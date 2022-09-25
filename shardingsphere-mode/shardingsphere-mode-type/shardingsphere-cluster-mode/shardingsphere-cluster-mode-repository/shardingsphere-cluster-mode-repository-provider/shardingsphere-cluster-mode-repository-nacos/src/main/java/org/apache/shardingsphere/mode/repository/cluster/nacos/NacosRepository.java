@@ -24,7 +24,9 @@ import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.alibaba.nacos.common.utils.StringUtils;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -36,13 +38,15 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMet
 import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.MetadataUtil;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtil;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -60,25 +64,23 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     private NacosProperties nacosProps;
     
-    private ServiceController serviceController;
+    private final ServiceController serviceController = new ServiceController();
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
         nacosProps = new NacosProperties(config.getProps());
-        initClient(config);
+        client = createClient(config);
         initServiceMetadata();
     }
     
-    private void initClient(final ClusterPersistRepositoryConfiguration config) {
+    private NamingService createClient(final ClusterPersistRepositoryConfiguration config) {
         Properties props = new Properties();
         props.setProperty("serverAddr", config.getServerLists());
         props.setProperty("namespace", config.getNamespace());
         try {
-            client = NamingFactory.createNamingService(props);
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+            return NamingFactory.createNamingService(props);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
@@ -86,48 +88,37 @@ public final class NacosRepository implements ClusterPersistRepository {
         try {
             String clusterIp = nacosProps.getValue(NacosPropertyKey.CLUSTER_IP);
             String ip = Strings.isNullOrEmpty(clusterIp) ? IpUtils.getIp() : clusterIp;
-            serviceController = new ServiceController();
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 Integer port = client.getAllInstances(each.getServiceName(), false).stream()
                         .filter(instance -> StringUtils.equals(instance.getIp(), ip)).map(Instance::getPort).max(Comparator.naturalOrder()).orElse(Integer.MIN_VALUE);
                 each.setIp(ip);
                 each.setPort(new AtomicInteger(port));
             }
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
         try {
-            if (Objects.isNull(value)) {
-                throw new IllegalArgumentException("Value cannot be null");
-            }
-            if (!findExisted(key, true).isEmpty()) {
+            Preconditions.checkNotNull(value, "Value can not be null");
+            if (!findExistedInstance(key, true).isEmpty()) {
                 delete(key);
             }
             put(key, value, true);
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
     @Override
     public void persistExclusiveEphemeral(final String key, final String value) {
         try {
-            if (!findExisted(key, true).isEmpty()) {
-                throw new IllegalStateException("Key: " + key + " already exists");
-            }
+            Preconditions.checkState(findExistedInstance(key, true).isEmpty(), "Key `%s` already exists", key);
             put(key, value, true);
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
@@ -147,19 +138,17 @@ public final class NacosRepository implements ClusterPersistRepository {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 NamingEventListener eventListener = each.getListener();
-                if (Objects.isNull(eventListener)) {
-                    eventListener = new NamingEventListener();
+                if (null != eventListener) {
                     eventListener.put(key, listener);
-                    each.setListener(eventListener);
-                    client.subscribe(each.getServiceName(), eventListener);
-                } else {
-                    eventListener.put(key, listener);
+                    return;
                 }
+                eventListener = new NamingEventListener();
+                eventListener.put(key, listener);
+                each.setListener(eventListener);
+                client.subscribe(each.getServiceName(), eventListener);
             }
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
@@ -167,16 +156,14 @@ public final class NacosRepository implements ClusterPersistRepository {
     public String get(final String key) {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
-                Optional<Instance> optional = findExisted(key, each.isEphemeral()).stream().max(Comparator.comparing(MetadataUtil::getTimestamp));
-                if (optional.isPresent()) {
-                    return MetadataUtil.getValue(optional.get());
+                Optional<Instance> instance = findExistedInstance(key, each.isEphemeral()).stream().max(Comparator.comparing(NacosMetaDataUtil::getTimestamp));
+                if (instance.isPresent()) {
+                    return NacosMetaDataUtil.getValue(instance.get());
                 }
             }
             return null;
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
@@ -185,9 +172,9 @@ public final class NacosRepository implements ClusterPersistRepository {
         try {
             Stream<String> concatKeys = Stream.empty();
             for (ServiceMetadata each : serviceController.getAllServices()) {
-                Stream<String> keys = findExisted(each.isEphemeral()).stream()
+                Stream<String> keys = findExistedInstance(each.isEphemeral()).stream()
                         .map(instance -> {
-                            String fullPath = MetadataUtil.getKey(instance);
+                            String fullPath = NacosMetaDataUtil.getKey(instance);
                             if (fullPath.startsWith(key + PATH_SEPARATOR)) {
                                 String pathWithoutPrefix = fullPath.substring((key + PATH_SEPARATOR).length());
                                 return pathWithoutPrefix.contains(PATH_SEPARATOR) ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf(PATH_SEPARATOR)) : pathWithoutPrefix;
@@ -197,34 +184,28 @@ public final class NacosRepository implements ClusterPersistRepository {
                 concatKeys = Stream.concat(concatKeys, keys);
             }
             return concatKeys.distinct().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
     @Override
     public void persist(final String key, final String value) {
         try {
-            if (Objects.isNull(value)) {
-                throw new IllegalArgumentException("Value cannot be null");
-            }
-            Optional<Instance> optional = findExisted(key, false).stream().max(Comparator.comparing(MetadataUtil::getTimestamp));
-            if (optional.isPresent()) {
-                update(optional.get(), value);
+            Preconditions.checkNotNull(value, "Value can not be null");
+            Optional<Instance> instance = findExistedInstance(key, false).stream().max(Comparator.comparing(NacosMetaDataUtil::getTimestamp));
+            if (instance.isPresent()) {
+                update(instance.get(), value);
             } else {
                 put(key, value, false);
             }
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
-    private void put(final String key, final String value, final boolean ephemeral) throws NacosException, InterruptedException {
-        final List<KeyValue> keyValues = buildParentPath(key);
+    private void put(final String key, final String value, final boolean ephemeral) throws NacosException {
+        final Collection<KeyValue> keyValues = buildParentPath(key);
         ServiceMetadata serviceMetadata = serviceController.getService(ephemeral);
         Instance instance = new Instance();
         instance.setIp(serviceMetadata.getIp());
@@ -235,40 +216,40 @@ public final class NacosRepository implements ClusterPersistRepository {
             fillEphemeralMetadata(metadataMap);
         }
         metadataMap.put(key, value);
-        metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
+        metadataMap.put(NacosMetaDataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(NacosMetaDataUtil.getTimestamp()));
         instance.setMetadata(metadataMap);
         client.registerInstance(serviceMetadata.getServiceName(), instance);
         keyValues.add(new KeyValue(key, value, ephemeral));
         waitValue(keyValues);
     }
     
-    private List<KeyValue> buildParentPath(final String key) throws NacosException {
-        List<KeyValue> result = new LinkedList<>();
+    private Collection<KeyValue> buildParentPath(final String key) throws NacosException {
+        Collection<KeyValue> result = new LinkedList<>();
         StringBuilder parentPath = new StringBuilder();
         String[] partPath = key.split(PATH_SEPARATOR);
         for (int index = 1; index < partPath.length - 1; index++) {
             String path = parentPath.append(PATH_SEPARATOR).append(partPath[index]).toString();
-            if (findExisted(path, false).isEmpty()) {
+            if (findExistedInstance(path, false).isEmpty()) {
                 result.addAll(build(path));
             }
         }
         return result;
     }
     
-    private List<KeyValue> build(final String key) throws NacosException {
-        List<KeyValue> result = new LinkedList<>();
-        if (findExisted(key, false).isEmpty()) {
+    private Collection<KeyValue> build(final String key) throws NacosException {
+        Collection<KeyValue> result = new LinkedList<>();
+        if (findExistedInstance(key, false).isEmpty()) {
             Instance instance = new Instance();
             ServiceMetadata persistentService = serviceController.getPersistentService();
             instance.setIp(persistentService.getIp());
             instance.setPort(persistentService.getPort());
             instance.setEphemeral(false);
             Map<String, String> metadataMap = new HashMap<>(2, 1);
-            metadataMap.put(key, MetadataUtil.EMPTY);
-            metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
+            metadataMap.put(key, "");
+            metadataMap.put(NacosMetaDataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(NacosMetaDataUtil.getTimestamp()));
             instance.setMetadata(metadataMap);
             client.registerInstance(persistentService.getServiceName(), instance);
-            result.add(new KeyValue(key, MetadataUtil.EMPTY, false));
+            result.add(new KeyValue(key, "", false));
         }
         return result;
     }
@@ -280,15 +261,15 @@ public final class NacosRepository implements ClusterPersistRepository {
         metadataMap.put(PreservedMetadataKeys.IP_DELETE_TIMEOUT, String.valueOf(timeToLiveSeconds * 1000));
     }
     
-    private void update(final Instance instance, final String value) throws NacosException, InterruptedException {
+    private void update(final Instance instance, final String value) throws NacosException {
         Map<String, String> metadataMap = instance.getMetadata();
-        String key = MetadataUtil.getKey(instance);
+        String key = NacosMetaDataUtil.getKey(instance);
         metadataMap.put(key, value);
-        metadataMap.put(MetadataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(MetadataUtil.getTimestamp()));
+        metadataMap.put(NacosMetaDataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(NacosMetaDataUtil.getTimestamp()));
         instance.setMetadata(metadataMap);
         ServiceMetadata persistentService = serviceController.getPersistentService();
         client.registerInstance(persistentService.getServiceName(), instance);
-        LinkedList<KeyValue> keyValues = new LinkedList<>();
+        Collection<KeyValue> keyValues = new LinkedList<>();
         keyValues.add(new KeyValue(key, value, instance.isEphemeral()));
         waitValue(keyValues);
     }
@@ -297,38 +278,35 @@ public final class NacosRepository implements ClusterPersistRepository {
     public void delete(final String key) {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
-                List<Instance> instances = findExisted(each.isEphemeral()).stream()
+                Collection<Instance> instances = findExistedInstance(each.isEphemeral()).stream()
                         .filter(instance -> {
-                            String fullPath = MetadataUtil.getKey(instance);
+                            String fullPath = NacosMetaDataUtil.getKey(instance);
                             return fullPath.startsWith(key + PATH_SEPARATOR) || StringUtils.equals(fullPath, key);
                         })
-                        .sorted(Comparator.comparing(MetadataUtil::getKey).reversed()).collect(Collectors.toList());
-                List<KeyValue> keyValues = new LinkedList<>();
+                        .sorted(Comparator.comparing(NacosMetaDataUtil::getKey).reversed()).collect(Collectors.toList());
+                Collection<KeyValue> keyValues = new LinkedList<>();
                 for (Instance instance : instances) {
                     client.deregisterInstance(each.getServiceName(), instance);
-                    keyValues.add(new KeyValue(MetadataUtil.getKey(instance), null, each.isEphemeral()));
+                    keyValues.add(new KeyValue(NacosMetaDataUtil.getKey(instance), null, each.isEphemeral()));
                 }
                 waitValue(keyValues);
             }
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     
-    private List<Instance> findExisted(final String key, final boolean ephemeral) throws NacosException {
-        ServiceMetadata service = serviceController.getService(ephemeral);
-        return client.getAllInstances(service.getServiceName(), false).stream()
-                .filter(instance -> Objects.equals(key, MetadataUtil.getKey(instance))).collect(Collectors.toList());
+    private Collection<Instance> findExistedInstance(final String key, final boolean ephemeral) throws NacosException {
+        return client.getAllInstances(serviceController.getService(ephemeral).getServiceName(), false).stream()
+                .filter(each -> Objects.equals(key, NacosMetaDataUtil.getKey(each))).collect(Collectors.toList());
     }
     
-    private List<Instance> findExisted(final boolean ephemeral) throws NacosException {
-        ServiceMetadata service = serviceController.getService(ephemeral);
-        return client.getAllInstances(service.getServiceName(), false);
+    private Collection<Instance> findExistedInstance(final boolean ephemeral) throws NacosException {
+        return client.getAllInstances(serviceController.getService(ephemeral).getServiceName(), false);
     }
     
-    private void waitValue(final List<KeyValue> keyValues) throws NacosException, InterruptedException {
+    @SneakyThrows(InterruptedException.class)
+    private void waitValue(final Collection<KeyValue> keyValues) throws NacosException {
         if (!isAvailable(keyValues)) {
             long retryIntervalMilliseconds = nacosProps.getValue(NacosPropertyKey.RETRY_INTERVAL_MILLISECONDS);
             int maxRetries = nacosProps.getValue(NacosPropertyKey.MAX_RETRIES);
@@ -342,23 +320,21 @@ public final class NacosRepository implements ClusterPersistRepository {
         }
     }
     
-    private boolean isAvailable(final List<KeyValue> keyValues) throws NacosException {
+    private boolean isAvailable(final Collection<KeyValue> keyValues) throws NacosException {
         Map<Boolean, List<KeyValue>> keyValueMap = keyValues.stream().collect(Collectors.groupingBy(KeyValue::isEphemeral));
-        for (Map.Entry<Boolean, List<KeyValue>> entry : keyValueMap.entrySet()) {
+        for (Entry<Boolean, List<KeyValue>> entry : keyValueMap.entrySet()) {
             ServiceMetadata service = serviceController.getService(entry.getKey());
-            Map<String, List<Instance>> instanceMap = client.getAllInstances(service.getServiceName(), false).stream()
-                    .collect(Collectors.groupingBy(MetadataUtil::getKey));
+            Map<String, List<Instance>> instanceMap = client.getAllInstances(service.getServiceName(), false).stream().collect(Collectors.groupingBy(NacosMetaDataUtil::getKey));
             keyValues.removeIf(keyValue -> {
-                List<Instance> instances = instanceMap.get(keyValue.getKey());
+                Collection<Instance> instances = instanceMap.get(keyValue.getKey());
                 String value = keyValue.getValue();
-                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> StringUtils.equals(MetadataUtil.getValue(instance), value)) : Objects.isNull(value);
+                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> StringUtils.equals(NacosMetaDataUtil.getValue(instance), value)) : Objects.isNull(value);
             });
         }
         return keyValues.isEmpty();
     }
     
     private long getSleepTimeMs(final int retryCount, final long baseSleepTimeMs) {
-        // copied from Hadoop's RetryPolicies.java
         return baseSleepTimeMs * Math.max(1, new Random().nextInt(1 << (retryCount + 1)));
     }
     
@@ -366,10 +342,8 @@ public final class NacosRepository implements ClusterPersistRepository {
     public void close() {
         try {
             client.shutDown();
-            // CHECKSTYLE:OFF
-        } catch (Exception cause) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(cause);
+        } catch (final NacosException ex) {
+            throw new ClusterPersistRepositoryException(ex);
         }
     }
     

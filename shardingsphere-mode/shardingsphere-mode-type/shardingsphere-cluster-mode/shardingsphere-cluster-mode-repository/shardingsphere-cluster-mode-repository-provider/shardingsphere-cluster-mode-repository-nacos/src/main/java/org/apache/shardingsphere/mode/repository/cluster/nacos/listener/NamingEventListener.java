@@ -22,8 +22,9 @@ import com.alibaba.nacos.api.naming.listener.EventListener;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.MetadataUtil;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtil;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -45,84 +46,82 @@ public final class NamingEventListener implements EventListener {
     
     @Override
     public void onEvent(final Event event) {
-        if (event instanceof NamingEvent) {
-            NamingEvent namingEvent = (NamingEvent) event;
-            List<Instance> instances = namingEvent.getInstances().stream().sorted(Comparator.comparing(MetadataUtil::getKey)).collect(Collectors.toList());
-            List<WatchData> watchDataList = new LinkedList<>();
-            synchronized (this) {
-                instances.forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
-                    String key = MetadataUtil.getKey(instance);
-                    if (key.startsWith(prefixPath)) {
-                        Instance preInstance = preInstances.remove(key);
-                        WatchData watchData = new WatchData(key, preInstance, instance, listener);
-                        watchDataList.add(watchData);
-                    }
-                }));
-                preInstances.values().stream().sorted(Comparator.comparing(MetadataUtil::getKey).reversed()).forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
-                    String key = MetadataUtil.getKey(instance);
-                    if (key.startsWith(prefixPath)) {
-                        WatchData watchData = new WatchData(key, instance, null, listener);
-                        watchDataList.add(watchData);
-                    }
-                }));
-                watchDataList.forEach(watchData -> {
-                    String key = watchData.getKey();
-                    Instance preInstance = watchData.getPreInstance();
-                    Instance instance = watchData.getInstance();
-                    DataChangedEventListener listener = watchData.getListener();
-                    DataChangedEvent.Type changedType = getEventChangedType(preInstance, instance);
-                    switch (changedType) {
-                        case ADDED:
-                        case UPDATED:
-                            listener.onChange(new DataChangedEvent(key, MetadataUtil.getValue(instance), changedType));
-                            break;
-                        case DELETED:
-                            listener.onChange(new DataChangedEvent(key, MetadataUtil.getValue(preInstance), changedType));
-                            break;
-                        default:
-                    }
-                });
-                setPreInstances(instances);
-            }
+        if (!(event instanceof NamingEvent)) {
+            return;
+        }
+        NamingEvent namingEvent = (NamingEvent) event;
+        List<Instance> instances = namingEvent.getInstances().stream().sorted(Comparator.comparing(NacosMetaDataUtil::getKey)).collect(Collectors.toList());
+        List<WatchData> watchDataList = new LinkedList<>();
+        synchronized (this) {
+            instances.forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
+                String key = NacosMetaDataUtil.getKey(instance);
+                if (key.startsWith(prefixPath)) {
+                    Instance preInstance = preInstances.remove(key);
+                    WatchData watchData = new WatchData(key, preInstance, instance, listener);
+                    watchDataList.add(watchData);
+                }
+            }));
+            preInstances.values().stream().sorted(Comparator.comparing(NacosMetaDataUtil::getKey).reversed()).forEach(instance -> prefixListenerMap.forEach((prefixPath, listener) -> {
+                String key = NacosMetaDataUtil.getKey(instance);
+                if (key.startsWith(prefixPath)) {
+                    WatchData watchData = new WatchData(key, instance, null, listener);
+                    watchDataList.add(watchData);
+                }
+            }));
+            watchDataList.forEach(watchData -> {
+                String key = watchData.getKey();
+                Instance preInstance = watchData.getPreInstance();
+                Instance instance = watchData.getInstance();
+                DataChangedEventListener listener = watchData.getListener();
+                DataChangedEvent.Type changedType = getEventChangedType(preInstance, instance);
+                switch (changedType) {
+                    case ADDED:
+                    case UPDATED:
+                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtil.getValue(instance), changedType));
+                        break;
+                    case DELETED:
+                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtil.getValue(preInstance), changedType));
+                        break;
+                    default:
+                }
+            });
+            setPreInstances(instances);
         }
     }
     
-    private DataChangedEvent.Type getEventChangedType(final Instance preInstance, final Instance instance) {
-        DataChangedEvent.Type result;
+    private Type getEventChangedType(final Instance preInstance, final Instance instance) {
         if (Objects.isNull(preInstance) && Objects.nonNull(instance)) {
-            result = DataChangedEvent.Type.ADDED;
-        } else if (Objects.nonNull(preInstance) && Objects.nonNull(instance)
-                && MetadataUtil.getTimestamp(preInstance) != MetadataUtil.getTimestamp(instance)) {
-            result = DataChangedEvent.Type.UPDATED;
-        } else if (Objects.nonNull(preInstance) && Objects.isNull(instance)) {
-            result = DataChangedEvent.Type.DELETED;
-        } else {
-            return DataChangedEvent.Type.IGNORED;
+            return DataChangedEvent.Type.ADDED;
         }
-        return result;
+        if (Objects.nonNull(preInstance) && Objects.nonNull(instance) && NacosMetaDataUtil.getTimestamp(preInstance) != NacosMetaDataUtil.getTimestamp(instance)) {
+            return DataChangedEvent.Type.UPDATED;
+        }
+        if (Objects.nonNull(preInstance) && Objects.isNull(instance)) {
+            return DataChangedEvent.Type.DELETED;
+        }
+        return DataChangedEvent.Type.IGNORED;
     }
     
     /**
-     * Update preInstances.
+     * Update pre instances.
      *
      * @param instances instances
      */
     public void setPreInstances(final List<Instance> instances) {
-        this.preInstances = instances.stream().filter(instance -> {
-            for (String prefixPath : prefixListenerMap.keySet()) {
-                String key = MetadataUtil.getKey(instance);
-                if (key.startsWith(prefixPath)) {
+        preInstances = instances.stream().filter(instance -> {
+            for (String each : prefixListenerMap.keySet()) {
+                if (NacosMetaDataUtil.getKey(instance).startsWith(each)) {
                     return true;
                 }
             }
             return false;
-        }).collect(Collectors.toMap(MetadataUtil::getKey, Function.identity(), (a, b) -> MetadataUtil.getTimestamp(a) > MetadataUtil.getTimestamp(b) ? a : b));
+        }).collect(Collectors.toMap(NacosMetaDataUtil::getKey, Function.identity(), (a, b) -> NacosMetaDataUtil.getTimestamp(a) > NacosMetaDataUtil.getTimestamp(b) ? a : b));
     }
     
     /**
-     * Put prefixPath and listener.
+     * Put prefix path and listener.
      *
-     * @param prefixPath prefixPath
+     * @param prefixPath prefix path
      * @param listener listener
      */
     public synchronized void put(final String prefixPath, final DataChangedEventListener listener) {
