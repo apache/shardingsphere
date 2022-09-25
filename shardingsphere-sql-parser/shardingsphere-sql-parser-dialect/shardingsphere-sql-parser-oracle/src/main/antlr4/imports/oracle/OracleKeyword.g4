@@ -3063,3 +3063,19 @@ OTHERS
 EXCEPTION
     : E X C E P T I O N
     ;
+
+CPU_PER_SESSION
+    : C P U UL_ P E R UL_ S E S S I O N
+    ;
+
+CONNECT_TIME
+    : C O N N E C T UL_ T I M E
+    ;
+
+LOGICAL_READS_PER_SESSION
+    : L O G I C A L UL_ R E A D S UL_ P E R UL_ S E S S I O N
+    ;
+
+PRIVATE_SGA
+    : P R I V A T E UL_ S G A
+    ;

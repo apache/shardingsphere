@@ -129,5 +129,6 @@ execute
     | dropPluggableDatabase
     | dropJava
     | dropLibrary
+    | alterResourceCost
     ) SEMI_?
     ;

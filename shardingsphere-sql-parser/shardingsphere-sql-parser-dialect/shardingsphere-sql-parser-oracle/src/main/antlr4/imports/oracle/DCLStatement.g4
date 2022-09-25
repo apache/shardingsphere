@@ -260,6 +260,10 @@ sessionsSystemPrivilege
     : (CREATE | ALTER | RESTRICTED) SESSION | ALTER RESOURCE COST
     ;
 
+alterResourceCost
+    : ALTER RESOURCE COST ((CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA) INTEGER_)+
+    ;
+
 sqlTranslationProfilesSystemPrivilege
     : (systemPrivilegeOperation | USE ANY) SQL TRANSLATION PROFILE | TRANSLATE ANY SQL
     ;
