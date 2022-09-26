@@ -28,7 +28,7 @@ import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceController;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMetadata;
