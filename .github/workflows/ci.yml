@@ -63,7 +63,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        java_version: [ 8, 17, 18 ]
+        java_version: [ 8 ]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK ${{ matrix.java_version }}
