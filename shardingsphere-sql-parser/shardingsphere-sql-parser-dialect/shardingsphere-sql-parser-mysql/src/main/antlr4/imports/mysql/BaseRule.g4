@@ -76,7 +76,7 @@ stringLiterals
     ;
     
 numberLiterals
-    : NUMBER_
+    : (PLUS_ | MINUS_)? NUMBER_
     ;
     
 temporalLiterals
@@ -1234,11 +1234,6 @@ defaultEncryption
     
 defaultCharset
     : DEFAULT? charset EQ_? charsetName
-    ;
-    
-signedLiteral
-    : literals
-    | (PLUS_ | MINUS_) numberLiterals
     ;
     
 now

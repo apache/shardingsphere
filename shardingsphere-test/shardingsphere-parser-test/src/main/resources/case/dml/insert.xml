@@ -100,7 +100,7 @@
         </values>
     </insert>
 
-    <insert sql-case-id="insert_with_columnname_uuid" parameters="1, 1">
+    <insert sql-case-id="insert_with_uuid_column" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="28">
             <column name="id" start-index="21" stop-index="22" />
@@ -2085,5 +2085,30 @@
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_with_negative_value" parameters="1, -1, 'init'">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="46">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+            <column name="status" start-index="40" stop-index="45" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="56" stop-index="56" />
+                    <literal-expression value="1" start-index="56" stop-index="56" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="59" stop-index="59" />
+                    <literal-expression value="-1" start-index="59" stop-index="60" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="62" stop-index="62" />
+                    <literal-expression value="init" start-index="63" stop-index="68" />
+                </assignment-value>
+            </value>
+        </values>
     </insert>
 </sql-parser-test-cases>

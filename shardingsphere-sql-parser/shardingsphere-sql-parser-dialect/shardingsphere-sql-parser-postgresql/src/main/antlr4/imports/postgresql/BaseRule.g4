@@ -933,7 +933,7 @@ funcName
     ;
 
 aexprConst
-    : NUMBER_
+    : numberConst
     | STRING_
     | BEGIN_DOLLAR_STRING_CONSTANT DOLLAR_TEXT* END_DOLLAR_STRING_CONSTANT
     | funcName STRING_
@@ -941,6 +941,10 @@ aexprConst
     | TRUE
     | FALSE
     | NULL
+    ;
+
+numberConst
+    : (PLUS_ | MINUS_)? NUMBER_
     ;
 
 qualifiedName
