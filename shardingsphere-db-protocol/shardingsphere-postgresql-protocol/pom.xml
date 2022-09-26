@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-db-protocol</artifactId>
         <version>5.2.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-db-protocol-mysql</artifactId>
+    <artifactId>shardingsphere-postgresql-protocol</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
@@ -36,7 +36,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mysql-dialect-exception</artifactId>
+            <artifactId>shardingsphere-postgresql-dialect-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

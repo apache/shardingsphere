@@ -24,13 +24,13 @@
         <artifactId>shardingsphere-db-protocol</artifactId>
         <version>5.2.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-db-protocol-opengauss</artifactId>
+    <artifactId>shardingsphere-opengauss-protocol</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-postgresql</artifactId>
+            <artifactId>shardingsphere-postgresql-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
         
