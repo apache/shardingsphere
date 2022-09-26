@@ -52,7 +52,7 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
      * Get consistency check version.
      *
      * @param consistencyCheckJobId consistency check job id.
-     * @return consistency check version
+     * @return sequence
      */
     public static int getSequence(final @NonNull String consistencyCheckJobId) {
         String versionString = consistencyCheckJobId.substring(consistencyCheckJobId.length() - 1);
