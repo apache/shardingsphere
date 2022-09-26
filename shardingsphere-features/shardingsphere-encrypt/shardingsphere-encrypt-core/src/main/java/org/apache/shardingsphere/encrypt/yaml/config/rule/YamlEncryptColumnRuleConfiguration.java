@@ -35,14 +35,14 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     private String assistedQueryColumn;
     
     private String plainColumn;
-    
+
+    private String fuzzyQueryColumn;
+
     private String encryptorName;
     
     private String assistedQueryEncryptorName;
-    
-    private Boolean queryWithCipherColumn;
-    
-    private String fuzzyQueryColumn;
-    
+
     private String fuzzyQueryEncryptorName;
+
+    private Boolean queryWithCipherColumn;
 }

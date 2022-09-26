@@ -41,8 +41,8 @@ public final class EncryptTable {
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName(),
-                    each.getAssistedQueryEncryptorName(), each.getQueryWithCipherColumn(), each.getFuzzyQueryColumn(), each.getFuzzyQueryEncryptorName()));
+            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getFuzzyQueryColumn(),
+                    each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getFuzzyQueryEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
