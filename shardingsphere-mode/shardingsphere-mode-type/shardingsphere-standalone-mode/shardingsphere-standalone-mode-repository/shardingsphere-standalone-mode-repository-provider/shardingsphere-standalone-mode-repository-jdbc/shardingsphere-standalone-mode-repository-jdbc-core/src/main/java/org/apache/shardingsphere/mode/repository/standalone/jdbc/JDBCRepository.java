@@ -118,8 +118,8 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public void persist(final String key, final String value) {
         try {
-            String keyValue = get(key);
-            if (!Strings.isNullOrEmpty(keyValue)) {
+            String oldValue = get(key);
+            if (!Strings.isNullOrEmpty(oldValue)) {
                 update(key, value);
                 return;
             }
