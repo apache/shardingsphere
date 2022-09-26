@@ -149,6 +149,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(database.getName()).thenReturn("db");
         when(database.getResource().getDataSources()).thenReturn(new LinkedHashMap<>());
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getSchemas()).thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema()));
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());

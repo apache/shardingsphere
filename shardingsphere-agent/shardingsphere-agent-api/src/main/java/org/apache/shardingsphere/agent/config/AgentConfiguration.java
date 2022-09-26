@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.agent.config;
 
-import java.util.Map;
-import java.util.Set;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 /**
  * Agent configuration.
@@ -28,10 +28,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public final class AgentConfiguration {
-    
-    private final String applicationName;
-    
-    private final Set<String> ignoredPluginNames;
     
     private final Map<String, PluginConfiguration> plugins;
 }
