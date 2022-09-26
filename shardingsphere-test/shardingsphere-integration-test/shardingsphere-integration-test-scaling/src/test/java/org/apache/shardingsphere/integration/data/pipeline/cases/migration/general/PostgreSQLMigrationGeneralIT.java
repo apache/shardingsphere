@@ -114,11 +114,12 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, getSourceTableOrderName(), 20));
         String jobId = getJobIdByTableName(getSourceTableOrderName());
-        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
         sourceExecuteWithLog(String.format("INSERT INTO %s.%s (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, getSourceTableOrderName(), KEY_GENERATE_ALGORITHM.generateKey(),
                 1, "afterStop"));
         startMigrationByJobId(jobId);
+        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
@@ -126,7 +127,7 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema("t_order_item", "t_order_item");
         String jobId = getJobIdByTableName("t_order_item");
-        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }

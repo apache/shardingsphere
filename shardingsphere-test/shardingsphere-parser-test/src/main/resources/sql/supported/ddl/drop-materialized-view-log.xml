@@ -15,9 +15,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <sql-cases>
-    <sql-case id="alter_resource_group" value="ALTER RESOURCE GROUP rg" db-types="MySQL" />
-    <sql-case id="alter_resource_cost_cpu_time" value="ALTER RESOURCE COST CPU_PER_SESSION 100 CONNECT_TIME 1" db-types="Oracle" />
-    <sql-case id="alter_resource_cost_cpu" value="ALTER RESOURCE COST CPU_PER_SESSION 100" db-types="Oracle" />
+    <sql-case id="drop_materialized_view_log" value="DROP MATERIALIZED VIEW LOG ON customers;" db-types="Oracle" />
 </sql-cases>

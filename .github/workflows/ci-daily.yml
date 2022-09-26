@@ -18,7 +18,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Daily Continuous Integration
+name: Continuous Integration:Daily
 
 on:
   schedule:
@@ -68,19 +68,3 @@ jobs:
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator
         run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
-
-  test-coverage-report:
-    if: github.repository == 'apache/shardingsphere'
-    runs-on: ubuntu-latest
-    name: ShardingSphere test coverage report
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Test with Maven
-        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true
-      - name: Upload to Codecov
-        run: bash <(curl -s https://codecov.io/bash)

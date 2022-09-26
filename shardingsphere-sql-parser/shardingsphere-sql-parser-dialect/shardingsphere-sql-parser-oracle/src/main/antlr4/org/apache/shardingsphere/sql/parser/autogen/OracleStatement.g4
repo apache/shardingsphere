@@ -17,7 +17,7 @@
 
 grammar OracleStatement;
 
-import DMLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import DMLStatement, TCLStatement, DCLStatement, DALStatement, StoreProcedure;
 
 execute
     : (select
@@ -129,5 +129,9 @@ execute
     | dropPluggableDatabase
     | dropJava
     | dropLibrary
+    | dropMaterializedView
+    | dropMaterializedViewLog
+    | dropMaterializedZonemap
+    | alterResourceCost
     ) SEMI_?
     ;
