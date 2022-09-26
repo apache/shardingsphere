@@ -230,7 +230,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLibraryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLockdownProfileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropMaterializedViewLogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropMaterializedZonemapStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorClassStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorFamilyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorStatementTestCase;
@@ -1678,6 +1680,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-library")
     private final List<DropLibraryStatementTestCase> dropLibraryStatementTestCase = new LinkedList<>();
+    
+    @XmlElement(name = "drop-materialized-view-log")
+    private final List<DropMaterializedViewLogStatementTestCase> dropMaterializedViewLogTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-materialized-zonemap")
+    private final List<DropMaterializedZonemapStatementTestCase> dropMaterializedZonemapTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
