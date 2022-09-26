@@ -18,7 +18,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Checkstyle and Apache Rat Check
+name: Check:Checkstyle and Apache Rat Check
 
 on:
   push:
@@ -55,7 +55,7 @@ jobs:
         with:
           path: ~/.m2/repository
           key: maven-cache-checkstyle-and-apache-rat-${{ hashFiles('**/pom.xml') }}
-      - name: Run Checkstyle and Apache Rat
+      - name: Run Checkstyle
         run: ./mvnw checkstyle:check -T1C
       - name: Run Apache Rat
         if: github.repository == 'apache/shardingsphere'

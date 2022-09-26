@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Transaction Integration Test
+name: Integration Test:Transaction
 
 on:
   push:
