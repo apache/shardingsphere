@@ -41,6 +41,6 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     
     @Override
     public String getType() {
-        return "Logging";
+        return "BaseLogging";
     }
 }

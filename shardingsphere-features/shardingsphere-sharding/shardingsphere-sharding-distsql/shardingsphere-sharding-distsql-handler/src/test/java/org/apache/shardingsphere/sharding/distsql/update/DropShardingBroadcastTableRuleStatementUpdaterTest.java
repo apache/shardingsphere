@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -45,17 +44,17 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     private final DropShardingBroadcastTableRuleStatementUpdater updater = new DropShardingBroadcastTableRuleStatementUpdater();
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         updater.checkSQLStatement(database, createSQLStatement("t_order"), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutExistBroadcastTableRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutExistBroadcastTableRule() {
         updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
+    public void assertCheckSQLStatementWithIfExists() {
         updater.checkSQLStatement(database, createSQLStatement(true, "t_order"), new ShardingRuleConfiguration());
         updater.checkSQLStatement(database, createSQLStatement(true, "t_order"), null);
     }
@@ -68,7 +67,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() throws DistSQLException {
+    public void assertCheckSQLStatementWithBroadcastTableRuleAreNotTheSame() {
         updater.checkSQLStatement(database, createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
     }
     

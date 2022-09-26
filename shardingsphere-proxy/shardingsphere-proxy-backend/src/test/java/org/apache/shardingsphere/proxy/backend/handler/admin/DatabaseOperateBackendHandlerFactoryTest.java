@@ -114,16 +114,16 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     }
     
     @Test
-    public void assertExecuteMySQLCreateDatabaseContextWithException() throws SQLException {
+    public void assertExecuteMySQLCreateDatabaseContextWithException() {
         assertExecuteCreateDatabaseContextWithException(new MySQLCreateDatabaseStatement());
     }
     
     @Test
-    public void assertExecutePostgreSQLCreateDatabaseContextWithException() throws SQLException {
+    public void assertExecutePostgreSQLCreateDatabaseContextWithException() {
         assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
     }
     
-    public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) throws SQLException {
+    public void assertExecuteCreateDatabaseContextWithException(final CreateDatabaseStatement sqlStatement) {
         sqlStatement.setDatabaseName("db");
         setGovernanceMetaDataContexts(true);
         try {

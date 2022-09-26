@@ -49,7 +49,7 @@ public final class TableMetaDataPersistServiceTest {
     public void assertPersist() {
         ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         new TableMetaDataPersistService(repository).persist("foo_db", "foo_schema", Collections.singletonMap("foo_table", table));
-        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_table", "name: foo_table\n");
+        verify(repository).persist("/metadata/foo_db/schemas/foo_schema/tables/foo_table", "name: foo_table" + System.lineSeparator());
     }
     
     @Test

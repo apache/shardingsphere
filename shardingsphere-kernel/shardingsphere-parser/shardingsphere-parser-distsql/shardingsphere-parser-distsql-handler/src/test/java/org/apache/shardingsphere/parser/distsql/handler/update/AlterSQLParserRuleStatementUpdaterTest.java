@@ -26,7 +26,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public final class AlterSQLParserRuleStatementUpdaterTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
         ShardingSphereMetaData metaData = createMetaData();

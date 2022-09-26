@@ -30,7 +30,7 @@ algorithmType ::=
 ### Supplement
 
 - `algorithmType` is the key generate algorithm type. For detailed key generate algorithm type information, please refer
-  to [KEY GENERATE ALGORITHM](en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/).
+  to [KEY GENERATE ALGORITHM](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/).
 
 ### Example
 

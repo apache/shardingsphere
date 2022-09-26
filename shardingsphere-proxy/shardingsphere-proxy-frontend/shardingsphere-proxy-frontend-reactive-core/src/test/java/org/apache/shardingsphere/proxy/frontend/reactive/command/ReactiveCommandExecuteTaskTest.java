@@ -34,7 +34,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public final class ReactiveCommandExecuteTaskTest {
     private ReactiveCommandExecutor reactiveCommandExecutor;
     
     @Before
-    public void setup() throws BackendConnectionException, SQLException {
+    public void setup() throws BackendConnectionException {
         reactiveCommandExecuteTask = new ReactiveCommandExecuteTask(frontendEngine, connectionSession, channelHandlerContext, message);
         when(connectionSession.getBackendConnection().prepareForTaskExecution()).thenReturn(Future.succeededFuture());
         when(connectionSession.getBackendConnection().closeExecutionResources()).thenReturn(Future.succeededFuture());
@@ -111,8 +110,8 @@ public final class ReactiveCommandExecuteTaskTest {
     }
     
     @Test
-    public void assertExecuteAndExceptionOccur() throws SQLException {
-        SQLException ex = new SQLException("");
+    public void assertExecuteAndExceptionOccur() {
+        RuntimeException ex = new RuntimeException("");
         when(connectionSession.getBackendConnection().prepareForTaskExecution()).thenThrow(ex);
         DatabasePacket errorPacket = mock(DatabasePacket.class);
         when(frontendEngine.getCommandExecuteEngine().getErrorPacket(ex)).thenReturn(errorPacket);

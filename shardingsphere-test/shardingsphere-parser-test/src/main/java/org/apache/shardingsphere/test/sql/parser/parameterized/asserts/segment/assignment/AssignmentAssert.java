@@ -42,19 +42,17 @@ public final class AssignmentAssert {
      * @param expected expected assignment
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
-        if (null != expected.getColumns()) {
+        if (null == expected.getColumns()) {
+            ColumnAssert.assertIs(assertContext, actual.getColumns().get(0), expected.getColumn());
+        } else {
             assertThat(assertContext.getText("Assignment columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
             int count = 0;
             for (ColumnSegment each : actual.getColumns()) {
                 ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
                 count++;
             }
-            // TODO assert assign operator
-            AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
-        } else {
-            ColumnAssert.assertIs(assertContext, actual.getColumns().get(0), expected.getColumn());
-            // TODO assert assign operator
-            AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
         }
+        // TODO assert assign operator
+        AssignmentValueAssert.assertIs(assertContext, actual.getValue(), expected.getAssignmentValue());
     }
 }

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.Drop
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,8 +34,8 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +60,7 @@ public final class DropTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         ShardingSphereMetaData metaData = createMetaData();
         DropTrafficRuleStatementUpdater updater = new DropTrafficRuleStatementUpdater();
         updater.executeUpdate(metaData, new DropTrafficRuleStatement(false, Collections.singleton("rule_name_1")));

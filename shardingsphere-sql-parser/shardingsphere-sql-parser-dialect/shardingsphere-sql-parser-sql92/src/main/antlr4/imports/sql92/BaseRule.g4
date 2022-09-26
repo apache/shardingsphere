@@ -38,8 +38,8 @@ stringLiterals
     ;
 
 numberLiterals
-   : MINUS_? NUMBER_
-   ;
+    : (PLUS_ | MINUS_)? NUMBER_
+    ;
 
 dateTimeLiterals
     : (DATE | TIME | TIMESTAMP) STRING_

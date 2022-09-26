@@ -22,7 +22,6 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfig
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
@@ -39,8 +38,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -53,12 +52,12 @@ public final class DropEncryptRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutCurrentRule() {
         updater.checkSQLStatement(database, createSQLStatement("t_encrypt"), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckSQLStatementWithoutToBeDroppedRule() throws DistSQLException {
+    public void assertCheckSQLStatementWithoutToBeDroppedRule() {
         updater.checkSQLStatement(database, createSQLStatement("t_encrypt"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
     }
     
@@ -77,7 +76,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
         EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropEncryptRuleStatement statement = createSQLStatement(true, "t_encrypt_1");
         updater.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));

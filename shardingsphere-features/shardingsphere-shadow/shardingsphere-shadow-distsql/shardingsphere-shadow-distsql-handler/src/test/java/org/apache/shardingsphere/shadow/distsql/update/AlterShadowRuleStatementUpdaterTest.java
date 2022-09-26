@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
@@ -73,25 +72,25 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertExecuteWithoutCurrentConfiguration() throws DistSQLException {
+    public void assertExecuteWithoutCurrentConfiguration() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), null);
     }
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithDuplicateRuleName() throws DistSQLException {
+    public void assertExecuteWithDuplicateRuleName() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment, ruleSegment), currentConfig);
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithRuleNameNotInMetaData() throws DistSQLException {
+    public void assertExecuteWithRuleNameNotInMetaData() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }
     
     @Test(expected = MissingRequiredResourcesException.class)
-    public void assertExecuteWithNotExistResource() throws DistSQLException {
+    public void assertExecuteWithNotExistResource() {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resource.getNotExistedResources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds3", null, null));
@@ -99,7 +98,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test(expected = AlgorithmInUsedException.class)
-    public void assertExecuteDuplicateAlgorithm() throws DistSQLException {
+    public void assertExecuteDuplicateAlgorithm() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
@@ -109,7 +108,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test(expected = AlgorithmInUsedException.class)
-    public void assertExecuteDuplicateAlgorithmWithoutConfiguration() throws DistSQLException {
+    public void assertExecuteDuplicateAlgorithmWithoutConfiguration() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
@@ -119,7 +118,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteSuccess() throws DistSQLException {
+    public void assertExecuteSuccess() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
         ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("name", prop));

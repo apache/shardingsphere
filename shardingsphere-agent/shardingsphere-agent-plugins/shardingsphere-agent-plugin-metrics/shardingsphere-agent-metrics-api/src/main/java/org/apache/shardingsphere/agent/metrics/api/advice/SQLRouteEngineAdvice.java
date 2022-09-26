@@ -52,7 +52,7 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        QueryContext queryContext = (QueryContext) args[0];
+        QueryContext queryContext = (QueryContext) args[1];
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
             MetricsPool.get(MetricIds.ROUTE_SQL_INSERT).ifPresent(MetricsWrapper::inc);

@@ -35,6 +35,6 @@ public final class BaseLoggingPluginBootService implements PluginBootService {
     
     @Override
     public String getType() {
-        return "Logging";
+        return "BaseLogging";
     }
 }

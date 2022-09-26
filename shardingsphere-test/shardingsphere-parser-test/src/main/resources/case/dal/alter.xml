@@ -20,4 +20,6 @@
     <alter-resource-group sql-case-id="alter_resource_group">
         <group name="rg" start-index="21" stop-index="22" />
     </alter-resource-group>
+    <alter-resource sql-case-id="alter_resource_cost_cpu_time"></alter-resource>
+    <alter-resource sql-case-id="alter_resource_cost_cpu"></alter-resource>
 </sql-parser-test-cases>

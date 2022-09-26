@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter;
 
 import lombok.Getter;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,15 +39,15 @@ public final class FilterableDatabase extends AbstractSchema {
     
     private final Map<String, Schema> subSchemaMap;
     
-    public FilterableDatabase(final ShardingSphereDatabase database, final TableScanExecutor executor) {
+    public FilterableDatabase(final ShardingSphereDatabase database, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         name = database.getName();
-        subSchemaMap = createSubSchemaMap(database, executor);
+        subSchemaMap = createSubSchemaMap(database, javaTypeFactory, executor);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final TableScanExecutor executor) {
+    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            result.put(entry.getKey(), new FilterableSchema(entry.getKey(), entry.getValue(), executor));
+            result.put(entry.getKey(), new FilterableSchema(entry.getKey(), entry.getValue(), javaTypeFactory, executor));
         }
         return result;
     }

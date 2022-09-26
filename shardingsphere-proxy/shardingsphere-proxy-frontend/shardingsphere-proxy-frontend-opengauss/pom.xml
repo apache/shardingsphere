@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-opengauss</artifactId>
+            <artifactId>shardingsphere-opengauss-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

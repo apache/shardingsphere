@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.GlobalRuleRALUpdater;
@@ -49,18 +48,18 @@ import java.util.stream.Collectors;
 public final class CreateTrafficRuleStatementUpdater implements GlobalRuleRALUpdater {
     
     @Override
-    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) throws DistSQLException {
+    public void executeUpdate(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
         CreateTrafficRuleStatement statement = (CreateTrafficRuleStatement) sqlStatement;
         check(metaData.getGlobalRuleMetaData(), statement);
         replaceNewRule(metaData.getGlobalRuleMetaData(), statement);
     }
     
-    private void check(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+    private void check(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) {
         checkRuleNames(ruleMetaData, sqlStatement);
         checkAlgorithmNames(sqlStatement);
     }
     
-    private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+    private void checkRuleNames(final ShardingSphereRuleMetaData ruleMetaData, final CreateTrafficRuleStatement sqlStatement) {
         Collection<String> inUsedRuleNames = getInUsedRuleNames(ruleMetaData, sqlStatement);
         ShardingSpherePreconditions.checkState(inUsedRuleNames.isEmpty(), () -> new DuplicateRuleException("Traffic", inUsedRuleNames));
     }
@@ -71,7 +70,7 @@ public final class CreateTrafficRuleStatementUpdater implements GlobalRuleRALUpd
         return sqlStatement.getSegments().stream().map(TrafficRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toSet());
     }
     
-    private void checkAlgorithmNames(final CreateTrafficRuleStatement sqlStatement) throws DistSQLException {
+    private void checkAlgorithmNames(final CreateTrafficRuleStatement sqlStatement) {
         Collection<String> invalidAlgorithmNames = getInvalidAlgorithmNames(sqlStatement);
         ShardingSpherePreconditions.checkState(invalidAlgorithmNames.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Traffic", invalidAlgorithmNames));
     }

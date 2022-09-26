@@ -19,8 +19,6 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
@@ -33,7 +31,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -163,33 +160,10 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) {
-        for (int i = 0; i < 5; i++) {
-            if (checkJobIncrementTaskFinished(jobId)) {
-                break;
-            }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
-        }
-        boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
-        log.info("second check job result: {}", secondCheckJobResult);
         List<Map<String, Object>> checkJobResults = queryForListWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType));
         log.info("check job results: {}", checkJobResults);
         for (Map<String, Object> entry : checkJobResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
-    }
-    
-    protected boolean checkJobIncrementTaskFinished(final String jobId) {
-        List<Map<String, Object>> listJobStatus = queryForListWithLog(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        log.info("list job status result: {}", listJobStatus);
-        for (Map<String, Object> entry : listJobStatus) {
-            if (!JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
-                return false;
-            }
-            int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds < 3) {
-                return false;
-            }
-        }
-        return true;
     }
 }

@@ -80,7 +80,6 @@ import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -98,6 +97,8 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class TranslatableTableScanExecutor implements TableScanExecutor {
+    
+    private static final JavaTypeFactory JAVA_TYPE_FACTORY = new JavaTypeFactoryImpl();
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -200,7 +201,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
         ShardingSphereSchema schema = executorContext.getFederationContext().getDatabases().get(databaseName).getSchema(schemaName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
-                new FilterableSchema(schemaName, schema, null), new JavaTypeFactoryImpl(), connectionConfig);
+                new FilterableSchema(schemaName, schema, JAVA_TYPE_FACTORY, null), new JavaTypeFactoryImpl(), connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName());
         if (null != scanContext.getFilterValues()) {
@@ -217,16 +218,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
         for (String each : filterValues) {
-            if (Strings.isNullOrEmpty(each)) {
-                continue;
+            if (!Strings.isNullOrEmpty(each)) {
+                result.add(StringToRexNodeUtil.buildRexNode(each, rexBuilder));
             }
-            RexNode filterCondition;
-            try {
-                filterCondition = StringToRexNodeUtil.buildRexNode(each, rexBuilder);
-            } catch (IOException ignored) {
-                continue;
-            }
-            result.add(filterCondition);
         }
         return result;
     }

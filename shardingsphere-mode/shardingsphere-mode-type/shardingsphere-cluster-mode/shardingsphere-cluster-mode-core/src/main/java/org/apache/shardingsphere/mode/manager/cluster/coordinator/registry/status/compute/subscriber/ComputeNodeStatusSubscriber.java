@@ -73,7 +73,7 @@ public final class ComputeNodeStatusSubscriber {
     @Subscribe
     public void update(final LabelsChangedEvent event) {
         if (event.getLabels().isEmpty()) {
-            registryCenter.getComputeNodeStatusService().persistInstanceLabels(event.getInstanceId(), Collections.EMPTY_LIST);
+            registryCenter.getComputeNodeStatusService().persistInstanceLabels(event.getInstanceId(), Collections.emptyList());
         } else {
             registryCenter.getComputeNodeStatusService().persistInstanceLabels(event.getInstanceId(), event.getLabels());
         }

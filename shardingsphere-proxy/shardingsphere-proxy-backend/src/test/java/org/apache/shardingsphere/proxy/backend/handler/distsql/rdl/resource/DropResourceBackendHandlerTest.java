@@ -159,7 +159,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test(expected = DistSQLException.class)
-    public void assertResourceNameInUseWithIfExists() throws DistSQLException {
+    public void assertResourceNameInUseWithIfExists() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));

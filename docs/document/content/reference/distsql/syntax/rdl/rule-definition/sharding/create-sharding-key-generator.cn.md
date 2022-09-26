@@ -29,7 +29,7 @@ algorithmType ::=
 ### 补充说明
 
 - `algorithmType`
-  为分布式主键生成算法类型，详细的分布式主键生成算法类型信息请参考[分布式序列算法类型](cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)。
+  为分布式主键生成算法类型，详细的分布式主键生成算法类型信息请参考[分布式序列算法类型](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)。
 
 ### 示例
 
