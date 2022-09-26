@@ -77,7 +77,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven

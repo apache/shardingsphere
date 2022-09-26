@@ -48,6 +48,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Build with Maven
         run: ./mvnw -B -ntp clean install
       - name: Build examples with Maven
@@ -64,6 +71,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Build Project
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator

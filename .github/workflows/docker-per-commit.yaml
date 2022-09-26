@@ -48,11 +48,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Cache local Maven repository
+      - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Log in to the Container registry
