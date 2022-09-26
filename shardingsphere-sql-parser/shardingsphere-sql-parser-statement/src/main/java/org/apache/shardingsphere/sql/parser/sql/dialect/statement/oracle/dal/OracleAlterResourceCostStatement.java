@@ -25,10 +25,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Oracle alter resource statement.
+ * Oracle alter resource cost statement.
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class OracleAlterResourceCostStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
+public final class OracleAlterResourceCostStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
 }
