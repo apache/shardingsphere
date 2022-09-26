@@ -93,7 +93,7 @@
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <version>1.4.2</version>
+            <version>1.5.2</version>
         </dependency>
     </#if>
     <#if framework?contains("jpa")>
@@ -186,14 +186,12 @@
         </dependency>
     </#if>
         
-    <#if feature=="encrypt">
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
-    </#if>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
