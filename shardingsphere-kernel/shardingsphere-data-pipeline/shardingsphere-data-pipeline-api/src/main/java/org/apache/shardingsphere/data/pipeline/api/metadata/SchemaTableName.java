@@ -43,7 +43,7 @@ public class SchemaTableName {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (null == o || getClass() != o.getClass()) {
             return false;
         }
         final SchemaTableName that = (SchemaTableName) o;

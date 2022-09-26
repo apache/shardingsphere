@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
             return;
         }
         Map<String, PluginInterceptorPoint> pointMap = new HashMap<>();
-        Set<String> ignoredPluginNames = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             for (File each : jarFiles) {
                 outputStream.reset();
@@ -117,8 +117,18 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
                 log.info("Loaded jar {}", each.getName());
             }
         }
-        loadPluginDefinitionServices(ignoredPluginNames, pointMap);
+        Collection<String> pluginNames = getPluginNames();
+        loadPluginDefinitionServices(pluginNames, pointMap);
         interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
+    }
+    
+    private Collection<String> getPluginNames() {
+        AgentConfiguration configuration = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
+        Set<String> pluginNames = new HashSet<>();
+        if (null != configuration && null != configuration.getPlugins()) {
+            pluginNames.addAll(configuration.getPlugins().keySet());
+        }
+        return pluginNames;
     }
     
     /**
@@ -238,10 +248,10 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
         }
     }
     
-    private void loadPluginDefinitionServices(final Set<String> ignoredPluginNames, final Map<String, PluginInterceptorPoint> pointMap) {
+    private void loadPluginDefinitionServices(final Collection<String> pluginNames, final Map<String, PluginInterceptorPoint> pointMap) {
         PluginServiceLoader.newServiceInstances(PluginDefinitionService.class)
                 .stream()
-                .filter(each -> ignoredPluginNames.isEmpty() || !ignoredPluginNames.contains(each.getType()))
+                .filter(each -> pluginNames.contains(each.getType()))
                 .forEach(each -> buildPluginInterceptorPointMap(each, pointMap));
     }
     

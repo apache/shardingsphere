@@ -31,35 +31,71 @@ import java.util.stream.Collectors;
 public final class SchemaManager {
     
     /**
-     * Get to be deleted schema meta data.
+     * Get to be added tables by schemas.
      *
-     * @param loadedSchema loaded schema
-     * @param currentSchema current schema
-     * @return To be deleted schema meta data
+     * @param reloadSchemas reload schemas
+     * @param currentSchemas current schemas
+     * @return To be added table meta data
      */
-    public static ShardingSphereSchema getToBeDeletedSchemaMetaData(final ShardingSphereSchema loadedSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(getToBeDeletedTables(loadedSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
+    public static Map<String, ShardingSphereSchema> getToBeAddedTablesBySchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1);
+        reloadSchemas.entrySet().stream().filter(entry -> currentSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
+                .forEach((key, value) -> result.put(key, getToBeAddedTablesBySchema(value, currentSchemas.get(key))));
+        return result;
+    }
+    
+    private static ShardingSphereSchema getToBeAddedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+        return new ShardingSphereSchema(getToBeAddedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
     }
     
     /**
-     * Get to be added table meta data.
+     * Get to be added tables.
      *
-     * @param loadedTables loaded tables
+     * @param reloadTables  reload tables
      * @param currentTables current tables
      * @return To be added table meta data
      */
-    public static Map<String, ShardingSphereTable> getToBeAddedTables(final Map<String, ShardingSphereTable> loadedTables, final Map<String, ShardingSphereTable> currentTables) {
-        return loadedTables.entrySet().stream().filter(entry -> !entry.getValue().equals(currentTables.get(entry.getKey()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    public static Map<String, ShardingSphereTable> getToBeAddedTables(final Map<String, ShardingSphereTable> reloadTables, final Map<String, ShardingSphereTable> currentTables) {
+        return reloadTables.entrySet().stream().filter(entry -> !entry.getValue().equals(currentTables.get(entry.getKey()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     /**
-     * Get to be deleted table meta data.
+     * Get to be deleted tables by schemas.
      *
-     * @param loadedTables loaded tables
+     * @param reloadSchemas reload schemas
+     * @param currentSchemas current schemas
+     * @return To be deleted table meta data
+     */
+    public static Map<String, ShardingSphereSchema> getToBeDeletedTablesBySchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1);
+        currentSchemas.entrySet().stream().filter(entry -> reloadSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue))
+                .forEach((key, value) -> result.put(key, getToBeDeletedTablesBySchema(reloadSchemas.get(key), value)));
+        return result;
+    }
+    
+    private static ShardingSphereSchema getToBeDeletedTablesBySchema(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
+        return new ShardingSphereSchema(getToBeDeletedTables(reloadSchema.getTables(), currentSchema.getTables()), new LinkedHashMap<>());
+    }
+    
+    /**
+     * Get to be deleted tables.
+     *
+     * @param reloadTables reload tables
      * @param currentTables current tables
      * @return To be deleted table meta data
      */
-    public static Map<String, ShardingSphereTable> getToBeDeletedTables(final Map<String, ShardingSphereTable> loadedTables, final Map<String, ShardingSphereTable> currentTables) {
-        return currentTables.entrySet().stream().filter(entry -> !loadedTables.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    public static Map<String, ShardingSphereTable> getToBeDeletedTables(final Map<String, ShardingSphereTable> reloadTables, final Map<String, ShardingSphereTable> currentTables) {
+        return currentTables.entrySet().stream().filter(entry -> !reloadTables.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    }
+    
+    /**
+     * Get to be deleted schema names.
+     *
+     * @param reloadSchemas reload schemas
+     * @param currentSchemas current schemas
+     * @return To be deleted schema names
+     */
+    public static Map<String, ShardingSphereSchema> getToBeDeletedSchemaNames(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
+        return currentSchemas.entrySet().stream().filter(entry -> !reloadSchemas.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
 }

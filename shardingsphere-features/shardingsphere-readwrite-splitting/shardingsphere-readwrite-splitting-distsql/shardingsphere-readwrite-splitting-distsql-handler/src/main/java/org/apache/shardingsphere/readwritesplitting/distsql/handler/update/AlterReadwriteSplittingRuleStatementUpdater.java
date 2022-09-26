@@ -63,18 +63,14 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
-        if (null == currentRuleConfig) {
-            throw new MissingRequiredRuleException("Readwrite splitting", databaseName);
-        }
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Readwrite splitting", databaseName));
     }
     
     private void checkToBeAlteredRules(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement,
                                        final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
         Collection<String> notExistedRuleNames = getToBeAlteredRuleNames(sqlStatement).stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
-        if (!notExistedRuleNames.isEmpty()) {
-            throw new MissingRequiredRuleException("Readwrite splitting", databaseName, notExistedRuleNames);
-        }
+        ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException("Readwrite splitting", databaseName, notExistedRuleNames));
     }
     
     private Collection<String> getToBeAlteredRuleNames(final AlterReadwriteSplittingRuleStatement sqlStatement) {
@@ -84,9 +80,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdater implements RuleDe
     private void checkToBeAlteredLoadBalancer(final AlterReadwriteSplittingRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
         Collection<String> invalidLoadBalancers = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getLoadBalancer).filter(Objects::nonNull).distinct()
                 .filter(each -> !ReadQueryLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
-        if (!invalidLoadBalancers.isEmpty()) {
-            throw new InvalidAlgorithmConfigurationException("Load balancers", invalidLoadBalancers);
-        }
+        ShardingSpherePreconditions.checkState(invalidLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", invalidLoadBalancers));
     }
     
     private void checkToBeAlteredResources(final String databaseName, final AlterReadwriteSplittingRuleStatement sqlStatement, final ShardingSphereDatabase database) {

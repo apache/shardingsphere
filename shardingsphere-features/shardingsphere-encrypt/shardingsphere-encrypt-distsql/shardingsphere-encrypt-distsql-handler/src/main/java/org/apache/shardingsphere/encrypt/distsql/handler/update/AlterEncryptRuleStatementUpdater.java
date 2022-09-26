@@ -53,9 +53,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final EncryptRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
-        if (null == currentRuleConfig) {
-            throw new MissingRequiredRuleException("Encrypt", databaseName);
-        }
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Encrypt", databaseName));
     }
     
     private void checkToBeAlteredRules(final String databaseName, final AlterEncryptRuleStatement sqlStatement, final EncryptRuleConfiguration currentRuleConfig) {

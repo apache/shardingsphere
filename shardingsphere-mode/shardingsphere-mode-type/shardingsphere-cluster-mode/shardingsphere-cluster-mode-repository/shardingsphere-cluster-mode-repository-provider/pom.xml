@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-cluster-mode-repository-zookeeper-curator</module>
         <module>shardingsphere-cluster-mode-repository-etcd</module>
+        <module>shardingsphere-cluster-mode-repository-nacos</module>
     </modules>
 </project>
