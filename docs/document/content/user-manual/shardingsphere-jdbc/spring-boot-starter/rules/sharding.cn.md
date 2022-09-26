@@ -41,6 +41,10 @@ spring.shardingsphere.rules.sharding.auto-tables.<auto-table-name>.sharding-stra
 spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.column= # 分布式序列列名称
 spring.shardingsphere.rules.sharding.tables.<table-name>.key-generate-strategy.key-generator-name= # 分布式序列算法名称
 
+# 分片审计策略配置
+spring.shardingsphere.rules.sharding.tables.<table-name>.audit-strategy.auditor-names= # 分片审计算法名称
+spring.shardingsphere.rules.sharding.tables.<table-name>.audit-strategy.allow-hint-disable= # 是否禁用分片审计hint
+
 spring.shardingsphere.rules.sharding.binding-tables[0]= # 绑定表规则列表
 spring.shardingsphere.rules.sharding.binding-tables[1]= # 绑定表规则列表
 spring.shardingsphere.rules.sharding.binding-tables[x]= # 绑定表规则列表
@@ -61,6 +65,10 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-nam
 # 分布式序列算法配置
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.type= # 分布式序列算法类型
 spring.shardingsphere.rules.sharding.key-generators.<key-generate-algorithm-name>.props.xxx= # 分布式序列算法属性配置
+
+# 分片审计算法配置
+spring.shardingsphere.rules.sharding.auditors.<sharding-audit-algorithm-name>.type= # 分片审计算法类型
+spring.shardingsphere.rules.sharding.auditors.<sharding-audit-algorithm-name>.props.xxx= # 分片审计算法属性配置
 ```
 
 算法类型的详情，请参见[内置分片算法列表](/cn/user-manual/common-config/builtin-algorithm/sharding)和[内置分布式序列算法列表](/cn/user-manual/common-config/builtin-algorithm/keygen)。
@@ -104,6 +112,8 @@ spring.shardingsphere.rules.sharding.tables.t_order.table-strategy.standard.shar
 
 spring.shardingsphere.rules.sharding.tables.t_order.key-generate-strategy.column=order_id
 spring.shardingsphere.rules.sharding.tables.t_order.key-generate-strategy.key-generator-name=snowflake
+spring.shardingsphere.rules.sharding.tables.t_order.audit-strategy.auditor-names=shardingKeyAudit
+spring.shardingsphere.rules.sharding.tables.t_order.audit-strategy.allow-hint-disable=true
 
 spring.shardingsphere.rules.sharding.tables.t_order_item.actual-data-nodes=ds-$->{0..1}.t_order_item_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_order_item.table-strategy.standard.sharding-column=order_id
@@ -120,6 +130,7 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.t-order-item-inline.typ
 spring.shardingsphere.rules.sharding.sharding-algorithms.t-order-item-inline.props.algorithm-expression=t_order_item_$->{order_id % 2}
 
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
+spring.shardingsphere.rules.sharding.auditors.shardingKeyAudit.type=DML_SHARDING_CONDITIONS
 ```
 
 ## 相关参考

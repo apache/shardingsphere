@@ -14,7 +14,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 \<sharding:rule />
 
 | *Name*                                | *Type*    | *Description*                               |
-| ------------------------------------- | --------- | ------------------------------------------- |
+| ------------------------------------- | --------- |---------------------------------------------|
 | id                                    | Attribute | Spring Bean Id                              |
 | table-rules (?)                       | Tag       | Sharding table rule configuration           |
 | auto-table-rules (?)                  | Tag       | Automatic sharding table rule configuration |
@@ -23,19 +23,21 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | default-database-strategy-ref (?)     | Attribute | Default database strategy name              |
 | default-table-strategy-ref (?)        | Attribute | Default table strategy name                 |
 | default-key-generate-strategy-ref (?) | Attribute | Default key generate strategy name          |
+| default-audit-strategy-ref (?)        | Attribute | Default sharding audit strategy name        |
 | default-sharding-column (?)           | Attribute | Default sharding column name                |
 
 \<sharding:table-rule />
 
-| *Name*                    | *Type*    | *Description*              |
-| ------------------------- | --------- | -------------------------- |
-| logic-table               | Attribute | Logic table name           |
+| *Name*                    | *Type*    | *Description*                                                                                                                                                                |
+| ------------------------- | --------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| logic-table               | Attribute | Logic table name                                                                                                                                                             |
 | actual-data-nodes         | Attribute | Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only. |
-| actual-data-sources       | Attribute | Data source names for auto sharding table |
-| database-strategy-ref     | Attribute | Database strategy name for standard sharding table     |
-| table-strategy-ref        | Attribute | Table strategy name for standard sharding table        |
-| sharding-strategy-ref     | Attribute | sharding strategy name for auto sharding table         |
-| key-generate-strategy-ref | Attribute | Key generate strategy name |
+| actual-data-sources       | Attribute | Data source names for auto sharding table                                                                                                                                    |
+| database-strategy-ref     | Attribute | Database strategy name for standard sharding table                                                                                                                           |
+| table-strategy-ref        | Attribute | Table strategy name for standard sharding table                                                                                                                              |
+| sharding-strategy-ref     | Attribute | sharding strategy name for auto sharding table                                                                                                                               |
+| key-generate-strategy-ref | Attribute | Key generate strategy name                                                                                                                                                   |
+| audit-strategy-ref        | Attribute | Sharding audit strategy name                                                                                                                                                 |
 
 \<sharding:binding-table-rules />
 
@@ -98,6 +100,26 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | column        | Attribute | Key generate column name    |
 | algorithm-ref | Attribute | Key generate algorithm name |
 
+\<sharding:audit-strategy />
+
+| *Name*             | *Type*    | *Description*                         |
+|--------------------|-----------|---------------------------------------|
+| id                 | Attribute | Sharding audit strategy name          |
+| allow-hint-disable | Attribute | Enable or disable sharding audit hint |
+| auditors           | Tag       | Sharding audit algorithm name         |
+
+\<sharding:auditors />
+
+| *Name*  | *Type* | *Description*                 |
+|---------|--------|-------------------------------|
+| auditor | Tag    | Sharding audit algorithm name |
+
+\<sharding:auditor />
+
+| *Name*           | *Type*    | *Description*                 |
+| -----------------|-----------|-------------------------------|
+| algorithm-ref    | Attribute | Sharding audit algorithm name |
+
 \<sharding:sharding-algorithm />
 
 | *Name*    | *Type*    | *Description*                 |
@@ -114,7 +136,15 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/shar
 | type      | Attribute | Key generate algorithm type       |
 | props (?) | Tag       | Key generate algorithm properties |
 
-Please refer to [Built-in Sharding Algorithm List](/en/user-manual/common-config/builtin-algorithm/sharding) and [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
+\<sharding:audit-algorithm />
+
+| *Name*    | *Type*    | *Description*                       |
+| --------- | --------- |-------------------------------------|
+| id        | Attribute | Sharding audit algorithm name       |
+| type      | Attribute | Sharding audit algorithm type       |
+| props (?) | Tag       | Sharding audit algorithm properties |
+
+Please refer to [Built-in Sharding Audit Algorithm List](/en/user-manual/common-config/builtin-algorithm/sharding), [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) and [Built-in Sharding Audit Algorithm List](/en/user-manual/common-config/builtin-algorithm/audit) for more details about type of algorithm.
 
 > Attention: Inline expression identifier can use `${...}` or `$->{...}`, but `${...}` is conflict with spring placeholder of properties, so use `$->{...}` on spring environment is better.
 
@@ -170,12 +200,25 @@ Please refer to [Built-in Sharding Algorithm List](/en/user-manual/common-config
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
     </sharding:key-generate-algorithm>
 
+    <sharding:audit-algorithm id="auditAlgorithm" type="DML_SHARDING_CONDITIONS" />
+
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
 
+    <sharding:audit-strategy id="defaultAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
+    <sharding:audit-strategy id="shardingKeyAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
+    
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" audit-strategy-ref="shardingKeyAudit" />
             <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>

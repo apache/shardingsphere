@@ -16,6 +16,7 @@ There are many third-party solutions that can perfectly solve this problem, such
 In order to cater to the requirements of different users in different scenarios, Apache ShardingSphere not only provides built-in distributed primary key generators, such as UUID, SNOWFLAKE, but also abstracts the interface of distributed primary key generators to facilitate users to implement their own customized primary key generators. 
 
 ## Parameters
+
 ### Snowflake
 
 Type: SNOWFLAKE

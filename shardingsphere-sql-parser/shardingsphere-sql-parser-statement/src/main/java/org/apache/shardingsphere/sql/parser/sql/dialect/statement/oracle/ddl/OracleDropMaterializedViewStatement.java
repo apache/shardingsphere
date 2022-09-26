@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.exception;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Plugin configuration exception.
+ * Oracle drop materialized view statement.
  */
-public final class PluginConfigurationException extends RuntimeException {
-    
-    private static final long serialVersionUID = -3298813951573088711L;
-    
-    public PluginConfigurationException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
+@ToString(callSuper = true)
+public final class OracleDropMaterializedViewStatement extends DropMaterializedViewStatement implements OracleStatement {
 }
