@@ -87,7 +87,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration result = mock(EncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         Collection<EncryptColumnRuleConfiguration> columns =
-                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "user_plain", "aes_encryptor", "aes_assisted_encryptor", false));
+                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "user_plain", "aes_encryptor", "aes_assisted_encryptor", false, null, null));
         when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
         return result;
     }
