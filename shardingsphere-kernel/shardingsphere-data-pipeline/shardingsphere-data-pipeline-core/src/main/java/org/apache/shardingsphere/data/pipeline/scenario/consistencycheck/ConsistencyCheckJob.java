@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResultConfiguration.YamlDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyCheckResultValue;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlConsistencyCheckJobConfigurationSwapper;
@@ -63,18 +63,18 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         jobAPI.persistJobItemProgress(jobItemContext);
         String referredJobId = consistencyCheckJobConfig.getReferredJobId();
         log.info("execute consistency check, job id:{}, referred job id:{}", checkJobId, referredJobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(referredJobId, checkJobId);
         JobType jobType = PipelineJobIdUtils.parseJobType(referredJobId);
         InventoryIncrementalJobPublicAPI jobPublicAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(jobType.getTypeName());
         Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult;
         if (StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())) {
             dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(referredJobId);
         } else {
-            dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(referredJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), null);
+            dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(referredJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(referredJobId, checkJobId);
         Map<String, String> checkResultMap = new LinkedHashMap<>();
         for (Entry<String, DataConsistencyCheckResult> entry : dataConsistencyCheckResult.entrySet()) {
-            YamlDataConsistencyCheckResult checkResult = CHECK_RESULT_SWAPPER.swapToYamlConfiguration(entry.getValue());
+            YamlDataConsistencyCheckResultValue checkResult = CHECK_RESULT_SWAPPER.swapToYamlConfiguration(entry.getValue());
             checkResultMap.put(entry.getKey(), YamlEngine.marshal(checkResult));
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(referredJobId, checkJobId, YamlEngine.marshal(checkResultMap));

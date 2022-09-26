@@ -24,22 +24,23 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 /**
  * YAML consistency check job configuration swapper.
  */
-public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobResultConfiguration, ConsistencyCheckJobConfiguration> {
+public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobConfiguration, ConsistencyCheckJobConfiguration> {
     
     private static final YamlConsistencyCheckJobConfigurationSwapper JOB_CONFIG_SWAPPER = new YamlConsistencyCheckJobConfigurationSwapper();
     
     @Override
-    public YamlConsistencyCheckJobResultConfiguration swapToYamlConfiguration(final ConsistencyCheckJobConfiguration data) {
-        YamlConsistencyCheckJobResultConfiguration result = new YamlConsistencyCheckJobResultConfiguration();
+    public YamlConsistencyCheckJobConfiguration swapToYamlConfiguration(final ConsistencyCheckJobConfiguration data) {
+        YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setReferredJobId(data.getReferredJobId());
+        result.setParentJobId(data.getReferredJobId());
         result.setAlgorithmTypeName(data.getAlgorithmTypeName());
+        result.setAlgorithmProperties(data.getAlgorithmProperties());
         return result;
     }
     
     @Override
-    public ConsistencyCheckJobConfiguration swapToObject(final YamlConsistencyCheckJobResultConfiguration yamlConfig) {
-        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getReferredJobId(), yamlConfig.getAlgorithmTypeName());
+    public ConsistencyCheckJobConfiguration swapToObject(final YamlConsistencyCheckJobConfiguration yamlConfig) {
+        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProperties());
     }
     
     /**
@@ -52,7 +53,7 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
         if (null == jobParameter) {
             return null;
         }
-        YamlConsistencyCheckJobResultConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlConsistencyCheckJobResultConfiguration.class, true);
+        YamlConsistencyCheckJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlConsistencyCheckJobConfiguration.class, true);
         return JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
     }
 }

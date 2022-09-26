@@ -43,13 +43,13 @@ public final class ConsistencyCheckJobAPIImplTest {
     @Test
     public void assertCreateJobConfig() {
         String migrationJobId = "j0101test";
-        CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(migrationJobId, null);
+        CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(migrationJobId, null, null);
         String checkJobId = jobAPI.createJobAndStart(parameter);
         ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) jobAPI.getJobConfiguration(checkJobId);
         String expectCheckJobId = "j0201j0101test0";
         assertThat(jobConfig.getJobId(), is(expectCheckJobId));
         assertNull(jobConfig.getAlgorithmTypeName());
-        int consistencyCheckVersion = ConsistencyCheckJobId.getConsistencyCheckVersion(expectCheckJobId);
+        int consistencyCheckVersion = ConsistencyCheckJobId.getSequence(expectCheckJobId);
         assertThat(consistencyCheckVersion, is(0));
     }
 }

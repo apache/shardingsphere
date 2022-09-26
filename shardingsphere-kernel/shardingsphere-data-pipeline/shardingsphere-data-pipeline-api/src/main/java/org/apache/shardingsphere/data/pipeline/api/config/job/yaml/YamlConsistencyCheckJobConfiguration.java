@@ -22,6 +22,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Properties;
+
 /**
  * Consistency check job configuration for YAML.
  */
@@ -29,16 +31,18 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Slf4j
 @ToString
-public final class YamlConsistencyCheckJobResultConfiguration implements YamlPipelineJobConfiguration {
+public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;
     
-    private String referredJobId;
+    private String parentJobId;
     
     private String algorithmTypeName;
     
+    private Properties algorithmProperties;
+    
     @Override
     public String getTargetDatabaseName() {
-        return null;
+        throw new UnsupportedOperationException("");
     }
 }

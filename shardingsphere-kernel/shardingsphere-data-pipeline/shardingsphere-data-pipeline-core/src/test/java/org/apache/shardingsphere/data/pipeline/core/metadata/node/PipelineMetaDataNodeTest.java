@@ -71,12 +71,12 @@ public final class PipelineMetaDataNodeTest {
     }
     
     @Test
-    public void assertGetCheckLatestResultPath() {
+    public void assertGetCheckLatestJobIdPath() {
         assertThat(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId), is(jobCheckRootPath + "/latest_job_id"));
     }
     
     @Test
-    public void assertgetCheckJobResultPath() {
+    public void assertGetCheckJobResultPath() {
         assertThat(PipelineMetaDataNode.getCheckJobResultPath(jobId, "j02fx123"), is(jobCheckRootPath + "/job_ids/j02fx123"));
     }
     

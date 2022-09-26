@@ -36,15 +36,15 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
     private final String pipelineJobId;
     
-    private final Integer consistencyCheckVersion;
+    private final int sequence;
     
-    public ConsistencyCheckJobId(final @NonNull String pipelineJobId, final int consistencyCheckVersion) {
+    public ConsistencyCheckJobId(final @NonNull String pipelineJobId, final int sequence) {
         super(JobType.CONSISTENCY_CHECK, CURRENT_VERSION);
         this.pipelineJobId = pipelineJobId;
-        if (consistencyCheckVersion > MAX_CONSISTENCY_CHECK_VERSION) {
-            this.consistencyCheckVersion = 0;
+        if (sequence > MAX_CONSISTENCY_CHECK_VERSION) {
+            this.sequence = 0;
         } else {
-            this.consistencyCheckVersion = consistencyCheckVersion;
+            this.sequence = sequence;
         }
     }
     
@@ -54,9 +54,8 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
      * @param consistencyCheckJobId consistency check job id.
      * @return consistency check version
      */
-    public static int getConsistencyCheckVersion(final @NonNull String consistencyCheckJobId) {
+    public static int getSequence(final @NonNull String consistencyCheckJobId) {
         String versionString = consistencyCheckJobId.substring(consistencyCheckJobId.length() - 1);
-        int version = Integer.parseInt(versionString);
-        return version > MAX_CONSISTENCY_CHECK_VERSION ? 0 : version;
+        return Integer.parseInt(versionString);
     }
 }

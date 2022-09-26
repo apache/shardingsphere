@@ -33,9 +33,9 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public final class YamlDataConsistencyCheckResultConfiguration {
+public final class YamlDataConsistencyCheckResult {
     
-    private Map<String, YamlDataConsistencyCheckResult> result;
+    private Map<String, YamlDataConsistencyCheckResultValue> result;
     
     /**
      * Yaml data consistency check result.
@@ -44,7 +44,7 @@ public final class YamlDataConsistencyCheckResultConfiguration {
     @NoArgsConstructor
     @AllArgsConstructor
     @ToString
-    public static class YamlDataConsistencyCheckResult implements YamlConfiguration {
+    public static class YamlDataConsistencyCheckResultValue implements YamlConfiguration {
         
         private YamlDataConsistencyCountCheckResult countCheckResult;
         

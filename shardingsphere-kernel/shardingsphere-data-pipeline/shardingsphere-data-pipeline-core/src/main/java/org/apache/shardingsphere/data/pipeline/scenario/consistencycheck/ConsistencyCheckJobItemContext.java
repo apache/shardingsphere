@@ -21,16 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Consistency check job item context.
@@ -38,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Getter
 @Setter
 @Slf4j
-public final class ConsistencyCheckJobItemContext implements InventoryIncrementalJobItemContext {
+public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext {
     
     private final String jobId;
     
@@ -50,12 +43,6 @@ public final class ConsistencyCheckJobItemContext implements InventoryIncrementa
     
     private volatile JobStatus status;
     
-    private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
-    
-    private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
-    
-    private final AtomicLong processedRecordsCount = new AtomicLong(0);
-    
     private final ConsistencyCheckJobConfiguration jobConfig;
     
     public ConsistencyCheckJobItemContext(final ConsistencyCheckJobConfiguration jobConfig, final int shardingItem, final JobStatus status) {
@@ -66,17 +53,7 @@ public final class ConsistencyCheckJobItemContext implements InventoryIncrementa
     }
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
-        // TODO not support yet
-    }
-    
-    @Override
-    public InventoryIncrementalProcessContext getJobProcessContext() {
-        return null;
-    }
-    
-    @Override
-    public long getProcessedRecordsCount() {
-        return processedRecordsCount.get();
+    public PipelineProcessContext getJobProcessContext() {
+        throw new UnsupportedOperationException("");
     }
 }

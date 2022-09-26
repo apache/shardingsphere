@@ -28,6 +28,6 @@ public final class PipelineJobHasAlreadyExistedException extends PipelineSQLExce
     private static final long serialVersionUID = 2854259384634892428L;
     
     public PipelineJobHasAlreadyExistedException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 81, "Job `%s` has already existed", jobId);
+        super(XOpenSQLState.GENERAL_ERROR, 86, "Job `%s` has already existed", jobId);
     }
 }

@@ -25,10 +25,10 @@ import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import java.util.Map;
 
 /**
- * Migration job public API.
+ * Consistency check job public API.
  */
 @SingletonSPI
-public interface ConsistencyCheckJobPublicAPI extends InventoryIncrementalJobPublicAPI, RequiredSPI {
+public interface ConsistencyCheckJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI {
     
     /**
      * Create job migration config and start.

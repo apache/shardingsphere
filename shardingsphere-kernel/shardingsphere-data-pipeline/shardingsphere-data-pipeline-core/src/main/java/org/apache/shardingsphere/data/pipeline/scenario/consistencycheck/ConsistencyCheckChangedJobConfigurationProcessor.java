@@ -50,7 +50,11 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
                     log.info("{} executing jobs", jobId);
-                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor());
+                    CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
+                        if (null != throwable) {
+                            log.error("execute failed, jobId={}", jobId, throwable);
+                        }
+                    });
                 }
                 break;
             case DELETED:
@@ -66,8 +70,8 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
         ConsistencyCheckJob job = new ConsistencyCheckJob();
         PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
-        oneOffJobBootstrap.execute();
         job.setOneOffJobBootstrap(oneOffJobBootstrap);
+        oneOffJobBootstrap.execute();
     }
     
     @Override

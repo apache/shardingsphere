@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Check migration job updater.
@@ -36,7 +37,9 @@ public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigration
     @Override
     public void executeUpdate(final String databaseName, final CheckMigrationStatement sqlStatement) throws SQLException {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
-        JOB_API.createJobAndStart(new CreateConsistencyCheckJobParameter(sqlStatement.getJobId(), null == typeStrategy ? null : typeStrategy.getName()));
+        String algorithmTypeName = null != typeStrategy ? typeStrategy.getName() : null;
+        Properties algorithmProps = null != typeStrategy ? typeStrategy.getProps() : null;
+        JOB_API.createJobAndStart(new CreateConsistencyCheckJobParameter(sqlStatement.getJobId(), algorithmTypeName, algorithmProps));
     }
     
     @Override
