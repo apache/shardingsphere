@@ -37,8 +37,6 @@ public final class YamlConsistencyCheckJobResultConfiguration implements YamlPip
     
     private String algorithmTypeName;
     
-    private Long createTimeMillis;
-    
     @Override
     public String getTargetDatabaseName() {
         return null;
