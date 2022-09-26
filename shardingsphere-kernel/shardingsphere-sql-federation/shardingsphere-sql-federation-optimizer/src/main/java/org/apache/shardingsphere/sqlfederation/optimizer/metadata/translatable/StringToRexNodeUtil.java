@@ -28,8 +28,6 @@ import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeLexer;
 import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser;
 
-import java.io.IOException;
-
 /**
  * Utility for parsing string and generate rex node.
  */
@@ -40,9 +38,8 @@ public final class StringToRexNodeUtil {
      * @param filterValue filter condition
      * @param rexBuilder used to build rex node
      * @return rex node
-     * @throws IOException io exception
      */
-    public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder) throws IOException {
+    public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder) {
         CharStream input = CharStreams.fromString(filterValue);
         ParseRexNodeLexer lexer = new ParseRexNodeLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);

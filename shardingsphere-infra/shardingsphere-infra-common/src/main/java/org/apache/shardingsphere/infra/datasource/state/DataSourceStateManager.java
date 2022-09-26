@@ -66,9 +66,7 @@ public final class DataSourceStateManager {
      */
     public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
         this.force = force;
-        dataSources.forEach((key, value) -> {
-            initState(databaseName, storageDataSourceStates, key, value);
-        });
+        dataSources.forEach((key, value) -> initState(databaseName, storageDataSourceStates, key, value));
         initialized = true;
     }
     

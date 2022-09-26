@@ -33,7 +33,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -65,14 +64,14 @@ public final class VertxExecutorCallbackTest {
     }
     
     @Test
-    public void assertExecuteQuery() throws SQLException {
+    public void assertExecuteQuery() {
         Collection<Future<ExecuteResult>> actual = callback.execute(Collections.singletonList(vertxExecutionUnit), true, Collections.emptyMap());
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().result(), instanceOf(VertxQueryResult.class));
     }
     
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    public void assertExecuteUpdate() {
         when(rowSet.columnDescriptors()).thenReturn(null);
         when(rowSet.rowCount()).thenReturn(10);
         when(rowSet.property(MySQLClient.LAST_INSERTED_ID)).thenReturn(-1L);

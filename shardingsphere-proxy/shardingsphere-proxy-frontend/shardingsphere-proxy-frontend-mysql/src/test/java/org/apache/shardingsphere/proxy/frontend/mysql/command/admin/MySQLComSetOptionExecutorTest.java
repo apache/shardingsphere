@@ -30,7 +30,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -55,7 +54,7 @@ public final class MySQLComSetOptionExecutorTest {
     private MySQLComSetOptionExecutor executor;
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         when(packet.getValue()).thenReturn(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(attribute);
         Collection<DatabasePacket<?>> actual = executor.execute();

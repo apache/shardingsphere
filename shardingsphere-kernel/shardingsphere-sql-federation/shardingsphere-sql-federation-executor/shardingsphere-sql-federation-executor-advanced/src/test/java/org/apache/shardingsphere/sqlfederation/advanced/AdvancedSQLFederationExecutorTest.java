@@ -43,7 +43,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AdvancedSQLFederationExecutorTest {
+public final class AdvancedSQLFederationExecutorTest {
     
     private SQLFederationExecutor sqlFederationExecutor;
     

@@ -211,14 +211,14 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     }
     
     @Test(expected = UnknownDatabaseException.class)
-    public void assertExecuteWithNotExistedDatabase() throws SQLException {
+    public void assertExecuteWithNotExistedDatabase() {
         ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler();
         handler.init(new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("not_exist_db")), null), mock(ConnectionSession.class));
         handler.execute();
     }
     
     @Test(expected = NoDatabaseSelectedException.class)
-    public void assertExecuteWithNoDatabaseSelected() throws SQLException {
+    public void assertExecuteWithNoDatabaseSelected() {
         ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler();
         handler.init(new ExportDatabaseConfigurationStatement(null, null), mock(ConnectionSession.class));
         handler.execute();
