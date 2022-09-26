@@ -68,7 +68,7 @@ spring.shardingsphere.rules.database-discovery.discovery-types.mgr.props.groupNa
 ```
 ## 相关参考
 
-- [高可用核心特性](cn/features/ha/)
+- [高可用核心特性](/cn/features/ha/)
 - [JAVA API：高可用配置](/cn/user-manual/shardingsphere-jdbc/java-api/rules/ha/)
 - [YAML 配置：高可用配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/ha/)
 - [Spring 命名空间：高可用配置](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha/)

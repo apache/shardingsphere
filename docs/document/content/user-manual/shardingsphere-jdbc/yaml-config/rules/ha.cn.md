@@ -102,7 +102,7 @@ rules:
 ```
 ## 相关参考
 
-- [高可用核心特性](cn/features/ha/)
+- [高可用核心特性](/cn/features/ha/)
 - [JAVA API：高可用配置](/cn/user-manual/shardingsphere-jdbc/java-api/rules/ha/)
 - [Spring Boot Starter：高可用配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha/)
 - [Spring 命名空间：高可用配置](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha/)

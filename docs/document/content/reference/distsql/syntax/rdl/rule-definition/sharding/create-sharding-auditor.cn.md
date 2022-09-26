@@ -29,7 +29,7 @@ algorithmType ::=
 ### 补充说明
 
 - `algorithmType`
-  为分片审计算法类型，详细的分片审计生成算法类型信息请参考[分片审计算法类型](cn/user-manual/common-config/builtin-algorithm/audit/)。
+  为分片审计算法类型，详细的分片审计生成算法类型信息请参考[分片审计算法类型](/cn/user-manual/common-config/builtin-algorithm/audit/)。
 
 ### 示例
 
