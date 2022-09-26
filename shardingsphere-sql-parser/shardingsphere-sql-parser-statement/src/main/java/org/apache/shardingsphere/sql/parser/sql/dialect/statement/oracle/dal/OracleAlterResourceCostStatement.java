@@ -15,27 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Database admin query executor.
+ * Oracle alter resource cost statement.
  */
-public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
-    
-    /**
-     * Get query result meta data.
-     * 
-     * @return query result meta data
-     */
-    QueryResultMetaData getQueryResultMetaData();
-    
-    /**
-     * Get merged result.
-     * 
-     * @return  merged result
-     */
-    MergedResult getMergedResult();
+@Getter
+@Setter
+@ToString(callSuper = true)
+public final class OracleAlterResourceCostStatement extends AbstractSQLStatement implements DALStatement, OracleStatement {
 }

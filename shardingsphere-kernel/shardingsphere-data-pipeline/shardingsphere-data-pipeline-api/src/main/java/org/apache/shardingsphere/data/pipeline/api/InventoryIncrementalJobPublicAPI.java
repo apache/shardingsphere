@@ -75,9 +75,8 @@ public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, 
      * Commit pipeline job.
      *
      * @param jobId job id
-     * @throws SQLException when commit underlying database data
      */
-    void commit(String jobId) throws SQLException;
+    void commit(String jobId);
     
     /**
      * Get job progress.

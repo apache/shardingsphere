@@ -82,7 +82,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     }
     
     @Override
-    public Connection getConnection(final String username, final String password) throws SQLException {
+    public Connection getConnection(final String username, final String password) {
         return getConnection();
     }
     

@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public final class MySQLComStmtExecutePacketTest {
     
     @Test
-    public void assertNewWithoutParameter() throws SQLException {
+    public void assertNewWithoutParameter() {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 0);

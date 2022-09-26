@@ -87,7 +87,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertExecute() throws Exception {
+    public void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);

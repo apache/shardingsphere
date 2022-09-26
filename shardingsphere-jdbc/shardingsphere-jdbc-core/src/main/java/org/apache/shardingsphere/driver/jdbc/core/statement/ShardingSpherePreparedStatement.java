@@ -626,7 +626,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     @Override
-    public void clearBatch() throws SQLException {
+    public void clearBatch() {
         currentResultSet = null;
         batchPreparedStatementExecutor.clear();
         clearParameters();

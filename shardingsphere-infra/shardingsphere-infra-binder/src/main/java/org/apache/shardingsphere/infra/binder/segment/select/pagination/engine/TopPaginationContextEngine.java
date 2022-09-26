@@ -71,7 +71,7 @@ public final class TopPaginationContextEngine {
     private boolean isRowNumberColumn(final ExpressionSegment predicate, final String rowNumberAlias) {
         if (predicate instanceof BinaryOperationExpression) {
             ExpressionSegment left = ((BinaryOperationExpression) predicate).getLeft();
-            return left instanceof ColumnSegment ? ((ColumnSegment) left).getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias) : false;
+            return left instanceof ColumnSegment && ((ColumnSegment) left).getIdentifier().getValue().equalsIgnoreCase(rowNumberAlias);
         }
         return false;
     }

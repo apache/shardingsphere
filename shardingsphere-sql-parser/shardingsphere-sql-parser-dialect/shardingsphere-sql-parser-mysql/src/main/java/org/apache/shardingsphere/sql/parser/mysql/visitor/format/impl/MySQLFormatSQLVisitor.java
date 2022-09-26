@@ -272,12 +272,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrintln(" (");
         int identifierCount = ctx.identifier().size();
         for (int i = 0; i < identifierCount; i++) {
-            if (0 == i) {
-                visit(ctx.identifier(i));
-            } else {
+            if (0 != i) {
                 formatPrint(" ,");
-                visit(ctx.identifier(i));
             }
+            visit(ctx.identifier(i));
         }
         formatPrint(")");
         return result.toString();
@@ -303,13 +301,11 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         if (!ctx.assignmentValues().isEmpty()) {
             int valueCount = ctx.assignmentValues().size();
             for (int i = 0; i < valueCount; i++) {
-                if (0 == i) {
-                    visit(ctx.assignmentValues(i));
-                } else {
+                if (0 != i) {
                     formatPrint(",");
                     formatPrintln();
-                    visit(ctx.assignmentValues(i));
                 }
+                visit(ctx.assignmentValues(i));
             }
         }
         if (null != ctx.rowConstructorList()) {
@@ -354,12 +350,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(" ");
         int assignmentCount = ctx.assignment().size();
         for (int i = 0; i < assignmentCount; i++) {
-            if (0 == i) {
-                visit(ctx.assignment(i));
-            } else {
+            if (0 != i) {
                 formatPrintln(",");
-                visit(ctx.assignment(i));
             }
+            visit(ctx.assignment(i));
         }
         indentCount--;
         return result.toString();
@@ -370,12 +364,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint("(");
         int aliasCount = ctx.alias().size();
         for (int i = 0; i < aliasCount; i++) {
-            if (0 == i) {
-                visit(ctx.alias(i));
-            } else {
+            if (0 != i) {
                 formatPrint(", ");
-                visit(ctx.alias(i));
             }
+            visit(ctx.alias(i));
         }
         formatPrint(")");
         return result.toString();
@@ -394,12 +386,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount++;
         int assignmentCount = ctx.assignment().size();
         for (int i = 0; i < assignmentCount; i++) {
-            if (0 == i) {
-                visit(ctx.assignment(i));
-            } else {
+            if (0 != i) {
                 formatPrintln();
-                visit(ctx.assignment(i));
             }
+            visit(ctx.assignment(i));
         }
         indentCount--;
         return result.toString();
@@ -515,16 +505,12 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitRowConstructorList(final RowConstructorListContext ctx) {
         int rowCount = ctx.assignmentValues().size();
         for (int i = 0; i < rowCount; i++) {
-            if (0 == i) {
-                visit(ctx.ROW(i));
-                formatPrint(" ");
-                visit(ctx.assignmentValues(i));
-            } else {
+            if (0 != i) {
                 formatPrintln(",");
-                visit(ctx.ROW(i));
-                formatPrint(" ");
-                visit(ctx.assignmentValues(i));
             }
+            visit(ctx.ROW(i));
+            formatPrint(" ");
+            visit(ctx.assignmentValues(i));
         }
         return result.toString();
     }
@@ -536,10 +522,8 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         for (int i = 0; i < assignCount; i++) {
             if (i != 0) {
                 formatPrint(", ");
-                visit(ctx.assignmentValue(i));
-            } else {
-                visit(ctx.assignmentValue(i));
             }
+            visit(ctx.assignmentValue(i));
         }
         formatPrint(")");
         return result.toString();
@@ -645,12 +629,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitTableElementList(final TableElementListContext ctx) {
         int tableElementCount = ctx.tableElement().size();
         for (int i = 0; i < tableElementCount; i++) {
-            if (0 == i) {
-                visit(ctx.tableElement(i));
-            } else {
+            if (0 != i) {
                 formatPrintln(",");
-                visit(ctx.tableElement(i));
             }
+            visit(ctx.tableElement(i));
         }
         return result.toString();
     }

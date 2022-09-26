@@ -15,27 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
+grammar DALStatement;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import BaseRule;
 
-/**
- * Database admin query executor.
- */
-public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
-    
-    /**
-     * Get query result meta data.
-     * 
-     * @return query result meta data
-     */
-    QueryResultMetaData getQueryResultMetaData();
-    
-    /**
-     * Get merged result.
-     * 
-     * @return  merged result
-     */
-    MergedResult getMergedResult();
-}
+alterResourceCost
+    : ALTER RESOURCE COST ((CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA) INTEGER_)+
+    ;

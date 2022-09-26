@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
@@ -26,25 +27,17 @@ import java.util.Collections;
 /**
  * Audit strategy segment.
  */
+@RequiredArgsConstructor
 @Getter
 public final class AuditStrategySegment implements ASTNode {
     
-    private Collection<String> auditorNames;
+    private final Collection<String> auditorNames;
     
-    private Collection<ShardingAuditorSegment> shardingAuditorSegments;
+    private final Collection<ShardingAuditorSegment> shardingAuditorSegments;
     
     private final boolean allowHintDisable;
     
     public AuditStrategySegment(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        this.auditorNames = auditorNames;
-        this.shardingAuditorSegments = Collections.EMPTY_LIST;
-        this.allowHintDisable = allowHintDisable;
-    }
-    
-    public AuditStrategySegment(final Collection<String> auditorNames, final Collection<ShardingAuditorSegment> shardingAuditorSegments,
-                                final boolean allowHintDisable) {
-        this.auditorNames = auditorNames;
-        this.shardingAuditorSegments = shardingAuditorSegments;
-        this.allowHintDisable = allowHintDisable;
+        this(auditorNames, Collections.emptyList(), allowHintDisable);
     }
 }
