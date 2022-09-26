@@ -42,8 +42,12 @@ public final class EncryptColumn {
     
     private final Boolean queryWithCipherColumn;
     
+    private final String fuzzyQueryColumn;
+    
+    private final String fuzzyQueryEncryptorName;
+    
     public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(cipherColumn, assistedQueryColumn, plainColumn, encryptorName, null, queryWithCipherColumn);
+        this(cipherColumn, assistedQueryColumn, plainColumn, encryptorName, null, queryWithCipherColumn, null, null);
     }
     
     /**
