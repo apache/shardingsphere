@@ -162,6 +162,6 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractInventoryIncrement
     }
     
     @Override
-    public void commit(final String jobId) throws SQLException {
+    public void commit(final String jobId) {
     }
 }
