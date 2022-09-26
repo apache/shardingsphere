@@ -40,7 +40,7 @@ public final class SQLParserEngineTest {
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseASTNode.class));
-        CacheOption cacheOption = new CacheOption(128, 1024L);
+        CacheOption cacheOption = new CacheOption(128, 1024L, false);
         SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", cacheOption);
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
         Field parseTreeCacheField = sqlParserEngine.getClass().getDeclaredField("parseTreeCache");

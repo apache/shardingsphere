@@ -62,7 +62,8 @@ import static org.mockito.Mockito.when;
 
 public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestorer {
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("openGauss", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("openGauss",
+            new CacheOption(2000, 65535L, false), new CacheOption(128, 1024L, false), false);
     
     @Before
     public void setup() {

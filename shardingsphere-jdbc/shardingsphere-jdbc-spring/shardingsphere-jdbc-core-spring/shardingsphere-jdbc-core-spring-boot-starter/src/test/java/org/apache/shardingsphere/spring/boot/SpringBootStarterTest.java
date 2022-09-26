@@ -203,6 +203,7 @@ public class SpringBootStarterTest {
     private void assertCacheOption(final CacheOption actual) {
         assertThat(actual.getInitialCapacity(), is(1024));
         assertThat(actual.getMaximumSize(), is(1024L));
+        assertThat(actual.isPersistent(), is(false));
     }
     
     @Test

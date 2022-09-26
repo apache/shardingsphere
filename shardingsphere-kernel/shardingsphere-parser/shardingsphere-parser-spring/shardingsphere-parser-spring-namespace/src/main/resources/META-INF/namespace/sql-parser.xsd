@@ -21,7 +21,7 @@
             targetNamespace="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
             elementFormDefault="qualified">
     <xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans.xsd" />
-    
+
     <xsd:element name="rule">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
@@ -30,12 +30,13 @@
             <xsd:attribute name="parse-tree-cache-ref" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
-    
+
     <xsd:element name="cache-option">
         <xsd:complexType>
             <xsd:attribute name="id" type="xsd:string" use="required" />
             <xsd:attribute name="initial-capacity" type="xsd:int" use="required" />
             <xsd:attribute name="maximum-size" type="xsd:long" use="required" />
+            <xsd:attribute name="persistent" type="xsd:boolean" default="false" />
         </xsd:complexType>
     </xsd:element>
 </xsd:schema>

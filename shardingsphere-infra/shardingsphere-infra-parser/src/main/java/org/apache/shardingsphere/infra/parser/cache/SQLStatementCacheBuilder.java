@@ -41,7 +41,10 @@ public final class SQLStatementCacheBuilder {
      */
     public static LoadingCache<String, SQLStatement> build(final String databaseType,
                                                            final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
-        return Caffeine.newBuilder().softValues().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize())
-                .build(new SQLStatementCacheLoader(databaseType, parseTreeCacheOption, isParseComment));
+        Caffeine<Object, Object> cache = Caffeine.newBuilder().initialCapacity(sqlStatementCacheOption.getInitialCapacity()).maximumSize(sqlStatementCacheOption.getMaximumSize());
+        if (!sqlStatementCacheOption.isPersistent()) {
+            cache.softValues();
+        }
+        return cache.build(new SQLStatementCacheLoader(databaseType, parseTreeCacheOption, isParseComment));
     }
 }

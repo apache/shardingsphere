@@ -38,7 +38,10 @@ public final class ParseTreeCacheBuilder {
      * @return built parse tree cache
      */
     public static LoadingCache<String, ParseASTNode> build(final CacheOption option, final String databaseType) {
-        return Caffeine.newBuilder().softValues().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize())
-                .build(new ParseTreeCacheLoader(databaseType));
+        Caffeine<Object, Object> cache = Caffeine.newBuilder().initialCapacity(option.getInitialCapacity()).maximumSize(option.getMaximumSize());
+        if (!option.isPersistent()) {
+            cache.softValues();
+        }
+        return cache.build(new ParseTreeCacheLoader(databaseType));
     }
 }

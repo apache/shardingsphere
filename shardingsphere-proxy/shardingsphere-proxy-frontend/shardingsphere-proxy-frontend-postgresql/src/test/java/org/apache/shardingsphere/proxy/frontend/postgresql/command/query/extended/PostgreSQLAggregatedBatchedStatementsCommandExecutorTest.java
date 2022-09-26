@@ -64,7 +64,8 @@ import static org.mockito.Mockito.when;
 
 public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest extends ProxyContextRestorer {
     
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine("PostgreSQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE =
+            new ShardingSphereSQLParserEngine("PostgreSQL", new CacheOption(2000, 65535L, false), new CacheOption(128, 1024L, false), false);
     
     private static final int CONNECTION_ID = 1;
     

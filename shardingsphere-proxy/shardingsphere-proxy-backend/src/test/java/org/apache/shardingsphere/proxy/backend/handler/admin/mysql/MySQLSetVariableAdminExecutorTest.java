@@ -59,7 +59,8 @@ public final class MySQLSetVariableAdminExecutorTest extends ProxyContextRestore
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(mock(ShardingSphereDatabase.class));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
+                .thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(
+                        new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1, false), new CacheOption(1, 1, false))))));
         try (MockedConstruction<JDBCDatabaseCommunicationEngine> mockConstruction = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
             executor.execute(connectionSession);
             verify(mockConstruction.constructed().get(0)).execute();

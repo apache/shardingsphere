@@ -35,6 +35,7 @@ public final class CacheOptionBeanDefinitionParser extends AbstractBeanDefinitio
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(CacheOption.class);
         factory.addConstructorArgValue(element.getAttribute(SQLParserRuleBeanDefinitionTag.INITIAL_CAPACITY_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(SQLParserRuleBeanDefinitionTag.MAXIMUM_SIZE_ATTRIBUTE));
+        factory.addConstructorArgValue(element.getAttribute(SQLParserRuleBeanDefinitionTag.PERSISTENT));
         return factory.getBeanDefinition();
     }
 }

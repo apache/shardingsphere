@@ -57,7 +57,8 @@ public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStat
     public CacheOptionSegment visitCacheOption(final CacheOptionContext ctx) {
         return new CacheOptionSegment(
                 null == ctx.initialCapacity() ? null : Integer.parseInt(getIdentifierValue(ctx.initialCapacity())),
-                null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())));
+                null == ctx.maximumSize() ? null : Long.parseLong(getIdentifierValue(ctx.maximumSize())),
+                null == ctx.persistent() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.persistent())));
     }
     
     private String getIdentifierValue(final ParseTree context) {

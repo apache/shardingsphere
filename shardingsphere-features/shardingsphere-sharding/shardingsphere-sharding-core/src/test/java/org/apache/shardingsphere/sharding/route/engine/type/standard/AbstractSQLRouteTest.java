@@ -59,7 +59,7 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine("MySQL",
-                new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
+                new CacheOption(2000, 65535L, false), new CacheOption(128, 1024L, false), false);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, singleTableRule));
         ShardingSphereResource resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
         when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());

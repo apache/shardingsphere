@@ -44,7 +44,7 @@ sqlStatementCache
     ;
 
 cacheOption
-    : (INITIAL_CAPACITY EQ initialCapacity)? (COMMA? MAXIMUM_SIZE EQ maximumSize)? (COMMA? CONCURRENCY_LEVEL EQ concurrencyLevel)? 
+    : (INITIAL_CAPACITY EQ initialCapacity)? (COMMA? MAXIMUM_SIZE EQ maximumSize)? (COMMA? CONCURRENCY_LEVEL EQ concurrencyLevel)? (COMMA? PERSISTENT EQ persistent)?
     ;
 
 initialCapacity
@@ -53,6 +53,10 @@ initialCapacity
 
 maximumSize
     : INT
+    ;
+
+persistent
+    : TRUE | FALSE
     ;
 
 concurrencyLevel

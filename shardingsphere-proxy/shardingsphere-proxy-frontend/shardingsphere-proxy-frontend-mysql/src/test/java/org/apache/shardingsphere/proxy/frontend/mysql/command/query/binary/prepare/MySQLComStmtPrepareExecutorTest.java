@@ -82,7 +82,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
-        CacheOption cacheOption = new CacheOption(1024, 1024);
+        CacheOption cacheOption = new CacheOption(1024, 1024, false);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         when(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());

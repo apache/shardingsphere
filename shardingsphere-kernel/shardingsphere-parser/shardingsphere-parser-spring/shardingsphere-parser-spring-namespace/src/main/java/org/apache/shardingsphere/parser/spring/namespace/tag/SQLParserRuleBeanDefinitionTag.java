@@ -57,6 +57,11 @@ public final class SQLParserRuleBeanDefinitionTag {
     public static final String MAXIMUM_SIZE_ATTRIBUTE = "maximum-size";
     
     /**
+     * Persistent attribute.
+     */
+    public static final String PERSISTENT = "persistent";
+    
+    /**
      * Cache option attribute.
      */
     public static final String CACHE_OPTION_ATTRIBUTE = "cache-option";

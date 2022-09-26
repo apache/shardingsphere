@@ -28,6 +28,6 @@ public final class SQLStatementCacheBuilderTest {
     
     @Test
     public void assertBuild() {
-        assertThat(SQLStatementCacheBuilder.build("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false), isA(LoadingCache.class));
+        assertThat(SQLStatementCacheBuilder.build("MySQL", new CacheOption(2000, 65535L, false), new CacheOption(128, 1024L, false), false), isA(LoadingCache.class));
     }
 }

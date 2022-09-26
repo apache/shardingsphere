@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
  */
 public final class DefaultSQLParserRuleConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<SQLParserRuleConfiguration, SQLParserRuleBuilder> {
     
-    public static final CacheOption PARSE_TREE_CACHE_OPTION = new CacheOption(128, 1024L);
+    public static final CacheOption PARSE_TREE_CACHE_OPTION = new CacheOption(128, 1024L, false);
     
-    public static final CacheOption SQL_STATEMENT_CACHE_OPTION = new CacheOption(2000, 65535L);
+    public static final CacheOption SQL_STATEMENT_CACHE_OPTION = new CacheOption(2000, 65535L, false);
     
     @Override
     public SQLParserRuleConfiguration build() {

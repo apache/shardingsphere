@@ -82,7 +82,7 @@ public final class ShardingSphereDataSourceTest {
     public void assertRemoveGlobalRuleConfiguration() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
-        CacheOption cacheOption = new CacheOption(1024, 1024);
+        CacheOption cacheOption = new CacheOption(1024, 1024, false);
         SQLParserRuleConfiguration sqlParserRuleConfig = new SQLParserRuleConfiguration(true, cacheOption, cacheOption);
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME,
                 null, Collections.singletonMap("ds", new MockedDataSource(connection)), Arrays.asList(mock(ShardingRuleConfiguration.class), sqlParserRuleConfig), new Properties());

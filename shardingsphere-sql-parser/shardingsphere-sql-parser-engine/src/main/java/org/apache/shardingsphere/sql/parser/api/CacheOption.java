@@ -31,8 +31,10 @@ public final class CacheOption {
     
     private final long maximumSize;
     
+    private final boolean persistent;
+    
     @Override
     public String toString() {
-        return String.format("initialCapacity: %d, maximumSize: %d", initialCapacity, maximumSize);
+        return String.format("initialCapacity: %d, maximumSize: %d, persistent: %b", initialCapacity, maximumSize, persistent);
     }
 }

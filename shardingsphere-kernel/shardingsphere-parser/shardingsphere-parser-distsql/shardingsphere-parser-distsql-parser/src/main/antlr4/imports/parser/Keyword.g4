@@ -59,6 +59,10 @@ MAXIMUM_SIZE
     : M A X I M U M UL_ S I Z E
     ;
 
+PERSISTENT
+    : P E R S I S T E N T
+    ;
+
 CONCURRENCY_LEVEL
     : C O N C U R R E N C Y UL_ L E V E L
     ;

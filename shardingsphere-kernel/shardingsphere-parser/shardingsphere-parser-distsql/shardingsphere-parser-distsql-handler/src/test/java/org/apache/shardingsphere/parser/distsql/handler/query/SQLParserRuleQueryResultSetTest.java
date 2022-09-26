@@ -62,6 +62,6 @@ public final class SQLParserRuleQueryResultSetTest {
     }
     
     private SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535));
+        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024, false), new CacheOption(2000, 65535, false));
     }
 }

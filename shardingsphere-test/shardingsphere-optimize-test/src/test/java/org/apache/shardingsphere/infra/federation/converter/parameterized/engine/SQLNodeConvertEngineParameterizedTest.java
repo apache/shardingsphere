@@ -169,7 +169,7 @@ public final class SQLNodeConvertEngineParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        CacheOption cacheOption = new CacheOption(128, 1024L);
+        CacheOption cacheOption = new CacheOption(128, 1024L, false);
         return new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, cacheOption).parse(sql, false));
     }
 }

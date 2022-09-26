@@ -92,7 +92,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        CacheOption cacheOption = new CacheOption(1024, 1024);
+        CacheOption cacheOption = new CacheOption(1024, 1024, false);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
         ProxyContext.init(contextManager);
     }

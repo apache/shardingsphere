@@ -19,13 +19,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:sql-parser="http://shardingsphere.apache.org/schema/shardingsphere/sql-parser"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser 
+                           http://shardingsphere.apache.org/schema/shardingsphere/sql-parser
                            http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser.xsd
                            ">
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parseTreeCache" sql-statement-cache-ref="sqlStatementCache" />
-    
-    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" />
-    <sql-parser:cache-option id="parseTreeCache" initial-capacity="1024" maximum-size="1024" />
+
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" persistent="false" />
+    <sql-parser:cache-option id="parseTreeCache" initial-capacity="1024" maximum-size="1024" persistent="false"/>
 </beans>

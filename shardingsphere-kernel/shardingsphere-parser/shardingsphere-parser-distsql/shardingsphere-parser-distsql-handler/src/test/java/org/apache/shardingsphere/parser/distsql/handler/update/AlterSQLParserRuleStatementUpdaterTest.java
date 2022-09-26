@@ -40,7 +40,7 @@ public final class AlterSQLParserRuleStatementUpdaterTest {
     @Test
     public void assertExecute() throws SQLException {
         AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
-        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
+        AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L, false), new CacheOptionSegment(1000, 1000L, false));
         ShardingSphereMetaData metaData = createMetaData();
         updater.executeUpdate(metaData, sqlStatement);
         SQLParserRule actual = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);

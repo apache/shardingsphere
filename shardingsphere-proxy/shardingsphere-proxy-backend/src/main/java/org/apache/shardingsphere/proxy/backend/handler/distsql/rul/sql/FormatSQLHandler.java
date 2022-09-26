@@ -56,6 +56,6 @@ public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement
     }
     
     private ParseASTNode parseSQL(final String sql, final String databaseType) {
-        return new SQLParserEngine(databaseType, new CacheOption(1, 1L)).parse(sql, false);
+        return new SQLParserEngine(databaseType, new CacheOption(1, 1L, false)).parse(sql, false);
     }
 }

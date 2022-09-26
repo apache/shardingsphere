@@ -29,7 +29,7 @@ public final class YamlSQLParserCacheOptionConfigurationSwapperTest {
     
     private final YamlSQLParserCacheOptionConfigurationSwapper cacheOptionConfigurationSwapper = new YamlSQLParserCacheOptionConfigurationSwapper();
     
-    private final CacheOption cacheOption = new CacheOption(2, 5);
+    private final CacheOption cacheOption = new CacheOption(2, 5, false);
     
     private final YamlSQLParserCacheOptionRuleConfiguration cacheOptionRuleConfiguration = new YamlSQLParserCacheOptionRuleConfiguration();
     

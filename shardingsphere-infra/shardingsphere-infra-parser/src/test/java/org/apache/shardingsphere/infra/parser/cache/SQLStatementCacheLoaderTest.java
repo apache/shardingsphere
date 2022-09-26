@@ -35,7 +35,7 @@ public final class SQLStatementCacheLoaderTest {
     
     @Test
     public void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
-        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L), false);
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L, false), false);
         Field sqlStatementParserExecutorField = sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor");
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
         sqlStatementParserExecutorField.setAccessible(true);

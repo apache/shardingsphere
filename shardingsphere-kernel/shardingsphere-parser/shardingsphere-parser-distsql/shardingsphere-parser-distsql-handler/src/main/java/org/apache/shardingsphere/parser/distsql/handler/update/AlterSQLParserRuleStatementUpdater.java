@@ -57,7 +57,8 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
     private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
-        return new CacheOption(initialCapacity, maximumSize);
+        boolean persistent = null == segment.getPersistent() ? cacheOption.isPersistent() : segment.getPersistent();
+        return new CacheOption(initialCapacity, maximumSize, persistent);
     }
     
     @Override

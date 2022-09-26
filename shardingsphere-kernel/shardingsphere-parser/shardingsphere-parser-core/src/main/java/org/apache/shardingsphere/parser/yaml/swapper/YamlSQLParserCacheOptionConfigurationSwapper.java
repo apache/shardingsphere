@@ -31,11 +31,12 @@ public final class YamlSQLParserCacheOptionConfigurationSwapper implements YamlC
         YamlSQLParserCacheOptionRuleConfiguration result = new YamlSQLParserCacheOptionRuleConfiguration();
         result.setInitialCapacity(data.getInitialCapacity());
         result.setMaximumSize(data.getMaximumSize());
+        result.setPersistent(data.isPersistent());
         return result;
     }
     
     @Override
     public CacheOption swapToObject(final YamlSQLParserCacheOptionRuleConfiguration yamlConfig) {
-        return new CacheOption(yamlConfig.getInitialCapacity(), yamlConfig.getMaximumSize());
+        return new CacheOption(yamlConfig.getInitialCapacity(), yamlConfig.getMaximumSize(), yamlConfig.isPersistent());
     }
 }
