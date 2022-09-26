@@ -41,7 +41,7 @@ jobs:
     steps:
       - name: Support longpaths in Windows
         if: matrix.os == 'windows-latest'
-        run: git config --system core.longpaths true
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v3
       - name: Set up JDK ${{ matrix.java_version }}
         uses: actions/setup-java@v2
