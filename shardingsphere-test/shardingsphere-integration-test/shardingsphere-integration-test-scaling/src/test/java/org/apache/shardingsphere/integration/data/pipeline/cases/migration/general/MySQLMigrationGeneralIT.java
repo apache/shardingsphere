@@ -112,7 +112,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
     }
     
     private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
-        List<Map<String, Object>> jobStatus = waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        List<Map<String, Object>> jobStatus = waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
         }
