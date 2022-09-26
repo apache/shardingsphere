@@ -129,6 +129,9 @@ execute
     | dropPluggableDatabase
     | dropJava
     | dropLibrary
+    | dropMaterializedView
+    | dropMaterializedViewLog
+    | dropMaterializedZonemap
     | alterResourceCost
     ) SEMI_?
     ;
