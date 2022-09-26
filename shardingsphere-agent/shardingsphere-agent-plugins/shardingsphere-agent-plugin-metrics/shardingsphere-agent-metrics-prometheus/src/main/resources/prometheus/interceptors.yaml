@@ -37,7 +37,7 @@ interceptors:
     points:
       - type: instance
         name: route
-  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager
     instanceAdvice: org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice
     points:
       - type: instance
