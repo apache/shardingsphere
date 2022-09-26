@@ -124,7 +124,7 @@ gpg --export >~/.gnupg/pubring.gpg
 gpg --export-secret-keys >~/.gnupg/secring.gpg
 ```
 
-### 4. 将公钥同步到服务器
+### 5. 将公钥同步到服务器
 
 命令如下：
 
