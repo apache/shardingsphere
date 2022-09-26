@@ -59,7 +59,7 @@ strategyType ::=
 
 - `tableDefinition` is defined for standard sharding table rule; `autoTableDefinition` is defined for auto sharding
   table rule. For standard sharding rules and auto sharding rule, refer
-  to [Data Sharding](en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/);
+  to [Data Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/);
 - use standard sharding table rule:
     - `DATANODES` can only use resources that have been added to the current database, and can only use INLINE
       expressions to specify required resources;
@@ -75,7 +75,7 @@ strategyType ::=
     - Only auto sharding algorithm can be used, please refer
       to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#auto-sharding-algorithm).
 - `algorithmType` is the sharding algorithm type, please refer
-  to [Sharding Algorithm](en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding);
+  to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding);
 - The auto-generated algorithm naming rule is `tableName` _ `strategyType` _ `shardingAlgorithmType`;
 - The auto-generated primary key strategy naming rule is `tableName` _ `strategyType`;
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key

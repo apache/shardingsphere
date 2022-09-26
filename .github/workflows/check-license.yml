@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: check-license
+name: Check:License Check
 
 on:
   pull_request:

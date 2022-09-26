@@ -47,7 +47,7 @@ public final class PipelineJobProgressPersistService {
     private static final long DELAY_SECONDS = 1;
     
     static {
-        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 5, DELAY_SECONDS, TimeUnit.SECONDS);
+        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 0, DELAY_SECONDS, TimeUnit.SECONDS);
     }
     
     /**

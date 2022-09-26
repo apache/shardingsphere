@@ -648,7 +648,11 @@ public enum SQLVisitorRule {
     
     DROP_JAVA("DropJava", SQLStatementType.DDL),
     
-    DROP_LIBRARY("DropLibrary", SQLStatementType.DDL);
+    DROP_LIBRARY("DropLibrary", SQLStatementType.DDL),
+    
+    DROP_MATERIALIZED_VIEW_LOG("DropMaterializedViewLog", SQLStatementType.DDL),
+    
+    DROP_MATERIALIZED_ZONEMAP("DropMaterializedZonemap", SQLStatementType.DDL);
     
     private final String name;
     
