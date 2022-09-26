@@ -28,8 +28,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefi
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Test;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -37,22 +35,22 @@ import static org.mockito.Mockito.mock;
 public final class RDLBackendHandlerFactoryTest {
     
     @Test
-    public void assertNewInstanceWithAddResourceStatement() throws SQLException {
+    public void assertNewInstanceWithAddResourceStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), mock(ConnectionSession.class)), instanceOf(AddResourceBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithAlterResourceStatement() throws SQLException {
+    public void assertNewInstanceWithAlterResourceStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterResourceStatement.class), mock(ConnectionSession.class)), instanceOf(AlterResourceBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithDropResourceStatement() throws SQLException {
+    public void assertNewInstanceWithDropResourceStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(DropResourceStatement.class), mock(ConnectionSession.class)), instanceOf(DropResourceBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithRuleDefinitionStatement() throws SQLException {
+    public void assertNewInstanceWithRuleDefinitionStatement() {
         assertThat(RDLBackendHandlerFactory.newInstance(mock(RuleDefinitionStatement.class), mock(ConnectionSession.class)), instanceOf(RuleDefinitionBackendHandler.class));
     }
 }

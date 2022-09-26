@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
-import java.sql.SQLException;
-
 /**
  * Database admin query executor.
  */
@@ -38,7 +36,6 @@ public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
      * Get merged result.
      * 
      * @return  merged result
-     * @throws SQLException SQL exception
      */
-    MergedResult getMergedResult() throws SQLException;
+    MergedResult getMergedResult();
 }

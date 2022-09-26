@@ -21,8 +21,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
-import java.sql.SQLException;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -30,7 +28,7 @@ import static org.mockito.Mockito.verify;
 public final class PostgreSQLResetVariableAdminExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement("key"));
         try (MockedStatic<PostgreSQLSessionVariableHandlerFactory> mockStatic = mockStatic(PostgreSQLSessionVariableHandlerFactory.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);

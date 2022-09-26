@@ -31,7 +31,6 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.junit.Test;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,15 +38,15 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CreateTrafficRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteWithInUsedRuleName() throws SQLException {
+    public void assertExecuteWithInUsedRuleName() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
@@ -56,7 +55,7 @@ public final class CreateTrafficRuleStatementUpdaterTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertExecuteWithInvalidAlgorithmType() throws SQLException {
+    public void assertExecuteWithInvalidAlgorithmType() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
@@ -65,7 +64,7 @@ public final class CreateTrafficRuleStatementUpdaterTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertExecuteWithLoadBalancerCannotBeNull() throws SQLException {
+    public void assertExecuteWithLoadBalancerCannotBeNull() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
@@ -80,7 +79,7 @@ public final class CreateTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));

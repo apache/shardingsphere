@@ -52,7 +52,7 @@ public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> imp
         return execute(databaseName, sqlStatement);
     }
     
-    protected abstract ResponseHeader execute(String databaseName, T sqlStatement) throws SQLException;
+    protected abstract ResponseHeader execute(String databaseName, T sqlStatement);
     
     private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
         Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();

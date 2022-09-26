@@ -25,8 +25,6 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 
-import java.sql.SQLException;
-
 /**
  * Updatable RAL backend handler for global rule.
  */
@@ -42,7 +40,7 @@ public final class UpdatableGlobalRuleRALBackendHandler implements ProxyBackendH
     }
     
     @Override
-    public ResponseHeader execute() throws SQLException {
+    public ResponseHeader execute() {
         updater.executeUpdate(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), sqlStatement);
         persistNewRuleConfigurations();
         return new UpdateResponseHeader(sqlStatement);

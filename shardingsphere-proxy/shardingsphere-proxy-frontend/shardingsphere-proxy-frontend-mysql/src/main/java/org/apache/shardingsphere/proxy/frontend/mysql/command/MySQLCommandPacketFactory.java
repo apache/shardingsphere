@@ -37,8 +37,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
 
-import java.sql.SQLException;
-
 /**
  * Command packet factory for MySQL.
  */
@@ -52,9 +50,8 @@ public final class MySQLCommandPacketFactory {
      * @param payload packet payload for MySQL
      * @param connectionSession connection session
      * @return created instance
-     * @throws SQLException SQL exception
      */
-    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final ConnectionSession connectionSession) throws SQLException {
+    public static MySQLCommandPacket newInstance(final MySQLCommandPacketType commandPacketType, final MySQLPacketPayload payload, final ConnectionSession connectionSession) {
         switch (commandPacketType) {
             case COM_QUIT:
                 return new MySQLComQuitPacket();

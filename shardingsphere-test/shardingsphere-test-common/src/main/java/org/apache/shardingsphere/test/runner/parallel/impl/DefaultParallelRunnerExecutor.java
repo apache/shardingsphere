@@ -93,7 +93,7 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
             } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
-        executorServiceMap.values().forEach(each -> each.shutdownNow());
+        executorServiceMap.values().forEach(ExecutorService::shutdownNow);
         if (null != defaultExecutorService) {
             defaultExecutorService.shutdownNow();
         }

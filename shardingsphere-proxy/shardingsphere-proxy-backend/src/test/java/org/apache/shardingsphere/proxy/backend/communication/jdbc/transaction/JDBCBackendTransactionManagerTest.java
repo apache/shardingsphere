@@ -95,7 +95,7 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     }
     
     @Test
-    public void assertBeginForLocalTransaction() throws SQLException {
+    public void assertBeginForLocalTransaction() {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
@@ -105,7 +105,7 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     }
     
     @Test
-    public void assertBeginForDistributedTransaction() throws SQLException {
+    public void assertBeginForDistributedTransaction() {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
