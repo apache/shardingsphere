@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,20 +40,26 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
     
     @Override
     public Optional<ShardingConditionValue> generate(final BetweenExpression predicate, final Column column, final List<Object> parameters) {
-        Optional<Comparable<?>> betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), parameters).getValue();
-        Optional<Comparable<?>> andConditionValue = new ConditionValue(predicate.getAndExpr(), parameters).getValue();
-        if (betweenConditionValue.isPresent() && andConditionValue.isPresent()) {
-            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenConditionValue.get(), andConditionValue.get())));
+        ConditionValue betweenConditionValue = new ConditionValue(predicate.getBetweenExpr(), parameters);
+        ConditionValue andConditionValue = new ConditionValue(predicate.getAndExpr(), parameters);
+        Optional<Comparable<?>> betweenValue = betweenConditionValue.getValue();
+        Optional<Comparable<?>> andValue = andConditionValue.getValue();
+        List<Integer> parameterMarkerIndexes = new ArrayList<>(2);
+        if (betweenValue.isPresent() && andValue.isPresent()) {
+            betweenConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
+            andConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
+            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenValue.get(), andValue.get())));
         }
         Date datetime = DatetimeServiceFactory.getInstance().getDatetime();
-        if (!betweenConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
-            betweenConditionValue = Optional.of(datetime);
+        if (!betweenValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
+            betweenValue = Optional.of(datetime);
         }
-        if (!andConditionValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getAndExpr())) {
-            andConditionValue = Optional.of(datetime);
+        if (!andValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getAndExpr())) {
+            andValue = Optional.of(datetime);
         }
-        return betweenConditionValue.isPresent() && andConditionValue.isPresent()
-                ? Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), Range.closed(betweenConditionValue.get(), andConditionValue.get())))
-                : Optional.empty();
+        if (!betweenValue.isPresent() || !andValue.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), Range.closed(betweenValue.get(), andValue.get())));
     }
 }

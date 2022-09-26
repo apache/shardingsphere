@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
+import java.util.List;
+
 /**
  * Sharding condition value.
  */
@@ -35,4 +37,11 @@ public interface ShardingConditionValue {
      * @return table name
      */
     String getTableName();
+    
+    /**
+     * Get parameter marker indexes.
+     *
+     * @return parameter marker indexes
+     */
+    List<Integer> getParameterMarkerIndexes();
 }

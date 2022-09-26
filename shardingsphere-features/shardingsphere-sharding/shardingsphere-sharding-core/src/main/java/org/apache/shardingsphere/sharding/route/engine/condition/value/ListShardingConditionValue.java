@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +38,12 @@ public final class ListShardingConditionValue<T extends Comparable<?>> implement
     private final String tableName;
     
     private final Collection<T> values;
+    
+    private final List<Integer> parameterMarkerIndexes;
+    
+    public ListShardingConditionValue(final String columnName, final String tableName, final Collection<T> values) {
+        this(columnName, tableName, values, Collections.emptyList());
+    }
     
     @Override
     public String toString() {
