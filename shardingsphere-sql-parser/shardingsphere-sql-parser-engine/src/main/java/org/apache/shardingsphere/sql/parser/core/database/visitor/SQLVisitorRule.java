@@ -429,6 +429,8 @@ public enum SQLVisitorRule {
     SHUTDOWN("Shutdown", SQLStatementType.DAL),
     
     CREATE_RESOURCE_GROUP("CreateResourceGroup", SQLStatementType.DAL),
+
+    ALTER_RESOURCE_COST("AlterResourceCost", SQLStatementType.DAL),
     
     SET_RESOURCE_GROUP("SetResourceGroup", SQLStatementType.DAL),
     
