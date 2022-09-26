@@ -30,7 +30,7 @@ algorithmType ::=
 ### Supplement
 
 - `algorithmType` is the sharding audit algorithm type. For detailed sharding audit algorithm type information, please refer
-  to [SHARDING AUDIT ALGORITHM](en/user-manual/common-config/builtin-algorithm/audit/).
+  to [SHARDING AUDIT ALGORITHM](/en/user-manual/common-config/builtin-algorithm/audit/).
 
 ### Example
 
