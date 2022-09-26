@@ -38,6 +38,8 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
+import java.util.Optional;
+
 /**
  * Frontend channel inbound handler.
  */
@@ -105,7 +107,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         } catch (final BackendConnectionException ex) {
             log.error("Exception occurred when frontend connection [{}] disconnected", connectionSession.getConnectionId(), ex);
         }
-        ExecuteProcessEngine.finishConnection(connectionSession.getExecutionId());
+        Optional.ofNullable(connectionSession.getExecutionId()).ifPresent(ExecuteProcessEngine::finishConnection);
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     
