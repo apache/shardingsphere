@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
-import Symbol, RALStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+/**
+ * Consistency check job configuration for YAML.
+ */
+@Getter
+@Setter
+@Slf4j
+@ToString
+public final class YamlConsistencyCheckJobResultConfiguration implements YamlPipelineJobConfiguration {
+    
+    private String jobId;
+    
+    private String referredJobId;
+    
+    private String algorithmTypeName;
+    
+    private Long createTimeMillis;
+    
+    @Override
+    public String getTargetDatabaseName() {
+        return null;
+    }
+}

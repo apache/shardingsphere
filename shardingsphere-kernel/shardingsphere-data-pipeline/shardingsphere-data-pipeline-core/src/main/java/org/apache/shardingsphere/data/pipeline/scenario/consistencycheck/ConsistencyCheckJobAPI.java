@@ -15,23 +15,14 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+/**
+ * Consistency check job API.
+ */
+public interface ConsistencyCheckJobAPI extends ConsistencyCheckJobPublicAPI, InventoryIncrementalJobAPI {
+    
+}

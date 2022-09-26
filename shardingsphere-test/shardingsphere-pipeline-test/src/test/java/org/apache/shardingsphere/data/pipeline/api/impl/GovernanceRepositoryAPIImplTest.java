@@ -41,17 +41,16 @@ import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -76,9 +75,9 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistCheckLatestResult(jobItemContext.getJobId(), true);
-        Optional<Boolean> checkResult = governanceRepositoryAPI.getCheckLatestResult(jobItemContext.getJobId());
-        assertTrue(checkResult.isPresent() && checkResult.get());
+        governanceRepositoryAPI.persistCheckJobResult(jobItemContext.getJobId(), "j02123", "test");
+        String checkResult = governanceRepositoryAPI.getCheckJobResult(jobItemContext.getJobId(), "j02123");
+        assertThat(checkResult, is("test"));
     }
     
     @Test

@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import Symbol, RALStatement, RQLStatement;
+import org.junit.Test;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class ConsistencyCheckJobAPIFactoryTest {
+    
+    @Test
+    public void assertGetInstance() {
+        assertThat(ConsistencyCheckJobAPIFactory.getInstance(), instanceOf(ConsistencyCheckJobAPIImpl.class));
+    }
+}

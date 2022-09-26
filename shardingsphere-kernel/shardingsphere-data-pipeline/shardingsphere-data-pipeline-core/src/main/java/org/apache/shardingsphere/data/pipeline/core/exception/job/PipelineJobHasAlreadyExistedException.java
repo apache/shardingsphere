@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+/**
+ * Pipeline job has already existed exception.
+ */
+public final class PipelineJobHasAlreadyExistedException extends PipelineSQLException {
+    
+    private static final long serialVersionUID = 2854259384634892428L;
+    
+    public PipelineJobHasAlreadyExistedException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 81, "Job `%s` has already existed", jobId);
+    }
+}

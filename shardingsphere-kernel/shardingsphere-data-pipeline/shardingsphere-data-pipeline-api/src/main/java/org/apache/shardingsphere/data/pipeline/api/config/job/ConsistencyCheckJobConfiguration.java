@@ -15,23 +15,40 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
-import Symbol, RALStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+/**
+ * Consistency check job configuration.
+ */
+@RequiredArgsConstructor
+@Getter
+@Slf4j
+@ToString
+public final class ConsistencyCheckJobConfiguration implements PipelineJobConfiguration {
+    
+    private final String jobId;
+    
+    private final String referredJobId;
+    
+    private final String algorithmTypeName;
+    
+    @Override
+    public String getSourceDatabaseType() {
+        return null;
+    }
+    
+    /**
+     * Get job sharding count.
+     *
+     * @return job sharding count
+     */
+    @Override
+    public int getJobShardingCount() {
+        return 1;
+    }
+}

@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import Symbol, RALStatement, RQLStatement;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+/**
+ * Create consistency check job parameter.
+ */
+@Data
+@RequiredArgsConstructor
+public final class CreateConsistencyCheckJobParameter {
+    
+    private final String jobId;
+    
+    private final String algorithmTypeName;
+}

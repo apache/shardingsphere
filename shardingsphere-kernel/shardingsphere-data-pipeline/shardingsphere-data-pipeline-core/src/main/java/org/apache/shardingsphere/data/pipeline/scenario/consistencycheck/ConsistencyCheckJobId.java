@@ -23,9 +23,6 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-
 /**
  * Consistency check job id.
  */
@@ -35,15 +32,31 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
     public static final String CURRENT_VERSION = "01";
     
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    private static final int MAX_CONSISTENCY_CHECK_VERSION = 9;
     
     private final String pipelineJobId;
     
-    private final String createTimeMinutes;
+    private final Integer consistencyCheckVersion;
     
-    public ConsistencyCheckJobId(final @NonNull String pipelineJobId, final long createTimeMillis) {
+    public ConsistencyCheckJobId(final @NonNull String pipelineJobId, final int consistencyCheckVersion) {
         super(JobType.CONSISTENCY_CHECK, CURRENT_VERSION);
         this.pipelineJobId = pipelineJobId;
-        this.createTimeMinutes = DATE_TIME_FORMATTER.format(Instant.ofEpochMilli(createTimeMillis));
+        if (consistencyCheckVersion > MAX_CONSISTENCY_CHECK_VERSION) {
+            this.consistencyCheckVersion = 0;
+        } else {
+            this.consistencyCheckVersion = consistencyCheckVersion;
+        }
+    }
+    
+    /**
+     * Get consistency check version.
+     *
+     * @param consistencyCheckJobId consistency check job id.
+     * @return consistency check version
+     */
+    public static int getConsistencyCheckVersion(final @NonNull String consistencyCheckJobId) {
+        String versionString = consistencyCheckJobId.substring(consistencyCheckJobId.length() - 1);
+        int version = Integer.parseInt(versionString);
+        return version > MAX_CONSISTENCY_CHECK_VERSION ? 0 : version;
     }
 }

@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    ) SEMI?
-    ;
+/**
+ * Consistency check job API factory.
+ */
+public final class ConsistencyCheckJobAPIFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(ConsistencyCheckJobAPI.class);
+    }
+    
+    /**
+     * Get instance of migration job API.
+     *
+     * @return got instance
+     */
+    public static ConsistencyCheckJobAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(ConsistencyCheckJobAPI.class);
+    }
+}

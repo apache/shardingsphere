@@ -38,6 +38,10 @@
         <job-id>123</job-id>
     </show-migration-status>
     
+    <show-migration-check-status sql-case-id="show-migration-check-status">
+        <job-id>123</job-id>
+    </show-migration-check-status>
+    
     <drop-migration-process-configuration sql-case-id="drop-migration-process-configuration-read">
         <conf-path>/READ</conf-path>
     </drop-migration-process-configuration>
