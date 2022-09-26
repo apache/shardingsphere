@@ -27,7 +27,13 @@ CREATE DATABASE rdl_ds_1;
 CREATE DATABASE rdl_ds_2;
 
 DROP TABLE IF EXISTS rdl_ds_0.t_user_0;
-DROP TABLE IF EXISTS rdl_ds_1.t_user_1;
+DROP TABLE IF EXISTS rdl_ds_0.t_user_1;
+DROP TABLE IF EXISTS rdl_ds_0.t_user_2;
+DROP TABLE IF EXISTS rdl_ds_0.t_user_3;
+DROP TABLE IF EXISTS rdl_ds_0.t_user_4;
 
-CREATE TABLE rdl_ds_0.t_user_0 (user_id INT NOT NULL, username(20) VARCHAR NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
-CREATE TABLE rdl_ds_0.t_user_1 (user_id INT NOT NULL, username(20) VARCHAR NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+CREATE TABLE rdl_ds_0.t_user_0 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+CREATE TABLE rdl_ds_0.t_user_1 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+CREATE TABLE rdl_ds_0.t_user_2 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+CREATE TABLE rdl_ds_0.t_user_3 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+CREATE TABLE rdl_ds_0.t_user_4 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
