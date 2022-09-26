@@ -938,13 +938,17 @@ funcName
     ;
 
 aexprConst
-    : NUMBER_
+    : numberConst
     | STRING_
     | funcName STRING_
     | funcName LP_ funcArgList sortClause? RP_ STRING_
     | TRUE
     | FALSE
     | NULL
+    ;
+
+numberConst
+    : (PLUS_ | MINUS_)? NUMBER_
     ;
 
 qualifiedName
