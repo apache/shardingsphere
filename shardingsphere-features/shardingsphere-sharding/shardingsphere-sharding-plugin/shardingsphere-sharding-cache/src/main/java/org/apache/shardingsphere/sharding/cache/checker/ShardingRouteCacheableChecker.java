@@ -120,7 +120,6 @@ public final class ShardingRouteCacheableChecker {
                 || !isShardingTable && !shardingRule.isAllBroadcastTables(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
-        ;
         Collection<InsertValuesSegment> values = statementContext.getSqlStatement().getValues();
         if (1 != values.size()) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
@@ -218,7 +217,7 @@ public final class ShardingRouteCacheableChecker {
         
         private final List<Object> parameters;
         
-        public Key(final ShardingSphereDatabase database, final String sql, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+        Key(final ShardingSphereDatabase database, final String sql, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
             this.database = database;
             this.sql = sql;
             this.sqlStatementContext = sqlStatementContext;

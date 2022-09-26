@@ -45,6 +45,11 @@ public final class ShardingRouteCacheValue {
         this(null != routeContext, routeContext);
     }
     
+    /**
+     * Get cached route context.
+     *
+     * @return optional cached route context
+     */
     public Optional<RouteContext> getCachedRouteContext() {
         return cacheable ? Optional.of(deepCopyRouteContext()) : Optional.empty();
     }

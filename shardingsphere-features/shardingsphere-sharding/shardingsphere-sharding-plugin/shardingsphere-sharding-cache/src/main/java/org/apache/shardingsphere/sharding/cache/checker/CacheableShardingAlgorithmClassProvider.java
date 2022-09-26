@@ -26,5 +26,10 @@ import java.util.Collection;
  */
 public interface CacheableShardingAlgorithmClassProvider {
     
+    /**
+     * Get classes of cacheable sharding algorithm.
+     *
+     * @return classes of cacheable sharding algorithm.
+     */
     Collection<Class<? extends ShardingAlgorithm>> getCacheableShardingAlgorithmClasses();
 }

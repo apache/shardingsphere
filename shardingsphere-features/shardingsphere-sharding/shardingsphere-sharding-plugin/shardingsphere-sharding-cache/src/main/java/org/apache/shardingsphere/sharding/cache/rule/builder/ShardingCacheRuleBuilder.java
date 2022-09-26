@@ -36,7 +36,8 @@ import java.util.Map;
 public final class ShardingCacheRuleBuilder implements DatabaseRuleBuilder<ShardingCacheRuleConfiguration> {
     
     @Override
-    public DatabaseRule build(final ShardingCacheRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+    public DatabaseRule build(final ShardingCacheRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules,
+                              final InstanceContext instanceContext) {
         ShardingRule shardingRule = (ShardingRule) builtRules.stream().filter(ShardingRule.class::isInstance).findFirst()
                 .orElseThrow(() -> new IllegalStateException("ShardingCacheRule requires ShardingRule"));
         return new ShardingCacheRule(config, shardingRule);
