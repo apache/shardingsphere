@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableCheckResult;
+import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheKey;
+import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheValue;
 import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter;

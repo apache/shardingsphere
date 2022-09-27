@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.checker;
+package org.apache.shardingsphere.sharding.cache.api;
 
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 /**
- * Cacheable sharding algorithm class provider.
+ * Configuration for sharding cache rule.
  */
-public interface CacheableShardingAlgorithmClassProvider {
+@RequiredArgsConstructor
+@Getter
+@ToString
+public final class ShardingCacheRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
-    /**
-     * Get classes of cacheable sharding algorithm.
-     *
-     * @return classes of cacheable sharding algorithm.
-     */
-    Collection<Class<? extends ShardingAlgorithm>> getCacheableShardingAlgorithmClasses();
+    private final int allowedMaxSqlLength;
+    
+    private final ShardingCacheOptions routeCache;
 }

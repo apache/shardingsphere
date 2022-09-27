@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.checker;
+package org.apache.shardingsphere.sharding.cache.checker.algorithm.impl;
 
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.HashModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm;
+import org.apache.shardingsphere.sharding.cache.checker.algorithm.CacheableShardingAlgorithmClassProvider;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Arrays;

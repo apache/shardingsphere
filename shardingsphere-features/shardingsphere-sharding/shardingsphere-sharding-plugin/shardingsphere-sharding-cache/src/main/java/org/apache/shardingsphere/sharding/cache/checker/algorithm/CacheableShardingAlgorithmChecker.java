@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.checker;
+package org.apache.shardingsphere.sharding.cache.checker.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

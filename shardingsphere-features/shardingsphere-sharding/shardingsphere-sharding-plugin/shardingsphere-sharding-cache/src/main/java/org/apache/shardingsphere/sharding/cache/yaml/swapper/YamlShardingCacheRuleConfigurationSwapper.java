@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.cache.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.sharding.cache.config.ShardingCacheRuleConfiguration;
+import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfiguration;
 import org.apache.shardingsphere.sharding.cache.yaml.YamlShardingCacheRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 

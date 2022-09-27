@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.route;
+package org.apache.shardingsphere.sharding.cache.route.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import org.apache.shardingsphere.sharding.cache.config.ShardingCacheOptions;
+import org.apache.shardingsphere.sharding.cache.api.ShardingCacheOptions;
 
 import java.util.Optional;
 

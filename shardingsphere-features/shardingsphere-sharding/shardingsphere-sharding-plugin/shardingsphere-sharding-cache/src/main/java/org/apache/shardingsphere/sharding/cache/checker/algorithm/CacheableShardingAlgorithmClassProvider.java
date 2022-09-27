@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.route;
+package org.apache.shardingsphere.sharding.cache.checker.algorithm;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Key of sharding route cache.
+ * Cacheable sharding algorithm class provider.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-public final class ShardingRouteCacheKey {
+public interface CacheableShardingAlgorithmClassProvider {
     
-    private final String sql;
-    
-    private final List<Object> shardingConditionParameters;
+    /**
+     * Get classes of cacheable sharding algorithm.
+     *
+     * @return classes of cacheable sharding algorithm.
+     */
+    Collection<Class<? extends ShardingAlgorithm>> getCacheableShardingAlgorithmClasses();
 }

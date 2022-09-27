@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.config;
+package org.apache.shardingsphere.sharding.cache.api;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

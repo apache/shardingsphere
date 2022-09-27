@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.cache.checker.BuiltInCacheableShardingAlgorithmClassProvider
+org.apache.shardingsphere.sharding.cache.checker.algorithm.impl.BuiltInCacheableShardingAlgorithmClassProvider

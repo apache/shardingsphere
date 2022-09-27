@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.cache.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.sharding.cache.config.ShardingCacheRuleConfiguration;
-import org.apache.shardingsphere.sharding.cache.route.ShardingRouteCache;
+import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfiguration;
+import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCache;
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 

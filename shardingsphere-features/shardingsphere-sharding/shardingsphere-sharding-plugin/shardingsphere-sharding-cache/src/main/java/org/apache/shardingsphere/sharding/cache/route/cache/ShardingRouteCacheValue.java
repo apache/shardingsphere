@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.route;
+package org.apache.shardingsphere.sharding.cache.route.cache;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

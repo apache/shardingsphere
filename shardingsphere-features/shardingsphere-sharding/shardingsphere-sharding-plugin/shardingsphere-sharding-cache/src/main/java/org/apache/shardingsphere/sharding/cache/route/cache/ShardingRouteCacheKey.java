@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.cache.config;
+package org.apache.shardingsphere.sharding.cache.route.cache;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+
+import java.util.List;
 
 /**
- * Configuration for sharding cache rule.
+ * Key of sharding route cache.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class ShardingCacheRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
+@EqualsAndHashCode
+public final class ShardingRouteCacheKey {
     
-    private final int allowedMaxSqlLength;
+    private final String sql;
     
-    private final ShardingCacheOptions routeCache;
+    private final List<Object> shardingConditionParameters;
 }
