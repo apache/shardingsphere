@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
  * Yaml data check job progress.
  */
 @Data
-public final class YamlDataCheckJobProgress implements YamlConfiguration {
+public final class YamlConsistencyCheckJobProgress implements YamlConfiguration {
     
     private String status;
 }

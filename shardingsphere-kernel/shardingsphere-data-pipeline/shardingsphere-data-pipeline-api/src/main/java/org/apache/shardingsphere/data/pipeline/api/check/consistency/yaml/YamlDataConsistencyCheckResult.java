@@ -19,37 +19,20 @@ package org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Map;
 
 /**
  * Yaml data consistency check result config.
  */
-@Getter
-@Setter
-@ToString
-public final class YamlDataConsistencyCheckResult {
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
     
-    private Map<String, YamlDataConsistencyCheckResultValue> result;
+    private YamlDataConsistencyCountCheckResult countCheckResult;
     
-    /**
-     * Yaml data consistency check result.
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString
-    public static class YamlDataConsistencyCheckResultValue implements YamlConfiguration {
-        
-        private YamlDataConsistencyCountCheckResult countCheckResult;
-        
-        private YamlDataConsistencyContentCheckResult contentCheckResult;
-    }
+    private YamlDataConsistencyContentCheckResult contentCheckResult;
     
     /**
      * Yaml data consistency count result.

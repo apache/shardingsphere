@@ -29,20 +29,20 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlConsisten
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.DataCheckJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyExistedException;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlDataCheckJobProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlDataCheckJobProgressSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgressSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
@@ -57,7 +57,7 @@ import java.util.Map.Entry;
 @Slf4j
 public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl implements ConsistencyCheckJobAPI {
     
-    private static final YamlDataCheckJobProgressSwapper PROGRESS_SWAPPER = new YamlDataCheckJobProgressSwapper();
+    private static final YamlConsistencyCheckJobProgressSwapper PROGRESS_SWAPPER = new YamlConsistencyCheckJobProgressSwapper();
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
@@ -83,7 +83,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         yamlConfig.setJobId(result);
         yamlConfig.setParentJobId(parameter.getJobId());
         yamlConfig.setAlgorithmTypeName(parameter.getAlgorithmTypeName());
-        yamlConfig.setAlgorithmProperties(parameter.getAlgorithmProperties());
+        yamlConfig.setAlgorithmProperties(parameter.getAlgorithmProps());
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig);
         start(jobConfig);
         return result;
@@ -110,10 +110,10 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
-        DataCheckJobItemProgress progress = new DataCheckJobItemProgress();
+        ConsistencyCheckJobProgress progress = new ConsistencyCheckJobProgress();
         progress.setStatus(jobItemContext.getStatus());
-        YamlDataCheckJobProgress yamlDataCheckJobProgress = PROGRESS_SWAPPER.swapToYamlConfiguration(progress);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), YamlEngine.marshal(yamlDataCheckJobProgress));
+        YamlConsistencyCheckJobProgress yamlConsistencyCheckJobProgress = PROGRESS_SWAPPER.swapToYamlConfiguration(progress);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), YamlEngine.marshal(yamlConsistencyCheckJobProgress));
     }
     
     @Override
@@ -122,15 +122,15 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         if (StringUtils.isBlank(progress)) {
             return null;
         }
-        DataCheckJobItemProgress dataCheckJobItemProgress = PROGRESS_SWAPPER.swapToObject(YamlEngine.unmarshal(progress, YamlDataCheckJobProgress.class, true));
-        DataCheckJobItemProgress result = new DataCheckJobItemProgress();
-        result.setStatus(dataCheckJobItemProgress.getStatus());
+        ConsistencyCheckJobProgress consistencyCheckJobProgress = PROGRESS_SWAPPER.swapToObject(YamlEngine.unmarshal(progress, YamlConsistencyCheckJobProgress.class, true));
+        ConsistencyCheckJobProgress result = new ConsistencyCheckJobProgress();
+        result.setStatus(consistencyCheckJobProgress.getStatus());
         return result;
     }
     
     @Override
     public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        DataCheckJobItemProgress jobItemProgress = (DataCheckJobItemProgress) getJobItemProgress(jobId, shardingItem);
+        ConsistencyCheckJobProgress jobItemProgress = (ConsistencyCheckJobProgress) getJobItemProgress(jobId, shardingItem);
         if (null == jobItemProgress) {
             log.warn("updateJobItemStatus, jobItemProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
@@ -164,7 +164,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     }
     
     @Override
-    public InventoryIncrementalProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
+    public PipelineProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
         return null;
     }
     

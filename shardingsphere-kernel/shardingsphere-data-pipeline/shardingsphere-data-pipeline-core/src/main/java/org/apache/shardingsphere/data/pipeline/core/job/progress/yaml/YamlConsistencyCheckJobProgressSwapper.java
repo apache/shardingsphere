@@ -18,24 +18,24 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.DataCheckJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobProgress;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML data check job progress swapper.
  */
-public final class YamlDataCheckJobProgressSwapper implements YamlConfigurationSwapper<YamlDataCheckJobProgress, DataCheckJobItemProgress> {
+public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobProgress, ConsistencyCheckJobProgress> {
     
     @Override
-    public YamlDataCheckJobProgress swapToYamlConfiguration(final DataCheckJobItemProgress data) {
-        YamlDataCheckJobProgress result = new YamlDataCheckJobProgress();
+    public YamlConsistencyCheckJobProgress swapToYamlConfiguration(final ConsistencyCheckJobProgress data) {
+        YamlConsistencyCheckJobProgress result = new YamlConsistencyCheckJobProgress();
         result.setStatus(data.getStatus().name());
         return result;
     }
     
     @Override
-    public DataCheckJobItemProgress swapToObject(final YamlDataCheckJobProgress yamlConfig) {
-        DataCheckJobItemProgress result = new DataCheckJobItemProgress();
+    public ConsistencyCheckJobProgress swapToObject(final YamlConsistencyCheckJobProgress yamlConfig) {
+        ConsistencyCheckJobProgress result = new ConsistencyCheckJobProgress();
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         return result;
     }

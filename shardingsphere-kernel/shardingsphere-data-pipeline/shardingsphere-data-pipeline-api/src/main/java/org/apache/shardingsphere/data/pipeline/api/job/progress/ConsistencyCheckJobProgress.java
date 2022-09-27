@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
  */
 @Getter
 @Setter
-public final class DataCheckJobItemProgress implements PipelineJobItemProgress {
+public final class ConsistencyCheckJobProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;
 }

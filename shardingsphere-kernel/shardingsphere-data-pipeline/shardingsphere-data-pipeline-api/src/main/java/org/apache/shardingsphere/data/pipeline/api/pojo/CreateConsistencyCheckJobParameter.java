@@ -33,5 +33,5 @@ public final class CreateConsistencyCheckJobParameter {
     
     private final String algorithmTypeName;
     
-    private final Properties algorithmProperties;
+    private final Properties algorithmProps;
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyCheckResultValue;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -29,17 +28,17 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 /**
  * Yaml data consistency check result swapper.
  */
-public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigurationSwapper<YamlDataConsistencyCheckResultValue, DataConsistencyCheckResult> {
+public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigurationSwapper<YamlDataConsistencyCheckResult, DataConsistencyCheckResult> {
     
     private static final YamlDataConsistencyCheckResultSwapper CONFIG_SWAPPER = new YamlDataConsistencyCheckResultSwapper();
     
     @Override
-    public YamlDataConsistencyCheckResultValue swapToYamlConfiguration(final DataConsistencyCheckResult data) {
+    public YamlDataConsistencyCheckResult swapToYamlConfiguration(final DataConsistencyCheckResult data) {
         YamlDataConsistencyCountCheckResult countCheckResult = new YamlDataConsistencyCountCheckResult();
         countCheckResult.setSourceRecordsCount(data.getCountCheckResult().getSourceRecordsCount());
         countCheckResult.setTargetRecordsCount(data.getCountCheckResult().getTargetRecordsCount());
         countCheckResult.setMatched(data.getContentCheckResult().isMatched());
-        YamlDataConsistencyCheckResultValue result = new YamlDataConsistencyCheckResultValue();
+        YamlDataConsistencyCheckResult result = new YamlDataConsistencyCheckResult();
         result.setCountCheckResult(countCheckResult);
         YamlDataConsistencyContentCheckResult contentCheckResult = new YamlDataConsistencyContentCheckResult(data.getContentCheckResult().isMatched());
         result.setContentCheckResult(contentCheckResult);
@@ -47,7 +46,7 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
     }
     
     @Override
-    public DataConsistencyCheckResult swapToObject(final YamlDataConsistencyCheckResultValue yamlConfig) {
+    public DataConsistencyCheckResult swapToObject(final YamlDataConsistencyCheckResult yamlConfig) {
         if (null == yamlConfig) {
             return null;
         }
@@ -64,7 +63,7 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
      * @return data consistency check result
      */
     public static DataConsistencyCheckResult swapToObject(final String parameter) {
-        YamlDataConsistencyCheckResultValue yamlDataCheckResult = YamlEngine.unmarshal(parameter, YamlDataConsistencyCheckResultValue.class, true);
+        YamlDataConsistencyCheckResult yamlDataCheckResult = YamlEngine.unmarshal(parameter, YamlDataConsistencyCheckResult.class, true);
         return CONFIG_SWAPPER.swapToObject(yamlDataCheckResult);
     }
 }

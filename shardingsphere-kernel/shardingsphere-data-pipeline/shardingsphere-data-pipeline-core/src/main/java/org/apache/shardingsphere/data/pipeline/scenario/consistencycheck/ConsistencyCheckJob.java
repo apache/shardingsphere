@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyCheckResultValue;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlConsistencyCheckJobConfigurationSwapper;
@@ -74,7 +74,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         }
         Map<String, String> checkResultMap = new LinkedHashMap<>();
         for (Entry<String, DataConsistencyCheckResult> entry : dataConsistencyCheckResult.entrySet()) {
-            YamlDataConsistencyCheckResultValue checkResult = CHECK_RESULT_SWAPPER.swapToYamlConfiguration(entry.getValue());
+            YamlDataConsistencyCheckResult checkResult = CHECK_RESULT_SWAPPER.swapToYamlConfiguration(entry.getValue());
             checkResultMap.put(entry.getKey(), YamlEngine.marshal(checkResult));
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(referredJobId, checkJobId, YamlEngine.marshal(checkResultMap));
