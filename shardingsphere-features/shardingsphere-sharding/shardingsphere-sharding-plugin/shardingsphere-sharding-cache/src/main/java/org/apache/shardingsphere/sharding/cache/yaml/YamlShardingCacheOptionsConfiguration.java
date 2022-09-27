@@ -19,23 +19,18 @@ package org.apache.shardingsphere.sharding.cache.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.sharding.cache.config.ShardingCacheRuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Sharding cache rule configuration for YAML.
+ * Sharding cache options configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlShardingCacheRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlShardingCacheOptionsConfiguration implements YamlConfiguration {
     
-    private int allowedMaxSqlLength;
+    private boolean softValues;
     
-    private YamlShardingCacheOptionsConfiguration routeCache;
+    private int initialCapacity;
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return ShardingCacheRuleConfiguration.class;
-    }
+    private int maximumSize;
 }
