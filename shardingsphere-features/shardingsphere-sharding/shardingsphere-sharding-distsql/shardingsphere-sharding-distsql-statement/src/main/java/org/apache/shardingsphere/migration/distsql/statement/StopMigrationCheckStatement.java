@@ -15,44 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.job;
+package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Properties;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Consistency check job configuration.
+ * Stop migration check statement.
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
-@ToString
-public final class ConsistencyCheckJobConfiguration implements PipelineJobConfiguration {
+public final class StopMigrationCheckStatement extends UpdatableScalingRALStatement {
     
     private final String jobId;
-    
-    private final String parentJobId;
-    
-    private final String algorithmTypeName;
-    
-    private final Properties algorithmProperties;
-    
-    @Override
-    public String getSourceDatabaseType() {
-        throw new UnsupportedOperationException("");
-    }
-    
-    /**
-     * Get job sharding count.
-     *
-     * @return job sharding count
-     */
-    @Override
-    public int getJobShardingCount() {
-        return 1;
-    }
 }

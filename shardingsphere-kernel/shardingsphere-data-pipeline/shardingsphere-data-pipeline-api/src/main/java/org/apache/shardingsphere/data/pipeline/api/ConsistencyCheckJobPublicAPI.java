@@ -45,4 +45,18 @@ public interface ConsistencyCheckJobPublicAPI extends PipelineJobPublicAPI, Requ
      * @return latest data consistency check result
      */
     Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(String jobId);
+    
+    /**
+     * Start by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
+    void startByParentJobId(String parentJobId);
+    
+    /**
+     * Start by parent job id.
+     *
+     * @param parentJobId parent job id
+     */
+    void stopByParentJobId(String parentJobId);
 }
