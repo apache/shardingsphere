@@ -115,7 +115,6 @@ public final class DatabaseDiscoveryEngine {
     private StorageNodeDataSource createStorageNodeDataSource(final ReplicaDataSourceStatus replicaStatus) {
         return new StorageNodeDataSource(StorageNodeRole.MEMBER, replicaStatus.isOnline() ? StorageNodeStatus.ENABLED : StorageNodeStatus.DISABLED, replicaStatus.getReplicationDelayMilliseconds());
     }
-    
     private ReplicaDataSourceStatus loadReplicaStatus(final DataSource replicaDataSource) {
         try {
             return databaseDiscoveryProviderAlgorithm.loadReplicaStatus(replicaDataSource);
