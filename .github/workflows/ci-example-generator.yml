@@ -18,7 +18,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Run test
+name: Shardingsphere Example generator Tests
 
 on:
   push:
@@ -32,6 +32,13 @@ jobs:
     #if: github.repository == 'apache/shardingsphere'
     name: ShardingSphere example generator
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        product: [ jdbc ]
+        mode: [ standalone ]
+        transaction: [ local ]
+        feature: [ sharding ]
+        framework: [ jdbc ]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 8
@@ -41,9 +48,9 @@ jobs:
           java-version: 8
       - name: Build Project
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
-      - name: Run Example generator
-        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=jdbc -Dmodes=standalone -Dtransactions=local -Dfeatures=sharding -frameworks=jdbc
-      - name: docker
+      - name: Example generator
+        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+      - name: Prepare The Docker Environment
         run : docker-compose -f examples/shardingsphere-example-generator/docker-compose.yml up -d
-      - name: run test
-        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/sharding--jdbc--standalone--local/pom.xml -Pexample-generator
+      - name: Example Test
+        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator
