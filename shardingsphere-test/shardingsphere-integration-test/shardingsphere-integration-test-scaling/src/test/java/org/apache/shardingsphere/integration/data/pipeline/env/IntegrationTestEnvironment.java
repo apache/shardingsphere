@@ -146,7 +146,7 @@ public final class IntegrationTestEnvironment {
     }
     
     /**
-     * List storage contaienr images.
+     * List storage container images.
      *
      * @param databaseType database type.
      * @return database storage container images

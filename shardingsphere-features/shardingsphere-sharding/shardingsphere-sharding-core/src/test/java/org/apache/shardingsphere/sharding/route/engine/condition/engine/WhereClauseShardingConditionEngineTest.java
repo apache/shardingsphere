@@ -41,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +70,7 @@ public final class WhereClauseShardingConditionEngineTest {
     private TablesContext tablesContext;
     
     @Before
-    public void setUp() throws SQLException {
+    public void setUp() {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(shardingRule, ShardingSphereDatabase.create("test_db", DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);

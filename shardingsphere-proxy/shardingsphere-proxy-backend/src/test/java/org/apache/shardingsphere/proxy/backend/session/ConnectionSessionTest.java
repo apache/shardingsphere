@@ -35,13 +35,11 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,7 +72,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     }
     
     @Test(expected = SwitchTypeInTransactionException.class)
-    public void assertFailedSwitchTransactionTypeWhileBegin() throws SQLException {
+    public void assertFailedSwitchTransactionTypeWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();
@@ -82,7 +80,7 @@ public final class ConnectionSessionTest extends ProxyContextRestorer {
     }
     
     @Test
-    public void assertSwitchSchemaWhileBegin() throws SQLException {
+    public void assertSwitchSchemaWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         transactionManager.begin();

@@ -3816,7 +3816,6 @@
     <sql-case id="explain_by_postgresql_source_test_case27" value="EXPLAIN (COSTS OFF) EXECUTE role_inval;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case28" value="EXPLAIN (COSTS OFF) EXECUTE role_inval;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case29" value="EXPLAIN (COSTS OFF) INSERT INTO t2 (SELECT * FROM t1);" db-types="PostgreSQL" />
-    <sql-case id="explain_by_postgresql_source_test_case44" value="EXPLAIN (COSTS OFF) SELECT * FROM circle_tbl WHERE f1 &amp;&amp; circle(point(1,-2), 1)     ORDER BY area(f1);" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case45" value="EXPLAIN (COSTS OFF) SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case46" value="EXPLAIN (COSTS OFF) SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case48" value="EXPLAIN (COSTS OFF) SELECT * FROM inet_tbl WHERE &apos;192.168.1.0/24&apos;::cidr &gt;&gt; i;" db-types="PostgreSQL" />
@@ -4191,8 +4190,6 @@
     <sql-case id="select_by_postgresql_source_test_case226" value="SELECT * FROM (VALUES (1),(2),(3)) v(r), ROWS FROM( rngfunc_sql(11,11), rngfunc_mat(10+r,13) );" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case233" value="SELECT * FROM ROWS FROM(generate_series(10,11), get_users()) WITH ORDINALITY;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case234" value="SELECT * FROM ROWS FROM(get_users(), generate_series(10,11)) WITH ORDINALITY;" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case244" value="SELECT * FROM circle_tbl WHERE f1 &amp;&amp; circle(point(1,-2), 1)     ORDER BY area(f1);" db-types="PostgreSQL" />
-    <sql-case id="select_by_postgresql_source_test_case245" value="SELECT * FROM circle_tbl WHERE f1 &amp;&amp; circle(point(1,-2), 1)     ORDER BY area(f1);" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case246" value="SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case247" value="SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case248" value="SELECT * FROM fast_emp4000     WHERE home_base &lt;@ &apos;(200,200),(2000,1000)&apos;::box     ORDER BY (home_base[0])[0];" db-types="PostgreSQL" />

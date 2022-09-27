@@ -496,7 +496,7 @@ public final class ShardingSphereResultSetTest {
     
     @Test
     public void assertGetObjectWithByte() throws SQLException {
-        Byte result = new Byte((byte) 1);
+        Byte result = (byte) 1;
         when(mergeResultSet.getValue(1, byte.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, byte.class), is(result));
     }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.when;
 public final class MySQLComStmtSendLongDataExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         MySQLComStmtSendLongDataPacket packet = mock(MySQLComStmtSendLongDataPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         when(packet.getParamId()).thenReturn(0);

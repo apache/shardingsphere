@@ -102,9 +102,8 @@ public final class ContextManager implements AutoCloseable {
      * Add database.
      *
      * @param databaseName database name
-     * @throws SQLException SQL exception
      */
-    public synchronized void addDatabase(final String databaseName) throws SQLException {
+    public synchronized void addDatabase(final String databaseName) {
         if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
             return;
         }
@@ -116,9 +115,8 @@ public final class ContextManager implements AutoCloseable {
      * Add database and persist.
      *
      * @param databaseName database name
-     * @throws SQLException SQL exception
      */
-    public synchronized void addDatabaseAndPersist(final String databaseName) throws SQLException {
+    public synchronized void addDatabaseAndPersist(final String databaseName) {
         if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
             return;
         }
@@ -578,7 +576,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         executorEngine.close();
         metaDataContexts.close();
     }

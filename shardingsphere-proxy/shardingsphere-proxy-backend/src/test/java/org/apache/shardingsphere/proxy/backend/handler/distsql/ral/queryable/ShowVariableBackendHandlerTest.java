@@ -87,7 +87,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     }
     
     @Test(expected = UnsupportedVariableException.class)
-    public void assertShowCachedConnectionFailed() throws SQLException {
+    public void assertShowCachedConnectionFailed() {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
         backendHandler.init(new ShowVariableStatement("cached_connectionss"), connectionSession);

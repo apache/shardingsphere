@@ -32,7 +32,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,7 +66,7 @@ public final class PostgreSQLComExecuteExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() {
         PostgreSQLPacket expectedPacket = mock(PostgreSQLPacket.class);
         when(portal.execute(anyInt())).thenReturn(Collections.singletonList(expectedPacket));
         List<DatabasePacket<?>> actualPackets = executor.execute();

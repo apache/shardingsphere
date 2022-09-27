@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.AddShardingHintTableValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ClearHintExecutor;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.SetShardingHintDatabaseValueExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ShowReadwriteSplittingHintStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor.ShowShardingHintStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
@@ -42,8 +42,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -55,55 +53,55 @@ public final class HintRALStatementExecutorFactoryTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertSetReadwriteSplittingHintSourceExecutor() throws SQLException {
+    public void assertSetReadwriteSplittingHintSourceExecutor() {
         HintRALStatement sqlStatement = mock(SetReadwriteSplittingHintStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(SetReadwriteSplittingHintExecutor.class));
     }
     
     @Test
-    public void assertShowReadwriteSplittingHintSourceExecutor() throws SQLException {
+    public void assertShowReadwriteSplittingHintSourceExecutor() {
         HintRALStatement sqlStatement = mock(ShowReadwriteSplittingHintStatusStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(ShowReadwriteSplittingHintStatusExecutor.class));
     }
     
     @Test
-    public void assertClearReadwriteSplittingHintSourceExecutor() throws SQLException {
+    public void assertClearReadwriteSplittingHintSourceExecutor() {
         HintRALStatement sqlStatement = mock(ClearReadwriteSplittingHintStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(ClearReadwriteSplittingHintExecutor.class));
     }
     
     @Test
-    public void assertClearHintExecutor() throws SQLException {
+    public void assertClearHintExecutor() {
         HintRALStatement sqlStatement = mock(ClearHintStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(ClearHintExecutor.class));
     }
     
     @Test
-    public void assertSetShardingHintDatabaseValueExecutor() throws SQLException {
+    public void assertSetShardingHintDatabaseValueExecutor() {
         HintRALStatement sqlStatement = mock(SetShardingHintDatabaseValueStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(SetShardingHintDatabaseValueExecutor.class));
     }
     
     @Test
-    public void assertAddShardingHintDatabaseValueExecutor() throws SQLException {
+    public void assertAddShardingHintDatabaseValueExecutor() {
         HintRALStatement sqlStatement = mock(AddShardingHintDatabaseValueStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(AddShardingHintDatabaseValueExecutor.class));
     }
     
     @Test
-    public void assertAddShardingHintTableValueExecutor() throws SQLException {
+    public void assertAddShardingHintTableValueExecutor() {
         HintRALStatement sqlStatement = mock(AddShardingHintTableValueStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(AddShardingHintTableValueExecutor.class));
     }
     
     @Test
-    public void assertShowShardingHintStatusExecutor() throws SQLException {
+    public void assertShowShardingHintStatusExecutor() {
         HintRALStatement sqlStatement = mock(ShowShardingHintStatusStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(ShowShardingHintStatusExecutor.class));
     }
     
     @Test
-    public void assertClearShardingValueHintExecutor() throws SQLException {
+    public void assertClearShardingValueHintExecutor() {
         HintRALStatement sqlStatement = mock(ClearShardingHintStatement.class);
         assertThat(HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession), instanceOf(ClearShardingHintExecutor.class));
     }

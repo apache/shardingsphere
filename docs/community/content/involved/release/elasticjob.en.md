@@ -1,6 +1,6 @@
 +++
 title = "ElasticJob Release Guide"
-weight = 2
+weight = 3
 chapter = true
 +++
 

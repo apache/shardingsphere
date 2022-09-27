@@ -32,8 +32,6 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHan
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
-import java.sql.SQLException;
-
 /**
  * DistSQL backend handler factory.
  */
@@ -46,9 +44,8 @@ public final class DistSQLBackendHandlerFactory {
      * @param sqlStatement dist SQL statement
      * @param connectionSession connection session
      * @return proxy backend handler
-     * @throws SQLException SQL exception
      */
-    public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof RQLStatement) {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
