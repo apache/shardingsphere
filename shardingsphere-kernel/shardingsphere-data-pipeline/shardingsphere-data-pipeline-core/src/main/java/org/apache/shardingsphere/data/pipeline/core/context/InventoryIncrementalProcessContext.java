@@ -46,4 +46,9 @@ public interface InventoryIncrementalProcessContext extends PipelineProcessConte
      * @return job write rate limit algorithm
      */
     JobRateLimitAlgorithm getWriteRateLimitAlgorithm();
+    
+    /**
+     * Close.
+     */
+    void close();
 }

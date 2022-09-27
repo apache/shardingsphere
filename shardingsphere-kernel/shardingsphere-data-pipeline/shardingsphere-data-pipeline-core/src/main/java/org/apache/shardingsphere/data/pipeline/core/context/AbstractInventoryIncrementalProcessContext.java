@@ -117,4 +117,11 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     public ExecuteEngine getImporterExecuteEngine() {
         return importerExecuteEngineLazyInitializer.get();
     }
+    
+    @Override
+    public void close() {
+        getInventoryDumperExecuteEngine().shutdown();
+        getIncrementalDumperExecuteEngine().shutdown();
+        getImporterExecuteEngine().shutdown();
+    }
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -127,5 +128,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         }
         getTasksRunnerMap().clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+        InventoryIncrementalProcessContext processContext = (InventoryIncrementalProcessContext) getTasksRunnerMap().values().iterator().next().getJobItemContext();
+        processContext.close();
     }
 }
