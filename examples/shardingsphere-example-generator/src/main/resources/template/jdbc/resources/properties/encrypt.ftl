@@ -23,6 +23,7 @@ spring.shardingsphere.rules.encrypt.encryptors.string_encryptor.type=assistedTes
 spring.shardingsphere.rules.encrypt.tables.t_order.columns.status.cipher-column=status
 spring.shardingsphere.rules.encrypt.tables.t_order.columns.status.assisted-query-column=assisted_query_status
 spring.shardingsphere.rules.encrypt.tables.t_order.columns.status.encryptor-name=string_encryptor
+spring.shardingsphere.rules.encrypt.tables.t_order.columns.status.assisted-query-encryptor-name=string_encryptor
 
 spring.shardingsphere.rules.encrypt.tables.t_order_item.columns.phone.cipher-column=phone
 spring.shardingsphere.rules.encrypt.tables.t_order_item.columns.phone.plain-column=phone_plain
