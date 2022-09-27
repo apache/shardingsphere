@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,6 +51,7 @@ public abstract class BaseRDLIT extends SingleITCase {
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
+        sleep();
     }
     
     @After
@@ -59,6 +61,7 @@ public abstract class BaseRDLIT extends SingleITCase {
                 executeDestroySQLs(connection);
             }
         }
+        sleep();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
@@ -80,6 +83,13 @@ public abstract class BaseRDLIT extends SingleITCase {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
+        }
+    }
+    
+    public void sleep() {
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (final InterruptedException ignored) {
         }
     }
     

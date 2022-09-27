@@ -68,11 +68,4 @@ public final class GeneralRDLIT extends BaseRDLIT {
             assertResultSet(resultSet);
         }
     }
-    
-    private void sleep() {
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (final InterruptedException ignored) {
-        }
-    }
 }
