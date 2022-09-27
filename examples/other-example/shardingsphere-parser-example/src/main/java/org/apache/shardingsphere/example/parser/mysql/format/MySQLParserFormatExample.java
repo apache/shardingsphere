@@ -27,30 +27,30 @@ import java.util.List;
 import java.util.Properties;
 
 public final class MySQLParserFormatExample {
-
+    
     private static final String DML_SELECT_SQL = "SELECT age AS b, name AS n FROM table1 JOIN table2 WHERE id = 1 AND name = 'lu';";
-
+    
     private static final String DML_INSERT_SQL = "INSERT INTO user (name, age, status) VALUES ('z', 18, 1);";
-
+    
     private static final String DML_DELETE_SQL = "DELETE FROM user WHERE id = 1;";
-
+    
     private static final String DML_UPDATE_SQL = "UPDATE user SET name = 'j' WHERE id = 1;";
-
+    
     private static final String DDL_CREATE_SQL = "CREATE TABLE user (id BIGINT(20) PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20), age INT(2), status INT(1));";
-
+    
     private static final String DDL_DROP_SQL = "DROP TABLE user;";
-
+    
     private static final String DDL_ALTER_SQL = "ALTER TABLE user CHANGE name name_new VARCHAR(20);";
-
+    
     private static final String DDL_SHOW_SQL = "SHOW COLUMNS FROM user;";
-
+    
     private static final List<String> MYSQL_FORMAT_SQL_LIST;
-
+    
     static {
         MYSQL_FORMAT_SQL_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_DELETE_SQL, DML_UPDATE_SQL, DDL_CREATE_SQL,
                 DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
     }
-
+    
     public static void main(String[] args) {
         MYSQL_FORMAT_SQL_LIST.forEach(each -> {
             Properties props = new Properties();
