@@ -1,4 +1,9 @@
 +++
+title = "ShardingSphere on Cloud Release Guide"
+weight = 2
+chapter = true
++++
+
 ## Prepare before release
 
 ### 1. Confirm release notes
