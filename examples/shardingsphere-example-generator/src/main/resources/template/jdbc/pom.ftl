@@ -216,6 +216,33 @@
             <version>1.2.10</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>example-generator</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <#assign package = feature?replace('-', '')?replace(',', '.') />
+                                    <mainClass>org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.ExampleMain</mainClass>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
     <build>
         <plugins>

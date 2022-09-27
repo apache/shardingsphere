@@ -18,11 +18,11 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Daily Continuous Integration
+name: Run test
 
 on:
-  schedule:
-    - cron: '0 18 */1 * *'  # once a day. UTC time
+  push:
+    branches: [ master, example-generator-test ]
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3  -Drat.skip=true -Dcheckstyle.skip=true
@@ -42,5 +42,8 @@ jobs:
       - name: Build Project
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Example generator
-        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
-
+        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=jdbc -Dmodes=standalone -Dtransactions=local -Dfeatures=sharding -frameworks=jdbc
+      - name: docker
+        run : docker-compose -f examples/shardingsphere-example-generator/docker-compose.yml up -d
+      - name: run test
+        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/sharding--jdbc--standalone--local/pom.xml -Pexample-generator
