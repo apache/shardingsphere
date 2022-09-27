@@ -27,12 +27,12 @@ import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Inventory incremental tasks' runner.
@@ -50,27 +50,15 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     
     private final Collection<IncrementalTask> incrementalTasks;
     
-    private final ExecuteEngine inventoryDumperExecuteEngine;
-    
-    private final ExecuteEngine incrementalDumperExecuteEngine;
-    
     @Override
     public void stop() {
         jobItemContext.setStopping(true);
         log.info("stop, jobId={}, shardingItem={}", jobItemContext.getJobId(), jobItemContext.getShardingItem());
         for (InventoryTask each : inventoryTasks) {
-            if (!each.isRunning()) {
-                continue;
-            }
-            log.info("stop inventory task {} - {}", jobItemContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
         for (IncrementalTask each : incrementalTasks) {
-            if (!each.isRunning()) {
-                continue;
-            }
-            log.info("stop incremental task {} - {}", jobItemContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
@@ -99,41 +87,35 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         }
         log.info("-------------- Start inventory task --------------");
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
-        ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
+        Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (InventoryTask each : inventoryTasks) {
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            inventoryDumperExecuteEngine.submit(each, inventoryTaskCallback);
+            futures.add(each.start());
         }
-        return false;
-    }
-    
-    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
-        jobItemContext.setStatus(jobStatus);
-        jobItemAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
-    }
-    
-    private ExecuteCallback createInventoryTaskCallback() {
-        return new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
+            if (null == throwable) {
                 if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
+                } else {
+                    log.info("onSuccess, inventory tasks not finished");
                 }
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
+            } else {
                 log.error("Inventory task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
                 PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
                         .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
             }
-        };
+        });
+        return false;
+    }
+    
+    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
+        jobItemContext.setStatus(jobStatus);
+        jobItemAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
     
     private synchronized void executeIncrementalTask() {
@@ -147,30 +129,23 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         }
         log.info("-------------- Start incremental task --------------");
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
-        ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
+        Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (IncrementalTask each : incrementalTasks) {
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            incrementalDumperExecuteEngine.submit(each, incrementalTaskCallback);
+            futures.add(each.start());
         }
-    }
-    
-    private ExecuteCallback createIncrementalTaskCallback() {
-        return new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
+            if (null == throwable) {
+                log.info("onSuccess, all incremental tasks finished");
+            } else {
                 log.error("Incremental task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
                 PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
                         .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
             }
-        };
+        });
     }
 }

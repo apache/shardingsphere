@@ -72,7 +72,7 @@ public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosi
     }
     
     @Override
-    protected void doStart() {
+    protected void runBlocking() {
         dump();
     }
     

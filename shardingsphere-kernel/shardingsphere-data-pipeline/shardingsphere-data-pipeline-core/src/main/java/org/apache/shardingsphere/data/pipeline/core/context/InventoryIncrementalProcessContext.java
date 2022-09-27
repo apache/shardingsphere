@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.context;
 
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
@@ -32,6 +33,20 @@ public interface InventoryIncrementalProcessContext extends PipelineProcessConte
      * @return pipeline channel creator
      */
     PipelineChannelCreator getPipelineChannelCreator();
+    
+    /**
+     * Get importer execute engine.
+     *
+     * @return importer execute engine
+     */
+    ExecuteEngine getImporterExecuteEngine();
+    
+    /**
+     * Get inventory dumper execute engine.
+     *
+     * @return inventory dumper execute engine
+     */
+    ExecuteEngine getInventoryDumperExecuteEngine();
     
     /**
      * Get job read rate limit algorithm.

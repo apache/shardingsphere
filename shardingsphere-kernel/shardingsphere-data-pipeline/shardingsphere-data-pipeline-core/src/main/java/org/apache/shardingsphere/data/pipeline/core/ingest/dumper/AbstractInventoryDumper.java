@@ -104,7 +104,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     @Override
-    protected void doStart() {
+    protected void runBlocking() {
         dump();
     }
     

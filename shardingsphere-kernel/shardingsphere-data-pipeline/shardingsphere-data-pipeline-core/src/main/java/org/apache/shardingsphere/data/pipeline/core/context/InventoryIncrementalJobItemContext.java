@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.context;
 
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -45,6 +48,27 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
      * @return incremental tasks
      */
     Collection<IncrementalTask> getIncrementalTasks();
+    
+    /**
+     * Get init progress.
+     *
+     * @return init progress
+     */
+    InventoryIncrementalJobItemProgress getInitProgress();
+    
+    /**
+     * Get source meta data loader.
+     *
+     * @return source meta data loader
+     */
+    PipelineTableMetaDataLoader getSourceMetaDataLoader();
+    
+    /**
+     * Get data source manager.
+     *
+     * @return data source manager
+     */
+    PipelineDataSourceManager getDataSourceManager();
     
     /**
      * Get processed record count.

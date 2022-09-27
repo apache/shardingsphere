@@ -51,8 +51,8 @@ public final class IncrementalTaskTest {
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelCreator(),
-                new DefaultPipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
+                PipelineContextUtil.getPipelineChannelCreator(), new DefaultPipelineDataSourceManager(), metaDataLoader,
+                PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
     }
     
     @Test

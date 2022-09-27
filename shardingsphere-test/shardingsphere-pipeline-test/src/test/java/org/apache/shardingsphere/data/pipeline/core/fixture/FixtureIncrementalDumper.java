@@ -32,7 +32,7 @@ public final class FixtureIncrementalDumper extends AbstractIncrementalDumper<Fi
     }
     
     @Override
-    protected void doStart() {
+    protected void runBlocking() {
     }
     
     @Override

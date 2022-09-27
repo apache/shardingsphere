@@ -77,9 +77,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         }
         log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
         PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-        // TODO inventory and incremental tasks are always empty on construction
-        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks(),
-                jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
+        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
         runInBackground(() -> {
             prepare(jobItemContext);
             tasksRunner.start();

@@ -41,14 +41,14 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         log.info("start lifecycle executor {}", super.toString());
         running = true;
         startTimeMillis = System.currentTimeMillis();
-        doStart();
-        // TODO  1) running = false;, 2) stop();
+        runBlocking();
+        stop();
     }
     
     /**
-     * Start blocked running.
+     * Run blocking.
      */
-    protected abstract void doStart();
+    protected abstract void runBlocking();
     
     @Override
     public final void stop() {

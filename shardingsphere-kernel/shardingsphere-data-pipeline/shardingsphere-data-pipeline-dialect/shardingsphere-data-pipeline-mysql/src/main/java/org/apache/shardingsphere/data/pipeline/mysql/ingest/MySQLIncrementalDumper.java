@@ -92,7 +92,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     @Override
-    protected void doStart() {
+    protected void runBlocking() {
         dump();
     }
     
