@@ -34,7 +34,9 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -52,24 +54,32 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         String checkJobId = shardingContext.getJobName();
         setJobId(checkJobId);
         ConsistencyCheckJobConfiguration consistencyCheckJobConfig = YamlConsistencyCheckJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(consistencyCheckJobConfig, 0, JobStatus.FINISHED);
+        JobStatus status = JobStatus.RUNNING;
+        ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(consistencyCheckJobConfig, 0, status);
         jobAPI.persistJobItemProgress(jobItemContext);
-        String referredJobId = consistencyCheckJobConfig.getReferredJobId();
-        log.info("execute consistency check, job id:{}, referred job id:{}", checkJobId, referredJobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(referredJobId, checkJobId);
-        JobType jobType = PipelineJobIdUtils.parseJobType(referredJobId);
+        String parentJobId = consistencyCheckJobConfig.getParentJobId();
+        log.info("execute consistency check, job id:{}, referred job id:{}", checkJobId, parentJobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(parentJobId, checkJobId);
+        JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
         InventoryIncrementalJobPublicAPI jobPublicAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(jobType.getTypeName());
-        Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult;
-        if (StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())) {
-            dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(referredJobId);
-        } else {
-            dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(referredJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
+        Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = Collections.emptyMap();
+        try {
+            if (StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())) {
+                dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId);
+            } else {
+                dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
+            }
+            status = JobStatus.FINISHED;
+        } catch (final SQLWrapperException ex) {
+            log.error("data consistency check failed", ex);
+            status = JobStatus.CONSISTENCY_CHECK_FAILURE;
+            jobAPI.persistJobItemErrorMessage(checkJobId, 0, ex);
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(referredJobId, checkJobId, dataConsistencyCheckResult);
-        jobItemContext.setStatus(JobStatus.FINISHED);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
+        jobItemContext.setStatus(status);
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.stop(checkJobId);
-        log.info("execute consistency check job finished, job id:{}, referred job id:{}", checkJobId, referredJobId);
+        log.info("execute consistency check job finished, job id:{}, parent job id:{}", checkJobId, parentJobId);
     }
     
     @Override

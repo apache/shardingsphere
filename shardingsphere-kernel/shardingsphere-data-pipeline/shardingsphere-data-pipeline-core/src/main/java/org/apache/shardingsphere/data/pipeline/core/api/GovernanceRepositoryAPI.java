@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Governance repository API.
@@ -62,7 +63,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      * @return check job id
      */
-    String getCheckLatestJobId(String jobId);
+    Optional<String> getCheckLatestJobId(String jobId);
     
     /**
      * Persist check latest result.

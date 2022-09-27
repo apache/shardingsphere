@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    ) SEMI?
-    ;
+/**
+ * Pipeline job has already finished exception.
+ */
+public final class PipelineJobHasAlreadyFinishedException extends PipelineSQLException {
+    
+    private static final long serialVersionUID = 2854259384634892428L;
+    
+    public PipelineJobHasAlreadyFinishedException(final String message) {
+        super(XOpenSQLState.GENERAL_ERROR, 88, message);
+    }
+}

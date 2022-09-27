@@ -32,7 +32,7 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
     public YamlConsistencyCheckJobConfiguration swapToYamlConfiguration(final ConsistencyCheckJobConfiguration data) {
         YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
         result.setJobId(data.getJobId());
-        result.setParentJobId(data.getReferredJobId());
+        result.setParentJobId(data.getParentJobId());
         result.setAlgorithmTypeName(data.getAlgorithmTypeName());
         result.setAlgorithmProperties(data.getAlgorithmProperties());
         return result;

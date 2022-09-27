@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -64,8 +65,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public String getCheckLatestJobId(final String jobId) {
-        return repository.get(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId));
+    public Optional<String> getCheckLatestJobId(final String jobId) {
+        return Optional.ofNullable(repository.get(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId)));
     }
     
     @Override

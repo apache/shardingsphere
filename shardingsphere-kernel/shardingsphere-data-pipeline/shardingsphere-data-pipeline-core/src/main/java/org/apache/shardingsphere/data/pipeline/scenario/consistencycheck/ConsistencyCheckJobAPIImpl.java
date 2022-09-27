@@ -40,6 +40,8 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyExistedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyFinishedException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgressSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Consistency check job API impl.
@@ -65,15 +68,15 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     @Override
     public String createJobAndStart(final CreateConsistencyCheckJobParameter parameter) {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        String checkLatestJobId = repositoryAPI.getCheckLatestJobId(parameter.getJobId());
-        if (StringUtils.isNotBlank(checkLatestJobId)) {
-            PipelineJobItemProgress progress = getJobItemProgress(checkLatestJobId, 0);
+        Optional<String> optional = repositoryAPI.getCheckLatestJobId(parameter.getJobId());
+        if (optional.isPresent()) {
+            PipelineJobItemProgress progress = getJobItemProgress(optional.get(), 0);
             if (null != progress && JobStatus.FINISHED != progress.getStatus()) {
                 log.info("check job already existed and status isn't FINISHED, status {}", progress.getStatus());
-                throw new PipelineJobHasAlreadyExistedException(checkLatestJobId);
+                throw new PipelineJobHasAlreadyExistedException(optional.get());
             }
         }
-        int consistencyCheckVersionNew = null == checkLatestJobId ? 0 : ConsistencyCheckJobId.getSequence(checkLatestJobId) + 1;
+        int consistencyCheckVersionNew = optional.map(s -> ConsistencyCheckJobId.getSequence(s) + 1).orElse(0);
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
         ConsistencyCheckJobId checkJobId = new ConsistencyCheckJobId(parameter.getJobId(), consistencyCheckVersionNew);
         String result = marshalJobId(checkJobId);
@@ -88,11 +91,11 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String jobId) {
-        String checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId);
-        if (StringUtils.isBlank(checkLatestJobId)) {
+        Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId);
+        if (!checkLatestJobId.isPresent()) {
             return Collections.emptyMap();
         }
-        return PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(jobId, checkLatestJobId);
+        return PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(jobId, checkLatestJobId.get());
     }
     
     @Override
@@ -124,6 +127,37 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         }
         jobProgress.setStatus(status);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(PROGRESS_SWAPPER.swapToYamlConfiguration(jobProgress)));
+    }
+    
+    @Override
+    public void startDisabledJob(final String jobId) {
+        log.info("start disable check job {}", jobId);
+        PipelineJobItemProgress jobProgress = getJobItemProgress(jobId, 0);
+        if (null != jobProgress && JobStatus.FINISHED == jobProgress.getStatus()) {
+            String errorMessage = String.format("job already finished, can use `CHECK MIGRATION '%s'` to start a new data consistency check job", jobId);
+            throw new PipelineJobHasAlreadyFinishedException(errorMessage);
+        }
+        super.startDisabledJob(jobId);
+    }
+    
+    @Override
+    public void startByParentJobId(final String parentJobId) {
+        log.info("start check job by parentJobId {}", parentJobId);
+        Optional<String> optional = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
+        if (!optional.isPresent()) {
+            throw new PipelineJobNotFoundException(parentJobId + " check job");
+        }
+        startDisabledJob(optional.get());
+    }
+    
+    @Override
+    public void stopByParentJobId(final String parentJobId) {
+        log.info("stop check job by parentJobId {}", parentJobId);
+        Optional<String> optional = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
+        if (!optional.isPresent()) {
+            throw new PipelineJobNotFoundException(parentJobId + " check job");
+        }
+        stop(optional.get());
     }
     
     @Override

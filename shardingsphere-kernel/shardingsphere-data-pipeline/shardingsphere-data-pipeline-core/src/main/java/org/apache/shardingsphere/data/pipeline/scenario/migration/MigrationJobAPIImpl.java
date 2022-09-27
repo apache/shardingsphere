@@ -53,6 +53,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineCol
 import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
@@ -64,6 +65,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSche
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -97,6 +99,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -404,6 +407,13 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         result.setType(type);
         result.setParameter(parameter);
         return result;
+    }
+    
+    @Override
+    public void startDisabledJob(final String jobId) {
+        super.startDisabledJob(jobId);
+        Optional<String> optional = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId);
+        optional.ifPresent(s -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(s));
     }
     
     @Override

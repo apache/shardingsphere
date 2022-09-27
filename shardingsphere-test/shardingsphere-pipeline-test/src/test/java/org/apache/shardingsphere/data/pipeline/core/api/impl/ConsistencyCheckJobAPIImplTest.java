@@ -17,39 +17,69 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public final class ConsistencyCheckJobAPIImplTest {
     
-    private static ConsistencyCheckJobAPI jobAPI;
+    private static ConsistencyCheckJobAPI checkJobAPI;
+    
+    private static MigrationJobAPI migrationJobAPI;
     
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
-        jobAPI = ConsistencyCheckJobAPIFactory.getInstance();
+        checkJobAPI = ConsistencyCheckJobAPIFactory.getInstance();
+        migrationJobAPI = MigrationJobAPIFactory.getInstance();
     }
     
     @Test
     public void assertCreateJobConfig() {
         String migrationJobId = "j0101test";
         CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(migrationJobId, null, null);
-        String checkJobId = jobAPI.createJobAndStart(parameter);
-        ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) jobAPI.getJobConfiguration(checkJobId);
+        String checkJobId = checkJobAPI.createJobAndStart(parameter);
+        ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) checkJobAPI.getJobConfiguration(checkJobId);
         String expectCheckJobId = "j0201j0101test0";
         assertThat(jobConfig.getJobId(), is(expectCheckJobId));
         assertNull(jobConfig.getAlgorithmTypeName());
         int consistencyCheckVersion = ConsistencyCheckJobId.getSequence(expectCheckJobId);
         assertThat(consistencyCheckVersion, is(0));
+    }
+    
+    @Test
+    public void assertGetLatestDataConsistencyCheckResult() {
+        Optional<String> jobId = migrationJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(jobId.isPresent());
+        CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(jobId.get(), null, null);
+        String checkJobId = checkJobAPI.createJobAndStart(parameter);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(jobId.get(), checkJobId);
+        Map<String, DataConsistencyCheckResult> expectResult = Collections.singletonMap("t_order", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1),
+                new DataConsistencyContentCheckResult(true)));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(jobId.get(), checkJobId, expectResult);
+        Map<String, DataConsistencyCheckResult> actualCheckResult = checkJobAPI.getLatestDataConsistencyCheckResult(jobId.get());
+        assertThat(actualCheckResult.size(), is(expectResult.size()));
+        assertThat(actualCheckResult.get("t_order").getCountCheckResult().isMatched(), is(expectResult.get("t_order").getContentCheckResult().isMatched()));
     }
 }
