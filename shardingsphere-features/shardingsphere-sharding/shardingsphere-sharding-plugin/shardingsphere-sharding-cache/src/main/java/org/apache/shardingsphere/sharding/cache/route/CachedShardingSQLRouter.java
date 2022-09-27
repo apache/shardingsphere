@@ -42,6 +42,9 @@ public final class CachedShardingSQLRouter implements SQLRouter<ShardingCacheRul
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingCacheRule rule, final ConfigurationProperties props,
                                            final ConnectionContext connectionContext) {
+        if (queryContext.getSql().length() > rule.getConfiguration().getAllowedMaxSqlLength()) {
+            return new RouteContext();
+        }
         ShardingRouteCacheableCheckResult cacheableCheckResult = rule.getRouteCacheableChecker().check(database, queryContext);
         if (!cacheableCheckResult.isProbablyCacheable()) {
             return new RouteContext();
