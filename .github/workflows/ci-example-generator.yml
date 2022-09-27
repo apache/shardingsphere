@@ -29,7 +29,7 @@ env:
 
 jobs:
   shardingsphere-example-generator:
-    #if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     name: ShardingSphere example generator
     runs-on: ubuntu-latest
     strategy:
