@@ -22,8 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -36,19 +34,14 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Consistency check job.
  */
 @Slf4j
 public final class ConsistencyCheckJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
-    
-    private static final YamlDataConsistencyCheckResultSwapper CHECK_RESULT_SWAPPER = new YamlDataConsistencyCheckResultSwapper();
     
     private final ConsistencyCheckJobAPI jobAPI = ConsistencyCheckJobAPIFactory.getInstance();
     
@@ -72,12 +65,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         } else {
             dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(referredJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
         }
-        Map<String, String> checkResultMap = new LinkedHashMap<>();
-        for (Entry<String, DataConsistencyCheckResult> entry : dataConsistencyCheckResult.entrySet()) {
-            YamlDataConsistencyCheckResult checkResult = CHECK_RESULT_SWAPPER.swapToYamlConfiguration(entry.getValue());
-            checkResultMap.put(entry.getKey(), YamlEngine.marshal(checkResult));
-        }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(referredJobId, checkJobId, YamlEngine.marshal(checkResultMap));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(referredJobId, checkJobId, dataConsistencyCheckResult);
         jobItemContext.setStatus(JobStatus.FINISHED);
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.stop(checkJobId);
