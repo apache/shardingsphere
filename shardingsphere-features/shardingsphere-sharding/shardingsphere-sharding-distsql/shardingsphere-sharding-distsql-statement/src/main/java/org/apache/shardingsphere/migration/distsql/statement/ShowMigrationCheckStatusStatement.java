@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Pipeline job execution exception.
+ * Show check migration status statement.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class ShowMigrationCheckStatusStatement extends QueryableScalingRALStatement {
     
-    private static final long serialVersionUID = -8462847591661221914L;
-    
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());
-    }
+    private final String jobId;
 }

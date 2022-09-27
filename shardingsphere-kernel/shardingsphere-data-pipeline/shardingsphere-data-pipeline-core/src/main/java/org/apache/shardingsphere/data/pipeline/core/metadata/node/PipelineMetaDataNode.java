@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
     
-    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}\\d{2}[0-9a-f]+)";
+    private static final String JOB_PATTERN_PREFIX = DataPipelineConstants.DATA_PIPELINE_ROOT + "/jobs/(j\\d{2}\\d{2}[0-9a-z]+)";
     
     public static final Pattern CONFIG_PATTERN = Pattern.compile(JOB_PATTERN_PREFIX + "/config");
     
@@ -120,23 +120,24 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get check latest result path.
-     *
-     * @param jobId job id
-     * @return check latest result path
-     */
-    public static String getCheckLatestResultPath(final String jobId) {
-        return String.join("/", getJobRootPath(jobId), "check", "latest_result");
-    }
-    
-    /**
      * Get check latest detailed result path.
      *
      * @param jobId job id
-     * @return check latest detailed result path
+     * @return check latest job id path
      */
-    public static String getCheckLatestDetailedResultPath(final String jobId) {
-        return String.join("/", getJobRootPath(jobId), "check", "latest_detailed_result");
+    public static String getCheckLatestJobIdPath(final String jobId) {
+        return String.join("/", getJobRootPath(jobId), "check", "latest_job_id");
+    }
+    
+    /**
+     * Get check latest result path.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     * @return check latest result path
+     */
+    public static String getCheckJobResultPath(final String jobId, final String checkJobId) {
+        return String.join("/", getCheckJobIdsRootPath(jobId), checkJobId);
     }
     
     /**

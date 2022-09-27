@@ -51,6 +51,10 @@ checkMigration
     : CHECK MIGRATION jobId (BY algorithmDefinition)?
     ;
 
+showMigrationCheckStatus
+    : SHOW MIGRATION CHECK STATUS jobId
+    ;
+
 showMigrationCheckAlgorithms
     : SHOW MIGRATION CHECK ALGORITHMS
     ;

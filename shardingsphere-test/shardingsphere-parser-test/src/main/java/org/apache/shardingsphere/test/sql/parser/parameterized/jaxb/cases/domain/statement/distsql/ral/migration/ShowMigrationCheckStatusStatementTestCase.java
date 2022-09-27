@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Pipeline job execution exception.
+ * Check migration statement test case.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+@Getter
+public final class ShowMigrationCheckStatusStatementTestCase extends SQLParserTestCase {
     
-    private static final long serialVersionUID = -8462847591661221914L;
-    
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());
-    }
+    @XmlElement(name = "job-id")
+    private final List<String> jobIds = new LinkedList<>();
 }

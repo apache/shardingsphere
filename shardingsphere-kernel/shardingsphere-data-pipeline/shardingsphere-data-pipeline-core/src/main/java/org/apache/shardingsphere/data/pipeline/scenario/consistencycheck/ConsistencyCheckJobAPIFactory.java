@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Pipeline job execution exception.
+ * Consistency check job API factory.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+public final class ConsistencyCheckJobAPIFactory {
     
-    private static final long serialVersionUID = -8462847591661221914L;
+    static {
+        ShardingSphereServiceLoader.register(ConsistencyCheckJobAPI.class);
+    }
     
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());
+    /**
+     * Get instance of migration job API.
+     *
+     * @return got instance
+     */
+    public static ConsistencyCheckJobAPI getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(ConsistencyCheckJobAPI.class);
     }
 }

@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Properties;
 
 /**
- * Pipeline job execution exception.
+ * Create consistency check job parameter.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+@Data
+@RequiredArgsConstructor
+public final class CreateConsistencyCheckJobParameter {
     
-    private static final long serialVersionUID = -8462847591661221914L;
+    private final String jobId;
     
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());
-    }
+    private final String algorithmTypeName;
+    
+    private final Properties algorithmProps;
 }

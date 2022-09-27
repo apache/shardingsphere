@@ -15,19 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.job;
+package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Properties;
 
 /**
- * Pipeline job execution exception.
+ * Consistency check job configuration for YAML.
  */
-public final class PipelineJobExecutionException extends PipelineSQLException {
+@Getter
+@Setter
+@Slf4j
+@ToString
+public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
     
-    private static final long serialVersionUID = -8462847591661221914L;
+    private String jobId;
     
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());
+    private String parentJobId;
+    
+    private String algorithmTypeName;
+    
+    private Properties algorithmProperties;
+    
+    @Override
+    public String getTargetDatabaseName() {
+        throw new UnsupportedOperationException("");
     }
 }
