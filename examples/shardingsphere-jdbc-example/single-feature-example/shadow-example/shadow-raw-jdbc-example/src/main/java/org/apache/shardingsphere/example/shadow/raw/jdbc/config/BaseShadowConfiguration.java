@@ -32,26 +32,26 @@ import java.util.Map;
 import java.util.Properties;
 
 public abstract class BaseShadowConfiguration implements ExampleConfiguration {
-
+    
     protected Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds", DataSourceUtil.createDataSource("demo_ds"));
         result.put("ds_shadow", DataSourceUtil.createDataSource("shadow_demo_ds"));
         return result;
     }
-
+    
     protected Properties createShardingSphereProps() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         return result;
     }
-
+    
     protected SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        CacheOption parseTreeCacheOption = new CacheOption(128, 1024L, false);
-        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L, false);
+        CacheOption parseTreeCacheOption = new CacheOption(128, 1024L);
+        CacheOption sqlStatementCacheOption = new CacheOption(2000, 65535L);
         return new SQLParserRuleConfiguration(true, parseTreeCacheOption, sqlStatementCacheOption);
     }
-
+    
     protected Collection<String> createShadowAlgorithmNames() {
         Collection<String> result = new LinkedList<>();
         result.add("user-id-insert-match-algorithm");
@@ -60,7 +60,7 @@ public abstract class BaseShadowConfiguration implements ExampleConfiguration {
         result.add("simple-hint-algorithm");
         return result;
     }
-
+    
     protected Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties userIdInsertProps = new Properties();
