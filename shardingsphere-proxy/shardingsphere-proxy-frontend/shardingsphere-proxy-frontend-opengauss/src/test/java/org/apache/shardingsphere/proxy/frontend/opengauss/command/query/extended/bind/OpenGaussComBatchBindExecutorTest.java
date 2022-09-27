@@ -33,12 +33,14 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBC
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,6 +96,7 @@ public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestore
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(preparedStatement);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
