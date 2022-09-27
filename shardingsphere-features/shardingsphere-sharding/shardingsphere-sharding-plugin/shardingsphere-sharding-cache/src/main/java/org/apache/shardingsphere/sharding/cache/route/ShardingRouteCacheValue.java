@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -79,14 +78,14 @@ public final class ShardingRouteCacheValue {
     
     private Collection<RouteUnit> deepCopyRouteUnits() {
         Collection<RouteUnit> result = new ArrayList<>(cachedRouteContext.getRouteUnits().size());
-        for (RouteUnit eachRouteUnit : cachedRouteContext.getRouteUnits()) {
-            result.add(new RouteUnit(eachRouteUnit.getDataSourceMapper(), new ArrayList<>(eachRouteUnit.getTableMappers())));
+        for (RouteUnit each : cachedRouteContext.getRouteUnits()) {
+            result.add(new RouteUnit(each.getDataSourceMapper(), new ArrayList<>(each.getTableMappers())));
         }
         return result;
     }
     
     private Map<Class<? extends ShardingSphereRule>, ? extends RouteStageContext> deepCopyRouteStageContext() {
         // TODO Implements deep copy for route stage contexts
-        return new HashMap<>(cachedRouteContext.getRouteStageContexts());
+        return cachedRouteContext.getRouteStageContexts();
     }
 }
