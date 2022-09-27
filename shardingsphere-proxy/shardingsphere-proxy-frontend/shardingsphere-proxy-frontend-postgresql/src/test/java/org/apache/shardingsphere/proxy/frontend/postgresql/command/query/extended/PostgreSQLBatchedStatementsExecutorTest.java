@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -74,6 +75,9 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     @Mock
     private JDBCBackendStatement backendStatement;
     
+    @Mock
+    private TransactionStatus transactionStatus; 
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
@@ -82,6 +86,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
         when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
+        when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         ProxyContext.init(contextManager);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
@@ -101,6 +106,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
+        when(connectionSession.getTransactionStatus().isInConnectionHeldTransaction()).thenReturn(false);
         when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);

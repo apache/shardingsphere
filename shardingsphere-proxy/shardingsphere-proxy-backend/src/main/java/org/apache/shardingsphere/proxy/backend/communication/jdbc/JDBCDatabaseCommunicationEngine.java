@@ -164,8 +164,9 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaData) {
-        int maxConnectionsSizePerQuery = backendConnection.getConnectionSession().getTransactionStatus().isInConnectionHeldTransaction() 
-                ? 1 : metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = backendConnection.getConnectionSession().getTransactionStatus().isInConnectionHeldTransaction()
+                ? 1
+                : metaData.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         JDBCBackendStatement statementManager = (JDBCBackendStatement) backendConnection.getConnectionSession().getStatementManager();
         return new DriverExecutionPrepareEngine<>(getDriverType(), maxConnectionsSizePerQuery, backendConnection, statementManager,
                 new StatementOption(isReturnGeneratedKeys), metaData.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getRuleMetaData().getRules(),

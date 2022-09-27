@@ -38,10 +38,12 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBC
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,6 +95,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         connectionSession.getPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
                 new PostgreSQLPreparedStatement(SQL, SQL_PARSER_ENGINE.parse(SQL, false), null, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("");

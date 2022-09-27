@@ -145,8 +145,9 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
-        int maxConnectionsSizePerQuery = connectionSession.getTransactionStatus().isInConnectionHeldTransaction() 
-                ? 1 : metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = connectionSession.getTransactionStatus().isInConnectionHeldTransaction()
+                ? 1
+                : metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
                 maxConnectionsSizePerQuery,
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),

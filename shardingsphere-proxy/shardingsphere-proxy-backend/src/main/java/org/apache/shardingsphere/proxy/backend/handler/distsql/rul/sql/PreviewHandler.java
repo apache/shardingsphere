@@ -165,8 +165,9 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaDataContexts) {
-        int maxConnectionsSizePerQuery = getConnectionSession().getTransactionStatus().isInConnectionHeldTransaction() 
-                ? 1 : metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = getConnectionSession().getTransactionStatus().isInConnectionHeldTransaction()
+                ? 1
+                : metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) getConnectionSession().getBackendConnection(),
                 (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
                 metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules(),

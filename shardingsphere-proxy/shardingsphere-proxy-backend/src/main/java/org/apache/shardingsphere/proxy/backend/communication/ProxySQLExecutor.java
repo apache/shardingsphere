@@ -141,8 +141,9 @@ public final class ProxySQLExecutor {
     public List<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         Collection<ShardingSphereRule> rules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules();
-        int maxConnectionsSizePerQuery = backendConnection.getConnectionSession().getTransactionStatus().isInConnectionHeldTransaction() 
-                ? 1 : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        int maxConnectionsSizePerQuery = backendConnection.getConnectionSession().getTransactionStatus().isInConnectionHeldTransaction()
+                ? 1
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         boolean isReturnGeneratedKeys = executionContext.getSqlStatementContext().getSqlStatement() instanceof MySQLInsertStatement;
         return execute(executionContext, rules, maxConnectionsSizePerQuery, isReturnGeneratedKeys);
     }
