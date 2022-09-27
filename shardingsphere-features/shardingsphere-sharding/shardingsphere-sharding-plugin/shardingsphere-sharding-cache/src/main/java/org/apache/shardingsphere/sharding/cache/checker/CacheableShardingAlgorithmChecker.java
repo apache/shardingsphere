@@ -48,6 +48,7 @@ public final class CacheableShardingAlgorithmChecker {
      * @param shardingAlgorithm instance of sharding algorithm
      * @return is sharding algorithm cacheable
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isCacheableShardingAlgorithm(final ShardingAlgorithm shardingAlgorithm) {
         return CACHEABLE_SHARDING_ALGORITHM_CLASSES.contains(shardingAlgorithm.getClass());
     }
