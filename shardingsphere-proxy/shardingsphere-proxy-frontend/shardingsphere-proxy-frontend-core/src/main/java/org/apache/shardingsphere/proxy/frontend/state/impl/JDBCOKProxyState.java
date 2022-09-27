@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.proxy.frontend.exception.InvalidExecutorSuitableException;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
@@ -45,9 +46,11 @@ public final class JDBCOKProxyState implements OKProxyState {
                                                              final ConnectionSession connectionSession) {
         if (requireOccupyThreadForConnection(connectionSession)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
-        } else if (isPreferNettyEventLoop()) {
+        }
+        if (isPreferNettyEventLoop()) {
             return context.executor();
-        } else if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
+        }
+        if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
         return UserExecutorGroup.getInstance().getExecutorService();
@@ -65,7 +68,7 @@ public final class JDBCOKProxyState implements OKProxyState {
             case "OLAP":
                 return false;
             default:
-                throw new IllegalArgumentException("The property proxy-backend-executor-suitable must be 'OLAP' or 'OLTP'");
+                throw new InvalidExecutorSuitableException();
         }
     }
     

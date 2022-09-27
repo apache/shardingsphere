@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.proxy.frontend.exception.InvalidExecutorSuitableException;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -108,7 +109,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = InvalidExecutorSuitableException.class)
     public void assertExecuteWithProxyBackendExecutorSuitableForInvalidValue() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager()
