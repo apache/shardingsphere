@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.cache.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 /**
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class ShardingCacheRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
+public final class ShardingCacheRuleConfiguration implements DatabaseRuleConfiguration, EnhancedRuleConfiguration {
     
     private final int allowedMaxSqlLength;
     

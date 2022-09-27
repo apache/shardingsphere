@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.cache.route.PreCachedShardingSQLRouter
-org.apache.shardingsphere.sharding.cache.route.PostCachedShardingSQLRouter
+org.apache.shardingsphere.sharding.cache.route.CachedShardingSQLRouter
