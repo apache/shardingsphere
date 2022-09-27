@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTimeThreadLocal;
 
@@ -29,15 +28,15 @@ import java.lang.reflect.Method;
  * Schema meta data loader advice.
  */
 @Slf4j
-public final class MetaDataContextsBuilderAdvice implements InstanceMethodAroundAdvice {
+public final class MetaDataContextsFactoryAdvice implements ClassStaticMethodAroundAdvice {
     
     @Override
-    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
     }
     
     @Override
-    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         try {
             long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
             log.info("Build meta data contexts finished, cost {} milliseconds", elapsedTime);

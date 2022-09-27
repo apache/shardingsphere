@@ -1,4 +1,9 @@
 +++
+title = "ShardingSphere on Cloud 发布指南"
+weight = 2
+chapter = true
++++
+
 ## 准备工作
 
 ### 1. 确认 Release Note

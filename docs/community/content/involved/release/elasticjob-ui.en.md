@@ -1,6 +1,6 @@
 +++
-title = "ElasticJob-UI Release Guide"
-weight = 3
+title = "ElasticJob UI Release Guide"
+weight = 4
 chapter = true
 +++
 

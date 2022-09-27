@@ -17,48 +17,44 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
+import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 /**
- * Query result set for check migration.
+ * Show migration check status query result set.
  */
-public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDistSQLResultSet {
     
-    private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
+    private static final ConsistencyCheckJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getConsistencyCheckJobPublicAPI();
     
     private Iterator<Collection<Object>> data;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        CheckMigrationStatement checkMigrationStatement = (CheckMigrationStatement) sqlStatement;
-        AlgorithmSegment typeStrategy = checkMigrationStatement.getTypeStrategy();
-        Map<String, DataConsistencyCheckResult> checkResultMap = null == typeStrategy
-                ? JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId())
-                : JOB_API.dataConsistencyCheck(checkMigrationStatement.getJobId(), typeStrategy.getName(), typeStrategy.getProps());
-        data = checkResultMap.entrySet().stream()
-                .map(each -> {
-                    Collection<Object> result = new LinkedList<>();
-                    result.add(each.getKey());
-                    result.add(each.getValue().getCountCheckResult().getSourceRecordsCount());
-                    result.add(each.getValue().getCountCheckResult().getTargetRecordsCount());
-                    result.add(each.getValue().getCountCheckResult().isMatched() + "");
-                    result.add(each.getValue().getContentCheckResult().isMatched() + "");
-                    return result;
-                }).collect(Collectors.toList()).iterator();
+        ShowMigrationCheckStatusStatement checkMigrationStatement = (ShowMigrationCheckStatusStatement) sqlStatement;
+        Map<String, DataConsistencyCheckResult> consistencyCheckResult = JOB_API.getLatestDataConsistencyCheckResult(checkMigrationStatement.getJobId());
+        List<Collection<Object>> result = new ArrayList<>(consistencyCheckResult.size());
+        for (Entry<String, DataConsistencyCheckResult> entry : consistencyCheckResult.entrySet()) {
+            DataConsistencyCheckResult value = entry.getValue();
+            DataConsistencyCountCheckResult countCheckResult = value.getCountCheckResult();
+            result.add(Arrays.asList(entry.getKey(), countCheckResult.getSourceRecordsCount(), countCheckResult.getTargetRecordsCount(), String.valueOf(countCheckResult.isMatched()),
+                    String.valueOf(value.getContentCheckResult().isMatched())));
+        }
+        data = result.iterator();
     }
     
     @Override
@@ -78,6 +74,6 @@ public final class CheckMigrationQueryResultSet implements DatabaseDistSQLResult
     
     @Override
     public String getType() {
-        return CheckMigrationStatement.class.getName();
+        return ShowMigrationCheckStatusStatement.class.getName();
     }
 }

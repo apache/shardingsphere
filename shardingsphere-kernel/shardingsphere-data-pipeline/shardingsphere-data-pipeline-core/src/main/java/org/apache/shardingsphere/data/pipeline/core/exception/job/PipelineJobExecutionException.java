@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
  */
 public final class PipelineJobExecutionException extends PipelineSQLException {
     
-    private static final long serialVersionUID = -5530453461378051166L;
+    private static final long serialVersionUID = -8462847591661221914L;
     
     public PipelineJobExecutionException(final String taskId, final Throwable cause) {
         super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed", taskId, cause.getMessage());

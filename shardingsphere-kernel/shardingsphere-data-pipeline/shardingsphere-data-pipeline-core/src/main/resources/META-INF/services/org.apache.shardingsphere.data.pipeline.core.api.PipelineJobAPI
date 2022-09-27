@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl
+org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIImpl

@@ -22,5 +22,5 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
 /**
  * Show migration source resources statement.
  */
-public class ShowMigrationSourceResourcesStatement extends QueryableScalingRALStatement {
+public final class ShowMigrationSourceResourcesStatement extends QueryableScalingRALStatement {
 }
