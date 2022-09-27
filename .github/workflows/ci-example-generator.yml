@@ -32,7 +32,7 @@ env:
 jobs:
   shardingsphere-example-generator:
     if: github.repository == 'apache/shardingsphere'
-    name: ShardingSphere example generator
+    name: ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
