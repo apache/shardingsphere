@@ -45,10 +45,11 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         Optional<Comparable<?>> betweenValue = betweenConditionValue.getValue();
         Optional<Comparable<?>> andValue = andConditionValue.getValue();
         List<Integer> parameterMarkerIndexes = new ArrayList<>(2);
+        betweenConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
+        andConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
         if (betweenValue.isPresent() && andValue.isPresent()) {
-            betweenConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
-            andConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
-            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenValue.get(), andValue.get())));
+            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenValue.get(), andValue.get()),
+                    parameterMarkerIndexes));
         }
         Date datetime = DatetimeServiceFactory.getInstance().getDatetime();
         if (!betweenValue.isPresent() && ExpressionConditionUtils.isNowExpression(predicate.getBetweenExpr())) {
@@ -60,6 +61,6 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         if (!betweenValue.isPresent() || !andValue.isPresent()) {
             return Optional.empty();
         }
-        return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), Range.closed(betweenValue.get(), andValue.get())));
+        return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), Range.closed(betweenValue.get(), andValue.get()), parameterMarkerIndexes));
     }
 }
