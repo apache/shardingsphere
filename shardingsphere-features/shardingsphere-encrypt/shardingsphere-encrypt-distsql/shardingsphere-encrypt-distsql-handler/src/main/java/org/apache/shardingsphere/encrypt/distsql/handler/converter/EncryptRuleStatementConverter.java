@@ -62,7 +62,7 @@ public final class EncryptRuleStatementConverter {
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
         // todo: support distsql later.
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null, null, null);
+                columnSegment.getPlainColumn(), null, getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null, null);
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
