@@ -30,6 +30,9 @@ import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Cached sharding SQL router for cache preflight.
+ */
 public final class PreCachedShardingSQLRouter implements SQLRouter<ShardingCacheRule> {
     
     @Override

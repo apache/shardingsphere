@@ -21,6 +21,9 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
 
+/**
+ * Cacheable sharding algorithm class provider.
+ */
 public interface CacheableShardingAlgorithmClassProvider {
     
     Collection<Class<? extends ShardingAlgorithm>> getCacheableShardingAlgorithmClasses();
