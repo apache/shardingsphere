@@ -53,4 +53,4 @@ jobs:
       - name: Prepare The Docker Environment
         run : docker-compose -f examples/shardingsphere-example-generator/docker-compose.yml up -d
       - name: Example Test
-        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator
+        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false 
