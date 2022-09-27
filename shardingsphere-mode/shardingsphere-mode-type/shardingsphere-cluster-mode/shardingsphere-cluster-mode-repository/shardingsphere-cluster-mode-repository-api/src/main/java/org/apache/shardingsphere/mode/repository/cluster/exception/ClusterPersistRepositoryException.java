@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster;
+package org.apache.shardingsphere.mode.repository.cluster.exception;
+
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
  * Cluster persist repository exception.
  */
-public final class ClusterPersistRepositoryException extends RuntimeException {
+public final class ClusterPersistRepositoryException extends KernelSQLException {
     
     private static final long serialVersionUID = -6417179023552012152L;
     
+    private static final int KERNEL_CODE = 7;
+    
     public ClusterPersistRepositoryException(final Exception cause) {
-        super(cause);
+        super(XOpenSQLState.GENERAL_ERROR, KERNEL_CODE, 10, "Cluster persist repository error, reason is: %s", cause.getMessage());
     }
 }
