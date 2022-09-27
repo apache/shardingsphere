@@ -52,6 +52,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(statement);
+                sleep();
                 assertResultSet(statement);
             }
         }
