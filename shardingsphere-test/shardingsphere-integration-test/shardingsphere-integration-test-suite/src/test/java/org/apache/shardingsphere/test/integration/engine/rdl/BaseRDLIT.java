@@ -86,7 +86,7 @@ public abstract class BaseRDLIT extends SingleITCase {
         }
     }
     
-    public void sleep() {
+    protected void sleep() {
         try {
             TimeUnit.SECONDS.sleep(2);
         } catch (final InterruptedException ignored) {
