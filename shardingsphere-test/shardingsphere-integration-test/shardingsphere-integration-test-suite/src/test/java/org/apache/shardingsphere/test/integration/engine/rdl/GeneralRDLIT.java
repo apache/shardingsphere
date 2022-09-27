@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -52,6 +53,7 @@ public final class GeneralRDLIT extends BaseRDLIT {
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 executeSQLCase(statement);
+                sleep();
                 assertResultSet(statement);
             }
         }
@@ -64,6 +66,13 @@ public final class GeneralRDLIT extends BaseRDLIT {
     private void assertResultSet(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(getAssertion().getAssertionSQL().getSql())) {
             assertResultSet(resultSet);
+        }
+    }
+    
+    private void sleep() {
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (final InterruptedException ignored) {
         }
     }
 }
