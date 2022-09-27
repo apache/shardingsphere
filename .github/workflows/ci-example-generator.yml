@@ -22,7 +22,7 @@ name: Shardingsphere Example generator Tests
 
 on:
   push:
-    branches: [ master, example-generator-test ]
+    branches: [ master, dev ]
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3  -Drat.skip=true -Dcheckstyle.skip=true
