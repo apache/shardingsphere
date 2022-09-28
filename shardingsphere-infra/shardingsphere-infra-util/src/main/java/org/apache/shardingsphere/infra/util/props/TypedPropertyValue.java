@@ -50,6 +50,17 @@ public final class TypedPropertyValue {
                 throw new TypedPropertyValueException(key, value);
             }
         }
+        if (Enum.class.isAssignableFrom(key.getType())) {
+            return getEnumValue(key, value);
+        }
         return value;
+    }
+    
+    private Enum<?> getEnumValue(final TypedPropertyKey key, final String value) throws TypedPropertyValueException {
+        try {
+            return (Enum<?>) key.getType().getMethod("valueOf", String.class).invoke(null, value);
+        } catch (final ReflectiveOperationException | IllegalArgumentException ex) {
+            throw new TypedPropertyValueException(key, value);
+        }
     }
 }

@@ -15,19 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.infra.util.props.fixture;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-
-/**
- * Invalid executor suitable exception.
- */
-public final class InvalidExecutorSuitableException extends ConnectionSQLException {
+public enum TypedPropertyEnumFixture {
     
-    private static final long serialVersionUID = 8481186245119374721L;
-    
-    public InvalidExecutorSuitableException() {
-        super(XOpenSQLState.GENERAL_ERROR, 50, "The property `proxy-backend-executor-suitable` must be `OLAP` or `OLTP`");
-    }
+    FOO
 }
