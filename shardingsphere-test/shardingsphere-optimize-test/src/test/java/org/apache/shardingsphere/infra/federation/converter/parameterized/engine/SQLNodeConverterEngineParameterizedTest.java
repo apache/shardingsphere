@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class SQLNodeConvertEngineParameterizedTest {
+public final class SQLNodeConverterEngineParameterizedTest {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = CasesRegistry.getInstance().getSqlCasesLoader();
     
@@ -68,6 +68,8 @@ public final class SQLNodeConvertEngineParameterizedTest {
     
     private static final Set<String> SUPPORTED_SQL_CASE_IDS = new HashSet<>();
     
+    // TODO remove SUPPORTED_SQL_CASE_IDS when all sql statement support convert to sql node
+    // CHECKSTYLE:OFF
     static {
         SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
         SUPPORTED_SQL_CASE_IDS.add("select_with_projection_subquery");
@@ -76,8 +78,6 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_with_exist_subquery_condition");
         SUPPORTED_SQL_CASE_IDS.add("select_with_not_exist_subquery_condition");
         SUPPORTED_SQL_CASE_IDS.add("select_with_simple_table");
-        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
-        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
         SUPPORTED_SQL_CASE_IDS.add("select_group_by_with_limit");
         SUPPORTED_SQL_CASE_IDS.add("select_left_outer_join_related_with_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_right_outer_join_related_with_alias");
@@ -108,7 +108,28 @@ public final class SQLNodeConvertEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_cast_function");
         SUPPORTED_SQL_CASE_IDS.add("select_position");
         SUPPORTED_SQL_CASE_IDS.add("select_mod_function");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_top");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_top_percent_with_ties");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_row_number");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_with_back_quotes");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_and_offset_keyword");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_and_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_and_limit_all");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_top_for_greater_than");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_top_percent_with_ties_for_greater_than");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_top_for_greater_than_and_equal");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_top_percent_with_ties_for_greater_than_and_equal");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_row_number_for_greater_than");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_row_number_for_greater_than_and_equal");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_row_number_not_at_end");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_fetch_first_with_row_number");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_fetch");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
     }
+    // CHECKSTYLE:ON
     
     private final String sqlCaseId;
     
