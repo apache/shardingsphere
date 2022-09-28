@@ -62,30 +62,32 @@ public final class ConditionValueCompareOperatorGenerator implements ConditionVa
             return Optional.empty();
         }
         ExpressionSegment valueExpression = predicate.getLeft() instanceof ColumnSegment ? predicate.getRight() : predicate.getLeft();
-        Optional<Comparable<?>> conditionValue = new ConditionValue(valueExpression, parameters).getValue();
-        if (conditionValue.isPresent()) {
-            return generate(conditionValue.get(), column, operator);
+        ConditionValue conditionValue = new ConditionValue(valueExpression, parameters);
+        Optional<Comparable<?>> value = conditionValue.getValue();
+        if (value.isPresent()) {
+            return generate(value.get(), column, operator, conditionValue.getParameterMarkerIndex().orElse(-1));
         }
         if (ExpressionConditionUtils.isNowExpression(valueExpression)) {
-            return generate(DatetimeServiceFactory.getInstance().getDatetime(), column, operator);
+            return generate(DatetimeServiceFactory.getInstance().getDatetime(), column, operator, -1);
         }
         return Optional.empty();
     }
     
-    private Optional<ShardingConditionValue> generate(final Comparable<?> comparable, final Column column, final String operator) {
+    private Optional<ShardingConditionValue> generate(final Comparable<?> comparable, final Column column, final String operator, final int parameterMarkerIndex) {
         String columnName = column.getName();
         String tableName = column.getTableName();
+        List<Integer> parameterMarkerIndexes = parameterMarkerIndex > -1 ? Collections.singletonList(parameterMarkerIndex) : Collections.emptyList();
         switch (operator) {
             case EQUAL:
-                return Optional.of(new ListShardingConditionValue<>(columnName, tableName, new ArrayList<>(Collections.singleton(comparable))));
+                return Optional.of(new ListShardingConditionValue<>(columnName, tableName, new ArrayList<>(Collections.singleton(comparable)), parameterMarkerIndexes));
             case GREATER_THAN:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.greaterThan(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.greaterThan(comparable), parameterMarkerIndexes));
             case LESS_THAN:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.lessThan(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.lessThan(comparable), parameterMarkerIndexes));
             case AT_MOST:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atMost(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atMost(comparable), parameterMarkerIndexes));
             case AT_LEAST:
-                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atLeast(comparable)));
+                return Optional.of(new RangeShardingConditionValue<>(columnName, tableName, Range.atLeast(comparable), parameterMarkerIndexes));
             default:
                 return Optional.empty();
         }

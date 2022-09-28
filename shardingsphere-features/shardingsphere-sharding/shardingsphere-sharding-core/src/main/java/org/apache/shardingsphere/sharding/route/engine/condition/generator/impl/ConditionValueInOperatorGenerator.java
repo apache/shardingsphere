@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingC
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -40,17 +41,21 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
     @Override
     public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> parameters) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
+        List<Integer> parameterMarkerIndexes = new ArrayList<>(predicate.getExpressionList().size());
         DatetimeService datetimeService = DatetimeServiceFactory.getInstance();
         for (ExpressionSegment each : predicate.getExpressionList()) {
-            Optional<Comparable<?>> shardingConditionValue = new ConditionValue(each, parameters).getValue();
-            if (shardingConditionValue.isPresent()) {
-                shardingConditionValues.add(shardingConditionValue.get());
+            ConditionValue conditionValue = new ConditionValue(each, parameters);
+            Optional<Comparable<?>> value = conditionValue.getValue();
+            if (value.isPresent()) {
+                shardingConditionValues.add(value.get());
+                conditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
                 continue;
             }
             if (ExpressionConditionUtils.isNowExpression(each)) {
                 shardingConditionValues.add(datetimeService.getDatetime());
             }
         }
-        return shardingConditionValues.isEmpty() ? Optional.empty() : Optional.of(new ListShardingConditionValue<>(column.getName(), column.getTableName(), shardingConditionValues));
+        return shardingConditionValues.isEmpty() ? Optional.empty()
+                : Optional.of(new ListShardingConditionValue<>(column.getName(), column.getTableName(), shardingConditionValues, parameterMarkerIndexes));
     }
 }
