@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.core.database.visitor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
@@ -678,6 +679,6 @@ public enum SQLVisitorRule {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Can not find visitor rule: `%s`", parseTreeClassName));
+        throw new SQLASTVisitorException(parseTreeClass);
     }
 }

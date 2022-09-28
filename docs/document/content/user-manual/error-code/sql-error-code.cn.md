@@ -38,11 +38,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | SQL String can not be NULL or empty |
-| 42000     | 12002       | Could not support variable \`%s\` |
-| 42S02     | 12003       | Can not find column label \`%s\` |
-| HV008     | 12004       | Column index \`%d\` is out of range |
-| 0A000     | 12010       | DROP TABLE ... CASCADE is not supported |
+| 42000     | 12001       | Can not accept SQL type \`%s\` |
+| 42000     | 12002       | SQL String can not be NULL or empty |
+| 42000     | 12010       | Can not support variable \`%s\` |
+| 42S02     | 12011       | Can not find column label \`%s\` |
+| HV008     | 12020       | Column index \`%d\` is out of range |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported |
 
 ### 连接
 

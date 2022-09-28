@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.core.database.visitor;
+package org.apache.shardingsphere.sql.parser.exception;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class SQLVisitorRuleTest {
+/**
+ * SQL AST visitor exception.
+ */
+public final class SQLASTVisitorException extends KernelSQLException {
     
-    @Test
-    public void assertValueOfParseTreeClassSuccess() {
-        assertThat(SQLVisitorRule.valueOf(SelectContext.class), is(SQLVisitorRule.SELECT));
-    }
+    private static final long serialVersionUID = 8597155168000874870L;
     
-    @Test(expected = SQLASTVisitorException.class)
-    public void assertValueOfParseTreeClassFailure() {
-        SQLVisitorRule.valueOf(ParseTree.class);
+    private static final int KERNEL_CODE = 2;
+    
+    public SQLASTVisitorException(final Class<? extends ParseTree> parseTreeClass) {
+        super(XOpenSQLState.SYNTAX_ERROR, KERNEL_CODE, 1, "Can not accept SQL type `%s`", parseTreeClass.getSimpleName());
     }
 }
