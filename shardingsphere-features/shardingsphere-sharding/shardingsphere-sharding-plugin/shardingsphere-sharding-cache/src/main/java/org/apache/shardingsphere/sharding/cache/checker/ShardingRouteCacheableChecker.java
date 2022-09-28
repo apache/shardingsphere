@@ -101,7 +101,7 @@ public final class ShardingRouteCacheableChecker {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
         tableNames.removeAll(shardingRule.getBroadcastTables());
-        if (!shardingRule.isAllBindingTables(tableNames) || containsNonCacheableShardingAlgorithm(tableNames)) {
+        if (1 != tableNames.size() && !shardingRule.isAllBindingTables(tableNames) || containsNonCacheableShardingAlgorithm(tableNames)) {
             return new ShardingRouteCacheableCheckResult(false, Collections.emptyList());
         }
         List<ShardingCondition> shardingConditions = new WhereClauseShardingConditionEngine(shardingRule, database).createShardingConditions(statementContext, parameters);
