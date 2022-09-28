@@ -154,7 +154,6 @@ public final class InsertClauseShardingConditionEngineTest {
     public void assertCreateShardingConditionsWithParameterMarkers() {
         InsertValueContext insertValueContext = new InsertValueContext(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.singletonList(1), 0);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
-        when(shardingRule.findTableRule(eq("foo_table"))).thenReturn(Optional.of(new TableRule(Collections.singletonList("foo_col"), "test")));
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(1));
         assertThat(shardingConditions.size(), is(1));
