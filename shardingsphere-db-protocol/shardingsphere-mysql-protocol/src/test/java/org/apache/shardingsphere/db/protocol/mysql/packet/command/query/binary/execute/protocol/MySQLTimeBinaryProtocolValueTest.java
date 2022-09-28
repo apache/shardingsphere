@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -41,12 +42,12 @@ public final class MySQLTimeBinaryProtocolValueTest {
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertReadWithZeroByte() {
+    public void assertReadWithZeroByte() throws SQLException {
         assertThat(new MySQLTimeBinaryProtocolValue().read(payload), is(new Timestamp(0)));
     }
     
     @Test
-    public void assertReadWithEightBytes() {
+    public void assertReadWithEightBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(8, 0, 10, 59, 0);
         Calendar actual = Calendar.getInstance();
         actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload)).getTime());
@@ -56,7 +57,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithTwelveBytes() {
+    public void assertReadWithTwelveBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(12, 0, 10, 59, 0);
         Calendar actual = Calendar.getInstance();
         actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload)).getTime());
@@ -66,7 +67,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertReadWithIllegalArgument() {
+    public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
         new MySQLTimeBinaryProtocolValue().read(payload);
     }
