@@ -37,6 +37,8 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
+import java.util.Optional;
+
 /**
  * Frontend channel inbound handler.
  */
@@ -100,7 +102,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
         connectionSession.getBackendConnection().closeAllResources();
-        ExecuteProcessEngine.finishConnection(connectionSession.getExecutionId());
+        Optional.ofNullable(connectionSession.getExecutionId()).ifPresent(ExecuteProcessEngine::finishConnection);
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     
