@@ -31,6 +31,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,8 +60,8 @@ public final class IncrementalTaskTest {
     }
     
     @Test
-    public void assertStart() {
-        incrementalTask.start();
+    public void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
+        incrementalTask.start().get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("standard_0"));
         assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(PlaceholderPosition.class));
     }
