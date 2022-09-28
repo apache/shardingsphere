@@ -59,10 +59,15 @@ public final class CachedShardingSQLRouter implements SQLRouter<ShardingCacheRul
         Optional<RouteContext> cachedRouteContext = rule.getRouteCache().get(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParameters))
                 .flatMap(ShardingRouteCacheValue::getCachedRouteContext);
         RouteContext result = cachedRouteContext.orElseGet(() -> new ShardingSQLRouter().createRouteContext(queryContext, database, rule.getShardingRule(), props, connectionContext));
-        if (!cachedRouteContext.isPresent() && 1 == result.getRouteUnits().size() && 1 == result.getOriginalDataNodes().size()) {
+        if (!cachedRouteContext.isPresent() && hitOneShardOnly(result)) {
             rule.getRouteCache().put(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParameters), new ShardingRouteCacheValue(result));
         }
         return result;
+    }
+    
+    private boolean hitOneShardOnly(final RouteContext routeContext) {
+        return 1 == routeContext.getRouteUnits().size() && 1 == routeContext.getRouteUnits().iterator().next().getTableMappers().size()
+                && 1 == routeContext.getOriginalDataNodes().size() && 1 == routeContext.getOriginalDataNodes().iterator().next().size();
     }
     
     @Override
