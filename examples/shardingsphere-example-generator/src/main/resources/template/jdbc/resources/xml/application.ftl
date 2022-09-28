@@ -84,21 +84,21 @@
     -->
     
     <bean id="ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
     
     <bean id="ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_1?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
     
     <bean id="ds_2" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_2?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
