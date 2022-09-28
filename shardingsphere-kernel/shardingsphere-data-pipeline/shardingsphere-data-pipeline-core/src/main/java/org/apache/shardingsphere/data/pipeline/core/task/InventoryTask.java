@@ -54,7 +54,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
-    private final ExecuteEngine importerExecuteEngine;
+    private final ExecuteEngine inventoryImporterExecuteEngine;
     
     private final PipelineChannel channel;
     
@@ -67,11 +67,11 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
                          final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
-                         final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine importerExecuteEngine,
+                         final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine inventoryImporterExecuteEngine,
                          final PipelineJobProgressListener jobProgressListener) {
         taskId = generateTaskId(inventoryDumperConfig);
         this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
-        this.importerExecuteEngine = importerExecuteEngine;
+        this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
         channel = createChannel(pipelineChannelCreator);
         dumper = InventoryDumperCreatorFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType())
                 .createInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
@@ -103,7 +103,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
                 stop();
             }
         });
-        CompletableFuture<?> importerFuture = importerExecuteEngine.submit(importer, new ExecuteCallback() {
+        CompletableFuture<?> importerFuture = inventoryImporterExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {

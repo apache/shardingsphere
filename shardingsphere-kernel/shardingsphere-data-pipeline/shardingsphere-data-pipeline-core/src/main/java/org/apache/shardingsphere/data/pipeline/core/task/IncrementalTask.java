@@ -52,9 +52,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine incrementalDumperExecuteEngine;
-    
-    private final ExecuteEngine importerExecuteEngine;
+    private final ExecuteEngine incrementalExecuteEngine;
     
     private final PipelineChannel channel;
     
@@ -67,12 +65,10 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
-                           final PipelineTableMetaDataLoader sourceMetaDataLoader,
-                           final ExecuteEngine incrementalDumperExecuteEngine, final ExecuteEngine importerExecuteEngine,
+                           final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalExecuteEngine,
                            final PipelineJobProgressListener jobProgressListener) {
         taskId = dumperConfig.getDataSourceName();
-        this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
-        this.importerExecuteEngine = importerExecuteEngine;
+        this.incrementalExecuteEngine = incrementalExecuteEngine;
         IngestPosition<?> position = dumperConfig.getPosition();
         taskProgress = createIncrementalTaskProgress(position);
         channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
@@ -115,7 +111,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
      */
     public CompletableFuture<?> start() {
         taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
-        CompletableFuture<?> dumperFuture = incrementalDumperExecuteEngine.submit(dumper, new ExecuteCallback() {
+        CompletableFuture<?> dumperFuture = incrementalExecuteEngine.submit(dumper, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
@@ -128,7 +124,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
                 stop();
             }
         });
-        CompletableFuture<?> importerFuture = importerExecuteEngine.submitAll(importers, new ExecuteCallback() {
+        CompletableFuture<?> importerFuture = incrementalExecuteEngine.submitAll(importers, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {

@@ -35,18 +35,18 @@ public interface InventoryIncrementalProcessContext extends PipelineProcessConte
     PipelineChannelCreator getPipelineChannelCreator();
     
     /**
-     * Get importer execute engine.
-     *
-     * @return importer execute engine
-     */
-    ExecuteEngine getImporterExecuteEngine();
-    
-    /**
      * Get inventory dumper execute engine.
      *
      * @return inventory dumper execute engine
      */
     ExecuteEngine getInventoryDumperExecuteEngine();
+    
+    /**
+     * Get inventory importer execute engine.
+     *
+     * @return inventory importer execute engine
+     */
+    ExecuteEngine getInventoryImporterExecuteEngine();
     
     /**
      * Get job read rate limit algorithm.
