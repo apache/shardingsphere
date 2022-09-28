@@ -68,7 +68,7 @@ public final class TableExtractor {
     private final Collection<TableSegment> tableContext = new LinkedList<>();
     
     /**
-     * Extract table that should be rewrite from select statement.
+     * Extract table that should be rewritten from select statement.
      *
      * @param selectStatement select statement
      */
@@ -198,7 +198,7 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrite from delete statement.
+     * Extract table that should be rewritten from delete statement.
      *
      * @param deleteStatement delete statement
      */
@@ -210,7 +210,7 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrite from insert statement.
+     * Extract table that should be rewritten from insert statement.
      *
      * @param insertStatement insert statement
      */
@@ -243,7 +243,7 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrite from update statement.
+     * Extract table that should be rewritten from update statement.
      *
      * @param updateStatement update statement.
      */
@@ -326,7 +326,7 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrite from sql statement.
+     * Extract table that should be rewritten from sql statement.
      *
      * @param sqlStatement sql statement
      */
@@ -343,13 +343,13 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewrite from create view statement.
+     * Extract table that should be rewritten from create view statement.
      * 
      * @param createViewStatement create view statement
      */
     public void extractTablesFromCreateViewStatement(final CreateViewStatement createViewStatement) {
         tableContext.add(createViewStatement.getView());
         rewriteTables.add(createViewStatement.getView());
-        createViewStatement.getSelect().ifPresent(this::extractTablesFromSelect);
+        extractTablesFromSelect(createViewStatement.getSelect());
     }
 }

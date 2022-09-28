@@ -24,7 +24,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 10021       | Single table \`%s\` does not exist |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables |
-| 0A000     | 10050       | The property \`proxy-backend-executor-suitable\` must be \`OLAP\` or \`OLTP\` |
 
 ### Data
 
@@ -39,11 +38,12 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |
 | 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | SQL String can not be NULL or empty |
-| 42000     | 12002       | Could not support variable \`%s\` |
-| 42S02     | 12003       | Can not find column label \`%s\` |
-| HV008     | 12004       | Column index \`%d\` is out of range |
-| 0A000     | 12010       | DROP TABLE ... CASCADE is not supported |
+| 42000     | 12001       | Can not accept SQL type \`%s\` |
+| 42000     | 12002       | SQL String can not be NULL or empty |
+| 42000     | 12010       | Can not support variable \`%s\` |
+| 42S02     | 12011       | Can not find column label \`%s\` |
+| HV008     | 12020       | Column index \`%d\` is out of range |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported |
 
 ### Connection
 

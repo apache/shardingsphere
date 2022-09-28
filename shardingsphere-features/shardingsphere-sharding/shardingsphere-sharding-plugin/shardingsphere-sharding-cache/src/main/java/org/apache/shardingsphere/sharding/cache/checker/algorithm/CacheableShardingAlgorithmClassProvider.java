@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.exception;
+package org.apache.shardingsphere.sharding.cache.checker.algorithm;
 
-import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+
+import java.util.Collection;
 
 /**
- * Invalid executor suitable exception.
+ * Cacheable sharding algorithm class provider.
  */
-public final class InvalidExecutorSuitableException extends ConnectionSQLException {
+public interface CacheableShardingAlgorithmClassProvider {
     
-    private static final long serialVersionUID = 8481186245119374721L;
-    
-    public InvalidExecutorSuitableException() {
-        super(XOpenSQLState.GENERAL_ERROR, 50, "The property `proxy-backend-executor-suitable` must be `OLAP` or `OLTP`");
-    }
+    /**
+     * Get classes of cacheable sharding algorithm.
+     *
+     * @return classes of cacheable sharding algorithm.
+     */
+    Collection<Class<? extends ShardingAlgorithm>> getCacheableShardingAlgorithmClasses();
 }

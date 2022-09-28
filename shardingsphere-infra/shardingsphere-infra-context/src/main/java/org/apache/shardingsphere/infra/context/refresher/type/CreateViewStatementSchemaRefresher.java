@@ -46,7 +46,6 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        String viewDefinition = sqlStatement.getViewSQL().substring(getViewDefinitionStartIndex(sqlStatement)).trim();
         if (!containsInImmutableDataNodeContainedRule(viewName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, viewName));
         }
@@ -55,7 +54,7 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTable(viewName));
         if (actualTableMetaData.isPresent()) {
-            ShardingSphereView view = new ShardingSphereView(viewName, viewDefinition);
+            ShardingSphereView view = new ShardingSphereView(viewName, sqlStatement.getViewDefinition());
             database.getSchema(schemaName).putTable(viewName, actualTableMetaData.get());
             database.getSchema(schemaName).putView(viewName, view);
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
@@ -64,10 +63,6 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
             return Optional.of(event);
         }
         return Optional.empty();
-    }
-    
-    private static int getViewDefinitionStartIndex(final CreateViewStatement sqlStatement) {
-        return sqlStatement.getViewSQL().toUpperCase().indexOf("AS") + "AS".length();
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {

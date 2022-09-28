@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.util.Optional;
-
 /**
  * Create view statement.
  */
@@ -36,16 +34,7 @@ public abstract class CreateViewStatement extends AbstractSQLStatement implement
     
     private SimpleTableSegment view;
     
-    private String viewSQL;
+    private String viewDefinition;
     
     private SelectStatement select;
-    
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
-    }
 }

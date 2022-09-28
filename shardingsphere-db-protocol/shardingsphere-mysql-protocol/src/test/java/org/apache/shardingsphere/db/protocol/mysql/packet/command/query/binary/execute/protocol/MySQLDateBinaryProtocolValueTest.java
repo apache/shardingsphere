@@ -86,7 +86,7 @@ public final class MySQLDateBinaryProtocolValueTest {
         assertThat(actualTimestamp.getNanos(), is(232323000));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
         new MySQLDateBinaryProtocolValue().read(payload);

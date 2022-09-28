@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.infra.util.props;
 
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
+import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyEnumFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class TypedPropertyValueTest {
@@ -64,5 +65,15 @@ public final class TypedPropertyValueTest {
     @Test
     public void assertGetStringValue() throws TypedPropertyValueException {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.STRING_VALUE, "new_value").getValue(), is("new_value"));
+    }
+    
+    @Test
+    public void assertGetEnumValue() throws TypedPropertyValueException {
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, TypedPropertyEnumFixture.FOO.name()).getValue(), is(TypedPropertyEnumFixture.FOO));
+    }
+    
+    @Test(expected = TypedPropertyValueException.class)
+    public void assertGetInvalidEnumValue() throws TypedPropertyValueException {
+        new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, "BAR");
     }
 }
