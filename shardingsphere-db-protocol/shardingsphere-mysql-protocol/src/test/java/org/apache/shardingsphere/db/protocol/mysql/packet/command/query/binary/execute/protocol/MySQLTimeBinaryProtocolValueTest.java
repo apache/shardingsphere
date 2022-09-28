@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -66,7 +67,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
         assertThat(actual.get(Calendar.SECOND), is(0));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertReadWithIllegalArgument() throws SQLException {
         when(payload.readInt1()).thenReturn(100);
         new MySQLTimeBinaryProtocolValue().read(payload);
