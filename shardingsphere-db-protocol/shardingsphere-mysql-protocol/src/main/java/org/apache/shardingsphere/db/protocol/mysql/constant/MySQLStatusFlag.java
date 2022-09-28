@@ -19,6 +19,9 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
+
+import java.sql.SQLException;
 
 /**
  * Status flags are a bit-field for MySQL.
@@ -71,6 +74,6 @@ public enum MySQLStatusFlag {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Illegal MySQL status flag value %d", value));
+        throw new UnknownSQLException(new SQLException(String.format("Illegal MySQL status flag value %d", value)));
     }
 }
