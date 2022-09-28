@@ -19,6 +19,8 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -29,7 +31,7 @@ import java.util.Calendar;
 public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolValue {
     
     @Override
-    public Object read(final MySQLPacketPayload payload) {
+    public Object read(final MySQLPacketPayload payload) throws SQLException {
         int length = payload.readInt1();
         payload.readInt1();
         payload.readInt4();
@@ -43,7 +45,7 @@ public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolVa
                 result.setNanos(payload.readInt4());
                 return result;
             default:
-                throw new IllegalArgumentException(String.format("Wrong length `%d` of MYSQL_TYPE_DATE", length));
+                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_DATE", length));
         }
     }
     
