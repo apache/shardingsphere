@@ -167,7 +167,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
+            ThreadUtil.sleep(5, TimeUnit.SECONDS);
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
@@ -186,7 +186,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds < 3) {
+            if (incrementalIdleSeconds < 10) {
                 return false;
             }
         }
