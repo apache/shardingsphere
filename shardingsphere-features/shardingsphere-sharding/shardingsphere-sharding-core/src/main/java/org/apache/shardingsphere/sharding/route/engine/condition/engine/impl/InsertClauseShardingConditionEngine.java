@@ -103,8 +103,9 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 continue;
             }
             if (each instanceof SimpleExpressionSegment) {
-                List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment 
-                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex()) : Collections.emptyList();
+                List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
+                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
+                        : Collections.emptyList();
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters)),
                         parameterMarkerIndexes));
             } else if (each instanceof CommonExpressionSegment) {
