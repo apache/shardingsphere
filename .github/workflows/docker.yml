@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Deploy Docker Image
+name: Docker:Deploy Docker Image
 
 on:
   release:
@@ -45,13 +45,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      # build target with maven
+
       - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       

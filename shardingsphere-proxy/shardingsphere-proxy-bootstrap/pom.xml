@@ -35,17 +35,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-mysql</artifactId>
+            <artifactId>shardingsphere-mysql-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-postgresql</artifactId>
+            <artifactId>shardingsphere-postgresql-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-db-protocol-opengauss</artifactId>
+            <artifactId>shardingsphere-opengauss-protocol</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -96,6 +96,11 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sharding-cache</artifactId>
             <version>${project.version}</version>
         </dependency>
         

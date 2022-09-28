@@ -298,16 +298,19 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.patternMatchingOperator()) {
             return createPatternMatchingOperationSegment(ctx);
         }
-        Optional<String> commonBinaryOperator = findCommonBinaryOperator(ctx);
-        if (commonBinaryOperator.isPresent()) {
-            return createCommonBinaryOperationSegment(ctx, commonBinaryOperator.get());
+        Optional<String> binaryOperator = findBinaryOperator(ctx);
+        if (binaryOperator.isPresent()) {
+            return createBinaryOperationSegment(ctx, binaryOperator.get());
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
     }
     
-    private Optional<String> findCommonBinaryOperator(final AExprContext ctx) {
+    private Optional<String> findBinaryOperator(final AExprContext ctx) {
+        if (1 == ctx.aExpr().size()) {
+            return Optional.empty();
+        }
         if (null != ctx.comparisonOperator()) {
             return Optional.of(ctx.comparisonOperator().getText());
         }
@@ -343,7 +346,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     
-    private BinaryOperationExpression createCommonBinaryOperationSegment(final AExprContext ctx, final String operator) {
+    private BinaryOperationExpression createBinaryOperationSegment(final AExprContext ctx, final String operator) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
@@ -438,8 +441,8 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public ASTNode visitAexprConst(final AexprConstContext ctx) {
-        if (null != ctx.NUMBER_()) {
-            return new NumberLiteralValue(ctx.NUMBER_().getText());
+        if (null != ctx.numberConst()) {
+            return new NumberLiteralValue(ctx.numberConst().getText());
         }
         if (null != ctx.STRING_()) {
             return new StringLiteralValue(ctx.STRING_().getText());
@@ -1216,11 +1219,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
         if (null != ctx.limitClause()) {
-            if (null != ctx.limitClause().selectOffsetValue()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
-                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
-                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
-            }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }

@@ -93,7 +93,7 @@ public final class Configuration {
         return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "governance-sharding-data-source", "localhost:2379", new Properties()), true);
     </#if>
     <#if mode=="standalone">
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()), true);
     </#if> 
     }
     

@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.api.impl;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
@@ -40,8 +43,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -76,9 +80,12 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
-        governanceRepositoryAPI.persistCheckLatestResult(jobItemContext.getJobId(), true);
-        Optional<Boolean> checkResult = governanceRepositoryAPI.getCheckLatestResult(jobItemContext.getJobId());
-        assertTrue(checkResult.isPresent() && checkResult.get());
+        Map<String, DataConsistencyCheckResult> actual = new HashMap<>();
+        actual.put("test", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1), new DataConsistencyContentCheckResult(true)));
+        governanceRepositoryAPI.persistCheckJobResult(jobItemContext.getJobId(), "j02123", actual);
+        Map<String, DataConsistencyCheckResult> checkResult = governanceRepositoryAPI.getCheckJobResult(jobItemContext.getJobId(), "j02123");
+        assertThat(checkResult.size(), is(1));
+        assertTrue(checkResult.get("test").getContentCheckResult().isMatched());
     }
     
     @Test

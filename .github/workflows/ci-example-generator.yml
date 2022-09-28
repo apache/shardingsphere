@@ -1,0 +1,58 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Example Generator Test
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3  -Drat.skip=true -Dcheckstyle.skip=true
+
+jobs:
+  shardingsphere-example-generator:
+    if: github.repository == 'apache/shardingsphere'
+    name: ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        product: [ jdbc ]
+        mode: [ standalone ]
+        transaction: [ local ]
+        feature: [ sharding ]
+        framework: [ jdbc ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 8
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build Project
+        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
+      - name: Example generator
+        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+      - name: Prepare The Docker Environment
+        run : docker-compose -f examples/shardingsphere-example-generator/docker-compose.yml up -d
+      - name: Example Test
+        run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false 

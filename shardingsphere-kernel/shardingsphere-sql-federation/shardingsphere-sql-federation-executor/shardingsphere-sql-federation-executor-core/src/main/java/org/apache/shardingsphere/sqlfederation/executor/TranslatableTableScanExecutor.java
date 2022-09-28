@@ -80,7 +80,6 @@ import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -219,16 +218,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         JavaTypeFactory typeFactory = new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
         for (String each : filterValues) {
-            if (Strings.isNullOrEmpty(each)) {
-                continue;
+            if (!Strings.isNullOrEmpty(each)) {
+                result.add(StringToRexNodeUtil.buildRexNode(each, rexBuilder));
             }
-            RexNode filterCondition;
-            try {
-                filterCondition = StringToRexNodeUtil.buildRexNode(each, rexBuilder);
-            } catch (IOException ignored) {
-                continue;
-            }
-            result.add(filterCondition);
         }
         return result;
     }

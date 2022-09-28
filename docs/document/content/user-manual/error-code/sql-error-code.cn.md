@@ -23,7 +23,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10020       | Schema \`%s\` does not exist |
 | 42S02     | 10021       | Single table \`%s\` does not exist |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
-| 0A000     | 11030       | Can not drop schema \`%s\` because of contains tables |
+| 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables |
 
 ### 数据
 
@@ -38,11 +38,12 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | 42000     | 12000       | You have an error in your SQL syntax: %s |
-| 42000     | 12001       | SQL String can not be NULL or empty |
-| 42000     | 12002       | Could not support variable \`%s\` |
-| 42S02     | 12003       | Can not find column label \`%s\` |
-| HV008     | 12004       | Column index \`%d\` is out of range |
-| 0A000     | 12010       | DROP TABLE ... CASCADE is not supported |
+| 42000     | 12001       | Can not accept SQL type \`%s\` |
+| 42000     | 12002       | SQL String can not be NULL or empty |
+| 42000     | 12010       | Can not support variable \`%s\` |
+| 42S02     | 12011       | Can not find column label \`%s\` |
+| HV008     | 12020       | Column index \`%d\` is out of range |
+| 0A000     | 12100       | DROP TABLE ... CASCADE is not supported |
 
 ### 连接
 
@@ -84,6 +85,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 17000       | Work ID assigned failed, which can not exceed 1024 |
 | HY000     | 17001       | Can not find \`%s\` file for datetime initialize |
 | HY000     | 17002       | File access failed, reason is: %s |
+| HY000     | 17010       | Cluster persist repository error, reason is: %s |
 
 ### 迁移
 

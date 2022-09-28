@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ public interface RawExecutorCallback<I, O> {
      * @param isTrunkThread is execution in trunk thread
      * @param dataMap data map
      * @return execution results
-     * @throws SQLException throw when execute failure
      */
-    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap) throws SQLException;
+    Collection<O> execute(Collection<I> inputs, boolean isTrunkThread, Map<String, Object> dataMap);
 }

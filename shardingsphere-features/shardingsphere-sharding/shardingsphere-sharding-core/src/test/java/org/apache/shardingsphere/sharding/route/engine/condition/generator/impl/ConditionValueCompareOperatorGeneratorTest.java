@@ -55,6 +55,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertTrue(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().contains(value));
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -64,6 +65,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertTrue(Range.lessThan(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -73,6 +75,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertTrue(Range.greaterThan(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -82,6 +85,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertTrue(Range.atMost(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -91,6 +95,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertTrue(Range.atLeast(1).encloses(((RangeShardingConditionValue<Integer>) shardingConditionValue.get()).getValueRange()));
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @Test
@@ -112,6 +117,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertFalse(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().isEmpty());
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -127,6 +133,7 @@ public final class ConditionValueCompareOperatorGeneratorTest {
         assertThat(conditionValue.getTableName(), is("tbl"));
         assertThat(conditionValue.getColumnName(), is("id"));
         assertThat(conditionValue.getValues(), is(Collections.singletonList(1)));
+        assertThat(conditionValue.getParameterMarkerIndexes(), is(Collections.singletonList(0)));
     }
     
     @Test

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler;
 
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.junit.Test;
 

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: publish-docker
+name: Docker:Publish Image per Commit
 
 on:
   push:
@@ -48,11 +48,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Cache local Maven repository
+      - name: Cache Maven Repos
         uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Log in to the Container registry

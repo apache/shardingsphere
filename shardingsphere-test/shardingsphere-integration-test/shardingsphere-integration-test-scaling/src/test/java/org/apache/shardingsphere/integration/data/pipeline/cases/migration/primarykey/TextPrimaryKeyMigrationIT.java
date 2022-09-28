@@ -89,8 +89,8 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         createTargetOrderTableRule();
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         String jobId = listJobId().get(0);
-        waitJobFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableOrderName(), "1000000000", 1, "afterStop"));
+        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         // TODO The ordering of primary or unique keys for text types is different, but can't reproduce now
         if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
             assertCheckMigrationSuccess(jobId, "DATA_MATCH");

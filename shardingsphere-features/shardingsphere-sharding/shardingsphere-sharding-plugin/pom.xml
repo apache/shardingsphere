@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-sharding-cosid</module>
         <module>shardingsphere-sharding-nanoid</module>
+        <module>shardingsphere-sharding-cache</module>
     </modules>
 </project>

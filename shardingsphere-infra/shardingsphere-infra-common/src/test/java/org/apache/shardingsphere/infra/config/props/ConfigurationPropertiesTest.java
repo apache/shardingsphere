@@ -42,7 +42,7 @@ public final class ConfigurationPropertiesTest {
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(20));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is("OLTP"));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLTP));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE), is("JDBC"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION), is("5.7.22"));
@@ -63,7 +63,7 @@ public final class ConfigurationPropertiesTest {
         result.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
         result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getKey(), "20");
         result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE.getKey(), "20");
-        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), "OLTP");
+        result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), BackendExecutorType.OLTP.name());
         result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS.getKey(), "20");
         result.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), "JDBC");
         result.setProperty(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION.getKey(), "5.7.22");
@@ -86,7 +86,7 @@ public final class ConfigurationPropertiesTest {
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(-1));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(0));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is("OLAP"));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLAP));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE), is("JDBC"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION), is("5.7.22"));

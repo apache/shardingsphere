@@ -17,18 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_view" value="CREATE VIEW comedies AS
-        SELECT *
-        FROM films
-        WHERE kind = 'Comedy'" db-types="PostgreSQL,openGauss,SQLServer" />
-    <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS
-        SELECT *
-        FROM comedies
-        WHERE classification = 'U'
-        WITH LOCAL CHECK OPTION" db-types="PostgreSQL,openGauss" />
-    <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS
-        VALUES (1)
-        UNION ALL
-        SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_view" value="CREATE VIEW comedies AS SELECT * FROM films WHERE kind = 'Comedy'" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS SELECT * FROM comedies WHERE classification = 'U' WITH LOCAL CHECK OPTION" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_option" value="CREATE OR REPLACE TEMP view order_view (order_id,user_id) WITH (security_barrier=TRUE) AS SELECT * FROM t_order" db-types="PostgreSQL,openGauss" />
 </sql-cases>

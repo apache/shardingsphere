@@ -30,9 +30,9 @@
     
     <modules>
         <module>shardingsphere-db-protocol-core</module>
-        <module>shardingsphere-db-protocol-postgresql</module>
-        <module>shardingsphere-db-protocol-mysql</module>
-        <module>shardingsphere-db-protocol-opengauss</module>
+        <module>shardingsphere-postgresql-protocol</module>
+        <module>shardingsphere-mysql-protocol</module>
+        <module>shardingsphere-opengauss-protocol</module>
     </modules>
     
     <dependencies>

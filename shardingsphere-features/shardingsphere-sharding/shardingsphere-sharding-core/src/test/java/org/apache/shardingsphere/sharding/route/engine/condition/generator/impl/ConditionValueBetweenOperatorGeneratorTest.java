@@ -64,6 +64,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
         assertTrue(rangeShardingConditionValue.getValueRange().contains(between));
         assertTrue(rangeShardingConditionValue.getValueRange().contains(and));
+        assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -81,6 +82,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
         assertTrue(SafeNumberOperationUtil.safeContains(rangeShardingConditionValue.getValueRange(), between));
         assertTrue(SafeNumberOperationUtil.safeContains(rangeShardingConditionValue.getValueRange(), and));
+        assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
     @Test(expected = ClassCastException.class)
@@ -105,6 +107,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
         assertThat(rangeShardingConditionValue.getValueRange().lowerEndpoint(), is(date));
+        assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -122,6 +125,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
         assertTrue(rangeShardingConditionValue.getValueRange().upperEndpoint().before(after));
+        assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -138,6 +142,7 @@ public final class ConditionValueBetweenOperatorGeneratorTest {
         assertThat(conditionValue.getTableName(), is("tbl"));
         assertThat(conditionValue.getColumnName(), is("id"));
         assertThat(conditionValue.getValueRange(), is(Range.closed(1, 2)));
+        assertThat(conditionValue.getParameterMarkerIndexes(), is(Arrays.asList(0, 1)));
     }
     
     @Test

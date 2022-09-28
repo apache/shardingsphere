@@ -22,6 +22,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Sharding condition value for range.
  */
@@ -35,4 +38,10 @@ public final class RangeShardingConditionValue<T extends Comparable<?>> implemen
     private final String tableName;
     
     private final Range<T> valueRange;
+    
+    private final List<Integer> parameterMarkerIndexes;
+    
+    public RangeShardingConditionValue(final String columnName, final String tableName, final Range<T> valueRange) {
+        this(columnName, tableName, valueRange, Collections.emptyList());
+    }
 }

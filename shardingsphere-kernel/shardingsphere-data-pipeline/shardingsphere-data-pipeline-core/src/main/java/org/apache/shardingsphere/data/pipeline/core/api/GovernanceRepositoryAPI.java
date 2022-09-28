@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,44 +58,38 @@ public interface GovernanceRepositoryAPI {
     String getJobItemProgress(String jobId, int shardingItem);
     
     /**
+     * Get check latest job id.
+     *
+     * @param jobId job id
+     * @return check job id
+     */
+    Optional<String> getCheckLatestJobId(String jobId);
+    
+    /**
      * Persist check latest result.
      *
      * @param jobId job id
-     * @param checkSuccess check success
+     * @param checkJobId check job id
      */
-    void persistCheckLatestResult(String jobId, boolean checkSuccess);
+    void persistCheckLatestJobId(String jobId, String checkJobId);
     
     /**
-     * Get check latest result.
+     * Get check job result.
      *
      * @param jobId job id
-     * @return check result
+     * @param checkJobId check job id
+     * @return check job result
      */
-    Optional<Boolean> getCheckLatestResult(String jobId);
+    Map<String, DataConsistencyCheckResult> getCheckJobResult(String jobId, String checkJobId);
     
     /**
      * Persist check latest detailed result.
      *
      * @param jobId job id
-     * @param checkDetailedSuccess check detailed success
-     */
-    void persistCheckLatestDetailedResult(String jobId, String checkDetailedSuccess);
-    
-    /**
-     * Get check latest detailed result.
-     *
-     * @param jobId job id
-     * @return check detailed result
-     */
-    Optional<String> getCheckLatestDetailedResult(String jobId);
-    
-    /**
-     * Persist check job id.
-     *
-     * @param jobId job id
      * @param checkJobId check job id
+     * @param dataConsistencyCheckResult check result
      */
-    void persistCheckJobId(String jobId, String checkJobId);
+    void persistCheckJobResult(String jobId, String checkJobId, Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult);
     
     /**
      * List check job ids.

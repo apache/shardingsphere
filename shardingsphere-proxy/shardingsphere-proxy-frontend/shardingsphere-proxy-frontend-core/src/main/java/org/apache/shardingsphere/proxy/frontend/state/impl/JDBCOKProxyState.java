@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.infra.config.props.BackendExecutorType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -45,9 +46,11 @@ public final class JDBCOKProxyState implements OKProxyState {
                                                              final ConnectionSession connectionSession) {
         if (requireOccupyThreadForConnection(connectionSession)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
-        } else if (isPreferNettyEventLoop()) {
+        }
+        if (isPreferNettyEventLoop()) {
             return context.executor();
-        } else if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
+        }
+        if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
         return UserExecutorGroup.getInstance().getExecutorService();
@@ -59,14 +62,8 @@ public final class JDBCOKProxyState implements OKProxyState {
     }
     
     private boolean isPreferNettyEventLoop() {
-        switch (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)) {
-            case "OLTP":
-                return true;
-            case "OLAP":
-                return false;
-            default:
-                throw new IllegalArgumentException("The property proxy-backend-executor-suitable must be 'OLAP' or 'OLTP'");
-        }
+        return BackendExecutorType.OLTP == ProxyContext.getInstance()
+                .getContextManager().getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE);
     }
     
     @Override

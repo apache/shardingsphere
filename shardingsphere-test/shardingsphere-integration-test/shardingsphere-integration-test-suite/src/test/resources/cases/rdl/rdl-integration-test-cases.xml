@@ -31,19 +31,32 @@
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-    <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL, PostgreSQL">
+    <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL">
         <assertion expected-data-file="create_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_user"/>
+        </assertion>
+        <assertion expected-data-file="create_sharding_rules_show_tables.xml">
+            <assertion-sql sql="SHOW TABLES;" />
         </assertion>
     </test-case>
-    <test-case sql="ALTER SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 4}')))))" db-types="MySQL, PostgreSQL">
+    <test-case sql="ALTER SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 4}')))))" db-types="MySQL">
         <assertion expected-data-file="alter_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_user"/>
+        </assertion>
+        <assertion expected-data-file="alter_sharding_rules_show_tables.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" />
+            <assertion-sql sql="SHOW TABLES;" />
         </assertion>
     </test-case>
-    <test-case sql="DROP SHARDING TABLE RULE t_user" db-types="MySQL, PostgreSQL">
+    <test-case sql="DROP SHARDING TABLE RULE t_user" db-types="MySQL">
         <assertion expected-data-file="drop_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
+        </assertion>
+        <assertion expected-data-file="drop_sharding_rules_show_tables.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" />
+            <assertion-sql sql="SHOW TABLES;" />
         </assertion>
     </test-case>
     <test-case sql="CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_RESOURCE=ds_0,READ_RESOURCES(ds_1),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">

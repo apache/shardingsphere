@@ -18,7 +18,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Daily Continuous Integration
+name: Continuous Integration:Daily
 
 on:
   schedule:
@@ -37,50 +37,25 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        java_version: [ 8, 17, 18 ]
+        java_version: [ 8, 17, 19 ]
     steps:
       - name: Support longpaths in Windows
         if: matrix.os == 'windows-latest'
-        run: git config --system core.longpaths true
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v3
       - name: Set up JDK ${{ matrix.java_version }}
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: Build with Maven
         run: ./mvnw -B -ntp clean install
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package
-  
-  shardingsphere-example-generator:
-    if: github.repository == 'apache/shardingsphere'
-    name: ShardingSphere example generator
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Build Project
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
-      - name: Run Example generator
-        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
-
-  test-coverage-report:
-    if: github.repository == 'apache/shardingsphere'
-    runs-on: ubuntu-latest
-    name: ShardingSphere test coverage report
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Test with Maven
-        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true
-      - name: Upload to Codecov
-        run: bash <(curl -s https://codecov.io/bash)

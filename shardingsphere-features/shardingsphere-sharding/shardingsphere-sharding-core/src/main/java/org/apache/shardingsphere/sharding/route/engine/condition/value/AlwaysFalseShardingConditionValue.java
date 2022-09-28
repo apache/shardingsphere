@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Always false sharding condition value.
  */
@@ -30,5 +33,10 @@ public final class AlwaysFalseShardingConditionValue implements ShardingConditio
     @Override
     public String getTableName() {
         return "";
+    }
+    
+    @Override
+    public List<Integer> getParameterMarkerIndexes() {
+        return Collections.emptyList();
     }
 }

@@ -47,8 +47,8 @@ public final class OpenGaussContainer extends DockerStorageContainer {
         addEnvs(storageContainerConfiguration.getContainerEnvironments());
         mapResources(storageContainerConfiguration.getMountedResources());
         withPrivilegedMode(true);
-        withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS));
         super.configure();
+        withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS));
     }
     
     @Override

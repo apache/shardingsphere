@@ -62,7 +62,6 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -271,19 +270,26 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected List<Map<String, Object>> waitJobFinished(final String distSQL) throws InterruptedException {
+    protected List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
         if (null != getIncreaseTaskThread()) {
             TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
         }
-        Set<String> actualStatus;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 15; i++) {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);
-            actualStatus = listJobStatus.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
-            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
-                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            Set<String> actualStatus = new HashSet<>();
+            List<Integer> incrementalIdleSecondsList = new ArrayList<>();
             for (Map<String, Object> each : listJobStatus) {
                 assertTrue(StringUtils.isBlank(each.get("error_message").toString()));
+                actualStatus.add(each.get("status").toString());
+                String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
+                incrementalIdleSecondsList.add(StringUtils.isBlank(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
+            }
+            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
+                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            if (Collections.min(incrementalIdleSecondsList) <= 5) {
+                ThreadUtil.sleep(3, TimeUnit.SECONDS);
+                continue;
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 return listJobStatus;

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,9 +59,8 @@ public final class ShardingSphereMetaData {
      * 
      * @param databaseName database name
      * @param protocolType protocol database type
-     * @throws SQLException SQL exception
      */
-    public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
+    public void addDatabase(final String databaseName, final DatabaseType protocolType) {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
         putDatabase(database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
