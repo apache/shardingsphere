@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * TODO Design a cache layer interface in kernel.
  * Cached sharding SQL router.
  */
 public final class CachedShardingSQLRouter implements SQLRouter<ShardingCacheRule> {
