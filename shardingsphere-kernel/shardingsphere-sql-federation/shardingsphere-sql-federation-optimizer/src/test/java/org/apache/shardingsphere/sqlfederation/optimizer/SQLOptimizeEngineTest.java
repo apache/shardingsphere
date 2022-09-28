@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.hamcrest.MatcherAssert;
@@ -91,6 +90,8 @@ public final class SQLOptimizeEngineTest {
     
     private static final String SELECT_UNION = "SELECT order_id, user_id FROM t_order_federate UNION SELECT 1, user_id FROM t_user_info WHERE information = 'before'";
     
+    private static final String SELECT_LIMIT = "SELECT order_id, user_id FROM t_order_federate LIMIT 1";
+    
     private static final String SCHEMA_NAME = "federate_jdbc";
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
@@ -125,9 +126,10 @@ public final class SQLOptimizeEngineTest {
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
         TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, null);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
-        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, new H2DatabaseType(), connectionConfig);
+        H2DatabaseType databaseType = new H2DatabaseType();
+        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
         RelOptCluster cluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
-        return SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, cluster, mock(OptimizerContext.class), false);
+        return SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator, cluster, mock(SQLParserRule.class), databaseType, false);
     }
     
     @Test
@@ -266,6 +268,16 @@ public final class SQLOptimizeEngineTest {
                 + "  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "  EnumerableCalc(expr#0=[{inputs}], expr#1=['1':VARCHAR], EXPR$0=[$t1], user_id=[$t0])" + LINE_SEPARATOR
                 + "    TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($1):VARCHAR, 'before'), null]])" + LINE_SEPARATOR;
+        MatcherAssert.assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertSelectLimit() {
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_LIMIT, false);
+        String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
+        String expected = "EnumerableLimit(fetch=[1])" + LINE_SEPARATOR
+                + "  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR;
         MatcherAssert.assertThat(actual, is(expected));
     }
 }

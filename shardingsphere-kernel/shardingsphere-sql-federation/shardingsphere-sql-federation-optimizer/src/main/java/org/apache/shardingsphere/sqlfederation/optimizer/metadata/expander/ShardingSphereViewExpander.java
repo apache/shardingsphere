@@ -23,10 +23,10 @@ import org.apache.calcite.rel.RelRoot;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -38,15 +38,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ShardingSphereViewExpander implements ViewExpander {
     
-    private final OptimizerContext optimizerContext;
+    private final SQLParserRule sqlParserRule;
+    
+    private final DatabaseType databaseType;
     
     private final SqlToRelConverter sqlToRelConverter;
     
     @Override
     public RelRoot expandView(final RelDataType rowType, final String queryString, final List<String> schemaPath, @Nullable final List<String> viewPath) {
-        SQLStatement sqlStatement = new SQLStatementParserEngine(new MySQLDatabaseType().getType(),
-                optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
-                optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(queryString, false);
+        SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(), sqlParserRule.getSqlStatementCache(),
+                sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled()).parse(queryString, false);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
         return sqlToRelConverter.convertQuery(sqlNode, true, true);
     }
