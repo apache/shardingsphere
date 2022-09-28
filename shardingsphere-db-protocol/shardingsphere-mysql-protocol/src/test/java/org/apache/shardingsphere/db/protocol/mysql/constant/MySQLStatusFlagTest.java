@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,7 +35,7 @@ public final class MySQLStatusFlagTest {
         assertThat(MySQLStatusFlag.valueOf(0x0001), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = UnknownSQLException.class)
     public void assertValueOfByIntegerFailure() {
         MySQLStatusFlag.valueOf(0x0011);
     }
