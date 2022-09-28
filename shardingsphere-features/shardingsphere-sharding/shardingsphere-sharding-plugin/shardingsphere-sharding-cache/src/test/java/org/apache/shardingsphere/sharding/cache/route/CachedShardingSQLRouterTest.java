@@ -105,8 +105,9 @@ public final class CachedShardingSQLRouterTest {
         expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t")));
         when(shardingCacheRule.getRouteCache().get(any(ShardingRouteCacheKey.class))).thenReturn(Optional.empty());
         RouteContext actual;
-        try (MockedConstruction<ShardingSQLRouter> ignored = mockConstruction(ShardingSQLRouter.class,
-                (mock, context) -> when(mock.createRouteContext(queryContext, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
+        try (
+                MockedConstruction<ShardingSQLRouter> ignored = mockConstruction(ShardingSQLRouter.class,
+                        (mock, context) -> when(mock.createRouteContext(queryContext, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
             actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
         }
         assertThat(actual, is(expected));
@@ -141,8 +142,9 @@ public final class CachedShardingSQLRouterTest {
         expected.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Arrays.asList(new RouteMapper("t", "t_0"), new RouteMapper("t", "t_1"))));
         expected.getOriginalDataNodes().add(Collections.singletonList(new DataNode("ds_0", "t_0")));
         RouteContext actual;
-        try (MockedConstruction<ShardingSQLRouter> ignored = mockConstruction(ShardingSQLRouter.class,
-                (mock, context) -> when(mock.createRouteContext(queryContext, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
+        try (
+                MockedConstruction<ShardingSQLRouter> ignored = mockConstruction(ShardingSQLRouter.class,
+                        (mock, context) -> when(mock.createRouteContext(queryContext, null, shardingCacheRule.getShardingRule(), null, null)).thenReturn(expected))) {
             actual = new CachedShardingSQLRouter().createRouteContext(queryContext, null, shardingCacheRule, null, null);
         }
         assertThat(actual, is(expected));

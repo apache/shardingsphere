@@ -89,8 +89,7 @@ public final class ShardingRouteCacheableCheckerTest {
                 new Object[]{"update t_broadcast_table set broadcast_table_col1 = ? where broadcast_table_id = ?", Arrays.asList(0, 1), true, Collections.emptyList()},
                 new Object[]{"update t_warehouse set warehouse_name = ? where id = ?", Arrays.asList("foo", 1), true, Collections.singletonList(1)},
                 new Object[]{"delete from t_broadcast_table", Collections.emptyList(), true, Collections.emptyList()},
-                new Object[]{"delete from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)}
-        );
+                new Object[]{"delete from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)});
         Collection<Object[]> nonCacheableCases = Arrays.asList(
                 new Object[]{"create table t_warehouse (id int4 not null primary key)", Collections.emptyList(), false, Collections.emptyList()},
                 new Object[]{"insert into t_warehouse (id) select warehouse_id from t_order", Collections.emptyList(), false, Collections.emptyList()},
@@ -105,8 +104,7 @@ public final class ShardingRouteCacheableCheckerTest {
                 new Object[]{"update t_warehouse set warehouse_name = ? where id = (select max(warehouse_id) from t_order)", Collections.singletonList("foo"), false, Collections.emptyList()},
                 new Object[]{"delete from t_order where warehouse_id in (1, 2, now())", Collections.emptyList(), false, Collections.emptyList()},
                 new Object[]{"delete from t_order where warehouse_id between now() and now()", Collections.emptyList(), false, Collections.emptyList()},
-                new Object[]{"delete from t_order o where o.warehouse_id in (select w.id from t_warehouse w)", Collections.emptyList(), false, Collections.emptyList()}
-        );
+                new Object[]{"delete from t_order o where o.warehouse_id in (select w.id from t_warehouse w)", Collections.emptyList(), false, Collections.emptyList()});
         return Stream.of(probablyCacheableCases.stream(), nonCacheableCases.stream()).flatMap(Function.identity()).collect(Collectors.toList());
     }
     
