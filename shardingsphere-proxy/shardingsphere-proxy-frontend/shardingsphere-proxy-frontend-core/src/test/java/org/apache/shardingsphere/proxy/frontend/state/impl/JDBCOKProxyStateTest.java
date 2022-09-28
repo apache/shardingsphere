@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.state.impl;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.EventExecutor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.props.BackendExecutorType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.apache.shardingsphere.proxy.frontend.exception.InvalidExecutorSuitableException;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -90,7 +90,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     public void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLTP");
+                .getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLTP);
         EventExecutor eventExecutor = mock(EventExecutor.class);
         when(context.executor()).thenReturn(eventExecutor);
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
@@ -101,20 +101,12 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     public void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLAP");
+                .getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLAP);
         when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection(null)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
-    }
-    
-    @Test(expected = InvalidExecutorSuitableException.class)
-    public void assertExecuteWithProxyBackendExecutorSuitableForInvalidValue() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("invalid value");
-        new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})

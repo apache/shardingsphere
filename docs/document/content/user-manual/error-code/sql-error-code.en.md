@@ -24,7 +24,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42S02     | 10021       | Single table \`%s\` does not exist |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\` |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables |
-| 0A000     | 10050       | The property \`proxy-backend-executor-suitable\` must be \`OLAP\` or \`OLTP\` |
 
 ### Data
 
