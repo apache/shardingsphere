@@ -23,6 +23,9 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+<#if mode=="standalone">
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
+</#if>
 <#if feature?contains("sharding")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
@@ -35,6 +38,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 <#if feature?contains("readwrite-splitting")>
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 </#if>
 <#if feature?contains("encrypt")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
