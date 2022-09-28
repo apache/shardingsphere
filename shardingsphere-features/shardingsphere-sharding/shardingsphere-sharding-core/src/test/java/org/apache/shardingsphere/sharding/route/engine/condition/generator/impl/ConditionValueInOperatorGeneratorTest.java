@@ -53,6 +53,7 @@ public final class ConditionValueInOperatorGeneratorTest {
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>());
         assertTrue(shardingConditionValue.isPresent());
         assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues().iterator().next(), instanceOf(Date.class));
+        assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
     }
     
     @SuppressWarnings("unchecked")
@@ -69,6 +70,7 @@ public final class ConditionValueInOperatorGeneratorTest {
         assertThat(conditionValue.getTableName(), is("tbl"));
         assertThat(conditionValue.getColumnName(), is("id"));
         assertThat(conditionValue.getValues(), is(Collections.singletonList(1)));
+        assertThat(conditionValue.getParameterMarkerIndexes() ,is(Collections.singletonList(0)));
     }
     
     @Test
