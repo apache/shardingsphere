@@ -43,6 +43,14 @@ jobs:
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
     steps:
       - uses: actions/checkout@v3
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/checkout@v3
       - name: Set up JDK 8
         uses: actions/setup-java@v2
         with:

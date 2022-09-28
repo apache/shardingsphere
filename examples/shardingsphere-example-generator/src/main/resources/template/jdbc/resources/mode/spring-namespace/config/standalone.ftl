@@ -15,4 +15,4 @@
   ~ limitations under the License.
   -->
 
-<standalone:repository id="standaloneRepository" type="H2" />
+<standalone:repository id="standaloneRepository" type="JDBC" />
