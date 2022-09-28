@@ -1219,11 +1219,6 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
         if (null != ctx.limitClause()) {
-            if (null != ctx.limitClause().selectOffsetValue()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
-                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
-                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
-            }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }
