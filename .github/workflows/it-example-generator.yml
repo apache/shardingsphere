@@ -38,8 +38,8 @@ jobs:
       matrix:
         product: [ jdbc ]
         mode: [ standalone ]
-        transaction: [ local, xa-atomikos, xa-bitronix, xa-narayana ]
-        feature: [ sharding, readwrite-splitting, encrypt, shadow ]
+        transaction: [ local ]
+        feature: [ sharding, encrypt, shadow ]
         framework: [ jdbc ]
     steps:
       - uses: actions/checkout@v3
