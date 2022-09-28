@@ -69,6 +69,7 @@
                                 <excludes>
                                     <exclude>net.bytebuddy:byte-buddy:jar:</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
+                                    <exclude>com.h2database:h2:jar:</exclude>
                                     <exclude>com.google.*:*</exclude>
                                     <exclude>com.google.guava:guava:*</exclude>
                                     <exclude>org.slf4j:*</exclude>
