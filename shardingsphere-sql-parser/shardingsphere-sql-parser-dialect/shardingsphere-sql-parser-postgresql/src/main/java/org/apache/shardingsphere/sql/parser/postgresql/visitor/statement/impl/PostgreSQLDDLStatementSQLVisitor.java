@@ -774,7 +774,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         PostgreSQLCreateViewStatement result = new PostgreSQLCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
-        result.setViewSQL(getOriginalText(ctx));
+        result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
     }
