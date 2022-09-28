@@ -117,7 +117,7 @@ The ecosystem layer includes database protocol, SQL parser and storage adapter, 
 
 Apache ShardingSphere includes two independent clients: ShardingSphere-JDBC & ShardingSphere-Proxy. They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of scenarios such as Java isomorphism, heterogeneous languages, and a cloud-native environment.
 
-### Independent ShardingSphere-JDBC
+### Using ShardingSphere-JDBC
 
 ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
 With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence.
@@ -138,7 +138,7 @@ It can be considered as an enhanced version of the JDBC driver, which is fully c
 | Decentralization       | `Yes`               | No                   |
 | Static entry           | `No`                | Yes                  |
 
-### Independent ShardingSphere-Proxy
+### Using ShardingSphere-Proxy
 
 ShardingSphere-Proxy is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
 Currently, MySQL and PostgreSQL protocols are provided.
