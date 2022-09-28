@@ -31,16 +31,16 @@ env:
 
 jobs:
   shardingsphere-example-generator:
-    if: github.repository == 'apache/shardingsphere'
+    #if: github.repository == 'apache/shardingsphere'
     name: ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         product: [ jdbc ]
         mode: [ standalone ]
-        transaction: [ local ]
-        feature: [ sharding ]
-        framework: [ jdbc ]
+        transaction: [ local, xa-atomikos, xa-bitronix, xa-narayana ]
+        feature: [ sharding, readwrite-splitting, encrypt, shadow ]
+        framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 8
