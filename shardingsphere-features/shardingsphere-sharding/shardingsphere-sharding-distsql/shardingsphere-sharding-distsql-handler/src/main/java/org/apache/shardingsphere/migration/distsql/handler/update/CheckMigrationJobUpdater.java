@@ -37,8 +37,8 @@ public final class CheckMigrationJobUpdater implements RALUpdater<CheckMigration
     @Override
     public void executeUpdate(final String databaseName, final CheckMigrationStatement sqlStatement) throws SQLException {
         AlgorithmSegment typeStrategy = sqlStatement.getTypeStrategy();
-        String algorithmTypeName = null != typeStrategy ? typeStrategy.getName() : null;
-        Properties algorithmProps = null != typeStrategy ? typeStrategy.getProps() : null;
+        String algorithmTypeName = null == typeStrategy ? null : typeStrategy.getName();
+        Properties algorithmProps = null == typeStrategy ? null : typeStrategy.getProps();
         JOB_API.createJobAndStart(new CreateConsistencyCheckJobParameter(sqlStatement.getJobId(), algorithmTypeName, algorithmProps));
     }
     

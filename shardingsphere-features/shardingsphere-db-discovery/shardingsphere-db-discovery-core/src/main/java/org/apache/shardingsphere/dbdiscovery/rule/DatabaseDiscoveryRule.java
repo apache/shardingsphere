@@ -158,7 +158,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         PrimaryDataSourceChangedEvent dataSourceEvent = (PrimaryDataSourceChangedEvent) event;
         QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
-        Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
+        Preconditions.checkNotNull(dataSourceRule, "Can not find database discovery data source rule in database `%s`", databaseName);
         dataSourceRule.changePrimaryDataSourceName(qualifiedDatabase.getDataSourceName());
         initHeartBeatJobs();
     }
@@ -196,7 +196,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     public void updateStatus(final DataSourceStatusChangedEvent event) {
         StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(dataSourceChangedEvent.getQualifiedDatabase().getGroupName());
-        Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
+        Preconditions.checkNotNull(dataSourceRule, "Can not find database discovery data source rule in database `%s`", databaseName);
         if (StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus())) {
             dataSourceRule.disableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
         } else {

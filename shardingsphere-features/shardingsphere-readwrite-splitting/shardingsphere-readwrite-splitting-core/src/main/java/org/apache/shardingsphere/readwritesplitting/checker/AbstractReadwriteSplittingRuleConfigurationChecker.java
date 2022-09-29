@@ -104,9 +104,9 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
     }
     
     private void checkDynamicStrategy(final Collection<ShardingSphereRule> rules, final DynamicReadwriteSplittingStrategyConfiguration dynamicStrategy) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(dynamicStrategy.getAutoAwareDataSourceName()), "Auto aware data source name is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(dynamicStrategy.getAutoAwareDataSourceName()), "Auto aware data source name is required");
         Optional<ShardingSphereRule> dynamicDataSourceStrategy = rules.stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
-        Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");
+        Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required");
     }
     
     private void checkLoadBalancerDataSourceName(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
@@ -116,12 +116,12 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
                 continue;
             }
             ReadQueryLoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
-            Preconditions.checkState(null != loadBalancer, "Not found load balance type in database `%s`.", databaseName);
+            Preconditions.checkNotNull(loadBalancer, "Not found load balance type in database `%s`", databaseName);
             if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm || loadBalancer instanceof TransactionWeightReadQueryLoadBalanceAlgorithm) {
-                Preconditions.checkState(!loadBalancer.getProps().isEmpty(), "Readwrite-splitting data source weight config are required in database `%s`.", databaseName);
+                Preconditions.checkState(!loadBalancer.getProps().isEmpty(), "Readwrite-splitting data source weight config are required in database `%s`", databaseName);
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
                 loadBalancer.getProps().stringPropertyNames().forEach(dataSourceName -> Preconditions.checkState(dataSourceNames.contains(dataSourceName),
-                        "Load Balancer datasource name config does not match datasource in database `%s`.", databaseName));
+                        "Load Balancer datasource name config does not match datasource in database `%s`", databaseName));
             }
         }
     }

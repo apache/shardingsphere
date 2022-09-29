@@ -88,23 +88,19 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDatabaseDiscoveryRule(final DatabaseDiscoveryRuleContext ctx) {
-        if (null != ctx.databaseDiscoveryRuleDefinition()) {
-            return visit(ctx.databaseDiscoveryRuleDefinition());
-        } else {
-            return visit(ctx.databaseDiscoveryRuleConstruction());
-        }
+        return null == ctx.databaseDiscoveryRuleDefinition() ? visit(ctx.databaseDiscoveryRuleConstruction()) : visit(ctx.databaseDiscoveryRuleDefinition());
     }
     
     @Override
     public ASTNode visitDatabaseDiscoveryRuleConstruction(final DatabaseDiscoveryRuleConstructionContext ctx) {
-        return new DatabaseDiscoveryConstructionSegment(getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()),
-                getIdentifierValue(ctx.discoveryTypeName()), getIdentifierValue(ctx.discoveryHeartbeatName()));
+        return new DatabaseDiscoveryConstructionSegment(
+                getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()), getIdentifierValue(ctx.discoveryTypeName()), getIdentifierValue(ctx.discoveryHeartbeatName()));
     }
     
     @Override
     public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
-        return new DatabaseDiscoveryDefinitionSegment(getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()),
-                (AlgorithmSegment) visit(ctx.typeDefinition()), getProperties(ctx.discoveryHeartbeat().properties()));
+        return new DatabaseDiscoveryDefinitionSegment(
+                getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()), (AlgorithmSegment) visit(ctx.typeDefinition()), getProperties(ctx.discoveryHeartbeat().properties()));
         
     }
     

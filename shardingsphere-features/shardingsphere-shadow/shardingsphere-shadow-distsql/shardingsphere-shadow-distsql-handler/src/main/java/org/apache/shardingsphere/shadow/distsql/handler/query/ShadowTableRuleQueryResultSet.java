@@ -82,10 +82,7 @@ public final class ShadowTableRuleQueryResultSet implements DatabaseDistSQLResul
     }
     
     private String convertToString(final Collection<String> shadowTables) {
-        if (null != shadowTables) {
-            return String.join(",", shadowTables);
-        }
-        return "";
+        return null == shadowTables ? "" : String.join(",", shadowTables);
     }
     
     @Override
