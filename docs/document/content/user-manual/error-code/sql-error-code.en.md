@@ -115,6 +115,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s |
 | HY000     | 18093       | Can not poll event because of binlog sync channel already closed |
 | HY000     | 18094       | Task \`%s\` execute failed |
+| HY000     | 18095       | Job has already finished, please run \`CHECK MIGRATION %s\` to start a new data consistency check job |
 
 ### DistSQL
 

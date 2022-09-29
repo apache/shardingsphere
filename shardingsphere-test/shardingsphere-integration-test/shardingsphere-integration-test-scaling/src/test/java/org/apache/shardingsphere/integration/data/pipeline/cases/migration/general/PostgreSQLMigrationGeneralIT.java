@@ -44,10 +44,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * PostgreSQL general scaling test case. include openGauss type, same process.
+ * PostgreSQL and openGauss general scaling test case.
  */
-@Slf4j
 @RunWith(Parameterized.class)
+@Slf4j
 public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase {
     
     private static final KeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new AutoIncrementKeyGenerateAlgorithm();
@@ -117,15 +117,13 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         /*
          * TODO Compatible with restart job, before stopping job, incremental_idle_seconds=16, before checking migration, incremental_idle_seconds=23,
-         *   it just pass 7 seconds, and it's not enough for PostgreSQL incremental task to sync data
+         * it just pass 7 seconds, and it's not enough for PostgreSQL incremental task to sync data
          */
-/*
-        stopMigrationByJobId(jobId);
-        sourceExecuteWithLog(String.format("INSERT INTO %s.%s (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, getSourceTableOrderName(), KEY_GENERATE_ALGORITHM.generateKey(),
-                1, "afterStop"));
-        startMigrationByJobId(jobId);
-        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-*/
+//        stopMigrationByJobId(jobId);
+//        sourceExecuteWithLog(String.format("INSERT INTO %s.%s (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, getSourceTableOrderName(), KEY_GENERATE_ALGORITHM.generateKey(),
+//                1, "afterStop"));
+//        startMigrationByJobId(jobId);
+//        waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
