@@ -44,7 +44,9 @@ jobs:
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
         exclude: 
           - feature: shadow
-            framework: [ spring-boot-starter-jpa, spring-namespace-jpa]
+            framework: spring-boot-starter-jpa
+          - feature: shadow
+            framework: spring-namespace-jpa
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
