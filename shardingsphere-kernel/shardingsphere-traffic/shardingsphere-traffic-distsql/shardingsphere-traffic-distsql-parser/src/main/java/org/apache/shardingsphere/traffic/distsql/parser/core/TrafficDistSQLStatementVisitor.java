@@ -65,8 +65,8 @@ public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatemen
         if (null != ctx.loadBalancerDefinition()) {
             loadBalancerSegment = (AlgorithmSegment) visit(ctx.loadBalancerDefinition().algorithmDefinition());
         }
-        return new TrafficRuleSegment(getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()),
-                (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
+        return new TrafficRuleSegment(
+                getIdentifierValue(ctx.ruleName()), buildLabels(ctx.labelDefinition()), (AlgorithmSegment) visit(ctx.trafficAlgorithmDefinition().algorithmDefinition()), loadBalancerSegment);
     }
     
     private Collection<String> buildLabels(final LabelDefinitionContext labelDefinition) {

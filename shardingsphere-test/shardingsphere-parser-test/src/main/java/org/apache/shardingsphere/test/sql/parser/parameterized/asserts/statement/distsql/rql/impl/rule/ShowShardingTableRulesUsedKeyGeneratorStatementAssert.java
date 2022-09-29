@@ -45,17 +45,17 @@ public final class ShowShardingTableRulesUsedKeyGeneratorStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableRulesUsedKeyGeneratorStatement actual,
                                 final ShowShardingTableRulesUsedKeyGeneratorStatementTestCase expected) {
-        if (null != expected.getDatabase()) {
+        if (null == expected.getDatabase()) {
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
-        } else {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
-        if (!Strings.isNullOrEmpty(expected.getKeyGenerator())) {
+        if (Strings.isNullOrEmpty(expected.getKeyGenerator())) {
+            assertFalse(assertContext.getText("Actual keyGenerator should not exist."), actual.getKeyGeneratorName().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual keyGenerator should exist."), actual.getKeyGeneratorName().isPresent());
             assertThat(assertContext.getText("KeyGenerator assertion error:"), actual.getKeyGeneratorName().get(), is(expected.getKeyGenerator()));
-        } else {
-            assertFalse(assertContext.getText("Actual keyGenerator should not exist."), actual.getKeyGeneratorName().isPresent());
         }
     }
 }

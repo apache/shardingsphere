@@ -82,7 +82,9 @@ public final class AlterTableStatementAssert {
     
     private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         Optional<ConvertTableDefinitionSegment> convertTable = actual.getConvertTableDefinition();
-        if (null != expected.getConvertTable()) {
+        if (null == expected.getConvertTable()) {
+            assertFalse(assertContext.getText("Actual convert table segment should not exist."), convertTable.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual convert table segment should exist."), convertTable.isPresent());
             CharsetAssert.assertIs(assertContext, convertTable.get().getCharsetName(), expected.getConvertTable().getCharsetName());
             if (null == expected.getConvertTable().getCollateExpression()) {
@@ -91,8 +93,6 @@ public final class AlterTableStatementAssert {
                 ExpressionAssert.assertExpression(assertContext, convertTable.get().getCollateValue(), expected.getConvertTable().getCollateExpression().getCollateName());
             }
             SQLSegmentAssert.assertIs(assertContext, convertTable.get(), expected.getConvertTable());
-        } else {
-            assertFalse(assertContext.getText("Actual convert table segment should not exist."), convertTable.isPresent());
         }
     }
     

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.impl.rule;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAuditorsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAuditorsStatementTestCase;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Show unused sharding auditors statement assert.
@@ -41,11 +41,11 @@ public final class ShowUnusedShardingAuditorsStatementAssert {
      * @param expected expected show unused sharding auditors statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowUnusedShardingAuditorsStatement actual, final ShowUnusedShardingAuditorsStatementTestCase expected) {
-        if (null != expected.getDatabase()) {
+        if (null == expected.getDatabase()) {
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
-        } else {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

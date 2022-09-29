@@ -22,7 +22,6 @@ import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunner
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -80,10 +79,10 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
      * @return all executors
      */
     public Collection<ParallelRunnerExecutor> getAllExecutors() {
-        List<ParallelRunnerExecutor> executors = new LinkedList<>(this.executors.values());
+        Collection<ParallelRunnerExecutor> result = new LinkedList<>(executors.values());
         if (null != defaultExecutor) {
-            executors.add(defaultExecutor);
+            result.add(defaultExecutor);
         }
-        return executors;
+        return result;
     }
 }

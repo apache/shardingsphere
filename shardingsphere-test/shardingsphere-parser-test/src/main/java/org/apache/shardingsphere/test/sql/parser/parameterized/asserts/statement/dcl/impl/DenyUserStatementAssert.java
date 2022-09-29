@@ -48,11 +48,11 @@ public final class DenyUserStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final SQLServerDenyUserStatement actual, final DenyUserStatementTestCase expected) {
-        if (null != expected.getTable()) {
+        if (null == expected.getTable()) {
+            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+        } else {
             assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
-        } else {
-            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
         }
     }
     

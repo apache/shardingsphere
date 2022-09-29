@@ -134,8 +134,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         log.info("start disable check job {}", jobId);
         PipelineJobItemProgress jobProgress = getJobItemProgress(jobId, 0);
         if (null != jobProgress && JobStatus.FINISHED == jobProgress.getStatus()) {
-            String errorMessage = String.format("job already finished, can use `CHECK MIGRATION '%s'` to start a new data consistency check job", jobId);
-            throw new PipelineJobHasAlreadyFinishedException(errorMessage);
+            throw new PipelineJobHasAlreadyFinishedException(String.format("job already finished, can use `CHECK MIGRATION '%s'` to start a new data consistency check job", jobId));
         }
         super.startDisabledJob(jobId);
     }
