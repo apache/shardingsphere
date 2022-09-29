@@ -287,7 +287,7 @@ public abstract class BaseITCase {
             }
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
-            if (Collections.min(incrementalIdleSecondsList) <= 5) {
+            if (Collections.min(incrementalIdleSecondsList) < 15) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
             }
