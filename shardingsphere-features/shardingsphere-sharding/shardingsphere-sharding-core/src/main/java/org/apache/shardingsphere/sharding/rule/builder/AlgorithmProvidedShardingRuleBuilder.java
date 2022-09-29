@@ -37,7 +37,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements DatabaseRuleB
     @Override
     public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration config, final String databaseName,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        Preconditions.checkArgument(null != dataSources && !dataSources.isEmpty(), "Data sources cannot be empty.");
+        Preconditions.checkArgument(null != dataSources && !dataSources.isEmpty(), "Data sources can not be empty");
         return new ShardingRule(config, dataSources.keySet(), instanceContext);
     }
     

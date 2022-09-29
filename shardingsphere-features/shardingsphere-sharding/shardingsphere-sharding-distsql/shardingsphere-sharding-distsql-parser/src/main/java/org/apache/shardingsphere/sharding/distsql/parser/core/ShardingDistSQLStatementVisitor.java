@@ -221,8 +221,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingBindingTableRules(final DropShardingBindingTableRulesContext ctx) {
-        Collection<BindingTableRuleSegment> tableNames = null == ctx.bindTableRulesDefinition() ? Collections.emptyList()
-                : createBindingTableRuleSegment(ctx.bindTableRulesDefinition());
+        Collection<BindingTableRuleSegment> tableNames = null == ctx.bindTableRulesDefinition() ? Collections.emptyList() : createBindingTableRuleSegment(ctx.bindTableRulesDefinition());
         return new DropShardingBindingTableRulesStatement(null != ctx.ifExists(), tableNames);
     }
     
@@ -325,8 +324,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitShardingTableRule(final ShardingTableRuleContext ctx) {
-        KeyGenerateStrategySegment keyGenerateSegment = null != ctx.keyGenerateDeclaration() ? (KeyGenerateStrategySegment) visit(ctx.keyGenerateDeclaration()) : null;
-        AuditStrategySegment auditStrategySegment = null != ctx.auditDeclaration() ? (AuditStrategySegment) visit(ctx.auditDeclaration()) : null;
+        KeyGenerateStrategySegment keyGenerateSegment = null == ctx.keyGenerateDeclaration() ? null : (KeyGenerateStrategySegment) visit(ctx.keyGenerateDeclaration());
+        AuditStrategySegment auditStrategySegment = null == ctx.auditDeclaration() ? null : (AuditStrategySegment) visit(ctx.auditDeclaration());
         TableRuleSegment result = new TableRuleSegment(getIdentifierValue(ctx.tableName()), getDataNodes(ctx.dataNodes()), keyGenerateSegment, auditStrategySegment);
         Optional.ofNullable(ctx.tableStrategy()).ifPresent(optional -> result.setTableStrategySegment((ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy())));
         Optional.ofNullable(ctx.databaseStrategy()).ifPresent(optional -> result.setDatabaseStrategySegment((ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy())));

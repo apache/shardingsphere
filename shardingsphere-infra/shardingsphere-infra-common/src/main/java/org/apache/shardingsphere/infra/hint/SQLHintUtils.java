@@ -35,7 +35,7 @@ public final class SQLHintUtils {
     
     private static final String SQL_COMMENT_SUFFIX = "*/";
     
-    private static final String SQL_HINT_TOKEN = "shardingsphere hint:";
+    private static final String SQL_HINT_TOKEN = "shardingsphere_hint:";
     
     private static final String SQL_HINT_SPLIT = ",";
     
@@ -63,7 +63,7 @@ public final class SQLHintUtils {
         for (String each : sqlHints) {
             List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
             if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
-                result.put(hintValues.get(0), hintValues.get(1));
+                result.put(hintValues.get(0).toUpperCase(), hintValues.get(1));
             }
         }
         return result;

@@ -89,15 +89,16 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShowShadowAlgorithms(final ShowShadowAlgorithmsContext ctx) {
-        return new ShowShadowAlgorithmsStatement(null != ctx.databaseName() ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+        return new ShowShadowAlgorithmsStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
     public ASTNode visitShadowAlgorithmDefinition(final ShadowAlgorithmDefinitionContext ctx) {
         AlgorithmSegment segment = new AlgorithmSegment(getIdentifierValue(ctx.shadowAlgorithmType()), getAlgorithmProperties(ctx.algorithmProperties()));
-        String algorithmName = null != ctx.algorithmName() ? getIdentifierValue(ctx.algorithmName())
-                : createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()),
-                        getIdentifierValue(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment);
+        String algorithmName = null == ctx.algorithmName()
+                ? createAlgorithmName(getIdentifierValue(((ShadowRuleDefinitionContext) ctx.getParent().getParent()).ruleName()),
+                        getIdentifierValue(((ShadowTableRuleContext) ctx.getParent()).tableName()), segment)
+                : getIdentifierValue(ctx.algorithmName());
         return new ShadowAlgorithmSegment(algorithmName, segment);
     }
     
@@ -109,8 +110,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitAlterShadowRule(final AlterShadowRuleContext ctx) {
-        List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(each -> (ShadowRuleSegment) each).collect(Collectors.toList());
-        return new AlterShadowRuleStatement(shadowRuleSegments);
+        return new AlterShadowRuleStatement(ctx.shadowRuleDefinition().stream().map(this::visit).map(each -> (ShadowRuleSegment) each).collect(Collectors.toList()));
     }
     
     @Override
@@ -130,7 +130,8 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitDropShadowAlgorithm(final DropShadowAlgorithmContext ctx) {
-        return new DropShadowAlgorithmStatement(null != ctx.ifExists(), null == ctx.algorithmName() ? Collections.emptyList()
+        return new DropShadowAlgorithmStatement(null != ctx.ifExists(), null == ctx.algorithmName()
+                ? Collections.emptyList()
                 : ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
     }
     
@@ -148,7 +149,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShowShadowTableRules(final ShowShadowTableRulesContext ctx) {
-        return new ShowShadowTableRulesStatement(null != ctx.databaseName() ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+        return new ShowShadowTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     private String getIdentifierValue(final ParserRuleContext ctx) {

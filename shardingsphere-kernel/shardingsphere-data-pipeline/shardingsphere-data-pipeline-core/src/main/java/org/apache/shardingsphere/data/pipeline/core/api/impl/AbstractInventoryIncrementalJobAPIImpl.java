@@ -173,7 +173,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps));
     }
     
-    private Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm) {
+    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm) {
         String jobId = jobConfig.getJobId();
         Map<String, DataConsistencyCheckResult> result = buildPipelineDataConsistencyChecker(jobConfig, buildPipelineProcessContext(jobConfig)).check(calculateAlgorithm);
         log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, calculateAlgorithm.getType(), result);
@@ -185,6 +185,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
         if (checkResults.isEmpty()) {
+            log.info("aggregateDataConsistencyCheckResults, checkResults empty, jobId={}", jobId);
             return false;
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {

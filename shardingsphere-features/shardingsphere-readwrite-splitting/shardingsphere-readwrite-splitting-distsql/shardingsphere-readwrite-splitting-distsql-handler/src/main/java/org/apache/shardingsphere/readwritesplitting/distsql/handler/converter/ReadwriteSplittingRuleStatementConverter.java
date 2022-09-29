@@ -48,12 +48,12 @@ public final class ReadwriteSplittingRuleStatementConverter {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1);
         for (ReadwriteSplittingRuleSegment each : ruleSegments) {
-            if (null != each.getLoadBalancer()) {
+            if (null == each.getLoadBalancer()) {
+                dataSources.add(createDataSourceRuleConfiguration(each, null, each.isAutoAware()));
+            } else {
                 String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
                 loadBalancers.put(loadBalancerName, createLoadBalancer(each));
                 dataSources.add(createDataSourceRuleConfiguration(each, loadBalancerName, each.isAutoAware()));
-            } else {
-                dataSources.add(createDataSourceRuleConfiguration(each, null, each.isAutoAware()));
             }
         }
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);

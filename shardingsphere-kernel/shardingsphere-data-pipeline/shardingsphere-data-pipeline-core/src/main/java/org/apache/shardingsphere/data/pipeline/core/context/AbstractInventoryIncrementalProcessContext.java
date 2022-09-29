@@ -50,9 +50,9 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     
     private final LazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer;
     
-    private final LazyInitializer<ExecuteEngine> incrementalDumperExecuteEngineLazyInitializer;
+    private final LazyInitializer<ExecuteEngine> inventoryImporterExecuteEngineLazyInitializer;
     
-    private final LazyInitializer<ExecuteEngine> importerExecuteEngineLazyInitializer;
+    private final LazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     public AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtil.convertWithDefaultValue(originalProcessConfig);
@@ -72,49 +72,41 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
                 return ExecuteEngine.newFixedThreadInstance(readConfig.getWorkerThread(), "Inventory-" + jobId);
             }
         };
-        incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
-            
-            @Override
-            protected ExecuteEngine initialize() {
-                return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobId);
-            }
-        };
-        importerExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+        inventoryImporterExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
             
             @Override
             protected ExecuteEngine initialize() {
                 return ExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
             }
         };
+        incrementalExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+            
+            @Override
+            protected ExecuteEngine initialize() {
+                return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobId);
+            }
+        };
     }
     
-    /**
-     * Get inventory dumper execute engine.
-     *
-     * @return inventory dumper execute engine
-     */
+    @Override
     @SneakyThrows(ConcurrentException.class)
     public ExecuteEngine getInventoryDumperExecuteEngine() {
         return inventoryDumperExecuteEngineLazyInitializer.get();
     }
     
-    /**
-     * Get incremental dumper execute engine.
-     *
-     * @return incremental dumper execute engine
-     */
+    @Override
     @SneakyThrows(ConcurrentException.class)
-    public ExecuteEngine getIncrementalDumperExecuteEngine() {
-        return incrementalDumperExecuteEngineLazyInitializer.get();
+    public ExecuteEngine getInventoryImporterExecuteEngine() {
+        return inventoryImporterExecuteEngineLazyInitializer.get();
     }
     
     /**
-     * Get importer execute engine.
+     * Get incremental execute engine.
      *
-     * @return importer execute engine
+     * @return incremental execute engine
      */
     @SneakyThrows(ConcurrentException.class)
-    public ExecuteEngine getImporterExecuteEngine() {
-        return importerExecuteEngineLazyInitializer.get();
+    public ExecuteEngine getIncrementalExecuteEngine() {
+        return incrementalExecuteEngineLazyInitializer.get();
     }
 }

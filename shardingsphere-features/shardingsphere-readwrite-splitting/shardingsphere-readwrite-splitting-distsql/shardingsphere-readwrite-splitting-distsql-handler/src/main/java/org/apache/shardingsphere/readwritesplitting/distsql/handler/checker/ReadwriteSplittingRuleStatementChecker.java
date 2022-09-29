@@ -75,9 +75,9 @@ public final class ReadwriteSplittingRuleStatementChecker {
     
     private static void checkDuplicateReadResourceNames(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
                                                         final Collection<String> readDataSourceNames) {
-        for (final ReadwriteSplittingRuleSegment each : segments) {
+        for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getReadDataSources()) {
-                for (final String readDataSource : each.getReadDataSources()) {
+                for (String readDataSource : each.getReadDataSources()) {
                     ShardingSpherePreconditions.checkState(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("readwrite splitting", each.getName(),
                             String.format("Can not config duplicate read resource `%s` in database `%s`", readDataSource, databaseName)));
                 }

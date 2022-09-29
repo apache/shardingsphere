@@ -70,9 +70,7 @@ public final class InventoryTaskSplitterTest {
         InventoryDumperConfiguration dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         dumperConfig.setUniqueKeyDataType(Types.INTEGER);
         dumperConfig.setUniqueKey("order_id");
-        inventoryTaskSplitter = new InventoryTaskSplitter(
-                jobItemContext.getSourceDataSource(), dumperConfig, jobItemContext.getTaskConfig().getImporterConfig(), jobItemContext.getInitProgress(),
-                jobItemContext.getSourceMetaDataLoader(), jobItemContext.getDataSourceManager(), jobItemContext.getJobProcessContext().getImporterExecuteEngine());
+        inventoryTaskSplitter = new InventoryTaskSplitter(jobItemContext.getSourceDataSource(), dumperConfig, jobItemContext.getTaskConfig().getImporterConfig());
     }
     
     private void initJobItemContext() throws NoSuchFieldException, IllegalAccessException {
