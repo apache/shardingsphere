@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.container.compose;
 
+import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.container.compose.mode.ClusterContainerComposer;
 import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneContainerComposer;
@@ -75,21 +76,15 @@ public final class ContainerComposerRegistry implements AutoCloseable {
     
     @SneakyThrows
     private void closeTargetDataSource(final DataSource targetDataSource) {
-        if (targetDataSource instanceof AutoCloseable) {
-            ((AutoCloseable) targetDataSource).close();
-        } else {
-            throw new RuntimeException("targetDataSource is not AutoCloseable");
-        }
+        Preconditions.checkState(targetDataSource instanceof AutoCloseable, "target data source is not implement AutoCloseable");
+        ((AutoCloseable) targetDataSource).close();
     }
     
     @SneakyThrows
     private void closeActualDataSourceMap(final Map<String, DataSource> actualDataSourceMap) {
         for (DataSource each : actualDataSourceMap.values()) {
-            if (each instanceof AutoCloseable) {
-                ((AutoCloseable) each).close();
-            } else {
-                throw new RuntimeException("actualDataSource is not AutoCloseable");
-            }
+            Preconditions.checkState(each instanceof AutoCloseable, "actual data source is not implement AutoCloseable");
+            ((AutoCloseable) each).close();
         }
     }
     

@@ -61,14 +61,8 @@ public final class ReflectionUtil {
      * @throws NoSuchFieldException no such field exception
      */
     public static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field result;
-        if (isDeclared) {
-            result = targetClass.getDeclaredField(fieldName);
-        } else {
-            result = targetClass.getField(fieldName);
-        }
+        Field result = isDeclared ? targetClass.getDeclaredField(fieldName) : targetClass.getField(fieldName);
         result.setAccessible(true);
         return result;
     }
-    
 }

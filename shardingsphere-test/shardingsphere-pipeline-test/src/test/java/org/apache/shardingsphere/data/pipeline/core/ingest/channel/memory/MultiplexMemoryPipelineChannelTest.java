@@ -95,11 +95,7 @@ public final class MultiplexMemoryPipelineChannelTest {
         Record[] result = new Record[100];
         Random random = new Random();
         for (int i = 1; i <= result.length; i++) {
-            if (random.nextBoolean()) {
-                result[i - 1] = new DataRecord(new IntPosition(i), 0);
-            } else {
-                result[i - 1] = new PlaceholderRecord(new IntPosition(i));
-            }
+            result[i - 1] = random.nextBoolean() ? new DataRecord(new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
         }
         return result;
     }

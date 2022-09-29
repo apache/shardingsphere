@@ -85,10 +85,10 @@ public final class AlterTableStatementAssert {
         if (null != expected.getConvertTable()) {
             assertTrue(assertContext.getText("Actual convert table segment should exist."), convertTable.isPresent());
             CharsetAssert.assertIs(assertContext, convertTable.get().getCharsetName(), expected.getConvertTable().getCharsetName());
-            if (null != expected.getConvertTable().getCollateExpression()) {
-                ExpressionAssert.assertExpression(assertContext, convertTable.get().getCollateValue(), expected.getConvertTable().getCollateExpression().getCollateName());
-            } else {
+            if (null == expected.getConvertTable().getCollateExpression()) {
                 assertNull(assertContext.getText("Actual collate expression should not exist."), convertTable.get().getCollateValue());
+            } else {
+                ExpressionAssert.assertExpression(assertContext, convertTable.get().getCollateValue(), expected.getConvertTable().getCollateExpression().getCollateName());
             }
             SQLSegmentAssert.assertIs(assertContext, convertTable.get(), expected.getConvertTable());
         } else {
@@ -98,11 +98,11 @@ public final class AlterTableStatementAssert {
     
     private static void assertRenameTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = actual.getRenameTable();
-        if (null != expected.getRenameTable()) {
+        if (null == expected.getRenameTable()) {
+            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getRenameTable());
-        } else {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
         }
     }
     

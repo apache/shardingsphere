@@ -185,11 +185,9 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
-        if (firstQuery) {
-            return "SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
-        } else {
-            return "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
-        }
+        return firstQuery
+                ? "SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?"
+                : "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
     }
     
     @Override

@@ -341,52 +341,39 @@ public final class ExpressionAssert {
         }
         assertNotNull(assertContext.getText("Actual expression should exist."), actual);
         if (actual instanceof BinaryOperationExpression) {
-            assertBinaryOperationExpression(assertContext,
-                    (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());
+            assertBinaryOperationExpression(assertContext, (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());
         } else if (actual instanceof SubqueryExpressionSegment) {
-            assertSubqueryExpression(assertContext,
-                    (SubqueryExpressionSegment) actual, expected.getSubquery());
+            assertSubqueryExpression(assertContext, (SubqueryExpressionSegment) actual, expected.getSubquery());
         } else if (actual instanceof ColumnSegment) {
             ColumnAssert.assertIs(assertContext, (ColumnSegment) actual, expected.getColumn());
         } else if (actual instanceof DataTypeSegment) {
             DataTypeAssert.assertIs(assertContext, (DataTypeSegment) actual, expected.getDataType());
         } else if (actual instanceof LiteralExpressionSegment) {
-            assertLiteralExpression(assertContext,
-                    (LiteralExpressionSegment) actual, expected.getLiteralExpression());
+            assertLiteralExpression(assertContext, (LiteralExpressionSegment) actual, expected.getLiteralExpression());
         } else if (actual instanceof ParameterMarkerExpressionSegment) {
-            assertParameterMarkerExpression(assertContext,
-                    (ParameterMarkerExpressionSegment) actual, expected.getParameterMarkerExpression());
+            assertParameterMarkerExpression(assertContext, (ParameterMarkerExpressionSegment) actual, expected.getParameterMarkerExpression());
         } else if (actual instanceof ExistsSubqueryExpression) {
-            assertExistsSubqueryExpression(assertContext,
-                    (ExistsSubqueryExpression) actual, expected.getExistsSubquery());
+            assertExistsSubqueryExpression(assertContext, (ExistsSubqueryExpression) actual, expected.getExistsSubquery());
         } else if (actual instanceof CommonExpressionSegment) {
-            assertCommonExpression(assertContext,
-                    (ComplexExpressionSegment) actual, expected.getCommonExpression());
+            assertCommonExpression(assertContext, (ComplexExpressionSegment) actual, expected.getCommonExpression());
         } else if (actual instanceof InExpression) {
-            assertInExpression(assertContext,
-                    (InExpression) actual, expected.getInExpression());
+            assertInExpression(assertContext, (InExpression) actual, expected.getInExpression());
         } else if (actual instanceof NotExpression) {
-            assertNotExpression(assertContext,
-                    (NotExpression) actual, expected.getNotExpression());
+            assertNotExpression(assertContext, (NotExpression) actual, expected.getNotExpression());
         } else if (actual instanceof ListExpression) {
-            assertListExpression(assertContext,
-                    (ListExpression) actual, expected.getListExpression());
+            assertListExpression(assertContext, (ListExpression) actual, expected.getListExpression());
         } else if (actual instanceof BetweenExpression) {
-            assertBetweenExpression(assertContext,
-                    (BetweenExpression) actual, expected.getBetweenExpression());
+            assertBetweenExpression(assertContext, (BetweenExpression) actual, expected.getBetweenExpression());
         } else if (actual instanceof ExpressionProjectionSegment) {
-            ProjectionAssert.assertProjection(assertContext,
-                    (ExpressionProjectionSegment) actual, expected.getExpressionProjection());
+            ProjectionAssert.assertProjection(assertContext, (ExpressionProjectionSegment) actual, expected.getExpressionProjection());
         } else if (actual instanceof AggregationProjectionSegment) {
-            ProjectionAssert.assertProjection(assertContext,
-                    (AggregationProjectionSegment) actual, expected.getAggregationProjection());
+            ProjectionAssert.assertProjection(assertContext, (AggregationProjectionSegment) actual, expected.getAggregationProjection());
         } else if (actual instanceof FunctionSegment) {
             assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
         } else if (actual instanceof CollateExpression) {
             assertCollateExpression(assertContext, (CollateExpression) actual, expected.getCollateExpression());
         } else {
-            throw new UnsupportedOperationException(
-                    String.format("Unsupported expression  : %s.", actual.getClass().getName()));
+            throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }
     }
 }

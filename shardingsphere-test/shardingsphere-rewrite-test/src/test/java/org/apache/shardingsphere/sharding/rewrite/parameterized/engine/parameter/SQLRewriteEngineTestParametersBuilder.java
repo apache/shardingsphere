@@ -114,12 +114,11 @@ public final class SQLRewriteEngineTestParametersBuilder {
     private static List<Object> createInputParameters(final String inputParameters) {
         if (null == inputParameters) {
             return Collections.emptyList();
-        } else {
-            return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
-                Object result = Ints.tryParse(each);
-                return null == result ? each : result;
-            }).collect(Collectors.toList());
         }
+        return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
+            Object result = Ints.tryParse(each);
+            return null == result ? each : result;
+        }).collect(Collectors.toList());
     }
     
     private static List<String> createOutputSQLs(final List<RewriteOutputEntity> outputs) {

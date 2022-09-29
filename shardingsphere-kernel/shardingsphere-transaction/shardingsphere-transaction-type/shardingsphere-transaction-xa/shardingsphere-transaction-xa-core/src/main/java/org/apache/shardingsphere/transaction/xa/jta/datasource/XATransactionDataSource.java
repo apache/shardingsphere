@@ -104,10 +104,10 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     @Override
     public void close() {
-        if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
-            xaTransactionManagerProvider.removeRecoveryResource(resourceName, xaDataSource);
-        } else {
+        if (CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
             close(dataSource);
+        } else {
+            xaTransactionManagerProvider.removeRecoveryResource(resourceName, xaDataSource);
         }
     }
     

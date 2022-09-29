@@ -513,14 +513,14 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         }
         if (null != ctx.TYPE_CAST_() || null != ctx.qualOp()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.bExpr(0));
-            ExpressionSegment right;
             String operator;
-            if (null != ctx.TYPE_CAST_()) {
-                operator = ctx.TYPE_CAST_().getText();
-                right = new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText());
-            } else {
+            ExpressionSegment right;
+            if (null == ctx.TYPE_CAST_()) {
                 operator = ctx.qualOp().getText();
                 right = (ExpressionSegment) visit(ctx.bExpr(1));
+            } else {
+                operator = ctx.TYPE_CAST_().getText();
+                right = new CommonExpressionSegment(ctx.typeName().start.getStartIndex(), ctx.typeName().stop.getStopIndex(), ctx.typeName().getText());
             }
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
@@ -666,40 +666,40 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public ASTNode visitQualifiedName(final QualifiedNameContext ctx) {
-        if (null != ctx.indirection()) {
-            AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
-            TableNameSegment tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
-            OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
-            SimpleTableSegment result = new SimpleTableSegment(tableName);
-            if (null != ctx.indirection().indirection()) {
-                OwnerSegment tableOwner = createTableOwner(ctx.indirection().indirection());
-                tableOwner.setOwner(owner);
-                result.setOwner(tableOwner);
-            } else {
-                result.setOwner(owner);
-            }
-            return result;
+        if (null == ctx.indirection()) {
+            return new SimpleTableSegment(new TableNameSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
         }
-        return new SimpleTableSegment(new TableNameSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+        AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();
+        TableNameSegment tableName = new TableNameSegment(attrName.start.getStartIndex(), attrName.stop.getStopIndex(), new IdentifierValue(attrName.getText()));
+        OwnerSegment owner = new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+        SimpleTableSegment result = new SimpleTableSegment(tableName);
+        if (null == ctx.indirection().indirection()) {
+            result.setOwner(owner);
+        } else {
+            OwnerSegment tableOwner = createTableOwner(ctx.indirection().indirection());
+            tableOwner.setOwner(owner);
+            result.setOwner(tableOwner);
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
         OpenGaussInsertStatement result = new OpenGaussInsertStatement();
-        if (null != ctx.insertColumnList()) {
+        if (null == ctx.insertColumnList()) {
+            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+        } else {
             InsertColumnListContext insertColumns = ctx.insertColumnList();
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
             InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
             result.setInsertColumns(insertColumnsSegment);
-        } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
-        if (null != valuesClause) {
-            result.getValues().addAll(createInsertValuesSegments(valuesClause));
-        } else {
+        if (null == valuesClause) {
             OpenGaussSelectStatement selectStatement = (OpenGaussSelectStatement) visit(ctx.select());
             result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement));
+        } else {
+            result.getValues().addAll(createInsertValuesSegments(valuesClause));
         }
         return result;
     }
@@ -720,13 +720,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     public ASTNode visitAssignment(final AssignmentContext ctx) {
         List<ColumnSegment> columnSegments = Collections.singletonList((ColumnSegment) visit(ctx.setTarget()));
         ExpressionSegment expressionSegment;
-        if (null != ctx.aExpr()) {
-            expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
-        } else {
+        if (null == ctx.aExpr()) {
             String value = ctx.start.getInputStream().getText(new Interval(ctx.VALUES().getSymbol().getStartIndex(), ctx.stop.getStopIndex()));
             FunctionSegment functionSegment = new FunctionSegment(ctx.VALUES().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), ctx.VALUES().getText(), value);
             functionSegment.getParameters().add(new ColumnSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), new IdentifierValue(ctx.name().getText())));
             expressionSegment = functionSegment;
+        } else {
+            expressionSegment = (ExpressionSegment) visit(ctx.aExpr());
         }
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }
@@ -743,13 +743,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     
     @Override
     public ASTNode visitInsertColumnItem(final InsertColumnItemContext ctx) {
-        if (null != ctx.optIndirection().indirectionEl()) {
-            ColumnSegment result = new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.optIndirection().stop.getStopIndex(),
-                    new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
-            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
-            return result;
+        if (null == ctx.optIndirection().indirectionEl()) {
+            return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
         }
-        return new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText()));
+        ColumnSegment result = new ColumnSegment(
+                ctx.colId().start.getStartIndex(), ctx.optIndirection().stop.getStopIndex(), new IdentifierValue(ctx.optIndirection().indirectionEl().attrName().getText()));
+        result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
+        return result;
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final ValuesClauseContext ctx) {
@@ -1146,13 +1146,14 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
         if (null != ctx.INNER()) {
             return JoinType.INNER.name();
-        } else if (null != ctx.FULL()) {
-            return JoinType.FULL.name();
-        } else if (null != ctx.LEFT()) {
-            return JoinType.LEFT.name();
-        } else {
-            return JoinType.RIGHT.name();
         }
+        if (null != ctx.FULL()) {
+            return JoinType.FULL.name();
+        }
+        if (null != ctx.LEFT()) {
+            return JoinType.LEFT.name();
+        }
+        return JoinType.RIGHT.name();
     }
     
     private JoinTableSegment visitJoinQual(final JoinQualContext ctx, final JoinTableSegment joinTableSource) {
