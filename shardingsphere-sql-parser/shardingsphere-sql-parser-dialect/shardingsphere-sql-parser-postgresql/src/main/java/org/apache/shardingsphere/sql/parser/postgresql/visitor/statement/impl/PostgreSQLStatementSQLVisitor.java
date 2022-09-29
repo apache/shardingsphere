@@ -1060,7 +1060,8 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
             result.setAlias(alias);
             return result;
         }
-        if (null == ctx.tableReference()) {// TODO deal with functionTable and xmlTable
+        if (null == ctx.tableReference()) {
+            // TODO deal with functionTable and xmlTable
             TableNameSegment tableName = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
             return new SimpleTableSegment(tableName);
         }
