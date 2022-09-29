@@ -71,7 +71,7 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     }
     
     @Override
-    protected void doStart() {
+    protected void runBlocking() {
         dump();
     }
     
