@@ -41,6 +41,7 @@ execute
     | alterDatabase
     | alterService
     | alterSchema
+    | alterView
     | dropTable
     | dropDatabase
     | dropFunction

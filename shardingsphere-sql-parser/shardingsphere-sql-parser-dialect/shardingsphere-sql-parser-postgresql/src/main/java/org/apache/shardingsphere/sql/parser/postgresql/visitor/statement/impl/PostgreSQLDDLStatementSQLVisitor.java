@@ -783,7 +783,6 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         PostgreSQLAlterViewStatement result = new PostgreSQLAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
-        result.setViewSQL(getOriginalText(ctx));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
             result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),

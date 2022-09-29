@@ -199,7 +199,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         MySQLAlterViewStatement result = new MySQLAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
-        result.setViewSQL(getOriginalText(ctx));
+        result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((MySQLSelectStatement) visit(ctx.select()));
         return result;
     }

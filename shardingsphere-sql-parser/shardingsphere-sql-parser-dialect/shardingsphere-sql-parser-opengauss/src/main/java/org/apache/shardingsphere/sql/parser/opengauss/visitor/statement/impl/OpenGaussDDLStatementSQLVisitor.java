@@ -632,7 +632,6 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         OpenGaussAlterViewStatement result = new OpenGaussAlterViewStatement();
-        result.setViewSQL(getOriginalText(ctx));
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();

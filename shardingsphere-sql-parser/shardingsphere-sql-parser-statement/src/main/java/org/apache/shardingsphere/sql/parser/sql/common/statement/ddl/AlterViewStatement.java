@@ -32,6 +32,4 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 public abstract class AlterViewStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SimpleTableSegment view;
-    
-    private String viewSQL;
 }
