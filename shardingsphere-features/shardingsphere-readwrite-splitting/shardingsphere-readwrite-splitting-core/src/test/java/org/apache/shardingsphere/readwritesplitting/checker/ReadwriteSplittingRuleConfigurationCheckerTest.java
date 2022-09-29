@@ -66,7 +66,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalStateException.class)
     public void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
@@ -84,7 +84,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = NullPointerException.class)
     public void assertCheckWhenConfigInvalidWriteDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
@@ -97,7 +97,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = NullPointerException.class)
     public void assertCheckWhenConfigInvalidReadDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
