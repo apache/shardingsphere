@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.ShardingSphereBuiltInSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -112,6 +113,18 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereResource createResource(final String databaseName, final Map<String, DataSource> dataSourceMap) {
         return new ShardingSphereResource(databaseName, dataSourceMap);
+    }
+    
+    /**
+     * Create built in database.
+     * 
+     * @param databaseName database name
+     * @param protocolType protocol type
+     * @return sharding sphere database
+     */
+    public static ShardingSphereDatabase createBuiltInShardingSphereDatabase(final String databaseName, final DatabaseType protocolType) {
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
+        return create(databaseName, protocolType, databaseConfig, new LinkedList<>(), ShardingSphereBuiltInSchemaBuilder.build(protocolType));
     }
     
     /**
