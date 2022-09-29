@@ -59,7 +59,7 @@ public final class AlterDatabaseDiscoveryTypeStatementUpdater implements RuleDef
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig, () -> new MissingRequiredRuleException(RULE_TYPE, databaseName));
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException(RULE_TYPE, databaseName));
     }
     
     private void checkDuplicateDiscoveryType(final String databaseName, final AlterDatabaseDiscoveryTypeStatement sqlStatement) {

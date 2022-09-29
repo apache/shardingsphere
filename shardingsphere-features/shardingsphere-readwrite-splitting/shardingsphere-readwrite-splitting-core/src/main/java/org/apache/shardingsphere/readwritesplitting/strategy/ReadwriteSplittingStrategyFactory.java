@@ -45,8 +45,9 @@ public final class ReadwriteSplittingStrategyFactory {
      * @return created instance
      */
     public static ReadwriteSplittingStrategy newInstance(final ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingConfig, final Collection<ShardingSphereRule> builtRules) {
-        return null != readwriteSplittingConfig.getStaticStrategy() ? createStaticReadwriteSplittingStrategy(readwriteSplittingConfig.getStaticStrategy())
-                : createDynamicReadwriteSplittingStrategy(readwriteSplittingConfig.getDynamicStrategy(), builtRules);
+        return null == readwriteSplittingConfig.getStaticStrategy()
+                ? createDynamicReadwriteSplittingStrategy(readwriteSplittingConfig.getDynamicStrategy(), builtRules)
+                : createStaticReadwriteSplittingStrategy(readwriteSplittingConfig.getStaticStrategy());
     }
     
     private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final StaticReadwriteSplittingStrategyConfiguration staticConfig) {

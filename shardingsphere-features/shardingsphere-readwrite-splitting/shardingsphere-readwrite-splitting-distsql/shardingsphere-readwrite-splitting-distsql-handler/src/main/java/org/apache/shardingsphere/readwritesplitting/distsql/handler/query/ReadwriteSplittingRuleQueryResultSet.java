@@ -76,7 +76,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DatabaseDistS
     
     private Collection<Object> buildDataItem(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, AlgorithmConfiguration> loadBalancers) {
         String name = dataSourceRuleConfig.getName();
-        Map<String, String> exportDataSources = null != dataSourceRuleConfig.getDynamicStrategy() ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
+        Map<String, String> exportDataSources = null == dataSourceRuleConfig.getDynamicStrategy() ? exportableDataSourceMap.get(name) : exportableAutoAwareDataSource.get(name);
         Optional<AlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return Arrays.asList(name,
                 getAutoAwareDataSourceName(dataSourceRuleConfig),
@@ -89,7 +89,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DatabaseDistS
     
     private Map<String, AlgorithmConfiguration> getLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Map<String, AlgorithmConfiguration> loadBalancers = ruleConfig.getLoadBalancers();
-        return null != loadBalancers ? loadBalancers : Collections.emptyMap();
+        return null == loadBalancers ? Collections.emptyMap() : loadBalancers;
     }
     
     private String getAutoAwareDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {

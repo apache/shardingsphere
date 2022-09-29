@@ -38,10 +38,6 @@ public final class YamlDynamicReadwriteSplittingStrategyConfigurationSwapper
     
     @Override
     public DynamicReadwriteSplittingStrategyConfiguration swapToObject(final YamlDynamicReadwriteSplittingStrategyConfiguration config) {
-        DynamicReadwriteSplittingStrategyConfiguration result = null;
-        if (null != config) {
-            result = new DynamicReadwriteSplittingStrategyConfiguration(config.getAutoAwareDataSourceName(), config.getWriteDataSourceQueryEnabled());
-        }
-        return result;
+        return null == config ? null : new DynamicReadwriteSplittingStrategyConfiguration(config.getAutoAwareDataSourceName(), config.getWriteDataSourceQueryEnabled());
     }
 }

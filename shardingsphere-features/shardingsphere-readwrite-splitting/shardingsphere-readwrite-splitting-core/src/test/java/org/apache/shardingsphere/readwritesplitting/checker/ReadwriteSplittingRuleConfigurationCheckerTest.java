@@ -66,7 +66,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = NullPointerException.class)
     public void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
