@@ -54,10 +54,14 @@ jobs:
           MYSQL_ROOT_PASSWORD: 123456
         ports:
           - 3306:3306
-        volumes:
-          - /mysql/init:/docker-entrypoint-initdb.d/
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
+      - uses: actions/checkout@v2
+        name: Prepare Env
+        run: |
+          mysql -uroot -h127.0.0.1 -p123456 -e 'CREATE DATABASE IF NOT EXISTS demo_ds_0;'
+          mysql -uroot -h127.0.0.1 -p123456 -e 'CREATE DATABASE IF NOT EXISTS demo_ds_1;'
+          mysql -uroot -h127.0.0.1 -p123456 -e 'CREATE DATABASE IF NOT EXISTS demo_ds_2;'
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
