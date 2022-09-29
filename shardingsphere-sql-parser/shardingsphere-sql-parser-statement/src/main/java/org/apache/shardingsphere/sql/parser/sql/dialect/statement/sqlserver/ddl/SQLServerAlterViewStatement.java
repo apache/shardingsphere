@@ -17,13 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter view statement.
  */
+@Getter
+@Setter
 @ToString(callSuper = true)
 public final class SQLServerAlterViewStatement extends AlterViewStatement implements SQLServerStatement {
+    
+    private SelectStatement select;
+    
+    private String viewDefinition;
 }

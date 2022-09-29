@@ -52,7 +52,7 @@ public final class AlterViewStatementContextTest {
         when(select.getFrom()).thenReturn(view);
         MySQLAlterViewStatement mySQLAlterViewStatement = mock(MySQLAlterViewStatement.class);
         when(mySQLAlterViewStatement.getView()).thenReturn(view);
-        when(mySQLAlterViewStatement.getSelect()).thenReturn(Optional.of(select));
+        when(mySQLAlterViewStatement.getSelect()).thenReturn(select);
         assertNewInstance(mySQLAlterViewStatement);
     }
     

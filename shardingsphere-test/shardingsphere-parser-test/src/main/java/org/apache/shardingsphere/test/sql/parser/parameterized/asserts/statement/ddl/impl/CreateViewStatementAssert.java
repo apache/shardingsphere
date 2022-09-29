@@ -37,11 +37,11 @@ import static org.junit.Assert.assertNull;
 public final class CreateViewStatementAssert {
     
     /**
-     * Assert create table statement is correct with expected parser result.
+     * Assert create view statement is correct with expected parser result.
      * 
      * @param assertContext assert context
-     * @param actual actual create table statement
-     * @param expected expected create table statement test case
+     * @param actual actual create view statement
+     * @param expected expected create view statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         assertView(assertContext, actual, expected);

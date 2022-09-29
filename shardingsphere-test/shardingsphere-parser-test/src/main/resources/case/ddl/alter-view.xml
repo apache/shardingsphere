@@ -17,13 +17,52 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-view sql-case-id="alter_view" />
-    <alter-view sql-case-id="alter_view_set_default_column" />
-    <alter-view sql-case-id="alter_view_drop_default" />
-    <alter-view sql-case-id="alter_view_owner" />
-    <alter-view sql-case-id="alter_view_rename" />
-    <alter-view sql-case-id="alter_view_rename_column" />
-    <alter-view sql-case-id="alter_view_set_schema" />
-    <alter-view sql-case-id="alter_view_set_view_option" />
-    <alter-view sql-case-id="alter_view_reset" />
+    <alter-view sql-case-id="alter_view">
+        <view name="customer_ro" start-index="11" stop-index="21" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_set_default_column">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_drop_default">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_owner">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_rename">
+        <view name="order_view" start-index="11" stop-index="20" />
+        <rename-view name="new_order_view" start-index="32" stop-index="45" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_rename_column">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_set_schema">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_set_view_option">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+    
+    <alter-view sql-case-id="alter_view_reset">
+        <view name="order_view" start-index="11" stop-index="20" />
+    </alter-view>
+
+    <alter-view sql-case-id="alter_view_definition" view-definition="SELECT * FROM t_order">
+        <view name="order_view" start-index="11" stop-index="20" />
+        <select>
+            <projections start-index="32" stop-index="32">
+                <shorthand-projection start-index="32" stop-index="32" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="39" stop-index="45" />
+            </from>
+        </select>
+    </alter-view>
 </sql-parser-test-cases>

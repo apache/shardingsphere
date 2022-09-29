@@ -48,7 +48,6 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AlterViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
-        String viewDefinition = sqlStatement.getViewSQL().substring(sqlStatement.getViewSQL().substring(0, sqlStatement.getViewSQL().indexOf(" as ")).length() + 4).trim();
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         Optional<SimpleTableSegment> renameView = AlterViewStatementHandler.getRenameView(sqlStatement);
         if (renameView.isPresent()) {
@@ -60,8 +59,10 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
             event.getAlteredViews().add(database.getSchema(schemaName).getView(renameViewName));
             event.getDroppedTables().add(viewName);
             event.getDroppedViews().add(viewName);
-        } else {
-            putTableMetaData(database, logicDataSourceNames, schemaName, viewName, viewDefinition, props);
+        }
+        Optional<String> viewDefinition = AlterViewStatementHandler.getViewDefinition(sqlStatement);
+        if (viewDefinition.isPresent()) {
+            putTableMetaData(database, logicDataSourceNames, schemaName, viewName, viewDefinition.get(), props);
             event.getAlteredTables().add(database.getSchema(schemaName).getTable(viewName));
             event.getAlteredViews().add(database.getSchema(schemaName).getView(viewName));
         }

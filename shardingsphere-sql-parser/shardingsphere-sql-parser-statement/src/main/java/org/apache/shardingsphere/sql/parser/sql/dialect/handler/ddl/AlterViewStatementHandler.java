@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterViewStatement;
 
 import java.util.Optional;
 
@@ -46,7 +48,26 @@ public final class AlterViewStatementHandler implements SQLStatementHandler {
      */
     public static Optional<SelectStatement> getSelectStatement(final AlterViewStatement alterViewStatement) {
         if (alterViewStatement instanceof MySQLStatement) {
-            return ((MySQLAlterViewStatement) alterViewStatement).getSelect();
+            return Optional.of(((MySQLAlterViewStatement) alterViewStatement).getSelect());
+        }
+        if (alterViewStatement instanceof SQLServerStatement) {
+            return Optional.of(((SQLServerAlterViewStatement) alterViewStatement).getSelect());
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get view definition.
+     *
+     * @param alterViewStatement AlterViewStatement
+     * @return view definition
+     */
+    public static Optional<String> getViewDefinition(final AlterViewStatement alterViewStatement) {
+        if (alterViewStatement instanceof MySQLStatement) {
+            return Optional.of(((MySQLAlterViewStatement) alterViewStatement).getViewDefinition());
+        }
+        if (alterViewStatement instanceof SQLServerStatement) {
+            return Optional.of(((SQLServerAlterViewStatement) alterViewStatement).getViewDefinition());
         }
         return Optional.empty();
     }

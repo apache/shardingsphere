@@ -17,8 +17,24 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-view sql-case-id="drop_view" />
-    <drop-view sql-case-id="drop_view_with_schemaname" />
-    <drop-view sql-case-id="drop_view_cascade_constraints" />
-    <drop-view sql-case-id="drop_view_cascade" />
+    <drop-view sql-case-id="drop_view">
+        <view name="kinds" start-index="10" stop-index="14" />
+    </drop-view>
+    
+    <drop-view sql-case-id="drop_view_with_schemaname">
+        <view name="viewName" start-index="10" stop-index="28">
+            <owner name="schemaName" start-index="10" stop-index="19" />
+        </view>
+    </drop-view>
+    
+    <drop-view sql-case-id="drop_view_cascade_constraints">
+        <view name="viewName" start-index="10" stop-index="28">
+            <owner name="schemaName" start-index="10" stop-index="19" />
+        </view>
+    </drop-view>
+    
+    <drop-view sql-case-id="drop_view_cascade">
+        <view name="order_view" start-index="17" stop-index="26" />
+        <view name="kinds" start-index="10" stop-index="14" />
+    </drop-view>
 </sql-parser-test-cases>
