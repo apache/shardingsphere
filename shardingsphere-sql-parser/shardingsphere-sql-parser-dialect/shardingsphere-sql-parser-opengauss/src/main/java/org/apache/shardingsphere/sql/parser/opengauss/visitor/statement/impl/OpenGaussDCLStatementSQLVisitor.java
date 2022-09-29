@@ -73,12 +73,9 @@ public final class OpenGaussDCLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @SuppressWarnings("unchecked")
     private Optional<Collection<SimpleTableSegment>> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        if (null != ctx.onObjectClause() && null != ctx.onObjectClause().privilegeLevel()) {
-            if (null != ctx.onObjectClause().privilegeLevel().tableNames()) {
-                return Optional.of(((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue());
-            }
-        }
-        return Optional.empty();
+        return null == ctx.onObjectClause() || null == ctx.onObjectClause().privilegeLevel() || null == ctx.onObjectClause().privilegeLevel().tableNames()
+                ? Optional.empty()
+                : Optional.of(((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue());
     }
     
     @Override

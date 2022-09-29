@@ -53,11 +53,11 @@ public final class FetchStatementAssert {
     }
     
     private static void assertDirection(final SQLCaseAssertContext assertContext, final FetchStatement actual, final FetchStatementTestCase expected) {
-        if (null != expected.getDirection()) {
+        if (null == expected.getDirection()) {
+            assertFalse(assertContext.getText("Actual direction segment should not exist."), actual.getDirection().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual direction segment should exist."), actual.getDirection().isPresent());
             DirectionSegmentAssert.assertIs(assertContext, actual.getDirection().get(), expected.getDirection());
-        } else {
-            assertFalse(assertContext.getText("Actual direction segment should not exist."), actual.getDirection().isPresent());
         }
     }
 }

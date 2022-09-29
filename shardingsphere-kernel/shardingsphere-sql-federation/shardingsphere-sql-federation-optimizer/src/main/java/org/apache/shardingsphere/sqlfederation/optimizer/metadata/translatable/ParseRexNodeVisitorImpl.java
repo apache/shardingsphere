@@ -223,11 +223,11 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
                 lowerValue = BigDecimal.valueOf(Long.parseLong(lower));
                 upperValue = BigDecimal.valueOf(Long.parseLong(upper));
             }
-            if (null != each.LP_()) {
-                Range<BigDecimal> range = Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN);
+            if (null == each.LP_()) {
+                Range<BigDecimal> range = Range.range(lowerValue, BoundType.CLOSED, upperValue, BoundType.CLOSED);
                 rangeList.add(range);
             } else {
-                Range<BigDecimal> range = Range.range(lowerValue, BoundType.CLOSED, upperValue, BoundType.CLOSED);
+                Range<BigDecimal> range = Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN);
                 rangeList.add(range);
             }
         }

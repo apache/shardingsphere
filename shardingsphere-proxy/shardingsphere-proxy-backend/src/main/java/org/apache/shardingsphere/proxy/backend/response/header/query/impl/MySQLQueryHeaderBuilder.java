@@ -40,14 +40,14 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
         String tableName;
         boolean primaryKey;
-        if (null != actualTableName && null != database) {
+        if (null == actualTableName || null == database) {
+            tableName = actualTableName;
+            primaryKey = false;
+        } else {
             tableName = getLogicTableName(database, actualTableName);
             ShardingSphereSchema schema = database.getSchema(schemaName);
             primaryKey = null != schema
                     && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
-        } else {
-            tableName = actualTableName;
-            primaryKey = false;
         }
         int columnType = queryResultMetaData.getColumnType(columnIndex);
         String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);

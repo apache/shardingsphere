@@ -77,12 +77,13 @@ public final class PostgreSQLDCLStatementSQLVisitor extends PostgreSQLStatementS
     
     @SuppressWarnings("unchecked")
     private Optional<Collection<SimpleTableSegment>> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        if (null != ctx.onObjectClause() && null != ctx.onObjectClause().privilegeLevel()) {
-            if (null != ctx.onObjectClause().privilegeLevel().tableNames()) {
-                return Optional.of(((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue());
-            }
+        if (null == ctx.onObjectClause() || null == ctx.onObjectClause().privilegeLevel()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        if (null == ctx.onObjectClause().privilegeLevel().tableNames()) {
+            return Optional.empty();
+        }
+        return Optional.of(((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue());
     }
     
     @Override

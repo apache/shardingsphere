@@ -55,21 +55,21 @@ public final class AlterViewStatementAssert {
     }
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
-        if (null != expected.getViewDefinition()) {
+        if (null == expected.getViewDefinition()) {
+            assertFalse("actual view definition should not exist", AlterViewStatementHandler.getViewDefinition(actual).isPresent());
+        } else {
             assertTrue("actual view definition should exist", AlterViewStatementHandler.getViewDefinition(actual).isPresent());
             assertThat(assertContext.getText(String.format("`%s`'s view definition assertion error: ", actual.getClass().getSimpleName())), AlterViewStatementHandler.getViewDefinition(actual).get(),
                     is(expected.getViewDefinition()));
-        } else {
-            assertFalse("actual view definition should not exist", AlterViewStatementHandler.getViewDefinition(actual).isPresent());
         }
     }
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
-        if (null != expected.getSelectStatement()) {
+        if (null == expected.getSelectStatement()) {
+            assertFalse("actual select statement should not exist", AlterViewStatementHandler.getSelectStatement(actual).isPresent());
+        } else {
             assertTrue("actual select statement should exist", AlterViewStatementHandler.getSelectStatement(actual).isPresent());
             SelectStatementAssert.assertIs(assertContext, AlterViewStatementHandler.getSelectStatement(actual).get(), expected.getSelectStatement());
-        } else {
-            assertFalse("actual select statement should not exist", AlterViewStatementHandler.getSelectStatement(actual).isPresent());
         }
     }
 }

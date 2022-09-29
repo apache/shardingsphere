@@ -123,12 +123,12 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable, P
     }
     
     private Collection<String> getPluginNames() {
-        AgentConfiguration configuration = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
-        Set<String> pluginNames = new HashSet<>();
-        if (null != configuration && null != configuration.getPlugins()) {
-            pluginNames.addAll(configuration.getPlugins().keySet());
+        AgentConfiguration agentConfig = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
+        Set<String> result = new HashSet<>();
+        if (null != agentConfig && null != agentConfig.getPlugins()) {
+            result.addAll(agentConfig.getPlugins().keySet());
         }
-        return pluginNames;
+        return result;
     }
     
     /**
