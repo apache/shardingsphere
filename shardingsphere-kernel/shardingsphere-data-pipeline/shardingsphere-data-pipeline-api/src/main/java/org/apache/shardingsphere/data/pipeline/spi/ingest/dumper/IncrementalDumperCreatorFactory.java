@@ -22,6 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
+import java.util.Optional;
+
 /**
  * Incremental dumper creator factory.
  */
@@ -33,12 +35,22 @@ public class IncrementalDumperCreatorFactory {
     }
     
     /**
-     * Incremental dumper creator.
+     * Get incremental dumper creator.
      *
      * @param databaseType database type
      * @return incremental dumper creator
      */
     public static IncrementalDumperCreator getInstance(final String databaseType) {
         return TypedSPIRegistry.getRegisteredService(IncrementalDumperCreator.class, databaseType);
+    }
+    
+    /**
+     * Find incremental dumper creator.
+     *
+     * @param databaseType database type
+     * @return incremental dumper creator optional
+     */
+    public static Optional<IncrementalDumperCreator> findInstance(final String databaseType) {
+        return TypedSPIRegistry.findRegisteredService(IncrementalDumperCreator.class, databaseType);
     }
 }
