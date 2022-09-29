@@ -31,14 +31,14 @@ public final class SQLHintTrafficAlgorithmTest {
     @Test
     public void assertMatchWhenSQLHintAllMatch() {
         Properties props = new Properties();
-        props.put("useTraffic", Boolean.TRUE.toString());
+        props.put("USE_TRAFFIC", Boolean.TRUE.toString());
         assertTrue(new SQLHintTrafficAlgorithm().match(new HintTrafficValue(new SQLHintProperties(props))));
     }
     
     @Test
     public void assertMatchWhenSQLHintOneMatch() {
         Properties props = new Properties();
-        props.put("useTraffic", Boolean.FALSE.toString());
+        props.put("USE_TRAFFIC", Boolean.FALSE.toString());
         assertFalse(new SQLHintTrafficAlgorithm().match(new HintTrafficValue(new SQLHintProperties(props))));
     }
 }

@@ -39,7 +39,7 @@ public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
     
     @Override
     public boolean match(final HintTrafficValue hintTrafficValue) {
-        return hintTrafficValue.getSqlHintProps().getValue(SQLHintPropertiesKey.USE_TRAFFIC);
+        return hintTrafficValue.getSqlHintProps().getValue(SQLHintPropertiesKey.USE_TRAFFIC_KEY);
     }
     
     @Override

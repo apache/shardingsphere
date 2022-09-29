@@ -50,13 +50,13 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="update_blank_to_clear_plain_with_skip_encrypt_rewrite_true" db-types="MySQL">
-        <input sql="/*shardingsphere hint: skipEncryptRewrite=true*/UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
-        <output sql="/*shardingsphere hint: skipEncryptRewrite=true*/UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
+        <input sql="/*SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true*/UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
+        <output sql="/*SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true*/UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_blank_to_clear_plain_with_skip_encrypt_rewrite_false" db-types="MySQL">
-        <input sql="/*shardingsphere hint: skipEncryptRewrite=false*/UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
-        <output sql="/*shardingsphere hint: skipEncryptRewrite=false*/UPDATE t_account_bak SET cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', plain_certificate_number = '', status = 'OK'" />
+        <input sql="/*SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=false*/UPDATE t_account_bak SET certificate_number = '', status = 'OK'" />
+        <output sql="/*SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=false*/UPDATE t_account_bak SET cipher_certificate_number = 'encrypt_', assisted_query_certificate_number = 'assisted_query_', plain_certificate_number = '', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_blank_to_clear_plain_with_normal_skip_encrypt_rewrite_hint" db-types="MySQL">
