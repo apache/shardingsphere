@@ -180,10 +180,9 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
             return Type.DELETED == event.getType()
                     ? new TableMetaDataChangedEvent(databaseName, schemaName, null, tableName.get())
                     : new TableMetaDataChangedEvent(databaseName, schemaName, new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), null);
-        } else {
-            return Type.DELETED == event.getType()
-                    ? new ViewMetaDataChangedEvent(databaseName, schemaName, null, viewName.get())
-                    : new ViewMetaDataChangedEvent(databaseName, schemaName, new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class)), null);
         }
+        return Type.DELETED == event.getType()
+                ? new ViewMetaDataChangedEvent(databaseName, schemaName, null, viewName.get())
+                : new ViewMetaDataChangedEvent(databaseName, schemaName, new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereView.class)), null);
     }
 }

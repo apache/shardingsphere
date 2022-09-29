@@ -510,10 +510,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         OpenGaussCreateIndexStatement result = new OpenGaussCreateIndexStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
-        if (null != ctx.indexName()) {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
-        } else {
+        if (null == ctx.indexName()) {
             result.setGeneratedIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
+        } else {
+            result.setIndex((IndexSegment) visit(ctx.indexName()));
         }
         return result;
     }
@@ -635,8 +635,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
-            result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),
-                    nameContext.getStop().getStopIndex(), (IdentifierValue) visit(nameContext.identifier()))));
+            result.setRenameView(
+                    new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(), nameContext.getStop().getStopIndex(), (IdentifierValue) visit(nameContext.identifier()))));
         }
         return result;
     }
@@ -941,7 +941,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitComment(final CommentContext ctx) {
         if (null != ctx.commentClauses().objectTypeAnyName() && null != ctx.commentClauses().objectTypeAnyName().TABLE()) {
             return commentOnTable(ctx);
-        } else if (null != ctx.commentClauses().COLUMN()) {
+        }
+        if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
         }
         return new OpenGaussCommentStatement();

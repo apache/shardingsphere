@@ -133,13 +133,10 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     @SuppressWarnings("rawtypes")
     private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
-        Object result;
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            result = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
-        } else {
-            result = ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        }
-        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+        Object result = expressionSegment instanceof ParameterMarkerExpressionSegment
+                ? parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
+                : ((LiteralExpressionSegment) expressionSegment).getLiterals();
+        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable");
         return (Comparable) result;
     }
     

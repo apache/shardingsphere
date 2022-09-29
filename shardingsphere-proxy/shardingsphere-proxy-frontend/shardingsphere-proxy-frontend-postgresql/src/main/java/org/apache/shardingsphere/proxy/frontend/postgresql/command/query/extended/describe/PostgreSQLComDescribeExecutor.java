@@ -136,12 +136,9 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ShardingSphereTable table = database.getSchema(schemaName).getTable(logicTableName);
         Map<String, ShardingSphereColumn> columns = table.getColumns();
         Map<String, ShardingSphereColumn> caseInsensitiveColumns = null;
-        List<String> columnNames;
-        if (insertStatement.getColumns().isEmpty()) {
-            columnNames = new ArrayList<>(table.getColumns().keySet());
-        } else {
-            columnNames = insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        }
+        List<String> columnNames = insertStatement.getColumns().isEmpty()
+                ? new ArrayList<>(table.getColumns().keySet())
+                : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
         Iterator<InsertValuesSegment> iterator = insertStatement.getValues().iterator();
         int parameterMarkerIndex = 0;
         while (iterator.hasNext()) {

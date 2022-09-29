@@ -203,10 +203,6 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void put(final Map<String, String> map, final String key, final String value) {
-        if (map.containsKey(key)) {
-            map.put(key, String.join(",", map.get(key), value));
-        } else {
-            map.put(key, value);
-        }
+        map.put(key, map.containsKey(key) ? String.join(",", map.get(key), value) : value);
     }
 }

@@ -57,13 +57,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     public DockerContainerComposer(final DatabaseType databaseType, final String storageContainerImage) {
         this.databaseType = databaseType;
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        StorageContainerConfiguration storageContainerConfig;
-        if (DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(storageContainerImage).getMajorVersion() > 5) {
-            storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null,
-                    Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER));
-        } else {
-            storageContainerConfig = StorageContainerConfigurationFactory.newInstance(databaseType);
-        }
+        StorageContainerConfiguration storageContainerConfig = DatabaseTypeUtil.isMySQL(databaseType) && new DockerImageVersion(storageContainerImage).getMajorVersion() > 5
+                ? MySQLContainerConfigurationFactory.newInstance(null, null, Collections.singletonMap("/env/mysql/mysql8/my.cnf", StorageContainerConstants.MYSQL_CONF_IN_CONTAINER))
+                : StorageContainerConfigurationFactory.newInstance(databaseType);
         storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage,
                 "", storageContainerConfig));
         AdaptorContainerConfiguration containerConfig = ScalingProxyClusterContainerConfigurationFactory.newInstance(databaseType, storageContainerImage);

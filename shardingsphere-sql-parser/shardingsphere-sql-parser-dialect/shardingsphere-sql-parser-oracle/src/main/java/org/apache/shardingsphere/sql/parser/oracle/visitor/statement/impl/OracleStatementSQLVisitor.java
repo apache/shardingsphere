@@ -355,13 +355,8 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-        ExpressionSegment right;
-        if (null != ctx.predicate()) {
-            right = (ExpressionSegment) visit(ctx.predicate());
-        } else {
-            right = (ExpressionSegment) visit(ctx.subquery());
-        }
-        String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
+        String operator = null == ctx.SAFE_EQ_() ? ctx.comparisonOperator().getText() : ctx.SAFE_EQ_().getText();
+        ExpressionSegment right = null != ctx.predicate() ? (ExpressionSegment) visit(ctx.predicate()) : (ExpressionSegment) visit(ctx.subquery());
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
@@ -383,14 +378,14 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     private InExpression createInSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
-        if (null != ctx.subquery()) {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery())));
-        } else {
+        if (null == ctx.subquery()) {
             ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
             right = listExpression;
+        } else {
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (OracleSelectStatement) visit(ctx.subquery())));
         }
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);

@@ -51,12 +51,10 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
         }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
-        if (functions.isEmpty()) {
-            return Optional.of(new SqlBasicCall(new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION),
-                    getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
-        } else {
-            return Optional.of(new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
-        }
+        return Optional.of(functions.isEmpty()
+                ? new SqlBasicCall(
+                        new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO)
+                : new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
     }
     
     private List<SqlNode> getFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {

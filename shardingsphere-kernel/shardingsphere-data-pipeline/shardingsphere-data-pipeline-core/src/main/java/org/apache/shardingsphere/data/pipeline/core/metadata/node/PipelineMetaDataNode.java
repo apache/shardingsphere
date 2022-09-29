@@ -47,11 +47,9 @@ public final class PipelineMetaDataNode {
     }
     
     private static String getMetaDataRootPath(final JobType jobType) {
-        if (null != jobType) {
-            return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getLowercaseTypeName(), "metadata");
-        } else {
-            return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "metadata");
-        }
+        return null == jobType
+                ? String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, "metadata")
+                : String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobType.getLowercaseTypeName(), "metadata");
     }
     
     /**

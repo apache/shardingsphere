@@ -95,14 +95,11 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     }
     
     private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
-        String result;
         if (projection instanceof AggregationDistinctProjection) {
             boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
-            result = isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name() : projection.getExpression();
-        } else {
-            result = projection.getColumnLabel();
+            return isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name() : projection.getExpression();
         }
-        return result;
+        return projection.getColumnLabel();
     }
     
     @Override

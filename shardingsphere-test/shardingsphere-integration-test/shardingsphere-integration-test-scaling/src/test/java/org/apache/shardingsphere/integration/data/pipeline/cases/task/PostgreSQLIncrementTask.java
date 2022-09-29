@@ -92,10 +92,6 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private String getTableNameWithSchema(final String tableName) {
-        if (StringUtils.isNotBlank(schema)) {
-            return String.join(".", schema, tableName);
-        } else {
-            return tableName;
-        }
+        return StringUtils.isNotBlank(schema) ? String.join(".", schema, tableName) : tableName;
     }
 }

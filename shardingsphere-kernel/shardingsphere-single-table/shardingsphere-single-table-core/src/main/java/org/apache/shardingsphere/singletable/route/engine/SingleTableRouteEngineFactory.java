@@ -45,7 +45,8 @@ public final class SingleTableRouteEngineFactory {
         // TODO Consider to add route logic for more statements
         if (!singleTableNames.isEmpty()) {
             return Optional.of(new SingleTableStandardRouteEngine(singleTableNames, sqlStatement));
-        } else if (isSchemaDDLStatement(sqlStatement)) {
+        }
+        if (isSchemaDDLStatement(sqlStatement)) {
             return Optional.of(new SingleTableDatabaseBroadcastRouteEngine());
         }
         return Optional.empty();

@@ -52,51 +52,51 @@ public final class MergeStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        if (null != expected.getSource()) {
-            TableAssert.assertIs(assertContext, actual.getSource(), expected.getSource());
-        } else {
+        if (null == expected.getSource()) {
             assertNull(assertContext.getText("Actual source should not exist."), actual.getSource());
-        }
-        if (null != expected.getTarget()) {
-            TableAssert.assertIs(assertContext, actual.getTarget(), expected.getTarget());
         } else {
+            TableAssert.assertIs(assertContext, actual.getSource(), expected.getSource());
+        }
+        if (null == expected.getTarget()) {
             assertNull(assertContext.getText("Actual target should not exist."), actual.getTarget());
+        } else {
+            TableAssert.assertIs(assertContext, actual.getTarget(), expected.getTarget());
         }
     }
     
     private static void assertExpression(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        if (null != expected.getExpr()) {
-            ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
-        } else {
+        if (null == expected.getExpr()) {
             assertNull(assertContext.getText("Actual expression should not exist."), actual.getExpr());
+        } else {
+            ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
         }
     }
     
     private static void assertSetClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         if (null != expected.getUpdateClause()) {
-            if (null != expected.getUpdateClause().getSetClause()) {
-                SetClauseAssert.assertIs(assertContext, actual.getUpdate().getSetAssignment(), expected.getUpdateClause().getSetClause());
-            } else {
+            if (null == expected.getUpdateClause().getSetClause()) {
                 assertNull(assertContext.getText("Actual assignment should not exist."), actual.getUpdate().getSetAssignment());
+            } else {
+                SetClauseAssert.assertIs(assertContext, actual.getUpdate().getSetAssignment(), expected.getUpdateClause().getSetClause());
             }
         }
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         if (null != expected.getUpdateClause()) {
-            if (null != expected.getUpdateClause().getWhereClause()) {
+            if (null == expected.getUpdateClause().getWhereClause()) {
+                assertFalse(assertContext.getText("Actual update where segment should not exist."), actual.getUpdate().getWhere().isPresent());
+            } else {
                 assertTrue(assertContext.getText("Actual update where segment should exist."), actual.getUpdate().getWhere().isPresent());
                 WhereClauseAssert.assertIs(assertContext, actual.getUpdate().getWhere().get(), expected.getUpdateClause().getWhereClause());
-            } else {
-                assertFalse(assertContext.getText("Actual update where segment should not exist."), actual.getUpdate().getWhere().isPresent());
             }
         }
         if (null != expected.getDeleteClause()) {
-            if (null != expected.getDeleteClause().getWhereClause()) {
+            if (null == expected.getDeleteClause().getWhereClause()) {
+                assertFalse(assertContext.getText("Actual delete where segment should not exist."), actual.getDelete().getWhere().isPresent());
+            } else {
                 assertTrue(assertContext.getText("Actual delete where segment should exist."), actual.getDelete().getWhere().isPresent());
                 WhereClauseAssert.assertIs(assertContext, actual.getDelete().getWhere().get(), expected.getDeleteClause().getWhereClause());
-            } else {
-                assertFalse(assertContext.getText("Actual delete where segment should not exist."), actual.getDelete().getWhere().isPresent());
             }
         }
     }

@@ -47,11 +47,7 @@ public final class PostgreSQLColumnValueReader extends BasicColumnValueReader {
             PGobject result = new PGobject();
             result.setType("bit");
             Object resultSetObject = resultSet.getObject(columnIndex);
-            if (null == resultSetObject) {
-                result.setValue(null);
-            } else {
-                result.setValue((Boolean) resultSetObject ? "1" : "0");
-            }
+            result.setValue(null == resultSetObject ? null : (Boolean) resultSetObject ? "1" : "0");
             return result;
         }
         return super.readValue(resultSet, resultSetMetaData, columnIndex);

@@ -446,14 +446,14 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     private InExpression createInSegment(final PredicateContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.bitExpr(0));
         ExpressionSegment right;
-        if (null != ctx.subquery()) {
-            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(ctx.subquery())));
-        } else {
+        if (null == ctx.subquery()) {
             ListExpression listExpression = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
             for (ExprContext each : ctx.expr()) {
                 listExpression.getItems().add((ExpressionSegment) visit(each));
             }
             right = listExpression;
+        } else {
+            right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SQLServerSelectStatement) visit(ctx.subquery())));
         }
         boolean not = null != ctx.NOT();
         return new InExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, not);
@@ -966,11 +966,11 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     
     @SuppressWarnings("unchecked")
     private InsertColumnsSegment createInsertColumns(final ColumnNamesContext columnNames, final int startIndex) {
-        if (null != columnNames) {
+        if (null == columnNames) {
+            return new InsertColumnsSegment(startIndex - 1, startIndex - 1, Collections.emptyList());
+        } else {
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
             return new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-        } else {
-            return new InsertColumnsSegment(startIndex - 1, startIndex - 1, Collections.emptyList());
         }
     }
     

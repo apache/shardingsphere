@@ -82,11 +82,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     }
     
     private String getTransactionProvider(final String providerType) {
-        if (Strings.isNullOrEmpty(providerType)) {
-            return "";
-        } else {
-            return "-" + providerType.toLowerCase();
-        }
+        return Strings.isNullOrEmpty(providerType) ? "" : "-" + providerType.toLowerCase();
     }
     
     @Override
