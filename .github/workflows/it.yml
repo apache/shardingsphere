@@ -179,7 +179,7 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL, openGauss ]
+        database: [ MySQL, PostgreSQL ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
         exclude:
           - adapter: jdbc
