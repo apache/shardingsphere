@@ -22,6 +22,7 @@
     <row values="encrypt" />
     <row values="information_schema" />
     <row values="performance_schema" />
-    <row values="mysql" />
     <row values="sys" />
+    <row values="shardingsphere" />
+    <row values="mysql" />
 </dataset>
