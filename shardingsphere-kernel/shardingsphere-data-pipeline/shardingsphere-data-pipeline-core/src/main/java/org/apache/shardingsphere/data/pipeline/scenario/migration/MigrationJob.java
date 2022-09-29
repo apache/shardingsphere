@@ -124,9 +124,9 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             each.stop();
             pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
+        InventoryIncrementalProcessContext processContext = (InventoryIncrementalProcessContext) getTasksRunnerMap().values().iterator().next().getJobItemContext().getJobProcessContext();
+        processContext.close();
         getTasksRunnerMap().clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
-        InventoryIncrementalProcessContext processContext = (InventoryIncrementalProcessContext) getTasksRunnerMap().values().iterator().next().getJobItemContext();
-        processContext.close();
     }
 }

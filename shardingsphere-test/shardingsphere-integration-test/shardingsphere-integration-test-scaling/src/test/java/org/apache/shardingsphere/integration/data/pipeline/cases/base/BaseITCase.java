@@ -236,12 +236,13 @@ public abstract class BaseITCase {
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {
-        log.info("proxy query for list:{}", sql);
         int retryNumber = 0;
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                return resultSetToList(resultSet);
+                List<Map<String, Object>> result = resultSetToList(resultSet);
+                log.info("proxy query for list, sql: {}, result: {}", sql, result);
+                return result;
             } catch (final SQLException ex) {
                 log.error("data access error", ex);
             }
@@ -270,6 +271,7 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
+    // TODO use DAO to query via DistSQL
     protected List<Map<String, Object>> waitIncrementTaskFinished(final String distSQL) throws InterruptedException {
         if (null != getIncreaseTaskThread()) {
             TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
