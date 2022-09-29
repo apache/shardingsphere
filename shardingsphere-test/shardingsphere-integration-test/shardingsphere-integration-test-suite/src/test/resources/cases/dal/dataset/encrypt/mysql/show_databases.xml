@@ -19,10 +19,10 @@
     <metadata>
         <column name="schema_name" />
     </metadata>
-    <row values="encrypt" />
     <row values="information_schema" />
     <row values="performance_schema" />
     <row values="sys" />
     <row values="shardingsphere" />
+    <row values="encrypt" />
     <row values="mysql" />
 </dataset>
