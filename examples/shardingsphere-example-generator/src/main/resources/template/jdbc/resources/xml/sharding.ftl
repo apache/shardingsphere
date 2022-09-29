@@ -40,8 +40,9 @@
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" audit-strategy-ref="shardingKeyAudit" />
-            <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="itemKeyGenerator" audit-strategy-ref="shardingKeyAudit" />
+            <!--todo add audit-->
+            <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="itemKeyGenerator" />
             <sharding:table-rule logic-table="t_account" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="accountKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
