@@ -52,11 +52,10 @@ jobs:
         image: mysql:8.0.22
         env:
           MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: test
         ports:
           - 3306:3306
         volumes:
-          - ../../examples/shardingsphere-example-generator/mysql/init:/docker-entrypoint-initdb.d/
+          - ./mysql/init:/docker-entrypoint-initdb.d/
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
