@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
@@ -114,19 +113,18 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         if (null != getOneOffJobBootstrap()) {
             getOneOffJobBootstrap().shutdown();
         }
-        if (null == getJobId()) {
+        String jobId = getJobId();
+        if (null == jobId) {
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop tasks runner, jobId={}", getJobId());
-        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
+        log.info("stop tasks runner, jobId={}", jobId);
+        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
             pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
-        InventoryIncrementalProcessContext processContext = (InventoryIncrementalProcessContext) getTasksRunnerMap().values().iterator().next().getJobItemContext().getJobProcessContext();
-        processContext.close();
         getTasksRunnerMap().clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
 }

@@ -102,29 +102,34 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
-            if (null != event) {
-                handleEvent(catalog, event);
-                eventCount++;
+            if (null == event) {
+                continue;
             }
+            eventCount += handleEvent(event);
         }
         log.info("incremental dump, eventCount={}", eventCount);
         pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
-    private void handleEvent(final String catalog, final AbstractBinlogEvent event) {
+    private int handleEvent(final AbstractBinlogEvent event) {
         if (event instanceof PlaceholderEvent || filter(catalog, (AbstractRowsEvent) event)) {
             createPlaceholderRecord(event);
-            return;
+            return 0;
         }
         if (event instanceof WriteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((WriteRowsEvent) event).getTableName());
             handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
+            return 1;
         } else if (event instanceof UpdateRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((UpdateRowsEvent) event).getTableName());
             handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
+            return 1;
         } else if (event instanceof DeleteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((DeleteRowsEvent) event).getTableName());
             handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
+            return 1;
+        } else {
+            return 0;
         }
     }
     

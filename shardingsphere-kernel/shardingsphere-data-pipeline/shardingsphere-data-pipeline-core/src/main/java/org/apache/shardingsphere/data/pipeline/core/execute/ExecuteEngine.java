@@ -102,15 +102,4 @@ public final class ExecuteEngine {
             }
         }, executorService);
     }
-    
-    /**
-     * Shutdown underlying executor service.
-     */
-    public void shutdown() {
-        if (executorService.isShutdown()) {
-            return;
-        }
-        executorService.shutdown();
-        executorService.shutdownNow();
-    }
 }

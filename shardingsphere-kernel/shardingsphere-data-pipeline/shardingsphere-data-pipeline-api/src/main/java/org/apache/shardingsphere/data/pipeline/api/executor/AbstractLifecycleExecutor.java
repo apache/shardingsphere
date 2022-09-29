@@ -22,7 +22,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Abstract lifecycle executor.
@@ -30,9 +33,13 @@ import java.util.Date;
 @Slf4j
 public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    
     @Setter(AccessLevel.PROTECTED)
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private volatile boolean running;
+    
+    private volatile boolean stopped;
     
     private volatile long startTimeMillis;
     
@@ -52,12 +59,14 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Override
     public final void stop() {
-        if (!running) {
+        if (stopped) {
             return;
         }
-        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", super.toString(), new Date(startTimeMillis), System.currentTimeMillis() - startTimeMillis);
+        LocalDateTime startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeMillis), ZoneId.systemDefault());
+        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", super.toString(), startTime.format(DATE_TIME_FORMATTER), System.currentTimeMillis() - startTimeMillis);
         doStop();
         running = false;
+        stopped = true;
     }
     
     protected abstract void doStop();
