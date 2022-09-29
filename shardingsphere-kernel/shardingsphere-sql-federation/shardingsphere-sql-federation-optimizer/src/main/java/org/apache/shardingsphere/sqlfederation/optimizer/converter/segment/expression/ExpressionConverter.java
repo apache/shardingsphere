@@ -61,30 +61,42 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof LiteralExpressionSegment) {
             return new LiteralExpressionConverter().convert((LiteralExpressionSegment) segment);
-        } else if (segment instanceof CommonExpressionSegment) {
+        }
+        if (segment instanceof CommonExpressionSegment) {
             // TODO
             throw new UnsupportedSQLOperationException("unsupported CommonExpressionSegment");
-        } else if (segment instanceof ListExpression) {
+        }
+        if (segment instanceof ListExpression) {
             return new ListExpressionConverter().convert((ListExpression) segment);
-        } else if (segment instanceof BinaryOperationExpression) {
+        }
+        if (segment instanceof BinaryOperationExpression) {
             return new BinaryOperationExpressionConverter().convert((BinaryOperationExpression) segment);
-        } else if (segment instanceof ColumnSegment) {
+        }
+        if (segment instanceof ColumnSegment) {
             return new ColumnConverter().convert((ColumnSegment) segment);
-        } else if (segment instanceof ExistsSubqueryExpression) {
+        }
+        if (segment instanceof ExistsSubqueryExpression) {
             return new ExistsSubqueryExpressionConverter().convert((ExistsSubqueryExpression) segment);
-        } else if (segment instanceof SubqueryExpressionSegment) {
+        }
+        if (segment instanceof SubqueryExpressionSegment) {
             return new SubqueryExpressionConverter().convert((SubqueryExpressionSegment) segment);
-        } else if (segment instanceof InExpression) {
+        }
+        if (segment instanceof InExpression) {
             return new InExpressionConverter().convert((InExpression) segment);
-        } else if (segment instanceof BetweenExpression) {
+        }
+        if (segment instanceof BetweenExpression) {
             return new BetweenExpressionConverter().convert((BetweenExpression) segment);
-        } else if (segment instanceof ParameterMarkerExpressionSegment) {
+        }
+        if (segment instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerExpressionConverter().convert((ParameterMarkerExpressionSegment) segment);
-        } else if (segment instanceof FunctionSegment) {
+        }
+        if (segment instanceof FunctionSegment) {
             return new FunctionConverter().convert((FunctionSegment) segment);
-        } else if (segment instanceof AggregationProjectionSegment) {
+        }
+        if (segment instanceof AggregationProjectionSegment) {
             return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
-        } else if (segment instanceof DataTypeSegment) {
+        }
+        if (segment instanceof DataTypeSegment) {
             return new DataTypeConverter().convert((DataTypeSegment) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());

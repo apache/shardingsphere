@@ -57,39 +57,53 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (boolean.class == type) {
             return resultSet.getBoolean(columnIndex);
-        } else if (byte.class == type) {
-            return resultSet.getByte(columnIndex);
-        } else if (short.class == type) {
-            return resultSet.getShort(columnIndex);
-        } else if (int.class == type) {
-            return resultSet.getInt(columnIndex);
-        } else if (long.class == type) {
-            return resultSet.getLong(columnIndex);
-        } else if (float.class == type) {
-            return resultSet.getFloat(columnIndex);
-        } else if (double.class == type) {
-            return resultSet.getDouble(columnIndex);
-        } else if (String.class == type) {
-            return resultSet.getString(columnIndex);
-        } else if (BigDecimal.class == type) {
-            return resultSet.getBigDecimal(columnIndex);
-        } else if (byte[].class == type) {
-            return resultSet.getBytes(columnIndex);
-        } else if (Date.class == type) {
-            return resultSet.getDate(columnIndex);
-        } else if (Time.class == type) {
-            return resultSet.getTime(columnIndex);
-        } else if (Timestamp.class == type) {
-            return resultSet.getTimestamp(columnIndex);
-        } else if (Blob.class == type) {
-            return resultSet.getBlob(columnIndex);
-        } else if (Clob.class == type) {
-            return resultSet.getClob(columnIndex);
-        } else if (Array.class == type) {
-            return resultSet.getArray(columnIndex);
-        } else {
-            return resultSet.getObject(columnIndex);
         }
+        if (byte.class == type) {
+            return resultSet.getByte(columnIndex);
+        }
+        if (short.class == type) {
+            return resultSet.getShort(columnIndex);
+        }
+        if (int.class == type) {
+            return resultSet.getInt(columnIndex);
+        }
+        if (long.class == type) {
+            return resultSet.getLong(columnIndex);
+        }
+        if (float.class == type) {
+            return resultSet.getFloat(columnIndex);
+        }
+        if (double.class == type) {
+            return resultSet.getDouble(columnIndex);
+        }
+        if (String.class == type) {
+            return resultSet.getString(columnIndex);
+        }
+        if (BigDecimal.class == type) {
+            return resultSet.getBigDecimal(columnIndex);
+        }
+        if (byte[].class == type) {
+            return resultSet.getBytes(columnIndex);
+        }
+        if (Date.class == type) {
+            return resultSet.getDate(columnIndex);
+        }
+        if (Time.class == type) {
+            return resultSet.getTime(columnIndex);
+        }
+        if (Timestamp.class == type) {
+            return resultSet.getTimestamp(columnIndex);
+        }
+        if (Blob.class == type) {
+            return resultSet.getBlob(columnIndex);
+        }
+        if (Clob.class == type) {
+            return resultSet.getClob(columnIndex);
+        }
+        if (Array.class == type) {
+            return resultSet.getArray(columnIndex);
+        }
+        return resultSet.getObject(columnIndex);
     }
     
     @Override

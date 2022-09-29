@@ -56,23 +56,23 @@ public final class ConstraintDefinitionAssert {
             ColumnAssert.assertIs(assertContext, each, expected.getIndexColumns().get(indexCount));
             indexCount++;
         }
-        if (null != expected.getConstraintName()) {
+        if (null == expected.getConstraintName()) {
+            assertFalse(assertContext.getText("Actual constraint name should not exist."), actual.getConstraintName().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual constraint name should exist."), actual.getConstraintName().isPresent());
             assertThat(assertContext.getText("Actual constraint name assertion error."), actual.getConstraintName().get().getIdentifier().getValue(), is(expected.getConstraintName()));
-        } else {
-            assertFalse(assertContext.getText("Actual constraint name should not exist."), actual.getConstraintName().isPresent());
         }
-        if (null != expected.getIndexName()) {
+        if (null == expected.getIndexName()) {
+            assertFalse(assertContext.getText("Actual index name should not exist."), actual.getIndexName().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual index name should exist."), actual.getIndexName().isPresent());
             assertThat(assertContext.getText("Actual index name assertion error."), actual.getIndexName().get().getIndexName().getIdentifier().getValue(), is(expected.getIndexName()));
-        } else {
-            assertFalse(assertContext.getText("Actual index name should not exist."), actual.getIndexName().isPresent());
         }
-        if (null != expected.getReferencedTable()) {
+        if (null == expected.getReferencedTable()) {
+            assertFalse(assertContext.getText("Actual referenced table should not exist."), actual.getReferencedTable().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual referenced table should exist."), actual.getReferencedTable().isPresent());
             TableAssert.assertIs(assertContext, actual.getReferencedTable().get(), expected.getReferencedTable());
-        } else {
-            assertFalse(assertContext.getText("Actual referenced table should not exist."), actual.getReferencedTable().isPresent());
         }
         assertThat(assertContext.getText("Constraint definition start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
         assertThat(assertContext.getText("Constraint definition stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));

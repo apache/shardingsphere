@@ -113,11 +113,9 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
-        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            containerComposer = new DockerContainerComposer(parameterized.getDatabaseType(), parameterized.getStorageContainerImage());
-        } else {
-            containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
-        }
+        containerComposer = ENV.getItEnvType() == ITEnvTypeEnum.DOCKER
+                ? new DockerContainerComposer(parameterized.getDatabaseType(), parameterized.getStorageContainerImage())
+                : new NativeContainerComposer(parameterized.getDatabaseType());
         containerComposer.start();
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
@@ -179,11 +177,9 @@ public abstract class BaseITCase {
     protected String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
         if (ITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
-            if (isInContainer) {
-                return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
-            } else {
-                return DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getFirstMappedPort(), databaseName);
-            }
+            return isInContainer
+                    ? DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName)
+                    : DataSourceEnvironment.getURL(getDatabaseType(), storageContainer.getHost(), storageContainer.getFirstMappedPort(), databaseName);
         }
         return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
@@ -293,7 +289,8 @@ public abstract class BaseITCase {
             }
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 return listJobStatus;
-            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
+            }
+            if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
                 log.warn("one of the shardingItem was not started correctly");
             }
             ThreadUtil.sleep(3, TimeUnit.SECONDS);

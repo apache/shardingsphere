@@ -615,12 +615,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitRoutineBody(final RoutineBodyContext ctx) {
         RoutineBodySegment result = new RoutineBodySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        CollectionValue<ValidStatementSegment> validStatements;
-        if (null != ctx.simpleStatement()) {
-            validStatements = (CollectionValue<ValidStatementSegment>) visit(ctx.simpleStatement());
-        } else {
-            validStatements = (CollectionValue<ValidStatementSegment>) visit(ctx.compoundStatement());
-        }
+        CollectionValue<ValidStatementSegment> validStatements = null == ctx.simpleStatement()
+                ? (CollectionValue<ValidStatementSegment>) visit(ctx.compoundStatement())
+                : (CollectionValue<ValidStatementSegment>) visit(ctx.simpleStatement());
         result.getValidStatements().addAll(validStatements.getValue());
         return result;
     }

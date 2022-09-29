@@ -54,11 +54,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     public AbstractWalEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
         AbstractWalEvent result;
         char eventType = readOneChar(data);
-        if ('{' == eventType) {
-            result = readTableEvent(readMppData(data));
-        } else {
-            result = new PlaceholderEvent();
-        }
+        result = '{' == eventType ? readTableEvent(readMppData(data)) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }

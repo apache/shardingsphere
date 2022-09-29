@@ -46,11 +46,11 @@ public final class IndexAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final IndexSegment actual, final ExpectedIndex expected) {
         assertNotNull(assertContext.getText("Index should exist."), expected);
         IdentifierValueAssert.assertIs(assertContext, actual.getIndexName().getIdentifier(), expected, "Index");
-        if (null != expected.getOwner()) {
+        if (null == expected.getOwner()) {
+            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
-        } else {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

@@ -48,7 +48,8 @@ public final class MySQLInformationSchemaExecutorFactory {
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
             return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql));
-        } else if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
+        }
+        if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
             return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
         }
         return Optional.empty();

@@ -46,8 +46,7 @@ public final class AlgorithmAssert {
             assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual algorithm should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s algorithm segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getName(), is(expected.getName()));
+            assertThat(assertContext.getText(String.format("`%s`'s algorithm segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
         }
     }

@@ -53,21 +53,21 @@ public final class ClusterStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final ClusterStatement actual, final ClusterStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = ClusterStatementHandler.getSimpleTableSegment(actual);
-        if (null != expected.getTable()) {
+        if (null == expected.getTable()) {
+            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getTable());
-        } else {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
         }
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final ClusterStatement actual, final ClusterStatementTestCase expected) {
         Optional<IndexSegment> indexSegment = ClusterStatementHandler.getIndexSegment(actual);
-        if (null != expected.getIndex()) {
+        if (null == expected.getIndex()) {
+            assertFalse(assertContext.getText("Actual index segment should not exist."), indexSegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual index segment should exist."), indexSegment.isPresent());
             IndexAssert.assertIs(assertContext, indexSegment.get(), expected.getIndex());
-        } else {
-            assertFalse(assertContext.getText("Actual index segment should not exist."), indexSegment.isPresent());
         }
     }
 }

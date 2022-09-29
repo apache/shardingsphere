@@ -85,7 +85,8 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
                 if (connectionSession.getTransactionStatus().isInTransaction()) {
                     if (connectionSession.getDatabaseType() instanceof MySQLDatabaseType) {
                         return transactionManager.commit().compose(unused -> transactionManager.begin());
-                    } else if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
+                    }
+                    if (connectionSession.getDatabaseType() instanceof PostgreSQLDatabaseType || connectionSession.getDatabaseType() instanceof OpenGaussDatabaseType) {
                         return Future.failedFuture(new InTransactionException());
                     }
                 }

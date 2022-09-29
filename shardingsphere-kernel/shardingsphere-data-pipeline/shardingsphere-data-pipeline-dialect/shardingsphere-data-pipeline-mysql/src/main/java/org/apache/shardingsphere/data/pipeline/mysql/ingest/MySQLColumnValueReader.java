@@ -35,9 +35,8 @@ public final class MySQLColumnValueReader extends BasicColumnValueReader {
         if (isYearDataType(resultSetMetaData.getColumnTypeName(columnIndex))) {
             Object result = resultSet.getObject(columnIndex);
             return resultSet.wasNull() ? null : result;
-        } else {
-            return super.readValue(resultSet, resultSetMetaData, columnIndex);
         }
+        return super.readValue(resultSet, resultSetMetaData, columnIndex);
     }
     
     private boolean isYearDataType(final String columnDataTypeName) {
