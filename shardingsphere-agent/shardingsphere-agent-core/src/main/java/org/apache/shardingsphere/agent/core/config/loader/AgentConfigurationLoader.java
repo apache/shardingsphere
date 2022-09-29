@@ -38,9 +38,9 @@ public final class AgentConfigurationLoader {
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
     /**
-     * Load configuration of ShardingSphere-Agent.
+     * Load configuration of ShardingSphere agent.
      *
-     * @return configuration of ShardingSphere-Agent
+     * @return configuration of ShardingSphere agent
      * @throws IOException IO exception
      */
     public static AgentConfiguration load() throws IOException {
@@ -50,7 +50,7 @@ public final class AgentConfigurationLoader {
     
     private static YamlAgentConfiguration load(final File yamlFile) throws IOException {
         YamlAgentConfiguration result = YamlEngine.unmarshal(yamlFile, YamlAgentConfiguration.class);
-        Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());
+        Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid", yamlFile.getName());
         return result;
     }
 }

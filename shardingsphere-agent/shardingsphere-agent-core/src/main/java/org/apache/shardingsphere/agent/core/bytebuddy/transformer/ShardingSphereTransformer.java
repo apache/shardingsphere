@@ -195,7 +195,7 @@ public final class ShardingSphereTransformer implements Transformer {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class: {}", description.getTypeName(), ex);
+                log.error("Failed to load advice class `{}`", description.getTypeName(), ex);
             }
         }
         return result;
@@ -230,7 +230,8 @@ public final class ShardingSphereTransformer implements Transformer {
                 instanceMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(each.getAdvice()));
             }
         }
-        return isArgsOverride ? new ShardingSphereTransformationPoint<>(methodDescription, new ComposeInstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvices))
+        return isArgsOverride
+                ? new ShardingSphereTransformationPoint<>(methodDescription, new ComposeInstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvices))
                 : new ShardingSphereTransformationPoint<>(methodDescription, new ComposeInstanceMethodAroundInterceptor(instanceMethodAroundAdvices));
     }
 }
