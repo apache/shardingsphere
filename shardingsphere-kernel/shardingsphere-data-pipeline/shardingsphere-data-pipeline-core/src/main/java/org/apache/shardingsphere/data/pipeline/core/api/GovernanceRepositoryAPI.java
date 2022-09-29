@@ -92,6 +92,14 @@ public interface GovernanceRepositoryAPI {
     void persistCheckJobResult(String jobId, String checkJobId, Map<String, DataConsistencyCheckResult> checkResultMap);
     
     /**
+     * Delete check job result.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     */
+    void deleteCheckJobResult(String jobId, String checkJobId);
+    
+    /**
      * List check job ids.
      *
      * @param jobId job id

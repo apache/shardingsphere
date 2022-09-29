@@ -106,6 +106,12 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
+    public void deleteCheckJobResult(final String jobId, final String checkJobId) {
+        log.info("deleteCheckJobResult, jobId={}, checkJobId={}", jobId, checkJobId);
+        repository.delete(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+    }
+    
+    @Override
     public Collection<String> listCheckJobIds(final String jobId) {
         return repository.getChildrenKeys(PipelineMetaDataNode.getCheckJobIdsRootPath(jobId));
     }

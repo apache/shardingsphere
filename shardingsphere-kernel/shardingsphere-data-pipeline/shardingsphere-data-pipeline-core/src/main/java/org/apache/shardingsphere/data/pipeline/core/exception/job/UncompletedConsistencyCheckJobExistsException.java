@@ -21,13 +21,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLExcepti
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Pipeline job already exists exception.
+ * Uncompleted consistency check job exists exception.
  */
-public final class PipelineJobAlreadyExistsException extends PipelineSQLException {
+public final class UncompletedConsistencyCheckJobExistsException extends PipelineSQLException {
     
     private static final long serialVersionUID = 2854259384634892428L;
     
-    public PipelineJobAlreadyExistsException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 86, "Job `%s` already exists", jobId);
+    public UncompletedConsistencyCheckJobExistsException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 86, "Uncompelted consistency check job `%s` exists", jobId);
     }
 }

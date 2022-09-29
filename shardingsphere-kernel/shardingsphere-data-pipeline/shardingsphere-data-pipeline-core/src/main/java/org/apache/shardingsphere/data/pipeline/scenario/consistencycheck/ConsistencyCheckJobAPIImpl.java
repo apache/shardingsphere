@@ -39,7 +39,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobAlreadyExistsException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyFinishedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgress;
@@ -68,20 +68,23 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     @Override
     public String createJobAndStart(final CreateConsistencyCheckJobParameter parameter) {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        Optional<String> checkLatestJobId = repositoryAPI.getCheckLatestJobId(parameter.getJobId());
+        String parentJobId = parameter.getJobId();
+        Optional<String> checkLatestJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
         if (checkLatestJobId.isPresent()) {
             PipelineJobItemProgress progress = getJobItemProgress(checkLatestJobId.get(), 0);
-            if (null != progress && JobStatus.FINISHED != progress.getStatus()) {
-                log.info("check job already exists and status is not FINISHED, status {}", progress.getStatus());
-                throw new PipelineJobAlreadyExistsException(checkLatestJobId.get());
+            if (null == progress || JobStatus.FINISHED != progress.getStatus()) {
+                log.info("check job already exists and status is not FINISHED, progress={}", progress);
+                throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
             }
         }
         int sequence = checkLatestJobId.map(s -> ConsistencyCheckJobId.parseSequence(s) + 1).orElse(0);
+        String result = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
+        repositoryAPI.persistCheckLatestJobId(parentJobId, result);
+        repositoryAPI.deleteCheckJobResult(parentJobId, result);
+        dropJob(result);
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
-        ConsistencyCheckJobId checkJobId = new ConsistencyCheckJobId(parameter.getJobId(), sequence);
-        String result = marshalJobId(checkJobId);
         yamlConfig.setJobId(result);
-        yamlConfig.setParentJobId(parameter.getJobId());
+        yamlConfig.setParentJobId(parentJobId);
         yamlConfig.setAlgorithmTypeName(parameter.getAlgorithmTypeName());
         yamlConfig.setAlgorithmProps(parameter.getAlgorithmProps());
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig);
