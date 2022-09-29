@@ -34,13 +34,13 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
         result.setJobId(data.getJobId());
         result.setParentJobId(data.getParentJobId());
         result.setAlgorithmTypeName(data.getAlgorithmTypeName());
-        result.setAlgorithmProperties(data.getAlgorithmProperties());
+        result.setAlgorithmProps(data.getAlgorithmProps());
         return result;
     }
     
     @Override
     public ConsistencyCheckJobConfiguration swapToObject(final YamlConsistencyCheckJobConfiguration yamlConfig) {
-        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProperties());
+        return new ConsistencyCheckJobConfiguration(yamlConfig.getJobId(), yamlConfig.getParentJobId(), yamlConfig.getAlgorithmTypeName(), yamlConfig.getAlgorithmProps());
     }
     
     /**

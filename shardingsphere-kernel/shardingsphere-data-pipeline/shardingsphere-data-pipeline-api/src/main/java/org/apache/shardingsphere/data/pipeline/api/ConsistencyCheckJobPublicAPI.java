@@ -31,7 +31,7 @@ import java.util.Map;
 public interface ConsistencyCheckJobPublicAPI extends PipelineJobPublicAPI, RequiredSPI {
     
     /**
-     * Create job migration config and start.
+     * Create consistency check configuration and start job.
      *
      * @param parameter create consistency check job parameter
      * @return job id

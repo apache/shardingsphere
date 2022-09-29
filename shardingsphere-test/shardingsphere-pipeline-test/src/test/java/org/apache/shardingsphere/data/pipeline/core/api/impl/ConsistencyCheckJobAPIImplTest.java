@@ -64,8 +64,8 @@ public final class ConsistencyCheckJobAPIImplTest {
         String expectCheckJobId = "j0201j0101test0";
         assertThat(jobConfig.getJobId(), is(expectCheckJobId));
         assertNull(jobConfig.getAlgorithmTypeName());
-        int consistencyCheckVersion = ConsistencyCheckJobId.getSequence(expectCheckJobId);
-        assertThat(consistencyCheckVersion, is(0));
+        int sequence = ConsistencyCheckJobId.parseSequence(expectCheckJobId);
+        assertThat(sequence, is(0));
     }
     
     @Test
@@ -75,11 +75,11 @@ public final class ConsistencyCheckJobAPIImplTest {
         CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(jobId.get(), null, null);
         String checkJobId = checkJobAPI.createJobAndStart(parameter);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(jobId.get(), checkJobId);
-        Map<String, DataConsistencyCheckResult> expectResult = Collections.singletonMap("t_order", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1),
+        Map<String, DataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1),
                 new DataConsistencyContentCheckResult(true)));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(jobId.get(), checkJobId, expectResult);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(jobId.get(), checkJobId, expectedCheckResult);
         Map<String, DataConsistencyCheckResult> actualCheckResult = checkJobAPI.getLatestDataConsistencyCheckResult(jobId.get());
-        assertThat(actualCheckResult.size(), is(expectResult.size()));
-        assertThat(actualCheckResult.get("t_order").getCountCheckResult().isMatched(), is(expectResult.get("t_order").getContentCheckResult().isMatched()));
+        assertThat(actualCheckResult.size(), is(expectedCheckResult.size()));
+        assertThat(actualCheckResult.get("t_order").getCountCheckResult().isMatched(), is(expectedCheckResult.get("t_order").getContentCheckResult().isMatched()));
     }
 }

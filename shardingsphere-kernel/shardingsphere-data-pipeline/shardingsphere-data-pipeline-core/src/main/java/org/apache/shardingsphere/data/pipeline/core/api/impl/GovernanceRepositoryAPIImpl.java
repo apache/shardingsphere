@@ -79,30 +79,30 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String jobId, final String checkJobId) {
         Map<String, DataConsistencyCheckResult> result = new HashMap<>();
-        String checkJobText = repository.get(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
-        if (StringUtils.isBlank(checkJobText)) {
+        String yamlCheckResultMapText = repository.get(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+        if (StringUtils.isBlank(yamlCheckResultMapText)) {
             return Collections.emptyMap();
         }
-        Map<String, String> checkJobConfigMap = YamlEngine.unmarshal(checkJobText, Map.class, true);
-        for (Entry<String, String> entry : checkJobConfigMap.entrySet()) {
+        Map<String, String> yamlCheckResultMap = YamlEngine.unmarshal(yamlCheckResultMapText, Map.class, true);
+        for (Entry<String, String> entry : yamlCheckResultMap.entrySet()) {
             result.put(entry.getKey(), YamlDataConsistencyCheckResultSwapper.swapToObject(entry.getValue()));
         }
         return result;
     }
     
     @Override
-    public void persistCheckJobResult(final String jobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult) {
-        if (null == dataConsistencyCheckResult) {
-            log.warn("data consistency check is null, jobId {}, checkJobId {}", jobId, checkJobId);
+    public void persistCheckJobResult(final String jobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+        if (null == checkResultMap) {
+            log.warn("checkResultMap is null, jobId {}, checkJobId {}", jobId, checkJobId);
             return;
         }
-        log.info("persist check job result '{}' for job {}", checkJobId, jobId);
-        Map<String, String> checkResultMap = new LinkedHashMap<>();
-        for (Entry<String, DataConsistencyCheckResult> entry : dataConsistencyCheckResult.entrySet()) {
-            YamlDataConsistencyCheckResult checkResult = new YamlDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
-            checkResultMap.put(entry.getKey(), YamlEngine.marshal(checkResult));
+        log.info("persist check job result for job {}", checkJobId);
+        Map<String, String> yamlCheckResultMap = new LinkedHashMap<>();
+        for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
+            YamlDataConsistencyCheckResult yamlCheckResult = new YamlDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
+            yamlCheckResultMap.put(entry.getKey(), YamlEngine.marshal(yamlCheckResult));
         }
-        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId), YamlEngine.marshal(checkResultMap));
+        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId), YamlEngine.marshal(yamlCheckResultMap));
     }
     
     @Override

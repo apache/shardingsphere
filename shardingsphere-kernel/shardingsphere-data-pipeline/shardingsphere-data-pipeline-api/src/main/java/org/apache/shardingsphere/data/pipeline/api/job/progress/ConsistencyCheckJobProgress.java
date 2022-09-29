@@ -19,13 +19,15 @@ package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Data check job item progress.
+ * Data consistency check job progress.
  */
 @Getter
 @Setter
+@ToString
 public final class ConsistencyCheckJobProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;

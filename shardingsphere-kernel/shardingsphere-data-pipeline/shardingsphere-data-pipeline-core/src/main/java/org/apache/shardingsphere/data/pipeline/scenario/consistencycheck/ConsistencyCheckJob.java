@@ -67,7 +67,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
             if (StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())) {
                 dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId);
             } else {
-                dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
+                dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProps());
             }
             status = JobStatus.FINISHED;
         } catch (final SQLWrapperException ex) {

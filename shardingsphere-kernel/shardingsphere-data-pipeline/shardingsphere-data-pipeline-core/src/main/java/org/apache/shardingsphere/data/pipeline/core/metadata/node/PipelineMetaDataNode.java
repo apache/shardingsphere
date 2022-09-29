@@ -120,7 +120,7 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get check latest detailed result path.
+     * Get check latest job id path.
      *
      * @param jobId job id
      * @return check latest job id path
@@ -130,7 +130,7 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get check latest result path.
+     * Get check job result path.
      *
      * @param jobId job id
      * @param checkJobId check job id
