@@ -104,7 +104,7 @@ jobs:
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
     steps:
       - uses: actions/checkout@v2
@@ -140,7 +140,7 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
         exclude:
           - adapter: jdbc
@@ -179,7 +179,7 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
         exclude:
           - adapter: jdbc
