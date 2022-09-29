@@ -173,4 +173,3 @@ rules:
   auditors:
     auditor_constant:
       type: IT.AUDITOR.FIXTURE
-      
