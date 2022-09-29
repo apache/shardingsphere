@@ -39,9 +39,13 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -84,21 +88,32 @@ public final class ReactiveProxySQLExecutor {
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
-        return TransactionType.XA == transactionStatus.getTransactionType() && isUnsupportedDDLStatement(sqlStatement) && transactionStatus.isInTransaction();
+        return TransactionType.XA == transactionStatus.getTransactionType() && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement);
     }
     
     private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
         // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
-        boolean isPostgreSQLOpenGaussStatement = sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
-        boolean isSupportedDDLStatement = sqlStatement instanceof TruncateStatement;
-        return sqlStatement instanceof DDLStatement && !isSupportedDDLStatement && isPostgreSQLOpenGaussStatement && backendConnection.getConnectionSession().getTransactionStatus().isInTransaction();
+        if (!backendConnection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return false;
+        }
+        return sqlStatement instanceof DDLStatement && !isSupportedPostgreSQLAndOpenGaussStatement(sqlStatement);
     }
     
     private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement) {
-        if (isPostgreSQLOrOpenGaussStatement(sqlStatement) && sqlStatement instanceof TruncateStatement) {
+        if (isSupportedPostgreSQLAndOpenGaussStatement(sqlStatement)) {
             return false;
         }
         return sqlStatement instanceof DDLStatement;
+    }
+    
+    private boolean isSupportedPostgreSQLAndOpenGaussStatement(final SQLStatement sqlStatement) {
+        return isPostgreSQLOrOpenGaussStatement(sqlStatement) 
+                && (isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement);
+    }
+    
+    private boolean isCursorStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof OpenGaussCursorStatement
+                || sqlStatement instanceof CloseStatement || sqlStatement instanceof MoveStatement || sqlStatement instanceof FetchStatement;
     }
     
     private boolean isPostgreSQLOrOpenGaussStatement(final SQLStatement sqlStatement) {

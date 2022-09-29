@@ -105,14 +105,20 @@ public final class ProxySQLExecutor {
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
-        return TransactionType.XA == transactionStatus.getTransactionType() && isUnsupportedDDLStatement(sqlStatement) && transactionStatus.isInTransaction();
+        return TransactionType.XA == transactionStatus.getTransactionType() && transactionStatus.isInTransaction() && isUnsupportedDDLStatement(sqlStatement);
     }
     
     private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
         // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
-        boolean isPostgreSQLOpenGaussStatement = isPostgreSQLOrOpenGaussStatement(sqlStatement);
-        boolean isSupportedStatement = isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement;
-        return sqlStatement instanceof DDLStatement && !isSupportedStatement && isPostgreSQLOpenGaussStatement && backendConnection.getConnectionSession().getTransactionStatus().isInTransaction();
+        if (!backendConnection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+            return false;
+        }
+        return sqlStatement instanceof DDLStatement && !isSupportedPostgreSQLAndOpenGaussStatement(sqlStatement);
+    }
+    
+    private boolean isSupportedPostgreSQLAndOpenGaussStatement(final SQLStatement sqlStatement) {
+        return isPostgreSQLOrOpenGaussStatement(sqlStatement) 
+                && (isCursorStatement(sqlStatement) || sqlStatement instanceof TruncateStatement);
     }
     
     private boolean isCursorStatement(final SQLStatement sqlStatement) {
@@ -121,7 +127,7 @@ public final class ProxySQLExecutor {
     }
     
     private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement) {
-        if (isPostgreSQLOrOpenGaussStatement(sqlStatement) && sqlStatement instanceof TruncateStatement) {
+        if (isSupportedPostgreSQLAndOpenGaussStatement(sqlStatement)) {
             return false;
         }
         return sqlStatement instanceof DDLStatement;
