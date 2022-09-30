@@ -28,6 +28,6 @@ public final class InvalidMGRReplicationGroupMemberException extends DBDiscovery
     private static final long serialVersionUID = 3766206496827463146L;
     
     public InvalidMGRReplicationGroupMemberException(final String url, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 82, "`%s` is not in MGR replication group member in database `%s`", url, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 82, "`%s` is not in MGR replication group member in database `%s`.", url, databaseName);
     }
 }

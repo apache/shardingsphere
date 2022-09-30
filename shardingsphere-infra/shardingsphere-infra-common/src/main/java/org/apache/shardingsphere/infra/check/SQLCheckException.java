@@ -30,6 +30,6 @@ public final class SQLCheckException extends KernelSQLException {
     private static final int KERNEL_CODE = 6;
     
     public SQLCheckException(final String errorMessage) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 0, "SQL check failed, error message: %s", errorMessage);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 0, "SQL check failed, error message: %s.", errorMessage);
     }
 }

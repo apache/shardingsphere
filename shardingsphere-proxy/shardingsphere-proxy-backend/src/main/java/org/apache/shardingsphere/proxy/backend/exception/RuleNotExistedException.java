@@ -28,6 +28,6 @@ public final class RuleNotExistedException extends MetaDataSQLException {
     private static final long serialVersionUID = -4150905802300104824L;
     
     public RuleNotExistedException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 10, "Rule does not exist");
+        super(XOpenSQLState.SYNTAX_ERROR, 10, "Rule does not exist.");
     }
 }

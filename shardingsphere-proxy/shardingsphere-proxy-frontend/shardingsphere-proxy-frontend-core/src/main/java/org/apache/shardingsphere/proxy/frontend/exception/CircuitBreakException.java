@@ -28,6 +28,6 @@ public final class CircuitBreakException extends ConnectionSQLException {
     private static final long serialVersionUID = 6339672680026286798L;
     
     public CircuitBreakException() {
-        super(XOpenSQLState.GENERAL_WARNING, 10, "Circuit break open, the request has been ignored");
+        super(XOpenSQLState.GENERAL_WARNING, 10, "Circuit break open, the request has been ignored.");
     }
 }

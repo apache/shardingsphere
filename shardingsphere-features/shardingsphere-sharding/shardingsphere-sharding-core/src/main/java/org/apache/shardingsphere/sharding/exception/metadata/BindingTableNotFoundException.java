@@ -29,6 +29,6 @@ public final class BindingTableNotFoundException extends ShardingSQLException {
     
     public BindingTableNotFoundException(final String dataSource, final String logicTable, final String otherActualTable) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 5,
-                "Can not find binding actual table, data source is `%s`, logic table is `%s`, other actual table is `%s`", dataSource, logicTable, otherActualTable);
+                "Can not find binding actual table, data source is `%s`, logic table is `%s`, other actual table is `%s`.", dataSource, logicTable, otherActualTable);
     }
 }

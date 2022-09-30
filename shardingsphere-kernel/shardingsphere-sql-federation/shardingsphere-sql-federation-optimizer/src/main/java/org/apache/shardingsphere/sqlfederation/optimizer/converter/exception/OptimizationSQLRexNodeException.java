@@ -28,6 +28,6 @@ public final class OptimizationSQLRexNodeException extends MetaDataSQLException 
     private static final long serialVersionUID = -5486229929620713963L;
     
     public OptimizationSQLRexNodeException(final String reason) {
-        super(XOpenSQLState.SYNTAX_ERROR, 4, "Unsupported SQL condition `%s`", reason);
+        super(XOpenSQLState.SYNTAX_ERROR, 4, "Unsupported SQL condition `%s`.", reason);
     }
 }

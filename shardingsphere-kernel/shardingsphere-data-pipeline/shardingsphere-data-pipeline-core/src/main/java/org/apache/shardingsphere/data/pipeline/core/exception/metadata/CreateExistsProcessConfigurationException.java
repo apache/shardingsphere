@@ -28,6 +28,6 @@ public final class CreateExistsProcessConfigurationException extends PipelineSQL
     private static final long serialVersionUID = 8134085267509955091L;
     
     public CreateExistsProcessConfigurationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Created process configuration already existed");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Created process configuration already existed.");
     }
 }

@@ -28,6 +28,6 @@ public final class InvalidReadDatabaseWeightException extends ReadwriteSplitting
     private static final long serialVersionUID = -846600820893274188L;
     
     public InvalidReadDatabaseWeightException(final Object weight) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 80, "Invalid read database weight `%s`", weight);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 80, "Invalid read database weight `%s`.", weight);
     }
 }

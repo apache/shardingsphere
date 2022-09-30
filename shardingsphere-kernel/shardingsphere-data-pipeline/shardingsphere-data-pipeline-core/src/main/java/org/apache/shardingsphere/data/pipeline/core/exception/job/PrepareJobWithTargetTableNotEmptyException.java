@@ -28,6 +28,6 @@ public final class PrepareJobWithTargetTableNotEmptyException extends PipelineSQ
     private static final long serialVersionUID = -8462039913248251254L;
     
     public PrepareJobWithTargetTableNotEmptyException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 85, "Target table `%s` is not empty before migration", tableName);
+        super(XOpenSQLState.GENERAL_ERROR, 85, "Target table `%s` is not empty before migration.", tableName);
     }
 }

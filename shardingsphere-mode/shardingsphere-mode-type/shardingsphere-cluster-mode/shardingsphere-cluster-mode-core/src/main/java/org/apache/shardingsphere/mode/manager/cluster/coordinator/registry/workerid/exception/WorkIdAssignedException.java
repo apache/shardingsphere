@@ -27,6 +27,6 @@ public final class WorkIdAssignedException extends ClusterSQLException {
     private static final long serialVersionUID = 4782736481041926266L;
     
     public WorkIdAssignedException() {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Work ID assigned failed, which can not exceed 1024");
+        super(XOpenSQLState.GENERAL_ERROR, 0, "Work ID assigned failed, which can not exceed 1024.");
     }
 }

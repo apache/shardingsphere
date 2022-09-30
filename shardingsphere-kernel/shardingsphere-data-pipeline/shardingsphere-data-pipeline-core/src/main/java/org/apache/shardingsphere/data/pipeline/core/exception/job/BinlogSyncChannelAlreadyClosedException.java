@@ -28,6 +28,6 @@ public final class BinlogSyncChannelAlreadyClosedException extends PipelineSQLEx
     private static final long serialVersionUID = -8897293295641185703L;
     
     public BinlogSyncChannelAlreadyClosedException() {
-        super(XOpenSQLState.GENERAL_ERROR, 93, "Can not poll event because of binlog sync channel already closed");
+        super(XOpenSQLState.GENERAL_ERROR, 93, "Can not poll event because of binlog sync channel already closed.");
     }
 }

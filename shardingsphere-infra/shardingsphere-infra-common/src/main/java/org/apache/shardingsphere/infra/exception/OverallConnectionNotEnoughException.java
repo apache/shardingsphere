@@ -28,6 +28,6 @@ public final class OverallConnectionNotEnoughException extends ConnectionSQLExce
     
     public OverallConnectionNotEnoughException(final int desiredSize, final int actualSize) {
         super(XOpenSQLState.CONNECTION_EXCEPTION, 20, "Can not get %d connections one time, partition succeed connection(%d) have released. "
-                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties", desiredSize, actualSize);
+                + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties.", desiredSize, actualSize);
     }
 }

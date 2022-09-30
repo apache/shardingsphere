@@ -27,6 +27,6 @@ public final class EmptyResourceException extends ResourceDefinitionViolationExc
     private static final long serialVersionUID = 1704331180489268L;
     
     public EmptyResourceException(final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no resource in the database `%s`", databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "There is no resource in the database `%s`.", databaseName);
     }
 }

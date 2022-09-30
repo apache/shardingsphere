@@ -30,6 +30,6 @@ public final class DataSourceIntersectionNotFoundException extends ShardingSQLEx
     private static final long serialVersionUID = -2142571707728236489L;
     
     public DataSourceIntersectionNotFoundException(final Collection<String> logicTables) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 47, "Can not find actual data source intersection for logic tables `%s`", logicTables);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 47, "Can not find actual data source intersection for logic tables `%s`.", logicTables);
     }
 }
