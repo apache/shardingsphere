@@ -55,11 +55,6 @@
       "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"
     },
     {
-      "name": "spring.shardingsphere.mode.overwrite",
-      "type": "java.lang.Boolean",
-      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"
-    },
-    {
       "name": "spring.shardingsphere.datasource.names",
       "type": "java.lang.String",
       "sourceType": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"

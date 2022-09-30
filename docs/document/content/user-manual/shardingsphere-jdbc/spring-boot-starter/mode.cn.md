@@ -8,7 +8,6 @@ weight = 1
 ```properties
 spring.shardingsphere.mode.type= # 运行模式类型。可选配置：Standalone、Cluster
 spring.shardingsphere.mode.repository= # 持久化仓库配置。
-spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
 ```
 
 ### 单机模式
@@ -17,7 +16,6 @@ spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化�
 spring.shardingsphere.mode.type=Standalone
 spring.shardingsphere.mode.repository.type= # 持久化仓库类型
 spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
-spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
 ```
 
 ### 集群模式 (推荐)
@@ -28,7 +26,6 @@ spring.shardingsphere.mode.repository.type= # 持久化仓库类型
 spring.shardingsphere.mode.repository.props.namespace= # 注册中心命名空间
 spring.shardingsphere.mode.repository.props.server-lists= # 注册中心连接地址
 spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
-spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
 ```
 
 ## 注意事项
@@ -56,9 +53,7 @@ spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化�
 
 ```properties
 spring.shardingsphere.mode.type=Standalone
-spring.shardingsphere.mode.repository.type=File
-spring.shardingsphere.mode.repository.props.path=.shardingsphere
-spring.shardingsphere.mode.overwrite=false
+spring.shardingsphere.mode.repository.type=JDBC
 ```
 
 ### 集群模式 (推荐)
@@ -70,7 +65,6 @@ spring.shardingsphere.mode.repository.props.namespace=governance
 spring.shardingsphere.mode.repository.props.server-lists=localhost:2181
 spring.shardingsphere.mode.repository.props.retryIntervalMilliseconds=500
 spring.shardingsphere.mode.repository.props.timeToLiveSeconds=60
-spring.shardingsphere.mode.overwrite=false
 ```
 
 ## 相关参考

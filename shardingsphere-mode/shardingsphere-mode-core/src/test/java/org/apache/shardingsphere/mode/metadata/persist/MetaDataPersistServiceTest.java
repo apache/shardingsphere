@@ -97,11 +97,11 @@ public final class MetaDataPersistServiceTest {
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
         metaDataPersistService.persistConfigurations(
-                Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, false);
+                Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
         verify(dataSourceService).persist("foo_db", createDataSourcePropertiesMap(dataSourceMap), false);
         verify(databaseRulePersistService).persist("foo_db", ruleConfigs, false);
-        verify(globalRuleService).persist(globalRuleConfigs, false);
-        verify(propsService).persist(props, false);
+        verify(globalRuleService).persist(globalRuleConfigs);
+        verify(propsService).persist(props);
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {

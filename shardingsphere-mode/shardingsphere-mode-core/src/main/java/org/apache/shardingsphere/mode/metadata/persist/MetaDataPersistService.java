@@ -75,12 +75,11 @@ public final class MetaDataPersistService {
      * @param databaseConfigs database configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
-     * @param isOverwrite whether overwrite registry center's configuration if existed
      */
     public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> databaseConfigs,
-                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
-        globalRuleService.persist(globalRuleConfigs, isOverwrite);
-        propsService.persist(props, isOverwrite);
+                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        globalRuleService.conditionalPersist(globalRuleConfigs);
+        propsService.conditionalPersist(props);
         for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             String databaseName = entry.getKey();
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
@@ -88,8 +87,8 @@ public final class MetaDataPersistService {
             if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
                 databaseMetaDataService.addDatabase(databaseName);
             } else {
-                dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
-                databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
+                dataSourceService.conditionalPersist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()));
+                databaseRulePersistService.conditionalPersist(databaseName, entry.getValue().getRuleConfigurations());
             }
         }
     }

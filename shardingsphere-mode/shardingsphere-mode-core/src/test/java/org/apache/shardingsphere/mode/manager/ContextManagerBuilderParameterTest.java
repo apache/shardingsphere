@@ -87,15 +87,13 @@ public final class ContextManagerBuilderParameterTest {
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
         assertThat(parameter.getModeConfiguration().getType(), is("Standalone"));
         assertNull(parameter.getModeConfiguration().getRepository());
-        assertTrue(parameter.getModeConfiguration().isOverwrite());
     }
     
     @Test
     public void assertGetModeConfiguration() {
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false);
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class));
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
         assertThat(parameter.getModeConfiguration().getType(), is("Cluster"));
         assertNotNull(parameter.getModeConfiguration().getRepository());
-        assertFalse(parameter.getModeConfiguration().isOverwrite());
     }
 }

@@ -67,6 +67,6 @@ public final class ContextManagerBuilderParameter {
      * @return mode configuration
      */
     public ModeConfiguration getModeConfiguration() {
-        return null == modeConfig ? new ModeConfiguration("Standalone", null, true) : modeConfig;
+        return null == modeConfig ? new ModeConfiguration("Standalone", null) : modeConfig;
     }
 }

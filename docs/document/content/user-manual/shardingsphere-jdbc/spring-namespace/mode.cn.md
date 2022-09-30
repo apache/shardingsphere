@@ -70,14 +70,11 @@ weight = 1
                   http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">.shardingsphere</prop>
-        </props>
+    <standalone:repository id="standaloneRepository" type="JDBC">
     </standalone:repository>
 
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
     </shardingsphere:data-source>
 </beans>
 ```
@@ -104,7 +101,7 @@ weight = 1
     </cluster:repository>
     
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="false" />
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
 </beans>
 ```

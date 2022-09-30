@@ -17,8 +17,7 @@ chapter = true
 | *名称*      | *数据类型*                      | *说明*                                                                                                                                  | *默认值*     |
 | ---------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
 | type       | String                         | 运行模式类型<br />可选配置：Standalone、Cluster                                                                                             | Standalone |
-| repository | PersistRepositoryConfiguration | 持久化仓库配置<br />Standalone 类型使用 StandalonePersistRepositoryConfiguration<br />Cluster 类型使用 ClusterPersistRepositoryConfiguration |            |
-| overwrite  | boolean                        | 是否使用本地配置覆盖持久化配置                                                                                                               | false      |
+| repository | PersistRepositoryConfiguration | 持久化仓库配置<br />Standalone 类型使用 StandalonePersistRepositoryConfiguration<br />Cluster 类型使用 ClusterPersistRepositoryConfiguration |            | | false      |
 
 ### Standalone 持久化配置
 
@@ -75,7 +74,7 @@ Properties props = ... // 构建属性配置
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
 private ModeConfiguration createModeConfiguration() {
-    return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
+    return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()));
 }
 ```
 
@@ -89,7 +88,7 @@ Properties props = ... // 构建属性配置
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
 private ModeConfiguration createModeConfiguration() {
-    return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-db", "localhost:2181", new Properties()), true);
+    return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-db", "localhost:2181", new Properties()));
 }
 ```
 
