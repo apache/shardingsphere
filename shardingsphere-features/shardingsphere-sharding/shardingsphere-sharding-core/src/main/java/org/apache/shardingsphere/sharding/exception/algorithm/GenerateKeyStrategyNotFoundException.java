@@ -28,6 +28,6 @@ public final class GenerateKeyStrategyNotFoundException extends ShardingSQLExcep
     private static final long serialVersionUID = 7456922260524630374L;
     
     public GenerateKeyStrategyNotFoundException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Can not find strategy for generate keys with table `%s`", tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 90, "Can not find strategy for generate keys with table `%s`.", tableName);
     }
 }

@@ -31,6 +31,6 @@ public final class DataSourceJndiNotFoundServerException extends ShardingSphereS
     private static final int ERROR_CODE = 1;
     
     public DataSourceJndiNotFoundServerException(final Exception cause) {
-        super(ERROR_CATEGORY, ERROR_CODE, "Can not find JNDI data source", cause);
+        super(ERROR_CATEGORY, ERROR_CODE, "Can not find JNDI data source.", cause);
     }
 }

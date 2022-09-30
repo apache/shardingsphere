@@ -29,14 +29,14 @@ public final class InvalidAlgorithmConfigurationException extends RuleDefinition
     private static final long serialVersionUID = 9076740384552385180L;
     
     public InvalidAlgorithmConfigurationException(final String algorithmType, final Collection<String> algorithms) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithms `%s`", algorithmType, algorithms));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithms `%s`.", algorithmType, algorithms));
     }
     
     public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithm `%s`", algorithmType, algorithm));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithm `%s`.", algorithmType, algorithm));
     }
     
     public InvalidAlgorithmConfigurationException(final String algorithmType) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithm", algorithmType));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 150, String.format("Invalid %s algorithm.", algorithmType));
     }
 }

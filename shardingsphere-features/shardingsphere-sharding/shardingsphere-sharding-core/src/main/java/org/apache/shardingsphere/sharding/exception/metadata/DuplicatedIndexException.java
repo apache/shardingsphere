@@ -28,6 +28,6 @@ public final class DuplicatedIndexException extends ShardingSQLException {
     private static final long serialVersionUID = 2884666477007627873L;
     
     public DuplicatedIndexException(final String indexName) {
-        super(XOpenSQLState.DUPLICATE, 7, "Index `%s` already exists", indexName);
+        super(XOpenSQLState.DUPLICATE, 7, "Index `%s` already exists.", indexName);
     }
 }

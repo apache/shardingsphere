@@ -28,6 +28,6 @@ public final class ShardingSphereServerExceptionFixture extends ShardingSphereSe
     }
     
     public ShardingSphereServerExceptionFixture(final Exception cause) {
-        super("FIXTURE", 1, "Fixture error message", cause);
+        super("FIXTURE", 1, "Fixture error message.", cause);
     }
 }

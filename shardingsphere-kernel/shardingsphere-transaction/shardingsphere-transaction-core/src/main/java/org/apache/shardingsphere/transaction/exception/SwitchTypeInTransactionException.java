@@ -27,6 +27,6 @@ public final class SwitchTypeInTransactionException extends TransactionSQLExcept
     private static final long serialVersionUID = 5333976223578960845L;
     
     public SwitchTypeInTransactionException() {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 0, "Switch transaction type failed, please terminate the current transaction");
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 0, "Switch transaction type failed, please terminate the current transaction.");
     }
 }

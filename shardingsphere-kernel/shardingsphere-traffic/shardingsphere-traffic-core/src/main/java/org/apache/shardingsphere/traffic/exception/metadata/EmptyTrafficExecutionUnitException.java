@@ -28,6 +28,6 @@ public final class EmptyTrafficExecutionUnitException extends TrafficException {
     private static final long serialVersionUID = 1871625745475813160L;
     
     public EmptyTrafficExecutionUnitException() {
-        super(XOpenSQLState.NOT_FOUND, 0, "Can not get traffic execution unit");
+        super(XOpenSQLState.NOT_FOUND, 0, "Can not get traffic execution unit.");
     }
 }

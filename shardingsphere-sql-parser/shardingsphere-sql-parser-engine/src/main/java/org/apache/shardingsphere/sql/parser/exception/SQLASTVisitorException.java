@@ -31,6 +31,6 @@ public final class SQLASTVisitorException extends KernelSQLException {
     private static final int KERNEL_CODE = 2;
     
     public SQLASTVisitorException(final Class<? extends ParseTree> parseTreeClass) {
-        super(XOpenSQLState.SYNTAX_ERROR, KERNEL_CODE, 1, "Can not accept SQL type `%s`", parseTreeClass.getSimpleName());
+        super(XOpenSQLState.SYNTAX_ERROR, KERNEL_CODE, 1, "Can not accept SQL type `%s`.", parseTreeClass.getSimpleName());
     }
 }

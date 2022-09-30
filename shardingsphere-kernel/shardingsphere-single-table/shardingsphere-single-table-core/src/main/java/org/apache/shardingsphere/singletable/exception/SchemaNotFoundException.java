@@ -28,6 +28,6 @@ public final class SchemaNotFoundException extends MetaDataSQLException {
     private static final long serialVersionUID = 2722045034640737328L;
     
     public SchemaNotFoundException(final String schemaName) {
-        super(XOpenSQLState.NOT_FOUND, 20, "Schema `%s` does not exist", schemaName);
+        super(XOpenSQLState.NOT_FOUND, 20, "Schema `%s` does not exist.", schemaName);
     }
 }

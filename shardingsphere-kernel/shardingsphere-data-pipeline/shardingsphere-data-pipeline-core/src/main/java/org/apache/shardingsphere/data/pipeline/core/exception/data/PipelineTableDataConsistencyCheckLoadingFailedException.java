@@ -28,6 +28,6 @@ public final class PipelineTableDataConsistencyCheckLoadingFailedException exten
     private static final long serialVersionUID = 8965231249677009738L;
     
     public PipelineTableDataConsistencyCheckLoadingFailedException(final String tableName) {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 51, "Data check table `%s` failed", tableName);
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 51, "Data check table `%s` failed.", tableName);
     }
 }
