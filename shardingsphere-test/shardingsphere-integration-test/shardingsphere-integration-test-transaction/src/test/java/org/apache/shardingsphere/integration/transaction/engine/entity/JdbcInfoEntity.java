@@ -20,6 +20,9 @@ package org.apache.shardingsphere.integration.transaction.engine.entity;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * JDBC info entity.
+ */
 @RequiredArgsConstructor
 @Data
 public final class JdbcInfoEntity {

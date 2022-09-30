@@ -81,16 +81,16 @@ public abstract class BaseITCase {
     
     protected static final String TRANSACTION_IT = "transaction_it";
     
-    protected static final String DS_0 = TRANSACTION_IT + "_0";
+    protected static final String DATA_SOURCE_0 = TRANSACTION_IT + "_0";
     
-    protected static final String DS_1 = TRANSACTION_IT + "_1";
+    protected static final String DATA_SOURCE_1 = TRANSACTION_IT + "_1";
     
     /**
      * For adding resource tests.
      */
-    protected static final String DS_2 = TRANSACTION_IT + "_2";
+    protected static final String DATA_SOURCE_2 = TRANSACTION_IT + "_2";
     
-    protected static final Collection<String> ALL_DS = Arrays.asList(DS_0, DS_1, DS_2);
+    protected static final Collection<String> ALL_DATA_SOURCES = Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1, DATA_SOURCE_2);
     
     protected static final List<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
     
@@ -115,11 +115,11 @@ public abstract class BaseITCase {
         log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
     }
     
-    public BaseITCase(final TransactionParameterized parameterized) {
+    public BaseITCase(final TransactionParameterized parameterized) throws SQLException {
         databaseType = parameterized.getDatabaseType();
         adapter = parameterized.getAdapter();
-        containerComposer = createAndStartContainerComposer(parameterized);
-        commonSQLCommand = getSqlCommand();
+        containerComposer = initializeContainerComposer(parameterized);
+        commonSQLCommand = loadCommonSQLCommand();
         initActualDataSources();
         if (isProxyAdapter(parameterized)) {
             createProxyDatabase();
@@ -128,24 +128,102 @@ public abstract class BaseITCase {
         }
     }
     
+    private BaseContainerComposer initializeContainerComposer(final TransactionParameterized parameterized) {
+        BaseContainerComposer result = ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER
+                ? new DockerContainerComposer(parameterized)
+                : new NativeContainerComposer(parameterized.getDatabaseType());
+        result.start();
+        return result;
+    }
+    
+    private CommonSQLCommand loadCommonSQLCommand() {
+        return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
+    }
+    
+    private void initActualDataSources() throws SQLException {
+        JdbcInfoEntity jdbcInfo = getJdbcInfoEntity();
+        String jdbcUrl = getJdbcUrl(jdbcInfo);
+        dropDatabases(jdbcUrl, jdbcInfo);
+        createDatabases(jdbcUrl, jdbcInfo);
+    }
+    
+    private JdbcInfoEntity getJdbcInfoEntity() {
+        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            return new JdbcInfoEntity(storageContainer.getUsername(), storageContainer.getPassword(), storageContainer.getExposedPort());
+        }
+        return ENV.getActualDatabaseJdbcInfo(getDatabaseType());
+    }
+    
+    private String getJdbcUrl(final JdbcInfoEntity jdbcInfo) {
+        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            return storageContainer.getJdbcUrl("");
+        }
+        return DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
+    }
+    
+    private void dropDatabases(final String jdbcUrl, final JdbcInfoEntity jdbcInfo) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+            for (String each : ALL_DATA_SOURCES) {
+                executeWithLog(connection, String.format("DROP DATABASE IF EXISTS %s", each));
+            }
+        }
+    }
+    
+    private void createDatabases(final String jdbcUrl, final JdbcInfoEntity jdbcInfo) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+            for (String each : ALL_DATA_SOURCES) {
+                try {
+                    executeWithLog(connection, String.format("CREATE DATABASE %s", each));
+                } catch (final SQLException ex) {
+                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
+                }
+            }
+        }
+    }
+    
+    protected final boolean isProxyAdapter(final TransactionParameterized parameterized) {
+        return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
+    }
+    
+    private void createProxyDatabase() throws SQLException {
+        String jdbcUrl = getProxyJdbcUrl(databaseType);
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
+            if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE) {
+                executeWithLog(connection, "DROP DATABASE IF EXISTS " + SHARDING_DB);
+            }
+            executeWithLog(connection, "CREATE DATABASE " + SHARDING_DB);
+        }
+        dataSource = new ProxyDataSource(containerComposer, SHARDING_DB, ENV.getProxyUserName(), ENV.getProxyPassword());
+    }
+    
+    private String getProxyJdbcUrl(final DatabaseType databaseType) {
+        String defaultDatabaseName = "";
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            defaultDatabaseName = "postgres";
+        }
+        String result = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            result = JDBC_URL_APPENDER.appendQueryProperties(result, getPostgreSQLQueryProperties());
+        }
+        return result;
+    }
+    
     private void createJdbcDataSource() {
         if (containerComposer instanceof DockerContainerComposer) {
             DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
-            Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
-            actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
-            actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
+            DockerStorageContainer storageContainer = dockerContainerComposer.getStorageContainer();
+            Map<String, DataSource> actualDataSourceMap = storageContainer.getActualDataSourceMap();
+            actualDataSourceMap.put("ds_0", createDataSource(storageContainer, DATA_SOURCE_0));
+            actualDataSourceMap.put("ds_1", createDataSource(storageContainer, DATA_SOURCE_1));
             dataSource = new JdbcDataSource(dockerContainerComposer);
         }
     }
     
-    private DataSource createDataSource(final DockerStorageContainer databaseContainer, final String dataSourceName) {
-        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(), dataSourceName),
-                databaseContainer.getUsername(), databaseContainer.getPassword(), 50);
-    }
-    
-    protected boolean isProxyAdapter(final TransactionParameterized parameterized) {
-        return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
+    private DataSource createDataSource(final DockerStorageContainer storageContainer, final String dataSourceName) {
+        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, storageContainer.getHost(), storageContainer.getMappedPort(), dataSourceName),
+                storageContainer.getUsername(), storageContainer.getPassword(), 50);
     }
     
     protected static Collection<TransactionParameterized> getTransactionParameterizedList(final Class<? extends BaseTransactionITCase> testCaseClass) {
@@ -213,7 +291,7 @@ public abstract class BaseITCase {
                                                         final Map<String, TransactionParameterized> parameterizedMap, final String group) {
         if (AdapterContainerConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
             List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
-                    : ENV.getAllowTransactionTypes().stream().map(BaseITCase::getTransactionType).collect(Collectors.toList());
+                    : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
             addTestParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, parameterizedMap, group);
         } else {
@@ -224,19 +302,6 @@ public abstract class BaseITCase {
                 }
                 addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, parameterizedMap, group);
             }
-        }
-    }
-    
-    private static TransactionType getTransactionType(final String each) {
-        switch (each) {
-            case "LOCAL":
-                return TransactionType.LOCAL;
-            case "XA":
-                return TransactionType.XA;
-            case "BASE":
-                return TransactionType.BASE;
-            default:
-                throw new UnsupportedOperationException("Unsupported transaction type.");
         }
     }
     
@@ -275,7 +340,7 @@ public abstract class BaseITCase {
             case TransactionTestConstants.OPENGAUSS:
                 return new OpenGaussDatabaseType();
             default:
-                throw new UnsupportedOperationException("Unsupported database type.");
+                throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
         }
     }
     
@@ -287,108 +352,15 @@ public abstract class BaseITCase {
             case TransactionTestConstants.OPENGAUSS:
                 return version;
             default:
-                throw new UnsupportedOperationException("Unsupported database type.");
+                throw new UnsupportedOperationException(String.format("Unsupported database type `%s`.", databaseType));
         }
     }
     
-    private CommonSQLCommand getSqlCommand() {
-        return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
-    }
-    
-    private BaseContainerComposer createAndStartContainerComposer(final TransactionParameterized parameterized) {
-        BaseContainerComposer result = ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER
-                ? new DockerContainerComposer(parameterized)
-                : new NativeContainerComposer(parameterized.getDatabaseType());
-        result.start();
-        return result;
-    }
-    
-    @SneakyThrows(SQLException.class)
-    private void initActualDataSources() {
-        JdbcInfoEntity jdbcInfo = getJdbcInfoEntity();
-        String jdbcUrl = getJdbcUrl(jdbcInfo);
-        dropDatabases(jdbcUrl, jdbcInfo);
-        createDatabases(jdbcUrl, jdbcInfo);
-    }
-    
-    private String getJdbcUrl(final JdbcInfoEntity jdbcInfo) {
-        String jdbcUrl;
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
-            jdbcUrl = databaseContainer.getJdbcUrl("");
-        } else {
-            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
-        }
-        return jdbcUrl;
-    }
-    
-    private JdbcInfoEntity getJdbcInfoEntity() {
-        JdbcInfoEntity jdbcInfo;
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer databaseContainer = dockerContainerComposer.getStorageContainer();
-            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getExposedPort());
-        } else {
-            jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
-        }
-        return jdbcInfo;
-    }
-    
-    private void dropDatabases(final String jdbcUrl, final JdbcInfoEntity jdbcInfo) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
-            for (String each : ALL_DS) {
-                executeWithLog(connection, String.format("DROP DATABASE IF EXISTS %s", each));
-            }
-        }
-    }
-    
-    private void createDatabases(final String jdbcUrl, final JdbcInfoEntity jdbcInfo) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
-            for (String each : ALL_DS) {
-                try {
-                    executeWithLog(connection, String.format("CREATE DATABASE %s", each));
-                } catch (final SQLException ex) {
-                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
-                }
-            }
-        }
-    }
-    
-    protected Connection getProxyConnection() throws SQLException {
+    protected final Connection getProxyConnection() throws SQLException {
         return dataSource.getConnection();
     }
     
-    protected void createProxyDatabase() {
-        String jdbcUrl = getProxyJdbcUrl(databaseType);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
-            if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE) {
-                executeWithLog(connection, "DROP DATABASE IF EXISTS " + SHARDING_DB);
-            }
-            executeWithLog(connection, "CREATE DATABASE " + SHARDING_DB);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
-        dataSource = getProxyDataSource(SHARDING_DB);
-    }
-    
-    private String getProxyJdbcUrl(final DatabaseType databaseType) {
-        String defaultDatabaseName = "";
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            defaultDatabaseName = "postgres";
-        }
-        String jdbcUrl = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, getPostgreSQLQueryProperties());
-        }
-        return jdbcUrl;
-    }
-    
-    protected AutoDataSource getProxyDataSource(final String databaseName) {
-        return new ProxyDataSource(containerComposer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
-    }
-    
-    protected boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws SQLException {
+    protected final boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws SQLException {
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
@@ -403,7 +375,7 @@ public abstract class BaseITCase {
         return false;
     }
     
-    protected void addResources() throws SQLException {
+    protected final void addResources() throws SQLException {
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             try (Connection connection = DriverManager.getConnection(getContainerComposer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
@@ -421,13 +393,21 @@ public abstract class BaseITCase {
         assertThat(resourceCount, is(2));
     }
     
-    protected void addResources(final Connection connection) throws SQLException {
+    private void addResources(final Connection connection) throws SQLException {
         String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
                 .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
-                .replace("${ds0}", getActualJdbcUrlTemplate(DS_0))
-                .replace("${ds1}", getActualJdbcUrlTemplate(DS_1));
+                .replace("${ds0}", getActualJdbcUrlTemplate(DATA_SOURCE_0))
+                .replace("${ds1}", getActualJdbcUrlTemplate(DATA_SOURCE_1));
         executeWithLog(connection, addSourceResource);
+    }
+    
+    private String getActualJdbcUrlTemplate(final String databaseName) {
+        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
+            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getExposedPort(), databaseName);
+        }
+        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
     /**
@@ -437,14 +417,14 @@ public abstract class BaseITCase {
      * @throws SQLException SQL exception
      */
     @SneakyThrows(InterruptedException.class)
-    public void addNewResource(final Connection connection) throws SQLException {
+    public final void addNewResource(final Connection connection) throws SQLException {
         String addSourceResource = commonSQLCommand.getSourceAddNewResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
                 .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
-                .replace("${ds2}", getActualJdbcUrlTemplate(DS_2));
+                .replace("${ds2}", getActualJdbcUrlTemplate(DATA_SOURCE_2));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
-        Thread.sleep(5000);
+        Thread.sleep(5000L);
         assertThat(resourceCount, is(3));
     }
     
@@ -454,7 +434,7 @@ public abstract class BaseITCase {
      * @param connection connection
      * @throws SQLException SQL exception
      */
-    public void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
+    public final void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
         executeWithLog(connection, getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
         int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
@@ -467,37 +447,13 @@ public abstract class BaseITCase {
      * @param connection connection
      * @throws SQLException SQL exception
      */
-    public void createOriginalAccountTableRule(final Connection connection) throws SQLException {
+    public final void createOriginalAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
         executeWithLog(connection, getCommonSQLCommand().getCreateOneDataSourceAccountTableRule());
-        int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
-        assertThat(ruleCount, is(3));
+        assertThat(countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;"), is(3));
     }
     
-    private String getActualJdbcUrlTemplate(final String databaseName) {
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerStorageContainer databaseContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getExposedPort(), databaseName);
-        } else {
-            return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
-        }
-    }
-    
-    protected void initShardingAlgorithm() throws SQLException {
-        Connection connection = getProxyConnection();
-        executeWithLog(connection, commonSQLCommand.getCreateDatabaseShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateDatabaseIdShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateOrderShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateOrderItemShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateAccountShardingAlgorithm());
-    }
-    
-    protected void createSchema(final String schemaName) throws SQLException {
-        Connection connection = getProxyConnection();
-        executeWithLog(connection, String.format("CREATE SCHEMA %s", schemaName));
-    }
-    
-    protected int countWithLog(final String sql) throws SQLException {
+    private int countWithLog(final String sql) throws SQLException {
         Connection connection = getProxyConnection();
         int retryNumber = 0;
         while (retryNumber <= 3) {
@@ -518,15 +474,18 @@ public abstract class BaseITCase {
         throw new RuntimeException("Can't get result from proxy.");
     }
     
-    protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute:{}.", sql);
-        connection.createStatement().execute(sql);
-        ThreadUtil.sleep(1, TimeUnit.SECONDS);
+    protected final void initShardingAlgorithm() throws SQLException {
+        Connection connection = getProxyConnection();
+        executeWithLog(connection, commonSQLCommand.getCreateDatabaseShardingAlgorithm());
+        executeWithLog(connection, commonSQLCommand.getCreateDatabaseIdShardingAlgorithm());
+        executeWithLog(connection, commonSQLCommand.getCreateOrderShardingAlgorithm());
+        executeWithLog(connection, commonSQLCommand.getCreateOrderItemShardingAlgorithm());
+        executeWithLog(connection, commonSQLCommand.getCreateAccountShardingAlgorithm());
     }
     
-    protected void executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute update:{}.", sql);
-        connection.createStatement().executeUpdate(sql);
+    protected final void executeWithLog(final Connection connection, final String sql) throws SQLException {
+        log.info("Connection execute:{}.", sql);
+        connection.createStatement().execute(sql);
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
