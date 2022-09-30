@@ -86,11 +86,11 @@ public final class CreateTableStatementAssert {
     
     private static void assertCreateTableAsSelectStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
         Optional<SelectStatement> selectStatement = CreateTableStatementHandler.getSelectStatement(actual);
-        if (null != expected.getCreateTableAsSelectStatement()) {
+        if (null == expected.getCreateTableAsSelectStatement()) {
+            assertFalse("actual select statement should not exist", selectStatement.isPresent());
+        } else {
             assertTrue("actual select statement should exist", selectStatement.isPresent());
             SelectStatementAssert.assertIs(assertContext, selectStatement.get(), expected.getCreateTableAsSelectStatement());
-        } else {
-            assertFalse("actual select statement should not exist", selectStatement.isPresent());
         }
     }
     

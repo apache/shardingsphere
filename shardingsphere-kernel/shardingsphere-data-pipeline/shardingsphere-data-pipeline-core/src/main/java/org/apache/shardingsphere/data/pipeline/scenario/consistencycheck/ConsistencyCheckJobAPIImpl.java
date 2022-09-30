@@ -39,12 +39,13 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyFinishedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgressSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.util.Collections;
@@ -134,31 +135,25 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void startDisabledJob(final String jobId) {
-        log.info("start disable check job {}", jobId);
+        log.info("Start disable check job {}", jobId);
         PipelineJobItemProgress jobProgress = getJobItemProgress(jobId, 0);
-        if (null != jobProgress && JobStatus.FINISHED == jobProgress.getStatus()) {
-            throw new PipelineJobHasAlreadyFinishedException("Check job already finished.");
-        }
+        ShardingSpherePreconditions.checkState(null == jobProgress || JobStatus.FINISHED != jobProgress.getStatus(), () -> new PipelineJobHasAlreadyFinishedException(jobId));
         super.startDisabledJob(jobId);
     }
     
     @Override
     public void startByParentJobId(final String parentJobId) {
-        log.info("start check job by parentJobId {}", parentJobId);
+        log.info("Start check job by parent job id: {}", parentJobId);
         Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
-        if (!checkLatestJobId.isPresent()) {
-            throw new PipelineJobNotFoundException(parentJobId + " check job");
-        }
+        ShardingSpherePreconditions.checkState(checkLatestJobId.isPresent(), () -> new PipelineJobNotFoundException(parentJobId));
         startDisabledJob(checkLatestJobId.get());
     }
     
     @Override
     public void stopByParentJobId(final String parentJobId) {
-        log.info("stop check job by parentJobId {}", parentJobId);
+        log.info("Stop check job by parent job id: {}", parentJobId);
         Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
-        if (!checkLatestJobId.isPresent()) {
-            throw new PipelineJobNotFoundException(parentJobId + " check job");
-        }
+        ShardingSpherePreconditions.checkState(checkLatestJobId.isPresent(), () -> new PipelineJobNotFoundException(parentJobId));
         stop(checkLatestJobId.get());
     }
     

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegis
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.exception.UnsupportedActualDataNodeStructureException;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -66,9 +67,8 @@ public class SchemaMetaDataUtil {
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
-            if (null != databaseType.getType() && !"MySQL".equals(databaseType.getType()) && dataNode.getDataSourceName().contains(".")) {
-                throw new UnsupportedActualDataNodeStructureException(dataNode, databaseType.getJdbcUrlPrefixes());
-            }
+            ShardingSpherePreconditions.checkState(null == databaseType.getType() || "MySQL".equals(databaseType.getType()) || !dataNode.getDataSourceName().contains("."),
+                    () -> new UnsupportedActualDataNodeStructureException(dataNode, databaseType.getJdbcUrlPrefixes()));
             if (dataNode.getDataSourceName().contains(".")) {
                 String database = dataNode.getDataSourceName().split("\\.")[1];
                 GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().put(dataNode.getTableName(), database);

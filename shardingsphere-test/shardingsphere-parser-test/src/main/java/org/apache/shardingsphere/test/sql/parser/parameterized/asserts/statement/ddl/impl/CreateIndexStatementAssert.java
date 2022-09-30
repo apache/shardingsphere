@@ -51,11 +51,11 @@ public final class CreateIndexStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
-        if (null != expected.getTable()) {
+        if (null == expected.getTable()) {
+            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+        } else {
             assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
-        } else {
-            assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
         }
     }
     

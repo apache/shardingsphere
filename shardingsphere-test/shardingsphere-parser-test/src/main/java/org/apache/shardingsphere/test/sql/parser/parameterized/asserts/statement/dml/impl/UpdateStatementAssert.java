@@ -60,10 +60,10 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        if (null != expected.getTable()) {
-            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
-        } else {
+        if (null == expected.getTable()) {
             assertNull(assertContext.getText("Actual from should not exist."), actual.getTable());
+        } else {
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
     
@@ -72,32 +72,32 @@ public final class UpdateStatementAssert {
     }
     
     private static void assertWhereClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
-        if (null != expected.getWhereClause()) {
+        if (null == expected.getWhereClause()) {
+            assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
             WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
-        } else {
-            assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }
     }
     
     private static void assertOrderByClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         Optional<OrderBySegment> orderBySegment = UpdateStatementHandler.getOrderBySegment(actual);
-        if (null != expected.getOrderByClause()) {
+        if (null == expected.getOrderByClause()) {
+            assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual order by segment should exist."), orderBySegment.isPresent());
             OrderByClauseAssert.assertIs(assertContext, orderBySegment.get(), expected.getOrderByClause());
-        } else {
-            assertFalse(assertContext.getText("Actual order by segment should not exist."), orderBySegment.isPresent());
         }
     }
     
     private static void assertLimitClause(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
         Optional<LimitSegment> limitSegment = UpdateStatementHandler.getLimitSegment(actual);
-        if (null != expected.getLimitClause()) {
+        if (null == expected.getLimitClause()) {
+            assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual limit segment should exist."), limitSegment.isPresent());
             LimitClauseAssert.assertRowCount(assertContext, limitSegment.get().getRowCount().orElse(null), expected.getLimitClause().getRowCount());
             SQLSegmentAssert.assertIs(assertContext, limitSegment.get(), expected.getLimitClause());
-        } else {
-            assertFalse(assertContext.getText("Actual limit segment should not exist."), limitSegment.isPresent());
         }
     }
 }

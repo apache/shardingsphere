@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
  */
 public final class PipelineJobHasAlreadyFinishedException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 2854259384634892428L;
+    private static final long serialVersionUID = 6881217592831423520L;
     
-    public PipelineJobHasAlreadyFinishedException(final String message) {
-        super(XOpenSQLState.GENERAL_ERROR, 88, message);
+    public PipelineJobHasAlreadyFinishedException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 95, "Job has already finished, please run `CHECK MIGRATION %s` to start a new data consistency check job", jobId);
     }
 }
