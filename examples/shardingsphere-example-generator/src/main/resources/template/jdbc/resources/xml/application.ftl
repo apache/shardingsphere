@@ -89,20 +89,22 @@
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
-    
+<#if feature!="encrypt">
     <bean id="ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_1?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
-    
+    <#if feature!="shadow">
     <bean id="ds_2" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_2?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
+    </#if>
+</#if>
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
 </#list>
