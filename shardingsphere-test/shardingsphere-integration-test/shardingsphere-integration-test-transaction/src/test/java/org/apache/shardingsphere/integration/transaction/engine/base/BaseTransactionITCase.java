@@ -58,6 +58,39 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createTables();
     }
     
+    private void initShardingAlgorithm() throws SQLException {
+        Connection connection = getProxyConnection();
+        executeWithLog(connection, getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        executeWithLog(connection, getCommonSQLCommand().getCreateDatabaseIdShardingAlgorithm());
+        executeWithLog(connection, getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
+        executeWithLog(connection, getCommonSQLCommand().getCreateAccountShardingAlgorithm());
+    }
+    
+    private boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws SQLException {
+        long startTime = System.currentTimeMillis();
+        int waitTimes = 0;
+        do {
+            int result = countWithLog("SHOW SHARDING ALGORITHMS");
+            if (result >= 5) {
+                log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
+                return true;
+            }
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            waitTimes++;
+        } while (waitTimes <= maxWaitTimes);
+        return false;
+    }
+    
+    private void initTableRules() throws SQLException {
+        Connection connection = getProxyConnection();
+        createOrderTableRule(connection);
+        createOrderItemTableRule(connection);
+        bindingShardingRule(connection);
+        createAccountTableRule(connection);
+        createAddressBroadcastTableRule(connection);
+    }
+    
     private void initJdbcConfig() throws SQLException {
         createTables();
     }
@@ -68,15 +101,6 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createOrderItemTable(conn);
         createAccountTable(conn);
         createAddressTable(conn);
-    }
-    
-    private void initTableRules() throws SQLException {
-        Connection connection = getProxyConnection();
-        createOrderTableRule(connection);
-        createOrderItemTableRule(connection);
-        bindingShardingRule(connection);
-        createAccountTableRule(connection);
-        createAddressBroadcastTableRule(connection);
     }
     
     private void createOrderTableRule(final Connection connection) throws SQLException {

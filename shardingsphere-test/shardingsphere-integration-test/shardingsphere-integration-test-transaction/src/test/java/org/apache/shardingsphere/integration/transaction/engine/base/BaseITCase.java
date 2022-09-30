@@ -183,7 +183,7 @@ public abstract class BaseITCase {
         }
     }
     
-    protected final boolean isProxyAdapter(final TransactionParameterized parameterized) {
+    final boolean isProxyAdapter(final TransactionParameterized parameterized) {
         return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
     }
     
@@ -362,26 +362,11 @@ public abstract class BaseITCase {
         }
     }
     
-    protected final Connection getProxyConnection() throws SQLException {
+    final Connection getProxyConnection() throws SQLException {
         return dataSource.getConnection();
     }
     
-    protected final boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws SQLException {
-        long startTime = System.currentTimeMillis();
-        int waitTimes = 0;
-        do {
-            int result = countWithLog("SHOW SHARDING ALGORITHMS");
-            if (result >= 5) {
-                log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
-                return true;
-            }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            waitTimes++;
-        } while (waitTimes <= maxWaitTimes);
-        return false;
-    }
-    
-    protected final void addResources() throws SQLException {
+    final void addResources() throws SQLException {
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
             try (Connection connection = DriverManager.getConnection(getContainerComposer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
@@ -459,7 +444,7 @@ public abstract class BaseITCase {
         assertThat(countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;"), is(3));
     }
     
-    private int countWithLog(final String sql) throws SQLException {
+    int countWithLog(final String sql) throws SQLException {
         Connection connection = getProxyConnection();
         int retryNumber = 0;
         while (retryNumber <= 3) {
@@ -478,15 +463,6 @@ public abstract class BaseITCase {
             retryNumber++;
         }
         throw new RuntimeException("Can't get result from proxy.");
-    }
-    
-    protected final void initShardingAlgorithm() throws SQLException {
-        Connection connection = getProxyConnection();
-        executeWithLog(connection, commonSQLCommand.getCreateDatabaseShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateDatabaseIdShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateOrderShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateOrderItemShardingAlgorithm());
-        executeWithLog(connection, commonSQLCommand.getCreateAccountShardingAlgorithm());
     }
     
     protected final void executeWithLog(final Connection connection, final String sql) throws SQLException {
