@@ -48,12 +48,13 @@
     
     <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" production-data-source-name="ds_0" shadow-data-source-name="ds_1"/>
-        <shadow:shadow-table name="t_order" default-shadow-algorithm-name="simple-hint-algorithm" data-sources="shadow-data-source">
+        <shadow:shadow-table name="t_order" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
+        <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
     </shadow:rule>
     
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
