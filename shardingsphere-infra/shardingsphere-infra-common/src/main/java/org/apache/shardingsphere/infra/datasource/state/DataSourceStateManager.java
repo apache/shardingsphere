@@ -21,7 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.datasource.state.exception.DataSourceStateException;
+import org.apache.shardingsphere.infra.datasource.state.exception.UnavailableDataSourceException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,15 +36,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Data source state manager.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class DataSourceStateManager {
     
     private static final DataSourceStateManager INSTANCE = new DataSourceStateManager();
     
     private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
     
-    private volatile boolean force;
+    private volatile boolean forceStart;
     
     private volatile boolean initialized;
     
@@ -62,10 +63,10 @@ public final class DataSourceStateManager {
      * @param databaseName database name
      * @param dataSources data sources
      * @param storageDataSourceStates storage node data source state
-     * @param force whether to force start
+     * @param forceStart whether to force start
      */
-    public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean force) {
-        this.force = force;
+    public void initStates(final String databaseName, final Map<String, DataSource> dataSources, final Map<String, DataSourceState> storageDataSourceStates, final boolean forceStart) {
+        this.forceStart = forceStart;
         dataSources.forEach((key, value) -> initState(databaseName, storageDataSourceStates, key, value));
         initialized = true;
     }
@@ -83,11 +84,8 @@ public final class DataSourceStateManager {
         try (Connection ignored = dataSource.getConnection()) {
             dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
         } catch (final SQLException ex) {
-            if (this.force) {
-                log.error("Data source state unavailable, ignored with the -f parameter.", ex);
-            } else {
-                throw new DataSourceStateException("DataSourceState", 1, "Data source state unavailable.", ex);
-            }
+            ShardingSpherePreconditions.checkState(forceStart, UnavailableDataSourceException::new);
+            log.error("Data source unavailable, ignored with the -f parameter.", ex);
         }
     }
     
@@ -130,7 +128,7 @@ public final class DataSourceStateManager {
     }
     
     private void checkForceConnection(final Map<String, DataSource> dataSources) {
-        if (force) {
+        if (forceStart) {
             dataSources.entrySet().removeIf(entry -> {
                 try (Connection ignored = entry.getValue().getConnection()) {
                     return false;
