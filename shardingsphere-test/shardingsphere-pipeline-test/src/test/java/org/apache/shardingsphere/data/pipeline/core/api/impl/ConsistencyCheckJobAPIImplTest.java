@@ -61,11 +61,12 @@ public final class ConsistencyCheckJobAPIImplTest {
         CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(migrationJobId, null, null);
         String checkJobId = checkJobAPI.createJobAndStart(parameter);
         ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) checkJobAPI.getJobConfiguration(checkJobId);
-        String expectCheckJobId = "j0201j0101test0";
+        int expectedSequence = ConsistencyCheckJobId.MIN_SEQUENCE;
+        String expectCheckJobId = "j0201" + migrationJobId + expectedSequence;
         assertThat(jobConfig.getJobId(), is(expectCheckJobId));
         assertNull(jobConfig.getAlgorithmTypeName());
         int sequence = ConsistencyCheckJobId.parseSequence(expectCheckJobId);
-        assertThat(sequence, is(0));
+        assertThat(sequence, is(expectedSequence));
     }
     
     @Test
