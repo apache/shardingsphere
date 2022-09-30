@@ -43,12 +43,12 @@ public final class DropLoginStatementAssert {
      * @param expected expected drop login statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerDropLoginStatement actual, final DropLoginStatementTestCase expected) {
-        if (null != expected.getLogin()) {
+        if (null == expected.getLogin()) {
+            assertNull(assertContext.getText("Actual login should not exist."), actual.getLoginSegment());
+        } else {
             assertNotNull(assertContext.getText("Actual login should exist."), actual.getLoginSegment());
             assertThat(assertContext.getText("Login name assertion error: "), actual.getLoginSegment().getLoginName().getValueWithQuoteCharacters(), is(expected.getLogin().getName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLoginSegment(), expected.getLogin());
-        } else {
-            assertNull(assertContext.getText("Actual login should not exist."), actual.getLoginSegment());
         }
     }
 }

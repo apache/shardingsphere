@@ -226,7 +226,7 @@ public final class ConnectionManagerTest {
             connectionManager.getConnections("invalid_ds", 3, ConnectionMode.CONNECTION_STRICTLY);
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
-                    + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties"));
+                    + "Please consider increasing the `maxPoolSize` of the data sources or decreasing the `max-connections-size-per-query` in properties."));
         }
     }
 }

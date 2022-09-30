@@ -28,6 +28,6 @@ public final class ActualTableNotFoundException extends ShardingSQLException {
     private static final long serialVersionUID = -5008645813201488531L;
     
     public ActualTableNotFoundException(final String dataSourceName, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Actual table `%s.%s` is not in table rule configuration", dataSourceName, tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Actual table `%s.%s` is not in table rule configuration.", dataSourceName, tableName);
     }
 }

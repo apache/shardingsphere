@@ -32,8 +32,11 @@ public final class ConditionValue {
     
     private final Comparable<?> value;
     
+    private final int parameterMarkerIndex;
+    
     public ConditionValue(final ExpressionSegment expressionSegment, final List<Object> parameters) {
         value = getValue(expressionSegment, parameters);
+        parameterMarkerIndex = expressionSegment instanceof ParameterMarkerExpressionSegment ? ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex() : -1;
     }
     
     private Comparable<?> getValue(final ExpressionSegment expressionSegment, final List<Object> parameters) {
@@ -69,5 +72,14 @@ public final class ConditionValue {
      */
     public Optional<Comparable<?>> getValue() {
         return Optional.ofNullable(value);
+    }
+    
+    /**
+     * Get parameter marker index.
+     *
+     * @return parameter marker index
+     */
+    public Optional<Integer> getParameterMarkerIndex() {
+        return parameterMarkerIndex > -1 ? Optional.of(parameterMarkerIndex) : Optional.empty();
     }
 }

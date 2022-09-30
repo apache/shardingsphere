@@ -103,7 +103,11 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 continue;
             }
             if (each instanceof SimpleExpressionSegment) {
-                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
+                List<Integer> parameterMarkerIndexes = each instanceof ParameterMarkerExpressionSegment
+                        ? Collections.singletonList(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex())
+                        : Collections.emptyList();
+                result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters)),
+                        parameterMarkerIndexes));
             } else if (each instanceof CommonExpressionSegment) {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
@@ -129,13 +133,10 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     @SuppressWarnings("rawtypes")
     private Comparable<?> getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> parameters) {
-        Object result;
-        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            result = parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
-        } else {
-            result = ((LiteralExpressionSegment) expressionSegment).getLiterals();
-        }
-        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable.");
+        Object result = expressionSegment instanceof ParameterMarkerExpressionSegment
+                ? parameters.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
+                : ((LiteralExpressionSegment) expressionSegment).getLiterals();
+        Preconditions.checkArgument(result instanceof Comparable, "Sharding value must implements Comparable");
         return (Comparable) result;
     }
     

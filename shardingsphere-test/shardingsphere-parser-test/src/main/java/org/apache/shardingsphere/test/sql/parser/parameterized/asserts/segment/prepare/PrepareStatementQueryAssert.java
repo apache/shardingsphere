@@ -53,38 +53,38 @@ public final class PrepareStatementQueryAssert {
     }
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
-        if (null != expected.getSelectClause()) {
+        if (null == expected.getSelectClause()) {
+            assertFalse(assertContext.getText("Actual select statement should not exist."), actual.getSelect().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual select statement should exist."), actual.getSelect().isPresent());
             SelectStatementAssert.assertIs(assertContext, actual.getSelect().get(), expected.getSelectClause());
-        } else {
-            assertFalse(assertContext.getText("Actual select statement should not exist."), actual.getSelect().isPresent());
         }
     }
     
     private static void assertInsert(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
-        if (null != expected.getInsertClause()) {
+        if (null == expected.getInsertClause()) {
+            assertFalse(assertContext.getText("Actual insert statement should not exist."), actual.getInsert().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual insert statement should exist."), actual.getInsert().isPresent());
             InsertStatementAssert.assertIs(assertContext, actual.getInsert().get(), expected.getInsertClause());
-        } else {
-            assertFalse(assertContext.getText("Actual insert statement should not exist."), actual.getInsert().isPresent());
         }
     }
     
     private static void assertUpdate(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
-        if (null != expected.getUpdateClause()) {
+        if (null == expected.getUpdateClause()) {
+            assertFalse(assertContext.getText("Actual update statement should not exist."), actual.getUpdate().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual update statement should exist."), actual.getUpdate().isPresent());
             UpdateStatementAssert.assertIs(assertContext, actual.getUpdate().get(), expected.getUpdateClause());
-        } else {
-            assertFalse(assertContext.getText("Actual update statement should not exist."), actual.getUpdate().isPresent());
         }
     }
     
     private static void assertDelete(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
-        if (null != expected.getDeleteClause()) {
+        if (null == expected.getDeleteClause()) {
+            assertFalse(assertContext.getText("Actual delete statement should not exist."), actual.getDelete().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual delete statement should exist."), actual.getDelete().isPresent());
             DeleteStatementAssert.assertIs(assertContext, actual.getDelete().get(), expected.getDeleteClause());
-        } else {
-            assertFalse(assertContext.getText("Actual delete statement should not exist."), actual.getDelete().isPresent());
         }
     }
 }

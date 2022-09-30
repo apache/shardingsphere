@@ -42,14 +42,13 @@ public final class ShowShardingTableNodesStatementAssert {
      * @param actual actual show sharding table nodes statement
      * @param expected expected show sharding table nodes statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableNodesStatement actual,
-                                final ShowShardingTableNodesStatementTestCase expected) {
-        if (null != expected.getDatabase()) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableNodesStatement actual, final ShowShardingTableNodesStatementTestCase expected) {
+        if (null == expected.getDatabase()) {
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableName(), is(expected.getTable()));
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
-        } else {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

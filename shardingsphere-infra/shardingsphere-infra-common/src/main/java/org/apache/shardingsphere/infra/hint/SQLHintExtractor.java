@@ -73,6 +73,6 @@ public final class SQLHintExtractor {
      * @return disable audit names
      */
     public Collection<String> findDisableAuditNames() {
-        return SQLHintUtils.getSplitterSQLHintValue(sqlHintProperties.getValue(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES));
+        return SQLHintUtils.getSplitterSQLHintValue(sqlHintProperties.getValue(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY));
     }
 }

@@ -46,11 +46,9 @@ public final class ParameterizedArrayFactory {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
-                if (isDistSQLCommandType(sqlCommandType)) {
-                    result.addAll(ProxyStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-                } else {
-                    result.addAll(JdbcStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-                }
+                result.addAll(isDistSQLCommandType(sqlCommandType)
+                        ? ProxyStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType)
+                        : JdbcStandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             } else if (EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             }
@@ -68,11 +66,9 @@ public final class ParameterizedArrayFactory {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
-                if (isDistSQLCommandType(sqlCommandType)) {
-                    result.addAll(ProxyStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-                } else {
-                    result.addAll(JdbcStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-                }
+                result.addAll(isDistSQLCommandType(sqlCommandType)
+                        ? ProxyStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType)
+                        : JdbcStandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             } else if (EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             }

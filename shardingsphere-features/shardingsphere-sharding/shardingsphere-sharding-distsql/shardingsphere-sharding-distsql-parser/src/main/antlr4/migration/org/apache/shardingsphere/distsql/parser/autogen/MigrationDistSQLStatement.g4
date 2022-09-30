@@ -32,5 +32,8 @@ execute
     | addMigrationSourceResource
     | dropMigrationSourceResource
     | showMigrationSourceResources
+    | showMigrationCheckStatus
+    | startMigrationCheck
+    | stopMigrationCheck
     ) SEMI?
     ;

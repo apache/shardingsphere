@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Sharding create view statement validator.
@@ -48,12 +47,9 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        Optional<SelectStatement> selectStatement = sqlStatementContext.getSqlStatement().getSelect();
-        if (!selectStatement.isPresent()) {
-            return;
-        }
+        SelectStatement selectStatement = sqlStatementContext.getSqlStatement().getSelect();
         TableExtractor extractor = new TableExtractor();
-        extractor.extractTablesFromSelect(selectStatement.get());
+        extractor.extractTablesFromSelect(selectStatement);
         Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
         String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
         if ("NONE".equals(sqlFederationType) && isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
@@ -67,11 +63,8 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        Optional<SelectStatement> selectStatement = sqlStatementContext.getSqlStatement().getSelect();
-        if (!selectStatement.isPresent()) {
-            return;
-        }
-        if (isContainsNotSupportedViewStatement(selectStatement.get(), routeContext)) {
+        SelectStatement selectStatement = sqlStatementContext.getSqlStatement().getSelect();
+        if (isContainsNotSupportedViewStatement(selectStatement, routeContext)) {
             throw new UnsupportedCreateViewException();
         }
     }

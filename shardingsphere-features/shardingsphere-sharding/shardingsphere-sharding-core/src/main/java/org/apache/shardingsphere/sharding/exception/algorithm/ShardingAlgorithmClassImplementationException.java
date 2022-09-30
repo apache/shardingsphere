@@ -28,6 +28,6 @@ public final class ShardingAlgorithmClassImplementationException extends Shardin
     private static final long serialVersionUID = 3053033454701332815L;
     
     public ShardingAlgorithmClassImplementationException(final String shardingAlgorithmClassName, final Class<?> superShardingAlgorithmClass) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Sharding algorithm class `%s` should be implement `%s`", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
+        super(XOpenSQLState.GENERAL_ERROR, 80, "Sharding algorithm class `%s` should be implement `%s`.", shardingAlgorithmClassName, superShardingAlgorithmClass.getName());
     }
 }

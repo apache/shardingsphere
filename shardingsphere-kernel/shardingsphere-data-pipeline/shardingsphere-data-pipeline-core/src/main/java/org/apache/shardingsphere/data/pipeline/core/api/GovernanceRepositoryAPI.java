@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,44 +58,46 @@ public interface GovernanceRepositoryAPI {
     String getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Persist check latest result.
+     * Get check latest job id.
      *
      * @param jobId job id
-     * @param checkSuccess check success
+     * @return check job id
      */
-    void persistCheckLatestResult(String jobId, boolean checkSuccess);
+    Optional<String> getCheckLatestJobId(String jobId);
     
     /**
-     * Get check latest result.
-     *
-     * @param jobId job id
-     * @return check result
-     */
-    Optional<Boolean> getCheckLatestResult(String jobId);
-    
-    /**
-     * Persist check latest detailed result.
-     *
-     * @param jobId job id
-     * @param checkDetailedSuccess check detailed success
-     */
-    void persistCheckLatestDetailedResult(String jobId, String checkDetailedSuccess);
-    
-    /**
-     * Get check latest detailed result.
-     *
-     * @param jobId job id
-     * @return check detailed result
-     */
-    Optional<String> getCheckLatestDetailedResult(String jobId);
-    
-    /**
-     * Persist check job id.
+     * Persist check latest job id.
      *
      * @param jobId job id
      * @param checkJobId check job id
      */
-    void persistCheckJobId(String jobId, String checkJobId);
+    void persistCheckLatestJobId(String jobId, String checkJobId);
+    
+    /**
+     * Get check job result.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     * @return check job result
+     */
+    Map<String, DataConsistencyCheckResult> getCheckJobResult(String jobId, String checkJobId);
+    
+    /**
+     * Persist check job result.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     * @param checkResultMap check result map
+     */
+    void persistCheckJobResult(String jobId, String checkJobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    
+    /**
+     * Delete check job result.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     */
+    void deleteCheckJobResult(String jobId, String checkJobId);
     
     /**
      * List check job ids.

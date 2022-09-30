@@ -26,4 +26,5 @@
     <sql-case id="alter_view_set_schema" value="ALTER VIEW order_view SET SCHEMA test" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_view_set_view_option" value="ALTER VIEW order_view SET (security_barrier=TRUE)" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_view_reset" value="ALTER VIEW order_view RESET (security_barrier)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_view_definition" value="ALTER VIEW order_view AS SELECT * FROM t_order" db-types="MySQL,SQLServer" />
 </sql-cases>

@@ -39,7 +39,7 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
         super(baseTransactionITCase, dataSource);
     }
     
-    protected void assertNotSetReadOnly() throws SQLException {
+    void assertNotSetReadOnly() throws SQLException {
         Connection conn = getDataSource().getConnection();
         assertQueryBalance(conn);
         Statement queryStatement = conn.createStatement();
@@ -54,7 +54,7 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
         assertThat(String.format("Balance is %s, should be 101.", balanceEnd), balanceEnd, is(101));
     }
     
-    protected void assertQueryBalance(final Connection conn) throws SQLException {
+    void assertQueryBalance(final Connection conn) throws SQLException {
         Statement queryStatement = conn.createStatement();
         ResultSet rs = queryStatement.executeQuery("select * from account;");
         while (rs.next()) {

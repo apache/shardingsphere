@@ -17,18 +17,26 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
-import com.google.common.base.Strings;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResultSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,32 +65,50 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistCheckLatestResult(final String jobId, final boolean checkSuccess) {
-        log.info("persist check latest result '{}' for job {}", checkSuccess, jobId);
-        repository.persist(PipelineMetaDataNode.getCheckLatestResultPath(jobId), String.valueOf(checkSuccess));
+    public Optional<String> getCheckLatestJobId(final String jobId) {
+        return Optional.ofNullable(repository.get(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId)));
     }
     
     @Override
-    public Optional<Boolean> getCheckLatestResult(final String jobId) {
-        String data = repository.get(PipelineMetaDataNode.getCheckLatestResultPath(jobId));
-        return Strings.isNullOrEmpty(data) ? Optional.empty() : Optional.of(Boolean.parseBoolean(data));
+    public void persistCheckLatestJobId(final String jobId, final String checkJobId) {
+        log.info("persist check job id '{}' for job {}", checkJobId, jobId);
+        repository.persist(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId), String.valueOf(checkJobId));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String jobId, final String checkJobId) {
+        Map<String, DataConsistencyCheckResult> result = new HashMap<>();
+        String yamlCheckResultMapText = repository.get(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+        if (StringUtils.isBlank(yamlCheckResultMapText)) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> yamlCheckResultMap = YamlEngine.unmarshal(yamlCheckResultMapText, Map.class, true);
+        for (Entry<String, String> entry : yamlCheckResultMap.entrySet()) {
+            result.put(entry.getKey(), YamlDataConsistencyCheckResultSwapper.swapToObject(entry.getValue()));
+        }
+        return result;
     }
     
     @Override
-    public void persistCheckLatestDetailedResult(final String jobId, @NonNull final String checkDetailedSuccess) {
-        log.info("persist check latest detailed result, jobId={}, checkDetailedSuccess={}", jobId, checkDetailedSuccess);
-        repository.persist(PipelineMetaDataNode.getCheckLatestDetailedResultPath(jobId), checkDetailedSuccess);
+    public void persistCheckJobResult(final String jobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+        if (null == checkResultMap) {
+            log.warn("checkResultMap is null, jobId {}, checkJobId {}", jobId, checkJobId);
+            return;
+        }
+        log.info("persist check job result for job {}", checkJobId);
+        Map<String, String> yamlCheckResultMap = new LinkedHashMap<>();
+        for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
+            YamlDataConsistencyCheckResult yamlCheckResult = new YamlDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
+            yamlCheckResultMap.put(entry.getKey(), YamlEngine.marshal(yamlCheckResult));
+        }
+        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId), YamlEngine.marshal(yamlCheckResultMap));
     }
     
     @Override
-    public Optional<String> getCheckLatestDetailedResult(final String jobId) {
-        return Optional.ofNullable(repository.get(PipelineMetaDataNode.getCheckLatestDetailedResultPath(jobId)));
-    }
-    
-    @Override
-    public void persistCheckJobId(final String jobId, final String checkJobId) {
-        log.info("persist check job id, jobId={}, checkJobId={}", jobId, checkJobId);
-        repository.persist(PipelineMetaDataNode.getCheckJobIdPath(jobId, checkJobId), "");
+    public void deleteCheckJobResult(final String jobId, final String checkJobId) {
+        log.info("deleteCheckJobResult, jobId={}, checkJobId={}", jobId, checkJobId);
+        repository.delete(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
     }
     
     @Override

@@ -53,9 +53,7 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         if (null != currentRuleConfig) {
             Collection<String> currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toList());
             Collection<String> toBeCreatedDuplicateRuleNames = sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toList());
-            if (!toBeCreatedDuplicateRuleNames.isEmpty()) {
-                throw new DuplicateRuleException("encrypt", databaseName, toBeCreatedDuplicateRuleNames);
-            }
+            ShardingSpherePreconditions.checkState(toBeCreatedDuplicateRuleNames.isEmpty(), () -> new DuplicateRuleException("encrypt", databaseName, toBeCreatedDuplicateRuleNames));
         }
     }
     

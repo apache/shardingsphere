@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
@@ -398,6 +399,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         SQLServerCreateViewStatement result = new SQLServerCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
         result.setSelect((SQLServerSelectStatement) visit(ctx.createOrAlterViewClause().select()));
         return result;
     }
@@ -464,7 +466,11 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitAlterView(final AlterViewContext ctx) {
-        return new SQLServerAlterViewStatement();
+        SQLServerAlterViewStatement result = new SQLServerAlterViewStatement();
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setViewDefinition(getOriginalText(ctx.createOrAlterViewClause().select()));
+        result.setSelect((SQLServerSelectStatement) visit(ctx.createOrAlterViewClause().select()));
+        return result;
     }
     
     @Override
@@ -489,7 +495,11 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        return new SQLServerDropViewStatement();
+        SQLServerDropViewStatement result = new SQLServerDropViewStatement();
+        for (ViewNameContext each : ctx.viewName()) {
+            result.getViews().add((SimpleTableSegment) visit(each));
+        }
+        return result;
     }
     
     @Override

@@ -29,6 +29,6 @@ public final class DuplicateAlgorithmException extends RuleDefinitionViolationEx
     private static final long serialVersionUID = 4382238091103015055L;
     
     public DuplicateAlgorithmException(final String type, final String databaseName, final Collection<String> auditorNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`", type, auditorNames, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 153, "Duplicate %s algorithms `%s` in database `%s`.", type, auditorNames, databaseName);
     }
 }

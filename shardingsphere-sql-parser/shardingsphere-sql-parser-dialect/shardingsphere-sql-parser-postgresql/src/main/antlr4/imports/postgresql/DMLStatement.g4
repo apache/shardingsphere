@@ -229,7 +229,6 @@ valuesClause
 
 limitClause
     : LIMIT selectLimitValue
-    | LIMIT selectLimitValue COMMA_ selectOffsetValue
     | FETCH firstOrNext selectFetchFirstValue rowOrRows ONLY
     | FETCH firstOrNext selectFetchFirstValue rowOrRows WITH TIES
     | FETCH firstOrNext rowOrRows ONLY

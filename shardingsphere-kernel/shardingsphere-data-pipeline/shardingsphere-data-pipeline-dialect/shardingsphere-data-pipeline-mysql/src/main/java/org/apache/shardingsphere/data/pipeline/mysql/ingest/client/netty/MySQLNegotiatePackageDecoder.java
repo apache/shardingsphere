@@ -42,15 +42,15 @@ public final class MySQLNegotiatePackageDecoder extends ByteToMessageDecoder {
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-        if (!handshakeReceived) {
-            out.add(decodeHandshakePacket(payload));
-            handshakeReceived = true;
-        } else {
+        if (handshakeReceived) {
             MySQLPacket responsePacket = decodeResponsePacket(payload, out);
             if (responsePacket instanceof MySQLOKPacket) {
                 ctx.channel().pipeline().remove(this);
             }
             out.add(responsePacket);
+        } else {
+            out.add(decodeHandshakePacket(payload));
+            handshakeReceived = true;
         }
     }
     

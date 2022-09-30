@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationChangedJobConfigurationProcessor
+org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckChangedJobConfigurationProcessor

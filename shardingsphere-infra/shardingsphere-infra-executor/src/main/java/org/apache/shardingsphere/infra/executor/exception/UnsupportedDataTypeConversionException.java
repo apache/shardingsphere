@@ -30,6 +30,6 @@ public final class UnsupportedDataTypeConversionException extends DataSQLExcepti
     private static final long serialVersionUID = 4808672149254705863L;
     
     public UnsupportedDataTypeConversionException(final Class<?> convertType, final Object value) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 1, "Unsupported conversion data type `%s` for value `%s`", convertType.getName(), Objects.toString(value));
+        super(XOpenSQLState.INVALID_DATA_TYPE, 1, "Unsupported conversion data type `%s` for value `%s`.", convertType.getName(), Objects.toString(value));
     }
 }

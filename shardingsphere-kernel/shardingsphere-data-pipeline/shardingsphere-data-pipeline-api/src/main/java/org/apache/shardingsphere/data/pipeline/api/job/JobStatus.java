@@ -59,6 +59,11 @@ public enum JobStatus {
     FINISHED(false),
     
     /**
+     * Consistency check job execute failed.
+     */
+    CONSISTENCY_CHECK_FAILURE(false),
+    
+    /**
      * Task has stopped by failing to prepare work.
      */
     PREPARING_FAILURE(false),

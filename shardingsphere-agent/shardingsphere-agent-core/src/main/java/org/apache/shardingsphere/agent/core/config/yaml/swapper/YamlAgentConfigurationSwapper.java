@@ -53,13 +53,13 @@ public final class YamlAgentConfigurationSwapper {
     }
     
     private static Map<String, PluginConfiguration> transformPluginConfigurationMap(final Map<String, YamlPluginConfiguration> yamlConfigurationMap) {
-        Map<String, PluginConfiguration> configurationMap = new LinkedHashMap<>();
-        if (null != yamlConfigurationMap && yamlConfigurationMap.size() > 0) {
+        Map<String, PluginConfiguration> result = new LinkedHashMap<>();
+        if (null != yamlConfigurationMap) {
             for (Entry<String, YamlPluginConfiguration> entry : yamlConfigurationMap.entrySet()) {
-                configurationMap.put(entry.getKey(), transform(entry.getValue()));
+                result.put(entry.getKey(), transform(entry.getValue()));
             }
         }
-        return configurationMap;
+        return result;
     }
     
     private static PluginConfiguration transform(final YamlPluginConfiguration yamlConfig) {

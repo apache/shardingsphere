@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.core.database.visitor;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +31,7 @@ public final class SQLVisitorRuleTest {
         assertThat(SQLVisitorRule.valueOf(SelectContext.class), is(SQLVisitorRule.SELECT));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = SQLASTVisitorException.class)
     public void assertValueOfParseTreeClassFailure() {
         SQLVisitorRule.valueOf(ParseTree.class);
     }

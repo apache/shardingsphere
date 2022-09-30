@@ -24,8 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewSt
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
-import java.util.Optional;
-
 /**
  * MySQL alter view statement.
  */
@@ -36,12 +34,5 @@ public final class MySQLAlterViewStatement extends AlterViewStatement implements
     
     private SelectStatement select;
     
-    /**
-     * Get select statement.
-     *
-     * @return select statement
-     */
-    public Optional<SelectStatement> getSelect() {
-        return Optional.ofNullable(select);
-    }
+    private String viewDefinition;
 }

@@ -83,7 +83,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    protected void doStart() {
+    protected void runBlocking() {
         write();
     }
     

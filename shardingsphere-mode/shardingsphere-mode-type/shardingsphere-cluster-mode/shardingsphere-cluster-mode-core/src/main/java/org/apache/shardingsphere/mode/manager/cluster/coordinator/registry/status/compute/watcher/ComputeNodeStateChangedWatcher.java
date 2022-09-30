@@ -71,11 +71,14 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
             }
-        } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
+        }
+        if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
             return createInstanceEvent(event);
-        } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
+        }
+        if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
-        } else if (event.getKey().startsWith(ComputeNode.getProcessKillNodePatch())) {
+        }
+        if (event.getKey().startsWith(ComputeNode.getProcessKillNodePatch())) {
             return createKillProcessListIdEvent(event);
         }
         return Optional.empty();
@@ -88,7 +91,8 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         }
         if (Type.ADDED == event.getType()) {
             return Optional.of(new KillProcessListIdEvent(matcher.group(1), matcher.group(2)));
-        } else if (Type.DELETED == event.getType()) {
+        }
+        if (Type.DELETED == event.getType()) {
             return Optional.of(new KillProcessListIdUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();

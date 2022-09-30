@@ -580,15 +580,17 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitExplainableStatement(final ExplainableStatementContext ctx) {
         if (null != ctx.select()) {
             return visit(ctx.select());
-        } else if (null != ctx.delete()) {
-            return visit(ctx.delete());
-        } else if (null != ctx.insert()) {
-            return visit(ctx.insert());
-        } else if (null != ctx.replace()) {
-            return visit(ctx.replace());
-        } else {
-            return visit(ctx.update());
         }
+        if (null != ctx.delete()) {
+            return visit(ctx.delete());
+        }
+        if (null != ctx.insert()) {
+            return visit(ctx.insert());
+        }
+        if (null != ctx.replace()) {
+            return visit(ctx.replace());
+        }
+        return visit(ctx.update());
     }
     
     @Override
@@ -919,9 +921,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     private Collection<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         Collection<VariableAssignSegment> result = new LinkedList<>();
-        if (null != ctx.optionValueNoOptionType()) {
-            result.add(getVariableAssign(ctx.optionValueNoOptionType()));
-        } else {
+        if (null == ctx.optionValueNoOptionType()) {
             VariableAssignSegment variableAssign = new VariableAssignSegment();
             variableAssign.setStartIndex(ctx.start.getStartIndex());
             variableAssign.setStopIndex(ctx.setExprOrDefault().stop.getStopIndex());
@@ -931,6 +931,8 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             variableAssign.setVariable(variable);
             variableAssign.setAssignValue(ctx.setExprOrDefault().getText());
             result.add(variableAssign);
+        } else {
+            result.add(getVariableAssign(ctx.optionValueNoOptionType()));
         }
         for (OptionValueContext each : ctx.optionValue()) {
             result.add(getVariableAssign(each));
@@ -972,12 +974,11 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         VariableSegment variable = new VariableSegment();
         if (null != ctx.optionValueNoOptionType()) {
             return getVariableAssign(ctx.optionValueNoOptionType());
-        } else {
-            variable.setScope(ctx.optionType().getText());
-            variable.setVariable(ctx.internalVariableName().getText());
-            result.setVariable(variable);
-            result.setAssignValue(ctx.setExprOrDefault().getText());
         }
+        variable.setScope(ctx.optionType().getText());
+        variable.setVariable(ctx.internalVariableName().getText());
+        result.setVariable(variable);
+        result.setAssignValue(ctx.setExprOrDefault().getText());
         return result;
     }
     

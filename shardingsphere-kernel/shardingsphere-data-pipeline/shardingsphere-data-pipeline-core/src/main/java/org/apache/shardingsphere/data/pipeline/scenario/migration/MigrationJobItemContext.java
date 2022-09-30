@@ -115,11 +115,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         return sourceDataSourceLazyInitializer.get();
     }
     
-    /**
-     * Get source metadata loader.
-     *
-     * @return source metadata loader
-     */
+    @Override
     @SneakyThrows(ConcurrentException.class)
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();

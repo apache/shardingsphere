@@ -41,11 +41,11 @@ public final class CountEncryptRuleStatementAssert {
      * @param expected expected count encrypt rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CountEncryptRuleStatement actual, final CountEncryptRuleStatementTestCase expected) {
-        if (null != expected.getDatabase()) {
+        if (null == expected.getDatabase()) {
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
-        } else {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

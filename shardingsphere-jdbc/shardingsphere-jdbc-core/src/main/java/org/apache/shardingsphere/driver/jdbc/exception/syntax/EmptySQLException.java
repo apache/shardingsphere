@@ -28,6 +28,6 @@ public final class EmptySQLException extends SyntaxSQLException {
     private static final long serialVersionUID = -5723825491720138339L;
     
     public EmptySQLException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 1, "SQL String can not be NULL or empty");
+        super(XOpenSQLState.SYNTAX_ERROR, 2, "SQL String can not be NULL or empty.");
     }
 }

@@ -50,11 +50,9 @@ public final class TransactionSetHandler implements ProxyBackendHandler {
             connectionSession.setReadOnly(false);
         }
         if (null != sqlStatement.getIsolationLevel()) {
-            if (sqlStatement instanceof MySQLStatement) {
-                connectionSession.setDefaultIsolationLevel(TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ));
-            } else {
-                connectionSession.setDefaultIsolationLevel(TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
-            }
+            connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
+                    ? TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
+                    : TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
             connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel());
         }
         return new UpdateResponseHeader(sqlStatement);

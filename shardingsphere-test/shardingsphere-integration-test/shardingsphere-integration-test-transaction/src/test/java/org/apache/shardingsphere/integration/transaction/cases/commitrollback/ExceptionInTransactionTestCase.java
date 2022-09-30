@@ -50,6 +50,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             assertAccountRowCount(conn, 0);
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
             int causedExceptionResult = 1 / 0;
+            log.info("Caused exception result: {}", causedExceptionResult);
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
             conn.commit();
             fail("It should fail here.");

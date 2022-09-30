@@ -49,7 +49,7 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.expander.ShardingSphereViewExpander;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableFilterRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableProjectFilterRule;
@@ -110,6 +110,7 @@ public final class SQLFederationPlannerUtil {
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
         planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
@@ -217,14 +218,15 @@ public final class SQLFederationPlannerUtil {
      * @param catalogReader catalog reader
      * @param validator validator
      * @param cluster cluster
-     * @param optimizerContext optimizer context
+     * @param sqlParserRule sql parser rule
+     * @param databaseType database type
      * @param needsViewExpand whether sql needs view expand or not
      * @return sql to rel converter
      */
-    public static SqlToRelConverter createSqlToRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator,
-                                                            final RelOptCluster cluster, final OptimizerContext optimizerContext, final boolean needsViewExpand) {
-        ViewExpander expander = needsViewExpand ? new ShardingSphereViewExpander(optimizerContext,
-                createSqlToRelConverter(catalogReader, validator, cluster, optimizerContext, false)) : (rowType, queryString, schemaPath, viewPath) -> null;
+    public static SqlToRelConverter createSqlToRelConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelOptCluster cluster,
+                                                            final SQLParserRule sqlParserRule, final DatabaseType databaseType, final boolean needsViewExpand) {
+        ViewExpander expander = needsViewExpand ? new ShardingSphereViewExpander(sqlParserRule, databaseType,
+                createSqlToRelConverter(catalogReader, validator, cluster, sqlParserRule, databaseType, false)) : (rowType, queryString, schemaPath, viewPath) -> null;
         Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
         return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, converterConfig);
     }

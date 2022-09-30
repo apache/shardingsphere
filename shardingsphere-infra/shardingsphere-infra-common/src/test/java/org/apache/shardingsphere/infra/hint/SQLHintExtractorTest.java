@@ -36,21 +36,21 @@ public final class SQLHintExtractorTest {
     @Test
     public void assertSQLHintWriteRouteOnly() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: writeRouteOnly=true */", 0, 0)));
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */", 0, 0)));
         assertTrue(new SQLHintExtractor(statement).isHintWriteRouteOnly());
     }
     
     @Test
     public void assertSQLHintSkipEncryptRewrite() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: skipEncryptRewrite=true */", 0, 0)));
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SKIP_ENCRYPT_REWRITE=true */", 0, 0)));
         assertTrue(new SQLHintExtractor(statement).isHintSkipEncryptRewrite());
     }
     
     @Test
     public void assertSQLHintDisableAuditNames() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: disableAuditNames=sharding_audit1 sharding_audit2 */", 0, 0)));
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: DISABLE_AUDIT_NAMES=sharding_audit1 sharding_audit2 */", 0, 0)));
         Collection<String> actual = new SQLHintExtractor(statement).findDisableAuditNames();
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));

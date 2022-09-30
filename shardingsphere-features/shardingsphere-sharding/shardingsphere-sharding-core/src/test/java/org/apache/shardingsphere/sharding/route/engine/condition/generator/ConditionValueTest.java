@@ -19,28 +19,35 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.junit.Before;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class ConditionValueTest {
     
-    private ConditionValue conditionValue;
-    
-    @Before
-    public void setUp() {
+    @Test
+    public void assertGetValueFromLiteralExpressionSegment() {
         ExpressionSegment expressionSegment = new LiteralExpressionSegment(0, 0, "shardingsphere");
-        conditionValue = new ConditionValue(expressionSegment, new LinkedList<>());
+        ConditionValue conditionValue = new ConditionValue(expressionSegment, new LinkedList<>());
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is("shardingsphere"));
+        assertFalse(conditionValue.getParameterMarkerIndex().isPresent());
     }
     
     @Test
-    public void assertGetValue() {
+    public void assertGetValueFromParameterMarkerSegment() {
+        ExpressionSegment expressionSegment = new ParameterMarkerExpressionSegment(0, 0, 0);
+        ConditionValue conditionValue = new ConditionValue(expressionSegment, Collections.singletonList(1));
         assertTrue(conditionValue.getValue().isPresent());
-        assertThat(conditionValue.getValue().get(), is("shardingsphere"));
+        assertThat(conditionValue.getValue().get(), is(1));
+        assertTrue(conditionValue.getParameterMarkerIndex().isPresent());
+        assertThat(conditionValue.getParameterMarkerIndex().get(), is(0));
     }
 }

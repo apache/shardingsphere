@@ -28,6 +28,6 @@ public final class InvalidMGRGroupNameConfigurationException extends DBDiscovery
     private static final long serialVersionUID = -2585442998454509788L;
     
     public InvalidMGRGroupNameConfigurationException(final String groupName, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 83, "Group name in MGR is not same with configured one `%s` in database `%s`", groupName, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 83, "Group name in MGR is not same with configured one `%s` in database `%s`.", groupName, databaseName);
     }
 }

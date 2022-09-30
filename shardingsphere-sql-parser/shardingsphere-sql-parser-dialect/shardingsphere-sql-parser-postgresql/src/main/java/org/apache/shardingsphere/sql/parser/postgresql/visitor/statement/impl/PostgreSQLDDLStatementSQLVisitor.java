@@ -774,7 +774,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         PostgreSQLCreateViewStatement result = new PostgreSQLCreateViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
-        result.setViewSQL(getOriginalText(ctx));
+        result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
         return result;
     }
@@ -783,7 +783,6 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitAlterView(final AlterViewContext ctx) {
         PostgreSQLAlterViewStatement result = new PostgreSQLAlterViewStatement();
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
-        result.setViewSQL(getOriginalText(ctx));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
             result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),
@@ -1094,9 +1093,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitComment(final CommentContext ctx) {
         if (null != ctx.commentClauses().objectTypeAnyName() && null != ctx.commentClauses().objectTypeAnyName().TABLE()) {
             return commentOnTable(ctx);
-        } else if (null != ctx.commentClauses().COLUMN()) {
+        }
+        if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
-        } else if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
+        }
+        if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
             return getTableFromComment(ctx);
         }
         return new PostgreSQLCommentStatement();

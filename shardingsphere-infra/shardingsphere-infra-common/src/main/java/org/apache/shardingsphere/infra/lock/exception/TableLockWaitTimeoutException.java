@@ -27,6 +27,6 @@ public final class TableLockWaitTimeoutException extends LockSQLException {
     private static final long serialVersionUID = 2599713085782288003L;
     
     public TableLockWaitTimeoutException(final String schemaName, final String tableName, final long timeoutMilliseconds) {
-        super(XOpenSQLState.GENERAL_ERROR, 1, "The table `%s` of schema `%s` lock wait timeout of `%s` milliseconds exceeded", tableName, schemaName, String.valueOf(timeoutMilliseconds));
+        super(XOpenSQLState.GENERAL_ERROR, 1, "The table `%s` of schema `%s` lock wait timeout of `%s` milliseconds exceeded.", tableName, schemaName, String.valueOf(timeoutMilliseconds));
     }
 }

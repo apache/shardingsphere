@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl;
 import org.junit.Test;
 
@@ -42,5 +43,10 @@ public final class PipelineJobPublicAPIFactoryTest {
     @Test
     public void assertGetMigrationJobPublicAPI() {
         assertThat(PipelineJobPublicAPIFactory.getMigrationJobPublicAPI(), instanceOf(MigrationJobAPIImpl.class));
+    }
+    
+    @Test
+    public void assertGetConsistencyCheckJobPublicAPI() {
+        assertThat(PipelineJobPublicAPIFactory.getConsistencyCheckJobPublicAPI(), instanceOf(ConsistencyCheckJobAPIImpl.class));
     }
 }

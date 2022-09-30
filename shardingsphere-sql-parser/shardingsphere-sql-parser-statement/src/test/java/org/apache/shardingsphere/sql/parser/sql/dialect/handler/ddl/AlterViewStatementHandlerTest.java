@@ -27,12 +27,14 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class AlterViewStatementHandlerTest {
     
@@ -42,13 +44,6 @@ public final class AlterViewStatementHandlerTest {
         alterViewStatement.setSelect(new MySQLSelectStatement());
         Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         assertTrue(selectStatement.isPresent());
-    }
-    
-    @Test
-    public void assertGetSelectStatementWithoutSelectStatementForMySQL() {
-        MySQLAlterViewStatement alterViewStatement = new MySQLAlterViewStatement();
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
-        assertFalse(selectStatement.isPresent());
     }
     
     @Test
@@ -90,7 +85,9 @@ public final class AlterViewStatementHandlerTest {
         assertFalse(AlterViewStatementHandler.getSelectStatement(new OpenGaussAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getSelectStatement(new OracleAlterViewStatement()).isPresent());
         assertFalse(AlterViewStatementHandler.getSelectStatement(new PostgreSQLAlterViewStatement()).isPresent());
-        assertFalse(AlterViewStatementHandler.getSelectStatement(new SQLServerAlterViewStatement()).isPresent());
+        SQLServerAlterViewStatement alterViewStatement = new SQLServerAlterViewStatement();
+        alterViewStatement.setSelect(mock(SQLServerSelectStatement.class));
+        assertTrue(AlterViewStatementHandler.getSelectStatement(alterViewStatement).isPresent());
     }
     
     @Test

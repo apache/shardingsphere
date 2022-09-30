@@ -34,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourc
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -47,19 +48,14 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Pipeline job preparer utils.
  */
 @Slf4j
 public final class PipelineJobPreparerUtils {
-    
-    private static final Set<String> INCREMENTAL_SUPPORTED_DATABASES = new HashSet<>(Arrays.asList("MySQL", "PostgreSQL", "openGauss"));
     
     /**
      * Is incremental supported.
@@ -68,8 +64,7 @@ public final class PipelineJobPreparerUtils {
      * @return true if supported, otherwise false
      */
     public static boolean isIncrementalSupported(final String databaseType) {
-        // TODO check by IncrementalDumperCreator SPI
-        return INCREMENTAL_SUPPORTED_DATABASES.contains(databaseType);
+        return IncrementalDumperCreatorFactory.findInstance(databaseType).isPresent();
     }
     
     /**
@@ -85,7 +80,9 @@ public final class PipelineJobPreparerUtils {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
+        long startTimeMillis = System.currentTimeMillis();
         dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+        log.info("prepareTargetSchema cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -113,7 +110,9 @@ public final class PipelineJobPreparerUtils {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
+        long startTimeMillis = System.currentTimeMillis();
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
+        log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -135,7 +134,10 @@ public final class PipelineJobPreparerUtils {
         }
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        return PositionInitializerFactory.getInstance(databaseType).init(dataSource, dumperConfig.getJobId());
+        long startTimeMillis = System.currentTimeMillis();
+        IngestPosition<?> result = PositionInitializerFactory.getInstance(databaseType).init(dataSource, dumperConfig.getJobId());
+        log.info("getIncrementalPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        return result;
     }
     
     /**
@@ -149,10 +151,12 @@ public final class PipelineJobPreparerUtils {
             log.info("source data source is empty, skip check");
             return;
         }
+        final long startTimeMillis = System.currentTimeMillis();
         DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(databaseType);
         dataSourceChecker.checkConnection(dataSources);
         dataSourceChecker.checkPrivilege(dataSources);
         dataSourceChecker.checkVariable(dataSources);
+        log.info("checkSourceDataSource cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -168,8 +172,10 @@ public final class PipelineJobPreparerUtils {
             log.info("target data source is empty, skip check");
             return;
         }
+        long startTimeMillis = System.currentTimeMillis();
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
+        log.info("checkTargetDataSource cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -182,6 +188,7 @@ public final class PipelineJobPreparerUtils {
     public static void destroyPosition(final String jobId, final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
         PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
+        final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig;
@@ -199,5 +206,6 @@ public final class PipelineJobPreparerUtils {
                 positionInitializer.destroy(dataSource, jobId);
             }
         }
+        log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
 }

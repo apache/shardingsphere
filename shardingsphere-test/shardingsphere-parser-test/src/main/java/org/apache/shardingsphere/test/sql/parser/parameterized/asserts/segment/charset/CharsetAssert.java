@@ -45,12 +45,12 @@ public final class CharsetAssert {
      * @param expected expected charset name
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CharsetNameSegment actual, final ExpectedCharsetName expected) {
-        if (null != expected) {
+        if (null == expected) {
+            assertFalse(assertContext.getText("Actual charset name should not exist."), Optional.ofNullable(actual).isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual charset name should exist."), Optional.ofNullable(actual).isPresent());
             assertThat(assertContext.getText("charset name assertion error. "), actual.getName(), is(expected.getName()));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
-        } else {
-            assertFalse(assertContext.getText("Actual charset name should not exist."), Optional.ofNullable(actual).isPresent());
         }
     }
 }

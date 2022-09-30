@@ -36,25 +36,25 @@ public final class SQLHintUtilsTest {
     
     @Test
     public void assertGetSQLHintPropsWithSingleProp() {
-        Properties actual = SQLHintUtils.getSQLHintProps("/* ShardingSphere hint: tableName=t_order */");
+        Properties actual = SQLHintUtils.getSQLHintProps("/* SHARDINGSPHERE_HINT: TABLE_NAME=t_order */");
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("tableName"), is("t_order"));
+        assertThat(actual.get("TABLE_NAME"), is("t_order"));
     }
     
     @Test
     public void assertGetSQLHintPropsWithMultiProps() {
-        Properties actual = SQLHintUtils.getSQLHintProps("/* ShardingSphere hint: tableName=t_order, columnName=order_id */");
+        Properties actual = SQLHintUtils.getSQLHintProps("/* SHARDINGSPHERE_HINT: TABLE_NAME=t_order, COLUMN_NAME=order_id */");
         assertThat(actual.size(), is(2));
-        assertThat(actual.get("tableName"), is("t_order"));
-        assertThat(actual.get("columnName"), is("order_id"));
+        assertThat(actual.get("TABLE_NAME"), is("t_order"));
+        assertThat(actual.get("COLUMN_NAME"), is("order_id"));
     }
     
     @Test
     public void assertGetSQLHintPropsWithWrongFormat() {
-        Properties actual = SQLHintUtils.getSQLHintProps("/* ShardingSphere hint: tableName=t_order, , databaseName:sharding_db, columnName=order_id */");
+        Properties actual = SQLHintUtils.getSQLHintProps("/* SHARDINGSPHERE_HINT: TABLE_NAME=t_order, , DATABASE_NAME:sharding_db, COLUMN_NAME=order_id */");
         assertThat(actual.size(), is(2));
-        assertThat(actual.get("tableName"), is("t_order"));
-        assertThat(actual.get("columnName"), is("order_id"));
+        assertThat(actual.get("TABLE_NAME"), is("t_order"));
+        assertThat(actual.get("COLUMN_NAME"), is("order_id"));
     }
     
     @Test

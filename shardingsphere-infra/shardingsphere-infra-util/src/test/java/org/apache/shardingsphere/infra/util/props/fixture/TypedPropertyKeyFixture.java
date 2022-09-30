@@ -37,7 +37,9 @@ public enum TypedPropertyKeyFixture implements TypedPropertyKey {
     
     LONG_OBJECT_VALUE("Long", "1000", Long.class),
     
-    STRING_VALUE("String", "value", String.class);
+    STRING_VALUE("String", "value", String.class),
+    
+    ENUM_VALUE("enum", TypedPropertyEnumFixture.FOO.name(), TypedPropertyEnumFixture.class);
     
     private final String key;
     

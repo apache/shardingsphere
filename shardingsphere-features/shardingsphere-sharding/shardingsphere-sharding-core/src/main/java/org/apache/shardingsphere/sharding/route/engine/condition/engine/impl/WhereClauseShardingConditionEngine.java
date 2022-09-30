@@ -47,11 +47,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Sharding condition engine for where clause.
@@ -137,7 +139,9 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
     private ShardingConditionValue mergeShardingConditionValues(final Column column, final Collection<ShardingConditionValue> shardingConditionValues) {
         Collection<Comparable<?>> listValue = null;
         Range<Comparable<?>> rangeValue = null;
+        Set<Integer> parameterMarkerIndexes = new HashSet<>();
         for (ShardingConditionValue each : shardingConditionValues) {
+            parameterMarkerIndexes.addAll(each.getParameterMarkerIndexes());
             if (each instanceof ListShardingConditionValue) {
                 listValue = mergeListShardingValues(((ListShardingConditionValue) each).getValues(), listValue);
                 if (listValue.isEmpty()) {
@@ -152,13 +156,14 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
             }
         }
         if (null == listValue) {
-            return new RangeShardingConditionValue<>(column.getName(), column.getTableName(), rangeValue);
+            return new RangeShardingConditionValue<>(column.getName(), column.getTableName(), rangeValue, new ArrayList<>(parameterMarkerIndexes));
         }
         if (null == rangeValue) {
-            return new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue);
+            return new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue, new ArrayList<>(parameterMarkerIndexes));
         }
         listValue = mergeListAndRangeShardingValues(listValue, rangeValue);
-        return listValue.isEmpty() ? new AlwaysFalseShardingConditionValue() : new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue);
+        return listValue.isEmpty() ? new AlwaysFalseShardingConditionValue()
+                : new ListShardingConditionValue<>(column.getName(), column.getTableName(), listValue, new ArrayList<>(parameterMarkerIndexes));
     }
     
     private Collection<Comparable<?>> mergeListShardingValues(final Collection<Comparable<?>> value1, final Collection<Comparable<?>> value2) {

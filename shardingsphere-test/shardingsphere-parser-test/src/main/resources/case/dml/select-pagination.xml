@@ -68,7 +68,6 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <!-- TODO parameters-count should be 4, because the last parameter is in offset -->
         <where start-index="99" stop-index="154" literal-stop-index="155">
             <expr>
                 <binary-operation-expression start-index="105" stop-index="154" literal-stop-index="155">
@@ -750,7 +749,6 @@
                 <owner name="i" start-index="7" stop-index="7" />
             </shorthand-projection>
         </projections>
-        <!-- TODO parameters-count should be 4, because the last parameter is in offset -->
         <where start-index="99" stop-index="154" literal-stop-index="155">
             <expr>
                 <binary-operation-expression start-index="105" stop-index="154" literal-stop-index="155">

@@ -17,10 +17,31 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Alter view statement test case.
  */
+@Getter
+@Setter
 public final class AlterViewStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "view-definition")
+    private String viewDefinition;
+    
+    @XmlElement(name = "view")
+    private ExpectedSimpleTable view;
+    
+    @XmlElement(name = "rename-view")
+    private ExpectedSimpleTable renameView;
+    
+    @XmlElement(name = "select")
+    private SelectStatementTestCase selectStatement;
 }

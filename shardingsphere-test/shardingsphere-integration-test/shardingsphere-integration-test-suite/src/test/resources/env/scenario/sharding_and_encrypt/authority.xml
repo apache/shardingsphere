@@ -16,7 +16,7 @@
   -->
 
 <authority>
-    <sqlset db-types="Oracle,SQLServer,PostgreSQL">
+    <sqlset db-types="Oracle,SQLServer,PostgreSQL,openGauss">
         <user-create>
             <sql>CREATE USER default_user</sql>
             <sql>CREATE ROLE default_role</sql>

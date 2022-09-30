@@ -55,13 +55,17 @@ public final class ProjectionsConverter implements SQLSegmentConverter<Projectio
     private Optional<SqlNode> getProjectionSQLNode(final ProjectionSegment segment) {
         if (segment instanceof ColumnProjectionSegment) {
             return new ColumnProjectionConverter().convert((ColumnProjectionSegment) segment);
-        } else if (segment instanceof ExpressionProjectionSegment) {
+        }
+        if (segment instanceof ExpressionProjectionSegment) {
             return new ExpressionProjectionConverter().convert((ExpressionProjectionSegment) segment);
-        } else if (segment instanceof ShorthandProjectionSegment) {
+        }
+        if (segment instanceof ShorthandProjectionSegment) {
             return new ShorthandProjectionConverter().convert((ShorthandProjectionSegment) segment);
-        } else if (segment instanceof SubqueryProjectionSegment) {
+        }
+        if (segment instanceof SubqueryProjectionSegment) {
             return new SubqueryProjectionConverter().convert((SubqueryProjectionSegment) segment);
-        } else if (segment instanceof AggregationProjectionSegment) {
+        }
+        if (segment instanceof AggregationProjectionSegment) {
             return new AggregationProjectionConverter().convert((AggregationProjectionSegment) segment);
         }
         // TODO process other projection

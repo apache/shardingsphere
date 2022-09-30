@@ -28,6 +28,6 @@ public final class ColumnLabelNotFoundException extends SyntaxSQLException {
     private static final long serialVersionUID = -4634399403612501335L;
     
     public ColumnLabelNotFoundException(final String columnLabel) {
-        super(XOpenSQLState.NOT_FOUND, 3, "Can not find column label `%s`", columnLabel);
+        super(XOpenSQLState.NOT_FOUND, 11, "Can not find column label `%s`.", columnLabel);
     }
 }

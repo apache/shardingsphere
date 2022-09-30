@@ -45,7 +45,7 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
                 result.setNanos(payload.readInt4() * 1000);
                 return result;
             default:
-                throw new IllegalArgumentException(String.format("Wrong length `%d` of MYSQL_TYPE_TIME", length));
+                throw new SQLFeatureNotSupportedException(String.format("Wrong length `%d` of MYSQL_TYPE_TIME", length));
         }
     }
     

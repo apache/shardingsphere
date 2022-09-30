@@ -100,13 +100,7 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     private void buildColumnNames(final Map<String, String> aliasMap) {
-        aliasMap.forEach((key, value) -> {
-            if (!value.isEmpty()) {
-                columnNames.add(value);
-            } else {
-                columnNames.add(key);
-            }
-        });
+        aliasMap.forEach((key, value) -> columnNames.add(value.isEmpty() ? key : value));
         
     }
     
@@ -124,11 +118,10 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
         Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
         if (projections.stream().anyMatch(each -> !(each instanceof ColumnProjectionSegment))) {
             return Collections.singleton(databaseNameAlias);
-        } else {
-            return projections.stream().map(each -> {
-                ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
-                return segment.getAlias().isPresent() ? segment.getAlias().get() : segment.getColumn().getIdentifier().getValue();
-            }).collect(Collectors.toCollection(LinkedHashSet::new));
         }
+        return projections.stream().map(each -> {
+            ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
+            return segment.getAlias().isPresent() ? segment.getAlias().get() : segment.getColumn().getIdentifier().getValue();
+        }).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

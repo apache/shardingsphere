@@ -113,10 +113,10 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : actualColumns) {
             String tableName = columnTableNames.get(each.getExpression());
-            if (null != tableName && encryptRule.findEncryptor(tableName, each.getName()).isPresent()) {
-                projections.addAll(generateProjections(tableName, each, subqueryType, true, segment));
-            } else {
+            if (null == tableName || !encryptRule.findEncryptor(tableName, each.getName()).isPresent()) {
                 projections.add(new ColumnProjection(each.getOwner(), each.getName(), each.getAlias().orElse(null)));
+            } else {
+                projections.addAll(generateProjections(tableName, each, subqueryType, true, segment));
             }
         }
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
@@ -200,16 +200,16 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private ColumnProjection generateCommonProjection(final String tableName, final ColumnProjection column, final ShorthandProjectionSegment segment) {
         String encryptColumnName = getEncryptColumnName(tableName, column.getName());
-        String owner = (null != segment && segment.getOwner().isPresent()) ? segment.getOwner().get().getIdentifier().getValue() : column.getOwner();
+        String owner = (null == segment || !segment.getOwner().isPresent()) ? column.getOwner() : segment.getOwner().get().getIdentifier().getValue();
         return new ColumnProjection(owner, encryptColumnName, column.getAlias().orElse(column.getName()));
     }
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
         boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, logicEncryptColumnName);
-        if (!queryWithCipherColumn) {
-            return encryptRule.findPlainColumn(tableName, logicEncryptColumnName).orElseGet(() -> encryptRule.getCipherColumn(tableName, logicEncryptColumnName));
+        if (queryWithCipherColumn) {
+            return encryptRule.getCipherColumn(tableName, logicEncryptColumnName);
         }
-        return encryptRule.getCipherColumn(tableName, logicEncryptColumnName);
+        return encryptRule.findPlainColumn(tableName, logicEncryptColumnName).orElseGet(() -> encryptRule.getCipherColumn(tableName, logicEncryptColumnName));
     }
     
     private ShorthandProjection getShorthandProjection(final ShorthandProjectionSegment segment, final ProjectionsContext projectionsContext) {
@@ -224,6 +224,6 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 }
             }
         }
-        throw new IllegalStateException(String.format("Can not find shorthand projection segment, owner is: `%s`", owner.orElse(null)));
+        throw new IllegalStateException(String.format("Can not find shorthand projection segment, owner is `%s`", owner.orElse(null)));
     }
 }

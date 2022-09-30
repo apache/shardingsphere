@@ -42,9 +42,11 @@ public final class TableConverter implements SQLSegmentConverter<TableSegment, S
         }
         if (segment instanceof SimpleTableSegment) {
             return new SimpleTableConverter().convert((SimpleTableSegment) segment);
-        } else if (segment instanceof JoinTableSegment) {
+        }
+        if (segment instanceof JoinTableSegment) {
             return new JoinTableConverter().convert((JoinTableSegment) segment);
-        } else if (segment instanceof SubqueryTableSegment) {
+        }
+        if (segment instanceof SubqueryTableSegment) {
             return new SubqueryTableConverter().convert((SubqueryTableSegment) segment);
         }
         throw new UnsupportedSQLOperationException("Unsupported segment type: " + segment.getClass());

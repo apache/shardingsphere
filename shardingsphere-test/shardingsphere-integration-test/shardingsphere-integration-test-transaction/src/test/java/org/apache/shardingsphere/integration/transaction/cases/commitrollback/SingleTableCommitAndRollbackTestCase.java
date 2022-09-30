@@ -53,7 +53,7 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
         assertAccountRowCount(conn, 0);
     }
     
-    public void assertCommit() throws SQLException {
+    private void assertCommit() throws SQLException {
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
         assertAccountRowCount(conn, 0);

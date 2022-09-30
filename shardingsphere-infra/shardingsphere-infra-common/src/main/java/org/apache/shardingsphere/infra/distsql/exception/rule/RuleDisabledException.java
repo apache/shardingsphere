@@ -27,6 +27,6 @@ public final class RuleDisabledException extends RuleDefinitionViolationExceptio
     private static final long serialVersionUID = -4024905659258386784L;
     
     public RuleDisabledException(final String ruleType, final String databaseName, final String ruleName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 104, "%s rule `%s` has been disabled in database `%s`", ruleType, ruleName, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 104, "%s rule `%s` has been disabled in database `%s`.", ruleType, ruleName, databaseName);
     }
 }

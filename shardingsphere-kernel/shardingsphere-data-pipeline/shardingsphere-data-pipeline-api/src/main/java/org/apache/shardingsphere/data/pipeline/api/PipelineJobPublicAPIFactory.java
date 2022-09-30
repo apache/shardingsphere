@@ -30,6 +30,7 @@ public final class PipelineJobPublicAPIFactory {
     static {
         ShardingSphereServiceLoader.register(InventoryIncrementalJobPublicAPI.class);
         ShardingSphereServiceLoader.register(MigrationJobPublicAPI.class);
+        ShardingSphereServiceLoader.register(ConsistencyCheckJobPublicAPI.class);
     }
     
     /**
@@ -49,5 +50,14 @@ public final class PipelineJobPublicAPIFactory {
      */
     public static MigrationJobPublicAPI getMigrationJobPublicAPI() {
         return RequiredSPIRegistry.getRegisteredService(MigrationJobPublicAPI.class);
+    }
+    
+    /**
+     * Get instance of consistency check job public API.
+     *
+     * @return got instance
+     */
+    public static ConsistencyCheckJobPublicAPI getConsistencyCheckJobPublicAPI() {
+        return RequiredSPIRegistry.getRegisteredService(ConsistencyCheckJobPublicAPI.class);
     }
 }

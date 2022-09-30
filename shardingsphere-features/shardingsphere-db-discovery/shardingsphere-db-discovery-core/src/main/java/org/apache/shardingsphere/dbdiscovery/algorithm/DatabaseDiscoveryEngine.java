@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceCh
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -81,7 +80,7 @@ public final class DatabaseDiscoveryEngine {
     }
     
     private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        for (Entry<String, DataSource> entry : getActiveDataSourceMap(dataSourceMap, disabledDataSourceNames).entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try {
                 if (databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue())) {
                     return Optional.of(entry.getKey());
@@ -91,14 +90,6 @@ public final class DatabaseDiscoveryEngine {
             }
         }
         return Optional.empty();
-    }
-    
-    private Map<String, DataSource> getActiveDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> result = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            result.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        return result;
     }
     
     private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName,

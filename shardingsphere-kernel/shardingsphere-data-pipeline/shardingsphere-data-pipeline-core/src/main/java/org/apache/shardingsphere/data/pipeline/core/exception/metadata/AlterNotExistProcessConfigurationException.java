@@ -28,6 +28,6 @@ public final class AlterNotExistProcessConfigurationException extends PipelineSQ
     private static final long serialVersionUID = 8799641580689564088L;
     
     public AlterNotExistProcessConfigurationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered process configuration does not exist");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 2, "Altered process configuration does not exist.");
     }
 }

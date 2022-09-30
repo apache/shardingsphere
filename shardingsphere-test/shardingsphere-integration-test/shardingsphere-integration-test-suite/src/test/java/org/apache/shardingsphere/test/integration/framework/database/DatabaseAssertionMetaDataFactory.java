@@ -36,10 +36,10 @@ public final class DatabaseAssertionMetaDataFactory {
      * @param databaseType database type
      * @return created instance
      */
-    @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static Optional<DatabaseAssertionMetaData> newInstance(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "PostgreSQL":
+            case "openGauss":
                 return Optional.of(new PostgreSQLDatabaseAssertionMetaData());
             default:
                 return Optional.empty();

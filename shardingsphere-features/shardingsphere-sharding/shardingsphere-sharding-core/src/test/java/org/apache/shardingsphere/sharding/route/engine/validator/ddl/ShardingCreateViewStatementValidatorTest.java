@@ -40,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -67,7 +66,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     @Before
     public void setUp() {
         when(createViewStatementContext.getSqlStatement()).thenReturn(createViewStatement);
-        when(createViewStatement.getSelect()).thenReturn(Optional.of(selectStatement));
+        when(createViewStatement.getSelect()).thenReturn(selectStatement);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(createViewStatement.getView()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("order_view"))));
         when(routeContext.getRouteUnits().size()).thenReturn(2);

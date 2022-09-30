@@ -33,6 +33,6 @@ public final class DatabaseServerLoadingServerException extends ShardingSphereSe
     private static final int ERROR_CODE = 1;
     
     public DatabaseServerLoadingServerException(final SQLException cause) {
-        super(ERROR_CATEGORY, ERROR_CODE, "Load database server info failed", cause);
+        super(ERROR_CATEGORY, ERROR_CODE, "Load database server info failed.", cause);
     }
 }

@@ -49,20 +49,20 @@ public final class DirectionSegmentAssert {
     }
     
     private static void assertDirectionType(final SQLCaseAssertContext assertContext, final DirectionSegment actual, final ExpectedDirectionSegment expected) {
-        if (null != expected.getDirectionType()) {
+        if (null == expected.getDirectionType()) {
+            assertFalse(assertContext.getText("Actual direction type should not exist."), actual.getDirectionType().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual direction type should exist."), actual.getDirectionType().isPresent());
             assertThat(assertContext.getText("Direction type assertion error: "), actual.getDirectionType().get().name(), is(expected.getDirectionType()));
-        } else {
-            assertFalse(assertContext.getText("Actual direction type should not exist."), actual.getDirectionType().isPresent());
         }
     }
     
     private static void assertCount(final SQLCaseAssertContext assertContext, final DirectionSegment actual, final ExpectedDirectionSegment expected) {
-        if (null != expected.getCount()) {
+        if (null == expected.getCount()) {
+            assertFalse(assertContext.getText("Actual count should not exist."), actual.getCount().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual count should exist."), actual.getCount().isPresent());
             assertThat(assertContext.getText("Count assertion error: "), actual.getCount().get(), is(expected.getCount()));
-        } else {
-            assertFalse(assertContext.getText("Actual count should not exist."), actual.getCount().isPresent());
         }
     }
 }

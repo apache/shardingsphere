@@ -49,12 +49,12 @@ public final class CloseStatementAssert {
     }
     
     private static void assertCursorName(final SQLCaseAssertContext assertContext, final CloseStatement actual, final CloseStatementTestCase expected) {
-        if (null != expected.getCursorName()) {
+        if (null == expected.getCursorName()) {
+            assertFalse(assertContext.getText("Actual cursor name should not exist."), actual.getCursorName().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual cursor name should exist."), actual.getCursorName().isPresent());
             IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().get().getIdentifier(), expected.getCursorName(), "Close");
             SQLSegmentAssert.assertIs(assertContext, actual.getCursorName().get(), expected.getCursorName());
-        } else {
-            assertFalse(assertContext.getText("Actual cursor name should not exist."), actual.getCursorName().isPresent());
         }
     }
     

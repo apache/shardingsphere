@@ -61,14 +61,14 @@ public final class JoinTableConverter implements SQLSegmentConverter<JoinTableSe
         if (null != segment.getCondition()) {
             return new ExpressionConverter().convert(segment.getCondition());
         }
-        if (!segment.getUsing().isEmpty()) {
-            Collection<SqlNode> sqlNodes = new LinkedList<>();
-            ColumnConverter columnConverter = new ColumnConverter();
-            for (ColumnSegment each : segment.getUsing()) {
-                columnConverter.convert(each).ifPresent(sqlNodes::add);
-            }
-            return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
+        if (segment.getUsing().isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        Collection<SqlNode> sqlNodes = new LinkedList<>();
+        ColumnConverter columnConverter = new ColumnConverter();
+        for (ColumnSegment each : segment.getUsing()) {
+            columnConverter.convert(each).ifPresent(sqlNodes::add);
+        }
+        return Optional.of(new SqlNodeList(sqlNodes, SqlParserPos.ZERO));
     }
 }
