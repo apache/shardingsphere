@@ -54,14 +54,6 @@ public class OrderRepository {
         query.executeUpdate();
     }
     
-    <#if feature?contains("shadow")>
-    public void deleteShadow(final Long orderId) {
-        Query query = entityManager.createQuery("DELETE FROM Order o WHERE o.orderId = ?1 AND order_type=1");
-        query.setParameter(1, orderId);
-        query.executeUpdate();
-    }
-    </#if>
-    
     public List<Order> selectAll() {
         return (List<Order>) entityManager.createQuery("SELECT o FROM Order o").getResultList();
     }
