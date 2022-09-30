@@ -36,8 +36,13 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     @Override
     public void conditionalPersist(final Properties props) {
         if (!props.isEmpty() && !isExisted()) {
-            repository.persist(GlobalNode.getPropsPath(), YamlEngine.marshal(props));
+            persist(props);
         }
+    }
+    
+    @Override
+    public void persist(Properties props) {
+        repository.persist(GlobalNode.getPropsPath(), YamlEngine.marshal(props));
     }
     
     private boolean isExisted() {

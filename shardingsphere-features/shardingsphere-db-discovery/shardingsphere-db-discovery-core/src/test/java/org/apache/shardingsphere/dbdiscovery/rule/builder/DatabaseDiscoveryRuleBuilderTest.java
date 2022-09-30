@@ -45,7 +45,7 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     public void assertBuild() {
-        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
+        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         DatabaseDiscoveryRuleConfiguration config = new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "CORE.FIXTURE")),
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),

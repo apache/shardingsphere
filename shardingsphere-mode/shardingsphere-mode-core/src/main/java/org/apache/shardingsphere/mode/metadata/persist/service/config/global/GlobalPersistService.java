@@ -32,6 +32,13 @@ public interface GlobalPersistService<T> {
     void conditionalPersist(T globalRuleConfigs);
     
     /**
+     * Persist configurations.
+     *
+     * @param globalRuleConfigs configurations
+     */
+    void persist(T globalRuleConfigs);
+    
+    /**
      * Load configurations.
      *
      * @return configurations
