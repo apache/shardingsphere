@@ -104,7 +104,7 @@ jobs:
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
     steps:
       - uses: actions/checkout@v2

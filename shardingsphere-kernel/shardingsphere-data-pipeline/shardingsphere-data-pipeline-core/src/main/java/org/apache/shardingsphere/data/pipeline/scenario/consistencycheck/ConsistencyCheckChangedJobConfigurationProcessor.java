@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Consistency check job configuration changed processor.
+ * Consistency check changed job configuration processor.
  */
 @Slf4j
 public final class ConsistencyCheckChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {

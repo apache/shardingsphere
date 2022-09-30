@@ -25,5 +25,4 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
  * Consistency check job API.
  */
 public interface ConsistencyCheckJobAPI extends ConsistencyCheckJobPublicAPI, PipelineJobAPI, PipelineJobItemAPI {
-    
 }
