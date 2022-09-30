@@ -61,9 +61,3 @@
     
     <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024"/>
     <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024"/>
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1" rule-refs="shadowRule, sqlParseRule">
-        <props>
-            <prop key="sql-show">true</prop>
-        </props>
-    </shardingsphere:data-source>

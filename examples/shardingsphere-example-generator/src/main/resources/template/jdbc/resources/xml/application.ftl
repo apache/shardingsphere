@@ -136,13 +136,16 @@
         <#assign ruleRefs += ", " />
     </#if>
 </#list>
-    <#assign datasourceStr="ds_0">
-    <#if feature!="encrypt">
-        <#assign datasourceStr += ",ds_1" />
-        <#if feature!="shadow">
-            <#assign datasourceStr += ",ds_2" />
-        </#if>
+<#if feature?contains("shadow")>
+    <#assign ruleRefs += ", sqlParseRule" />
+</#if>
+<#assign datasourceStr="ds_0">
+<#if feature!="encrypt">
+    <#assign datasourceStr += ",ds_1" />
+    <#if feature!="shadow">
+        <#assign datasourceStr += ",ds_2" />
     </#if>
+</#if>
     <shardingsphere:data-source id="dataSource" data-source-names="${datasourceStr}" rule-refs="${ruleRefs}">
         <#if mode?contains("cluster")>
             <#include "../mode/spring-namespace/cluster.ftl" />
