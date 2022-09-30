@@ -59,7 +59,7 @@ public final class MySQLOKPacket implements MySQLPacket {
     
     public MySQLOKPacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
-        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL OK packet must be `0x00`.");
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL OK packet must be `0x00`");
         affectedRows = payload.readIntLenenc();
         lastInsertId = payload.readIntLenenc();
         statusFlag = payload.readInt2();

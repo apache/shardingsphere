@@ -50,7 +50,7 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
-        Preconditions.checkArgument(sqlStatementContext instanceof IndexAvailable, "SQLStatementContext must implementation IndexAvailable interface.");
+        Preconditions.checkArgument(sqlStatementContext instanceof IndexAvailable, "SQLStatementContext must implementation IndexAvailable interface");
         if (sqlStatementContext.getTablesContext().getTableNames().isEmpty()) {
             return Collections.emptyList();
         }

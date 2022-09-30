@@ -106,7 +106,7 @@ public final class MySQLBinlogProtocolValueFactory {
      * @return binlog protocol value
      */
     public static MySQLBinlogProtocolValue getBinlogProtocolValue(final MySQLBinaryColumnType columnType) {
-        Preconditions.checkArgument(BINLOG_PROTOCOL_VALUES.containsKey(columnType), "Cannot find MySQL type '%s' in column type when process binlog protocol value", columnType);
+        Preconditions.checkArgument(BINLOG_PROTOCOL_VALUES.containsKey(columnType), "Can not find MySQL type `%s` in column type when process binlog protocol value", columnType);
         return BINLOG_PROTOCOL_VALUES.get(columnType);
     }
 }

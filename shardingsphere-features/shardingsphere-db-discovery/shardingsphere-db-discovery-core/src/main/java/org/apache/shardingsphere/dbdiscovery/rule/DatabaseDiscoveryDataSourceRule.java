@@ -62,8 +62,8 @@ public final class DatabaseDiscoveryDataSourceRule {
     }
     
     private void checkConfiguration(final DatabaseDiscoveryDataSourceRuleConfiguration config) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getGroupName()), "Group name is required.");
-        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getGroupName()), "Group name is required");
+        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required");
     }
     
     /**

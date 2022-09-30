@@ -130,7 +130,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
      * @throws SQLException failed when getCatalog
      */
     public static String getUniqueSlotName(final Connection connection, final String slotNameSuffix) throws SQLException {
-        // PostgreSQL slot name maximum length can't exceed 64,automatic truncation when the length exceeds the limit
+        // PostgreSQL slot name maximum length can not exceed 64,automatic truncation when the length exceeds the limit
         String slotName = DigestUtils.md5Hex(String.join("_", connection.getCatalog(), slotNameSuffix).getBytes());
         return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }

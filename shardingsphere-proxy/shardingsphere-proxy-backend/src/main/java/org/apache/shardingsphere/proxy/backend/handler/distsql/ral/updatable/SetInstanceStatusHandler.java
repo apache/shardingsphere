@@ -51,7 +51,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
     
     private void checkDisablingIsValid(final ContextManager contextManager, final String instanceId) {
         ShardingSpherePreconditions.checkState(!contextManager.getInstanceContext().getInstance().getCurrentInstanceId().equals(instanceId),
-                () -> new UnsupportedSQLOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", instanceId)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` is the currently in use instance and can not be disabled", instanceId)));
         ShardingSpherePreconditions.checkState(contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).isPresent(),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` does not exist", instanceId)));
         ShardingSpherePreconditions.checkState(StateType.CIRCUIT_BREAK != contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).get().getState().getCurrentState(),

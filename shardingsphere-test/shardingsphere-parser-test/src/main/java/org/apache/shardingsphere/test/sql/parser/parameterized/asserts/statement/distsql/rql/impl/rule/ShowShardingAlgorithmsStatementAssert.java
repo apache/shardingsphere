@@ -42,9 +42,9 @@ public final class ShowShardingAlgorithmsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingAlgorithmsStatement actual, final ShowShardingAlgorithmsStatementTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist"), actual.getDatabase().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            assertTrue(assertContext.getText("Actual database should exist"), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         }
     }

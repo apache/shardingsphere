@@ -30,7 +30,7 @@ public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     
     @Override
     public long generate(final Properties props) {
-        Preconditions.checkArgument(fixtureWorkerId >= 0L && fixtureWorkerId <= MAX_WORKER_ID, "Illegal worker id.");
+        Preconditions.checkArgument(fixtureWorkerId >= 0L && fixtureWorkerId <= MAX_WORKER_ID, "Illegal worker id");
         return fixtureWorkerId;
     }
 }

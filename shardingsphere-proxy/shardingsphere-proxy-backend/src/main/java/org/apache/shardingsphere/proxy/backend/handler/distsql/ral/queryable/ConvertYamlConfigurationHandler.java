@@ -92,7 +92,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             throw new FileIOException(ex);
         }
         Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
-        Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
+        Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required", file.getName());
         return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
     }
     

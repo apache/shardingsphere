@@ -34,6 +34,6 @@ public final class ShadowSpringBootCondition extends SpringBootCondition {
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHADOW_PREFIX)
                 ? ConditionOutcome.match()
-                : ConditionOutcome.noMatch("Can't find ShardingSphere shadow rule configuration in local file.");
+                : ConditionOutcome.noMatch("Can not find ShardingSphere shadow rule configuration in local file");
     }
 }

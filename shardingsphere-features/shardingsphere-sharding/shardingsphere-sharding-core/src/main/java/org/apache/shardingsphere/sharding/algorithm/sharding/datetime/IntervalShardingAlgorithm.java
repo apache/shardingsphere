@@ -96,12 +96,12 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private String getDateTimePattern(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(DATE_TIME_PATTERN_KEY), "%s can not be null.", DATE_TIME_PATTERN_KEY);
+        Preconditions.checkArgument(props.containsKey(DATE_TIME_PATTERN_KEY), "%s can not be null", DATE_TIME_PATTERN_KEY);
         return props.getProperty(DATE_TIME_PATTERN_KEY);
     }
     
     private TemporalAccessor getDateTimeLower(final Properties props, final String dateTimePattern) {
-        Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "%s can not be null.", DATE_TIME_LOWER_KEY);
+        Preconditions.checkArgument(props.containsKey(DATE_TIME_LOWER_KEY), "%s can not be null", DATE_TIME_LOWER_KEY);
         return getDateTime(DATE_TIME_LOWER_KEY, props.getProperty(DATE_TIME_LOWER_KEY), dateTimePattern);
     }
     
@@ -118,7 +118,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private DateTimeFormatter getTableSuffixPattern(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY), "%s can not be null.", SHARDING_SUFFIX_FORMAT_KEY);
+        Preconditions.checkArgument(props.containsKey(SHARDING_SUFFIX_FORMAT_KEY), "%s can not be null", SHARDING_SUFFIX_FORMAT_KEY);
         return DateTimeFormatter.ofPattern(props.getProperty(SHARDING_SUFFIX_FORMAT_KEY));
     }
     
@@ -128,7 +128,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
                 return each;
             }
         }
-        throw new UnsupportedSQLOperationException(String.format("Cannot find step unit for specified %s property: `%s`", INTERVAL_UNIT_KEY, stepUnit));
+        throw new UnsupportedSQLOperationException(String.format("Can not find step unit for specified %s property: `%s`", INTERVAL_UNIT_KEY, stepUnit));
     }
     
     @Override

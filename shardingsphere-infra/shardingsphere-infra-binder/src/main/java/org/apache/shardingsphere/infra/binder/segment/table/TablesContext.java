@@ -293,7 +293,7 @@ public final class TablesContext {
      * @return database name
      */
     public Optional<String> getDatabaseName() {
-        Preconditions.checkState(databaseNames.size() <= 1, "Can not support multiple different database.");
+        Preconditions.checkState(databaseNames.size() <= 1, "Can not support multiple different database");
         return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
     }
     

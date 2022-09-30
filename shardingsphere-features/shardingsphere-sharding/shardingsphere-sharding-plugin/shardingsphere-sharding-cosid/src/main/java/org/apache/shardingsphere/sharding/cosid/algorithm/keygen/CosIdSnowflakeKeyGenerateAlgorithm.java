@@ -94,7 +94,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     }
     
     private SnowflakeId getSnowflakeId() {
-        Preconditions.checkNotNull(snowflakeId, "Instance context not set yet.");
+        Preconditions.checkNotNull(snowflakeId, "Instance context not set yet");
         return snowflakeId;
     }
     

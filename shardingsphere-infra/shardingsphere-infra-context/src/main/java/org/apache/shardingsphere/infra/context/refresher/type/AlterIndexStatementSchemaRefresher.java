@@ -50,7 +50,7 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         Optional<String> logicTableName = findLogicTableName(database.getSchema(actualSchemaName), indexName);
         if (logicTableName.isPresent()) {
             ShardingSphereTable table = database.getSchema(actualSchemaName).getTable(logicTableName.get());
-            Preconditions.checkNotNull(table, "Can not get the table '%s' metadata!", logicTableName.get());
+            Preconditions.checkNotNull(table, "Can not get the table '%s' metadata", logicTableName.get());
             table.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
             table.getIndexes().put(renameIndexName, new ShardingSphereIndex(renameIndexName));

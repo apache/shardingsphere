@@ -50,7 +50,7 @@ public final class ShardingRuleConfigurationConverter {
      */
     public static YamlShardingRuleConfiguration findYamlShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Optional<YamlRuleConfiguration> ruleConfig = yamlRuleConfigs.stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule.");
+        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule");
         return (YamlShardingRuleConfiguration) ruleConfig.get();
     }
 }

@@ -89,7 +89,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
+        ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Can not alter the database of %s", invalid))));
     }
     
     private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {

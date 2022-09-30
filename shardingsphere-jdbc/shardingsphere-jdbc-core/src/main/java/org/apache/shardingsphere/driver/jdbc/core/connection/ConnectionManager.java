@@ -92,7 +92,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         }
         String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName);
         Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(actualDatabaseName);
-        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
+        Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
         Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, trafficRule.getLabels());

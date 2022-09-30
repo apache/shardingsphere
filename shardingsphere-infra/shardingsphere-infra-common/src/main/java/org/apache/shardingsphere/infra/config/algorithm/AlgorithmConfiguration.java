@@ -34,7 +34,7 @@ public final class AlgorithmConfiguration {
     private final Properties props;
     
     public AlgorithmConfiguration(final String type, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required");
         this.type = type;
         this.props = null == props ? new Properties() : props;
     }

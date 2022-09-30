@@ -39,9 +39,9 @@ public final class ClassBasedOrderItemStandardShardingAlgorithmFixture implement
     @Override
     public void init(final Properties props) {
         this.props = props;
-        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null.", SHARDING_COUNT);
+        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null", SHARDING_COUNT);
         shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
-        Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);
+        Preconditions.checkArgument(null != shardingCount, "%s is invalid", SHARDING_COUNT);
     }
     
     @Override

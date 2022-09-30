@@ -58,7 +58,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     private static File getFile() {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForShardingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+                AbstractShardingSphereDataSourceForShardingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed", CONFIG_FILE)).getFile());
     }
     
     @Before

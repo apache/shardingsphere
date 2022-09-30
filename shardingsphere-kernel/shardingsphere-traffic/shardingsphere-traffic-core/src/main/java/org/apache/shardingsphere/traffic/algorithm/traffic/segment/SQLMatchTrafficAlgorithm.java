@@ -46,7 +46,7 @@ public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     @Override
     public void init(final Properties props) {
         this.props = props;
-        Preconditions.checkArgument(props.containsKey(SQL_PROPS_KEY), "%s cannot be null.", SQL_PROPS_KEY);
+        Preconditions.checkArgument(props.containsKey(SQL_PROPS_KEY), "%s can not be null", SQL_PROPS_KEY);
         sql = getExactlySQL(props.getProperty(SQL_PROPS_KEY));
     }
     

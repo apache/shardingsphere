@@ -95,7 +95,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private int executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(getSQL()));
+            assertFalse("Not a DML statement", statement.execute(getSQL()));
             return statement.getUpdateCount();
         }
     }
@@ -105,7 +105,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertFalse("Not a DML statement.", preparedStatement.execute());
+            assertFalse("Not a DML statement", preparedStatement.execute());
             return preparedStatement.getUpdateCount();
         }
     }

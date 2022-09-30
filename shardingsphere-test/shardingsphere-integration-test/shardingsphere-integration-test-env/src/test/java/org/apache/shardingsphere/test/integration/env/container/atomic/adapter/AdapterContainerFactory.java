@@ -53,7 +53,7 @@ public final class AdapterContainerFactory {
             case "jdbc":
                 return new ShardingSphereJdbcContainer(storageContainer, scenario);
             default:
-                throw new RuntimeException(String.format("Adapter [%s] is unknown.", adapter));
+                throw new RuntimeException(String.format("Unknown adapter `%s`", adapter));
         }
     }
 }

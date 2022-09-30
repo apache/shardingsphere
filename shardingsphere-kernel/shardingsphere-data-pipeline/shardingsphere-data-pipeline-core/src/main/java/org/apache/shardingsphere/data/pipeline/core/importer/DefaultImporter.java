@@ -142,7 +142,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
                 doFlush(dataSource, buffer);
                 return true;
             } catch (final SQLException ex) {
-                log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
+                log.error("flush failed {}/{} times", i, importerConfig.getRetryTimes(), ex);
                 ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
         }

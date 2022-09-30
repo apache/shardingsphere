@@ -105,7 +105,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
         try (
                 Statement actualStatement = actualConnection.createStatement();
                 Statement expectedStatement = expectedConnection.createStatement()) {
-            assertTrue("Not a query statement.", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
+            assertTrue("Not a query statement", actualStatement.execute(getSQL()) && expectedStatement.execute(getSQL()));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -122,7 +122,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
+            assertTrue("Not a query statement", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
                     ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {

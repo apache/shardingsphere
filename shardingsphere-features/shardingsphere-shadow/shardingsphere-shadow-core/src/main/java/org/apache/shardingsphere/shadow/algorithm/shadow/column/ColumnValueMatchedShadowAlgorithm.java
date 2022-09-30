@@ -38,7 +38,7 @@ public final class ColumnValueMatchedShadowAlgorithm extends AbstractColumnMatch
     
     private String getShadowValue(final Properties props) {
         String result = props.getProperty(VALUE_PROPS_KEY);
-        Preconditions.checkNotNull(result, "Column value match shadow algorithm value cannot be null.");
+        Preconditions.checkNotNull(result, "Column value match shadow algorithm value can not be null");
         return result;
     }
     

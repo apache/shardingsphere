@@ -67,7 +67,7 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         Set<String> dataSourceNames = dataSources.keySet();
         shadowTables.forEach((key, value) -> {
             for (String each : value.getDataSourceNames()) {
-                Preconditions.checkState(dataSourceNames.contains(each), "No available shadow data sources mappings in shadow table `%s`.", key);
+                Preconditions.checkState(dataSourceNames.contains(each), "No available shadow data sources mappings in shadow table `%s`", key);
             }
         });
     }
@@ -76,14 +76,14 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         if (null != defaultShadowAlgorithmName) {
             AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
             boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
-            Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
+            Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm");
         }
     }
     
     protected void defaultShadowAlgorithmCheck(final String defaultShadowAlgorithmName, final Map<String, ShadowAlgorithm> shadowAlgorithms) {
         if (null != defaultShadowAlgorithmName) {
             boolean isHintShadowAlgorithmState = shadowAlgorithms.get(defaultShadowAlgorithmName) instanceof HintShadowAlgorithm;
-            Preconditions.checkState(isHintShadowAlgorithmState, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
+            Preconditions.checkState(isHintShadowAlgorithmState, "Default shadow algorithm class should be implement HintShadowAlgorithm");
         }
     }
     
@@ -98,6 +98,6 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     }
     
     protected void shadowTableAlgorithmsReferencesCheck(final Map<String, ShadowTableConfiguration> shadowTables) {
-        shadowTables.forEach((key, value) -> Preconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(), "No available shadow Algorithm configuration in shadow table `%s`.", key));
+        shadowTables.forEach((key, value) -> Preconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(), "No available shadow Algorithm configuration in shadow table `%s`", key));
     }
 }

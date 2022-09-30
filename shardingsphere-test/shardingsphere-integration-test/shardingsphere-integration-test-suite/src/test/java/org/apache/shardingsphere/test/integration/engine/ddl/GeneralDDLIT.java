@@ -61,13 +61,13 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     private void executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DDL statement.", statement.executeUpdate(getSQL()) > 0);
+            assertFalse("Not a DDL statement", statement.executeUpdate(getSQL()) > 0);
         }
     }
     
     private void executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            assertFalse("Not a DDL statement.", preparedStatement.executeUpdate() > 0);
+            assertFalse("Not a DDL statement", preparedStatement.executeUpdate() > 0);
         }
     }
     
@@ -85,13 +85,13 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     private void executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DDL statement.", statement.execute(getSQL()));
+            assertFalse("Not a DDL statement", statement.execute(getSQL()));
         }
     }
     
     private void executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            assertFalse("Not a DDL statement.", preparedStatement.execute());
+            assertFalse("Not a DDL statement", preparedStatement.execute());
         }
     }
 }

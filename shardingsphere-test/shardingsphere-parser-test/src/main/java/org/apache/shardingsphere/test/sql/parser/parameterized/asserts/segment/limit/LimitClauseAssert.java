@@ -46,7 +46,7 @@ public final class LimitClauseAssert {
      */
     public static void assertOffset(final SQLCaseAssertContext assertContext, final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertContext.getText("Offset should not exist."), expected);
+            assertNull(assertContext.getText("Offset should not exist"), expected);
             return;
         }
         if (actual instanceof ParameterMarkerPaginationValueSegment) {
@@ -67,7 +67,7 @@ public final class LimitClauseAssert {
      */
     public static void assertRowCount(final SQLCaseAssertContext assertContext, final PaginationValueSegment actual, final ExpectedPaginationValue expected) {
         if (null == actual) {
-            assertNull(assertContext.getText("Row count should not exist."), expected);
+            assertNull(assertContext.getText("Row count should not exist"), expected);
             return;
         }
         if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {

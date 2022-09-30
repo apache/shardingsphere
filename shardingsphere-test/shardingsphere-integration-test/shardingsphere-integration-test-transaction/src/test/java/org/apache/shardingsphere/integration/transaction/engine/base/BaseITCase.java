@@ -112,7 +112,7 @@ public abstract class BaseITCase {
     static {
         long startTime = System.currentTimeMillis();
         TEST_CASES = TestCaseClassScanner.scan();
-        log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
+        log.info("Load transaction test case classes time consume: {}", System.currentTimeMillis() - startTime);
     }
     
     public BaseITCase(final TransactionParameterized parameterized) {
@@ -183,22 +183,22 @@ public abstract class BaseITCase {
         Map<String, TransactionParameterized> parameterizedMap = new LinkedHashMap<>();
         for (Class<? extends BaseTransactionTestCase> each : TEST_CASES) {
             if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(each.getSimpleName())) {
-                log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", each.getName());
+                log.info("Collect transaction test case, need to run cases don't contain this, skip: {}", each.getName());
                 continue;
             }
             TransactionTestCase annotation = each.getAnnotation(TransactionTestCase.class);
             if (null == annotation) {
-                log.info("Collect transaction test case, annotation is null, skip: {}.", each.getName());
+                log.info("Collect transaction test case, annotation is null, skip: {}", each.getName());
                 continue;
             }
             Optional<String> dbType = Arrays.stream(annotation.dbTypes()).filter(currentTestCaseInfo.getDbType()::equalsIgnoreCase).findAny();
             if (!dbType.isPresent()) {
-                log.info("Collect transaction test case, dbType is not matched, skip: {}.", each.getName());
+                log.info("Collect transaction test case, dbType is not matched, skip: {}", each.getName());
                 continue;
             }
             Optional<String> runAdapters = Arrays.stream(annotation.adapters()).filter(currentTestCaseInfo.getRunningAdaptor()::equalsIgnoreCase).findAny();
             if (!runAdapters.isPresent()) {
-                log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", each.getName());
+                log.info("Collect transaction test case, runAdapter is not matched, skip: {}", each.getName());
                 continue;
             }
             String group = annotation.group();
@@ -219,7 +219,7 @@ public abstract class BaseITCase {
         } else {
             for (TransactionType each : annotation.transactionTypes()) {
                 if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
-                    log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
+                    log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}", caseClass.getName(), each);
                     continue;
                 }
                 addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, parameterizedMap, group);
@@ -236,7 +236,7 @@ public abstract class BaseITCase {
             case "BASE":
                 return TransactionType.BASE;
             default:
-                throw new UnsupportedOperationException("Unsupported transaction type.");
+                throw new UnsupportedOperationException("Unsupported transaction type");
         }
     }
     
@@ -275,7 +275,7 @@ public abstract class BaseITCase {
             case TransactionTestConstants.OPENGAUSS:
                 return new OpenGaussDatabaseType();
             default:
-                throw new UnsupportedOperationException("Unsupported database type.");
+                throw new UnsupportedOperationException("Unsupported database type");
         }
     }
     
@@ -287,7 +287,7 @@ public abstract class BaseITCase {
             case TransactionTestConstants.OPENGAUSS:
                 return version;
             default:
-                throw new UnsupportedOperationException("Unsupported database type.");
+                throw new UnsupportedOperationException("Unsupported database type");
         }
     }
     
@@ -492,11 +492,6 @@ public abstract class BaseITCase {
         executeWithLog(connection, commonSQLCommand.getCreateAccountShardingAlgorithm());
     }
     
-    protected void createSchema(final String schemaName) throws SQLException {
-        Connection connection = getProxyConnection();
-        executeWithLog(connection, String.format("CREATE SCHEMA %s", schemaName));
-    }
-    
     protected int countWithLog(final String sql) throws SQLException {
         Connection connection = getProxyConnection();
         int retryNumber = 0;
@@ -510,23 +505,17 @@ public abstract class BaseITCase {
                 }
                 return result;
             } catch (final SQLException ex) {
-                log.error("Data access error.", ex);
+                log.error("Data access error", ex);
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
             retryNumber++;
         }
-        throw new RuntimeException("Can't get result from proxy.");
+        throw new RuntimeException("Can not get result from proxy");
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute:{}.", sql);
+        log.info("Connection execute:{}", sql);
         connection.createStatement().execute(sql);
-        ThreadUtil.sleep(1, TimeUnit.SECONDS);
-    }
-    
-    protected void executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute update:{}.", sql);
-        connection.createStatement().executeUpdate(sql);
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     

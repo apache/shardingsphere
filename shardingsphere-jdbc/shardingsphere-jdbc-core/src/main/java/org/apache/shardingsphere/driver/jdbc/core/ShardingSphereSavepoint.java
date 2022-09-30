@@ -42,7 +42,7 @@ public final class ShardingSphereSavepoint implements Savepoint {
     
     @Override
     public int getSavepointId() throws SQLException {
-        throw new SQLFeatureNotSupportedException("Only named savepoint are supported.");
+        throw new SQLFeatureNotSupportedException("Only named savepoint are supported");
     }
     
     @Override

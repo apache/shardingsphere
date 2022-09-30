@@ -390,7 +390,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLException {
         Integer result = columnLabelAndIndexMap.get(columnLabel);
-        ShardingSpherePreconditions.checkState(null != result, () -> new SQLFeatureNotSupportedException(String.format("Can not get index from column label `%s`.", columnLabel)));
+        ShardingSpherePreconditions.checkState(null != result, () -> new SQLFeatureNotSupportedException(String.format("Can not get index from column label `%s`", columnLabel)));
         return result;
     }
 }

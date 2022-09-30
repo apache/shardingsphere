@@ -73,7 +73,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     private void initSeataRPCClient() {
-        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file.");
+        Preconditions.checkNotNull(applicationId, "please config application id within seata.conf file");
         TMClient.init(applicationId, transactionServiceGroup);
         RMClient.init(applicationId, transactionServiceGroup);
     }
@@ -85,13 +85,13 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     
     @Override
     public boolean isInTransaction() {
-        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled");
         return null != RootContext.getXID();
     }
     
     @Override
     public Connection getConnection(final String databaseName, final String dataSourceName) throws SQLException {
-        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled");
         return dataSourceMap.get(databaseName + "." + dataSourceName).getConnection();
     }
     
@@ -106,7 +106,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
         if (timeout < 0) {
             throw new TransactionException("timeout should more than 0s");
         }
-        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled");
         GlobalTransaction globalTransaction = GlobalTransactionContext.getCurrentOrCreate();
         globalTransaction.begin(timeout * 1000);
         SeataTransactionHolder.set(globalTransaction);
@@ -115,7 +115,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     @Override
     @SneakyThrows(TransactionException.class)
     public void commit(final boolean rollbackOnly) {
-        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled");
         try {
             SeataTransactionHolder.get().commit();
         } finally {
@@ -127,7 +127,7 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     @Override
     @SneakyThrows(TransactionException.class)
     public void rollback() {
-        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled.");
+        Preconditions.checkState(enableSeataAT, "sharding seata-at transaction has been disabled");
         try {
             SeataTransactionHolder.get().rollback();
         } finally {

@@ -61,7 +61,7 @@ public final class AlterShardingBindingTableRulesStatementAssert {
         if (null == expected) {
             assertNull(assertContext.getText("Actual sharding binding table rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding binding table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding binding table rule should exist"), actual);
             assertThat(assertContext.getText(String.format("Actual sharding binding table rule size should be %s , but it was %s", expected.size(), actual.size())),
                     actual.size(), is(expected.size()));
             int count = 0;

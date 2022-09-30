@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static File getFile(final String fileName) {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForEncryptTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
+                AbstractShardingSphereDataSourceForEncryptTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed", fileName)).getFile());
     }
     
     private static Map<String, DataSource> getDataSourceMap() {

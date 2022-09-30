@@ -67,7 +67,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", getDataSet().getMetaDataList().size(), is(1));
+        assertThat("Only support single table for DML", getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
@@ -115,7 +115,7 @@ public abstract class BaseDMLIT extends SingleITCase {
             }
             rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows", rowCount, is(expected.size()));
     }
     
     private void assertValue(final ResultSet actual, final int columnIndex, final String expected) throws SQLException {

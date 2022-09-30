@@ -227,11 +227,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     private void setIndexForAggregationProjection(final Map<String, Integer> columnLabelIndexMap) {
         for (AggregationProjection each : projectionsContext.getAggregationProjections()) {
             String columnLabel = SQLUtil.getExactlyValue(each.getColumnLabel());
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s, please add alias for aggregate selections", each);
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can not find index: %s, please add alias for aggregate selections", each);
             each.setIndex(columnLabelIndexMap.get(columnLabel));
             for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
                 String derivedColumnLabel = SQLUtil.getExactlyValue(derived.getColumnLabel());
-                Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can't find index: %s", derived);
+                Preconditions.checkState(columnLabelIndexMap.containsKey(derivedColumnLabel), "Can not find index: %s", derived);
                 derived.setIndex(columnLabelIndexMap.get(derivedColumnLabel));
             }
         }
@@ -251,7 +251,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 }
             }
             String columnLabel = getAlias(each.getSegment()).orElseGet(() -> getOrderItemText((TextOrderByItemSegment) each.getSegment()));
-            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can't find index: %s", each);
+            Preconditions.checkState(columnLabelIndexMap.containsKey(columnLabel), "Can not find index: %s", each);
             if (columnLabelIndexMap.containsKey(columnLabel)) {
                 each.setIndex(columnLabelIndexMap.get(columnLabel));
             }

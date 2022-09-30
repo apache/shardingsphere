@@ -134,7 +134,7 @@ public final class TrafficRule implements GlobalRule {
     
     private TrafficAlgorithm getTrafficAlgorithm(final Map<String, TrafficAlgorithm> trafficAlgorithms, final String algorithmName) {
         TrafficAlgorithm result = trafficAlgorithms.get(algorithmName);
-        Preconditions.checkState(null != result, "Traffic algorithm can not be null.");
+        Preconditions.checkState(null != result, "Traffic algorithm can not be null");
         return result;
     }
     
@@ -173,7 +173,7 @@ public final class TrafficRule implements GlobalRule {
     
     private TrafficLoadBalanceAlgorithm getLoadBalancer(final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers, final String loadBalancerName) {
         TrafficLoadBalanceAlgorithm result = loadBalancers.get(loadBalancerName);
-        Preconditions.checkState(null != result, "Traffic load balance algorithm can not be null.");
+        Preconditions.checkState(null != result, "Traffic load balance algorithm can not be null");
         return result;
     }
     

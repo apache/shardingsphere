@@ -37,7 +37,7 @@ public final class OpenTracingPluginBootService implements PluginBootService {
         try {
             init((Tracer) Class.forName(tracerClassName).getDeclaredConstructor().newInstance());
         } catch (final ReflectiveOperationException ex) {
-            throw new RuntimeException("Initialize opentracing tracer class failure.", ex);
+            throw new RuntimeException("Initialize opentracing tracer class failure", ex);
         }
     }
     

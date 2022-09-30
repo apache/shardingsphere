@@ -39,7 +39,7 @@ public final class GovernanceContainerFactory {
             case "ZooKeeper":
                 return new ZookeeperContainer();
             default:
-                throw new RuntimeException(String.format("Governance center [%s] is unknown.", type));
+                throw new RuntimeException(String.format("Unknown governance center `%s`", type));
         }
     }
 }

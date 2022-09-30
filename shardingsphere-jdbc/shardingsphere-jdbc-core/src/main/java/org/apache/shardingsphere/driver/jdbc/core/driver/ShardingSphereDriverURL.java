@@ -46,7 +46,7 @@ public final class ShardingSphereDriverURL {
             file = configuredFile;
             inClasspath = false;
         }
-        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
+        Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL");
     }
     
     /**
@@ -58,7 +58,7 @@ public final class ShardingSphereDriverURL {
     public byte[] toConfigurationBytes() {
         try (InputStream stream = inClasspath ? ShardingSphereDriverURL.class.getResourceAsStream("/" + file) : Files.newInputStream(new File(file).toPath())) {
             byte[] result = new byte[null == stream ? 0 : stream.available()];
-            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file)).read(result);
+            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`", file)).read(result);
             return result;
         }
     }

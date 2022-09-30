@@ -55,7 +55,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
             jdbcTemplate.update("UPDATE t_order_item SET status = ? WHERE item_id = ?", "updated" + Instant.now().getEpochSecond(), orderItemPrimaryKey);
             executeCount++;
         }
-        log.info("MySQL increment task runnable execute successfully.");
+        log.info("MySQL increment task runnable execute successfully");
     }
     
     private Object insertOrder() {

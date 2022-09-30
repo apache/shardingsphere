@@ -100,7 +100,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     }
     
     private void ensureRandomAccessible(final List<PostgreSQLCommandPacket> packets) {
-        Preconditions.checkArgument(packets instanceof RandomAccess, "Packets must be RandomAccess.");
+        Preconditions.checkArgument(packets instanceof RandomAccess, "Packets must be RandomAccess");
     }
     
     @Override

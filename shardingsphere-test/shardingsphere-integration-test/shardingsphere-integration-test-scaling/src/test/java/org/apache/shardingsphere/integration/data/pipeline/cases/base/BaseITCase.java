@@ -245,7 +245,7 @@ public abstract class BaseITCase {
             ThreadUtil.sleep(3, TimeUnit.SECONDS);
             retryNumber++;
         }
-        throw new RuntimeException("can't get result from proxy");
+        throw new RuntimeException("Can not get result from proxy");
     }
     
     protected List<Map<String, Object>> resultSetToList(final ResultSet rs) throws SQLException {

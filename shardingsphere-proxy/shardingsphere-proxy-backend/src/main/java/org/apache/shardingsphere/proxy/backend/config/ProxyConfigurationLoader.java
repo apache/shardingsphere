@@ -77,7 +77,7 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
+        Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid", yamlFile.getName());
         // TODO use SPI with pluggable
         boolean containsGovernance = null != result.getMode() && "Cluster".equals(result.getMode().getType());
         if (null != result.getAuthority()) {
@@ -85,7 +85,7 @@ public final class ProxyConfigurationLoader {
             result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
         YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(each -> each instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
-        Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
+        Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid");
         return result;
     }
     
@@ -94,7 +94,7 @@ public final class ProxyConfigurationLoader {
         Collection<YamlProxyDatabaseConfiguration> result = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
             loadDatabaseConfiguration(each).ifPresent(optional -> {
-                Preconditions.checkState(loadedDatabaseNames.add(optional.getDatabaseName()), "Database name `%s` must unique at all database configurations.", optional.getDatabaseName());
+                Preconditions.checkState(loadedDatabaseNames.add(optional.getDatabaseName()), "Database name `%s` must unique at all database configurations", optional.getDatabaseName());
                 result.add(optional);
             });
         }
@@ -109,7 +109,7 @@ public final class ProxyConfigurationLoader {
         if (null == result.getDatabaseName()) {
             result.setDatabaseName(result.getSchemaName());
         }
-        Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
+        Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required", yamlFile.getName());
         checkDuplicateRule(result.getRules(), yamlFile);
         return Optional.of(result);
     }

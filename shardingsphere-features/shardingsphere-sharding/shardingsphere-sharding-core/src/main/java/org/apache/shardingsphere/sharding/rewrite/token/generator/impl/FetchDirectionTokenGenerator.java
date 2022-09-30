@@ -46,7 +46,7 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
     
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        Preconditions.checkArgument(sqlStatementContext instanceof FetchStatementContext, "SQLStatementContext must be instance of FetchStatementContext.");
+        Preconditions.checkArgument(sqlStatementContext instanceof FetchStatementContext, "SQLStatementContext must be instance of FetchStatementContext");
         FetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);

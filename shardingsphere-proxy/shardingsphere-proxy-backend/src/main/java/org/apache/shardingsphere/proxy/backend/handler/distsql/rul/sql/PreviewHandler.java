@@ -126,7 +126,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         }
         String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
         CursorStatementContext cursorStatementContext = (CursorStatementContext) getConnectionSession().getConnectionContext().getCursorConnectionContext().getCursorDefinitions().get(cursorName);
-        Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
+        Preconditions.checkArgument(null != cursorStatementContext, "Cursor `%s` does not exist", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     

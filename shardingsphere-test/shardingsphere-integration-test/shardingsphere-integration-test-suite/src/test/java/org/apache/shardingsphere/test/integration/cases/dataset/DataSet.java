@@ -66,7 +66,7 @@ public final class DataSet {
      */
     public DataSetMetaData findMetaData(final DataNode dataNode) {
         Optional<DataSetMetaData> result = metaDataList.stream().filter(each -> contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)).findFirst();
-        return result.orElseThrow(() -> new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode)));
+        return result.orElseThrow(() -> new IllegalArgumentException(String.format("Can not find data node `%s`", dataNode)));
     }
     
     private boolean contains(final List<String> dataNodes, final DataNode dataNode) {

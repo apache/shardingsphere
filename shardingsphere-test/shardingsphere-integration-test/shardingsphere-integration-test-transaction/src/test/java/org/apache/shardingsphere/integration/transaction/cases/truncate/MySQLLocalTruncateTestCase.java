@@ -51,7 +51,7 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
         executeWithLog(conn, "truncate account;");
         assertAccountRowCount(conn, 0);
         conn.rollback();
-        // Expected truncate operation cannot be rolled back in MySQL local transaction
+        // Expected truncate operation can not be rolled back in MySQL local transaction
         assertAccountRowCount(conn, 0);
         conn.close();
     }

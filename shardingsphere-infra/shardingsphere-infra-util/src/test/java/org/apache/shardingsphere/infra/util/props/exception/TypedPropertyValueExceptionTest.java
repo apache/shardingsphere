@@ -27,6 +27,6 @@ public final class TypedPropertyValueExceptionTest {
     
     @Test
     public void assertGetMessage() {
-        assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`"));
+        assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` can not convert to type `int`"));
     }
 }

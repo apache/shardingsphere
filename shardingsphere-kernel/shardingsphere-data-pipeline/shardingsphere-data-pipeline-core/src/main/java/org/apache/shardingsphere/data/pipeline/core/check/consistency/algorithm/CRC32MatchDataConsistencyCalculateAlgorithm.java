@@ -91,6 +91,6 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     
     @Override
     public String getDescription() {
-        return "Match CRC32 of records.";
+        return "Match CRC32 of records";
     }
 }

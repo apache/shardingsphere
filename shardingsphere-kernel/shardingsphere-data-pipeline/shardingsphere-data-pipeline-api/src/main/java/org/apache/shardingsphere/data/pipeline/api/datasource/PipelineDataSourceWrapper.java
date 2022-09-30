@@ -100,7 +100,7 @@ public final class PipelineDataSourceWrapper implements DataSource, AutoCloseabl
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                throw new SQLException("data source close failed.", ex);
+                throw new SQLException("data source close failed", ex);
             }
         } else {
             log.warn("dataSource is not closed, it might cause connection leak, dataSource={}", dataSource);

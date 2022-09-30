@@ -38,9 +38,9 @@ public final class ShowMigrationCheckAlgorithmsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationCheckAlgorithmsStatement actual, final ShowMigrationCheckAlgorithmsStatementTestCase expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual statement should not exist."), actual);
+            assertNull(assertContext.getText("Actual statement should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertNotNull(assertContext.getText("Actual statement should exist"), actual);
         }
     }
 }

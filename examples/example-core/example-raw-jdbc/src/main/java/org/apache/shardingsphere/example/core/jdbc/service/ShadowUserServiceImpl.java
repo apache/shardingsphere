@@ -59,7 +59,7 @@ public final class ShadowUserServiceImpl implements ExampleService {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
-        throw new RuntimeException("Exception occur for transaction test.");
+        throw new RuntimeException("Exception occur for transaction test");
     }
     
     private List<Long> insertData() throws SQLException {

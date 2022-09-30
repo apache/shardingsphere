@@ -30,13 +30,13 @@ public final class SQLRouterFailureFixture implements SQLRouter<RouteFailureRule
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final RouteFailureRuleFixture rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        throw new UnsupportedOperationException("Route failure.");
+        throw new UnsupportedOperationException("Route failure");
     }
     
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final RouteFailureRuleFixture rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        throw new UnsupportedOperationException("Route failure.");
+        throw new UnsupportedOperationException("Route failure");
     }
     
     @Override

@@ -41,7 +41,7 @@ public final class HintShardingStrategy implements ShardingStrategy {
     private final HintShardingAlgorithm<?> shardingAlgorithm;
     
     public HintShardingStrategy(final HintShardingAlgorithm<?> shardingAlgorithm) {
-        Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
+        Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm can not be null");
         shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingAlgorithm = shardingAlgorithm;
     }

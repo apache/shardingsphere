@@ -60,11 +60,11 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
             updateThread.start();
             tasks.add(updateThread);
             int sum = getBalanceSum();
-            assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
+            assertThat(String.format("Balance sum is %s, should be 100", sum), sum, is(100));
         }
         Thread.sleep(3000);
         int sum = getBalanceSum();
-        assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
+        assertThat(String.format("Balance sum is %s, should be 100", sum), sum, is(100));
         for (Thread task : tasks) {
             task.join();
         }

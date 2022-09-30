@@ -46,9 +46,9 @@ public final class ShowShardingTableRulesUsedAlgorithmStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableRulesUsedAlgorithmStatement actual,
                                 final ShowShardingTableRulesUsedAlgorithmStatementTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist"), actual.getDatabase().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            assertTrue(assertContext.getText("Actual database should exist"), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         }
         if (Strings.isNullOrEmpty(expected.getAlgorithmName())) {

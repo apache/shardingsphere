@@ -64,7 +64,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
     @Override
     public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters, final String databaseType) {
         Map<String, Case> sqlCaseMap = super.getCases();
-        Preconditions.checkState(sqlCaseMap.containsKey(sqlCaseId), "Can't find case of ID: %s", sqlCaseId);
+        Preconditions.checkState(sqlCaseMap.containsKey(sqlCaseId), "Can not find case of ID: %s", sqlCaseId);
         DistSQLCase statement = (DistSQLCase) sqlCaseMap.get(sqlCaseId);
         return statement.getValue();
     }

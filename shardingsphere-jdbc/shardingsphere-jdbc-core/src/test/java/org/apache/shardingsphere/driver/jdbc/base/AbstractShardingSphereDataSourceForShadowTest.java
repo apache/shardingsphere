@@ -54,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     private static File getFile() {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForShadowTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+                AbstractShardingSphereDataSourceForShadowTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed", CONFIG_FILE)).getFile());
     }
     
     protected final ShardingSphereDataSource getShadowDataSource() {

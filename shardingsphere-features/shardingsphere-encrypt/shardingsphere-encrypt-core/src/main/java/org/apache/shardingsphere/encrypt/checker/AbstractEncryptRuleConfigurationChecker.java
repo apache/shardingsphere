@@ -52,11 +52,11 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
     
     private void checkCipherColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
         Preconditions.checkState(!Strings.isNullOrEmpty(column.getCipherColumn()),
-                "Cipher column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+                "Cipher column of `%s` can not be null in database `%s`", column.getLogicColumn(), databaseName);
         Preconditions.checkState(!Strings.isNullOrEmpty(column.getEncryptorName()),
-                "Encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+                "Encryptor name of `%s` can not be null in database `%s`", column.getLogicColumn(), databaseName);
         Preconditions.checkState(encryptors.contains(column.getEncryptorName()),
-                "Can not find encryptor `%s` in database `%s`.", column.getEncryptorName(), databaseName);
+                "Can not find encryptor `%s` in database `%s`", column.getEncryptorName(), databaseName);
     }
     
     private void checkAssistColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
@@ -64,11 +64,11 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
             return;
         }
         Preconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryColumn()),
-                "Assisted query column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+                "Assisted query column of `%s` can not be null in database `%s`", column.getLogicColumn(), databaseName);
         Preconditions.checkState(!Strings.isNullOrEmpty(column.getAssistedQueryEncryptorName()),
-                "Assisted query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+                "Assisted query encryptor name of `%s` can not be null in database `%s`", column.getLogicColumn(), databaseName);
         Preconditions.checkState(encryptors.contains(column.getAssistedQueryEncryptorName()),
-                "Can not find assisted query encryptor `%s` in database `%s`.", column.getAssistedQueryEncryptorName(), databaseName);
+                "Can not find assisted query encryptor `%s` in database `%s`", column.getAssistedQueryEncryptorName(), databaseName);
     }
     
     protected abstract Collection<String> getEncryptors(T config);

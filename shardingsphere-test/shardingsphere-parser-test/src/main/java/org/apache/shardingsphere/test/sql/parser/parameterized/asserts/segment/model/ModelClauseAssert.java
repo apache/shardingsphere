@@ -54,22 +54,22 @@ public final class ModelClauseAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final ModelSegment actual, final ExpectedModelClause expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         if (null != expected.getReferenceModelSelect()) {
-            assertNotNull(assertContext.getText("Actual reference model select subquery should exist."), actual.getReferenceModelSelects());
+            assertNotNull(assertContext.getText("Actual reference model select subquery should exist"), actual.getReferenceModelSelects());
             assertThat(assertContext.getText("Actual reference model select subquery size assertion error: "), actual.getReferenceModelSelects().size(), is(expected.getReferenceModelSelect().size()));
             assertReferenceModelSelectStatements(assertContext, actual.getReferenceModelSelects(), expected.getReferenceModelSelect());
         }
         if (null != expected.getOrderBySegments()) {
-            assertNotNull(assertContext.getText("Actual order by segments should exist."), actual.getOrderBySegments());
+            assertNotNull(assertContext.getText("Actual order by segments should exist"), actual.getOrderBySegments());
             assertThat(assertContext.getText("Actual order by segments size assertion error: "), actual.getOrderBySegments().size(), is(expected.getOrderBySegments().size()));
             assertOrderBySegments(assertContext, actual.getOrderBySegments(), expected.getOrderBySegments());
         }
         if (null != expected.getCellAssignmentColumns()) {
-            assertNotNull(assertContext.getText("Actual cell assignment columns should exist."), actual.getCellAssignmentColumns());
+            assertNotNull(assertContext.getText("Actual cell assignment columns should exist"), actual.getCellAssignmentColumns());
             assertThat(assertContext.getText("Actual cell assignment columns assertion error: "), actual.getCellAssignmentColumns().size(), is(expected.getCellAssignmentColumns().size()));
             assertCellAssignmentColumns(assertContext, actual.getCellAssignmentColumns(), expected.getCellAssignmentColumns());
         }
         if (null != expected.getCellAssignmentSelect()) {
-            assertNotNull(assertContext.getText("Actual cell assignment select subquery should exist."), actual.getCellAssignmentSelects());
+            assertNotNull(assertContext.getText("Actual cell assignment select subquery should exist"), actual.getCellAssignmentSelects());
             assertThat(assertContext.getText("Actual cell assignment select size assertion error: "), actual.getCellAssignmentSelects().size(), is(expected.getCellAssignmentSelect().size()));
             assertCellAssignmentSelectStatements(assertContext, actual.getCellAssignmentSelects(), expected.getCellAssignmentSelect());
         }

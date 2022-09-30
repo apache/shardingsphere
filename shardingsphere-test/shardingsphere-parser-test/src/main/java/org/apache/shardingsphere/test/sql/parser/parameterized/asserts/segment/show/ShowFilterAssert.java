@@ -43,7 +43,7 @@ public final class ShowFilterAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowFilterSegment actual, final ExpectedShowFilter expected) {
         if (actual.getLike().isPresent()) {
-            assertThat(assertContext.getText("Show filter like segment pattern content assert error."),
+            assertThat(assertContext.getText("Show filter like segment pattern content assert error"),
                     actual.getLike().get().getPattern(), is(expected.getLike().getPattern()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLike().get(), expected.getLike());
         }

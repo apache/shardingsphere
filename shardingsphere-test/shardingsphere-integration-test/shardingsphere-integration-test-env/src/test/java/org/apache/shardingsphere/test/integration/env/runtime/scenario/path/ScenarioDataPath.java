@@ -68,7 +68,7 @@ public final class ScenarioDataPath {
     private String getFile(final Type type, final String fileName) {
         String path = String.join("/", getBasicPath(type), fileName);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(path);
-        assertNotNull(String.format("File `%s` must exist.", path), url);
+        assertNotNull(String.format("File `%s` must exist", path), url);
         return url.getFile();
     }
     
@@ -83,7 +83,7 @@ public final class ScenarioDataPath {
         String initSQLFileName = String.join("-", "01", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
         String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
-        assertNotNull(String.format("File `%s` must exist.", initSQLResourceFile), url);
+        assertNotNull(String.format("File `%s` must exist", initSQLResourceFile), url);
         return url.getFile();
     }
     
@@ -111,7 +111,7 @@ public final class ScenarioDataPath {
     private String getActualDatabaseInitSQLFile(final DatabaseType databaseType, final String databaseName) {
         String resourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
-        assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
+        assertNotNull(String.format("File `%s` must exist", resourceFile), url);
         return url.getFile();
     }
     

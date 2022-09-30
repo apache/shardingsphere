@@ -53,11 +53,11 @@ public final class LockClauseAssert {
         List<ExpectedSimpleTable> expectedTables = expected.getTables();
         List<ExpectedColumn> expectedColumns = expected.getColumns();
         if (actualTables.isEmpty()) {
-            assertTrue(assertContext.getText("lock tables should not exist."), expectedTables.isEmpty());
+            assertTrue(assertContext.getText("lock tables should not exist"), expectedTables.isEmpty());
         }
         TableAssert.assertIs(assertContext, actualTables, expectedTables);
         if (actualColumns.isEmpty()) {
-            assertTrue(assertContext.getText("lock columns should not exist."), expectedColumns.isEmpty());
+            assertTrue(assertContext.getText("lock columns should not exist"), expectedColumns.isEmpty());
             return;
         }
         int count = 0;

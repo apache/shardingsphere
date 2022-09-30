@@ -43,9 +43,9 @@ public final class ShardingBindingTableRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final BindingTableRuleSegment actual, final ExpectedShardingBindingTableRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding binding table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding binding table rule should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding binding table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual sharding binding table rule should exist"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s sharding binding table rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getTableGroups(), is(expected.getTableGroups()));
         }

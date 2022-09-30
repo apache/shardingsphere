@@ -63,7 +63,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertExecuteWithLoadBalancerCannotBeNull() {
+    public void assertExecuteWithLoadBalancerCanNotBeNull() {
         ShardingSphereMetaData metaData = createMetaData();
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);

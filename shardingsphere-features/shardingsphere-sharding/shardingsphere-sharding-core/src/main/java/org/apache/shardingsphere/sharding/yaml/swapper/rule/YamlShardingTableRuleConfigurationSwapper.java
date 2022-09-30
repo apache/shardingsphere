@@ -58,7 +58,7 @@ public final class YamlShardingTableRuleConfigurationSwapper implements YamlConf
     
     @Override
     public ShardingTableRuleConfiguration swapToObject(final YamlTableRuleConfiguration yamlConfig) {
-        Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
+        Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table can not be null");
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataNodes());
         if (null != yamlConfig.getDatabaseStrategy()) {
             result.setDatabaseShardingStrategy(shardingStrategySwapper.swapToObject(yamlConfig.getDatabaseStrategy()));

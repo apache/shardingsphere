@@ -45,7 +45,7 @@ public final class MySQLAuthMoreDataPacket implements MySQLPacket {
     
     public MySQLAuthMoreDataPacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
-        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth more data packet must be `0x01`.");
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL auth more data packet must be `0x01`");
         pluginData = payload.readStringEOFByBytes();
     }
     

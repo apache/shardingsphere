@@ -42,9 +42,9 @@ public final class ShowUnusedShardingAuditorsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowUnusedShardingAuditorsStatement actual, final ShowUnusedShardingAuditorsStatementTestCase expected) {
         if (null == expected.getDatabase()) {
-            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist"), actual.getDatabase().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            assertTrue(assertContext.getText("Actual database should exist"), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         }
     }

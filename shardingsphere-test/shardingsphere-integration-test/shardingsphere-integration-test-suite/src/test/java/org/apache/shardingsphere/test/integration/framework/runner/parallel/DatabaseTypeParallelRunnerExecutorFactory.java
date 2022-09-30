@@ -37,7 +37,7 @@ public final class DatabaseTypeParallelRunnerExecutorFactory extends DefaultPara
             case SCENARIO:
                 return new ScenarioParallelRunnerExecutor();
             default:
-                throw new UnsupportedOperationException("Unsupported runtime strategy.");
+                throw new UnsupportedOperationException("Unsupported runtime strategy");
         }
     }
     

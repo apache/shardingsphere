@@ -34,7 +34,7 @@ public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConf
     
     @Override
     public void check(final String databaseName, final DatabaseDiscoveryRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        config.getDataSources().forEach(each -> Preconditions.checkState(!each.getDiscoveryTypeName().isEmpty(), "No available database discovery rule configuration in database `%s.", databaseName));
+        config.getDataSources().forEach(each -> Preconditions.checkState(!each.getDiscoveryTypeName().isEmpty(), "No available database discovery rule configuration in database `%s`", databaseName));
     }
     
     @Override

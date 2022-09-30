@@ -40,7 +40,7 @@ public final class ShowShardingKeyGeneratorsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingKeyGeneratorsStatement actual,
                                 final ShowShardingKeyGeneratorsStatementTestCase expected) {
-        assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+        assertTrue(assertContext.getText("Actual database should exist"), actual.getDatabase().isPresent());
         DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
     }
 }

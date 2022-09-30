@@ -52,15 +52,15 @@ public abstract class AbstractColumnMatchedShadowAlgorithm implements ColumnShad
     
     private String getShadowColumn(final Properties props) {
         String result = props.getProperty(COLUMN_PROPS_KEY);
-        Preconditions.checkNotNull(result, "Column shadow algorithm column cannot be null.");
+        Preconditions.checkNotNull(result, "Column shadow algorithm column can not be null");
         return result;
     }
     
     private ShadowOperationType getShadowOperationType(final Properties props) {
         String operationType = props.getProperty(OPERATION_PROPS_KEY);
-        Preconditions.checkNotNull(operationType, "Column shadow algorithm operation cannot be null.");
+        Preconditions.checkNotNull(operationType, "Column shadow algorithm operation can not be null");
         Optional<ShadowOperationType> result = ShadowOperationType.contains(operationType);
-        Preconditions.checkState(result.isPresent(), "Column shadow algorithm operation must be one of [select, insert, update, delete].");
+        Preconditions.checkState(result.isPresent(), "Column shadow algorithm operation must be one of [select, insert, update, delete]");
         return result.get();
     }
     

@@ -44,12 +44,12 @@ public final class TypeAssert {
      * @param expected expected type
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TypeSegment actual, final ExpectedType expected) {
-        assertNotNull(assertContext.getText("Type should exist."), expected);
+        assertNotNull(assertContext.getText("Type should exist"), expected);
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Type");
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist"), actual.getOwner().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist"), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);

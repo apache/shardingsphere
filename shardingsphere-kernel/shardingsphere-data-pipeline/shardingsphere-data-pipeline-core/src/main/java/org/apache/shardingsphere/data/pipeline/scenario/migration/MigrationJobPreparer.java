@@ -143,7 +143,7 @@ public final class MigrationJobPreparer {
     }
     
     private void initInventoryTasks(final MigrationJobItemContext jobItemContext) {
-        log.info("initInventoryTasks, start...");
+        log.info("Start to init inventory tasks...");
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         PipelineColumnMetaData uniqueKeyColumn = jobItemContext.getJobConfig().getUniqueKeyColumn();
         inventoryDumperConfig.setUniqueKey(uniqueKeyColumn.getName());

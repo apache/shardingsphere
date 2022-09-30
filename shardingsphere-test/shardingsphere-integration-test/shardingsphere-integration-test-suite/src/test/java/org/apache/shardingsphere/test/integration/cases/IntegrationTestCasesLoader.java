@@ -77,7 +77,7 @@ public final class IntegrationTestCasesLoader {
     
     private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
         Collection<File> files = getFiles(url, sqlCommandType);
-        Preconditions.checkNotNull(files, "Can not find integration test cases.");
+        Preconditions.checkNotNull(files, "Can not find integration test cases");
         Collection<IntegrationTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
             result.addAll(getIntegrationTestCaseContexts(each));

@@ -63,7 +63,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
             String shardingValueStr = (String) shardingValue;
             return Radix62IdConverter.PAD_START.asLong(shardingValueStr);
         }
-        throw new IllegalArgumentException(Strings.lenientFormat("The current shard type:[%s] is not supported!", shardingValue.getClass()));
+        throw new IllegalArgumentException(Strings.lenientFormat("The current shard type `%s` is not supported", shardingValue.getClass()));
     }
     
     @Override

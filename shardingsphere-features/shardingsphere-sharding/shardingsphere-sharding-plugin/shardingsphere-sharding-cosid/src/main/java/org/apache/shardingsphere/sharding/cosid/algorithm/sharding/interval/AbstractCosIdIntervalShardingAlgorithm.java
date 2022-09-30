@@ -87,7 +87,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     }
     
     private String getRequiredValue(final Properties props, final String key) {
-        Preconditions.checkArgument(props.containsKey(key), "%s can not be null.", key);
+        Preconditions.checkArgument(props.containsKey(key), "%s can not be null", key);
         return props.getProperty(key);
     }
     

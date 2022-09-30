@@ -72,7 +72,7 @@ public final class SQLValue {
             case "timestamp":
                 return new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(value).getTime());
             default:
-                throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
+                throw new UnsupportedOperationException(String.format("Can not support type: `%s`", type));
         }
     }
     

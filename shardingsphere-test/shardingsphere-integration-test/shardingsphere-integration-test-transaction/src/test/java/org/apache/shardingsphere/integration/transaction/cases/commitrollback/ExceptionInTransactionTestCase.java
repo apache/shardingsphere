@@ -52,7 +52,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             int causedExceptionResult = 1 / 0;
             executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
             conn.commit();
-            fail("It should fail here.");
+            fail("It should fail here");
         } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
         } finally {
@@ -61,7 +61,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
             }
         }
         Thread queryThread = new Thread(() -> {
-            log.info("Execute query in new thread.");
+            log.info("Execute query in new thread");
             try (Connection connection = getDataSource().getConnection()) {
                 assertAccountRowCount(connection, 0);
             } catch (final SQLException ignored) {
@@ -70,7 +70,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
         queryThread.start();
         try {
             queryThread.join();
-            log.info("ExceptionInTransactionTestCase test over.");
+            log.info("ExceptionInTransactionTestCase test over");
         } catch (final InterruptedException ignored) {
         }
     }

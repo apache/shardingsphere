@@ -36,7 +36,7 @@ public final class DefaultMySQLSessionVariableHandler implements MySQLSessionVar
         if (replayRequiredSessionVariables.contains(variableName)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         } else {
-            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
+            log.debug("Set statement {} = {} was discarded", variableName, assignValue);
         }
     }
 }

@@ -72,7 +72,7 @@ public final class ShadowTableRule {
     private void initShadowAlgorithmNames(final ShadowOperationType operationType, final String algorithmName, final String shadowColumnName,
                                           final Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames) {
         Collection<ShadowAlgorithmNameRule> shadowAlgorithmNameRules = columnShadowAlgorithmNames.get(operationType);
-        Preconditions.checkState(null == shadowAlgorithmNameRules, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.", operationType.name(), tableName);
+        Preconditions.checkState(null == shadowAlgorithmNameRules, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`", operationType.name(), tableName);
         columnShadowAlgorithmNames.put(operationType, Collections.singletonList(new ShadowAlgorithmNameRule(shadowColumnName, algorithmName)));
     }
 }

@@ -89,10 +89,10 @@ public abstract class BaseDQLIT extends SingleITCase {
         ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
         ResultSetMetaData expectedMetaData = expectedResultSet.getMetaData();
         while (actualResultSet.next()) {
-            assertTrue("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+            assertTrue("Size of actual result set is different with size of expected result set", expectedResultSet.next());
             assertRow(actualResultSet, actualMetaData, expectedResultSet, expectedMetaData);
         }
-        assertFalse("Size of actual result set is different with size of expected result set.", expectedResultSet.next());
+        assertFalse("Size of actual result set is different with size of expected result set", expectedResultSet.next());
     }
     
     private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData,

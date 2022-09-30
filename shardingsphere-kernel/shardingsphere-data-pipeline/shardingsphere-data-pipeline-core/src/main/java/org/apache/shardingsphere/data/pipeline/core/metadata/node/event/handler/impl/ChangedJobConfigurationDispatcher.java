@@ -48,7 +48,7 @@ public final class ChangedJobConfigurationDispatcher implements PipelineMetaData
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("unmarshal job configuration pojo failed.", ex);
+            log.error("unmarshal job configuration pojo failed", ex);
             return;
         }
         log.info("{} job configuration: {}, disabled={}", event.getType(), event.getKey(), jobConfigPOJO.isDisabled());

@@ -66,7 +66,7 @@ public final class OpenGaussDatabaseType implements SchemaSupportedDatabaseType 
     @Override
     public void handleRollbackOnly(final boolean rollbackOnly, final SQLStatement statement) throws SQLException {
         ShardingSpherePreconditions.checkState(!rollbackOnly || statement instanceof CommitStatement || statement instanceof RollbackStatement,
-                () -> new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block."));
+                () -> new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block"));
     }
     
     @Override

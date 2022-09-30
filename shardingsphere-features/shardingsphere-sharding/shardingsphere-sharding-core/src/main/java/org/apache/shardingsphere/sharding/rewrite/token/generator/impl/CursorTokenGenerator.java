@@ -43,8 +43,8 @@ public final class CursorTokenGenerator implements OptionalSQLTokenGenerator<SQL
     
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        Preconditions.checkArgument(sqlStatementContext instanceof CursorAvailable, "SQLStatementContext must implementation CursorAvailable interface.");
-        Preconditions.checkArgument(((CursorAvailable) sqlStatementContext).getCursorName().isPresent(), "Can not get cursor name from SQLStatementContext.");
+        Preconditions.checkArgument(sqlStatementContext instanceof CursorAvailable, "SQLStatementContext must implementation CursorAvailable interface");
+        Preconditions.checkArgument(((CursorAvailable) sqlStatementContext).getCursorName().isPresent(), "Can not get cursor name from SQLStatementContext");
         CursorNameSegment cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get();
         return new CursorToken(cursorName.getStartIndex(), cursorName.getStopIndex(), cursorName.getIdentifier(), sqlStatementContext, shardingRule);
     }

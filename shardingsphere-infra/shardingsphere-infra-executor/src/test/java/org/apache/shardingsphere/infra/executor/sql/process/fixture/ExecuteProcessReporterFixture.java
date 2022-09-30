@@ -37,17 +37,17 @@ public final class ExecuteProcessReporterFixture implements ExecuteProcessReport
     @Override
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants,
                        final EventBusContext eventBusContext) {
-        ACTIONS.add("Report the summary of this task.");
+        ACTIONS.add("Report the summary of this task");
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ACTIONS.add("Report a unit of this task.");
+        ACTIONS.add("Report a unit of this task");
     }
     
     @Override
     public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ACTIONS.add("Report this task on completion.");
+        ACTIONS.add("Report this task on completion");
     }
     
     @Override

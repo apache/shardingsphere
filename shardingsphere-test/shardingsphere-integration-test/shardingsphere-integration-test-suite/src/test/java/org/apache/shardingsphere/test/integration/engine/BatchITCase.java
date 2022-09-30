@@ -79,7 +79,7 @@ public abstract class BatchITCase extends BaseITCase {
     
     protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
         DataSet expected = getDataSet(actualUpdateCounts);
-        assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
+        assertThat("Only support single table for DML", expected.getMetaDataList().size(), is(1));
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
@@ -164,6 +164,6 @@ public abstract class BatchITCase extends BaseITCase {
             }
             count++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows", count, is(expectedDatSetRows.size()));
     }
 }

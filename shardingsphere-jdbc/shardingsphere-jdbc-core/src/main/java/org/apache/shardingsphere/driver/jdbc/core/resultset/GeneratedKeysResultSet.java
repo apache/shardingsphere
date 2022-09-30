@@ -240,10 +240,10 @@ public final class GeneratedKeysResultSet extends AbstractUnsupportedGeneratedKe
     
     private void checkStateForGetData() {
         checkState();
-        Preconditions.checkNotNull(currentValue, "ResultSet should call next or has no more data.");
+        Preconditions.checkNotNull(currentValue, "ResultSet should call next or has no more data");
     }
     
     private void checkState() {
-        Preconditions.checkState(!closed, "ResultSet has closed.");
+        Preconditions.checkState(!closed, "ResultSet has closed");
     }
 }

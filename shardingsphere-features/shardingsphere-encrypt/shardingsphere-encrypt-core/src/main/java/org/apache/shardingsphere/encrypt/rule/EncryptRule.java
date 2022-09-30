@@ -130,7 +130,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public List<Object> getEncryptValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by %s.%s.", logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent(), "Can not find EncryptAlgorithm by `%s.%s`", logicTable, logicColumn);
         return getEncryptValues(encryptor.get(), originalValues, encryptContext);
     }
     
@@ -202,7 +202,7 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     public List<Object> getEncryptAssistedQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
         Optional<EncryptAlgorithm> encryptor = findAssistedQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find assist encryptor by %s.%s.", logicTable, logicColumn);
+        Preconditions.checkArgument(encryptor.isPresent(), "Can not find assist encryptor by `%s.%s`", logicTable, logicColumn);
         return getEncryptAssistedQueryValues(encryptor.get(), originalValues, encryptContext);
     }
     

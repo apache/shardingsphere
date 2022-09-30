@@ -53,7 +53,7 @@ public final class StorageContainerFactory {
             case "H2":
                 return new H2Container(scenario);
             default:
-                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
+                throw new RuntimeException(String.format("Unknown database `%s`", databaseType.getType()));
         }
     }
 }

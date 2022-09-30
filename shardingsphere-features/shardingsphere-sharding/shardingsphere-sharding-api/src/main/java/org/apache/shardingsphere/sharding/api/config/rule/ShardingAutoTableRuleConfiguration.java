@@ -43,7 +43,7 @@ public final class ShardingAutoTableRuleConfiguration {
     private ShardingAuditStrategyConfiguration auditStrategy;
     
     public ShardingAutoTableRuleConfiguration(final String logicTable, final String actualDataSources) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "Logic table is required");
         this.logicTable = logicTable;
         this.actualDataSources = actualDataSources;
     }

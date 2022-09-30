@@ -87,7 +87,7 @@ public final class AuthorityEnvironmentManager {
                 try (Statement statement = connection.createStatement()) {
                     statement.execute(each);
                 } catch (final SQLException ex) {
-                    log.error("execute '{}' failed.", each, ex);
+                    log.error("execute '{}' failed", each, ex);
                 }
             }
         }

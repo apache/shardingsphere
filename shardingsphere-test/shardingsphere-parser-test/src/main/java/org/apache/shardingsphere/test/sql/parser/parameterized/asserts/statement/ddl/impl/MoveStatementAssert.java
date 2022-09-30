@@ -54,9 +54,9 @@ public final class MoveStatementAssert {
     
     private static void assertDirection(final SQLCaseAssertContext assertContext, final MoveStatement actual, final MoveStatementTestCase expected) {
         if (null == expected.getDirection()) {
-            assertFalse(assertContext.getText("Actual direction segment should not exist."), actual.getDirection().isPresent());
+            assertFalse(assertContext.getText("Actual direction segment should not exist"), actual.getDirection().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual direction segment should exist."), actual.getDirection().isPresent());
+            assertTrue(assertContext.getText("Actual direction segment should exist"), actual.getDirection().isPresent());
             DirectionSegmentAssert.assertIs(assertContext, actual.getDirection().get(), expected.getDirection());
         }
     }

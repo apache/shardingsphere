@@ -48,7 +48,7 @@ public final class MySQLBinlogFormatDescriptionEventPacket extends AbstractMySQL
         Preconditions.checkArgument(binlogVersion == payload.readInt2(), "Binlog version of FORMAT_DESCRIPTION_EVENT should always 4");
         mysqlServerVersion = payload.readStringFixByBytes(50);
         createTimestamp = payload.readInt4();
-        Preconditions.checkArgument(eventHeaderLength == payload.readInt1(), "Length of the Binlog Event Header should always be 19.");
+        Preconditions.checkArgument(eventHeaderLength == payload.readInt1(), "Length of the Binlog Event Header should always be 19");
         skipTypeHeaderLength(payload);
         skipCheckSums(payload);
     }

@@ -60,16 +60,16 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
                         // CHECKSTYLE:ON
-                        log.info("Failed to check container {} healthy.", each.getName(), ex);
+                        log.info("Failed to check container {} healthy", each.getName(), ex);
                         return false;
                     }
                 })
                 .forEach(each -> {
                     DockerHealthcheckWaitStrategy waitStrategy = new DockerHealthcheckWaitStrategy();
-                    log.info("Waiting for container {} healthy.", each.getDockerImageName());
+                    log.info("Waiting for container {} healthy", each.getDockerImageName());
                     waitStrategy.withStartupTimeout(Duration.of(90, ChronoUnit.SECONDS));
                     waitStrategy.waitUntilReady(each);
-                    log.info("Container {} is startup.", each.getDockerImageName());
+                    log.info("Container {} is startup", each.getDockerImageName());
                 });
     }
     

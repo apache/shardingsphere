@@ -35,7 +35,7 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
         int length = payload.readInt1();
         switch (length) {
             case 0:
-                throw new SQLFeatureNotSupportedException("Can not support date format if year, month, day is absent.");
+                throw new SQLFeatureNotSupportedException("Can not support date format if year, month, day is absent");
             case 4:
                 return getTimestampForDate(payload);
             case 7:

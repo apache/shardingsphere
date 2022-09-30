@@ -44,7 +44,7 @@ public final class JdbcConnectionWaitStrategy extends AbstractWaitStrategy {
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
-                    throw new RuntimeException("Not Ready yet.", ex);
+                    throw new RuntimeException("Container not ready yet", ex);
                 }
             });
             return true;

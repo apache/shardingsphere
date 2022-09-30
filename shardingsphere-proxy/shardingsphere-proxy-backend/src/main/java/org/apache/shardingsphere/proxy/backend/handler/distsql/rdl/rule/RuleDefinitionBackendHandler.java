@@ -90,7 +90,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         } else if (updater instanceof RuleDefinitionDropUpdater) {
             processDrop(result, sqlStatement, (RuleDefinitionDropUpdater) updater, currentRuleConfig);
         } else {
-            throw new UnsupportedSQLOperationException(String.format("Cannot support RDL updater type `%s`", updater.getClass().getCanonicalName()));
+            throw new UnsupportedSQLOperationException(String.format("Can not support RDL updater type `%s`", updater.getClass().getCanonicalName()));
         }
         ProxyContext.getInstance().getContextManager().alterRuleConfiguration(database.getName(), result);
         return result;

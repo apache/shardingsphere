@@ -48,9 +48,9 @@ public final class EncryptRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final EncryptRuleSegment actual, final ExpectedEncryptRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual encrypt rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual encrypt rule should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual encrypt rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual encrypt rule should exist"), actual);
             assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getTableName(), is(expected.getName()));
             assertThat(assertContext.getText("encrypt rule assertion error: "), actual.getQueryWithCipherColumn(), is(expected.getQueryWithCipherColumn()));
             assertEncryptColumns(assertContext, actual.getColumns(), expected.getColumns());
@@ -59,9 +59,9 @@ public final class EncryptRuleAssert {
     
     private static void assertEncryptColumns(final SQLCaseAssertContext assertContext, final Collection<EncryptColumnSegment> actual, final List<ExpectedEncryptColumn> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual encrypt column should not exist."), actual);
+            assertNull(assertContext.getText("Actual encrypt column should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual encrypt column should exist."), actual);
+            assertNotNull(assertContext.getText("Actual encrypt column should exist"), actual);
             assertThat(assertContext.getText(String.format("Actual encrypt column size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (EncryptColumnSegment encryptColumnSegment : actual) {

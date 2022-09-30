@@ -54,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     
     private static File getFile() {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForReadwriteSplittingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+                AbstractShardingSphereDataSourceForReadwriteSplittingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed", CONFIG_FILE)).getFile());
     }
     
     protected final ShardingSphereDataSource getReadwriteSplittingDataSource() {

@@ -61,7 +61,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             SQLFederationDeciderContext deciderContext = decide(getQueryContext(), metaData.getProps(), getDatabase());
             if (deciderContext.isUseSQLFederation()) {
-                return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));
+                return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet"));
             }
             ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(getQueryContext(), getDatabase(), metaData.getGlobalRuleMetaData(),
                     metaData.getProps(), getBackendConnection().getConnectionSession().getConnectionContext());

@@ -54,7 +54,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     private byte[] createSecretKey(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(AES_KEY), "%s can not be null.", AES_KEY);
+        Preconditions.checkArgument(props.containsKey(AES_KEY), "%s can not be null", AES_KEY);
         return Arrays.copyOf(DigestUtils.sha1(props.getProperty(AES_KEY)), 16);
     }
     

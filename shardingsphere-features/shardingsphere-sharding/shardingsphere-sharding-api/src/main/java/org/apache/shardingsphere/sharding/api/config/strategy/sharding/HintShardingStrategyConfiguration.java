@@ -29,7 +29,7 @@ public final class HintShardingStrategyConfiguration implements ShardingStrategy
     private final String shardingAlgorithmName;
     
     public HintShardingStrategyConfiguration(final String shardingAlgorithmName) {
-        Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required.");
+        Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required");
         this.shardingAlgorithmName = shardingAlgorithmName;
     }
     

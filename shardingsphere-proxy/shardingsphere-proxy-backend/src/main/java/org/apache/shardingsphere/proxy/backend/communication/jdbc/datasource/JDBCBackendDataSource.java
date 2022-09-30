@@ -75,7 +75,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
                 dataSource = GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().get(dataSourceStr);
             }
         }
-        Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
+        Preconditions.checkNotNull(dataSource, "Can not get connection from datasource `%s`", dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(createConnection(databaseName, dataSourceName, dataSource, transactionType));
         }

@@ -32,7 +32,7 @@ public final class KeyGenerateStrategyConfiguration {
     private final String keyGeneratorName;
     
     public KeyGenerateStrategyConfiguration(final String column, final String keyGeneratorName) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(column), "Column is required");
         this.column = column;
         this.keyGeneratorName = keyGeneratorName;
     }

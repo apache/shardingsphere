@@ -46,8 +46,8 @@ public final class StandardShardingStrategy implements ShardingStrategy {
     private final StandardShardingAlgorithm<?> shardingAlgorithm;
     
     public StandardShardingStrategy(final String shardingColumn, final StandardShardingAlgorithm<?> shardingAlgorithm) {
-        Preconditions.checkNotNull(shardingColumn, "Sharding column cannot be null.");
-        Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm cannot be null.");
+        Preconditions.checkNotNull(shardingColumn, "Sharding column can not be null");
+        Preconditions.checkNotNull(shardingAlgorithm, "sharding algorithm can not be null");
         Collection<String> shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         shardingColumns.add(shardingColumn);
         this.shardingColumns = Collections.unmodifiableCollection(shardingColumns);

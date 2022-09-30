@@ -44,6 +44,6 @@ public final class MySQLVendorErrorTest {
         assertThat(MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getSqlState().getValue(), is("HY000"));
         assertThat(MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE.getReason(), is("Please do not modify the %s table with an XA transaction. "
                 + "This is an internal system table used to store GTIDs for committed transactions. "
-                + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction."));
+                + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction"));
     }
 }

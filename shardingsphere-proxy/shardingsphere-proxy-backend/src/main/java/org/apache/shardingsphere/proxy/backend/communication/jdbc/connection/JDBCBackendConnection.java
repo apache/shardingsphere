@@ -67,7 +67,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null.");
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null");
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName);

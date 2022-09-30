@@ -49,7 +49,7 @@ public final class ShardingTableRuleConfiguration {
     }
     
     public ShardingTableRuleConfiguration(final String logicTable, final String actualDataNodes) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "LogicTable is required.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTable), "Logic table is required");
         this.logicTable = logicTable;
         this.actualDataNodes = actualDataNodes;
     }

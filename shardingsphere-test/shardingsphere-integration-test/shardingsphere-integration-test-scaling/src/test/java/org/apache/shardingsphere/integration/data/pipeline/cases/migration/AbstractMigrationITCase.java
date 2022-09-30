@@ -101,7 +101,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
             } catch (final SQLException ex) {
                 // only used for native mode.
                 if (ex instanceof PSQLException && "42P06".equals(ex.getSQLState())) {
-                    log.info("Schema {} already exists.", schemaName);
+                    log.info("Schema {} already exists", schemaName);
                 } else {
                     throw ex;
                 }

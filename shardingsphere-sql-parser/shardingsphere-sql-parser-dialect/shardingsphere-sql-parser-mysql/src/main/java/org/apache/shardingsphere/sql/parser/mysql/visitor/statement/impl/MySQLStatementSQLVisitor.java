@@ -262,7 +262,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.nullValueLiterals()) {
             return visit(ctx.nullValueLiterals());
         }
-        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
+        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null");
     }
     
     @Override
@@ -765,7 +765,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.jsonFunction()) {
             return visit(ctx.jsonFunction());
         }
-        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction or jsonFunction.");
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, specialFunction or jsonFunction");
     }
     
     @Override

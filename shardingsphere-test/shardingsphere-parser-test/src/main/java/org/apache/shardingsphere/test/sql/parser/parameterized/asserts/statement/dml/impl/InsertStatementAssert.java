@@ -72,7 +72,7 @@ public final class InsertStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTable());
+            assertNull(assertContext.getText("Actual table should not exist"), actual.getTable());
         } else {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
@@ -80,18 +80,18 @@ public final class InsertStatementAssert {
     
     private static void assertInsertColumnsClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null == expected.getInsertColumnsClause()) {
-            assertFalse(assertContext.getText("Actual insert columns segment should not exist."), actual.getInsertColumns().isPresent());
+            assertFalse(assertContext.getText("Actual insert columns segment should not exist"), actual.getInsertColumns().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual insert columns segment should exist."), actual.getInsertColumns().isPresent());
+            assertTrue(assertContext.getText("Actual insert columns segment should exist"), actual.getInsertColumns().isPresent());
             InsertColumnsClauseAssert.assertIs(assertContext, actual.getInsertColumns().get(), expected.getInsertColumnsClause());
         }
     }
     
     private static void assertInsertValuesClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null == expected.getInsertValuesClause()) {
-            assertTrue(assertContext.getText("Actual insert values segment should not exist."), actual.getValues().isEmpty());
+            assertTrue(assertContext.getText("Actual insert values segment should not exist"), actual.getValues().isEmpty());
         } else {
-            assertFalse(assertContext.getText("Actual insert values segment should exist."), actual.getValues().isEmpty());
+            assertFalse(assertContext.getText("Actual insert values segment should exist"), actual.getValues().isEmpty());
             InsertValuesClauseAssert.assertIs(assertContext, actual.getValues(), expected.getInsertValuesClause());
         }
     }
@@ -99,18 +99,18 @@ public final class InsertStatementAssert {
     private static void assertSetClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<SetAssignmentSegment> setAssignmentSegment = InsertStatementHandler.getSetAssignmentSegment(actual);
         if (null == expected.getSetClause()) {
-            assertFalse(assertContext.getText("Actual set assignment segment should not exist."), setAssignmentSegment.isPresent());
+            assertFalse(assertContext.getText("Actual set assignment segment should not exist"), setAssignmentSegment.isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual set assignment segment should exist."), setAssignmentSegment.isPresent());
+            assertTrue(assertContext.getText("Actual set assignment segment should exist"), setAssignmentSegment.isPresent());
             SetClauseAssert.assertIs(assertContext, setAssignmentSegment.get(), expected.getSetClause());
         }
     }
     
     private static void assertInsertSelectClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         if (null == expected.getSelectTestCase()) {
-            assertFalse(assertContext.getText("Actual insert select segment should not exist."), actual.getInsertSelect().isPresent());
+            assertFalse(assertContext.getText("Actual insert select segment should not exist"), actual.getInsertSelect().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual insert select segment should exist."), actual.getInsertSelect().isPresent());
+            assertTrue(assertContext.getText("Actual insert select segment should exist"), actual.getInsertSelect().isPresent());
             SelectStatementAssert.assertIs(assertContext, actual.getInsertSelect().get().getSelect(), expected.getSelectTestCase());
         }
     }
@@ -118,9 +118,9 @@ public final class InsertStatementAssert {
     private static void assertOnDuplicateKeyColumns(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(actual);
         if (null == expected.getOnDuplicateKeyColumns()) {
-            assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist."), onDuplicateKeyColumnsSegment.isPresent());
+            assertFalse(assertContext.getText("Actual on duplicate key columns segment should not exist"), onDuplicateKeyColumnsSegment.isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual on duplicate key columns segment should exist."), onDuplicateKeyColumnsSegment.isPresent());
+            assertTrue(assertContext.getText("Actual on duplicate key columns segment should exist"), onDuplicateKeyColumnsSegment.isPresent());
             OnDuplicateKeyColumnsAssert.assertIs(assertContext, onDuplicateKeyColumnsSegment.get(), expected.getOnDuplicateKeyColumns());
         }
     }
@@ -128,9 +128,9 @@ public final class InsertStatementAssert {
     private static void assertWithClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(actual);
         if (null == expected.getWithClause()) {
-            assertFalse(assertContext.getText("Actual with segment should not exist."), withSegment.isPresent());
+            assertFalse(assertContext.getText("Actual with segment should not exist"), withSegment.isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual with segment should exist."), withSegment.isPresent());
+            assertTrue(assertContext.getText("Actual with segment should exist"), withSegment.isPresent());
             WithClauseAssert.assertIs(assertContext, withSegment.get(), expected.getWithClause());
         }
     }
@@ -138,9 +138,9 @@ public final class InsertStatementAssert {
     private static void assertOutputClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<OutputSegment> outputSegment = InsertStatementHandler.getOutputSegment(actual);
         if (null == expected.getOutputClause()) {
-            assertFalse(assertContext.getText("Actual output segment should not exist."), outputSegment.isPresent());
+            assertFalse(assertContext.getText("Actual output segment should not exist"), outputSegment.isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual output segment should exist."), outputSegment.isPresent());
+            assertTrue(assertContext.getText("Actual output segment should exist"), outputSegment.isPresent());
             OutputClauseAssert.assertIs(assertContext, outputSegment.get(), expected.getOutputClause());
         }
     }
@@ -148,9 +148,9 @@ public final class InsertStatementAssert {
     private static void assertInsertMultiTableElement(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<InsertMultiTableElementSegment> insertTableElementSegment = InsertStatementHandler.getInsertMultiTableElementSegment(actual);
         if (null == expected.getInsertTableElement()) {
-            assertFalse(assertContext.getText("Actual insert multi table element segment should not exist."), insertTableElementSegment.isPresent());
+            assertFalse(assertContext.getText("Actual insert multi table element segment should not exist"), insertTableElementSegment.isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual insert multi table element segment should exist."), insertTableElementSegment.isPresent());
+            assertTrue(assertContext.getText("Actual insert multi table element segment should exist"), insertTableElementSegment.isPresent());
             InsertMultiTableElementAssert.assertIs(assertContext, insertTableElementSegment.get(), expected.getInsertTableElement());
         }
     }
@@ -158,9 +158,9 @@ public final class InsertStatementAssert {
     private static void assertSelectSubqueryClause(final SQLCaseAssertContext assertContext, final InsertStatement actual, final InsertStatementTestCase expected) {
         Optional<SubquerySegment> selectSubquery = InsertStatementHandler.getSelectSubquery(actual);
         if (null == expected.getSelectSubquery()) {
-            assertFalse(assertContext.getText("Actual select subquery segment should not exist."), selectSubquery.isPresent());
+            assertFalse(assertContext.getText("Actual select subquery segment should not exist"), selectSubquery.isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual select subquery segment should exist."), selectSubquery.isPresent());
+            assertTrue(assertContext.getText("Actual select subquery segment should exist"), selectSubquery.isPresent());
             SelectStatementAssert.assertIs(assertContext, selectSubquery.get().getSelect(), expected.getSelectSubquery());
         }
     }

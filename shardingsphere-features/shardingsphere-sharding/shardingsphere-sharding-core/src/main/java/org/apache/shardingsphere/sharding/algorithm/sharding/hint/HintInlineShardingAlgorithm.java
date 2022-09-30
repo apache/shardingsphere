@@ -53,7 +53,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
-        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null.");
+        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null");
         return InlineExpressionParser.handlePlaceHolder(algorithmExpression.trim());
     }
     

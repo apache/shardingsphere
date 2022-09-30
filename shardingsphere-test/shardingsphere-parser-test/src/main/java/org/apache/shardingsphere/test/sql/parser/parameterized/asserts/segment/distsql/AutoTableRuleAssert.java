@@ -43,16 +43,16 @@ public final class AutoTableRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AutoTableRuleSegment actual, final ExpectedAutoTableRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual auto table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual auto table rule should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual auto table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual auto table rule should exist"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDataSourceNodes(), is(expected.getDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getShardingColumn(), is(expected.getTableStrategyColumn()));
-            assertNotNull(assertContext.getText("key generate should exist."), actual.getKeyGenerateStrategySegment());
+            assertNotNull(assertContext.getText("key generate should exist"), actual.getKeyGenerateStrategySegment());
             assertThat(assertContext.getText(String.format("`%s`'s auto table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getShardingAlgorithmSegment(), expected.getTableStrategy());

@@ -98,7 +98,7 @@ public final class SQLCasesLoader extends CasesLoader {
     }
     
     private String getSQLFromMap(final String id, final Map<String, Case> sqlCaseMap) {
-        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of ID: %s", id);
+        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can not find SQL of ID: %s", id);
         SQLCase statement = (SQLCase) sqlCaseMap.get(id);
         return statement.getValue();
     }

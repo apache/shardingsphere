@@ -274,7 +274,7 @@ public enum MySQLCommandPacketType implements CommandPacketType {
      */
     public static MySQLCommandPacketType valueOf(final int value) {
         MySQLCommandPacketType result = MYSQL_COMMAND_PACKET_TYPE_CACHE.get(value);
-        Preconditions.checkNotNull(result, "Cannot find '%s' in command packet type", value);
+        Preconditions.checkNotNull(result, "Can not find `%s` in command packet type", value);
         return result;
     }
 }

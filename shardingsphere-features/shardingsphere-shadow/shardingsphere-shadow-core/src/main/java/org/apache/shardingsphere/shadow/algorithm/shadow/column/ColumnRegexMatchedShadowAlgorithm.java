@@ -39,7 +39,7 @@ public final class ColumnRegexMatchedShadowAlgorithm extends AbstractColumnMatch
     
     private Pattern getRegex(final Properties props) {
         String regex = props.getProperty(REGEX_PROPS_KEY);
-        Preconditions.checkNotNull(regex, "Column regex match shadow algorithm regex cannot be null.");
+        Preconditions.checkNotNull(regex, "Column regex match shadow algorithm regex can not be null");
         return Pattern.compile(regex);
     }
     

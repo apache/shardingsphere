@@ -55,7 +55,7 @@ public final class CommentStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         if (null == expected.getTable()) {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTable());
+            assertNull(assertContext.getText("Actual table should not exist"), actual.getTable());
         } else {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
@@ -63,7 +63,7 @@ public final class CommentStatementAssert {
     
     private static void assertColumn(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         if (null == expected.getColumn()) {
-            assertNull(assertContext.getText("Actual column should not exist."), actual.getColumn());
+            assertNull(assertContext.getText("Actual column should not exist"), actual.getColumn());
         } else {
             ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
         }
@@ -72,7 +72,7 @@ public final class CommentStatementAssert {
     private static void assertIndexType(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         Optional<IndexTypeSegment> indexTypeSegment = CommentStatementHandler.getIndexType(actual);
         if (null == expected.getIndexType()) {
-            assertFalse(assertContext.getText("Actual index type should not exist."), indexTypeSegment.isPresent());
+            assertFalse(assertContext.getText("Actual index type should not exist"), indexTypeSegment.isPresent());
         } else {
             assertTrue(assertContext.getText("Actual index type should exist"), indexTypeSegment.isPresent());
             IndexTypeAssert.assertIs(assertContext, indexTypeSegment.get(), expected.getIndexType());

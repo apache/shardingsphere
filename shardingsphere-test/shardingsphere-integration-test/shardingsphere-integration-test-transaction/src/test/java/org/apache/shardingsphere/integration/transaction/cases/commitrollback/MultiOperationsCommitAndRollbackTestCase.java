@@ -91,6 +91,6 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
     }
     
     private void assertBalance(final int actual, final int expected) {
-        assertThat(String.format("Balance is %s, should be %s.", actual, expected), actual, is(expected));
+        assertThat(String.format("Balance is %s, should be %s", actual, expected), actual, is(expected));
     }
 }

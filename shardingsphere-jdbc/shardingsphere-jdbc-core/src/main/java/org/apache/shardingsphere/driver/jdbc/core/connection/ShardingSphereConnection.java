@@ -202,7 +202,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     public Savepoint setSavepoint(final String name) throws SQLException {
         checkClose();
         if (!isHoldTransaction()) {
-            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks.");
+            throw new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks");
         }
         return connectionManager.setSavepoint(name);
     }
@@ -210,7 +210,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Override
     public Savepoint setSavepoint() throws SQLException {
         checkClose();
-        ShardingSpherePreconditions.checkState(isHoldTransaction(), () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks."));
+        ShardingSpherePreconditions.checkState(isHoldTransaction(), () -> new SQLFeatureNotSupportedException("Savepoint can only be used in transaction blocks"));
         return connectionManager.setSavepoint();
     }
     

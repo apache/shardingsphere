@@ -34,6 +34,6 @@ public final class ShardingSpringBootCondition extends SpringBootCondition {
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDING_PREFIX)
                 ? ConditionOutcome.match()
-                : ConditionOutcome.noMatch("Can't find ShardingSphere sharding rule configuration in local file.");
+                : ConditionOutcome.noMatch("Can not find ShardingSphere sharding rule configuration in local file");
     }
 }

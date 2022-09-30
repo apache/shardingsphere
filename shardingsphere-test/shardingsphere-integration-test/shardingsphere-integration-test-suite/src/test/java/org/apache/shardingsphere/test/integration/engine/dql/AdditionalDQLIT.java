@@ -156,7 +156,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
-            assertTrue("Not a query statement.", actualStatement.execute(sql) && expectedStatement.execute(sql));
+            assertTrue("Not a query statement", actualStatement.execute(sql) && expectedStatement.execute(sql));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -174,7 +174,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
+            assertTrue("Not a query statement", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
                     ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {
@@ -203,7 +203,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
                 Statement actualStatement = actualConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 Statement expectedStatement = expectedConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             String sql = String.format(getSQL(), getAssertion().getSQLValues().toArray());
-            assertTrue("Not a query statement.", actualStatement.execute(sql) && expectedStatement.execute(sql));
+            assertTrue("Not a query statement", actualStatement.execute(sql) && expectedStatement.execute(sql));
             try (
                     ResultSet actualResultSet = actualStatement.getResultSet();
                     ResultSet expectedResultSet = expectedStatement.getResultSet()) {
@@ -223,7 +223,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
                 actualPreparedStatement.setObject(each.getIndex(), each.getValue());
                 expectedPreparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a query statement.", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
+            assertTrue("Not a query statement", actualPreparedStatement.execute() && expectedPreparedStatement.execute());
             try (
                     ResultSet actualResultSet = actualPreparedStatement.getResultSet();
                     ResultSet expectedResultSet = expectedPreparedStatement.getResultSet()) {

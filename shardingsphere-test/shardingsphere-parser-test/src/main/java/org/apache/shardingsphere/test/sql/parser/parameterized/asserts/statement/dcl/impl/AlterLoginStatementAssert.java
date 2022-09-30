@@ -44,9 +44,9 @@ public final class AlterLoginStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLServerAlterLoginStatement actual, final AlterLoginStatementTestCase expected) {
         if (null == expected.getLogin()) {
-            assertNull(assertContext.getText("Actual login should not exist."), actual.getLoginSegment());
+            assertNull(assertContext.getText("Actual login should not exist"), actual.getLoginSegment());
         } else {
-            assertNotNull(assertContext.getText("Actual login should exist."), actual.getLoginSegment());
+            assertNotNull(assertContext.getText("Actual login should exist"), actual.getLoginSegment());
             assertThat(assertContext.getText("Login name assertion error: "), actual.getLoginSegment().getLoginName().getValueWithQuoteCharacters(), is(expected.getLogin().getName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLoginSegment(), expected.getLogin());
         }

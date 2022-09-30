@@ -44,7 +44,7 @@ public final class StorageContainerConfigurationFactory {
                 return MySQLContainerConfigurationFactory.newInstance(scenario, databaseType);
             // TODO please add other configuration factory for PG or OG if there is HA solution for these database types.
             default:
-                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
+                throw new RuntimeException(String.format("Unknown Database `%s`", databaseType.getType()));
         }
     }
 }

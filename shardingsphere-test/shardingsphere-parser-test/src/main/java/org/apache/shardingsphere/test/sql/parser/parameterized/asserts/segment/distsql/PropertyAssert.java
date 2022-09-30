@@ -44,9 +44,9 @@ public final class PropertyAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperty expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual properties should not exist."), actual);
+            assertNull(assertContext.getText("Actual properties should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual properties should exist."), actual);
+            assertNotNull(assertContext.getText("Actual properties should exist"), actual);
             assertThat(assertContext.getText("properties assertion error: "), actual.getProperty(expected.getKey()), is(expected.getValue()));
         }
     }

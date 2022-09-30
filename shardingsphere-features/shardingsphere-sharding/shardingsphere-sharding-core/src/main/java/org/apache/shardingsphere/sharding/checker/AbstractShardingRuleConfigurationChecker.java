@@ -71,7 +71,7 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
             return;
         }
         Preconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
-                "Can not find keyGenerator `%s` in database `%s`.", keyGenerateStrategy.getKeyGeneratorName(), databaseName);
+                "Can not find keyGenerator `%s` in database `%s`", keyGenerateStrategy.getKeyGeneratorName(), databaseName);
     }
     
     private void checkAuditStrategy(final String databaseName, final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> auditors) {
@@ -79,7 +79,7 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
             return;
         }
         Preconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
-                "Can not find all auditors `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
+                "Can not find all auditors `%s` in database `%s`", auditStrategy.getAuditorNames(), databaseName);
     }
     
     private void checkShardingStrategy(final String databaseName, final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms) {
@@ -87,7 +87,7 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
             return;
         }
         Preconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
-                "Can not find shardingAlgorithm `%s` in database `%s`.", shardingStrategy.getShardingAlgorithmName(), databaseName);
+                "Can not find shardingAlgorithm `%s` in database `%s`", shardingStrategy.getShardingAlgorithmName(), databaseName);
     }
     
     protected abstract Collection<String> getKeyGenerators(T config);

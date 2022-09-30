@@ -44,12 +44,12 @@ public final class IndexTypeAssert {
      * @param expected expected index type
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final IndexTypeSegment actual, final ExpectedIndexType expected) {
-        assertNotNull(assertContext.getText("IndexType should exist."), expected);
+        assertNotNull(assertContext.getText("IndexType should exist"), expected);
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "IndexType");
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist"), actual.getOwner().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist"), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);

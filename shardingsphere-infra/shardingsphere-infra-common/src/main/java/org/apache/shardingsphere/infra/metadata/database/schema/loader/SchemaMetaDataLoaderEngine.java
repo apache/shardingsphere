@@ -64,7 +64,7 @@ public final class SchemaMetaDataLoaderEngine {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);
             } catch (final SQLException ex) {
-                log.error("Dialect load table meta data error.", ex);
+                log.error("Dialect load table meta data error", ex);
             }
         }
         return loadByDefault(materials, databaseType);

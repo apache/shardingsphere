@@ -44,9 +44,9 @@ public final class ReadwriteSplittingRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual readwrite splitting rule should not exit."), actual);
+            assertNull(assertContext.getText("Actual readwrite splitting rule should not exit"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual readwrite splitting rule should exit."), actual);
+            assertNotNull(assertContext.getText("Actual readwrite splitting rule should exit"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",

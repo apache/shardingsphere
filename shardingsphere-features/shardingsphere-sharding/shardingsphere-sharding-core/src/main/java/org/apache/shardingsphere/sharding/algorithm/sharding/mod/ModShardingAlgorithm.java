@@ -66,7 +66,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private int getShardingCount(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count can not be null.");
+        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT_KEY), "Sharding count can not be null");
         return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
     }
     
@@ -134,9 +134,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private void checkOffsetArgument(final Comparable<?> shardingValue) {
-        Preconditions.checkArgument(startOffset >= 0, "Start offset can not be less than 0.");
-        Preconditions.checkArgument(stopOffset >= 0, "Stop offset can not be less than 0.");
-        Preconditions.checkArgument(shardingValue.toString().length() - stopOffset > startOffset, "Sharding value subtract stop offset can not be less than start offset.");
+        Preconditions.checkArgument(startOffset >= 0, "Start offset can not be less than 0");
+        Preconditions.checkArgument(stopOffset >= 0, "Stop offset can not be less than 0");
+        Preconditions.checkArgument(shardingValue.toString().length() - stopOffset > startOffset, "Sharding value subtract stop offset can not be less than start offset");
     }
     
     private BigInteger getBigInteger(final Comparable<?> value) {

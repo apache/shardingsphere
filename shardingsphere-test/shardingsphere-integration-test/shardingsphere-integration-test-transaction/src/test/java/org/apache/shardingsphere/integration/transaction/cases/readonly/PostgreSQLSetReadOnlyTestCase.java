@@ -54,11 +54,11 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
         Statement updateStatement = conn.createStatement();
         try {
             String updateSql = "update account set balance=100 where id=2;";
-            log.info("Connection execute update: {}.", updateSql);
+            log.info("Connection execute update: {}", updateSql);
             updateStatement.execute(updateSql);
             log.info("Using the driver of postgresql:42.4.1 expect to update successfully");
         } catch (SQLException e) {
-            Assert.fail("Update failed, should be successfully.");
+            Assert.fail("Update failed, should be successfully");
         }
     }
 }

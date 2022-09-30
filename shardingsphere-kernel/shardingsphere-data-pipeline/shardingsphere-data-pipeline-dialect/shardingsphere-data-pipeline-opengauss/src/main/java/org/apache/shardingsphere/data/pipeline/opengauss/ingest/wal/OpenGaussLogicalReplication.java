@@ -61,7 +61,7 @@ public final class OpenGaussLogicalReplication {
             return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
         } catch (final SQLException ex) {
             if (failedBecauseOfNonHAPort(ex)) {
-                log.info("Failed to connect to openGauss caused by: {} - {}. Try connecting to HA port.", ex.getSQLState(), ex.getMessage());
+                log.info("Failed to connect to openGauss caused by: {} - {}. Try connecting to HA port", ex.getSQLState(), ex.getMessage());
                 return tryConnectingToHAPort(jdbcConfig.getJdbcUrl(), props);
             }
             throw ex;

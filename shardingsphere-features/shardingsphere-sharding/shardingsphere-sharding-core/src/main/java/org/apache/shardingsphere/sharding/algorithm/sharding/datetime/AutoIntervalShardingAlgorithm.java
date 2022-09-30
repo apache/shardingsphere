@@ -69,7 +69,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     private LocalDateTime getDateTime(final Properties props) {
         String value = props.getProperty(DATE_TIME_LOWER_KEY);
-        Preconditions.checkNotNull(value, "%s cannot be null.", DATE_TIME_LOWER_KEY);
+        Preconditions.checkNotNull(value, "%s can not be null", DATE_TIME_LOWER_KEY);
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
         } catch (final DateTimeParseException ex) {
@@ -78,7 +78,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     }
     
     private long getShardingSeconds(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s cannot be null.", SHARDING_SECONDS_KEY);
+        Preconditions.checkArgument(props.containsKey(SHARDING_SECONDS_KEY), "%s can not be null", SHARDING_SECONDS_KEY);
         return Long.parseLong(props.getProperty(SHARDING_SECONDS_KEY));
     }
     

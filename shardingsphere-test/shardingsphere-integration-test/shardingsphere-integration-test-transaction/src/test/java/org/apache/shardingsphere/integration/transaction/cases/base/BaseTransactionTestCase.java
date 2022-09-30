@@ -70,17 +70,17 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected static void executeWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute: {}.", sql);
+        log.info("Connection execute: {}", sql);
         connection.createStatement().execute(sql);
     }
     
     protected static void executeUpdateWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute update: {}.", sql);
+        log.info("Connection execute update: {}", sql);
         connection.createStatement().executeUpdate(sql);
     }
     
     protected static ResultSet executeQueryWithLog(final Connection connection, final String sql) throws SQLException {
-        log.info("Connection execute query: {}.", sql);
+        log.info("Connection execute query: {}", sql);
         return connection.createStatement().executeQuery(sql);
     }
     
@@ -96,12 +96,12 @@ public abstract class BaseTransactionTestCase {
             resultSetCount++;
         }
         statement.close();
-        assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
+        assertThat(String.format("Recode num assert error, expect: %s, actual: %s", rowNum, resultSetCount), resultSetCount, is(rowNum));
     }
     
     protected void executeSqlListWithLog(final Connection conn, final String... sqlList) throws SQLException {
         for (String each : sqlList) {
-            log.info("Connection execute: {}.", each);
+            log.info("Connection execute: {}", each);
             conn.createStatement().execute(each);
         }
     }

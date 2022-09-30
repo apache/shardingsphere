@@ -78,7 +78,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     
     private String getJdbcUrl(final Map<String, Object> props) {
         Object result = props.getOrDefault("url", props.get("jdbcUrl"));
-        Preconditions.checkNotNull(result, "url or jdbcUrl is required.");
+        Preconditions.checkNotNull(result, "url or jdbcUrl is required");
         return result.toString();
     }
     

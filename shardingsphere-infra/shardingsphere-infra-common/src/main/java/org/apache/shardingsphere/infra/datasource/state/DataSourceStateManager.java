@@ -84,9 +84,9 @@ public final class DataSourceStateManager {
             dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
         } catch (final SQLException ex) {
             if (this.force) {
-                log.error("Data source state unavailable, ignored with the -f parameter.", ex);
+                log.error("Data source state unavailable, ignored with the -f parameter", ex);
             } else {
-                throw new DataSourceStateException("DataSourceState", 1, "Data source state unavailable.", ex);
+                throw new DataSourceStateException("DataSourceState", 1, "Data source state unavailable", ex);
             }
         }
     }
@@ -135,7 +135,7 @@ public final class DataSourceStateManager {
                 try (Connection ignored = entry.getValue().getConnection()) {
                     return false;
                 } catch (final SQLException ex) {
-                    log.error("Data source state unavailable, ignored with the -f parameter.", ex);
+                    log.error("Data source state unavailable, ignored with the -f parameter", ex);
                     return true;
                 }
             });

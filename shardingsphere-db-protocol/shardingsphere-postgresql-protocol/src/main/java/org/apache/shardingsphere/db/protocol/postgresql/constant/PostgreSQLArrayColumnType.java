@@ -126,7 +126,7 @@ public final class PostgreSQLArrayColumnType {
      * @return type oid, e.g. {@code 23} for {@code int4}
      */
     public static int getTypeOid(final String columnTypeName) {
-        Preconditions.checkArgument(COLUMN_TYPE_NAME_OID_MAP.containsKey(columnTypeName), "Cannot find PostgreSQL type oid for columnTypeName '%s'", columnTypeName);
+        Preconditions.checkArgument(COLUMN_TYPE_NAME_OID_MAP.containsKey(columnTypeName), "Can not find PostgreSQL type oid for columnTypeName '%s'", columnTypeName);
         return COLUMN_TYPE_NAME_OID_MAP.get(columnTypeName);
     }
 }

@@ -43,9 +43,9 @@ public final class TableRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final TableRuleSegment actual, final ExpectedTableRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual table rule should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual table rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual table rule should exist"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getLogicTable(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),

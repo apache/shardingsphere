@@ -39,7 +39,7 @@ public abstract class WrapperAdapter implements Wrapper {
         if (isWrapperFor(iface)) {
             return (T) this;
         }
-        throw new SQLFeatureNotSupportedException(String.format("`%s` cannot be unwrapped as `%s`", getClass().getName(), iface.getName()));
+        throw new SQLFeatureNotSupportedException(String.format("`%s` can not be unwrapped as `%s`", getClass().getName(), iface.getName()));
     }
     
     @Override

@@ -49,7 +49,7 @@ public final class MySQLEofPacket implements MySQLPacket {
     
     public MySQLEofPacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
-        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL EOF packet must be `0xfe`.");
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL EOF packet must be `0xfe`");
         warnings = payload.readInt2();
         statusFlags = payload.readInt2();
     }

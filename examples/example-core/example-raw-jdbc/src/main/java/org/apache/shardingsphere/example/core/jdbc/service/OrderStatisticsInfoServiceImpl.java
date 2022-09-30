@@ -62,7 +62,7 @@ public final class OrderStatisticsInfoServiceImpl implements ExampleService {
         System.out.println("-------------- Process Failure Begin ---------------");
         insertData();
         System.out.println("-------------- Process Failure Finish --------------");
-        throw new RuntimeException("Exception occur for transaction test.");
+        throw new RuntimeException("Exception occur for transaction test");
     }
     
     private Collection<Long> insertData() throws SQLException {

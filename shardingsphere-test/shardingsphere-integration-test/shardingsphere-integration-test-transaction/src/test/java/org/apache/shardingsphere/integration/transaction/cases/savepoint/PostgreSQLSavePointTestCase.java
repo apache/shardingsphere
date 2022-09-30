@@ -54,20 +54,20 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
         Connection conn = getDataSource().getConnection();
         try {
             conn.setSavepoint("point");
-            fail("Expect exception, but no exception report.");
+            fail("Expect exception, but no exception report");
         } catch (SQLException ex) {
-            assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
+            assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks"));
         }
         try {
             conn.rollback(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
+            fail("Expect exception, but no exception report");
         } catch (SQLException ex) {
             // TODO can not run to get the correct result in JDBC mode.
             assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         }
         try {
             conn.releaseSavepoint(new PSQLSavepoint("point1"));
-            fail("Expect exception, but no exception report.");
+            fail("Expect exception, but no exception report");
         } catch (SQLException ex) {
             // TODO can not run to get the correct result in JDBC mode.
             assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));

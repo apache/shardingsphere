@@ -82,16 +82,16 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     private String createSm4Mode(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SM4_MODE), "%s can not be null.", SM4_MODE);
+        Preconditions.checkArgument(props.containsKey(SM4_MODE), "%s can not be null", SM4_MODE);
         String result = String.valueOf(props.getProperty(SM4_MODE)).toUpperCase();
-        Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB.");
+        Preconditions.checkState(MODES.contains(result), "Mode must be either CBC or ECB");
         return result;
     }
     
     private byte[] createSm4Key(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SM4_KEY), "%s can not be null.", SM4_KEY);
+        Preconditions.checkArgument(props.containsKey(SM4_KEY), "%s can not be null", SM4_KEY);
         byte[] result = ByteUtils.fromHexString(String.valueOf(props.getProperty(SM4_KEY)));
-        Preconditions.checkState(KEY_LENGTH == result.length, "Key length must be " + KEY_LENGTH + " bytes long.");
+        Preconditions.checkState(KEY_LENGTH == result.length, "Key length must be " + KEY_LENGTH + " bytes long");
         return result;
     }
     
@@ -99,17 +99,17 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         if (!"CBC".equalsIgnoreCase(sm4Mode)) {
             return null;
         }
-        Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null.", SM4_IV);
+        Preconditions.checkArgument(props.containsKey(SM4_IV), "%s can not be null", SM4_IV);
         String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
         byte[] result = ByteUtils.fromHexString(sm4IvValue);
-        Preconditions.checkState(IV_LENGTH == result.length, "Iv length must be " + IV_LENGTH + " bytes long.");
+        Preconditions.checkState(IV_LENGTH == result.length, "Iv length must be " + IV_LENGTH + " bytes long");
         return result;
     }
     
     private String createSm4Padding(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(SM4_PADDING), "%s can not be null.", SM4_PADDING);
+        Preconditions.checkArgument(props.containsKey(SM4_PADDING), "%s can not be null", SM4_PADDING);
         String result = String.valueOf(props.getProperty(SM4_PADDING)).toUpperCase().replace("PADDING", "Padding");
-        Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding.");
+        Preconditions.checkState(PADDINGS.contains(result), "Padding must be either PKCS5Padding or PKCS7Padding");
         return result;
     }
     

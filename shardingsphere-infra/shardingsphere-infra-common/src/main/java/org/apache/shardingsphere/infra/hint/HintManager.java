@@ -48,7 +48,7 @@ public final class HintManager implements AutoCloseable {
      * @return {@code HintManager} instance
      */
     public static HintManager getInstance() {
-        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first.");
+        Preconditions.checkState(null == HINT_MANAGER_HOLDER.get(), "Hint has previous value, please clear first");
         HintManager result = new HintManager();
         HINT_MANAGER_HOLDER.set(result);
         return result;

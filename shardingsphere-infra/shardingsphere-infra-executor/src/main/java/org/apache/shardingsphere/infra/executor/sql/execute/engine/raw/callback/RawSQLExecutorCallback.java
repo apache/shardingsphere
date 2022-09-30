@@ -42,7 +42,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     public RawSQLExecutorCallback(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
         callbacks = RawExecutorCallbackFactory.getAllInstances();
-        Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
+        Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found");
     }
     
     @SuppressWarnings("unchecked")

@@ -44,9 +44,9 @@ public final class RenameTableStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RenameTableStatement actual, final RenameTableStatementTestCase expected) {
         if (null == expected.getRenames()) {
-            assertNull(assertContext.getText("Actual rename table segment should exist."), actual.getRenameTables());
+            assertNull(assertContext.getText("Actual rename table segment should exist"), actual.getRenameTables());
         } else {
-            assertNotNull(assertContext.getText("Actual rename table segment should exist."), actual.getRenameTables());
+            assertNotNull(assertContext.getText("Actual rename table segment should exist"), actual.getRenameTables());
             int count = 0;
             for (RenameTableDefinitionSegment each : actual.getRenameTables()) {
                 SQLSegmentAssert.assertIs(assertContext, each, expected.getRenames().get(count));

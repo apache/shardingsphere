@@ -147,7 +147,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @Override
     public String getDescription() {
-        return "Match raw data of records.";
+        return "Match raw data of records";
     }
     
     @RequiredArgsConstructor

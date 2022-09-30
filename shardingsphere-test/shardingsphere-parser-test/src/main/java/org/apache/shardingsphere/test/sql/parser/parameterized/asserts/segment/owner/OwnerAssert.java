@@ -45,9 +45,9 @@ public final class OwnerAssert {
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Owner");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist"), actual.getOwner().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist"), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
     }

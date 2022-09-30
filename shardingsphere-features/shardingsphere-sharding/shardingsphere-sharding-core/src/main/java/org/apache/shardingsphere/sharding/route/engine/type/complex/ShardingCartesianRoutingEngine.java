@@ -105,7 +105,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
                 return result.get();
             }
         }
-        throw new IllegalStateException(String.format("Cannot found routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
+        throw new IllegalStateException(String.format("Can not find routing table factor, data source: %s, actual table: %s", dataSource, actualTable));
     }
     
     private Collection<RouteUnit> getRouteUnits(final String dataSource, final Set<List<RouteMapper>> cartesianRoutingTableGroups) {

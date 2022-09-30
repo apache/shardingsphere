@@ -72,7 +72,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
                 primaryCount++;
             }
         }
-        Preconditions.checkState(1 == primaryCount, "Check Environment are failed in database `%s`.", databaseName);
+        Preconditions.checkState(1 == primaryCount, "Check Environment are failed in database `%s`", databaseName);
     }
     
     private CompletableFuture<Boolean> supplyAsyncCheckEnvironment(final DataSource dataSource, final ExecutorService executorService) {

@@ -48,15 +48,15 @@ public final class ExecuteProcessEngineTest {
         executionGroupContext = createMockedExecutionGroups();
         ExecuteProcessEngine.initializeExecution(createQueryContext(), executionGroupContext, eventBusContext);
         assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
-        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
+        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task"));
     }
     
     @Test
     public void assertFinish() {
         ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class), eventBusContext);
-        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task."));
+        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task"));
         ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
-        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion."));
+        assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion"));
     }
     
     @Test

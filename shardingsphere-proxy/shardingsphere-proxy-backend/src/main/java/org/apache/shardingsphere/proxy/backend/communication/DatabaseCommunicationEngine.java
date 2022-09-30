@@ -120,7 +120,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         }
         if (statementContext instanceof CursorDefinitionAware) {
             CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getConnectionContext().getCursorConnectionContext().getCursorDefinitions().get(cursorName);
-            Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
+            Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {

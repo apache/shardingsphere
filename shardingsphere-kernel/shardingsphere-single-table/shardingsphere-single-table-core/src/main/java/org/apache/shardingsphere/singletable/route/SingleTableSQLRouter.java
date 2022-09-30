@@ -117,7 +117,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
         boolean allTablesInSameDataSource = !"NONE".equals(sqlFederationType)
                 ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames)
                 : rule.isAllTablesInSameDataSource(routeContext, singleTableNames);
-        Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource.");
+        Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource");
     }
     
     @Override

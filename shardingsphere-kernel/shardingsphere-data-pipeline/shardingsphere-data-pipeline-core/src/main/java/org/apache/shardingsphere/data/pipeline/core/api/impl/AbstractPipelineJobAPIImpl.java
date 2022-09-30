@@ -74,8 +74,8 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected void checkModeConfig() {
         ModeConfiguration modeConfig = PipelineContext.getModeConfig();
-        Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equalsIgnoreCase(modeConfig.getType()), "Mode must be `Cluster`.");
+        Preconditions.checkNotNull(modeConfig, "Mode configuration is required");
+        Preconditions.checkArgument("Cluster".equalsIgnoreCase(modeConfig.getType()), "Mode must be `Cluster`");
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {

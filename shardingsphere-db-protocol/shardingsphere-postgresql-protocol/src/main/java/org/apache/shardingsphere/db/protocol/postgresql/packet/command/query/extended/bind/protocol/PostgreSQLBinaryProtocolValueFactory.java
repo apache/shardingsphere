@@ -142,7 +142,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
      * @return binary protocol value
      */
     public static PostgreSQLBinaryProtocolValue getBinaryProtocolValue(final BinaryColumnType binaryColumnType) {
-        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(binaryColumnType), "Cannot find PostgreSQL type '%s' in column type when process binary protocol value", binaryColumnType);
+        Preconditions.checkArgument(BINARY_PROTOCOL_VALUES.containsKey(binaryColumnType), "Can not find PostgreSQL type '%s' in column type when process binary protocol value", binaryColumnType);
         return BINARY_PROTOCOL_VALUES.get(binaryColumnType);
     }
 }

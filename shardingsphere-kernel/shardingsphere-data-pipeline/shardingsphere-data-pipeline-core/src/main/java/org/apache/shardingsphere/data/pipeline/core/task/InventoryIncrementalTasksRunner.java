@@ -82,7 +82,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     
     private synchronized boolean executeInventoryTask() {
         if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-            log.info("All inventory tasks finished.");
+            log.info("All inventory tasks finished");
             return true;
         }
         log.info("-------------- Start inventory task --------------");
@@ -97,13 +97,13 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
             if (null == throwable) {
                 if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
-                    log.info("onSuccess, all inventory tasks finished.");
+                    log.info("onSuccess, all inventory tasks finished");
                     executeIncrementalTask();
                 } else {
                     log.info("onSuccess, inventory tasks not finished");
                 }
             } else {
-                log.error("Inventory task execute failed.", throwable);
+                log.error("Inventory task execute failed", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
                 PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
                         .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
@@ -140,7 +140,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             if (null == throwable) {
                 log.info("onSuccess, all incremental tasks finished");
             } else {
-                log.error("Incremental task execute failed.", throwable);
+                log.error("Incremental task execute failed", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
                 PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
                         .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);

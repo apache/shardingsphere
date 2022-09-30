@@ -31,7 +31,7 @@ public final class StandardShardingStrategyConfiguration implements ShardingStra
     private final String shardingAlgorithmName;
     
     public StandardShardingStrategyConfiguration(final String shardingColumn, final String shardingAlgorithmName) {
-        Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required.");
+        Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required");
         this.shardingColumn = shardingColumn;
         this.shardingAlgorithmName = shardingAlgorithmName;
     }

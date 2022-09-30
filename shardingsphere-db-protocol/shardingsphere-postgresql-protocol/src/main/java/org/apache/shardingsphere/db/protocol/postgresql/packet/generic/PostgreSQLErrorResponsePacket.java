@@ -133,9 +133,9 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
         private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
         
         private Builder(final String severity, final String sqlState, final String message) {
-            Preconditions.checkArgument(null != severity, "The severity is always present!");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(sqlState), "The SQLSTATE code is always present!");
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(message), "The message is always present!");
+            Preconditions.checkArgument(null != severity, "The severity is always present");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(sqlState), "The SQLSTATE code is always present");
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(message), "The message is always present");
             fields.put(FIELD_TYPE_SEVERITY, severity);
             fields.put(FIELD_TYPE_SEVERITY_NON_LOCALIZED, severity);
             fields.put(FIELD_TYPE_CODE, sqlState);

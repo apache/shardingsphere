@@ -93,9 +93,9 @@ public final class OrderByItemAssert {
                                                 final ColumnOrderByItemSegment actual, final ExpectedColumnOrderByItem expected, final String type) {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, String.format("%s item", type));
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist"), actual.getColumn().getOwner().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist"), actual.getColumn().getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);

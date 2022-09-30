@@ -67,7 +67,7 @@ public final class TableAssert {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
         } else {
             throw new UnsupportedOperationException(
-                    String.format("Unsupported table segment type `%s`.", actual.getClass()));
+                    String.format("Unsupported table segment type `%s`", actual.getClass()));
         }
     }
     
@@ -82,9 +82,9 @@ public final class TableAssert {
         IdentifierValueAssert.assertIs(assertContext, actual.getTableName().getIdentifier(), expected, "Table");
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+            assertFalse(assertContext.getText("Actual owner should not exist"), actual.getOwner().isPresent());
         } else {
-            assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
+            assertTrue(assertContext.getText("Actual owner should exist"), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);

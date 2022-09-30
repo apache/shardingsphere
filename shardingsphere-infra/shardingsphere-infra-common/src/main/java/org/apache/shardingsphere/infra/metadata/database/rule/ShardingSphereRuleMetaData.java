@@ -88,7 +88,7 @@ public final class ShardingSphereRuleMetaData {
      */
     public <T extends ShardingSphereRule> T getSingleRule(final Class<T> clazz) {
         Collection<T> foundRules = findRules(clazz);
-        Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance.", clazz.getSimpleName());
+        Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance", clazz.getSimpleName());
         return foundRules.iterator().next();
     }
 }

@@ -45,9 +45,9 @@ public final class DataSourceAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DataSourceSegment actual, final ExpectedDataSource expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
+            assertNull(assertContext.getText("Actual dataSource should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
+            assertNotNull(assertContext.getText("Actual dataSource should exist"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));

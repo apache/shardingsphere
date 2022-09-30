@@ -67,7 +67,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null.");
+        Preconditions.checkNotNull(algorithmExpression, "Inline sharding algorithm expression can not be null");
         return InlineExpressionParser.handlePlaceHolder(algorithmExpression.trim());
     }
     

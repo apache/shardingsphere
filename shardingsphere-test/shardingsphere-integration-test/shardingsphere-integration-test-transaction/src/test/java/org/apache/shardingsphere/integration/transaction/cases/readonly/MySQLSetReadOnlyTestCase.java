@@ -55,11 +55,11 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
         Statement updateStatement = conn.createStatement();
         try {
             String updateSql = "update account set balance=100 where id=2;";
-            log.info("Connection execute update: {}.", updateSql);
+            log.info("Connection execute update: {}", updateSql);
             updateStatement.execute(updateSql);
-            fail("Update ran successfully, should failed.");
+            fail("Update ran successfully, should failed");
         } catch (SQLException e) {
-            log.info("Update failed for expect.");
+            log.info("Update failed for expect");
         }
     }
 }

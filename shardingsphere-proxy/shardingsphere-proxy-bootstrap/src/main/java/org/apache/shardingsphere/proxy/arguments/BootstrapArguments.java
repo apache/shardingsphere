@@ -52,7 +52,7 @@ public final class BootstrapArguments {
             }
             return Optional.of(port);
         } catch (final NumberFormatException ex) {
-            throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
+            throw new IllegalArgumentException(String.format("Invalid port `%s`", args[0]));
         }
     }
     

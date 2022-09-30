@@ -73,7 +73,7 @@ public final class YamlShardingStrategyConfigurationSwapper implements YamlConfi
             shardingStrategyConfigCount++;
             result = new NoneShardingStrategyConfiguration();
         }
-        Preconditions.checkArgument(shardingStrategyConfigCount <= 1, "Only allowed 0 or 1 sharding strategy configuration.");
+        Preconditions.checkArgument(shardingStrategyConfigCount <= 1, "Only allowed 0 or 1 sharding strategy configuration");
         return result;
     }
     

@@ -48,10 +48,10 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
         Statement statement3 = conn.createStatement();
         ResultSet r3 = statement3.executeQuery("select * from account where id=2");
         if (!r3.next()) {
-            fail("Update run failed, should success.");
+            fail("Update run failed, should success");
         }
         int balanceEnd = r3.getInt("balance");
-        assertThat(String.format("Balance is %s, should be 101.", balanceEnd), balanceEnd, is(101));
+        assertThat(String.format("Balance is %s, should be 101", balanceEnd), balanceEnd, is(101));
     }
     
     protected void assertQueryBalance(final Connection conn) throws SQLException {
@@ -61,10 +61,10 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
             int id = rs.getInt("id");
             int balance = rs.getInt("balance");
             if (1 == id) {
-                assertThat(String.format("Balance is %s, should be 0.", balance), balance, is(0));
+                assertThat(String.format("Balance is %s, should be 0", balance), balance, is(0));
             }
             if (2 == id) {
-                assertThat(String.format("Balance is %s, should be 100.", balance), balance, is(100));
+                assertThat(String.format("Balance is %s, should be 100", balance), balance, is(100));
             }
         }
     }

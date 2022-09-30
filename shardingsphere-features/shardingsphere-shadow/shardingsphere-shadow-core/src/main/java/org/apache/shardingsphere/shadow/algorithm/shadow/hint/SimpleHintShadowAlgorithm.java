@@ -57,7 +57,7 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
     }
     
     private void checkPropsSize(final Properties props) {
-        Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props cannot be empty.");
+        Preconditions.checkState(!props.isEmpty(), "Simple hint shadow algorithm props can not be empty");
     }
     
     @Override

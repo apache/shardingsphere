@@ -165,22 +165,22 @@ public abstract class BaseDDLIT extends SingleITCase {
     }
     
     private void assertColumnMetaData(final List<DataSetColumn> actual, final List<DataSetColumn> expected) {
-        assertThat("Size of actual columns is different with size of expected columns.", actual.size(), is(expected.size()));
+        assertThat("Size of actual columns is different with size of expected columns", actual.size(), is(expected.size()));
         for (int i = 0; i < actual.size(); i++) {
             assertColumnMetaData(actual.get(i), expected.get(i));
         }
     }
     
     private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
-        assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
+        assertThat("Mismatched column name", actual.getName(), is(expected.getName()));
         if ("MySQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
-            assertThat("Mismatched column type.", actual.getType(), is("int"));
+            assertThat("Mismatched column type", actual.getType(), is("int"));
         } else if ("PostgreSQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
-            assertThat("Mismatched column type.", actual.getType(), is("int4"));
+            assertThat("Mismatched column type", actual.getType(), is("int4"));
         } else if ("openGauss".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
-            assertThat("Mismatched column type.", actual.getType(), is("int4"));
+            assertThat("Mismatched column type", actual.getType(), is("int4"));
         } else {
-            assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));
+            assertThat("Mismatched column type", actual.getType(), is(expected.getType()));
         }
     }
     

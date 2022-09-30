@@ -103,7 +103,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
-        Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
+        Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context");
         ShardingSphereSchema schema = federationContext.getDatabases().get(databaseName.toLowerCase()).getSchema(schemaName);
         AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, schema, callback, federationContext);
         Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());

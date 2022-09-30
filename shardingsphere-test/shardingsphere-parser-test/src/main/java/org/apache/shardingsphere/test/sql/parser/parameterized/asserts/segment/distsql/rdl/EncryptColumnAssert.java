@@ -44,9 +44,9 @@ public final class EncryptColumnAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final EncryptColumnSegment actual, final ExpectedEncryptColumn expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual encrypt column should not exist."), actual);
+            assertNull(assertContext.getText("Actual encrypt column should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual encrypt column should exist."), actual);
+            assertNotNull(assertContext.getText("Actual encrypt column should exist"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getPlainColumn(), is(expected.getPlainColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getCipherColumn(), is(expected.getCipherColumn()));

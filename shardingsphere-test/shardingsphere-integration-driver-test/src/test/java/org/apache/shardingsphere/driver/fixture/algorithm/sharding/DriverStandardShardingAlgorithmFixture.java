@@ -47,7 +47,7 @@ public final class DriverStandardShardingAlgorithmFixture implements StandardSha
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        throw new UnsupportedOperationException("Cannot find range sharding strategy in sharding rule.");
+        throw new UnsupportedOperationException("Can not find range sharding strategy in sharding rule");
     }
     
     @Override

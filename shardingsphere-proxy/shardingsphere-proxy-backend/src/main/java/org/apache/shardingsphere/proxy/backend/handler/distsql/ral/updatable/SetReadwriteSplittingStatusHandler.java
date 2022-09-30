@@ -147,7 +147,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private void checkIsReplicaResource(final Map<String, String> replicaResources, final String toBeDisabledResource) {
         ShardingSpherePreconditions.checkState(replicaResources.containsKey(toBeDisabledResource),
-                () -> new UnsupportedSQLOperationException(String.format("`%s` is not used as a read resource by any read-write separation rules,cannot be disabled", toBeDisabledResource)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` is not used as a read resource by any read-write separation rules,can not be disabled", toBeDisabledResource)));
     }
     
     private void checkIsLastResource(final Map<String, String> replicaResources, final String toBeDisabledResource) {
@@ -156,7 +156,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         onlyOneResourceRules = onlyOneResourceRules.stream().filter(toBeDisabledResourceRuleNames::contains).collect(Collectors.toSet());
         Collection<String> finalOnlyOneResourceRules = onlyOneResourceRules;
         ShardingSpherePreconditions.checkState(onlyOneResourceRules.isEmpty(),
-                () -> new UnsupportedSQLOperationException(String.format("`%s` is the last read resource in `%s`, cannot be disabled", toBeDisabledResource, finalOnlyOneResourceRules)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` is the last read resource in `%s`, can not be disabled", toBeDisabledResource, finalOnlyOneResourceRules)));
     }
     
     private Collection<String> getGroupNames(final String toBeDisableResource, final Map<String, String> replicaResources,

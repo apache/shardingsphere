@@ -51,9 +51,9 @@ public final class ShadowRuleAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShadowRuleSegment actual, final ExpectedShadowRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual shadow rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual shadow rule should not exist"), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual shadow rule should exist."), actual);
+            assertNotNull(assertContext.getText("Actual shadow rule should exist"), actual);
             assertThat(assertContext.getText(String.format("`%s`'s shadow rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getShadow(), is(expected.getShadow()));
             assertThat(assertContext.getText(String.format("`%s`'s shadow rule segment assertion error: ",

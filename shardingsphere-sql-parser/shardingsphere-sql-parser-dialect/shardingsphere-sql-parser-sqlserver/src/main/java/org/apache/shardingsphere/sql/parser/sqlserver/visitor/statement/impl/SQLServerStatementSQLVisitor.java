@@ -229,7 +229,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.nullValueLiterals()) {
             return visit(ctx.nullValueLiterals());
         }
-        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
+        throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null");
     }
     
     @Override
@@ -555,7 +555,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.regularFunction()) {
             return visit(ctx.regularFunction());
         }
-        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction");
     }
     
     @Override

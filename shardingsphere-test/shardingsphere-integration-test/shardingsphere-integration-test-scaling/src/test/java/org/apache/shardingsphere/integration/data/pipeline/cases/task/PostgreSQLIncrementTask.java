@@ -65,7 +65,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
             jdbcTemplate.update(String.format("DELETE FROM %s WHERE item_id = ?", getTableNameWithSchema("t_order_item")), orderItemPrimaryKey);
             executeCount++;
         }
-        log.info("PostgreSQL increment task runnable execute successfully.");
+        log.info("PostgreSQL increment task runnable execute successfully");
     }
     
     private Object insertOrder() {

@@ -79,7 +79,7 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data source properties
      */
     public DataSourceProperties swapToDataSourceProperties(final Map<String, Object> yamlConfig) {
-        Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
+        Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null", DATA_SOURCE_CLASS_NAME_KEY);
         return new DataSourceProperties(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString(), getProperties(yamlConfig));
     }
     

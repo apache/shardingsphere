@@ -54,7 +54,7 @@ public final class MySQLErrPacket implements MySQLPacket {
     
     public MySQLErrPacket(final MySQLPacketPayload payload) {
         sequenceId = payload.readInt1();
-        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL ERR packet must be `0xff`.");
+        Preconditions.checkArgument(HEADER == payload.readInt1(), "Header of MySQL ERR packet must be `0xff`");
         errorCode = payload.readInt2();
         payload.readStringFix(1);
         sqlState = payload.readStringFix(5);
