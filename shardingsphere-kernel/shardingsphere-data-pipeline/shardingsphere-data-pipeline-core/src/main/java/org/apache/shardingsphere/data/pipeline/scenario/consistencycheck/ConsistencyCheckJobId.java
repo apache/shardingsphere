@@ -32,7 +32,9 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
     public static final String CURRENT_VERSION = "01";
     
-    private static final int MAX_SEQUENCE = 9;
+    public static final int MIN_SEQUENCE = 1;
+    
+    private static final int MAX_SEQUENCE = 3;
     
     private final String parentJobId;
     
@@ -41,7 +43,7 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     public ConsistencyCheckJobId(final @NonNull String parentJobId, final int sequence) {
         super(JobType.CONSISTENCY_CHECK, CURRENT_VERSION);
         this.parentJobId = parentJobId;
-        this.sequence = sequence > MAX_SEQUENCE ? 0 : sequence;
+        this.sequence = sequence > MAX_SEQUENCE ? MIN_SEQUENCE : sequence;
     }
     
     /**

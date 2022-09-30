@@ -78,7 +78,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
                 throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
             }
         }
-        int sequence = checkLatestJobId.map(s -> ConsistencyCheckJobId.parseSequence(s) + 1).orElse(0);
+        int sequence = checkLatestJobId.map(s -> ConsistencyCheckJobId.parseSequence(s) + 1).orElse(ConsistencyCheckJobId.MIN_SEQUENCE);
         String result = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
         repositoryAPI.persistCheckLatestJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
