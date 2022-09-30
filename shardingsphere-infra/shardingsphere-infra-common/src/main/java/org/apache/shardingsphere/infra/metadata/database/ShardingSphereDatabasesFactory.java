@@ -70,7 +70,6 @@ public final class ShardingSphereDatabasesFactory {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
         result.putAll(createGenericDatabases(databaseConfigMap, protocolType, storageType, props, instanceContext));
         result.putAll(createSystemDatabases(databaseConfigMap, protocolType));
-        result.putAll(createBuiltInShardingSphereDatabase(databaseConfigMap, protocolType));
         return result;
     }
     
@@ -80,7 +79,7 @@ public final class ShardingSphereDatabasesFactory {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName) && !SHARDING_SPHERE_BUILT_IN_DATABASE.equalsIgnoreCase(databaseName)) {
+            if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props, instanceContext));
             }
         }
@@ -93,15 +92,6 @@ public final class ShardingSphereDatabasesFactory {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {
                 result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType));
             }
-        }
-        return result;
-    }
-    
-    private static Map<String, ShardingSphereDatabase> createBuiltInShardingSphereDatabase(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType) {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(1, 1);
-        // TODO prevent the user to create sharding sphere built in database
-        if (!databaseConfigMap.containsKey(SHARDING_SPHERE_BUILT_IN_DATABASE) || databaseConfigMap.get(SHARDING_SPHERE_BUILT_IN_DATABASE).getDataSources().isEmpty()) {
-            result.put(SHARDING_SPHERE_BUILT_IN_DATABASE, ShardingSphereDatabase.createBuiltInShardingSphereDatabase(SHARDING_SPHERE_BUILT_IN_DATABASE, protocolType));
         }
         return result;
     }

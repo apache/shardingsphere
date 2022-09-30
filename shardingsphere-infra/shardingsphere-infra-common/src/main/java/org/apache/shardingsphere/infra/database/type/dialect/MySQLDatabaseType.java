@@ -39,6 +39,7 @@ public final class MySQLDatabaseType implements DatabaseType {
         SYSTEM_DATABASE_SCHEMA_MAP.put("performance_schema", Collections.singletonList("performance_schema"));
         SYSTEM_DATABASE_SCHEMA_MAP.put("mysql", Collections.singletonList("mysql"));
         SYSTEM_DATABASE_SCHEMA_MAP.put("sys", Collections.singletonList("sys"));
+        SYSTEM_DATABASE_SCHEMA_MAP.put("shardingsphere", Collections.singletonList("shardingsphere"));
     }
     
     @Override
