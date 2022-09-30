@@ -49,11 +49,10 @@ public final class ShowModeInfoHandlerTest extends ProxyContextRestorer {
         handler.execute();
         handler.next();
         List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(4));
+        assertThat(data.size(), is(3));
         assertThat(data.get(0), is("Cluster"));
         assertThat(data.get(1), is("ZooKeeper"));
         assertThat(data.get(2), is("{\"key\":\"value1,value2\"}"));
-        assertThat(data.get(3), is(Boolean.FALSE.toString()));
     }
     
     private InstanceContext createInstanceContext() {

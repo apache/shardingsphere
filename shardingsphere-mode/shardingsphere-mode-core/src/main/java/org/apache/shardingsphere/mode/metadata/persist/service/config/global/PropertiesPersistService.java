@@ -41,7 +41,7 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     }
     
     @Override
-    public void persist(Properties props) {
+    public void persist(final Properties props) {
         repository.persist(GlobalNode.getPropsPath(), YamlEngine.marshal(props));
     }
     

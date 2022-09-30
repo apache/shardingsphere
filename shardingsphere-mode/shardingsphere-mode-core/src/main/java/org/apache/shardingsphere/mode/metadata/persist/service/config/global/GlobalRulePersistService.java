@@ -47,7 +47,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     }
     
     @Override
-    public void persist(Collection<RuleConfiguration> globalRuleConfigs) {
+    public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
         repository.persist(GlobalNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
     }
     
