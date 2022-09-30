@@ -359,7 +359,7 @@ public abstract class BaseITCase {
         return dataSource.getConnection();
     }
     
-    protected void createProxyDatabase() {
+    private void createProxyDatabase() {
         String jdbcUrl = getProxyJdbcUrl(databaseType);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
             if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE) {
@@ -384,7 +384,7 @@ public abstract class BaseITCase {
         return jdbcUrl;
     }
     
-    protected AutoDataSource getProxyDataSource(final String databaseName) {
+    private AutoDataSource getProxyDataSource(final String databaseName) {
         return new ProxyDataSource(containerComposer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
     }
     
@@ -421,7 +421,7 @@ public abstract class BaseITCase {
         assertThat(resourceCount, is(2));
     }
     
-    protected void addResources(final Connection connection) throws SQLException {
+    private void addResources(final Connection connection) throws SQLException {
         String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
                 .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
@@ -497,7 +497,7 @@ public abstract class BaseITCase {
         executeWithLog(connection, String.format("CREATE SCHEMA %s", schemaName));
     }
     
-    protected int countWithLog(final String sql) throws SQLException {
+    private int countWithLog(final String sql) throws SQLException {
         Connection connection = getProxyConnection();
         int retryNumber = 0;
         while (retryNumber <= 3) {
@@ -535,7 +535,7 @@ public abstract class BaseITCase {
      *
      * @return query properties
      */
-    public static Properties getPostgreSQLQueryProperties() {
+    private static Properties getPostgreSQLQueryProperties() {
         Properties result = new Properties();
         result.put("preferQueryMode", "extendedForPrepared");
         return result;

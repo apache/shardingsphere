@@ -36,8 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -81,15 +79,15 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createAddressBroadcastTableRule(connection);
     }
     
-    protected void createOrderTableRule(final Connection connection) throws SQLException {
+    private void createOrderTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateOrderTableRule());
     }
     
-    protected void createOrderItemTableRule(final Connection connection) throws SQLException {
+    private void createOrderItemTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemTableRule());
     }
     
-    protected void createAccountTableRule(final Connection connection) throws SQLException {
+    private void createAccountTableRule(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateAccountTableRule());
     }
     
@@ -97,7 +95,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         executeWithLog(connection, getCommonSQLCommand().getCreateAddressBroadcastTableRule());
     }
     
-    protected void bindingShardingRule(final Connection connection) throws SQLException {
+    private void bindingShardingRule(final Connection connection) throws SQLException {
         executeWithLog(connection, "CREATE SHARDING BINDING TABLE RULES (t_order, t_order_item)");
     }
     
@@ -121,42 +119,19 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         executeWithLog(connection, "drop table if exists account;");
     }
     
-    protected void createOrderItemTable(final Connection connection) throws SQLException {
+    private void createOrderItemTable(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemTable());
     }
     
-    protected void createAddressTable(final Connection connection) throws SQLException {
+    private void createAddressTable(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateAddressTable());
     }
     
-    protected void dropOrderItemTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP TABLE IF EXISTS t_order_item;");
-    }
-    
-    protected void createOrderTable(final Connection connection) throws SQLException {
+    private void createOrderTable(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateOrderTable());
     }
     
-    protected void dropOrderTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP TABLE IF EXISTS t_order;");
-    }
-    
-    protected void assertAccountRowCount(final Connection conn, final int rowNum) throws SQLException {
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, rowNum);
-    }
-    
-    private void assertTableRowCount(final Connection conn, final String tableName, final int rowNum) throws SQLException {
-        Statement statement = conn.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from " + tableName);
-        int resultSetCount = 0;
-        while (resultSet.next()) {
-            resultSetCount++;
-        }
-        statement.close();
-        assertThat(String.format("Recode num assert error, expect:%s, actual:%s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
-    }
-    
-    protected void alterLocalTransactionRule() throws SQLException {
+    private void alterLocalTransactionRule() throws SQLException {
         Connection connection = getProxyConnection();
         if (isExpectedTransactionRule(connection, TransactionType.LOCAL, "")) {
             return;
@@ -166,7 +141,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, "", 5));
     }
     
-    protected void alterXaTransactionRule(final String providerType) throws SQLException {
+    private void alterXaTransactionRule(final String providerType) throws SQLException {
         Connection connection = getProxyConnection();
         if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
             return;
@@ -182,7 +157,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
                 && Objects.equals(transactionRuleMap.get(TransactionTestConstants.PROVIDER_TYPE), expectedProviderType);
     }
     
-    protected boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) throws SQLException {
+    private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) throws SQLException {
         ThreadUtil.sleep(5, TimeUnit.SECONDS);
         Connection connection = getProxyConnection();
         int waitTimes = 0;
@@ -196,7 +171,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         return false;
     }
     
-    protected Map<String, String> executeShowTransactionRule(final Connection conn) throws SQLException {
+    private Map<String, String> executeShowTransactionRule(final Connection conn) throws SQLException {
         Statement statement = conn.createStatement();
         ResultSet resultSet = statement.executeQuery("SHOW TRANSACTION RULE;");
         Map<String, String> result = new HashMap<>(1, 1);

@@ -56,7 +56,7 @@ public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
         conn.close();
     }
     
-    public void assertTruncateCommit() throws SQLException {
+    private void assertTruncateCommit() throws SQLException {
         prepare();
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
