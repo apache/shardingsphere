@@ -104,8 +104,12 @@ public final class Configuration {
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds_0", createDataSource("demo_ds_0"));
+    <#if feature!="encrypt">
         result.put("ds_1", createDataSource("demo_ds_1"));
+        <#if feature!="shadow">
         result.put("ds_2", createDataSource("demo_ds_2"));
+        </#if>
+    </#if>
         return result;
     }
     
