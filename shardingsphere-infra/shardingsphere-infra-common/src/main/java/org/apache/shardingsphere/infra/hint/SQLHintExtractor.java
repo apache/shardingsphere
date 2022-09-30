@@ -92,7 +92,7 @@ public final class SQLHintExtractor {
      * @param tableName table name
      * @return sharding database value
      */
-    public int getHintShardingDatabaseValue(String tableName) {
+    public int getHintShardingDatabaseValue(final String tableName) {
         String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
         if (sqlHintProperties.getProps().containsKey(key)) {
             return Integer.valueOf(sqlHintProperties.getProps().getProperty(key));
@@ -115,7 +115,7 @@ public final class SQLHintExtractor {
      * @param tableName table name
      * @return sharding table value
      */
-    public int getHintShardingTableValue(String tableName) {
+    public int getHintShardingTableValue(final String tableName) {
         String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
         if (sqlHintProperties.getProps().containsKey(key)) {
             return Integer.valueOf(sqlHintProperties.getProps().getProperty(key));
