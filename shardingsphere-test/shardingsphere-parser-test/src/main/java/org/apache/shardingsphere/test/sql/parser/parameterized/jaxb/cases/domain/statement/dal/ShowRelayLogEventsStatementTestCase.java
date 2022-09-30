@@ -33,6 +33,6 @@ public final class ShowRelayLogEventsStatementTestCase extends SQLParserTestCase
     @XmlAttribute(name = "log-name")
     private String logName;
     
-    @XmlAttribute(name = "channel")
+    @XmlAttribute
     private String channel;
 }

@@ -33,9 +33,9 @@ public final class AlterInstanceStatementTestCase extends SQLParserTestCase {
     @XmlAttribute(name = "instance-id")
     private String instanceId;
     
-    @XmlAttribute(name = "key")
+    @XmlAttribute
     private String key;
     
-    @XmlAttribute(name = "value")
+    @XmlAttribute
     private String value;
 }

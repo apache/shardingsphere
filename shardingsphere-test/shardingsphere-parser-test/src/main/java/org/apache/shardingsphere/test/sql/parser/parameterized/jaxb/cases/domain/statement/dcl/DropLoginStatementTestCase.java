@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.login.ExpectedLogin;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -27,8 +28,9 @@ import javax.xml.bind.annotation.XmlElement;
  * Drop login statement test case.
  */
 @Getter
+@Setter
 public final class DropLoginStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "login")
+    @XmlElement
     private ExpectedLogin login;
 }

@@ -32,13 +32,13 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class MergeStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "target")
+    @XmlElement
     private ExpectedTable target;
     
-    @XmlElement(name = "source")
+    @XmlElement
     private ExpectedTable source;
     
-    @XmlElement(name = "expr")
+    @XmlElement
     private ExpectedExpression expr;
     
     @XmlElement(name = "update")

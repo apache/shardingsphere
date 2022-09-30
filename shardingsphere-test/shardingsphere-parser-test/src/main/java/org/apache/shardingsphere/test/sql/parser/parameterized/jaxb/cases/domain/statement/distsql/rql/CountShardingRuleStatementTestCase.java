@@ -17,20 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
  * Count sharding rule statement test case.
  */
-@Getter
-@Setter
-public final class CountShardingRuleStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedDatabase database;
+public final class CountShardingRuleStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -37,7 +37,7 @@ import java.util.List;
 @Setter
 public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedSimpleTable table;
     
     @XmlElement(name = "column-definition")

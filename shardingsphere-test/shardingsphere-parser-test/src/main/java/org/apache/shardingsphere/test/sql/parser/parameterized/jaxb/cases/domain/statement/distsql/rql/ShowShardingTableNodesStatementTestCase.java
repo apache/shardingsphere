@@ -19,22 +19,17 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Show sharding table nodes statement test case.
  */
 @Getter
 @Setter
-public final class ShowShardingTableNodesStatementTestCase extends SQLParserTestCase {
+public final class ShowShardingTableNodesStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "table")
+    @XmlAttribute
     private String table;
-    
-    @XmlElement
-    private ExpectedDatabase database;
 }

@@ -35,6 +35,6 @@ public final class MoveStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "cursor-name")
     private ExpectedCursorName cursorName;
     
-    @XmlElement(name = "direction")
+    @XmlElement
     private ExpectedDirectionSegment direction;
 }
