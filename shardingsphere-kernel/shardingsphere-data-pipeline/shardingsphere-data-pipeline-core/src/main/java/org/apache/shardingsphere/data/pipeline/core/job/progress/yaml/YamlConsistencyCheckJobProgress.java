@@ -21,7 +21,7 @@ import lombok.Data;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Yaml data check job progress.
+ * Yaml data consistency check job progress.
  */
 @Data
 public final class YamlConsistencyCheckJobProgress implements YamlConfiguration {

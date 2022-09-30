@@ -39,7 +39,7 @@ public final class ConsistencyCheckJobConfiguration implements PipelineJobConfig
     
     private final String algorithmTypeName;
     
-    private final Properties algorithmProperties;
+    private final Properties algorithmProps;
     
     @Override
     public String getSourceDatabaseType() {

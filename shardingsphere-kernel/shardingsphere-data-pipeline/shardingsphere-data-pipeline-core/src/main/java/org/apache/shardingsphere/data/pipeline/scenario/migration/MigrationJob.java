@@ -88,7 +88,9 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
         try {
+            long startTimeMillis = System.currentTimeMillis();
             jobPreparer.prepare(jobItemContext);
+            log.info("prepare cost {} ms", System.currentTimeMillis() - startTimeMillis);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON

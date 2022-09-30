@@ -39,9 +39,9 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyExistedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyFinishedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgressSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -63,28 +63,31 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
         ConsistencyCheckJobId jobId = (ConsistencyCheckJobId) pipelineJobId;
-        return jobId.getPipelineJobId() + jobId.getSequence();
+        return jobId.getParentJobId() + jobId.getSequence();
     }
     
     @Override
     public String createJobAndStart(final CreateConsistencyCheckJobParameter parameter) {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        Optional<String> optional = repositoryAPI.getCheckLatestJobId(parameter.getJobId());
-        if (optional.isPresent()) {
-            PipelineJobItemProgress progress = getJobItemProgress(optional.get(), 0);
-            if (null != progress && JobStatus.FINISHED != progress.getStatus()) {
-                log.info("check job already existed and status isn't FINISHED, status {}", progress.getStatus());
-                throw new PipelineJobHasAlreadyExistedException(optional.get());
+        String parentJobId = parameter.getJobId();
+        Optional<String> checkLatestJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
+        if (checkLatestJobId.isPresent()) {
+            PipelineJobItemProgress progress = getJobItemProgress(checkLatestJobId.get(), 0);
+            if (null == progress || JobStatus.FINISHED != progress.getStatus()) {
+                log.info("check job already exists and status is not FINISHED, progress={}", progress);
+                throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
             }
         }
-        int consistencyCheckVersionNew = optional.map(s -> ConsistencyCheckJobId.getSequence(s) + 1).orElse(0);
+        int sequence = checkLatestJobId.map(s -> ConsistencyCheckJobId.parseSequence(s) + 1).orElse(ConsistencyCheckJobId.MIN_SEQUENCE);
+        String result = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
+        repositoryAPI.persistCheckLatestJobId(parentJobId, result);
+        repositoryAPI.deleteCheckJobResult(parentJobId, result);
+        dropJob(result);
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
-        ConsistencyCheckJobId checkJobId = new ConsistencyCheckJobId(parameter.getJobId(), consistencyCheckVersionNew);
-        String result = marshalJobId(checkJobId);
         yamlConfig.setJobId(result);
-        yamlConfig.setParentJobId(parameter.getJobId());
+        yamlConfig.setParentJobId(parentJobId);
         yamlConfig.setAlgorithmTypeName(parameter.getAlgorithmTypeName());
-        yamlConfig.setAlgorithmProperties(parameter.getAlgorithmProps());
+        yamlConfig.setAlgorithmProps(parameter.getAlgorithmProps());
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig);
         start(jobConfig);
         return result;
@@ -108,7 +111,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     }
     
     @Override
-    public PipelineJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
+    public ConsistencyCheckJobProgress getJobItemProgress(final String jobId, final int shardingItem) {
         String progress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
         if (StringUtils.isBlank(progress)) {
             return null;
@@ -121,7 +124,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
-        ConsistencyCheckJobProgress jobProgress = (ConsistencyCheckJobProgress) getJobItemProgress(jobId, shardingItem);
+        ConsistencyCheckJobProgress jobProgress = getJobItemProgress(jobId, shardingItem);
         if (null == jobProgress) {
             log.warn("updateJobItemStatus, jobProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
@@ -135,6 +138,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         log.info("Start disable check job {}", jobId);
         PipelineJobItemProgress jobProgress = getJobItemProgress(jobId, 0);
         ShardingSpherePreconditions.checkState(null == jobProgress || JobStatus.FINISHED != jobProgress.getStatus(), () -> new PipelineJobHasAlreadyFinishedException(jobId));
+        super.startDisabledJob(jobId);
     }
     
     @Override
@@ -170,21 +174,22 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+        throw new UnsupportedOperationException();
     }
     
     @Override
     public PipelineTaskConfiguration buildTaskConfiguration(final PipelineJobConfiguration pipelineJobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override
     public PipelineProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override
     protected PipelineJobInfo getJobInfo(final String jobId) {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Override
