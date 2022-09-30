@@ -35,8 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ShardingSphereDatabasesFactory {
     
-    private static final String SHARDING_SPHERE_BUILT_IN_DATABASE = "shardingsphere";
-    
     /**
      * Create databases.
      *
