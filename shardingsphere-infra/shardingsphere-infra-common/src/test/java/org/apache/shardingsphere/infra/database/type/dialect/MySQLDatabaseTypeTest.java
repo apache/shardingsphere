@@ -52,10 +52,11 @@ public final class MySQLDatabaseTypeTest {
         assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("performance_schema"));
         assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("mysql"));
         assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("sys"));
+        assertTrue(new MySQLDatabaseType().getSystemDatabaseSchemaMap().containsKey("shardingsphere"));
     }
     
     @Test
     public void assertGetSystemSchemas() {
-        assertThat(new MySQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys"))));
+        assertThat(new MySQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "performance_schema", "mysql", "sys", "shardingsphere"))));
     }
 }
