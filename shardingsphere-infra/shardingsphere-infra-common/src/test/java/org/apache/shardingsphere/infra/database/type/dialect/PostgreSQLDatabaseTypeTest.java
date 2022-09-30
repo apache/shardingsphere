@@ -80,7 +80,7 @@ public final class PostgreSQLDatabaseTypeTest {
     
     @Test
     public void assertGetSystemSchemas() {
-        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog"))));
+        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog", "shardingsphere"))));
     }
     
     @Test
