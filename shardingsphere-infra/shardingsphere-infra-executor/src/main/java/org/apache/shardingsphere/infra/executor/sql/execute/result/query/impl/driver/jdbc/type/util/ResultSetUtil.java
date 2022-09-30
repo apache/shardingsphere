@@ -250,9 +250,8 @@ public final class ResultSetUtil {
         if (stringVal.length() > 0) {
             int firstChar = Character.toLowerCase(stringVal.charAt(0));
             return 't' == firstChar || 'y' == firstChar || '1' == firstChar || "-1".equals(stringVal);
-        } else {
-            return false;
         }
+        return false;
     }
     
     private static Boolean longToBoolean(final long longVal) {

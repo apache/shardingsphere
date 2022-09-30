@@ -59,13 +59,17 @@ public final class WalEventConverter {
     public Record convert(final AbstractWalEvent event) {
         if (filter(event)) {
             return createPlaceholderRecord(event);
-        } else if (event instanceof WriteRowEvent) {
+        }
+        if (event instanceof WriteRowEvent) {
             return handleWriteRowsEvent((WriteRowEvent) event);
-        } else if (event instanceof UpdateRowEvent) {
+        }
+        if (event instanceof UpdateRowEvent) {
             return handleUpdateRowsEvent((UpdateRowEvent) event);
-        } else if (event instanceof DeleteRowEvent) {
+        }
+        if (event instanceof DeleteRowEvent) {
             return handleDeleteRowsEvent((DeleteRowEvent) event);
-        } else if (event instanceof PlaceholderEvent) {
+        }
+        if (event instanceof PlaceholderEvent) {
             return createPlaceholderRecord(event);
         }
         throw new UnsupportedSQLOperationException("");

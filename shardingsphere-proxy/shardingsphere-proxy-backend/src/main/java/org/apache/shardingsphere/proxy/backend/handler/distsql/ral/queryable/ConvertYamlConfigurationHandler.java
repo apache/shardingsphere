@@ -576,11 +576,11 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             Entry<String, YamlAlgorithmConfiguration> entry = encryptorConfigs.next();
             if (entry.getKey().equals(encryptorName)) {
                 String typeName = entry.getValue().getType();
-                if (!entry.getValue().getProps().isEmpty()) {
+                if (entry.getValue().getProps().isEmpty()) {
+                    result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_WITHOUT_PROPERTIES, typeName));
+                } else {
                     String properties = getColumnTypeProperties(entry.getValue().getProps());
                     result.append(String.format(DistSQLScriptConstants.TYPE, typeName, properties));
-                } else {
-                    result.append(String.format(DistSQLScriptConstants.ENCRYPT_TYPE_WITHOUT_PROPERTIES, typeName));
                 }
             }
         }

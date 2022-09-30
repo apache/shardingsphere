@@ -106,22 +106,22 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     
     @Override
     public String toString() {
-        if (null != filters) {
-            String[] filterValues = new String[number];
-            addFilter(filters, filterValues);
-            return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + ", filters=" + Arrays.toString(filterValues) + '}';
+        if (null == filters) {
+            return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + '}';
         }
-        return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + '}';
+        String[] filterValues = new String[number];
+        addFilter(filters, filterValues);
+        return "TranslatableTableScan{translatableTable=" + translatableTable + ", fields=" + Arrays.toString(fields) + ", filters=" + Arrays.toString(filterValues) + '}';
     }
     
     @Override
     public RelWriter explainTerms(final RelWriter relWriter) {
-        if (null != filters) {
-            String[] filterValues = new String[number];
-            addFilter(filters, filterValues);
-            return super.explainTerms(relWriter).item("fields", Primitive.asList(fields)).item("filters", Primitive.asList(filterValues));
+        if (null == filters) {
+            return super.explainTerms(relWriter).item("fields", Primitive.asList(fields));
         }
-        return super.explainTerms(relWriter).item("fields", Primitive.asList(fields));
+        String[] filterValues = new String[number];
+        addFilter(filters, filterValues);
+        return super.explainTerms(relWriter).item("fields", Primitive.asList(fields)).item("filters", Primitive.asList(filterValues));
     }
     
     @Override
@@ -155,14 +155,14 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
      */
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
         PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
-        if (null != filters) {
-            String[] filterValues = new String[number];
-            addFilter(filters, filterValues);
+        if (null == filters) {
             return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
-                    "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
+                    "project", implementor.getRootExpression(), Expressions.constant(fields))));
         }
+        String[] filterValues = new String[number];
+        addFilter(filters, filterValues);
         return implementor.result(physType, Blocks.toBlock(Expressions.call(table.getExpression(FederationTranslatableTable.class),
-                "project", implementor.getRootExpression(), Expressions.constant(fields))));
+                "projectAndFilter", implementor.getRootExpression(), Expressions.constant(filterValues), Expressions.constant(fields))));
     }
     
     private void addFilter(final List<RexNode> filters, final String[] filterValues) {

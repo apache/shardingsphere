@@ -141,10 +141,10 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitGrantRoleOrPrivilegeOnTo(final GrantRoleOrPrivilegeOnToContext ctx) {
         MySQLGrantStatement result = new MySQLGrantStatement();
-        if (null != ctx.roleOrPrivileges()) {
-            fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
-        } else {
+        if (null == ctx.roleOrPrivileges()) {
             result.setAllPrivileges(true);
+        } else {
+            fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         }
         result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
         for (UsernameContext each : ctx.userList().username()) {
@@ -193,18 +193,18 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (ctx instanceof GrantLevelGlobalContext) {
             return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "*", "*");
             
-        } else if (ctx instanceof GrantLevelSchemaGlobalContext) {
+        }
+        if (ctx instanceof GrantLevelSchemaGlobalContext) {
             String schemaName = new IdentifierValue(((GrantLevelSchemaGlobalContext) ctx).schemaName().getText()).getValue();
             return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, "*");
-        } else {
-            String schemaName = null;
-            String tableName;
-            if (null != ((GrantLevelTableContext) ctx).tableName().owner()) {
-                schemaName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().owner().getText()).getValue();
-            }
-            tableName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().name().getText()).getValue();
-            return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, tableName);
         }
+        String schemaName = null;
+        String tableName;
+        if (null != ((GrantLevelTableContext) ctx).tableName().owner()) {
+            schemaName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().owner().getText()).getValue();
+        }
+        tableName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().name().getText()).getValue();
+        return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, tableName);
     }
     
     @Override
@@ -630,23 +630,23 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             segment.setUpdateFailedLoginAttempts(true);
             segment.setFailedLoginAttempts(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
         } else {
-            if (null != ctx.UNBOUNDED()) {
-                segment.setUpdatePasswordLockTime(true);
-                segment.setPasswordLockTime(-1);
-            } else {
+            if (null == ctx.UNBOUNDED()) {
                 segment.setUpdatePasswordLockTime(true);
                 segment.setPasswordLockTime(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
+            } else {
+                segment.setUpdatePasswordLockTime(true);
+                segment.setPasswordLockTime(-1);
             }
         }
     }
     
     private void fillAccountLock(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
-        if (null != ctx.LOCK()) {
-            segment.setUpdateAccountLockedColumn(true);
-            segment.setAccountLocked(true);
-        } else {
+        if (null == ctx.LOCK()) {
             segment.setUpdateAccountLockedColumn(true);
             segment.setAccountLocked(false);
+        } else {
+            segment.setUpdateAccountLockedColumn(true);
+            segment.setAccountLocked(true);
         }
     }
     
@@ -675,26 +675,26 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     private void fillPasswordHistory(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
-        if (null != ctx.DEFAULT()) {
-            segment.setPasswordHistoryLength(0);
-            segment.setUpdatePasswordHistory(true);
-            segment.setUseDefaultPasswordHistory(true);
-        } else {
+        if (null == ctx.DEFAULT()) {
             segment.setPasswordHistoryLength(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
             segment.setUpdatePasswordHistory(true);
             segment.setUseDefaultPasswordHistory(false);
+        } else {
+            segment.setPasswordHistoryLength(0);
+            segment.setUpdatePasswordHistory(true);
+            segment.setUseDefaultPasswordHistory(true);
         }
     }
     
     private void fillPasswordReuse(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
-        if (null != ctx.DEFAULT()) {
-            segment.setPasswordReuseInterval(0);
-            segment.setUpdatePasswordReuseInterval(true);
-            segment.setUseDefaultPasswordReuseInterval(true);
-        } else {
+        if (null == ctx.DEFAULT()) {
             segment.setPasswordReuseInterval(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
             segment.setUpdatePasswordReuseInterval(true);
             segment.setUseDefaultPasswordReuseInterval(false);
+        } else {
+            segment.setPasswordReuseInterval(0);
+            segment.setUpdatePasswordReuseInterval(true);
+            segment.setUseDefaultPasswordReuseInterval(true);
         }
     }
     

@@ -54,11 +54,11 @@ public final class DropIndexStatementAssert {
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(actual);
-        if (null != expected.getTable()) {
+        if (null == expected.getTable()) {
+            assertFalse(assertContext.getText("Actual table segment should not exist."), simpleTableSegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual table segment should exist."), simpleTableSegment.isPresent());
             TableAssert.assertIs(assertContext, simpleTableSegment.get(), expected.getTable());
-        } else {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), simpleTableSegment.isPresent());
         }
     }
     

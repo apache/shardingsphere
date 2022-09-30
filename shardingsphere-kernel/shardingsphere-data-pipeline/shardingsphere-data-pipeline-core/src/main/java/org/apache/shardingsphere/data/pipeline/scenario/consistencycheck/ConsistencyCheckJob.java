@@ -64,11 +64,9 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         InventoryIncrementalJobPublicAPI jobPublicAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(jobType.getTypeName());
         Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = Collections.emptyMap();
         try {
-            if (StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())) {
-                dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId);
-            } else {
-                dataConsistencyCheckResult = jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
-            }
+            dataConsistencyCheckResult = StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())
+                    ? jobPublicAPI.dataConsistencyCheck(parentJobId)
+                    : jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProperties());
             status = JobStatus.FINISHED;
         } catch (final SQLWrapperException ex) {
             log.error("data consistency check failed", ex);

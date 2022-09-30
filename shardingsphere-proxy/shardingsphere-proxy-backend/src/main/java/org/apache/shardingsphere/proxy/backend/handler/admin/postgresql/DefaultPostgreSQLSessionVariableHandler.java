@@ -33,10 +33,10 @@ public final class DefaultPostgreSQLSessionVariableHandler implements PostgreSQL
     
     @Override
     public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        if (!replayRequiredSessionVariables.contains(variableName)) {
-            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
-        } else {
+        if (replayRequiredSessionVariables.contains(variableName)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
+        } else {
+            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
         }
     }
 }

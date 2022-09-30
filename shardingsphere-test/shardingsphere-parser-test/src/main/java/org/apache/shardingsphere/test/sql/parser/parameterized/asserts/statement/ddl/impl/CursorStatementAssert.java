@@ -53,11 +53,11 @@ public final class CursorStatementAssert {
     }
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final OpenGaussCursorStatement actual, final CursorStatementTestCase expected) {
-        if (null != expected.getSelectTestCase()) {
+        if (null == expected.getSelectTestCase()) {
+            assertNull(assertContext.getText("Actual select statement should not exist."), actual.getSelect());
+        } else {
             assertNotNull(assertContext.getText("Actual select statement should exist."), actual.getSelect());
             SelectStatementAssert.assertIs(assertContext, actual.getSelect(), expected.getSelectTestCase());
-        } else {
-            assertNull(assertContext.getText("Actual select statement should not exist."), actual.getSelect());
         }
     }
 }

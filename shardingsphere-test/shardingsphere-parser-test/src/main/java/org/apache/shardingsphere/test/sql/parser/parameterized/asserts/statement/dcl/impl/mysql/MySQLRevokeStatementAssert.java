@@ -43,11 +43,11 @@ public final class MySQLRevokeStatementAssert {
      * @param expected expected revoke statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLRevokeStatement actual, final RevokeStatementTestCase expected) {
-        if (null != expected.getTables() && !expected.getTables().isEmpty()) {
+        if (null == expected.getTables() || expected.getTables().isEmpty()) {
+            assertThat(assertContext.getText("Actual table should not exist."), actual.getTables(), is(Collections.emptyList()));
+        } else {
             assertThat(expected.getTables().size(), is(1));
             GrantLevelSegmentAssert.assertIs(assertContext, actual.getLevel(), expected.getTables());
-        } else {
-            assertThat(assertContext.getText("Actual table should not exist."), actual.getTables(), is(Collections.emptyList()));
         }
     }
 }

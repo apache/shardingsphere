@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.core.config.loader;
 
-import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.util.ReflectiveUtil;
 import org.junit.Test;
@@ -41,9 +40,6 @@ public final class AgentConfigurationLoaderTest {
     
     private String getResourceUrl() {
         URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
-        if (null != url) {
-            return URLDecoder.decode(url.getFile());
-        }
-        return DEFAULT_CONFIG_PATH;
+        return null == url ? DEFAULT_CONFIG_PATH : URLDecoder.decode(url.getFile());
     }
 }

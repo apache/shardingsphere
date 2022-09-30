@@ -56,30 +56,30 @@ public final class CopyStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
-        if (null != expected.getTable()) {
-            TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
-        } else {
+        if (null == expected.getTable()) {
             assertNull(assertContext.getText("Actual table should not exist."), actual.getTableSegment());
+        } else {
+            TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
         }
     }
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         Collection<ColumnSegment> columnSegments = CopyStatementHandler.getColumns(actual);
-        if (null != expected.getColumns() && !expected.getColumns().getColumns().isEmpty()) {
+        if (null == expected.getColumns() || expected.getColumns().getColumns().isEmpty()) {
+            assertTrue(assertContext.getText("Actual column segments should not exist."), columnSegments.isEmpty());
+        } else {
             assertFalse(assertContext.getText("Actual column segments should exist."), columnSegments.isEmpty());
             ColumnAssert.assertIs(assertContext, columnSegments, expected.getColumns().getColumns());
-        } else {
-            assertTrue(assertContext.getText("Actual column segments should not exist."), columnSegments.isEmpty());
         }
     }
     
     private static void assertPrepareStatementQuerySegment(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         Optional<PrepareStatementQuerySegment> prepareStatementQuerySegment = CopyStatementHandler.getPrepareStatementQuerySegment(actual);
-        if (null != expected.getQuery()) {
+        if (null == expected.getQuery()) {
+            assertFalse(assertContext.getText("Actual prepare statement query segment should not exist."), prepareStatementQuerySegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual prepare statement query segment should exist."), prepareStatementQuerySegment.isPresent());
             PrepareStatementQueryAssert.assertIs(assertContext, prepareStatementQuerySegment.get(), expected.getQuery());
-        } else {
-            assertFalse(assertContext.getText("Actual prepare statement query segment should not exist."), prepareStatementQuerySegment.isPresent());
         }
     }
 }

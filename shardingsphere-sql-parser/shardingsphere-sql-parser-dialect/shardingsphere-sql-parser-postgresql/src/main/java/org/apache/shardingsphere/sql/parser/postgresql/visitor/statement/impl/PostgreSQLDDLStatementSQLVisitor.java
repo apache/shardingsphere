@@ -1093,9 +1093,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitComment(final CommentContext ctx) {
         if (null != ctx.commentClauses().objectTypeAnyName() && null != ctx.commentClauses().objectTypeAnyName().TABLE()) {
             return commentOnTable(ctx);
-        } else if (null != ctx.commentClauses().COLUMN()) {
+        }
+        if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
-        } else if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
+        }
+        if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
             return getTableFromComment(ctx);
         }
         return new PostgreSQLCommentStatement();

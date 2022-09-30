@@ -203,11 +203,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitInsertMultiTable(final InsertMultiTableContext ctx) {
         OracleInsertStatement result = new OracleInsertStatement();
-        if (null != ctx.conditionalInsertClause()) {
-            result.setInsertMultiTableElementSegment((InsertMultiTableElementSegment) visit(ctx.conditionalInsertClause()));
-        } else {
-            result.setInsertMultiTableElementSegment(createInsertMultiTableElementSegment(ctx.multiTableElement()));
-        }
+        result.setInsertMultiTableElementSegment(null == ctx.conditionalInsertClause()
+                ? createInsertMultiTableElementSegment(ctx.multiTableElement())
+                : (InsertMultiTableElementSegment) visit(ctx.conditionalInsertClause()));
         OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.selectSubquery());
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectSubquery().start.getStartIndex(), ctx.selectSubquery().stop.getStopIndex(), subquery);
         result.setSelectSubquery(subquerySegment);

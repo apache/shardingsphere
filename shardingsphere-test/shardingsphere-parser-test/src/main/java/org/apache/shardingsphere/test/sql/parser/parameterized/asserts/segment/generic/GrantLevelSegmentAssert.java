@@ -43,11 +43,11 @@ public final class GrantLevelSegmentAssert {
      * @param expected expected grant statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final GrantLevelSegment actual, final List<ExpectedSimpleTable> expected) {
-        if (null != expected && !expected.isEmpty()) {
+        if (null == expected || expected.isEmpty()) {
+            assertNull(assertContext.getText("Actual table should not exist."), actual.getTableName());
+        } else {
             assertThat(expected.size(), is(1));
             assertThat(actual.getTableName(), is(expected.get(0).getName()));
-        } else {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTableName());
         }
     }
 }

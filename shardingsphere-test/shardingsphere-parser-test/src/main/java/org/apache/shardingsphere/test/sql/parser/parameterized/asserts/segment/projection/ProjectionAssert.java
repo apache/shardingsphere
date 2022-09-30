@@ -121,22 +121,22 @@ public final class ProjectionAssert {
     }
     
     private static void assertShorthandProjection(final SQLCaseAssertContext assertContext, final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected) {
-        if (null != expected.getOwner()) {
+        if (null == expected.getOwner()) {
+            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
-        } else {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
     }
     
     private static void assertColumnProjection(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
         assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
-        if (null != expected.getOwner()) {
+        if (null == expected.getOwner()) {
+            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
             OwnerAssert.assertIs(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
-        } else {
-            assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
     }
     

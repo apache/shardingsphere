@@ -296,14 +296,11 @@ public abstract class BaseITCase {
     }
     
     private BaseContainerComposer createAndStartContainerComposer(final TransactionParameterized parameterized) {
-        final BaseContainerComposer containerComposer;
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            containerComposer = new DockerContainerComposer(parameterized);
-        } else {
-            containerComposer = new NativeContainerComposer(parameterized.getDatabaseType());
-        }
-        containerComposer.start();
-        return containerComposer;
+        BaseContainerComposer result = ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER
+                ? new DockerContainerComposer(parameterized)
+                : new NativeContainerComposer(parameterized.getDatabaseType());
+        result.start();
+        return result;
     }
     
     @SneakyThrows(SQLException.class)
@@ -479,7 +476,7 @@ public abstract class BaseITCase {
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            final DockerStorageContainer databaseContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+            DockerStorageContainer databaseContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
             return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getExposedPort(), databaseName);
         } else {
             return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);

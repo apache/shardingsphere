@@ -110,16 +110,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     
     @Override
     public String visitSelect(final SelectContext ctx) {
-        if (null != ctx.queryExpression()) {
+        if (null == ctx.queryExpression()) {
+            visit(null == ctx.queryExpressionParens() ? ctx.selectWithInto() : ctx.queryExpressionParens());
+        } else {
             visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
                 result.append(" ");
                 visit(ctx.lockClauseList());
             }
-        } else if (null != ctx.queryExpressionParens()) {
-            visit(ctx.queryExpressionParens());
-        } else {
-            visit(ctx.selectWithInto());
         }
         formatPrint(";");
         return result.toString();
@@ -131,11 +129,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             visit(ctx.withClause());
             formatPrint(" ");
         }
-        if (null != ctx.queryExpressionBody()) {
-            visit(ctx.queryExpressionBody());
-        } else {
-            visit(ctx.queryExpressionParens());
-        }
+        visit(null == ctx.queryExpressionBody() ? ctx.queryExpressionParens() : ctx.queryExpressionBody());
         if (null != ctx.orderByClause()) {
             formatPrint(" ");
             visit(ctx.orderByClause());
@@ -153,14 +147,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount++;
         formatPrint("(");
         formatPrintln();
-        if (null != ctx.queryExpressionParens()) {
-            visit(ctx.queryExpressionParens());
-        } else {
+        if (null == ctx.queryExpressionParens()) {
             visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
                 result.append(" ");
                 visit(ctx.lockClauseList());
             }
+        } else {
+            visit(ctx.queryExpressionParens());
         }
         indentCount--;
         formatPrintln();
@@ -172,11 +166,11 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitQueryExpressionBody(final QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount()) {
             visit(ctx.queryPrimary());
-        } else if (null != ctx.queryExpressionParens()) {
-            visit(ctx.queryExpressionParens());
+        } else if (null == ctx.queryExpressionParens()) {
+            visit(ctx.queryExpressionBody());
             visit(ctx.combineClause());
         } else {
-            visit(ctx.queryExpressionBody());
+            visit(ctx.queryExpressionParens());
             visit(ctx.combineClause());
         }
         return result.toString();
@@ -189,11 +183,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             visit(ctx.combineOption());
             result.append(" ");
         }
-        if (null != ctx.queryPrimary()) {
-            visit(ctx.queryPrimary());
-        } else {
-            visit(ctx.queryExpressionParens());
-        }
+        visit(null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary());
         return result.toString();
     }
     
@@ -291,11 +281,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             formatPrint(")");
         }
         formatPrintln();
-        if (null != ctx.VALUE()) {
-            visit(ctx.VALUE());
-        } else {
-            visit(ctx.VALUES());
-        }
+        visit(null == ctx.VALUE() ? ctx.VALUES() : ctx.VALUE());
         indentCount++;
         formatPrintln();
         if (!ctx.assignmentValues().isEmpty()) {
@@ -703,11 +689,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public String visitSystemVariable(final SystemVariableContext ctx) {
         formatPrint("@@");
         if (null != ctx.systemVariableScope) {
-            if (upperCase) {
-                formatPrint(ctx.systemVariableScope.getText().toUpperCase());
-            } else {
-                formatPrint(ctx.systemVariableScope.getText().toLowerCase());
-            }
+            formatPrint(upperCase ? ctx.systemVariableScope.getText().toUpperCase() : ctx.systemVariableScope.getText().toLowerCase());
         }
         visit(ctx.textOrIdentifier());
         if (null != ctx.DOT_()) {
@@ -722,11 +704,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         if ("<EOF>".equals(node.getText())) {
             return result.toString();
         }
-        if (upperCase) {
-            formatPrint(node.getText().toUpperCase());
-        } else {
-            formatPrint(node.getText().toLowerCase());
-        }
+        formatPrint(upperCase ? node.getText().toUpperCase() : node.getText().toLowerCase());
         return result.toString();
     }
     
@@ -759,13 +737,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             formatPrint("?");
             return result.toString();
         }
-        if (null != ctx.string_()) {
+        if (null == ctx.string_()) {
+            visit(ctx.NCHAR_TEXT());
+        } else {
             if (null != ctx.UNDERSCORE_CHARSET()) {
                 formatPrint(ctx.UNDERSCORE_CHARSET().getText());
             }
             visit(ctx.string_());
-        } else {
-            visit(ctx.NCHAR_TEXT());
         }
         return result.toString();
     }
@@ -778,11 +756,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     
     @Override
     public String visitNumberLiterals(final NumberLiteralsContext ctx) {
-        if (parameterized) {
-            formatPrint("?");
-        } else {
-            formatPrint(ctx.getText());
-        }
+        formatPrint(parameterized ? "?" : ctx.getText());
         return result.toString();
     }
     

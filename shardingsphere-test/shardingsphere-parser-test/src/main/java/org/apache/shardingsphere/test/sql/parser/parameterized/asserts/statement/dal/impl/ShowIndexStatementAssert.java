@@ -48,19 +48,19 @@ public final class ShowIndexStatementAssert {
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
-        if (null != expected.getTable()) {
-            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
-        } else {
+        if (null == expected.getTable()) {
             assertNull(assertContext.getText("Actual table segment should not exist."), actual.getTable());
+        } else {
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
     
     private static void assertSchema(final SQLCaseAssertContext assertContext, final MySQLShowIndexStatement actual, final ShowIndexStatementTestCase expected) {
-        if (null != expected.getSchema()) {
+        if (null == expected.getSchema()) {
+            assertFalse(assertContext.getText("Actual database segment should not exist."), actual.getFromSchema().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual database segment should exist."), actual.getFromSchema().isPresent());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromSchema().get(), expected.getSchema());
-        } else {
-            assertFalse(assertContext.getText("Actual database segment should not exist."), actual.getFromSchema().isPresent());
         }
     }
 }

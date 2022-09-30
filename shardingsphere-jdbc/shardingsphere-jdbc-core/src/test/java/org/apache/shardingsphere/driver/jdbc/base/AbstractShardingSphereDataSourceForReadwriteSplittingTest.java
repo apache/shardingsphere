@@ -43,10 +43,9 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     
     @BeforeClass
     public static void initReadwriteSplittingDataSources() throws SQLException, IOException {
-        if (null != dataSource) {
-            return;
+        if (null == dataSource) {
+            dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
         }
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
     }
     
     private static Map<String, DataSource> getDataSourceMap() {

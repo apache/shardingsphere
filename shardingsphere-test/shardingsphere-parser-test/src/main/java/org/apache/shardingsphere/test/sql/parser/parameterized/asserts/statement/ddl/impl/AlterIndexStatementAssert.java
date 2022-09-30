@@ -53,11 +53,11 @@ public final class AlterIndexStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
         Optional<SimpleTableSegment> tableSegment = AlterIndexStatementHandler.getSimpleTableSegment(actual);
-        if (null != expected.getTable()) {
+        if (null == expected.getTable()) {
+            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual table segment should exist."), tableSegment.isPresent());
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getTable());
-        } else {
-            assertFalse(assertContext.getText("Actual table segment should not exist."), tableSegment.isPresent());
         }
     }
     

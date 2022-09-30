@@ -71,25 +71,35 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     private SqlOperator getOp(final OpContext ctx) {
         if (null != ctx.LIKE()) {
             return SqlStdOperatorTable.LIKE;
-        } else if (null != ctx.SEARCH()) {
+        }
+        if (null != ctx.SEARCH()) {
             return SqlStdOperatorTable.SEARCH;
-        } else if (null != ctx.AND()) {
+        }
+        if (null != ctx.AND()) {
             return SqlStdOperatorTable.AND;
-        } else if (null != ctx.OR()) {
+        }
+        if (null != ctx.OR()) {
             return SqlStdOperatorTable.OR;
-        } else if (null != ctx.NOT()) {
+        }
+        if (null != ctx.NOT()) {
             return SqlStdOperatorTable.NOT;
-        } else if (null != ctx.EQ_()) {
+        }
+        if (null != ctx.EQ_()) {
             return SqlStdOperatorTable.EQUALS;
-        } else if (null != ctx.LT_()) {
+        }
+        if (null != ctx.LT_()) {
             return SqlStdOperatorTable.LESS_THAN;
-        } else if (null != ctx.LTE_()) {
+        }
+        if (null != ctx.LTE_()) {
             return SqlStdOperatorTable.LESS_THAN_OR_EQUAL;
-        } else if (null != ctx.GT_()) {
+        }
+        if (null != ctx.GT_()) {
             return SqlStdOperatorTable.GREATER_THAN;
-        } else if (null != ctx.GTE_()) {
+        }
+        if (null != ctx.GTE_()) {
             return SqlStdOperatorTable.GREATER_THAN_OR_EQUAL;
-        } else if (null != ctx.NEQ_()) {
+        }
+        if (null != ctx.NEQ_()) {
             return SqlStdOperatorTable.NOT_EQUALS;
         }
         throw new OptimizationSQLRexNodeException(ctx.getText());
@@ -99,7 +109,8 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     public RexNode visitParameter(final ParameterContext ctx) {
         if (null != ctx.expression()) {
             return visitExpression(ctx.expression());
-        } else if (null != ctx.input()) {
+        }
+        if (null != ctx.input()) {
             return visitInput(ctx.input());
         }
         throw new OptimizationSQLRexNodeException(ctx.getText());
@@ -109,13 +120,17 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     public RexNode visitInput(final InputContext ctx) {
         if (null != ctx.inputRef()) {
             return visitInputRef(ctx.inputRef());
-        } else if (null != ctx.searchArgs()) {
+        }
+        if (null != ctx.searchArgs()) {
             return visitSearchArgs(ctx.searchArgs());
-        } else if (null != ctx.constant()) {
+        }
+        if (null != ctx.constant()) {
             return visitConstant(ctx.constant());
-        } else if (null != ctx.cast()) {
+        }
+        if (null != ctx.cast()) {
             return visitCast(ctx.cast());
-        } else if (null != ctx.paramWithType()) {
+        }
+        if (null != ctx.paramWithType()) {
             return visitParamWithType(ctx.paramWithType());
         }
         throw new OptimizationSQLRexNodeException(ctx.getText());
@@ -130,7 +145,7 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     
     @Override
     public RexNode visitSearchArgs(final SearchArgsContext ctx) {
-        Sarg<BigDecimal> sarg = null;
+        Sarg<BigDecimal> sarg;
         if (null != ctx.argList()) {
             sarg = getArgList(ctx.argList());
         } else if (null != ctx.argRange()) {
@@ -150,7 +165,8 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
             Integer number = Integer.valueOf(ctx.INTEGER_().getText());
             RelDataType nonNullableInt = typeFactory.createSqlType(SqlTypeName.INTEGER);
             return rexBuilder.makeLiteral(number, nonNullableInt, false);
-        } else if (null != ctx.STRING_()) {
+        }
+        if (null != ctx.STRING_()) {
             RelDataType varchar = typeFactory.createSqlType(SqlTypeName.VARCHAR);
             return rexBuilder.makeLiteral(ctx.STRING_().getText(), varchar, false);
         }
@@ -167,26 +183,20 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     @Override
     public RexNode visitParamWithType(final ParamWithTypeContext ctx) {
         RelDataType type = getType(ctx.type());
-        if (null != ctx.INTEGER_()) {
-            return rexBuilder.makeLiteral(Integer.valueOf(ctx.INTEGER_().getText()), type);
-        } else {
-            return rexBuilder.makeLiteral(ctx.STRING_().getText(), type);
-        }
+        return null == ctx.INTEGER_() ? rexBuilder.makeLiteral(ctx.STRING_().getText(), type) : rexBuilder.makeLiteral(Integer.valueOf(ctx.INTEGER_().getText()), type);
     }
     
     private Sarg<BigDecimal> getArgRange(final ArgRangeContext ctx) {
         BigDecimal lowerValue = BigDecimal.valueOf(Long.parseLong(ctx.INTEGER_(0).getText()));
         BigDecimal upperValue = BigDecimal.valueOf(Long.parseLong(ctx.INTEGER_(1).getText()));
         Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN);
-        if (null != ctx.LP_()) {
-            return Sarg.of(RexUnknownAs.UNKNOWN, ImmutableRangeSet.of(Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN)));
-        } else {
-            return Sarg.of(RexUnknownAs.UNKNOWN, ImmutableRangeSet.of(Range.range(lowerValue, BoundType.CLOSED, upperValue, BoundType.CLOSED)));
-        }
+        return null == ctx.LP_()
+                ? Sarg.of(RexUnknownAs.UNKNOWN, ImmutableRangeSet.of(Range.range(lowerValue, BoundType.CLOSED, upperValue, BoundType.CLOSED)))
+                : Sarg.of(RexUnknownAs.UNKNOWN, ImmutableRangeSet.of(Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN)));
     }
     
     private Sarg<BigDecimal> getArgList(final ArgListContext ctx) {
-        final RangeSet<BigDecimal> rangeSet = TreeRangeSet.create();
+        RangeSet<BigDecimal> rangeSet = TreeRangeSet.create();
         for (TerminalNode each : ctx.INTEGER_()) {
             BigDecimal value = BigDecimal.valueOf(Long.parseLong(each.getText()));
             rangeSet.add(Range.singleton(value));
@@ -213,11 +223,11 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
                 lowerValue = BigDecimal.valueOf(Long.parseLong(lower));
                 upperValue = BigDecimal.valueOf(Long.parseLong(upper));
             }
-            if (null != each.LP_()) {
-                Range<BigDecimal> range = Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN);
+            if (null == each.LP_()) {
+                Range<BigDecimal> range = Range.range(lowerValue, BoundType.CLOSED, upperValue, BoundType.CLOSED);
                 rangeList.add(range);
             } else {
-                Range<BigDecimal> range = Range.range(lowerValue, BoundType.CLOSED, upperValue, BoundType.CLOSED);
+                Range<BigDecimal> range = Range.range(lowerValue, BoundType.OPEN, upperValue, BoundType.OPEN);
                 rangeList.add(range);
             }
         }
@@ -225,10 +235,6 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
     }
     
     private RelDataType getType(final TypeContext ctx) {
-        if (null != ctx.INTEGER()) {
-            return typeFactory.createSqlType(SqlTypeName.INTEGER);
-        } else {
-            return typeFactory.createSqlType(SqlTypeName.VARCHAR);
-        }
+        return null == ctx.INTEGER() ? typeFactory.createSqlType(SqlTypeName.VARCHAR) : typeFactory.createSqlType(SqlTypeName.INTEGER);
     }
 }

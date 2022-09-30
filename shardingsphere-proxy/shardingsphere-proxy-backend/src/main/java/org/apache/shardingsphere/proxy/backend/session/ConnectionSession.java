@@ -107,10 +107,9 @@ public final class ConnectionSession {
      * @param databaseName database name
      */
     public void setCurrentDatabase(final String databaseName) {
-        if (null != databaseName && databaseName.equals(this.databaseName)) {
-            return;
+        if (null == databaseName || !databaseName.equals(this.databaseName)) {
+            this.databaseName = databaseName;
         }
-        this.databaseName = databaseName;
     }
     
     /**
