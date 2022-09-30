@@ -90,23 +90,15 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
         private DataSource dataSource;
         
         public void run() {
-            Statement statement1 = null;
-            Statement statement2 = null;
             try (Connection connection = dataSource.getConnection()) {
                 connection.setAutoCommit(false);
-                statement1 = connection.createStatement();
+                Statement statement1 = connection.createStatement();
                 statement1.execute("update account set balance=balance-1 where transaction_id=2;");
-                statement2 = connection.createStatement();
+                Statement statement2 = connection.createStatement();
                 Thread.sleep(1000);
                 statement2.execute("update account set balance=balance+1 where transaction_id=1;");
                 connection.commit();
             } catch (SQLException | InterruptedException ignored) {
-            } finally {
-                try {
-                    statement1.close();
-                    statement2.close();
-                } catch (SQLException ignored) {
-                }
             }
         }
     }

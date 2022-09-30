@@ -34,7 +34,7 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         super(baseTransactionITCase, dataSource);
     }
     
-    protected void assertRollback2Savepoint() throws SQLException {
+    void assertRollback2Savepoint() throws SQLException {
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 0);
@@ -49,7 +49,7 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         assertAccountRowCount(connection, 1);
     }
     
-    protected void assertReleaseSavepoint() throws SQLException {
+    void assertReleaseSavepoint() throws SQLException {
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 1);
