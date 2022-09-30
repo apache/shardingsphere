@@ -89,7 +89,7 @@ public final class ClusterModeRawJavaConfigurationExample {
     }
     
     private static ModeConfiguration getModeConfiguration(final ShardingType shardingType, final String repositoryType) {
-        return ClusterModeConfigurationUtil.getRepositoryConfiguration(!loadConfigFromRegCenter, shardingType, repositoryType);
+        return ClusterModeConfigurationUtil.getRepositoryConfiguration(shardingType, repositoryType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {
