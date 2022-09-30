@@ -210,6 +210,12 @@ public abstract class BaseITCase {
         return result;
     }
     
+    private Properties getPostgreSQLQueryProperties() {
+        Properties result = new Properties();
+        result.put("preferQueryMode", "extendedForPrepared");
+        return result;
+    }
+    
     private void createJdbcDataSource() {
         if (containerComposer instanceof DockerContainerComposer) {
             DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
@@ -487,16 +493,5 @@ public abstract class BaseITCase {
         log.info("Connection execute:{}.", sql);
         connection.createStatement().execute(sql);
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
-    }
-    
-    /**
-     * Get query properties by database type.
-     *
-     * @return query properties
-     */
-    public static Properties getPostgreSQLQueryProperties() {
-        Properties result = new Properties();
-        result.put("preferQueryMode", "extendedForPrepared");
-        return result;
     }
 }
