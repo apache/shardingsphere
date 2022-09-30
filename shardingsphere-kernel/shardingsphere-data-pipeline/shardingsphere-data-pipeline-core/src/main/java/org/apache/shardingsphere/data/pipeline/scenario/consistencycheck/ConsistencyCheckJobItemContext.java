@@ -54,6 +54,6 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     @Override
     public PipelineProcessContext getJobProcessContext() {
-        throw new UnsupportedOperationException("");
+        throw new UnsupportedOperationException();
     }
 }

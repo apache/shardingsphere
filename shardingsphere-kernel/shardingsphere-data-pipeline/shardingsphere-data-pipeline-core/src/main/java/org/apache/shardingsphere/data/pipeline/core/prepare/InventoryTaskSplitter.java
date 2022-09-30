@@ -73,11 +73,13 @@ public final class InventoryTaskSplitter {
      */
     public List<InventoryTask> splitInventoryData(final InventoryIncrementalJobItemContext jobItemContext) {
         List<InventoryTask> result = new LinkedList<>();
+        long startTimeMillis = System.currentTimeMillis();
         PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, dumperConfig)) {
             result.add(new InventoryTask(each, importerConfig, pipelineChannelCreator, jobItemContext.getDataSourceManager(), sourceDataSource, jobItemContext.getSourceMetaDataLoader(),
                     jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getInventoryImporterExecuteEngine(), jobItemContext));
         }
+        log.info("splitInventoryData cost {} ms", System.currentTimeMillis() - startTimeMillis);
         return result;
     }
     
