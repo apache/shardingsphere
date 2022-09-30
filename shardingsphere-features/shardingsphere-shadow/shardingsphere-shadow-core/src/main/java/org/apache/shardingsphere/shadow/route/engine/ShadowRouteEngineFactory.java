@@ -51,15 +51,17 @@ public final class ShadowRouteEngineFactory {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
             return createShadowInsertStatementRoutingEngine(queryContext);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            return createShadowDeleteStatementRoutingEngine(queryContext);
-        } else if (sqlStatement instanceof UpdateStatement) {
-            return createShadowUpdateStatementRoutingEngine(queryContext);
-        } else if (sqlStatement instanceof SelectStatement) {
-            return createShadowSelectStatementRoutingEngine(queryContext);
-        } else {
-            return createShadowNonMDLStatementRoutingEngine(queryContext);
         }
+        if (sqlStatement instanceof DeleteStatement) {
+            return createShadowDeleteStatementRoutingEngine(queryContext);
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return createShadowUpdateStatementRoutingEngine(queryContext);
+        }
+        if (sqlStatement instanceof SelectStatement) {
+            return createShadowSelectStatementRoutingEngine(queryContext);
+        }
+        return createShadowNonMDLStatementRoutingEngine(queryContext);
     }
     
     private static ShadowRouteEngine createShadowNonMDLStatementRoutingEngine(final QueryContext queryContext) {

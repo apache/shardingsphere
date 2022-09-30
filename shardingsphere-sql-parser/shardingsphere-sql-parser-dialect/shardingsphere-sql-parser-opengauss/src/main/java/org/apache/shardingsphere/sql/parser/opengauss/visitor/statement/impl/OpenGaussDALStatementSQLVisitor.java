@@ -160,23 +160,28 @@ public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitExplainableStmt(final ExplainableStmtContext ctx) {
         if (null != ctx.select()) {
             return visit(ctx.select());
-        } else if (null != ctx.insert()) {
+        }
+        if (null != ctx.insert()) {
             return visit(ctx.insert());
-        } else if (null != ctx.update()) {
+        }
+        if (null != ctx.update()) {
             return visit(ctx.update());
-        } else if (null != ctx.delete()) {
+        }
+        if (null != ctx.delete()) {
             return visit(ctx.delete());
-        } else if (null != ctx.declare()) {
+        }
+        if (null != ctx.declare()) {
             // TODO visit declare statement
             return visit(ctx.declare());
-        } else if (null != ctx.executeStmt()) {
+        }
+        if (null != ctx.executeStmt()) {
             return visit(ctx.executeStmt());
-        } else if (null != ctx.createMaterializedView()) {
+        }
+        if (null != ctx.createMaterializedView()) {
             // TODO visit create materialized view statement
             return visit(ctx.createMaterializedView());
-        } else {
-            // TODO visit refresh materialized view statement
-            return visit(ctx.refreshMatViewStmt());
         }
+        // TODO visit refresh materialized view statement
+        return visit(ctx.refreshMatViewStmt());
     }
 }

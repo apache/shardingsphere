@@ -29,18 +29,18 @@ public final class MissingRequiredAlgorithmException extends RuleDefinitionViola
     private static final long serialVersionUID = -1952698375135777585L;
     
     public MissingRequiredAlgorithmException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, "Algorithm does not exist");
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, "Algorithm does not exist.");
     }
     
     public MissingRequiredAlgorithmException(final String type, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, String.format("%s algorithm does not exist in database `%s`", type, databaseName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, String.format("%s algorithm does not exist in database `%s`.", type, databaseName));
     }
     
     public MissingRequiredAlgorithmException(final String type, final Collection<String> algorithmNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, String.format("%s algorithms `%s` do not exist", type, algorithmNames));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, String.format("%s algorithms `%s` do not exist.", type, algorithmNames));
     }
     
     public MissingRequiredAlgorithmException(final String type, final String databaseName, final Collection<String> algorithmNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, String.format("%s algorithms `%s` do not exist in database `%s`", type, algorithmNames, databaseName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 151, String.format("%s algorithms `%s` do not exist in database `%s`.", type, algorithmNames, databaseName));
     }
 }

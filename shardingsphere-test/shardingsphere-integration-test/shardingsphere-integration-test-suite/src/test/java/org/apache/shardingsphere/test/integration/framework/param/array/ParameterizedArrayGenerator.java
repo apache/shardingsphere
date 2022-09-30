@@ -172,7 +172,7 @@ public final class ParameterizedArrayGenerator {
     }
     
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL" : databaseTypes;
+        String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL,openGauss" : databaseTypes;
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(DatabaseTypeFactory::getInstance).collect(Collectors.toList());
     }
 }

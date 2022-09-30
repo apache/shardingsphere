@@ -66,7 +66,7 @@ public interface GovernanceRepositoryAPI {
     Optional<String> getCheckLatestJobId(String jobId);
     
     /**
-     * Persist check latest result.
+     * Persist check latest job id.
      *
      * @param jobId job id
      * @param checkJobId check job id
@@ -83,13 +83,21 @@ public interface GovernanceRepositoryAPI {
     Map<String, DataConsistencyCheckResult> getCheckJobResult(String jobId, String checkJobId);
     
     /**
-     * Persist check latest detailed result.
+     * Persist check job result.
      *
      * @param jobId job id
      * @param checkJobId check job id
-     * @param dataConsistencyCheckResult check result
+     * @param checkResultMap check result map
      */
-    void persistCheckJobResult(String jobId, String checkJobId, Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult);
+    void persistCheckJobResult(String jobId, String checkJobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    
+    /**
+     * Delete check job result.
+     *
+     * @param jobId job id
+     * @param checkJobId check job id
+     */
+    void deleteCheckJobResult(String jobId, String checkJobId);
     
     /**
      * List check job ids.

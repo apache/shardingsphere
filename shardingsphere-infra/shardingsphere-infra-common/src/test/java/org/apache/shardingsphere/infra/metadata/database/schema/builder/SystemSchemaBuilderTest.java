@@ -41,10 +41,12 @@ public final class SystemSchemaBuilderTest {
     @Test
     public void assertBuildForPostgreSQL() {
         Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("sharding_db", new PostgreSQLDatabaseType());
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(3));
         assertTrue(actual.containsKey("information_schema"));
         assertTrue(actual.containsKey("pg_catalog"));
+        assertTrue(actual.containsKey("shardingsphere"));
         assertThat(actual.get("information_schema").getTables().size(), is(3));
         assertThat(actual.get("pg_catalog").getTables().size(), is(5));
+        assertThat(actual.get("shardingsphere").getTables().size(), is(1));
     }
 }

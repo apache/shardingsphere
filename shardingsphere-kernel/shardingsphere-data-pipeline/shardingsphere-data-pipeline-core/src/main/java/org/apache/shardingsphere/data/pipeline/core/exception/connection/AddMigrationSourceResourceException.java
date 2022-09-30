@@ -30,6 +30,6 @@ public final class AddMigrationSourceResourceException extends PipelineSQLExcept
     private static final long serialVersionUID = -3952313247315105684L;
     
     public AddMigrationSourceResourceException(final Collection<String> duplicateDataSourceNames) {
-        super(XOpenSQLState.DUPLICATE, 30, "Duplicate resource names `%s`", duplicateDataSourceNames);
+        super(XOpenSQLState.DUPLICATE, 30, "Duplicate resource names `%s`.", duplicateDataSourceNames);
     }
 }

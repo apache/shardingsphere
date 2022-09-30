@@ -204,14 +204,14 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        if (null != ctx.DOLLAR_()) {
-            int parameterIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
-            if (parameterIndex > currentParameterIndex) {
-                currentParameterIndex = parameterIndex;
-            }
-            return new ParameterMarkerValue(parameterIndex - 1, ParameterMarkerType.DOLLAR);
+        if (null == ctx.DOLLAR_()) {
+            return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
         }
-        return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
+        int parameterIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
+        if (parameterIndex > currentParameterIndex) {
+            currentParameterIndex = parameterIndex;
+        }
+        return new ParameterMarkerValue(parameterIndex - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override
@@ -388,10 +388,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.selectWithParens()));
-        if (null != ctx.EXISTS()) {
-            return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
-        }
-        return new SubqueryExpressionSegment(subquerySegment);
+        return null == ctx.EXISTS() ? new SubqueryExpressionSegment(subquerySegment) : new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
     }
     
     @Override

@@ -32,7 +32,7 @@ public final class ExampleMain {
         ExampleService exampleService = new ExampleService(dataSource);
         exampleService.run();
     <#if transaction=="xa-narayana">
-        System.exit(1);
+        System.exit(0);
     </#if>
     }
 }

@@ -49,14 +49,16 @@ public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQL
     public ASTNode visitExplainableStatement(final ExplainableStatementContext ctx) {
         if (null != ctx.select()) {
             return visit(ctx.select());
-        } else if (null != ctx.insert()) {
-            return visit(ctx.insert());
-        } else if (null != ctx.update()) {
-            return visit(ctx.update());
-        } else if (null != ctx.delete()) {
-            return visit(ctx.delete());
-        } else {
-            return visit(ctx.createTableAsSelectClause());
         }
+        if (null != ctx.insert()) {
+            return visit(ctx.insert());
+        }
+        if (null != ctx.update()) {
+            return visit(ctx.update());
+        }
+        if (null != ctx.delete()) {
+            return visit(ctx.delete());
+        }
+        return visit(ctx.createTableAsSelectClause());
     }
 }

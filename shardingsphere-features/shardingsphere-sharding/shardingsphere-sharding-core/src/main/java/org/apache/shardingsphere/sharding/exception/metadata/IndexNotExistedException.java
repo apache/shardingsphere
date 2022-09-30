@@ -28,6 +28,6 @@ public final class IndexNotExistedException extends ShardingSQLException {
     private static final long serialVersionUID = 206503570677185269L;
     
     public IndexNotExistedException(final String indexName) {
-        super(XOpenSQLState.NOT_FOUND, 8, "Index `%s` does not exist", indexName);
+        super(XOpenSQLState.NOT_FOUND, 8, "Index `%s` does not exist.", indexName);
     }
 }

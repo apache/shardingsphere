@@ -22,6 +22,7 @@
     <row values="information_schema" />
     <row values="performance_schema" />
     <row values="encrypt_and_readwrite_splitting" />
-    <row values="mysql" />
     <row values="sys" />
+    <row values="shardingsphere" />
+    <row values="mysql" />
 </dataset>

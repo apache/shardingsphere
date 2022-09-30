@@ -45,13 +45,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     @Override
     public AbstractWalEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
-        AbstractWalEvent result;
-        String eventType = readEventType(data);
-        if ("table".equals(eventType)) {
-            result = readTableEvent(data);
-        } else {
-            result = new PlaceholderEvent();
-        }
+        AbstractWalEvent result = "table".equals(readEventType(data)) ? readTableEvent(data) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }
@@ -226,7 +220,8 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 char c2 = (char) data.get();
                 if (' ' == c2) {
                     return result.toString();
-                } else if ('\'' != c2) {
+                }
+                if ('\'' != c2) {
                     throw new IngestException("Read character varying data unexpected exception");
                 }
             }

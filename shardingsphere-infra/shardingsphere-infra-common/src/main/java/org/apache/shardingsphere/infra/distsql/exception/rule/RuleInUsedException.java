@@ -29,6 +29,6 @@ public final class RuleInUsedException extends RuleDefinitionViolationException 
     private static final long serialVersionUID = 3308787279125477660L;
     
     public RuleInUsedException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used", ruleType, ruleNames, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 102, "%s rules `%s` in database `%s` are still in used.", ruleType, ruleNames, databaseName);
     }
 }

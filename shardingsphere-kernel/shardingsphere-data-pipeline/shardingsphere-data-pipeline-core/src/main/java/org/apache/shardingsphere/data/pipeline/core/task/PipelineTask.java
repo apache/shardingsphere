@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
 
 /**
  * Pipeline task interface.
  */
-public interface PipelineTask extends LifecycleExecutor {
+public interface PipelineTask {
     
     /**
      * Get task id.

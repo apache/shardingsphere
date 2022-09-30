@@ -265,17 +265,20 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
     private String getFullTypeValue(final String name, final String schema, final String length, final String array) {
         if ("char".equals(name) && "pg_catalog".equals(schema)) {
             return "\"char\"" + array;
-        } else if ("time with time zone".equals(name)) {
-            return "time" + length + " with time zone" + array;
-        } else if ("time without time zone".equals(name)) {
-            return "time" + length + " without time zone" + array;
-        } else if ("timestamp with time zone".equals(name)) {
-            return "timestamp" + length + " with time zone" + array;
-        } else if ("timestamp without time zone".equals(name)) {
-            return "timestamp" + length + " without time zone" + array;
-        } else {
-            return name + length + array;
         }
+        if ("time with time zone".equals(name)) {
+            return "time" + length + " with time zone" + array;
+        }
+        if ("time without time zone".equals(name)) {
+            return "time" + length + " without time zone" + array;
+        }
+        if ("timestamp with time zone".equals(name)) {
+            return "timestamp" + length + " with time zone" + array;
+        }
+        if ("timestamp without time zone".equals(name)) {
+            return "timestamp" + length + " without time zone" + array;
+        }
+        return name + length + array;
     }
     
     private String checkTypmod(final Integer typmod, final String name) {

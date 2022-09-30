@@ -95,9 +95,8 @@ public final class RowNumberPaginationContextEngine {
             if (left instanceof ColumnSegment) {
                 String leftColumnValue = ((ColumnSegment) left).getIdentifier().getValue();
                 return ROW_NUMBER_IDENTIFIERS.contains(leftColumnValue) || leftColumnValue.equalsIgnoreCase(rowNumberAlias);
-            } else {
-                return false;
             }
+            return false;
         }
         return false;
     }

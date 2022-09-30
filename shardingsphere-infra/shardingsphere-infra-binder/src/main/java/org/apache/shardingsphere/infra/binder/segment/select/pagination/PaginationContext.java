@@ -55,9 +55,8 @@ public final class PaginationContext {
         if (paginationValueSegment instanceof ParameterMarkerPaginationValueSegment) {
             Object obj = null == parameters || parameters.isEmpty() ? 0L : parameters.get(((ParameterMarkerPaginationValueSegment) paginationValueSegment).getParameterIndex());
             return obj instanceof Long ? (long) obj : (int) obj;
-        } else {
-            return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
         }
+        return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
     }
     
     /**

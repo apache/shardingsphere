@@ -28,6 +28,6 @@ public final class ResultSetClosedException extends ConnectionSQLException {
     private static final long serialVersionUID = 3931974854134322934L;
     
     public ResultSetClosedException() {
-        super(XOpenSQLState.CONNECTION_EXCEPTION, 31, "Result set has been closed");
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 31, "Result set has been closed.");
     }
 }

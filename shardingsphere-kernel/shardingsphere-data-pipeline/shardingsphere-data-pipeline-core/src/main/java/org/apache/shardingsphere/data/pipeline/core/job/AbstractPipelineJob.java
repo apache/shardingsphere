@@ -42,7 +42,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private volatile boolean stopping;
     
     @Setter
-    private OneOffJobBootstrap oneOffJobBootstrap;
+    private volatile OneOffJobBootstrap oneOffJobBootstrap;
     
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     

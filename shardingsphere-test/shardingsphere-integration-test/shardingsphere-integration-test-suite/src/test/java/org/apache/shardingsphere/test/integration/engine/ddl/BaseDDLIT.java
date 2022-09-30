@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
@@ -42,9 +42,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class BaseDDLIT extends SingleITCase {
     
@@ -176,6 +176,8 @@ public abstract class BaseDDLIT extends SingleITCase {
         if ("MySQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
         } else if ("PostgreSQL".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
+            assertThat("Mismatched column type.", actual.getType(), is("int4"));
+        } else if ("openGauss".equals(getDatabaseType().getType()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
             assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));

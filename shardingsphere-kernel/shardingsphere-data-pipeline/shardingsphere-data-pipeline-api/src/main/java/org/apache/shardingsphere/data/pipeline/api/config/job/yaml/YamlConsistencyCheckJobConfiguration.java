@@ -39,7 +39,7 @@ public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJ
     
     private String algorithmTypeName;
     
-    private Properties algorithmProperties;
+    private Properties algorithmProps;
     
     @Override
     public String getTargetDatabaseName() {

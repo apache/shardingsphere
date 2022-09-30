@@ -77,12 +77,11 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitCallArgument(final CallArgumentContext ctx) {
-        if (null != ctx.positionalNotation()) {
-            return visit(ctx.positionalNotation().aExpr());
-        } else {
+        if (null == ctx.positionalNotation()) {
             String text = ctx.namedNotation().start.getInputStream().getText(new Interval(ctx.namedNotation().start.getStartIndex(), ctx.namedNotation().stop.getStopIndex()));
             return new CommonExpressionSegment(ctx.namedNotation().getStart().getStartIndex(), ctx.namedNotation().getStop().getStopIndex(), text);
         }
+        return visit(ctx.positionalNotation().aExpr());
     }
     
     @Override
@@ -94,11 +93,11 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitCopy(final CopyContext ctx) {
         if (null != ctx.copyWithTableOrQuery()) {
             return visit(ctx.copyWithTableOrQuery());
-        } else if (null != ctx.copyWithTableOrQueryBinaryCsv()) {
-            return visit(ctx.copyWithTableOrQueryBinaryCsv());
-        } else {
-            return visit(ctx.copyWithTableBinary());
         }
+        if (null != ctx.copyWithTableOrQueryBinaryCsv()) {
+            return visit(ctx.copyWithTableOrQueryBinaryCsv());
+        }
+        return visit(ctx.copyWithTableBinary());
     }
     
     @Override

@@ -308,10 +308,9 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     
     @Override
     public ASTNode visitAlias(final AliasContext ctx) {
-        if (null != ctx.identifier()) {
-            return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
-        }
-        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()));
+        return null == ctx.identifier()
+                ? new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.STRING_().getText()))
+                : new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     private ASTNode createProjection(final ProjectionContext ctx, final AliasSegment alias) {

@@ -31,6 +31,6 @@ public final class UnsupportedShardingAlgorithmTypeServerException extends Shard
     private static final int ERROR_CODE = 1;
     
     public UnsupportedShardingAlgorithmTypeServerException(final String type) {
-        super(ERROR_CATEGORY, ERROR_CODE, String.format("Can not support type `%s`", type));
+        super(ERROR_CATEGORY, ERROR_CODE, String.format("Can not support type `%s`.", type));
     }
 }

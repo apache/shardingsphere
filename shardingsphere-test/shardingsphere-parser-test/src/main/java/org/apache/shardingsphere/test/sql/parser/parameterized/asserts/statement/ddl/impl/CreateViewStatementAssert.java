@@ -54,21 +54,21 @@ public final class CreateViewStatementAssert {
     }
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
-        if (null != expected.getViewDefinition()) {
+        if (null == expected.getViewDefinition()) {
+            assertNull("actual view definition should not exist", actual.getViewDefinition());
+        } else {
             assertNotNull("actual view definition should exist", actual.getViewDefinition());
             assertThat(assertContext.getText(String.format("`%s`'s view definition assertion error: ", actual.getClass().getSimpleName())), actual.getViewDefinition(),
                     is(expected.getViewDefinition()));
-        } else {
-            assertNull("actual view definition should not exist", actual.getViewDefinition());
         }
     }
     
     private static void assertSelect(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
-        if (null != expected.getSelectStatement()) {
+        if (null == expected.getSelectStatement()) {
+            assertNull("actual select statement should not exist", actual.getSelect());
+        } else {
             assertNotNull("actual select statement should exist", actual.getSelect());
             SelectStatementAssert.assertIs(assertContext, actual.getSelect(), expected.getSelectStatement());
-        } else {
-            assertNull("actual select statement should not exist", actual.getSelect());
         }
     }
 }

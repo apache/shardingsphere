@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFactory;
@@ -42,20 +40,21 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Inventory task.
  */
 @Slf4j
-@ToString(exclude = {"importerExecuteEngine", "channel", "dumper", "importer"})
-public final class InventoryTask extends AbstractLifecycleExecutor implements PipelineTask, AutoCloseable {
+@ToString(exclude = {"inventoryDumperExecuteEngine", "importerExecuteEngine", "channel", "dumper", "importer"})
+public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine importerExecuteEngine;
+    private final ExecuteEngine inventoryDumperExecuteEngine;
+    
+    private final ExecuteEngine inventoryImporterExecuteEngine;
     
     private final PipelineChannel channel;
     
@@ -68,9 +67,11 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
                          final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
-                         final ExecuteEngine importerExecuteEngine, final PipelineJobProgressListener jobProgressListener) {
-        this.importerExecuteEngine = importerExecuteEngine;
+                         final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine inventoryImporterExecuteEngine,
+                         final PipelineJobProgressListener jobProgressListener) {
         taskId = generateTaskId(inventoryDumperConfig);
+        this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
+        this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
         channel = createChannel(pipelineChannelCreator);
         dumper = InventoryDumperCreatorFactory.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getType())
                 .createInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
@@ -83,9 +84,26 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
     }
     
-    @Override
-    protected void doStart() {
-        Future<?> future = importerExecuteEngine.submit(importer, new ExecuteCallback() {
+    /**
+     * Start.
+     *
+     * @return future
+     */
+    public CompletableFuture<?> start() {
+        CompletableFuture<?> dumperFuture = inventoryDumperExecuteEngine.submit(dumper, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+                log.info("dumper onSuccess, taskId={}", taskId);
+            }
+            
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.error("dumper onFailure, taskId={}", taskId);
+                stop();
+            }
+        });
+        CompletableFuture<?> importerFuture = inventoryImporterExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
@@ -98,9 +116,7 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
                 stop();
             }
         });
-        dumper.start();
-        waitForResult(future);
-        log.info("importer future done");
+        return CompletableFuture.allOf(dumperFuture, importerFuture);
     }
     
     private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator) {
@@ -123,17 +139,10 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
         return null;
     }
     
-    private void waitForResult(final Future<?> future) {
-        try {
-            future.get();
-        } catch (final InterruptedException ignored) {
-        } catch (final ExecutionException ex) {
-            throw new PipelineJobExecutionException(taskId, ex.getCause());
-        }
-    }
-    
-    @Override
-    protected void doStop() {
+    /**
+     * Stop.
+     */
+    public void stop() {
         dumper.stop();
         importer.stop();
     }

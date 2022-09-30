@@ -29,14 +29,14 @@ public final class DuplicateRuleException extends RuleDefinitionViolationExcepti
     private static final long serialVersionUID = -1738699538105858939L;
     
     public DuplicateRuleException(final String ruleType, final String databaseName, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate %s rule names `%s` in database `%s`", ruleType, ruleNames, databaseName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate %s rule names `%s` in database `%s`.", ruleType, ruleNames, databaseName));
     }
     
     public DuplicateRuleException(final String ruleType, final Collection<String> ruleNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate %s rule names `%s`", ruleType, ruleNames));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate %s rule names `%s`.", ruleType, ruleNames));
     }
     
     public DuplicateRuleException(final String type, final String databaseName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate `%s` in database `%s`", type, databaseName));
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 105, String.format("Duplicate `%s` in database `%s`.", type, databaseName));
     }
 }

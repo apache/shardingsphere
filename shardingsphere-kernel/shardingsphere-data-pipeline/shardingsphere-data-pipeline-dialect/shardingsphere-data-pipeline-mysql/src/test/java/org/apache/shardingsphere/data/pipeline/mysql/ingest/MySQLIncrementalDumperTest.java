@@ -184,6 +184,6 @@ public final class MySQLIncrementalDumperTest {
     
     @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})
     private void invokeHandleEvent(final AbstractBinlogEvent event) {
-        ReflectionUtil.invokeMethod(incrementalDumper, "handleEvent", new Class[]{String.class, AbstractBinlogEvent.class}, new Object[]{"", event});
+        ReflectionUtil.invokeMethod(incrementalDumper, "handleEvent", new Class[]{AbstractBinlogEvent.class}, new Object[]{event});
     }
 }

@@ -29,6 +29,6 @@ public final class ResourceInUsedException extends ResourceDefinitionViolationEx
     private static final long serialVersionUID = -3427324685070457375L;
     
     public ResourceInUsedException(final String resourceName, final Collection<String> ruleTypes) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Resource `%s` is still used by `%s`", resourceName, ruleTypes);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Resource `%s` is still used by `%s`.", resourceName, ruleTypes);
     }
 }

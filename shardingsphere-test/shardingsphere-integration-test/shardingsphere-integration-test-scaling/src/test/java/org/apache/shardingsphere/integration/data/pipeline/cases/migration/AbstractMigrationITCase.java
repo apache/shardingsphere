@@ -170,7 +170,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
             if (null != checkJobResults && !checkJobResults.isEmpty()) {
                 break;
             }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
+            ThreadUtil.sleep(5, TimeUnit.SECONDS);
         }
         assertTrue(null != checkJobResults && !checkJobResults.isEmpty());
         log.info("check job results: {}", checkJobResults);

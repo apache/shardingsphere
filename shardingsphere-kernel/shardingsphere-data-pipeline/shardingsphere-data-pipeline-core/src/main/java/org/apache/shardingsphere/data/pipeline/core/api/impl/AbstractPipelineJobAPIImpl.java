@@ -152,6 +152,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     }
     
     protected void dropJob(final String jobId) {
+        log.info("Drop job {}", jobId);
         PipelineAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         PipelineAPIFactory.getGovernanceRepositoryAPI().deleteJob(jobId);
     }
@@ -177,11 +178,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         String key = PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem);
         String value = "";
         if (null != error) {
-            if (error instanceof Throwable) {
-                value = ExceptionUtils.getStackTrace((Throwable) error);
-            } else {
-                value = error.toString();
-            }
+            value = error instanceof Throwable ? ExceptionUtils.getStackTrace((Throwable) error) : error.toString();
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persist(key, value);
     }

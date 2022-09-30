@@ -28,6 +28,6 @@ public final class PrepareJobWithInvalidSourceDataSourceException extends Pipeli
     private static final long serialVersionUID = -7710035889344958565L;
     
     public PrepareJobWithInvalidSourceDataSourceException(final String dataSourceKey, final String toBeCheckedValue, final String actualValue) {
-        super(XOpenSQLState.GENERAL_ERROR, 87, "Source data source required `%s = %s`, now is `%s`", dataSourceKey, toBeCheckedValue, actualValue);
+        super(XOpenSQLState.GENERAL_ERROR, 87, "Source data source required `%s = %s`, now is `%s`.", dataSourceKey, toBeCheckedValue, actualValue);
     }
 }

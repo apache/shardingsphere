@@ -28,6 +28,6 @@ public final class InvalidValueException extends DataSQLException {
     private static final long serialVersionUID = 1840341880422454371L;
     
     public InvalidValueException(final String value) {
-        super(XOpenSQLState.INVALID_DATA_TYPE, 0, "Invalid value `%s`", value);
+        super(XOpenSQLState.INVALID_DATA_TYPE, 0, "Invalid value `%s`.", value);
     }
 }

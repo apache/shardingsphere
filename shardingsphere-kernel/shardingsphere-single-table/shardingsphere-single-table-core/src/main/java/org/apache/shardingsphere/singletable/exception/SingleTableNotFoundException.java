@@ -28,6 +28,6 @@ public final class SingleTableNotFoundException extends MetaDataSQLException {
     private static final long serialVersionUID = 3498790429190415298L;
     
     public SingleTableNotFoundException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 21, "Single table `%s` does not exist", tableName);
+        super(XOpenSQLState.NOT_FOUND, 21, "Single table `%s` does not exist.", tableName);
     }
 }

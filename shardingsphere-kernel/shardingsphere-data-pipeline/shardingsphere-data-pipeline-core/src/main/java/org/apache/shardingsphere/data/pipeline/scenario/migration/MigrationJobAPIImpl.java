@@ -255,9 +255,25 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     @Override
     public void rollback(final String jobId) throws SQLException {
         log.info("Rollback job {}", jobId);
+        final long startTimeMillis = System.currentTimeMillis();
+        dropCheckJobs(jobId);
         stop(jobId);
         cleanTempTableOnRollback(jobId);
         dropJob(jobId);
+        log.info("Rollback cost {} ms", System.currentTimeMillis() - startTimeMillis);
+    }
+    
+    private void dropCheckJobs(final String jobId) {
+        Collection<String> checkJobIds = PipelineAPIFactory.getGovernanceRepositoryAPI().listCheckJobIds(jobId);
+        if (checkJobIds.isEmpty()) {
+            return;
+        }
+        log.info("dropCheckJobs start...");
+        long startTimeMillis = System.currentTimeMillis();
+        for (String each : checkJobIds) {
+            dropJob(each);
+        }
+        log.info("dropCheckJobs cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
@@ -281,8 +297,11 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     public void commit(final String jobId) {
         checkModeConfig();
         log.info("Commit job {}", jobId);
+        final long startTimeMillis = System.currentTimeMillis();
+        dropCheckJobs(jobId);
         stop(jobId);
         dropJob(jobId);
+        log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     @Override

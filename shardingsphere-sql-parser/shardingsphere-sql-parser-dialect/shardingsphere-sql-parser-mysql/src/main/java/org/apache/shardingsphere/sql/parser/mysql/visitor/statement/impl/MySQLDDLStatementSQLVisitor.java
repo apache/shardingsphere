@@ -415,12 +415,12 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(), (IdentifierValue) visit(ctx.columnInternalRef));
-        ModifyColumnDefinitionSegment modifyColumnDefinition = new ModifyColumnDefinitionSegment(
+        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), generateColumnDefinitionSegment(column, ctx.fieldDefinition()));
         if (null != ctx.place()) {
-            modifyColumnDefinition.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
+            result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
-        return modifyColumnDefinition;
+        return result;
     }
     
     private ChangeColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
@@ -526,7 +526,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.columnName()) {
             columnName = (ColumnSegment) visit(ctx.columnName());
         }
-        return null == ctx.columnName() ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
+        return null == ctx.columnName()
+                ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
                 : new ColumnAfterPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName);
     }
     
@@ -615,12 +616,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitRoutineBody(final RoutineBodyContext ctx) {
         RoutineBodySegment result = new RoutineBodySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        CollectionValue<ValidStatementSegment> validStatements;
-        if (null != ctx.simpleStatement()) {
-            validStatements = (CollectionValue<ValidStatementSegment>) visit(ctx.simpleStatement());
-        } else {
-            validStatements = (CollectionValue<ValidStatementSegment>) visit(ctx.compoundStatement());
-        }
+        CollectionValue<ValidStatementSegment> validStatements = null == ctx.simpleStatement()
+                ? (CollectionValue<ValidStatementSegment>) visit(ctx.compoundStatement())
+                : (CollectionValue<ValidStatementSegment>) visit(ctx.simpleStatement());
         result.getValidStatements().addAll(validStatements.getValue());
         return result;
     }

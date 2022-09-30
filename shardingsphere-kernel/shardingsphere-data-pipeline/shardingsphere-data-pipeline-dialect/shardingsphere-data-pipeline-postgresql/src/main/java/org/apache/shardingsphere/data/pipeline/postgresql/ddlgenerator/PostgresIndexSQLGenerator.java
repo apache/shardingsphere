@@ -121,19 +121,19 @@ public final class PostgresIndexSQLGenerator extends AbstractPostgresDDLAdapter 
     }
     
     private boolean isSortOrder(final Map<String, Object> columnDetail) throws SQLException {
-        if (null != columnDetail.get("options")) {
-            String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
-            return options.length > 0 && "DESC".equals(options[0]);
+        if (null == columnDetail.get("options")) {
+            return false;
         }
-        return false;
+        String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
+        return options.length > 0 && "DESC".equals(options[0]);
     }
     
     private Object isNulls(final Map<String, Object> columnDetail) throws SQLException {
-        if (null != columnDetail.get("options")) {
-            String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
-            return options.length > 1 && options[1].split(" ").length > 1 && "FIRST".equals(options[1].split(" ")[1]);
+        if (null == columnDetail.get("options")) {
+            return false;
         }
-        return false;
+        String[] options = (String[]) ((PgArray) columnDetail.get("options")).getArray();
+        return options.length > 1 && options[1].split(" ").length > 1 && "FIRST".equals(options[1].split(" ")[1]);
     }
     
     private Collection<Map<String, Object>> fetchColumnDetails(final Long indexId) {

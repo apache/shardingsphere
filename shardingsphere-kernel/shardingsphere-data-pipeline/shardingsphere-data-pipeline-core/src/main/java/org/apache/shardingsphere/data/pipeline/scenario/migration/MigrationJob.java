@@ -76,9 +76,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         }
         log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
         PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-        // TODO inventory and incremental tasks are always empty on construction
-        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks(),
-                jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
+        InventoryIncrementalTasksRunner tasksRunner = new InventoryIncrementalTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
         runInBackground(() -> {
             prepare(jobItemContext);
             tasksRunner.start();
@@ -90,7 +88,9 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
         try {
+            long startTimeMillis = System.currentTimeMillis();
             jobPreparer.prepare(jobItemContext);
+            log.info("prepare cost {} ms", System.currentTimeMillis() - startTimeMillis);
             // CHECKSTYLE:OFF
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -115,17 +115,18 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         if (null != getOneOffJobBootstrap()) {
             getOneOffJobBootstrap().shutdown();
         }
-        if (null == getJobId()) {
+        String jobId = getJobId();
+        if (null == jobId) {
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop tasks runner, jobId={}", getJobId());
-        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
+        log.info("stop tasks runner, jobId={}", jobId);
+        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
             pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
         getTasksRunnerMap().clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
 }

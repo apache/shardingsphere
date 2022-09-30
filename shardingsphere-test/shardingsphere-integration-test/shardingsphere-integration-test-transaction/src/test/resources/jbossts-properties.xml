@@ -34,9 +34,9 @@
         com.arjuna.ats.internal.arjuna.recovery.ExpiredTransactionStatusManagerScanner
     </entry>
     <entry key="RecoveryEnvironmentBean.recoveryPort">4712</entry>
-    <entry key="RecoveryEnvironmentBean.recoveryAddress"></entry>
+    <entry key="RecoveryEnvironmentBean.recoveryAddress"/>
     <entry key="RecoveryEnvironmentBean.transactionStatusManagerPort">0</entry>
-    <entry key="RecoveryEnvironmentBean.transactionStatusManagerAddress"></entry>
+    <entry key="RecoveryEnvironmentBean.transactionStatusManagerAddress"/>
     <entry key="RecoveryEnvironmentBean.recoveryListener">NO</entry>
     <entry key="RecoveryEnvironmentBean.recoveryBackoffPeriod">1</entry>
 </properties>

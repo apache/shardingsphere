@@ -29,6 +29,6 @@ public final class PipelineUnexpectedDataRecordOrderException extends PipelineSQ
     private static final long serialVersionUID = 6023695604738387750L;
     
     public PipelineUnexpectedDataRecordOrderException(final DataRecord beforeDataRecord, final DataRecord afterDataRecord) {
-        super(XOpenSQLState.GENERAL_ERROR, 50, "Before data record is `%s`, after data record is `%s`", beforeDataRecord, afterDataRecord);
+        super(XOpenSQLState.GENERAL_ERROR, 50, "Before data record is `%s`, after data record is `%s`.", beforeDataRecord, afterDataRecord);
     }
 }

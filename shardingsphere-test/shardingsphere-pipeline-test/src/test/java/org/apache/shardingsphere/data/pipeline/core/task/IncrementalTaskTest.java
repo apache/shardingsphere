@@ -31,6 +31,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,13 +55,13 @@ public final class IncrementalTaskTest {
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelCreator(),
-                new DefaultPipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
+                PipelineContextUtil.getPipelineChannelCreator(), new DefaultPipelineDataSourceManager(), metaDataLoader,
+                PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
     }
     
     @Test
-    public void assertStart() {
-        incrementalTask.start();
+    public void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
+        incrementalTask.start().get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("standard_0"));
         assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(PlaceholderPosition.class));
     }

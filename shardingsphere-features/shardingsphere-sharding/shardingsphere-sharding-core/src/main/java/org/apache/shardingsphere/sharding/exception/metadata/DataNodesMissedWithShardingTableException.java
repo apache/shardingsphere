@@ -28,6 +28,6 @@ public final class DataNodesMissedWithShardingTableException extends ShardingSQL
     private static final long serialVersionUID = 1691113459377955727L;
     
     public DataNodesMissedWithShardingTableException(final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Data nodes must be configured for sharding table `%s`", tableName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Data nodes must be configured for sharding table `%s`.", tableName);
     }
 }

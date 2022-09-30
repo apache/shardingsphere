@@ -191,12 +191,9 @@ public final class ShardingRouteEngineFactory {
     private static ShardingRouteEngine getDCLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext) {
         if (isDCLForSingleTable(sqlStatementContext)) {
             Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
-            return !shardingRuleTableNames.isEmpty()
-                    ? new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames)
-                    : new ShardingIgnoreRoutingEngine();
-        } else {
-            return new ShardingInstanceBroadcastRoutingEngine(database.getResource());
+            return shardingRuleTableNames.isEmpty() ? new ShardingIgnoreRoutingEngine() : new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
         }
+        return new ShardingInstanceBroadcastRoutingEngine(database.getResource());
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext<?> sqlStatementContext) {

@@ -89,10 +89,9 @@ public final class PipelineContextUtil {
     }
     
     private static void mockModeConfig() {
-        if (null != PipelineContext.getModeConfig()) {
-            return;
+        if (null == PipelineContext.getModeConfig()) {
+            PipelineContext.initModeConfig(createModeConfig());
         }
-        PipelineContext.initModeConfig(createModeConfig());
     }
     
     private static ModeConfiguration createModeConfig() {

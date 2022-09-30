@@ -42,11 +42,11 @@ public final class RollbackStatementAssert {
      * @param expected expected rollback statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackStatement actual, final RollbackStatementTestCase expected) {
-        if (null != expected.getSavepointName()) {
+        if (null == expected.getSavepointName()) {
+            assertFalse(assertContext.getText("Actual savepoint name should not exist."), actual.getSavepointName().isPresent());
+        } else {
             assertTrue(assertContext.getText("Actual savepoint name should exist."), actual.getSavepointName().isPresent());
             assertThat(assertContext.getText("Savepoint name assertion error."), actual.getSavepointName().get(), is(expected.getSavepointName()));
-        } else {
-            assertFalse(assertContext.getText("Actual savepoint name should not exist."), actual.getSavepointName().isPresent());
         }
     }
 }

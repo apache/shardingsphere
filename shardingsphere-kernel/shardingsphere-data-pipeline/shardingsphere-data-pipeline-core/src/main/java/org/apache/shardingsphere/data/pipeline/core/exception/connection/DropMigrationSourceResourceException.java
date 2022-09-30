@@ -30,6 +30,6 @@ public final class DropMigrationSourceResourceException extends PipelineSQLExcep
     private static final long serialVersionUID = -7133815271017274299L;
     
     public DropMigrationSourceResourceException(final Collection<String> resourceNames) {
-        super(XOpenSQLState.NOT_FOUND, 31, "Resource names `%s` do not exist", resourceNames);
+        super(XOpenSQLState.NOT_FOUND, 31, "Resource names `%s` do not exist.", resourceNames);
     }
 }
