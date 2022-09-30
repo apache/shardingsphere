@@ -22,11 +22,15 @@ import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSp
 /**
  * Data source state exception.
  */
-public final class DataSourceStateException extends ShardingSphereServerException {
+public final class UnavailableDataSourceException extends ShardingSphereServerException {
     
     private static final long serialVersionUID = -8058761885303180333L;
     
-    public DataSourceStateException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
-        super(errorCategory, errorCode, message, cause);
+    private static final String ERROR_CATEGORY = "DATA-SOURCE";
+    
+    private static final int ERROR_CODE = 1;
+    
+    public UnavailableDataSourceException() {
+        super(ERROR_CATEGORY, ERROR_CODE, "Data source unavailable.");
     }
 }

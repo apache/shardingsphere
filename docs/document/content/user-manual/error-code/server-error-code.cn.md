@@ -9,6 +9,7 @@ chapter = true
 | 错误码                 | 错误信息 |
 | --------------------- | ------ |
 | SPI-00001             | No implementation class load from SPI \`%s\` with type \`%s\` |
+| DATA-SOURCE-00001     | Data source unavailable. |
 | PROPS-00001           | Value \`%s\` of \`%s\` cannot convert to type \`%s\` |
 | PROXY-00001           | Load database server info failed |
 | SPRING-00001          | Can not find JNDI data source |
