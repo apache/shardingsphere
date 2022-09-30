@@ -116,6 +116,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 18093       | Can not poll event because of binlog sync channel already closed. |
 | HY000     | 18094       | Task \`%s\` execute failed. |
 | HY000     | 18095       | Job has already finished, please run \`CHECK MIGRATION %s\` to start a new data consistency check job. |
+| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists. |
 
 ### DistSQL
 
