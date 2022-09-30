@@ -1,0 +1,395 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+databaseName: dbtbl_with_readwrite_splitting_and_encrypt
+
+dataSources:
+  encrypt_write_ds_0:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_0
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_1:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_1
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_2:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_2
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_3:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_3
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_4:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_4
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_5:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_5
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_6:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_6
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_7:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_7
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_8:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_8
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_write_ds_9:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_write_ds_9
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_0:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_0
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_1:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_1
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_2:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_2
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_3:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_3
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_4:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_4
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_5:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_5
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_6:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_6
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_7:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_7
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_8:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_8
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds_9:
+    url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting_and_encrypt.host:5432/encrypt_read_ds_9
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+
+rules:
+- !SHARDING
+  tables:
+    t_user_item:
+      actualDataNodes: readwrite_ds_${0..9}.t_user_item_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithmName: it_standard_fixture
+      keyGenerateStrategy:
+        column: item_id
+        keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
+    t_user:
+      actualDataNodes: readwrite_ds_${0..9}.t_user_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: address_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
+    t_user_details:
+      actualDataNodes: readwrite_ds_${0..9}.t_user_details_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: address_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+    t_order_item_federate_sharding:
+      actualDataNodes: readwrite_ds_1.t_order_item_federate_sharding_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithmName: table_inline_item_id
+    t_order_federate_sharding:
+      actualDataNodes: readwrite_ds_1.t_order_federate_sharding_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id_sharding
+          shardingAlgorithmName: table_inline_order_id
+    t_user_encrypt_federate_sharding:
+      actualDataNodes: readwrite_ds_1.t_user_encrypt_federate_sharding_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: table_inline_user_id
+  bindingTables:
+    - t_user,t_user_item,t_user_details
+
+  shardingAlgorithms:
+    it_standard_fixture:
+      type: IT.STANDARD.FIXTURE
+    table_inline_item_id:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_federate_sharding_${item_id % 2}
+    table_inline_order_id:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_federate_sharding_${order_id_sharding % 2}
+    table_inline_user_id:
+      type: INLINE
+      props:
+        algorithm-expression: t_user_encrypt_federate_sharding_${user_id % 2}
+        allow-range-query-with-inline-sharding: true
+
+  keyGenerators:
+    constant:
+      type: IT.FIXTURE
+
+  auditors:
+    auditor_constant:
+      type: IT.AUDITOR.FIXTURE
+
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds_0:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_0
+        readDataSourceNames:
+          - encrypt_read_ds_0
+      loadBalancerName: roundRobin
+    readwrite_ds_1:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_1
+        readDataSourceNames:
+          - encrypt_read_ds_1
+      loadBalancerName: roundRobin
+    readwrite_ds_2:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_2
+        readDataSourceNames:
+          - encrypt_read_ds_2
+      loadBalancerName: roundRobin
+    readwrite_ds_3:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_3
+        readDataSourceNames:
+          - encrypt_read_ds_3
+      loadBalancerName: roundRobin
+    readwrite_ds_4:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_4
+        readDataSourceNames:
+          - encrypt_read_ds_4
+      loadBalancerName: roundRobin
+    readwrite_ds_5:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_5
+        readDataSourceNames:
+          - encrypt_read_ds_5
+      loadBalancerName: roundRobin
+    readwrite_ds_6:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_6
+        readDataSourceNames:
+          - encrypt_read_ds_6
+      loadBalancerName: roundRobin
+    readwrite_ds_7:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_7
+        readDataSourceNames:
+          - encrypt_read_ds_7
+      loadBalancerName: roundRobin
+    readwrite_ds_8:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_8
+        readDataSourceNames:
+          - encrypt_read_ds_8
+      loadBalancerName: roundRobin
+    readwrite_ds_9:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_9
+        readDataSourceNames:
+          - encrypt_read_ds_9
+      loadBalancerName: roundRobin
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN
+
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+  tables:
+    t_user:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
+    t_user_details:
+      columns:
+        number:
+          plainColumn: number_plain
+          cipherColumn: number_cipher
+          encryptorName: aes_encryptor
+        number_new:
+          plainColumn: number_new_plain
+          cipherColumn: number_new_cipher
+          encryptorName: aes_encryptor
+    t_user_encrypt_federate:
+      columns:
+        pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptorName: aes_encryptor
+    t_user_encrypt_federate_sharding:
+      columns:
+        pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptorName: aes_encryptor
