@@ -91,17 +91,17 @@ public final class MetaDataPersistServiceTest {
     }
     
     @Test
-    public void assertPersistConfigurations() {
+    public void assertConditionalPersistConfigurations() {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         Collection<RuleConfiguration> ruleConfigs = createRuleConfigurations();
         Collection<RuleConfiguration> globalRuleConfigs = createGlobalRuleConfigurations();
         Properties props = createProperties();
         metaDataPersistService.persistConfigurations(
                 Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
-        verify(dataSourceService).persist("foo_db", createDataSourcePropertiesMap(dataSourceMap), false);
-        verify(databaseRulePersistService).persist("foo_db", ruleConfigs, false);
-        verify(globalRuleService).persist(globalRuleConfigs);
-        verify(propsService).persist(props);
+        verify(dataSourceService).conditionalPersist("foo_db", createDataSourcePropertiesMap(dataSourceMap));
+        verify(databaseRulePersistService).conditionalPersist("foo_db", ruleConfigs);
+        verify(globalRuleService).conditionalPersist(globalRuleConfigs);
+        verify(propsService).conditionalPersist(props);
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {

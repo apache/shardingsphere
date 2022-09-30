@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
+    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
     
     private final LockContext lockContext = mock(LockContext.class);
     
@@ -126,7 +126,7 @@ public final class InstanceContextTest {
                 lockContext, eventBusContext, mock(ScheduleContext.class));
         assertFalse(context.isCluster());
         InstanceContext clusterContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
-                new ModeConfiguration("Cluster", null, false), lockContext, eventBusContext, mock(ScheduleContext.class));
+                new ModeConfiguration("Cluster", null), lockContext, eventBusContext, mock(ScheduleContext.class));
         assertTrue(clusterContext.isCluster());
     }
 }

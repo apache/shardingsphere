@@ -68,7 +68,7 @@ public final class GlobalRulesBuilderTest {
     
     private InstanceContext buildInstanceContext() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData(UUID.randomUUID().toString()));
-        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
+        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
         return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfig, mock(LockContext.class), new EventBusContext(), mock(ScheduleContext.class));
     }
     
