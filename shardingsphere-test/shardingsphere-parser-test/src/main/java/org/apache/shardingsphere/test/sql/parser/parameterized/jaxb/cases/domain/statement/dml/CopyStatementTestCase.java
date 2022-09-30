@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumns;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.query.ExpectedPrepareStatementQuery;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
@@ -29,14 +30,15 @@ import javax.xml.bind.annotation.XmlElement;
  * Copy statement test case.
  */
 @Getter
+@Setter
 public final class CopyStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedSimpleTable table;
     
-    @XmlElement(name = "columns")
+    @XmlElement
     private ExpectedColumns columns;
     
-    @XmlElement(name = "query")
+    @XmlElement
     private ExpectedPrepareStatementQuery query;
 }

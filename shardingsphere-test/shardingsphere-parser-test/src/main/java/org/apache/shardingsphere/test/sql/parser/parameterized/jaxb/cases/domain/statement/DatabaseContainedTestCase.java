@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Count database discovery rule statement test case.
+ * Database contained test case.
  */
-public final class CountDatabaseDiscoveryRuleStatementTestCase extends DatabaseContainedTestCase {
+@Getter
+@Setter
+public abstract class DatabaseContainedTestCase extends SQLParserTestCase {
+    
+    @XmlElement
+    private ExpectedDatabase database;
 }

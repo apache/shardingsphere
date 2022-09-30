@@ -31,6 +31,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class CreateDefaultShardingStrategyStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "strategy")
+    @XmlElement
     private ExpectedDefaultShardingStrategy strategy;
 }
