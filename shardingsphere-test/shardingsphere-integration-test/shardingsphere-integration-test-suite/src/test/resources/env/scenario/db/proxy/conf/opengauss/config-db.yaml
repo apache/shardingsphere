@@ -19,7 +19,7 @@ databaseName: db
 
 dataSources:
   ds_0:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_0&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_0
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_1:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_1&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_1
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -37,7 +37,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_2:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_2&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_2
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -46,7 +46,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_3:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_3&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_3
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -55,7 +55,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_4:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_4&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_4
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -64,7 +64,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_5:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_5&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_5
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -73,7 +73,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_6:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_6&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_6
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -82,7 +82,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_7:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_7&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_7
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -91,7 +91,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_8:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_8&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -100,7 +100,7 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
   ds_9:
-    url: jdbc:opengauss://opengauss.db.host:5432/db_9&batchMode=OFF
+    url: jdbc:opengauss://opengauss.db.host:5432/db_9
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
