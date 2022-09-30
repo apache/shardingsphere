@@ -134,7 +134,14 @@
         <#assign ruleRefs += ", " />
     </#if>
 </#list>
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1, ds_2" rule-refs="${ruleRefs}">
+    <#assign datasourceStr="ds_0">
+    <#if feature!="encrypt">
+        <#assign datasourceStr += ",ds_1" />
+        <#if feature!="shadow">
+            <#assign datasourceStr += ",ds_2" />
+        </#if>
+    </#if>
+    <shardingsphere:data-source id="dataSource" data-source-names="${datasourceStr}" rule-refs="${ruleRefs}">
         <#if mode?contains("cluster")>
             <#include "../mode/spring-namespace/cluster.ftl" />
         <#elseif mode?contains("standalone")>

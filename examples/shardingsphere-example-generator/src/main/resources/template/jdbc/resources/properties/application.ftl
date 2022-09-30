@@ -30,7 +30,14 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
 spring.jpa.properties.hibernate.show_sql=false
 </#if>
 
-spring.shardingsphere.datasource.names=ds-0,ds-1,ds-2
+<#assign datasourceStr="ds-0">
+<#if feature!="encrypt">
+    <#assign datasourceStr += ",ds-1" />
+    <#if feature!="shadow">
+        <#assign datasourceStr += ",ds-2" />
+    </#if>
+</#if>
+spring.shardingsphere.datasource.names=${datasourceStr}
 
 spring.shardingsphere.datasource.ds-0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds-0.driver-class-name=com.mysql.cj.jdbc.Driver
