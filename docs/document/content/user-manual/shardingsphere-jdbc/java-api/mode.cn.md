@@ -46,7 +46,8 @@ chapter = true
 ## 注意事项
 
 1. 生产环境建议使用集群模式部署。
-2. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+1. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+1. `ZooKeeper` 存在配置信息时，则以 `ZooKeeper` 中的配置为准。
 
 ## 操作步骤
 

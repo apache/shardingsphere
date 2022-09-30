@@ -37,7 +37,8 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/mode-reposit
 ## Tips:
 
 1. For production environments, it is recommended to use cluster mode deployment.
-1. For cluster mode deployment, it is recommended to use `ZooKeeper` registry. 
+1. The `ZooKeeper` registry center is recommended for cluster mode deployment.
+1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
 
 ## Operating Procedures
 
