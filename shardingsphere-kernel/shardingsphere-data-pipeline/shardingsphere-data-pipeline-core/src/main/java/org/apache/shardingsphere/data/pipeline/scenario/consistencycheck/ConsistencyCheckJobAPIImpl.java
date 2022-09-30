@@ -78,7 +78,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
                 throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
             }
         }
-        int sequence = checkLatestJobId.map(s -> ConsistencyCheckJobId.parseSequence(s) + 1).orElse(ConsistencyCheckJobId.MIN_SEQUENCE);
+        int sequence = checkLatestJobId.map(optional -> ConsistencyCheckJobId.parseSequence(optional) + 1).orElse(ConsistencyCheckJobId.MIN_SEQUENCE);
         String result = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
         repositoryAPI.persistCheckLatestJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
@@ -88,8 +88,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         yamlConfig.setParentJobId(parentJobId);
         yamlConfig.setAlgorithmTypeName(parameter.getAlgorithmTypeName());
         yamlConfig.setAlgorithmProps(parameter.getAlgorithmProps());
-        ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig);
-        start(jobConfig);
+        start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
         return result;
     }
     
