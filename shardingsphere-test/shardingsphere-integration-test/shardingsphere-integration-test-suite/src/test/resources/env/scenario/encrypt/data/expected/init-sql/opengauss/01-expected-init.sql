@@ -15,18 +15,20 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE rdl_ds_0;
-CREATE DATABASE rdl_ds_1;
-CREATE DATABASE rdl_ds_2;
+DROP DATABASE IF EXISTS expected_dataset;
+CREATE DATABASE expected_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE rdl_ds_0 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE rdl_ds_1 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE rdl_ds_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE expected_dataset TO test_user;
 
-\c rdl_ds_0
+\c expected_dataset;
 
-DROP TABLE IF EXISTS t_user_0;
-DROP TABLE IF EXISTS t_user_1;
+DROP TABLE IF EXISTS t_user;
+DROP TABLE IF EXISTS t_user_item;
+DROP TABLE IF EXISTS t_single_table;
 
-CREATE TABLE t_user_0 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
-CREATE TABLE t_user_1 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
+CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
+
+
+CREATE INDEX user_index_t_user ON t_user (user_id);
