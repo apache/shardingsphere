@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
+import java.util.Arrays;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
@@ -31,6 +32,8 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,16 +44,28 @@ public final class SQLParserRuleQueryResultSetTest {
         ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData();
         SQLParserRuleQueryResultSet resultSet = new SQLParserRuleQueryResultSet();
         resultSet.init(ruleMetaData, mock(ShowSQLParserRuleStatement.class));
+        assertTrue(resultSet.next());
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(3));
         Iterator<Object> rowData = actual.iterator();
         assertThat(rowData.next(), is(Boolean.TRUE.toString()));
         String parseTreeCache = (String) rowData.next();
+        assertFalse(resultSet.next());
         assertThat(parseTreeCache, containsString("initialCapacity: 128"));
         assertThat(parseTreeCache, containsString("maximumSize: 1024"));
         String sqlStatementCache = (String) rowData.next();
         assertThat(sqlStatementCache, containsString("initialCapacity: 2000"));
         assertThat(sqlStatementCache, containsString("maximumSize: 65535"));
+    }
+    
+    @Test
+    public void assertGetColumnNames() {
+        assertThat(new SQLParserRuleQueryResultSet().getColumnNames(), is(Arrays.asList("sql_comment_parse_enable", "parse_tree_cache", "sql_statement_cache")));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(new SQLParserRuleQueryResultSet().getType(), is(ShowSQLParserRuleStatement.class.getName()));
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
