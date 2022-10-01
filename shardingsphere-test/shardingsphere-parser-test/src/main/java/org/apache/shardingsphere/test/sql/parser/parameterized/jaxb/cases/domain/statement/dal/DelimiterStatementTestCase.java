@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class DelimiterStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
+    @XmlAttribute(name = "delimiter-name")
     private String delimiterName;
 }

@@ -91,8 +91,8 @@
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-table-rule>
@@ -100,8 +100,8 @@
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline"></table-strategy>
-            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline"></database-strategy>
+            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
+            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline" />
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-table-rule>
@@ -252,7 +252,7 @@
             </table-rule>
         </rule>
     </alter-shadow-rule>
-
+    
     <alter-shadow-algorithm sql-case-id="alter-shadow-algorithm">
         <shadow-algorithm algorithm-id="simple_hint_algorithm">
             <algorithm algorithm-name="SIMPLE_HINT">
@@ -263,7 +263,7 @@
             </algorithm>
         </shadow-algorithm>
     </alter-shadow-algorithm>
-
+    
     <alter-sharding-algorithm sql-case-id="alter-sharding-algorithm">
         <shardingAlgorithm sharding-algorithm-name="algorithm_name">
             <algorithm algorithm-name="inline">
@@ -273,26 +273,26 @@
             </algorithm>
         </shardingAlgorithm>
     </alter-sharding-algorithm>
-
+    
     <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator">
-        <shardingKeyGenerator key-generator-name="uuid_key_generator">
+        <sharding-key-generator key-generator-name="uuid_key_generator">
             <algorithm algorithm-name="uuid" />
-        </shardingKeyGenerator>
+        </sharding-key-generator>
     </alter-sharding-key-generator>
-
+    
     <alter-sharding-auditor sql-case-id="alter-sharding-auditor">
-        <shardingAuditor auditor-name="sharding_key_required_auditor">
+        <sharding-auditor auditor-name="sharding_key_required_auditor">
             <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
-        </shardingAuditor>
+        </sharding-auditor>
     </alter-sharding-auditor>
-
+    
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </alter-default-sharding-strategy>
-
+    
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy-complex">
         <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
         </strategy>
