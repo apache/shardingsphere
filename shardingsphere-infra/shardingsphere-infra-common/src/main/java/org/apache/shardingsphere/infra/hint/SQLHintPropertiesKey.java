@@ -46,7 +46,17 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Hint disable audit names.
      */
-    DISABLE_AUDIT_NAMES_KEY("DISABLE_AUDIT_NAMES", "", String.class);
+    DISABLE_AUDIT_NAMES_KEY("DISABLE_AUDIT_NAMES", "", String.class),
+    
+    /**
+     * Hint sharding database value.
+     */
+    SHARDING_DATABASE_VALUE_KEY("SHARDING_DATABASE_VALUE", "0", int.class),
+    
+    /**
+     * Hint sharding table value.
+     */
+    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "0", int.class);
     
     private final String key;
     

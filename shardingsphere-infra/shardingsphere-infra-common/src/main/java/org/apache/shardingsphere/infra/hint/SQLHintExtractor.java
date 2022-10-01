@@ -75,4 +75,48 @@ public final class SQLHintExtractor {
     public Collection<String> findDisableAuditNames() {
         return SQLHintUtils.getSplitterSQLHintValue(sqlHintProperties.getValue(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY));
     }
+    
+    /**
+     * Get hint sharding database value.
+     *
+     * @return sharding database value
+     */
+    public int getHintShardingDatabaseValue() {
+        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
+    }
+    
+    /**
+     * Get hint sharding database value.
+     *
+     * @param tableName table name
+     * @return sharding database value
+     */
+    public int getHintShardingDatabaseValue(final String tableName) {
+        String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key)
+                ? Integer.parseInt(sqlHintProperties.getProps().getProperty(key))
+                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
+    }
+    
+    /**
+     * Get hint sharding table value.
+     *
+     * @return sharding table value
+     */
+    public int getHintShardingTableValue() {
+        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+    }
+    
+    /**
+     * Get hint sharding table value.
+     *
+     * @param tableName table name
+     * @return sharding table value
+     */
+    public int getHintShardingTableValue(final String tableName) {
+        String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key)
+                ? Integer.parseInt(sqlHintProperties.getProps().getProperty(key))
+                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+    }
 }
