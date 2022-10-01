@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.hint;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -93,11 +92,10 @@ public final class SQLHintExtractor {
      * @return sharding database value
      */
     public int getHintShardingDatabaseValue(final String tableName) {
-        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
-        if (sqlHintProperties.getProps().containsKey(key)) {
-            return Integer.valueOf(sqlHintProperties.getProps().getProperty(key));
-        }
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
+        String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key)
+                ? Integer.parseInt(sqlHintProperties.getProps().getProperty(key))
+                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
     }
     
     /**
@@ -116,10 +114,9 @@ public final class SQLHintExtractor {
      * @return sharding table value
      */
     public int getHintShardingTableValue(final String tableName) {
-        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
-        if (sqlHintProperties.getProps().containsKey(key)) {
-            return Integer.valueOf(sqlHintProperties.getProps().getProperty(key));
-        }
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+        String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key)
+                ? Integer.parseInt(sqlHintProperties.getProps().getProperty(key))
+                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
     }
 }

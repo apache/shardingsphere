@@ -60,31 +60,27 @@ public final class SQLHintExtractorTest {
     public void assertSQLHintShardingDatabaseValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=100 */", 0, 0)));
-        int actual = new SQLHintExtractor(statement).getHintShardingDatabaseValue();
-        assertThat(actual, is(100));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue(), is(100));
     }
     
     @Test
     public void assertSQLHintShardingDatabaseValueWithTableName() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=10 */", 0, 0)));
-        int actual = new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order");
-        assertThat(actual, is(10));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(10));
     }
     
     @Test
     public void assertSQLHintShardingTableValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=100 */", 0, 0)));
-        int actual = new SQLHintExtractor(statement).getHintShardingTableValue();
-        assertThat(actual, is(100));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue(), is(100));
     }
     
     @Test
     public void assertSQLHintShardingTableValueWithTableName() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=10 */", 0, 0)));
-        int actual = new SQLHintExtractor(statement).getHintShardingTableValue("t_order");
-        assertThat(actual, is(10));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(10));
     }
 }
