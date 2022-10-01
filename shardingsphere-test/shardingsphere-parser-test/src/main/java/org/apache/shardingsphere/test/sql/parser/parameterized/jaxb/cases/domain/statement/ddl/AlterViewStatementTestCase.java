@@ -36,7 +36,7 @@ public final class AlterViewStatementTestCase extends SQLParserTestCase {
     @XmlAttribute(name = "view-definition")
     private String viewDefinition;
     
-    @XmlElement(name = "view")
+    @XmlElement
     private ExpectedSimpleTable view;
     
     @XmlElement(name = "rename-view")

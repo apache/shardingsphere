@@ -24,7 +24,7 @@
     
     <encrypt:rule id="encryptRule">
         <encrypt:table name="t_order">
-            <encrypt:column logic-column="status" cipher-column="status" assisted-query-column="assisted_query_status" encrypt-algorithm-ref="string_encryptor" />
+            <encrypt:column logic-column="status" cipher-column="status" assisted-query-column="assisted_query_status" encrypt-algorithm-ref="string_encryptor" assisted-query-encrypt-algorithm-ref="string_encryptor" />
         </encrypt:table>
         <encrypt:table name="t_order_item">
             <encrypt:column logic-column="phone" cipher-column="phone" plain-column="phone_plain" encrypt-algorithm-ref="phone_encryptor" />

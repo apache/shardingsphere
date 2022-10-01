@@ -36,7 +36,7 @@ public final class TableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "simple-table")
     private ExpectedSimpleTable simpleTable;
     
-    @XmlElement(name = "column")
+    @XmlElement
     private ExpectedColumn column;
     
     @XmlElement(name = "limit")

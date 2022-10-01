@@ -19,18 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
  * Count single table rule statement test case.
  */
 @Getter
 @Setter
-public final class CountSingleTableRuleStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedDatabase database;
+public final class CountSingleTableRuleStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -32,7 +32,7 @@ import java.util.Collection;
 @Setter
 public final class LabelInstanceStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "overwrite")
+    @XmlAttribute
     private boolean overwrite;
     
     @XmlAttribute(name = "instance-id")
