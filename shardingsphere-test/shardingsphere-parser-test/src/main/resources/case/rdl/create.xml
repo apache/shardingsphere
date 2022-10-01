@@ -372,7 +372,7 @@
             </table-rule>
         </rule>
     </create-shadow-rule>
-
+    
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
@@ -406,19 +406,19 @@
             </algorithm>
         </shardingAlgorithm>
     </create-sharding-algorithm>
-
+    
     <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
         </strategy>
     </create-default-sharding-strategy>
-
+    
     <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy">
         <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID" sharding-algorithm-name="algorithms_name">
         </strategy>
     </create-default-sharding-strategy>
-
+    
     <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy-complex">
         <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
         </strategy>
@@ -434,18 +434,18 @@
             </algorithm>
         </shadow-algorithm>
     </create-shadow-algorithm>
-
+    
     <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
-
+    
     <create-sharding-key-generator sql-case-id="create-sharding-key-generator">
-        <shardingKeyGenerator key-generator-name="uuid_key_generator">
+        <sharding-key-generator key-generator-name="uuid_key_generator">
             <algorithm algorithm-name="uuid" />
-        </shardingKeyGenerator>
+        </sharding-key-generator>
     </create-sharding-key-generator>
-
+    
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
-        <shardingAuditor auditor-name="sharding_key_required_auditor">
+        <sharding-auditor auditor-name="sharding_key_required_auditor">
             <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
-        </shardingAuditor>
+        </sharding-auditor>
     </create-sharding-auditor>
 </sql-parser-test-cases>

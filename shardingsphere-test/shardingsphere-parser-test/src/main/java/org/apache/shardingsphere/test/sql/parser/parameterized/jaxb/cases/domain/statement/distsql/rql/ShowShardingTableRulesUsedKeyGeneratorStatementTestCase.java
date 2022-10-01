@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ShowShardingTableRulesUsedKeyGeneratorStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "keyGenerator")
+    @XmlAttribute(name = "key-generator")
     private String keyGenerator;
 }

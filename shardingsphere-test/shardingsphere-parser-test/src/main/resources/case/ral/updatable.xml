@@ -90,6 +90,6 @@
     <discard-distsql sql-case-id="discard-distsql" />
     
     <import-database-config sql-case-id="import-database-config">
-        <filePath>/yaml/config-sharding.yaml</filePath>
+        <file-path>/yaml/config-sharding.yaml</file-path>
     </import-database-config>
 </sql-parser-test-cases>

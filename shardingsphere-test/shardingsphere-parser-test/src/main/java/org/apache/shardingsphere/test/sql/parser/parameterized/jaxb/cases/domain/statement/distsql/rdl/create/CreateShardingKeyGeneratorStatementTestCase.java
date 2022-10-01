@@ -33,6 +33,6 @@ import java.util.List;
 @Setter
 public final class CreateShardingKeyGeneratorStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "shardingKeyGenerator")
+    @XmlElement(name = "sharding-key-generator")
     private final List<ExpectedShardingKeyGenerator> shardingKeyGenerators = new LinkedList<>();
 }

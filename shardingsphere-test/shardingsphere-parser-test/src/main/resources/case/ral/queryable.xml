@@ -41,6 +41,6 @@
         <database name="database_name" start-index="28" stop-index="40" />
     </export-database-config>
     <convert-yaml-config sql-case-id="convert-yaml-config">
-        <filePath>/yaml/config-resource.yaml</filePath>
+        <file-path>/yaml/config-resource.yaml</file-path>
     </convert-yaml-config>
 </sql-parser-test-cases>
