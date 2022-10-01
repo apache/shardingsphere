@@ -29,12 +29,12 @@ public final class DefaultSQLParserRuleConfigurationBuilderTest {
     
     @Test
     public void assertBuild() {
-        SQLParserRuleConfiguration actualResult = new DefaultSQLParserRuleConfigurationBuilder().build();
-        assertFalse(actualResult.isSqlCommentParseEnabled());
-        assertThat(actualResult.getParseTreeCache().getInitialCapacity(), is(128));
-        assertThat(actualResult.getParseTreeCache().getMaximumSize(), is(1024L));
-        assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(2000));
-        assertThat(actualResult.getSqlStatementCache().getMaximumSize(), is(65535L));
+        SQLParserRuleConfiguration actual = new DefaultSQLParserRuleConfigurationBuilder().build();
+        assertFalse(actual.isSqlCommentParseEnabled());
+        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
+        assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
+        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(2000));
+        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(65535L));
     }
     
     @Test
