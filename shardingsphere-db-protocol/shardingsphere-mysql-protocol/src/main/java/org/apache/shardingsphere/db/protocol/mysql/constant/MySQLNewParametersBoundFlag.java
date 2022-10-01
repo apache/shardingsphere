@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.mysql.exception.MySQLProtocolException;
 
 /**
  * New parameters bound flag for MySQL.
@@ -47,6 +48,6 @@ public enum MySQLNewParametersBoundFlag {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Can not find value `%s` in new parameters bound flag", value));
+        throw new MySQLProtocolException(String.format("Can not find value `%s` in new parameters bound flag", value));
     }
 }
