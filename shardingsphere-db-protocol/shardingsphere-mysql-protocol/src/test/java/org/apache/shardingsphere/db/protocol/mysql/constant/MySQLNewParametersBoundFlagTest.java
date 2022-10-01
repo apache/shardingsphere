@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import org.apache.shardingsphere.db.protocol.mysql.exception.MySQLProtocolException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +30,7 @@ public final class MySQLNewParametersBoundFlagTest {
         assertThat(MySQLNewParametersBoundFlag.valueOf(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue()), is(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MySQLProtocolException.class)
     public void assertValueOfWithIllegalArgument() {
         MySQLNewParametersBoundFlag.valueOf(-1);
     }

@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.exception;
+package org.apache.shardingsphere.db.protocol.mysql.exception;
 
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * SQL dialect exception.
+ * MySQL protocol exception.
  */
-@NoArgsConstructor
-public abstract class SQLDialectException extends ShardingSphereExternalException {
+public final class MySQLProtocolException extends SQLDialectException {
     
-    private static final long serialVersionUID = -5090068160364259336L;
+    private static final long serialVersionUID = -2955235917749217233L;
     
-    public SQLDialectException(final String reason) {
+    public MySQLProtocolException(final String reason) {
         super(reason);
     }
 }
