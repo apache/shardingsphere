@@ -33,24 +33,24 @@ public final class YamlSQLParserRuleConfigurationSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlSQLParserRuleConfiguration actualResult =
+        YamlSQLParserRuleConfiguration actual =
                 new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7)));
-        assertTrue(actualResult.isSqlCommentParseEnabled());
-        assertThat(actualResult.getParseTreeCache().getInitialCapacity(), is(2));
-        assertThat(actualResult.getParseTreeCache().getMaximumSize(), is(5L));
-        assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(4));
-        assertThat(actualResult.getSqlStatementCache().getMaximumSize(), is(7L));
+        assertTrue(actual.isSqlCommentParseEnabled());
+        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
+        assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));
+        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(4));
+        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(7L));
     }
     
     @Test
     public void assertSwapToObjectWithDefaultConfig() {
         YamlSQLParserRuleConfiguration configuration = new YamlSQLParserRuleConfiguration();
         configuration.setSqlCommentParseEnabled(true);
-        SQLParserRuleConfiguration actualResult = new YamlSQLParserRuleConfigurationSwapper().swapToObject(configuration);
-        assertThat(actualResult.getParseTreeCache().getInitialCapacity(), is(128));
-        assertThat(actualResult.getParseTreeCache().getMaximumSize(), is(1024L));
-        assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(2000));
-        assertThat(actualResult.getSqlStatementCache().getMaximumSize(), is(65535L));
+        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(configuration);
+        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
+        assertThat(actual.getParseTreeCache().getMaximumSize(), is(1024L));
+        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(2000));
+        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(65535L));
     }
     
     @Test
@@ -63,11 +63,11 @@ public final class YamlSQLParserRuleConfigurationSwapperTest {
         configuration.setSqlStatementCache(new YamlSQLParserCacheOptionRuleConfiguration());
         configuration.getSqlStatementCache().setInitialCapacity(4);
         configuration.getSqlStatementCache().setMaximumSize(7L);
-        SQLParserRuleConfiguration actualResult = new YamlSQLParserRuleConfigurationSwapper().swapToObject(configuration);
-        assertThat(actualResult.getParseTreeCache().getInitialCapacity(), is(2));
-        assertThat(actualResult.getParseTreeCache().getMaximumSize(), is(5L));
-        assertThat(actualResult.getSqlStatementCache().getInitialCapacity(), is(4));
-        assertThat(actualResult.getSqlStatementCache().getMaximumSize(), is(7L));
+        SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(configuration);
+        assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
+        assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));
+        assertThat(actual.getSqlStatementCache().getInitialCapacity(), is(4));
+        assertThat(actual.getSqlStatementCache().getMaximumSize(), is(7L));
     }
     
     @Test
