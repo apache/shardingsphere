@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurati
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class YamlModeConfigurationSwapperTest {
     
@@ -34,18 +32,15 @@ public final class YamlModeConfigurationSwapperTest {
     
     @Test
     public void swapToYamlConfiguration() {
-        YamlModeConfiguration actual = swapper.swapToYamlConfiguration(new ModeConfiguration("TEST_TYPE", null, true));
+        YamlModeConfiguration actual = swapper.swapToYamlConfiguration(new ModeConfiguration("TEST_TYPE", null));
         assertThat(actual.getType(), is(TEST_TYPE));
-        assertTrue(actual.isOverwrite());
     }
     
     @Test
     public void swapToObject() {
         YamlModeConfiguration yamlConfig = new YamlModeConfiguration();
         yamlConfig.setType(TEST_TYPE);
-        yamlConfig.setOverwrite(false);
         ModeConfiguration actual = swapper.swapToObject(yamlConfig);
         assertThat(actual.getType(), is(TEST_TYPE));
-        assertFalse(actual.isOverwrite());
     }
 }

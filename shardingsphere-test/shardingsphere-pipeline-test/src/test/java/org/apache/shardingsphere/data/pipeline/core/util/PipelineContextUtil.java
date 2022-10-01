@@ -95,7 +95,7 @@ public final class PipelineContextUtil {
     }
     
     private static ModeConfiguration createModeConfig() {
-        return new ModeConfiguration("Cluster", PERSIST_REPOSITORY_CONFIG, true);
+        return new ModeConfiguration("Cluster", PERSIST_REPOSITORY_CONFIG);
     }
     
     private static void mockContextManager() {

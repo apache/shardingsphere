@@ -78,7 +78,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     private void addDefaultModeConfiguration(final BeanDefinitionBuilder factory) {
         factory.addConstructorArgValue("Standalone");
         factory.addConstructorArgValue(null);
-        factory.addConstructorArgValue(true);
     }
     
     private void addConfiguredModeConfiguration(final BeanDefinitionBuilder factory, final Element modeElement) {
@@ -88,7 +87,6 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
         } else {
             factory.addConstructorArgReference(modeElement.getAttribute(ModeBeanDefinitionTag.REPOSITORY_REF_ATTRIBUTE));
         }
-        factory.addConstructorArgValue(modeElement.getAttribute(ModeBeanDefinitionTag.OVERWRITE_ATTRIBUTE));
     }
     
     private Map<String, RuntimeBeanReference> parseDataSources(final Element element) {

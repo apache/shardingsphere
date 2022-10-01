@@ -49,18 +49,17 @@ public final class ShowModeInfoHandlerTest extends ProxyContextRestorer {
         handler.execute();
         handler.next();
         List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(4));
+        assertThat(data.size(), is(3));
         assertThat(data.get(0), is("Cluster"));
         assertThat(data.get(1), is("ZooKeeper"));
         assertThat(data.get(2), is("{\"key\":\"value1,value2\"}"));
-        assertThat(data.get(3), is(Boolean.FALSE.toString()));
     }
     
     private InstanceContext createInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(result.getInstance().getMetaData().getId()).thenReturn("127.0.0.1@3309");
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster",
-                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value1,value2")), false));
+                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value1,value2"))));
         return result;
     }
     

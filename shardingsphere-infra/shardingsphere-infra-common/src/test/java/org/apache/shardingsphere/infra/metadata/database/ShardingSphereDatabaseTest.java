@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -40,8 +39,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingSphereDatabaseTest {
-    
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
     
     @Test
     public void assertIsComplete() {

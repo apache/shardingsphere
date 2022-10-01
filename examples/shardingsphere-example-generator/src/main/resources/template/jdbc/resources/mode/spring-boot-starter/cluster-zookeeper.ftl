@@ -19,4 +19,3 @@ spring.shardingsphere.mode.type=Cluster
 spring.shardingsphere.mode.repository.type=ZooKeeper
 spring.shardingsphere.mode.repository.props.namespace=generator_demo
 spring.shardingsphere.mode.repository.props.server-lists=localhost:2181
-spring.shardingsphere.mode.overwrite=false

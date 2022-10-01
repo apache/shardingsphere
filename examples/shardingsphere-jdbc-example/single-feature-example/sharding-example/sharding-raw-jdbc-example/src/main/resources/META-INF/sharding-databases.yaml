@@ -18,8 +18,7 @@
 mode:
   type: Standalone
   repository:
-    type: H2
-  overwrite: true
+    type: JDBC
 
 dataSources:
   ds_0:
