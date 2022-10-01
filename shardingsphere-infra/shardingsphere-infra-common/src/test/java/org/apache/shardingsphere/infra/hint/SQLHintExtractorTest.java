@@ -55,4 +55,36 @@ public final class SQLHintExtractorTest {
         assertThat(actual.size(), is(2));
         assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
     }
+    
+    @Test
+    public void assertSQLHintShardingDatabaseValue() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=100 */", 0, 0)));
+        int actual = new SQLHintExtractor(statement).getHintShardingDatabaseValue();
+        assertThat(actual, is(100));
+    }
+    
+    @Test
+    public void assertSQLHintShardingDatabaseValueWithTableName() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=10 */", 0, 0)));
+        int actual = new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order");
+        assertThat(actual, is(10));
+    }
+    
+    @Test
+    public void assertSQLHintShardingTableValue() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=100 */", 0, 0)));
+        int actual = new SQLHintExtractor(statement).getHintShardingTableValue();
+        assertThat(actual, is(100));
+    }
+    
+    @Test
+    public void assertSQLHintShardingTableValueWithTableName() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=10 */", 0, 0)));
+        int actual = new SQLHintExtractor(statement).getHintShardingTableValue("t_order");
+        assertThat(actual, is(10));
+    }
 }
