@@ -48,6 +48,6 @@ public enum MySQLNewParametersBoundFlag {
                 return each;
             }
         }
-        throw new MySQLProtocolException(String.format("Can not find value `%s` in new parameters bound flag", value));
+        throw new MySQLProtocolException("Can not find value `%s` in new parameters bound flag.", value);
     }
 }

@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
+import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLCommandPacketTypeTest {
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PostgreSQLProtocolException.class)
     public void assertValueOfUnknownCommandPacketType() {
         PostgreSQLCommandPacketType.valueOf(-1);
     }

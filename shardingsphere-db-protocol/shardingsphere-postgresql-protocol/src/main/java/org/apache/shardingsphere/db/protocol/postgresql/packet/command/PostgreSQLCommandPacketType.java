@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Can not find `%s` in PostgreSQL command packet type", value));
+        throw new PostgreSQLProtocolException("Can not find `%s` in PostgreSQL command packet type.", value);
     }
     
     /**

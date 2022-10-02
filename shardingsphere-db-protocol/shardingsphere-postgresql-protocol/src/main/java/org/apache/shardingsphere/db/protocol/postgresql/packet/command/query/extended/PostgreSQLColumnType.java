@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -200,6 +201,6 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Can not find value `%s` in PostgreSQL column type", value));
+        throw new PostgreSQLProtocolException("Can not find value `%s` in PostgreSQL column type.", value);
     }
 }

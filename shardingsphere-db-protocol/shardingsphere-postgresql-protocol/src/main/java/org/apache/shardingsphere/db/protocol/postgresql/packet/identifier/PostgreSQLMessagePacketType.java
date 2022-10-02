@@ -19,6 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.identifier;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 
 /**
  * Message packet for PostgreSQL.
@@ -103,6 +104,6 @@ public enum PostgreSQLMessagePacketType implements PostgreSQLIdentifierTag {
                 return each;
             }
         }
-        throw new IllegalArgumentException(String.format("Can not find `%s` in PostgreSQL identifier tag type", value));
+        throw new PostgreSQLProtocolException("Can not find `%s` in PostgreSQL identifier tag type.", value);
     }
 }
