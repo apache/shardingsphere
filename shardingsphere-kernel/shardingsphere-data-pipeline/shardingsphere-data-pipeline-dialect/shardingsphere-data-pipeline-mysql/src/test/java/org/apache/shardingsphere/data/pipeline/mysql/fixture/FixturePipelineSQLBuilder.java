@@ -22,16 +22,6 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineS
 public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
     public String getType() {
         return "H2";
     }
