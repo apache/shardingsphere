@@ -36,21 +36,21 @@ public class DataSourceStateTest {
 
     @Test
     public void shouldThrowIllegalArgumentExceptionWhenStateIsEmpty() {
-        assertThrows("Illegal data source state ``",IllegalArgumentException.class,()->{
-           DataSourceState.getDataSourceState("");
+        assertThrows("Illegal data source state ``", IllegalArgumentException.class, () -> {
+            DataSourceState.getDataSourceState("");
         });
     }
 
     @Test
     public void shouldThrowIllegalArgumentExceptionWhenStateIsNull() {
-        assertThrows("Illegal data source state ``",IllegalArgumentException.class,()->{
+        assertThrows("Illegal data source state ``", IllegalArgumentException.class, () -> {
             DataSourceState.getDataSourceState(null);
         });
     }
 
     @Test
     public void shouldThrowIllegalArgumentExceptionWhenStateIsInvalid() {
-        assertThrows("Illegal data source state `invalid`",IllegalArgumentException.class,()->{
+        assertThrows("Illegal data source state `invalid`", IllegalArgumentException.class, () -> {
             DataSourceState.getDataSourceState("invalid");
         });
     }
