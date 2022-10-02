@@ -22,6 +22,7 @@ import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -70,7 +71,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
             return String.format("SELECT * FROM %s WHERE %s%s? ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey);
         }
-        throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
+        throw new UnsupportedPipelineJobUniqueKeyDataTypeException(uniqueKeyDataType);
     }
     
     protected final String getQualifiedTableName(final String schemaName, final String tableName) {
