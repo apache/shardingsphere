@@ -35,8 +35,8 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
     private volatile boolean running;
     
     private volatile boolean stopped;
