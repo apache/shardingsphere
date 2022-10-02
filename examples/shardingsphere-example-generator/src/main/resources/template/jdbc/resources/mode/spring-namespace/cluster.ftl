@@ -14,4 +14,4 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="true" />
+<shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />

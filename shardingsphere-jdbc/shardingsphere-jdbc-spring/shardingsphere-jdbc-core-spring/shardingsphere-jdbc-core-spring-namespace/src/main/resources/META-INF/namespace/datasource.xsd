@@ -41,7 +41,6 @@
         <xsd:complexType>
             <xsd:attribute name="type" type="xsd:string" use="required" />
             <xsd:attribute name="repository-ref" type="xsd:string" />
-            <xsd:attribute name="overwrite" type="xsd:string" default="false" />
         </xsd:complexType>
     </xsd:element>
     

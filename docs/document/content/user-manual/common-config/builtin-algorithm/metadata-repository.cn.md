@@ -88,7 +88,6 @@ mode:
       jdbc_url: jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
       username: test
       password: Test@123
-  overwrite: false
 ```
 
 - 集群模式
@@ -105,5 +104,4 @@ mode:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: false
 ```

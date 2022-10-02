@@ -18,7 +18,6 @@ Attributes:
 | ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
 | type       | String                         | Type of mode configuration<br />Values could be: Standalone or Cluster                                                                                           | Standalone      |
 | repository | PersistRepositoryConfiguration | Persist repository configuration<br />Standalone type uses StandalonePersistRepositoryConfiguration<br />Cluster type uses ClusterPersistRepositoryConfiguration |                 |
-| overwrite  | boolean                        | Whether overwrite persistent configuration with local configuration                                                                                              | false           |
 
 ### Standalone Persist Configuration
 
@@ -47,7 +46,8 @@ Attributes:
 ## Notes
 
 1. Cluster mode deployment is recommended for production environment.
-2. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+1. The `ZooKeeper` registry center is recommended for cluster mode deployment. 
+1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
 
 ## Procedure
 
@@ -75,7 +75,7 @@ Properties props = ... // Build property configuration
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
 private ModeConfiguration createModeConfiguration() {
-    return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
+    return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()));
 }
 ```
 
@@ -89,7 +89,7 @@ Properties props = ... // Build property configuration
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
 private ModeConfiguration createModeConfiguration() {
-    return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-db", "localhost:2181", new Properties()), true);
+    return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-db", "localhost:2181", new Properties()));
 }
 ```
 

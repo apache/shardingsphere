@@ -41,8 +41,8 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap, final boolean isOverwrite) {
-        if (!dataSourcePropsMap.isEmpty() && (isOverwrite || !isExisted(databaseName))) {
+    public void conditionalPersist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        if (!dataSourcePropsMap.isEmpty() && !isExisted(databaseName)) {
             persist(databaseName, dataSourcePropsMap);
         }
     }

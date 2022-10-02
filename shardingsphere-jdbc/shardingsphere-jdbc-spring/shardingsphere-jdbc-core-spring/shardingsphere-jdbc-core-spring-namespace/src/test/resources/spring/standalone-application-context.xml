@@ -38,7 +38,7 @@
     <standalone:repository id="fileRepository" type="JDBC" />
     
     <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule, sqlParseRule">
-        <shardingsphere:mode type="Standalone" repository-ref="fileRepository" overwrite="true" />
+        <shardingsphere:mode type="Standalone" repository-ref="fileRepository" />
         <props>
             <prop key="sql-show">false</prop>
             <prop key="kernel-executor-size">${kernel-executor-size}</prop>

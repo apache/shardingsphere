@@ -22,7 +22,6 @@ mode:
     props:
       namespace: test_name
       server-lists: localhost:3181
-  overwrite: true
 
 dataSources:
   write_ds:

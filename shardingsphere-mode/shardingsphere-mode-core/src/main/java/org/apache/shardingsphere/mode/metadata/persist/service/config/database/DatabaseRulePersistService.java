@@ -40,8 +40,8 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String databaseName, final Collection<RuleConfiguration> configs, final boolean isOverwrite) {
-        if (!configs.isEmpty() && (isOverwrite || !isExisted(databaseName))) {
+    public void conditionalPersist(final String databaseName, final Collection<RuleConfiguration> configs) {
+        if (!configs.isEmpty() && !isExisted(databaseName)) {
             persist(databaseName, configs);
         }
     }

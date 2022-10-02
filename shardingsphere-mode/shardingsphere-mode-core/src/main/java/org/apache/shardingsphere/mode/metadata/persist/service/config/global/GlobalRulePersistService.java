@@ -40,10 +40,15 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     private final PersistRepository repository;
     
     @Override
-    public void persist(final Collection<RuleConfiguration> globalRuleConfigs, final boolean isOverwrite) {
-        if (!globalRuleConfigs.isEmpty() && (isOverwrite || !isExisted())) {
-            repository.persist(GlobalNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
+    public void conditionalPersist(final Collection<RuleConfiguration> globalRuleConfigs) {
+        if (!globalRuleConfigs.isEmpty() && !isExisted()) {
+            persist(globalRuleConfigs);
         }
+    }
+    
+    @Override
+    public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
+        repository.persist(GlobalNode.getGlobalRuleNode(), YamlEngine.marshal(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(globalRuleConfigs)));
     }
     
     @Override

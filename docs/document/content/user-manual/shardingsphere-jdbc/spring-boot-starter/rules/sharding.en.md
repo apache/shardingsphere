@@ -84,8 +84,7 @@ Please refer to [Built-in Sharding Algorithm List](/en/user-manual/common-config
 
 ```properties
 spring.shardingsphere.mode.type=Standalone
-spring.shardingsphere.mode.repository.type=File
-spring.shardingsphere.mode.overwrite=true
+spring.shardingsphere.mode.repository.type=JDBC
 
 spring.shardingsphere.datasource.names=ds-0,ds-1
 

@@ -54,7 +54,7 @@ public final class StandaloneContextManagerBuilderTextTest {
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
-        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, true);
+        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap(
                 "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class))));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));

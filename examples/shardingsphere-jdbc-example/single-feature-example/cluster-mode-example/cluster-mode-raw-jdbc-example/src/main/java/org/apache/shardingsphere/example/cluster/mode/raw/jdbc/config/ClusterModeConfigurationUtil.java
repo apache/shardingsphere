@@ -33,7 +33,7 @@ public final class ClusterModeConfigurationUtil {
     
     private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
     
-    public static ModeConfiguration getRepositoryConfiguration(final boolean overwrite, final ShardingType shardingType, final String repositoryType) {
+    public static ModeConfiguration getRepositoryConfiguration(final ShardingType shardingType, final String repositoryType) {
         Properties props = new Properties();
         String repositoryConnection;
         switch (repositoryType) {
@@ -53,16 +53,16 @@ public final class ClusterModeConfigurationUtil {
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
                 clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-sharding-data-source", repositoryConnection, props);
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             case READWRITE_SPLITTING:
                 clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-readwrite-splitting-data-source", repositoryConnection, props);
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             case ENCRYPT:
                 clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-encrypt-data-source", repositoryConnection, props);
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             case SHADOW:
                 clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-shadow-data-source", repositoryConnection, props);
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

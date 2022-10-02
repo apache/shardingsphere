@@ -32,7 +32,6 @@
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
-#  overwrite: false
 #
 #rules:
 #  - !AUTHORITY

@@ -31,6 +31,4 @@ public final class YamlModeConfiguration implements YamlConfiguration {
     private String type;
     
     private YamlPersistRepositoryConfiguration repository;
-    
-    private boolean overwrite;
 }

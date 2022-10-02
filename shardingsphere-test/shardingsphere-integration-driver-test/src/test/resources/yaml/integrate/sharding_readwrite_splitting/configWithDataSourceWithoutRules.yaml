@@ -56,4 +56,3 @@ mode:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  overwrite: true

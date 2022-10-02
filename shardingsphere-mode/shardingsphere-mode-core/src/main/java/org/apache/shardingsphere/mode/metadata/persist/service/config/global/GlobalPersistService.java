@@ -25,12 +25,18 @@ package org.apache.shardingsphere.mode.metadata.persist.service.config.global;
 public interface GlobalPersistService<T> {
     
     /**
+     * Conditional persist configurations.
+     *
+     * @param globalRuleConfigs configurations
+     */
+    void conditionalPersist(T globalRuleConfigs);
+    
+    /**
      * Persist configurations.
      *
      * @param globalRuleConfigs configurations
-     * @param isOverwrite is overwrite
      */
-    void persist(T globalRuleConfigs, boolean isOverwrite);
+    void persist(T globalRuleConfigs);
     
     /**
      * Load configurations.
