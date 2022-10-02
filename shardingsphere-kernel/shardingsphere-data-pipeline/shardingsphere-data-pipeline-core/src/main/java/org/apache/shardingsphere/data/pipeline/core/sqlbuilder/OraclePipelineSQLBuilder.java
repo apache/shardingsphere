@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
@@ -47,7 +48,7 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
         if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
             return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? ORDER BY %s ASC) WHERE ROWNUM<=?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey);
         }
-        throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
+        throw new UnsupportedPipelineJobUniqueKeyDataTypeException(uniqueKeyDataType);
     }
     
     @Override

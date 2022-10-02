@@ -41,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
@@ -161,7 +162,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 preparedStatement.setObject(1, startUniqueKeyValue);
                 preparedStatement.setInt(2, batchSize);
             } else {
-                throw new IllegalArgumentException("Unsupported uniqueKeyDataType: " + uniqueKeyDataType);
+                throw new UnsupportedPipelineJobUniqueKeyDataTypeException(uniqueKeyDataType);
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
