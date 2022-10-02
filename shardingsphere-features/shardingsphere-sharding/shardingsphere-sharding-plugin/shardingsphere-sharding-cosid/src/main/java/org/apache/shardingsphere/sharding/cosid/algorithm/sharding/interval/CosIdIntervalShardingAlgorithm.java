@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
-import com.google.common.base.Strings;
+import me.ahoo.cosid.util.LocalDateTimeConvert;
+import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
+import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -30,9 +32,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Properties;
-
-import me.ahoo.cosid.util.LocalDateTimeConvert;
-import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 
 /**
  * Interval range sharding algorithm with CosId.
@@ -98,7 +97,7 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
         if (shardingValue instanceof String) {
             return LocalDateTimeConvert.fromString((String) shardingValue, dateTimeFormatter);
         }
-        throw new IllegalArgumentException(Strings.lenientFormat("The current shard type:[%s] is not supported!", shardingValue.getClass()));
+        throw new ShardingPluginException("Unsupported sharding value type `%s`.", shardingValue);
     }
     
     @Override

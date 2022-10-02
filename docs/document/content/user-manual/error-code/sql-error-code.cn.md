@@ -174,6 +174,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`. |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
+| HY000     | 20099       | Sharding plugin error, reason is: %s |
 
 ### 读写分离
 

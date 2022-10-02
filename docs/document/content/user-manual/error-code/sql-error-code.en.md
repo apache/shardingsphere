@@ -174,6 +174,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`. |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
+| HY000     | 20099       | Sharding plugin error, reason is: %s |
 
 ### Readwrite Splitting
 
