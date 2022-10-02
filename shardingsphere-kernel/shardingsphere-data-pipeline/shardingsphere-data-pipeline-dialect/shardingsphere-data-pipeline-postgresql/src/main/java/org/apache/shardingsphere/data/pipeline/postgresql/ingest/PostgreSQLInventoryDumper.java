@@ -23,9 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -39,9 +37,7 @@ public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
     }
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(1);
-        return result;
+    protected void setDialectParameters(final PreparedStatement preparedStatement) throws SQLException {
+        preparedStatement.setFetchSize(1);
     }
 }

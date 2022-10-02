@@ -80,7 +80,8 @@ public final class MySQLInventoryDumperTest {
     public void assertCreatePreparedStatement() throws SQLException {
         Connection connection = mock(Connection.class);
         when(connection.prepareStatement("", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)).thenReturn(mock(PreparedStatement.class));
-        PreparedStatement preparedStatement = mysqlJdbcDumper.createPreparedStatement(connection, "");
+        PreparedStatement preparedStatement = connection.prepareStatement("", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        mysqlJdbcDumper.setDialectParameters(preparedStatement);
         verify(preparedStatement).setFetchSize(Integer.MIN_VALUE);
     }
 }

@@ -77,7 +77,8 @@ public final class PostgreSQLJdbcDumperTest {
     public void assertCreatePreparedStatement() throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = jdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order")) {
+            jdbcDumper.setDialectParameters(preparedStatement);
             assertThat(preparedStatement.getFetchSize(), is(1));
         }
     }

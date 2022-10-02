@@ -20,16 +20,16 @@ package org.apache.shardingsphere.data.pipeline.api.metadata.loader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 
 /**
- * Pipeline table metadata loader.
+ * Pipeline table meta data loader.
  */
 public interface PipelineTableMetaDataLoader {
     
     /**
-     * Get table metadata, load if it does not exist.
+     * Get table meta data, load if meta data absent.
      *
-     * @param schemaName schema name. nullable
+     * @param schemaName schema name, can be nullable
      * @param tableName dedicated table name, not table name pattern
-     * @return table metadata
+     * @return got table meta data
      */
     PipelineTableMetaData getTableMetaData(String schemaName, String tableName);
 }

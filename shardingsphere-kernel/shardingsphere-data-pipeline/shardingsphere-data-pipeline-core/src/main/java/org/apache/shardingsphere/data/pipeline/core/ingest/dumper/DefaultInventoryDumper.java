@@ -22,10 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * Default inventory dumper.
@@ -35,10 +31,5 @@ public final class DefaultInventoryDumper extends AbstractInventoryDumper {
     public DefaultInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
                                   final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         super(inventoryDumperConfig, channel, dataSource, metaDataLoader);
-    }
-    
-    @Override
-    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        return connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
     }
 }
