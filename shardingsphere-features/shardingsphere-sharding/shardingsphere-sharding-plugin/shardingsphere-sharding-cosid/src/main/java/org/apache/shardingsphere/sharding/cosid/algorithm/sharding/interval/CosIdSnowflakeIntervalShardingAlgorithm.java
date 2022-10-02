@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
-import com.google.common.base.Strings;
 import me.ahoo.cosid.converter.Radix62IdConverter;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.time.LocalDateTime;
 import java.util.Properties;
@@ -63,7 +63,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
             String shardingValueStr = (String) shardingValue;
             return Radix62IdConverter.PAD_START.asLong(shardingValueStr);
         }
-        throw new IllegalArgumentException(Strings.lenientFormat("The current shard type:[%s] is not supported!", shardingValue.getClass()));
+        throw new ShardingPluginException("Unsupported sharding value type `%s`.", shardingValue);
     }
     
     @Override

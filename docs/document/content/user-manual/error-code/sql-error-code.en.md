@@ -173,6 +173,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20080       | Sharding algorithm class \`%s\` should be implement \`%s\`. |
 | HY000     | 20081       | Routed target \`%s\` does not exist, available targets are \`%s\`. |
 | 44000     | 20082       | Inline sharding algorithms expression \`%s\` and sharding column \`%s\` do not match. |
+| HY004     | 20083       | Unsupported sharding value type \`%s\`. |
 | 44000     | 20090       | Can not find strategy for generate keys with table \`%s\`. |
 
 ### Readwrite Splitting
