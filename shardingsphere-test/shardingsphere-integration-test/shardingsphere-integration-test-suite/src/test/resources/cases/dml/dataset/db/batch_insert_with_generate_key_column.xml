@@ -41,7 +41,7 @@
     <row data-node="db_1.t_order_item" values="210002, 2100, 21, 4, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="210101, 2101, 21, 5, 1, 2017-08-08" />
     <row data-node="db_1.t_order_item" values="210102, 2101, 21, 6, 1, 2017-08-08" />
-    <row data-node="db_1.t_order_item" values="2, 2, 2, 2, 2, 2017-08-08" />
+    <row data-node="db_2.t_order_item" values="2, 2, 2, 2, 2, 2017-08-08" />
     <row data-node="db_2.t_order_item" values="120001, 1200, 12, 7, 1, 2017-08-08" />
     <row data-node="db_2.t_order_item" values="120002, 1200, 12, 8, 1, 2017-08-08" />
     <row data-node="db_2.t_order_item" values="120101, 1201, 12, 9, 1, 2017-08-08" />

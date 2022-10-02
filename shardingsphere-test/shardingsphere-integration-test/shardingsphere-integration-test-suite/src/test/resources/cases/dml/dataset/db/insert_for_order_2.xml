@@ -28,7 +28,6 @@
     <row data-node="db_0.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="2000, 20, init, 3, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="2001, 20, init, 4, test, 2017-08-08" />
-    <row data-node="db_1.t_order" values="1, 1, insert, 1, test, 2017-08-08" />
     <row data-node="db_1.t_order" values="1100, 11, init, 5, test, 2017-08-08" />
     <row data-node="db_1.t_order" values="1101, 11, init, 6, test, 2017-08-08" />
     <row data-node="db_1.t_order" values="2100, 21, init, 7, test, 2017-08-08" />
