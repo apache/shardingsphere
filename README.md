@@ -60,7 +60,7 @@ Good news! We'll be taking part in [Hacktoberfest 2022](https://hacktoberfest.co
 
 Whether it's your first time, you're a seasoned PRO - it's almost time to get hacking, chase those pull/merge requests and complete your mission in supporting open source.
 
-You can find the issues we've prepared for this year's Hacktoberfest [here](https://github.com/apache/shardingsphere/labels/project%3A%20hacktoberfest).
+You can find the issues we've prepared for this year's Hacktoberfest [here](https://github.com/apache/shardingsphere/issues?q=is%3Aopen+is%3Aissue+label%3Ahacktoberfest).
 
 
 ### Team
