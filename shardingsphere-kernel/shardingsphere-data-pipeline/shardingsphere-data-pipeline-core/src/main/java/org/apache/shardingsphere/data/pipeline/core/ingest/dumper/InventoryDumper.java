@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumper
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.InventoryDumper;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -59,10 +59,10 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * Abstract JDBC dumper implement.
+ * Inventory dumper.
  */
 @Slf4j
-public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor implements InventoryDumper {
+public final class InventoryDumper extends AbstractLifecycleExecutor implements Dumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration dumperConfig;
@@ -77,7 +77,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     
     private final LazyInitializer<PipelineTableMetaData> metaDataLoader;
     
-    protected AbstractInventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
+    public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
@@ -134,8 +134,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         int batchSize = dumperConfig.getBatchSize();
         PipelineTableMetaData tableMetaData = metaDataLoader.get();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            setDialectParameters(preparedStatement);
-            setPreparedStatementParameters(preparedStatement, batchSize, beginUniqueKeyValue);
+            setParameters(preparedStatement, batchSize, beginUniqueKeyValue);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int rowCount = 0;
@@ -157,7 +156,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         }
     }
     
-    private void setPreparedStatementParameters(final PreparedStatement preparedStatement, final int batchSize, final Object beginUniqueKeyValue) throws SQLException {
+    private void setParameters(final PreparedStatement preparedStatement, final int batchSize, final Object beginUniqueKeyValue) throws SQLException {
         preparedStatement.setFetchSize(batchSize);
         if (PipelineJdbcUtils.isIntegerColumn(dumperConfig.getUniqueKeyDataType())) {
             preparedStatement.setObject(1, beginUniqueKeyValue);
@@ -188,9 +187,6 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
         return null == dumperConfig.getUniqueKey()
                 ? new PlaceholderPosition()
                 : PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKey()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
-    }
-    
-    protected void setDialectParameters(final PreparedStatement preparedStatement) throws SQLException {
     }
     
     @Override
