@@ -20,7 +20,8 @@
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
+        <column name="product_id" type="numeric" />
+        <column name="quantity" type="numeric" />
         <column name="creation_date" type="datetime" />
     </metadata>
     <row data-node="db_0.t_order_item" values="100001, 1000, 10, init, 2017-08-08" />
@@ -104,4 +105,5 @@
     <row data-node="db_9.t_order_item" values="290002, 2900, 29, init, 2017-08-08" />
     <row data-node="db_9.t_order_item" values="290101, 2901, 29, init, 2017-08-08" />
     <row data-node="db_9.t_order_item" values="290102, 2901, 29, init, 2017-08-08" />
+
 </dataset>

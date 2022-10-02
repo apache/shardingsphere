@@ -16,20 +16,20 @@
   -->
 
 <integration-test-cases>
-   <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+   <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, product_id, quantity, creation_date) VALUES (?, ?, ?, 1, 1, now())" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (1, 1, 'insert', 1, 'test', '2017-08-08'), (2, 2, 'insert2', 2, 'test', '2017-08-08')" db-types="MySQL,SQLServer,PostgreSQL,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08') ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion parameters="1000:int, 10:int, update:String" expected-data-file="insert_on_duplicate_key_update.xml" />
     </test-case>
     
@@ -39,7 +39,7 @@
         <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?, 1, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
@@ -60,11 +60,11 @@
         <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, product_id, quantity, creation_date) values (?, ?, ?, '1', '1', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item values(?, ?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item values(?, ?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
@@ -78,7 +78,7 @@
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item(order_id, user_id, product_id, quantity, creation_date) values (?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
     </test-case>
     
@@ -86,11 +86,11 @@
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, 1, 'insert', 1, 'test', '2017-08-08'), (?, ?, ?, 2, 'test', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
         <assertion parameters="1:int, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
     
@@ -98,7 +98,7 @@
         <!--<assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="pro_insert_order_value.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, product_id, quantity, creation_date) values (?, ?, ?, 1, 1, '2017-08-08'), (?, ?, ?, 2, 2, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />
     </test-case>
     
