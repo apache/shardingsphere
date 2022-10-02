@@ -33,17 +33,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     
     @Override
     public String buildCreateSchemaSQL(final String schemaName) {
-        return "CREATE SCHEMA IF NOT EXISTS " + quote(schemaName);
-    }
-    
-    @Override
-    public String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "\"";
+        return String.format("CREATE SCHEMA IF NOT EXISTS %s", quote(schemaName));
     }
     
     @Override

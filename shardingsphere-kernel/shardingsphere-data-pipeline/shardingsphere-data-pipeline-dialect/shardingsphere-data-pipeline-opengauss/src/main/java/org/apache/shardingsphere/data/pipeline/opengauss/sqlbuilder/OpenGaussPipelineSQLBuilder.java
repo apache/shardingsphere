@@ -34,17 +34,7 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     
     @Override
     public String buildCreateSchemaSQL(final String schemaName) {
-        return "CREATE SCHEMA " + quote(schemaName);
-    }
-    
-    @Override
-    public String getLeftIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "";
+        return String.format("CREATE SCHEMA %s", quote(schemaName));
     }
     
     @Override

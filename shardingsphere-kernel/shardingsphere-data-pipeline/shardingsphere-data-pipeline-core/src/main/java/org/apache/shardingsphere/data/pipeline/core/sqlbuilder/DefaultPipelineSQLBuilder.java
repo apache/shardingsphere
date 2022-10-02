@@ -23,16 +23,6 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 public final class DefaultPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String getLeftIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "";
-    }
-    
-    @Override
     public boolean isDefault() {
         return true;
     }

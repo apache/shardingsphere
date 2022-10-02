@@ -37,26 +37,15 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
     public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
-        String decoratedTableName = decorate(schemaName, tableName);
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
-            return "SELECT * FROM (SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
-                    + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC) WHERE ROWNUM<=?";
+            return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC) WHERE ROWNUM<=?",
+                    qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey, quotedUniqueKey);
         }
         if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return "SELECT * FROM (SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
-                    + " ORDER BY " + quotedUniqueKey + " ASC) WHERE ROWNUM<=?";
+            return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? ORDER BY %s ASC) WHERE ROWNUM<=?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey);
         }
         throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
     }
@@ -70,21 +59,24 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
     public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        String quotedUniqueKey = quote(uniqueKey);
         return firstQuery
-                ? "SELECT * FROM (SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC) WHERE ROWNUM<=?"
-                : "SELECT * FROM (SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC) WHERE ROWNUM<=?";
+                ? String.format("SELECT * FROM (SELECT * FROM %s ORDER BY %s ASC) WHERE ROWNUM<=?", qualifiedTableName, quotedUniqueKey)
+                : String.format("SELECT * FROM (SELECT * FROM %s WHERE %s>? ORDER BY %s ASC) WHERE ROWNUM<=?", qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM (SELECT * FROM %s) WHERE ROWNUM<=1", decorate(schemaName, tableName));
+        return String.format("SELECT * FROM (SELECT * FROM %s) WHERE ROWNUM<=1", getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
     public String buildSplitByPrimaryKeyRangeSQL(final String schemaName, final String tableName, final String primaryKey) {
-        String quotedKey = quote(primaryKey);
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        String quotedUniqueKey = quote(primaryKey);
         return String.format("SELECT MAX(%s) FROM (SELECT * FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s) WHERE ROWNUM<=?) t",
-                quotedKey, quotedKey, decorate(schemaName, tableName), quotedKey, quotedKey);
+                quotedUniqueKey, quotedUniqueKey, qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
     @Override
