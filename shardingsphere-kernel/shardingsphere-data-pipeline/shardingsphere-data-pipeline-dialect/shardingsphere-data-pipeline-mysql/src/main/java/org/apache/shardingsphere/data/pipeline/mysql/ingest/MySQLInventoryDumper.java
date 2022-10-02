@@ -23,9 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -33,15 +31,12 @@ import java.sql.SQLException;
  */
 public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
-    public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
-                                final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
-        super(inventoryDumperConfig, channel, dataSource, metaDataLoader);
+    public MySQLInventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
+        super(dumperConfig, channel, dataSource, metaDataLoader);
     }
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
-        PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(Integer.MIN_VALUE);
-        return result;
+    protected void setDialectParameters(final PreparedStatement preparedStatement) throws SQLException {
+        preparedStatement.setFetchSize(Integer.MIN_VALUE);
     }
 }
