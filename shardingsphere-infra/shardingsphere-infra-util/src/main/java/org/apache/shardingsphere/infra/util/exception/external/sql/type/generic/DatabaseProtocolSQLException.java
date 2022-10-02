@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.exception;
+package org.apache.shardingsphere.infra.util.exception.external.sql.type.generic;
 
-import org.apache.shardingsphere.dialect.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * MySQL protocol exception.
+ * Database protocol SQL exception.
  */
-public final class MySQLProtocolException extends DatabaseProtocolException {
+public final class DatabaseProtocolSQLException extends GenericSQLException {
     
-    private static final long serialVersionUID = -2955235917749217233L;
+    private static final long serialVersionUID = -6035033415978907492L;
     
-    public MySQLProtocolException(final String reason, final Object... arguments) {
-        super(String.format(reason, arguments));
+    public DatabaseProtocolSQLException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 2, "Database protocol exception: %s", reason);
     }
 }

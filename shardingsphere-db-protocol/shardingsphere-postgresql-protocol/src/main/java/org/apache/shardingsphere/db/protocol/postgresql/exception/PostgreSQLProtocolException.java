@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.exception;
+package org.apache.shardingsphere.db.protocol.postgresql.exception;
 
 import org.apache.shardingsphere.dialect.exception.protocol.DatabaseProtocolException;
 
 /**
- * MySQL protocol exception.
+ * PostgreSQL protocol exception.
  */
-public final class MySQLProtocolException extends DatabaseProtocolException {
+public final class PostgreSQLProtocolException extends DatabaseProtocolException {
     
-    private static final long serialVersionUID = -2955235917749217233L;
+    private static final long serialVersionUID = -2345109476596144026L;
     
-    public MySQLProtocolException(final String reason, final Object... arguments) {
+    public PostgreSQLProtocolException(final String reason, final Object... arguments) {
         super(String.format(reason, arguments));
     }
 }

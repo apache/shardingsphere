@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.identifier;
 
+import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +30,7 @@ public final class PostgreSQLMessagePacketTypeTest {
         assertThat(PostgreSQLMessagePacketType.valueOf(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue()), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PostgreSQLProtocolException.class)
     public void assertGetValueWithIllegalArgument() {
         PostgreSQLMessagePacketType.valueOf(-1);
     }

@@ -227,4 +227,5 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | --------- | ----------- | ------ |
 | HY004     | 30000       | Unknown exception: %s |
 | 0A000     | 30001       | Unsupported SQL operation: %s |
-| 0A000     | 30002       | Unsupported command: %s |
+| 0A000     | 30002       | Database protocol exception: %s |
+| 0A000     | 30003       | Unsupported command: %s |
