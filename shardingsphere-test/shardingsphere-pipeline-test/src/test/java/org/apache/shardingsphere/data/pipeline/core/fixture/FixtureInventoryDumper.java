@@ -23,19 +23,11 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public final class FixtureInventoryDumper extends AbstractInventoryDumper {
     
     public FixtureInventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel,
                                   final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         super(dumperConfig, channel, dataSource, metaDataLoader);
-    }
-    
-    @Override
-    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        return conn.prepareStatement(sql);
     }
 }
