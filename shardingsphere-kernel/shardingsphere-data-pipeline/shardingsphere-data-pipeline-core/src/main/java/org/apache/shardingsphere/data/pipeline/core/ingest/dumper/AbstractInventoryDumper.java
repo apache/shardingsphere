@@ -190,7 +190,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                 : PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKey()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
     }
     
-    protected void setDialectParameters(PreparedStatement preparedStatement) throws SQLException {
+    protected void setDialectParameters(final PreparedStatement preparedStatement) throws SQLException {
     }
     
     @Override
