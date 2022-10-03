@@ -34,6 +34,9 @@ import javax.transaction.Transaction;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -89,5 +92,23 @@ public final class AtomikosTransactionManagerProviderTest {
     public void assertClose() {
         transactionManagerProvider.close();
         verify(userTransactionService).shutdown(true);
+    }
+    
+    @Test
+    public void assertInit() throws Exception {
+        transactionManagerProvider.init();
+        assertNull(transactionManagerProvider.getTransactionManager().getTransaction());
+        assertFalse(transactionManagerProvider.getTransactionManager().getForceShutdown());
+        assertTrue(transactionManagerProvider.getTransactionManager().getStartupTransactionService());
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(transactionManagerProvider.getType(), is("Atomikos"));
+    }
+    
+    @Test
+    public void assertIsDefault() {
+        assertTrue(transactionManagerProvider.isDefault());
     }
 }
