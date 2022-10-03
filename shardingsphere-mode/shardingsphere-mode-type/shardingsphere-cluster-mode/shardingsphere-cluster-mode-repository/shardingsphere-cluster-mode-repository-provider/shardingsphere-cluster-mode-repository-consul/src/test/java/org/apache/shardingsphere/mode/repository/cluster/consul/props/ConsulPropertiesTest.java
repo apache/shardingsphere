@@ -15,18 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.mode.repository.cluster.consul.props;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
+import org.junit.Test;
 
-public final class FixtureIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ConsulPropertiesTest {
     
-    @Override
-    protected void runBlocking() {
+    @Test
+    public void assertGetValue() {
+        assertThat(new ConsulProperties(createProperties()).getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_TO_SECONDS), is(60L));
     }
     
-    @Override
-    protected void doStop() {
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(ConsulPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50");
+        return result;
+    }
+    
+    @Test
+    public void assertGetDefaultValue() {
+        assertThat(new ConsulProperties(new Properties()).getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
     }
 }

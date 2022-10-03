@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.mode.repository.cluster.consul.props;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
+import java.util.Properties;
 
-public final class FixtureIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+/**
+ * Typed properties of Consul.
+ */
+public final class ConsulProperties extends TypedProperties<ConsulPropertyKey> {
     
-    @Override
-    protected void runBlocking() {
-    }
-    
-    @Override
-    protected void doStop() {
+    public ConsulProperties(final Properties props) {
+        super(ConsulPropertyKey.class, props);
     }
 }

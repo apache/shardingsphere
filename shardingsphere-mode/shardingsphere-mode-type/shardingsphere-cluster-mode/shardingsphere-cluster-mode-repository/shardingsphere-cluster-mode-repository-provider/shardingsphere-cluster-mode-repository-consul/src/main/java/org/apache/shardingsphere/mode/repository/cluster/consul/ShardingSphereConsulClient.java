@@ -15,18 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.mode.repository.cluster.consul;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
+import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.ConsulRawClient;
 
-public final class FixtureIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+/**
+ * ShardingSphere consul client support use raw client.
+ */
+public class ShardingSphereConsulClient extends ConsulClient {
     
-    @Override
-    protected void runBlocking() {
+    private ConsulRawClient rawClient;
+    
+    public ShardingSphereConsulClient(final ConsulRawClient rawClient) {
+        super(rawClient);
+        this.rawClient = rawClient;
     }
     
-    @Override
-    protected void doStop() {
+    /**
+     * Get consul raw client.
+     * @return raw consul client
+     */
+    public ConsulRawClient getRawClient() {
+        return rawClient;
     }
 }

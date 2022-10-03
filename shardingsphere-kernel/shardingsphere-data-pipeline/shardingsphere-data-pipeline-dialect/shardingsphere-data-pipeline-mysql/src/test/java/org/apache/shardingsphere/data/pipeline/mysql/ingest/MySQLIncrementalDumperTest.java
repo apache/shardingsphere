@@ -68,11 +68,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLIncrementalDumperTest {
     
+    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+    
     private MySQLIncrementalDumper incrementalDumper;
     
     private MultiplexMemoryPipelineChannel channel;
-    
-    private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
     @Mock
     private PipelineTableMetaData pipelineTableMetaData;

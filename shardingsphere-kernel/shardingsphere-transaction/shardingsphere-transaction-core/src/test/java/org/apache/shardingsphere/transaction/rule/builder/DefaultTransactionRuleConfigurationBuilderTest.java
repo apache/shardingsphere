@@ -15,18 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.transaction.rule.builder;
 
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Test;
 
-public final class FixtureIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+import java.util.Properties;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+
+public final class DefaultTransactionRuleConfigurationBuilderTest {
     
-    @Override
-    protected void runBlocking() {
-    }
-    
-    @Override
-    protected void doStop() {
+    @Test
+    public void assertBuild() {
+        TransactionRuleConfiguration actual = new DefaultTransactionRuleConfigurationBuilder().build();
+        assertThat(actual.getDefaultType(), is(TransactionType.LOCAL.name()));
+        assertNull(actual.getProviderType());
+        assertThat(actual.getProps(), is(new Properties()));
     }
 }

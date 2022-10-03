@@ -15,12 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.state;
+package org.apache.shardingsphere.mode.repository.cluster.consul.props;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
- * Data source state.
+ * Typed property key of Consul.
  */
-public enum DataSourceState {
+@RequiredArgsConstructor
+@Getter
+public enum ConsulPropertyKey implements TypedPropertyKey {
     
-    DISABLED, ENABLED
+    /**
+     * Time to live seconds.
+     */
+    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30s", String.class),
+    
+    /**
+     *Time to live seconds.
+     */
+    LOCK_DELAY_TO_MICORSENDS("lockDelayToMicorsends", "2", String.class),
+    
+    /**
+     *Block query time seconds.
+     */
+    BLOCK_QUERY_TIME_TO_SECONDS("blockQueryTimeToSeconds", "60", long.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }
