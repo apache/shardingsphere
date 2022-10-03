@@ -88,7 +88,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
             String databaseName = values.get(0);
             String dataSourceName = values.get(2);
-            result.put(databaseName + "." + dataSourceName, DataSourceState.getDataSourceState(value.getStatus()));
+            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().toUpperCase()));
         });
         return result;
     }
