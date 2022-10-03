@@ -1979,6 +1979,10 @@ fetch
     : FETCH direction? (FROM | IN)? cursorName
     ;
 
+alterPackage
+    : ALTER PACKAGE packageName OWNER TO roleSpec
+    ;
+
 direction
     : NEXT #next
     | PRIOR #prior

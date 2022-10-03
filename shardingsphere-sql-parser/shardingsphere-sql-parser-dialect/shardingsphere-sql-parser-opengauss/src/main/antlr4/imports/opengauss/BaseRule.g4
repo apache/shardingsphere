@@ -1340,6 +1340,10 @@ directoryName
     : name
     ;
 
+packageName
+    : name
+    ;
+
 pathString
     : STRING_
     ;
