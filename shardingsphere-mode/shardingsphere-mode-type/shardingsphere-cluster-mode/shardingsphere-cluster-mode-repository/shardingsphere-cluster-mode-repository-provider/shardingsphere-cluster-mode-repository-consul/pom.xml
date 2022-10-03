@@ -12,8 +12,6 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
         <consul.api.version>1.4.1</consul.api.version>
     </properties>
     

@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ShardingConsul Query Params support wait time MILLISECONDS level.
- * @author Gavin.peng
  */
 public final class ShardingSphereQueryParams implements UrlParameters {
     

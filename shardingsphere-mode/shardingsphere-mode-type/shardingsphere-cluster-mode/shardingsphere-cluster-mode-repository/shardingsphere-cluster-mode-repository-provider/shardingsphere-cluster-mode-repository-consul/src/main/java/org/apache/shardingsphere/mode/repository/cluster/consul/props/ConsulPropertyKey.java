@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
  * Typed property key of Consul.
- * @Author: Gavin.peng
- * @Date: 2022/9/3 20:04
  */
 @RequiredArgsConstructor
 @Getter

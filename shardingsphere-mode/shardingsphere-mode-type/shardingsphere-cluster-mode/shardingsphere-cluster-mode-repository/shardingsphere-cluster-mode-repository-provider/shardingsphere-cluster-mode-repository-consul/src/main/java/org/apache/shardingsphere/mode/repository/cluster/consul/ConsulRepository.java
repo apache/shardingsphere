@@ -44,8 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Registry repository of Consul.
- * @Author: Gavin.peng
- * @Date: 2022/9/3 20:04
  */
 public class ConsulRepository implements ClusterPersistRepository {
     

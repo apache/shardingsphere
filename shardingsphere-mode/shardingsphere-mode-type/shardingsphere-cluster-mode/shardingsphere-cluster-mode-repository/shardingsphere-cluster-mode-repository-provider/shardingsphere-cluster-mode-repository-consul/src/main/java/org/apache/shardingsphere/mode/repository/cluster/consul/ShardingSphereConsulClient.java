@@ -22,8 +22,6 @@ import com.ecwid.consul.v1.ConsulRawClient;
 
 /**
  * ShardingSphere consul client support use raw client.
- * @Author: Gavin.peng
- * @Date: 2022/9/25 15:41
  */
 public class ShardingSphereConsulClient extends ConsulClient {
     
