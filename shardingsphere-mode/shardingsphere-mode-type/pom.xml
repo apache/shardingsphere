@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-standalone-mode</module>
         <module>shardingsphere-cluster-mode</module>
+        <!--        <module>shardingsphere-cluster-mode-repository-consul</module>-->
     </modules>
 </project>
