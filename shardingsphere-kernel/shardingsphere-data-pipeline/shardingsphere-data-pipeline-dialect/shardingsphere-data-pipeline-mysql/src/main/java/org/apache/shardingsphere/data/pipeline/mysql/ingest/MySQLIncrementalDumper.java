@@ -22,20 +22,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -59,7 +59,7 @@ import java.util.Optional;
  * MySQL incremental dumper.
  */
 @Slf4j
-public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
+public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
     
@@ -75,7 +75,6 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        super(dumperConfig, binlogPosition, channel, metaDataLoader);
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
         this.dumperConfig = dumperConfig;
         this.binlogPosition = (BinlogPosition) binlogPosition;
@@ -90,10 +89,6 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     @Override
     protected void runBlocking() {
-        dump();
-    }
-    
-    private void dump() {
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
@@ -105,11 +100,11 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             eventCount += handleEvent(event);
         }
         log.info("incremental dump, eventCount={}", eventCount);
-        pushRecord(new FinishedRecord(new PlaceholderPosition()));
+        channel.pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
     private int handleEvent(final AbstractBinlogEvent event) {
-        if (event instanceof PlaceholderEvent || filter(catalog, (AbstractRowsEvent) event)) {
+        if (event instanceof PlaceholderEvent || !((AbstractRowsEvent) event).getDatabaseName().equals(catalog) || !dumperConfig.containsTable(((AbstractRowsEvent) event).getTableName())) {
             createPlaceholderRecord(event);
             return 0;
         }
@@ -117,21 +112,28 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((WriteRowsEvent) event).getTableName());
             handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
             return 1;
-        } else if (event instanceof UpdateRowsEvent) {
+        }
+        if (event instanceof UpdateRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((UpdateRowsEvent) event).getTableName());
             handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
             return 1;
-        } else if (event instanceof DeleteRowsEvent) {
+        }
+        if (event instanceof DeleteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((DeleteRowsEvent) event).getTableName());
             handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
             return 1;
-        } else {
-            return 0;
         }
+        return 0;
     }
     
-    private boolean filter(final String database, final AbstractRowsEvent event) {
-        return !event.getDatabaseName().equals(database) || !dumperConfig.containsTable(event.getTableName());
+    private void createPlaceholderRecord(final AbstractBinlogEvent event) {
+        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
+        record.setCommitTime(event.getTimestamp() * 1000L);
+        channel.pushRecord(record);
+    }
+    
+    private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
+        return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private void handleWriteRowsEvent(final WriteRowsEvent event, final PipelineTableMetaData tableMetaData) {
@@ -142,12 +144,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
                 record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.getColumnMetaData(i + 1).isUniqueKey()));
             }
-            pushRecord(record);
+            channel.pushRecord(record);
         }
-    }
-    
-    private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
-        return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
     private void handleUpdateRowsEvent(final UpdateRowsEvent event, final PipelineTableMetaData tableMetaData) {
@@ -165,7 +163,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
                         (columnMetaData.isPrimaryKey() && updated) ? handleValue(columnMetaData, oldValue) : null,
                         handleValue(columnMetaData, newValue), updated, columnMetaData.isPrimaryKey()));
             }
-            pushRecord(record);
+            channel.pushRecord(record);
         }
     }
     
@@ -177,7 +175,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
                 record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, tableMetaData.getColumnMetaData(i + 1).isUniqueKey()));
             }
-            pushRecord(record);
+            channel.pushRecord(record);
         }
     }
     
@@ -191,16 +189,6 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
-    }
-    
-    private void createPlaceholderRecord(final AbstractBinlogEvent event) {
-        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
-        record.setCommitTime(event.getTimestamp() * 1000);
-        pushRecord(record);
-    }
-    
-    private void pushRecord(final Record record) {
-        channel.pushRecord(record);
     }
     
     @Override
