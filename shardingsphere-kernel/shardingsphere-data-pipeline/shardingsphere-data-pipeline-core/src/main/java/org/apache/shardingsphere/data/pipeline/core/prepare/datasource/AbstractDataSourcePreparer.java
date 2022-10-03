@@ -34,8 +34,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -59,33 +60,32 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
         CreateTableConfiguration createTableConfig = parameter.getCreateTableConfig();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType).orElse(null);
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
-        Set<String> createdSchemaNames = new HashSet<>();
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
+        Collection<String> createdSchemaNames = new HashSet<>();
         for (CreateTableEntry each : createTableConfig.getCreateTableEntries()) {
             String targetSchemaName = each.getTargetName().getSchemaName().getOriginal();
-            if (null == targetSchemaName) {
+            if (null == targetSchemaName || targetSchemaName.equalsIgnoreCase(defaultSchema) || createdSchemaNames.contains(targetSchemaName)) {
                 continue;
             }
-            if (targetSchemaName.equalsIgnoreCase(defaultSchema)) {
-                continue;
-            }
-            if (createdSchemaNames.contains(targetSchemaName)) {
-                continue;
-            }
-            try (Connection targetConnection = getCachedDataSource(each.getTargetDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
-                String sql = pipelineSQLBuilder.buildCreateSchemaSQL(targetSchemaName);
-                log.info("prepareTargetSchemas, sql={}", sql);
-                try (Statement statement = targetConnection.createStatement()) {
-                    statement.execute(sql);
-                    createdSchemaNames.add(targetSchemaName);
-                } catch (final SQLException ignored) {
-                }
+            Optional<String> sql = sqlBuilder.buildCreateSchemaSQL(targetSchemaName);
+            if (sql.isPresent()) {
+                executeCreateSchema(parameter.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
+                createdSchemaNames.add(targetSchemaName);
             }
         }
         log.info("prepareTargetSchemas, createdSchemaNames={}, defaultSchema={}", createdSchemaNames, defaultSchema);
     }
     
-    protected final PipelineDataSourceWrapper getCachedDataSource(final PipelineDataSourceConfiguration dataSourceConfig, final PipelineDataSourceManager dataSourceManager) {
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
+        log.info("prepareTargetSchemas, sql={}", sql);
+        try (Connection connection = getCachedDataSource(dataSourceManager, targetDataSourceConfig).getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(sql);
+            }
+        }
+    }
+    
+    protected final PipelineDataSourceWrapper getCachedDataSource(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration dataSourceConfig) {
         return dataSourceManager.getDataSource(dataSourceConfig);
     }
     

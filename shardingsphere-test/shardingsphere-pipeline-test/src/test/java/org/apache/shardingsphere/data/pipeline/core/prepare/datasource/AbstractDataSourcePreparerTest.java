@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -45,14 +43,6 @@ public final class AbstractDataSourcePreparerTest {
         public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         }
     };
-    
-    @Test
-    public void assertGetCachedDataSource() {
-        PipelineDataSourceConfiguration dataSourceConfig = mock(PipelineDataSourceConfiguration.class);
-        PipelineDataSourceManager dataSourceManager = mock(PipelineDataSourceManager.class);
-        preparer.getCachedDataSource(dataSourceConfig, dataSourceManager);
-        verify(dataSourceManager).getDataSource(dataSourceConfig);
-    }
     
     @Test
     public void assertExecuteTargetTableSQL() throws SQLException {

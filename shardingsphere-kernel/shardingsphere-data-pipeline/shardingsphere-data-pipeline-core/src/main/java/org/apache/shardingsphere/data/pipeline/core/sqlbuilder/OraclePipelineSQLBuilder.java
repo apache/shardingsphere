@@ -22,7 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.util.Map;
 import java.util.Set;
@@ -31,11 +30,6 @@ import java.util.Set;
  * Oracle pipeline SQL builder.
  */
 public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
-    
-    @Override
-    public String buildCreateSchemaSQL(final String schemaName) {
-        throw new UnsupportedSQLOperationException("buildCreateSchemaSQL");
-    }
     
     @Override
     public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {

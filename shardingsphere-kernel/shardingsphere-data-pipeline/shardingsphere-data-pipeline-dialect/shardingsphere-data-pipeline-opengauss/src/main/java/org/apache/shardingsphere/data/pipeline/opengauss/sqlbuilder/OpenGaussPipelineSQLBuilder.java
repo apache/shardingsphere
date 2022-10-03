@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineS
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,8 @@ import java.util.stream.Collectors;
 public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String buildCreateSchemaSQL(final String schemaName) {
-        return String.format("CREATE SCHEMA %s", quote(schemaName));
+    public Optional<String> buildCreateSchemaSQL(final String schemaName) {
+        return Optional.of(String.format("CREATE SCHEMA %s", quote(schemaName)));
     }
     
     @Override
