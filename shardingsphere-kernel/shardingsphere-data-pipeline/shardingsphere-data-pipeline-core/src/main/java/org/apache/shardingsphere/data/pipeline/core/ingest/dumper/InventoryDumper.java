@@ -19,10 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -75,7 +72,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final ColumnValueReader columnValueReader;
     
-    private final LazyInitializer<PipelineTableMetaData> metaDataLoader;
+    private final PipelineTableMetaDataLoader metaDataLoader;
     
     public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -85,13 +82,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         this.dataSource = dataSource;
         sqlBuilder = PipelineSQLBuilderFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType());
         columnValueReader = ColumnValueReaderFactory.getInstance(dumperConfig.getDataSourceConfig().getDatabaseType().getType());
-        this.metaDataLoader = new LazyInitializer<PipelineTableMetaData>() {
-            
-            @Override
-            protected PipelineTableMetaData initialize() {
-                return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName());
-            }
-        };
+        this.metaDataLoader = metaDataLoader;
     }
     
     @Override
@@ -105,11 +96,12 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             log.info("Ignored because of already finished.");
             return;
         }
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName());
         Object beginUniqueKeyValue = ((PrimaryKeyPosition<?>) position).getBeginValue();
+        int round = 1;
         try (Connection connection = dataSource.getConnection()) {
-            int round = 1;
             Optional<Object> maxUniqueKeyValue;
-            while ((maxUniqueKeyValue = dump(connection, 1 == round ? firstSQL : laterSQL, beginUniqueKeyValue, round++)).isPresent()) {
+            while ((maxUniqueKeyValue = dump(tableMetaData, connection, 1 == round ? firstSQL : laterSQL, beginUniqueKeyValue, round++)).isPresent()) {
                 beginUniqueKeyValue = maxUniqueKeyValue.get();
                 if (!isRunning()) {
                     log.info("Broke because of inventory dump is not running.");
@@ -126,13 +118,11 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
     }
     
-    @SneakyThrows(ConcurrentException.class)
-    private Optional<Object> dump(final Connection connection, final String sql, final Object beginUniqueKeyValue, final int round) throws SQLException {
+    private Optional<Object> dump(final PipelineTableMetaData tableMetaData, final Connection connection, final String sql, final Object beginUniqueKeyValue, final int round) throws SQLException {
         if (null != dumperConfig.getRateLimitAlgorithm()) {
             dumperConfig.getRateLimitAlgorithm().intercept(JobOperationType.SELECT, 1);
         }
         int batchSize = dumperConfig.getBatchSize();
-        PipelineTableMetaData tableMetaData = metaDataLoader.get();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             setParameters(preparedStatement, batchSize, beginUniqueKeyValue);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
