@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.prepare.datasource;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
@@ -29,7 +28,6 @@ import java.sql.SQLException;
 /**
  * Data source preparer for MySQL.
  */
-@Slf4j
 public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
@@ -37,7 +35,7 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
         for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
-            try (Connection targetConnection = getCachedDataSource(each.getTargetDataSourceConfig(), dataSourceManager).getConnection()) {
+            try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
                 executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(createTargetTableSQL));
             }
         }
