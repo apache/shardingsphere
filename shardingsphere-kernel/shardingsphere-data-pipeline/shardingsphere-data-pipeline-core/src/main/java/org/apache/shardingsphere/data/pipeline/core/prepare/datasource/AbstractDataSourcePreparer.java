@@ -83,6 +83,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 statement.execute(sql);
             }
         } catch (final SQLException ignored) {
+            // TODO should not ignore the exception, if do not catch it, the scaling IT will fail.
         }
     }
     
