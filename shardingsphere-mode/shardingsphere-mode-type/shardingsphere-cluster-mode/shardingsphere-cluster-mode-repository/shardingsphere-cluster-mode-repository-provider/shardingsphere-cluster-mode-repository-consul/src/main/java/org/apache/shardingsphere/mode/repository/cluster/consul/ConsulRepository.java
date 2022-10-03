@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.ConsulRawClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
@@ -40,8 +40,6 @@ import java.util.Map;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
@@ -52,9 +50,7 @@ import java.util.concurrent.locks.Lock;
  */
 public class ConsulRepository implements ClusterPersistRepository {
     
-    private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-    
-    private ConsulClient consulClient;
+    private ShardingSphereConsulClient consulClient;
     
     private ConsulInternalLockHolder consulInternalLockHolder;
     
@@ -64,11 +60,10 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        this.consulClient = new ConsulClient(config.getServerLists());
+        this.consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
         this.consulProperties = new ConsulProperties(config.getProps());
         this.consulInternalLockHolder = new ConsulInternalLockHolder(this.consulClient, this.consulProperties);
-        this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(2);
-        this.watchKeyMap = new HashMap<String, Set<String>>(4);
+        this.watchKeyMap = new HashMap<String, Set<String>>(6);
     }
     
     @Override
@@ -110,13 +105,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         PutParams putParams = new PutParams();
         putParams.setAcquireSession(sessionId);
         this.consulClient.setKVValue(key, value, putParams);
-        this.scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
-            
-            @Override
-            public void run() {
-                ConsulRepository.this.consulClient.renewSession(sessionId, QueryParams.DEFAULT);
-            }
-        }, 5, 10, TimeUnit.SECONDS);
+        this.consulInternalLockHolder.generatorFlushSessionTtlTask(this.consulClient, sessionId);
     }
     
     @Override
@@ -127,6 +116,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
         Thread watchThread = new Thread(new Runnable() {
+            
             @Override
             public void run() {
                 watchChildKeyChangeEvent(key, listener);

@@ -35,5 +35,12 @@
             <version>1.4.1</version>
         </dependency>
         
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.5</version>
+            <scope>compile</scope>
+        </dependency>
+        
     </dependencies>
 </project>
