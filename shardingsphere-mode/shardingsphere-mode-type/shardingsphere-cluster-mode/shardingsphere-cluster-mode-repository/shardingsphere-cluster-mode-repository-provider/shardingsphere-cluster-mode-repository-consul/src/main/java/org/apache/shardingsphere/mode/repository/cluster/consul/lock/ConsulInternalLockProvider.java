@@ -36,6 +36,8 @@ import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereCo
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereQueryParams;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -44,14 +46,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Consul internal lock holder.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class ConsulInternalLockHolder {
+public class ConsulInternalLockProvider implements InternalLockProvider {
     
     private static final String CONSUL_ROOT_PATH = "sharding/lock";
     
@@ -71,13 +72,18 @@ public class ConsulInternalLockHolder {
     
     private final ConsulProperties consulProps;
     
+    @Override
+    public InternalLock getInternalLock(final String lockKey) {
+        return getInternalReentrantMutexLock(lockKey);
+    }
+    
     /**
      * Get internal mutex lock.
      *
      * @param lockName lock name
      * @return internal mutex lock
      */
-    public Lock getInternalMutexLock(final String lockName) {
+    public InternalLock getInternalMutexLock(final String lockName) {
         return getInternalReentrantMutexLock(lockName);
     }
     
@@ -87,7 +93,7 @@ public class ConsulInternalLockHolder {
      * @param lockName lock name
      * @return internal reentrant mutex lock
      */
-    public Lock getInternalReentrantMutexLock(final String lockName) {
+    public InternalLock getInternalReentrantMutexLock(final String lockName) {
         ConsulInternalLock result = locks.get(lockName);
         if (result == null) {
             result = createLock(lockName);
@@ -127,7 +133,7 @@ public class ConsulInternalLockHolder {
     /**
      * Consul internal lock.
      */
-    private static class ConsulInternalLock implements Lock {
+    private static class ConsulInternalLock implements InternalLock {
         
         private final ConsulClient consulClient;
         
@@ -144,7 +150,7 @@ public class ConsulInternalLockHolder {
             this.lockSessionMap = new ThreadLocal<String>();
         }
         
-        @Override
+        // @Override
         public void lock() {
             try {
                 // support reentrant lock
@@ -160,7 +166,7 @@ public class ConsulInternalLockHolder {
                     if (response.getValue()) {
                         // lock success
                         lockSessionMap.set(sessionId);
-                        ConsulInternalLockHolder.generatorFlushSessionTtlTask(consulClient, sessionId);
+                        ConsulInternalLockProvider.generatorFlushSessionTtlTask(consulClient, sessionId);
                         if (log.isDebugEnabled()) {
                             log.debug("Session id {} get lock {} is success", sessionId, lockName);
                         }
@@ -188,17 +194,12 @@ public class ConsulInternalLockHolder {
         }
         
         @Override
-        public boolean tryLock() {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public boolean tryLock(final long time, final TimeUnit timeUnit) {
+        public boolean tryLock(final long timeoutMillis) {
             try {
                 if (StringUtils.isNotEmpty(lockSessionMap.get())) {
                     return true;
                 }
-                long lockTime = timeUnit.toMillis(time);
+                long lockTime = timeoutMillis;
                 PutParams putParams = new PutParams();
                 String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockName;
                 while (true) {
@@ -208,7 +209,7 @@ public class ConsulInternalLockHolder {
                     if (response.getValue()) {
                         // lock success
                         lockSessionMap.set(sessionId);
-                        ConsulInternalLockHolder.generatorFlushSessionTtlTask(this.consulClient, sessionId);
+                        ConsulInternalLockProvider.generatorFlushSessionTtlTask(this.consulClient, sessionId);
                         return true;
                     } else {
                         // lock failed,exist race so retry
@@ -251,12 +252,12 @@ public class ConsulInternalLockHolder {
             }
         }
         
-        @Override
+        // @Override
         public void lockInterruptibly() {
             throw new UnsupportedOperationException();
         }
         
-        @Override
+        // @Override
         public Condition newCondition() {
             throw new UnsupportedOperationException();
         }

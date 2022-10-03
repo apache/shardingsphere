@@ -24,14 +24,14 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulInternalLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Registry repository of Consul.
@@ -52,7 +51,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private ShardingSphereConsulClient consulClient;
     
-    private ConsulInternalLockHolder consulInternalLockHolder;
+    private ConsulInternalLockProvider consulInternalLockProvider;
     
     private ConsulProperties consulProperties;
     
@@ -62,7 +61,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     public void init(final ClusterPersistRepositoryConfiguration config) {
         this.consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
         this.consulProperties = new ConsulProperties(config.getProps());
-        this.consulInternalLockHolder = new ConsulInternalLockHolder(this.consulClient, this.consulProperties);
+        this.consulInternalLockProvider = new ConsulInternalLockProvider(this.consulClient, this.consulProperties);
         this.watchKeyMap = new HashMap<String, Set<String>>(6);
     }
     
@@ -105,12 +104,24 @@ public class ConsulRepository implements ClusterPersistRepository {
         PutParams putParams = new PutParams();
         putParams.setAcquireSession(sessionId);
         this.consulClient.setKVValue(key, value, putParams);
-        this.consulInternalLockHolder.generatorFlushSessionTtlTask(this.consulClient, sessionId);
+        this.consulInternalLockProvider.generatorFlushSessionTtlTask(this.consulClient, sessionId);
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        return null;
+    public void persistExclusiveEphemeral(final String key, final String value) {
+        this.persistEphemeral(key, value);
+    }
+    
+    @Override
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        InternalLock lock = this.consulInternalLockProvider.getInternalMutexLock(lockKey);
+        return lock.tryLock(timeoutMillis);
+    }
+    
+    @Override
+    public void unlock(final String lockKey) {
+        InternalLock lock = this.consulInternalLockProvider.getInternalMutexLock(lockKey);
+        lock.unlock();
     }
     
     @Override
@@ -176,21 +187,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     private void fireDataChangeEvent(final GetValue getValue, final DataChangedEventListener listener, final DataChangedEvent.Type type) {
         DataChangedEvent event = new DataChangedEvent(getValue.getKey(), getValue.getValue(), type);
         listener.onChange(event);
-    }
-    
-    @Override
-    public void watchSessionConnection(final InstanceContext instanceContext) {
-        // TODO
-    }
-    
-    @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return this.consulInternalLockHolder.getInternalMutexLock(lockName);
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return this.consulInternalLockHolder.getInternalReentrantMutexLock(lockName);
     }
     
     @Override
