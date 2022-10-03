@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.parser.distsql.handler.query;
 
-import java.util.Arrays;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
@@ -63,20 +63,11 @@ public final class SQLParserRuleQueryResultSetTest {
         assertThat(new SQLParserRuleQueryResultSet().getColumnNames(), is(Arrays.asList("sql_comment_parse_enable", "parse_tree_cache", "sql_statement_cache")));
     }
     
-    @Test
-    public void assertGetType() {
-        assertThat(new SQLParserRuleQueryResultSet().getType(), is(ShowSQLParserRuleStatement.class.getName()));
-    }
-    
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         SQLParserRule sqlParserRule = mock(SQLParserRule.class);
-        when(sqlParserRule.getConfiguration()).thenReturn(createSQLParserRuleConfiguration());
+        when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535)));
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         when(result.findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
         return result;
-    }
-    
-    private SQLParserRuleConfiguration createSQLParserRuleConfiguration() {
-        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535));
     }
 }
