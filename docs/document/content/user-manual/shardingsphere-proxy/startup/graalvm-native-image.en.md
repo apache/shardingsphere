@@ -53,14 +53,14 @@ corresponding `Docker Image` through the `native-image` component of `GraalVM`.
   Image.
 
 ```bash
-./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-native-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 - Scenario 2: It is necessary to use a JAR that has an SPI implementation or a third-party dependent JAR of a LICENSE
   such as GPL V2.
 
 - Add SPI implementation JARs or third-party dependent JARs to `dependencies`
-  in `shardingsphere-distribution/shardingsphere-proxy-distribution/pom.xml`. Examples are as follows
+  in `shardingsphere-distribution/shardingsphere-proxy-native-distribution/pom.xml`. Examples are as follows
 
 ```xml
 
@@ -78,16 +78,10 @@ corresponding `Docker Image` through the `native-image` component of `GraalVM`.
 </dependencies>
 ```
 
-- Execute the following commands in the same directory as Git Source.
-
-```bash
-./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
-```
-
 - Build GraalVM Native Image via command line.
 
 ```bash
-./mvnw org.graalvm.buildtools:native-maven-plugin:compile-no-fork -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -Pnative -DskipTests
+./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-native-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 3. Start Native Image through the command line, you need to bring two parameters,
@@ -103,7 +97,7 @@ corresponding `Docker Image` through the `native-image` component of `GraalVM`.
    dependencies, execute the following commands on the command line.
 
 ```shell
-./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat .skip=true clean package
+./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-native-distribution -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat .skip=true clean package
 ```
 
 - Assuming that there is a `conf` folder containing `server.yaml` as `./custom/conf`, you can start the Docker Image
@@ -122,10 +116,10 @@ services:
 ```
 
 - If you use the default build configuration, you can of course use `scratch` as the base docker image
-  for `shardingsphere-distribution/shardingsphere-proxy-distribution/Dockerfile-Native`.
+  for `shardingsphere-distribution/shardingsphere-proxy-native-distribution/Dockerfile`.
   But if you actively add `jvmArgs` to `-H:+StaticExecutableWithDynamicLibC` for the `native profile` of `pom.xml`,
   To statically link everything except `glic`, you should switch the base image to `busybox:glic`. Refer
   to https://www.graalvm.org/22.2/reference-manual/native-image/guides/build-static-executables/.
   Also note that some third-party dependencies will require more system libraries, such as `libdl`.
-  So make sure to adjust the base docker image and the content of `pom.xml` and `Dockerfile-Native`
-  under `shardingsphere-distribution/shardingsphere-proxy-distribution` according to your usage.
+  So make sure to adjust the base docker image and the content of `pom.xml` and `Dockerfile`
+  under `shardingsphere-distribution/shardingsphere-proxy-native-distribution` according to your usage.

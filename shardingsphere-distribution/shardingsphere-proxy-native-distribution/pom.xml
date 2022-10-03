@@ -16,115 +16,116 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-distribution</artifactId>
+        <groupId>org.apache.shardingsphere</groupId>
         <version>5.2.1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-proxy-distribution</artifactId>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
-    
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>shardingsphere-proxy-native-distribution</artifactId>
+
+    <properties>
+        <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
+        <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
+        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+        <native.maven.plugin.version>0.9.14</native.maven.plugin.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.opengauss</groupId>
             <artifactId>opengauss-jdbc</artifactId>
             <scope>runtime</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-    
+
     <profiles>
         <profile>
-            <id>release</id>
+            <id>native</id>
             <build>
-                <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven-compiler-plugin.version}</version>
                         <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/shardingsphere-proxy-binary-distribution.xml</descriptor>
-                            </descriptors>
+                            <source>17</source>
+                            <target>17</target>
+                            <compilerArgument>--enable-preview</compilerArgument>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <extensions>true</extensions>
                         <executions>
                             <execution>
-                                <id>shardingsphere-proxy-bin</id>
+                                <id>build-native</id>
                                 <goals>
-                                    <goal>single</goal>
+                                    <goal>compile-no-fork</goal>
                                 </goals>
                                 <phase>package</phase>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>net.nicoulaj.maven.plugins</groupId>
-                        <artifactId>checksum-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>docker</id>
-            <properties>
-                <proxy.image.repository>apache/shardingsphere-proxy</proxy.image.repository>
-                <proxy.image.tag>${project.version}</proxy.image.tag>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <configuration>
-                            <repository>${proxy.image.repository}</repository>
-                            <tag>${proxy.image.tag}</tag>
-                            <buildArgs>
-                                <APP_NAME>${project.build.finalName}-shardingsphere-proxy-bin</APP_NAME>
-                            </buildArgs>
-                        </configuration>
-                        <executions>
                             <execution>
-                                <id>shardingsphere-proxy-bin</id>
+                                <id>test-native</id>
                                 <goals>
-                                    <goal>build</goal>
+                                    <goal>test</goal>
                                 </goals>
+                                <phase>test</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <imageName>${native.image.name}</imageName>
+                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
+                            <fallback>false</fallback>
+                            <verbose>true</verbose>
+                            <buildArgs>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                            </buildArgs>
+                            <jvmArgs>
+                                <arg>--enable-preview</arg>
+                            </jvmArgs>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
-            <id>docker.buildx.push</id>
+            <id>docker.native</id>
             <properties>
-                <proxy.image.platform>linux/amd64,linux/arm64</proxy.image.platform>
-                <proxy.image.repository>apache/shardingsphere-proxy</proxy.image.repository>
+                <proxy.image.repository>${native.image.repository}</proxy.image.repository>
                 <proxy.image.tag>${project.version}</proxy.image.tag>
             </properties>
             <build>
@@ -132,7 +133,43 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>--pull</argument>
+                                        <argument>--build-arg</argument>
+                                        <argument>APP_NAME=${native.image.name}</argument>
+                                        <argument>.</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker.buildx.push.native</id>
+            <properties>
+                <proxy.image.platform>linux/amd64,linux/arm64</proxy.image.platform>
+                <proxy.image.repository>${native.image.repository}</proxy.image.repository>
+                <proxy.image.tag>${project.version}</proxy.image.tag>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>create builder</id>
@@ -170,7 +207,7 @@
                                         <argument>--platform</argument>
                                         <argument>${proxy.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-bin</argument>
+                                        <argument>APP_NAME=${native.image.name}</argument>
                                         <argument>.</argument>
                                     </arguments>
                                 </configuration>
@@ -190,7 +227,7 @@
                                         <argument>--platform</argument>
                                         <argument>${proxy.image.platform}</argument>
                                         <argument>--build-arg</argument>
-                                        <argument>APP_NAME=${project.build.finalName}-shardingsphere-proxy-bin</argument>
+                                        <argument>APP_NAME=${native.image.name}</argument>
                                         <argument>.</argument>
                                         <argument>-t</argument>
                                         <argument>${proxy.image.repository}:${proxy.image.tag}</argument>

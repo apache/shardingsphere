@@ -32,6 +32,7 @@
         <module>shardingsphere-src-distribution</module>
         <module>shardingsphere-jdbc-distribution</module>
         <module>shardingsphere-proxy-distribution</module>
+        <module>shardingsphere-proxy-native-distribution</module>
     </modules>
     
     <properties>

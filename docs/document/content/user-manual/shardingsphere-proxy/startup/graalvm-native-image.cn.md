@@ -49,12 +49,12 @@ weight = 2
 - 在 Git Source 同级目录下执行如下命令, 直接完成 Native Image 的构建。
 
 ```bash
-./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-native-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 - 情形二：需要使用存在 SPI 实现的 JAR 或 GPL V2 等 LICENSE 的第三方依赖的 JAR。
 
-- 在 `shardingsphere-distribution/shardingsphere-proxy-distribution/pom.xml` 的 `dependencies` 加入存在 SPI 实现的 JAR
+- 在 `shardingsphere-distribution/shardingsphere-proxy-native-distribution/pom.xml` 的 `dependencies` 加入存在 SPI 实现的 JAR
   或第三方依赖的 JAR。示例如下
 
 ```xml
@@ -73,16 +73,10 @@ weight = 2
 </dependencies>
 ```
 
-- 在 Git Source 同级目录下执行如下命令。
-
-```bash
-./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
-```
-
 - 通过命令行构建 GraalVM Native Image。
 
 ```bash
-./mvnw org.graalvm.buildtools:native-maven-plugin:compile-no-fork -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -Pnative -DskipTests
+./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-native-distribution -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 3. 通过命令行启动 Native Image, 需要带上两个参数，
@@ -96,7 +90,7 @@ weight = 2
 4. 如果需要构建 Docker Image, 在添加后存在 SPI 实现的依赖或第三方依赖后, 在命令行执行如下命令。
 
 ```shell
-./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-native-distribution -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 - 假设存在包含`server.yaml` 的 `conf` 文件夹为 `./custom/conf`，可通过如下的 `docker-compose.yml` 文件启动 GraalVM Native
@@ -114,11 +108,11 @@ services:
       - "3307:3307"
 ```
 
-- 如果您使用默认构建配置， 你当然可以为 `shardingsphere-distribution/shardingsphere-proxy-distribution/Dockerfile-Native`
+- 如果您使用默认构建配置， 你当然可以为 `shardingsphere-distribution/shardingsphere-proxy-native-distribution/Dockerfile`
   使用 `scratch` 作为 base docker image。
   但如果您主动为`pom.xml`的`native profile`添加`jvmArgs`为`-H:+StaticExecutableWithDynamicLibC`，
   以静态链接除 `glic` 之外的所有内容，您应该切换 base image 到 `busybox:glic`。
   参考 https://www.graalvm.org/22.2/reference-manual/native-image/guides/build-static-executables/ 。
   另请注意，某些第三方依赖将需要更多系统库，例如 `libdl`。
-  因此请确保根据您的使用情况调整 base docker image 和`shardingsphere-distribution/shardingsphere-proxy-distribution`
-  下的 `pom.xml` 和 `Dockerfile-Native` 的内容。
+  因此请确保根据您的使用情况调整 base docker image 和`shardingsphere-distribution/shardingsphere-proxy-native-distribution`
+  下的 `pom.xml` 和 `Dockerfile` 的内容。
