@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.transaction.rule.builder;
 
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.Test;
+
+import java.util.Properties;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
-
-import java.util.Properties;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.constant.TransactionOrder;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.Test;
 
 public final class DefaultTransactionRuleConfigurationBuilderTest {
     
@@ -35,15 +35,5 @@ public final class DefaultTransactionRuleConfigurationBuilderTest {
         assertThat(actual.getDefaultType(), is(TransactionType.LOCAL.name()));
         assertNull(actual.getProviderType());
         assertThat(actual.getProps(), is(new Properties()));
-    }
-    
-    @Test
-    public void assertGetOrder() {
-        assertThat(new DefaultTransactionRuleConfigurationBuilder().getOrder(), is(TransactionOrder.ORDER));
-    }
-    
-    @Test
-    public void assertGetTypeClass() {
-        assertThat(new DefaultTransactionRuleConfigurationBuilder().getTypeClass().toString(), is(TransactionRuleBuilder.class.toString()));
     }
 }
