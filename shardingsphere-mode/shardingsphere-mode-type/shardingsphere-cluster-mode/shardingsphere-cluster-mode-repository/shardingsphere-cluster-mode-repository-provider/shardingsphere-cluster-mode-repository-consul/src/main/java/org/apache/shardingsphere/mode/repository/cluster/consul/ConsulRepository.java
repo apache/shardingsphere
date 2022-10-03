@@ -31,15 +31,13 @@ import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProp
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Map;
-import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -49,88 +47,83 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private ShardingSphereConsulClient consulClient;
     
+    private ConsulProperties consulProps;
+    
     private ConsulInternalLockProvider consulInternalLockProvider;
     
-    private ConsulProperties consulProperties;
-    
-    private Map<String, Set<String>> watchKeyMap;
+    private Map<String, Collection<String>> watchKeyMap;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config) {
-        this.consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
-        this.consulProperties = new ConsulProperties(config.getProps());
-        this.consulInternalLockProvider = new ConsulInternalLockProvider(this.consulClient, this.consulProperties);
-        this.watchKeyMap = new HashMap<String, Set<String>>(6);
+        consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
+        consulProps = new ConsulProperties(config.getProps());
+        consulInternalLockProvider = new ConsulInternalLockProvider(consulClient, consulProps);
+        watchKeyMap = new HashMap<>(6, 1);
     }
     
     @Override
     public String get(final String key) {
-        Response<GetValue> response = this.consulClient.getKVValue(key);
-        return response != null ? response.getValue().getValue() : null;
+        Response<GetValue> response = consulClient.getKVValue(key);
+        return null == response ? null : response.getValue().getValue();
     }
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        Response<List<String>> response = this.consulClient.getKVKeysOnly(key);
-        return response != null ? response.getValue() : Collections.EMPTY_LIST;
+        Response<List<String>> response = consulClient.getKVKeysOnly(key);
+        return null == response ? Collections.emptyList() : response.getValue();
     }
     
     @Override
     public void persist(final String key, final String value) {
-        this.consulClient.setKVValue(key, value);
+        consulClient.setKVValue(key, value);
     }
     
     @Override
     public void delete(final String key) {
-        this.consulClient.deleteKVValue(key);
+        consulClient.deleteKVValue(key);
     }
     
     @Override
     public void close() {
-        // this.consulClien
-        // this.consulClient.
+        // TODO
     }
     
     @Override
     public void persistEphemeral(final String key, final String value) {
-        NewSession session = new NewSession();
-        session.setName(key);
-        session.setBehavior(Session.Behavior.DELETE);
-        session.setTtl(this.consulProperties.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS));
-        Response<String> response = this.consulClient.sessionCreate(session, QueryParams.DEFAULT);
-        final String sessionId = response.getValue();
+        Response<String> response = consulClient.sessionCreate(createNewSession(key), QueryParams.DEFAULT);
+        String sessionId = response.getValue();
         PutParams putParams = new PutParams();
         putParams.setAcquireSession(sessionId);
-        this.consulClient.setKVValue(key, value, putParams);
-        this.consulInternalLockProvider.generatorFlushSessionTtlTask(this.consulClient, sessionId);
+        consulClient.setKVValue(key, value, putParams);
+        consulInternalLockProvider.generatorFlushSessionTtlTask(consulClient, sessionId);
+    }
+    
+    private NewSession createNewSession(final String key) {
+        NewSession result = new NewSession();
+        result.setName(key);
+        result.setBehavior(Session.Behavior.DELETE);
+        result.setTtl(consulProps.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS));
+        return result;
     }
     
     @Override
     public void persistExclusiveEphemeral(final String key, final String value) {
-        this.persistEphemeral(key, value);
+        persistEphemeral(key, value);
     }
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        InternalLock lock = this.consulInternalLockProvider.getInternalMutexLock(lockKey);
-        return lock.tryLock(timeoutMillis);
+        return consulInternalLockProvider.getInternalMutexLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        InternalLock lock = this.consulInternalLockProvider.getInternalMutexLock(lockKey);
-        lock.unlock();
+        consulInternalLockProvider.getInternalMutexLock(lockKey).unlock();
     }
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        Thread watchThread = new Thread(new Runnable() {
-            
-            @Override
-            public void run() {
-                watchChildKeyChangeEvent(key, listener);
-            }
-        });
+        Thread watchThread = new Thread(() -> watchChildKeyChangeEvent(key, listener));
         watchThread.setDaemon(true);
         watchThread.start();
     }
@@ -139,52 +132,48 @@ public class ConsulRepository implements ClusterPersistRepository {
         AtomicBoolean running = new AtomicBoolean(true);
         long currentIndex = 0;
         while (running.get()) {
-            Response<List<GetValue>> response = consulClient.getKVValues(key,
-                    new QueryParams(consulProperties.getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_TO_SECONDS), currentIndex));
+            Response<List<GetValue>> response = consulClient.getKVValues(key, new QueryParams(consulProps.getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_TO_SECONDS), currentIndex));
             Long index = response.getConsulIndex();
-            if (index != null && currentIndex == 0) {
+            if (null != index && 0 == currentIndex) {
                 currentIndex = index;
-                Set<String> watchKeySet = watchKeyMap.get(key);
-                if (watchKeySet == null) {
-                    watchKeySet = new HashSet<>();
+                Collection<String> watchKeys = watchKeyMap.get(key);
+                if (null == watchKeys) {
+                    watchKeys = new HashSet<>();
                 }
-                for (GetValue getValue : response.getValue()) {
-                    if (!watchKeySet.contains(getValue.getKey())) {
-                        watchKeySet.add(getValue.getKey());
-                    }
+                for (GetValue each : response.getValue()) {
+                    watchKeys.add(each.getKey());
                 }
                 continue;
             }
-            if (index != null && index > currentIndex) {
+            if (null != index && index > currentIndex) {
                 currentIndex = index;
-                Set<String> newKeySet = new HashSet<>(response.getValue().size());
-                Set<String> watchKeySet = watchKeyMap.get(key);
-                for (GetValue getValue : response.getValue()) {
-                    newKeySet.add(getValue.getKey());
-                    if (!watchKeySet.contains(getValue.getKey())) {
-                        watchKeySet.add(getValue.getKey());
-                        fireDataChangeEvent(getValue, listener, DataChangedEvent.Type.ADDED);
-                    } else if (watchKeySet.contains(getValue.getKey()) && getValue.getModifyIndex() >= currentIndex) {
-                        fireDataChangeEvent(getValue, listener, DataChangedEvent.Type.UPDATED);
+                Collection<String> newKeys = new HashSet<>(response.getValue().size());
+                Collection<String> watchKeys = watchKeyMap.get(key);
+                for (GetValue each : response.getValue()) {
+                    newKeys.add(each.getKey());
+                    if (!watchKeys.contains(each.getKey())) {
+                        watchKeys.add(each.getKey());
+                        fireDataChangeEvent(each, listener, DataChangedEvent.Type.ADDED);
+                    } else if (watchKeys.contains(each.getKey()) && each.getModifyIndex() >= currentIndex) {
+                        fireDataChangeEvent(each, listener, DataChangedEvent.Type.UPDATED);
                     }
                 }
-                for (String existKey : watchKeySet) {
-                    if (!newKeySet.contains(existKey)) {
+                for (String each : watchKeys) {
+                    if (!newKeys.contains(each)) {
                         GetValue getValue = new GetValue();
-                        getValue.setKey(existKey);
+                        getValue.setKey(each);
                         fireDataChangeEvent(getValue, listener, DataChangedEvent.Type.DELETED);
                     }
                 }
-                this.watchKeyMap.put(key, newKeySet);
-            } else if (index != null && index < currentIndex) {
+                watchKeyMap.put(key, newKeys);
+            } else if (null != index && index < currentIndex) {
                 currentIndex = 0;
             }
         }
     }
     
     private void fireDataChangeEvent(final GetValue getValue, final DataChangedEventListener listener, final DataChangedEvent.Type type) {
-        DataChangedEvent event = new DataChangedEvent(getValue.getKey(), getValue.getValue(), type);
-        listener.onChange(event);
+        listener.onChange(new DataChangedEvent(getValue.getKey(), getValue.getValue(), type));
     }
     
     @Override
@@ -196,5 +185,4 @@ public class ConsulRepository implements ClusterPersistRepository {
     public Collection<String> getTypeAliases() {
         return ClusterPersistRepository.super.getTypeAliases();
     }
-    
 }
