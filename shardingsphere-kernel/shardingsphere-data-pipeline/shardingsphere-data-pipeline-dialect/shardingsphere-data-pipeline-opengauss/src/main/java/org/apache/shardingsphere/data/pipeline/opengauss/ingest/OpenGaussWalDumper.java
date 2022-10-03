@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
@@ -47,7 +47,7 @@ import java.sql.SQLException;
  * WAL dumper of openGauss.
  */
 @Slf4j
-public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosition> {
+public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
     
@@ -61,7 +61,6 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     
     public OpenGaussWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        super(dumperConfig, position, channel, metaDataLoader);
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
@@ -73,10 +72,6 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     
     @Override
     protected void runBlocking() {
-        dump();
-    }
-    
-    private void dump() {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
@@ -88,8 +83,7 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
                     continue;
                 }
                 AbstractWalEvent event = decodingPlugin.decode(message, new OpenGaussLogSequenceNumber(stream.getLastReceiveLSN()));
-                Record record = walEventConverter.convert(event);
-                pushRecord(record);
+                channel.pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
             throw new IngestException(ex);
@@ -105,10 +99,6 @@ public final class OpenGaussWalDumper extends AbstractIncrementalDumper<WalPosit
     
     private PgConnection getReplicationConnectionUnwrap() throws SQLException {
         return logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).unwrap(PgConnection.class);
-    }
-    
-    private void pushRecord(final Record record) {
-        channel.pushRecord(record);
     }
     
     @Override

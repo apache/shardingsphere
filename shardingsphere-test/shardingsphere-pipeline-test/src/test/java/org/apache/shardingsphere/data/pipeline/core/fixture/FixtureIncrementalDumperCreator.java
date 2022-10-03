@@ -39,7 +39,7 @@ public final class FixtureIncrementalDumperCreator implements IncrementalDumperC
     @Override
     public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position,
                                                      final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        return new FixtureIncrementalDumper(dumperConfig, position, channel, metaDataLoader);
+        return new FixtureIncrementalDumper();
     }
     
     @Override
