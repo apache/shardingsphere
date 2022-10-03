@@ -54,7 +54,6 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 
 /**
  * MySQL incremental dumper.
@@ -62,13 +61,11 @@ import java.util.Random;
 @Slf4j
 public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<BinlogPosition> {
     
-    private final BinlogPosition binlogPosition;
-    
     private final DumperConfiguration dumperConfig;
     
-    private final PipelineTableMetaDataLoader metaDataLoader;
+    private final BinlogPosition binlogPosition;
     
-    private final Random random = new SecureRandom();
+    private final PipelineTableMetaDataLoader metaDataLoader;
     
     private final PipelineChannel channel;
     
@@ -79,15 +76,15 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         super(dumperConfig, binlogPosition, channel, metaDataLoader);
-        this.binlogPosition = (BinlogPosition) binlogPosition;
-        this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
+        this.dumperConfig = dumperConfig;
+        this.binlogPosition = (BinlogPosition) binlogPosition;
         this.channel = channel;
         this.metaDataLoader = metaDataLoader;
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getJdbcUrl());
         DataSourceMetaData metaData = DatabaseTypeFactory.getInstance("MySQL").getDataSourceMetaData(jdbcConfig.getJdbcUrl(), null);
-        client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
+        client = new MySQLClient(new ConnectInfo(new SecureRandom().nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
         catalog = metaData.getCatalog();
     }
     

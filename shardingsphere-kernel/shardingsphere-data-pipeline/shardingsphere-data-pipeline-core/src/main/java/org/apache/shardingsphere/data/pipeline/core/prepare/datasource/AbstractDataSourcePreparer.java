@@ -52,7 +52,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) throws SQLException {
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
         DatabaseType targetDatabaseType = parameter.getTargetDatabaseType();
         if (!targetDatabaseType.isSchemaAvailable()) {
             log.info("prepareTargetSchemas, target database does not support schema, ignore, targetDatabaseType={}", targetDatabaseType);
@@ -76,12 +76,13 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         log.info("prepareTargetSchemas, createdSchemaNames={}, defaultSchema={}", createdSchemaNames, defaultSchema);
     }
     
-    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) throws SQLException {
+    private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) {
         log.info("prepareTargetSchemas, sql={}", sql);
         try (Connection connection = getCachedDataSource(dataSourceManager, targetDataSourceConfig).getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
+        } catch (final SQLException ignored) {
         }
     }
     

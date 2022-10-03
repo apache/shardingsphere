@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
@@ -49,26 +50,26 @@ import java.sql.SQLException;
 @Slf4j
 public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosition> {
     
-    private final WalPosition walPosition;
-    
     private final DumperConfiguration dumperConfig;
     
-    private final LogicalReplication logicalReplication = new LogicalReplication();
+    private final WalPosition walPosition;
+    
+    private final PipelineChannel channel;
     
     private final WalEventConverter walEventConverter;
     
-    private final PipelineChannel channel;
+    private final LogicalReplication logicalReplication;
     
     public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         super(dumperConfig, position, channel, metaDataLoader);
-        walPosition = (WalPosition) position;
-        if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
-        }
+        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
+                () -> new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
+        walPosition = (WalPosition) position;
         this.channel = channel;
         walEventConverter = new WalEventConverter(dumperConfig, metaDataLoader);
+        logicalReplication = new LogicalReplication();
     }
     
     @Override
