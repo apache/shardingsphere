@@ -123,7 +123,7 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build Scaling IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/caling -Pit.env.docker -DskipTests
+        run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
       - name: Run Scaling Daily MySQL Integration Test
         run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
       - name: Run Scaling Daily PostgreSQL Integration Test
