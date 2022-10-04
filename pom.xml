@@ -32,23 +32,23 @@
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
-        <module>shardingsphere-infra</module>
-        <module>shardingsphere-dialect-exception</module>
-        <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-distsql</module>
-        <module>shardingsphere-db-protocol</module>
-        <module>shardingsphere-mode</module>
-        <module>shardingsphere-kernel</module>
+        <module>infra</module>
+        <module>dialect-exception</module>
+        <module>sql-parser</module>
+        <module>distsql</module>
+        <module>db-protocol</module>
+        <module>mode</module>
+        <module>kernel</module>
         
-        <module>shardingsphere-jdbc</module>
-        <module>shardingsphere-proxy</module>
+        <module>jdbc</module>
+        <module>proxy</module>
         
-        <module>shardingsphere-features</module>
-        <module>shardingsphere-agent</module>
+        <module>features</module>
+        <module>agent</module>
         
-        <module>shardingsphere-test</module>
+        <module>test</module>
         
-        <module>shardingsphere-distribution</module>
+        <module>distribution</module>
     </modules>
     
     <properties>
