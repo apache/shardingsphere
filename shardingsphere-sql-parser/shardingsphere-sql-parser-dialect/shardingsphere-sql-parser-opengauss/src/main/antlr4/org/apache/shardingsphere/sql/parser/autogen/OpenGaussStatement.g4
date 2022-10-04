@@ -136,5 +136,6 @@ execute
     | createPublication
     | dropPublication
     | createAggregate
+    | alterPackage
     ) SEMI_? EOF
     ;

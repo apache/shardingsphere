@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <alter-package sql-case-id="alter_package" />
     <alter-package sql-case-id="alter_package_with_schemaname" />
+    <alter-package sql-case-id="alter_package_owner" />
 </sql-parser-test-cases>
