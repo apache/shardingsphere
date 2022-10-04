@@ -18,7 +18,7 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Check:Checkstyle and Apache Rat Check
+name: Check - Checkstyle and License Check
 
 on:
   push:
@@ -26,7 +26,7 @@ on:
     paths:
       - '**/src/main/**'
       - '**/src/test/**'
-      - '.github/workflows/checkstyle-and-rat-check.yml'
+      - '.github/workflows/checkstyle-and-license-check.yml'
       - 'examples/shardingsphere-example-generator/**'
       - '!examples/**'
       - '!*.md'
@@ -35,7 +35,7 @@ on:
     paths:
       - '**/src/main/**'
       - '**/src/test/**'
-      - '.github/workflows/checkstyle-and-rat-check.yml'
+      - '.github/workflows/checkstyle-and-license-check.yml'
       - 'examples/shardingsphere-example-generator/**'
       - '!examples/**'
       - '!*.md'
@@ -45,7 +45,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  checkstyle-and-apache-rat:
+  checkstyle-check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -59,6 +59,12 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Run Checkstyle
         run: ./mvnw checkstyle:check -T1C
-      - name: Run Apache Rat
-        if: github.repository == 'apache/shardingsphere'
-        run: ./mvnw apache-rat:check -T1C
+
+  check-license:
+    name: license-check
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check License Header
+        uses: apache/skywalking-eyes@v0.4.0
