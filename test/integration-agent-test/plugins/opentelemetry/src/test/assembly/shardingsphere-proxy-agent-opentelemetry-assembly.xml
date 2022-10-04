@@ -25,14 +25,14 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/target/plugins</directory>
+            <directory>${project.basedir}/../../../../agent/plugins/tracing/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>shardingsphere-agent-tracing-opentelemetry-*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-bootstrap/target</directory>
+            <directory>${project.basedir}/../../../../agent/bootstrap/target</directory>
             <outputDirectory>./</outputDirectory>
             <includes>
                 <include>shardingsphere-agent.jar</include>

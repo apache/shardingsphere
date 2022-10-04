@@ -25,14 +25,14 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/shardingsphere-agent-tracing-jaeger/target</directory>
+            <directory>${project.basedir}/../../../../agent/plugins/tracing/jaeger/target</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>
                 <include>shardingsphere-agent-tracing-jaeger-*.jar</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../../../../shardingsphere-agent/shardingsphere-agent-bootstrap/target</directory>
+            <directory>${project.basedir}/../../../../agent/bootstrap/target</directory>
             <outputDirectory>./</outputDirectory>
             <includes>
                 <include>shardingsphere-agent.jar</include>
