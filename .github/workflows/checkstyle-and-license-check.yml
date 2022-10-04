@@ -61,7 +61,7 @@ jobs:
         run: ./mvnw checkstyle:check -T1C
 
   check-license:
-    name: check-license
+    name: license-check
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
