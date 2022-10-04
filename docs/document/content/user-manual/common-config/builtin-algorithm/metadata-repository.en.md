@@ -68,6 +68,19 @@ Attributes:
 | maxRetries                   | int    | Max retries for client to check data availability | 3               |
 | timeToLiveSeconds            | int    | Seconds of ephemeral instance live                | 30              |
 
+### Consul Repository
+
+Type: Consul
+
+Mode: Cluster
+
+Attributes:
+
+| *Name*                       | *Type*  | *Description*                                     | *Default Value* |
+| ---------------------------- | ------- | ------------------------------------------------- | --------------- |
+| timeToLiveSeconds            | String  | Seconds of ephemeral instance live                | 30s             |
+| blockQueryTimeToSeconds      | long    | Seconds of query timeout                          | 60              |
+
 ## Procedure
 
 1. Configure running mode in server.yaml.
