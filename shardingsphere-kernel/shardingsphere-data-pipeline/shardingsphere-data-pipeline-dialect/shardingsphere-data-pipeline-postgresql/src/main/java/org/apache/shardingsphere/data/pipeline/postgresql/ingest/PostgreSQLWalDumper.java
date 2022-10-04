@@ -20,11 +20,11 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractIncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.TestDecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.PGReplicationStream;
@@ -47,36 +48,31 @@ import java.sql.SQLException;
  * PostgreSQL WAL dumper.
  */
 @Slf4j
-public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosition> {
-    
-    private final WalPosition walPosition;
+public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
     
-    private final LogicalReplication logicalReplication = new LogicalReplication();
-    
-    private final WalEventConverter walEventConverter;
+    private final WalPosition walPosition;
     
     private final PipelineChannel channel;
     
+    private final WalEventConverter walEventConverter;
+    
+    private final LogicalReplication logicalReplication;
+    
     public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
-        super(dumperConfig, position, channel, metaDataLoader);
-        walPosition = (WalPosition) position;
-        if (!StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration");
-        }
+        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
+                () -> new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
+        walPosition = (WalPosition) position;
         this.channel = channel;
         walEventConverter = new WalEventConverter(dumperConfig, metaDataLoader);
+        logicalReplication = new LogicalReplication();
     }
     
     @Override
     protected void runBlocking() {
-        dump();
-    }
-    
-    private void dump() {
         // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
@@ -91,16 +87,11 @@ public final class PostgreSQLWalDumper extends AbstractIncrementalDumper<WalPosi
                     continue;
                 }
                 AbstractWalEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
-                Record record = walEventConverter.convert(event);
-                pushRecord(record);
+                channel.pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
             throw new IngestException(ex);
         }
-    }
-    
-    private void pushRecord(final Record record) {
-        channel.pushRecord(record);
     }
     
     @Override

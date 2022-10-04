@@ -22,6 +22,7 @@ import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
+import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -49,20 +50,6 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     private final ConcurrentMap<String, String> sqlCacheMap = new ConcurrentHashMap<>();
     
     /**
-     * Get left identifier quote string.
-     *
-     * @return string
-     */
-    protected abstract String getLeftIdentifierQuoteString();
-    
-    /**
-     * Get right identifier quote string.
-     *
-     * @return string
-     */
-    protected abstract String getRightIdentifierQuoteString();
-    
-    /**
      * Add left and right identifier quote string.
      *
      * @param item to add quote item
@@ -76,29 +63,24 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
-        String decoratedTableName = decorate(schemaName, tableName);
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
         if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
-            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?"
-                    + " AND " + quotedUniqueKey + " <= ? ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+            return String.format("SELECT * FROM %s WHERE %s%s? AND %s <= ? ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey, quotedUniqueKey);
         }
         if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return "SELECT * FROM " + decoratedTableName + " WHERE " + quotedUniqueKey + " " + (firstQuery ? ">=" : ">") + " ?" + " ORDER BY " + quotedUniqueKey + " ASC LIMIT ?";
+            return String.format("SELECT * FROM %s WHERE %s%s? ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey);
         }
-        throw new IllegalArgumentException("Unknown uniqueKeyDataType: " + uniqueKeyDataType);
+        throw new UnsupportedPipelineJobUniqueKeyDataTypeException(uniqueKeyDataType);
     }
     
-    protected String decorate(final String schemaName, final String tableName) {
+    protected final String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
-        if (isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
+        if (DatabaseTypeFactory.getInstance(getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(quote(schemaName)).append(".");
         }
         result.append(quote(tableName));
         return result.toString();
-    }
-    
-    private boolean isSchemaAvailable() {
-        return DatabaseTypeFactory.getInstance(getType()).isSchemaAvailable();
     }
     
     @Override
@@ -119,7 +101,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
         }
         columnsLiteral.setLength(columnsLiteral.length() - 1);
         holder.setLength(holder.length() - 1);
-        return String.format("INSERT INTO %s(%s) VALUES(%s)", decorate(schemaName, tableName), columnsLiteral, holder);
+        return String.format("INSERT INTO %s(%s) VALUES(%s)", getQualifiedTableName(schemaName, tableName), columnsLiteral, holder);
     }
     
     // TODO seems sharding column could be updated for insert statement on conflict by kernel now
@@ -143,7 +125,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     private String buildUpdateSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("UPDATE %s SET %%s WHERE %s", decorate(schemaName, tableName), buildWhereSQL(conditionColumns));
+        return String.format("UPDATE %s SET %%s WHERE %s", getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     @Override
@@ -162,11 +144,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildDropSQL(final String schemaName, final String tableName) {
-        return String.format("DROP TABLE IF EXISTS %s", decorate(schemaName, tableName));
+        return String.format("DROP TABLE IF EXISTS %s", getQualifiedTableName(schemaName, tableName));
     }
     
     private String buildDeleteSQLInternal(final String schemaName, final String tableName, final Collection<Column> conditionColumns) {
-        return String.format("DELETE FROM %s WHERE %s", decorate(schemaName, tableName), buildWhereSQL(conditionColumns));
+        return String.format("DELETE FROM %s WHERE %s", getQualifiedTableName(schemaName, tableName), buildWhereSQL(conditionColumns));
     }
     
     private String buildWhereSQL(final Collection<Column> conditionColumns) {
@@ -180,24 +162,27 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     
     @Override
     public String buildCountSQL(final String schemaName, final String tableName) {
-        return String.format("SELECT COUNT(*) FROM %s", decorate(schemaName, tableName));
+        return String.format("SELECT COUNT(*) FROM %s", getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
     public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        String quotedUniqueKey = quote(uniqueKey);
         return firstQuery
-                ? "SELECT * FROM " + decorate(schemaName, tableName) + " ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?"
-                : "SELECT * FROM " + decorate(schemaName, tableName) + " WHERE " + quote(uniqueKey) + " > ? ORDER BY " + quote(uniqueKey) + " ASC LIMIT ?";
+                ? String.format("SELECT * FROM %s ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey)
+                : String.format("SELECT * FROM %s WHERE %s>? ORDER BY %s ASC LIMIT ?", qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
     @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
-        return String.format("SELECT * FROM %s LIMIT 1", decorate(schemaName, tableName));
+        return String.format("SELECT * FROM %s LIMIT 1", getQualifiedTableName(schemaName, tableName));
     }
     
     @Override
     public String buildSplitByPrimaryKeyRangeSQL(final String schemaName, final String tableName, final String primaryKey) {
-        String quotedKey = quote(primaryKey);
-        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t", quotedKey, quotedKey, decorate(schemaName, tableName), quotedKey, quotedKey);
+        String quotedUniqueKey = quote(primaryKey);
+        return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s LIMIT ?) t",
+                quotedUniqueKey, quotedUniqueKey, getQualifiedTableName(schemaName, tableName), quotedUniqueKey, quotedUniqueKey);
     }
 }

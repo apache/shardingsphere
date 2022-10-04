@@ -75,7 +75,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     
     @Before
     public void setUp() {
-        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
+        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
                 DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "", "CORE.FIXTURE");
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("CORE.FIXTURE", new Properties());

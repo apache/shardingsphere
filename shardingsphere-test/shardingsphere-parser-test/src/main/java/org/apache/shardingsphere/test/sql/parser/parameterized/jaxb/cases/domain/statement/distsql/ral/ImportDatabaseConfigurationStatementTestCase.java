@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ImportDatabaseConfigurationStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "filePath")
+    @XmlElement(name = "file-path")
     private String filePath;
 }

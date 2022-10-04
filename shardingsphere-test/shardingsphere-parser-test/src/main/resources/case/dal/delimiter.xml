@@ -17,5 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <delimiter sql-case-id="delimiter" delimiterName="|" />
+    <delimiter sql-case-id="delimiter" delimiter-name="|" />
 </sql-parser-test-cases>

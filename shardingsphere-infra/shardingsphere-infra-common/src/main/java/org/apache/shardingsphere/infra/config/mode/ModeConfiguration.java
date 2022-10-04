@@ -30,6 +30,4 @@ public final class ModeConfiguration {
     private final String type;
     
     private final PersistRepositoryConfiguration repository;
-    
-    private final boolean overwrite;
 }

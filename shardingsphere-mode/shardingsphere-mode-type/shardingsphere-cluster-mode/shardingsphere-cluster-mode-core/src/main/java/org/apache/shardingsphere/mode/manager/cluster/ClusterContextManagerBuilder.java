@@ -88,14 +88,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
             Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
             String databaseName = values.get(0);
             String dataSourceName = values.get(2);
-            result.put(databaseName + "." + dataSourceName, DataSourceState.getDataSourceState(value.getStatus()));
+            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().toUpperCase()));
         });
         return result;
     }
     
     private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
         if (!parameter.isEmpty()) {
-            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfiguration().isOverwrite());
+            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps());
         }
     }
     

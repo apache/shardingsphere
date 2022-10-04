@@ -26,7 +26,6 @@ mode:
       operationTimeoutMilliseconds: 500
       retryIntervalMilliseconds: 500
       maxRetries: 3
-  overwrite: false
 
 rules:
   - !AUTHORITY

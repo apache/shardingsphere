@@ -22,4 +22,3 @@ mode:
     props:
       namespace: demo_yaml_ds_shadow
       server-lists: localhost:2181
-  overwrite: false

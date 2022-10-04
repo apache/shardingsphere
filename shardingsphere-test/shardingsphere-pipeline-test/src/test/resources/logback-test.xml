@@ -25,7 +25,7 @@
     <logger name="org.apache.zookeeper" level="off" />
     <logger name="org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter" level="off" />
     <logger name="org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAPIImpl" level="off" />
-    <logger name="org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractInventoryDumper" level="off" />
+    <logger name="org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper" level="off" />
     
     <root>
         <level value="error" />

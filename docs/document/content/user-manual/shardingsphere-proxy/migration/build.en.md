@@ -46,7 +46,6 @@ mode:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: false
 ```
 
 4. Introduce JDBC driver.

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
+import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ public final class PostgreSQLCommandPacketTypeLoaderTest {
         assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLCommandPacketType.SIMPLE_QUERY));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = PostgreSQLProtocolException.class)
     public void assertGetCommandPacketTypeError() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class, RETURNS_DEEP_STUBS);
         when(payload.getByteBuf().getByte(anyInt())).thenReturn((byte) 'a');

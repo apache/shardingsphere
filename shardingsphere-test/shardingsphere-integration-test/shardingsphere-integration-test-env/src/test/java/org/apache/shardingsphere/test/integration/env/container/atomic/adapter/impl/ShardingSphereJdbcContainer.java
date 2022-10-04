@@ -95,7 +95,6 @@ public final class ShardingSphereJdbcContainer implements EmbeddedITContainer, A
         repositoryConfig.getProps().setProperty("retryIntervalMilliseconds", "500");
         repositoryConfig.getProps().setProperty("maxRetries", "3");
         result.setRepository(repositoryConfig);
-        result.setOverwrite(false);
         return result;
     }
     

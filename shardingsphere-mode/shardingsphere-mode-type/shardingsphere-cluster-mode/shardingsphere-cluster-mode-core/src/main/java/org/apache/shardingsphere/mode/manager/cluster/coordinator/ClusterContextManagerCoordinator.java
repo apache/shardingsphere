@@ -93,10 +93,9 @@ public final class ClusterContextManagerCoordinator {
      * Renew to persist meta data.
      *
      * @param event database added event
-     * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void renew(final DatabaseAddedEvent event) throws SQLException {
+    public synchronized void renew(final DatabaseAddedEvent event) {
         contextManager.addDatabase(event.getDatabaseName());
     }
     
@@ -197,10 +196,10 @@ public final class ClusterContextManagerCoordinator {
         }
         Optional<ShardingSphereRule> staticDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
                 .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
-        staticDataSourceRule.ifPresent(shardingSphereRule -> ((StaticDataSourceContainedRule) shardingSphereRule)
+        staticDataSourceRule.ifPresent(optional -> ((StaticDataSourceContainedRule) optional)
                 .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
-        DataSourceStateManager.getInstance().updateState(qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(),
-                DataSourceState.getDataSourceState(event.getDataSource().getStatus()));
+        DataSourceStateManager.getInstance().updateState(
+                qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().toUpperCase()));
     }
     
     /**

@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="alter_package" value="ALTER PACKAGE emp_mgmt COMPILE PACKAGE;" db-types="Oracle" />
     <sql-case id="alter_package_with_schemaname" value="ALTER PACKAGE hr.emp_mgmt COMPILE BODY;" db-types="Oracle" />
+    <sql-case id="alter_package_owner" value="ALTER PACKAGE emp_mgmt OWNER TO SESSION_USER;" db-types="openGauss" />
 </sql-cases>

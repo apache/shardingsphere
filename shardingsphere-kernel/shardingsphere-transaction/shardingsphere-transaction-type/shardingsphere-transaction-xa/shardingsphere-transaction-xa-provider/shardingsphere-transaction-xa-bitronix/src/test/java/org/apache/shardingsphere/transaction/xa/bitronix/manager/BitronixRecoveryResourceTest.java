@@ -34,6 +34,8 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +75,38 @@ public final class BitronixRecoveryResourceTest {
     }
     
     @Test
+    public void assertRecoveryWhenXaConnectionIsNull() throws SQLException {
+        BitronixRecoveryResource bitronixRecoveryResource = new BitronixRecoveryResource("ds1", null);
+        bitronixRecoveryResource.endRecovery();
+        verify(xaConnection, times(0)).close();
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertRecoveryWhenSQLExceptionIsThrown() throws SQLException {
+        when(xaDataSource.getXAConnection()).thenThrow(new SQLException());
+        bitronixRecoveryResource.startRecovery();
+    }
+    
+    @Test
     public void assertFindXAResourceHolder() {
         assertNotNull(bitronixRecoveryResource.findXAResourceHolder(singleXAResource));
+    }
+    
+    @Test
+    public void assertCreatePooledConnection() {
+        assertNull(bitronixRecoveryResource.createPooledConnection(null, null));
+    }
+    
+    @Test
+    public void assertGetReference() {
+        assertNull(bitronixRecoveryResource.getReference());
+    }
+    
+    @Test
+    public void assertEmptyMethods() {
+        bitronixRecoveryResource.init();
+        bitronixRecoveryResource.setFailed(true);
+        bitronixRecoveryResource.setFailed(false);
+        bitronixRecoveryResource.close();
     }
 }

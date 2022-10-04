@@ -52,7 +52,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     @BeforeClass
     public static void setUp() {
-        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
+        ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
     }
     
     @Test

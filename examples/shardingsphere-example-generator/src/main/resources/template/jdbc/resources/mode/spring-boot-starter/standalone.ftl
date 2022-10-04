@@ -18,4 +18,3 @@
 spring.shardingsphere.mode.type=Standalone
 spring.shardingsphere.mode.repository.type=JDBC
 spring.shardingsphere.mode.repository.props.path=demo
-spring.shardingsphere.mode.overwrite=false

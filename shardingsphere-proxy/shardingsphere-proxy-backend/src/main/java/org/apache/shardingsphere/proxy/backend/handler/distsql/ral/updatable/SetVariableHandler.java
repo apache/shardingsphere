@@ -69,7 +69,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         contextManager.alterProperties(props);
         MetaDataPersistService persistService = metaDataContexts.getPersistService();
         if (null != persistService.getPropsService()) {
-            persistService.getPropsService().persist(props, true);
+            persistService.getPropsService().persist(props);
         }
     }
     

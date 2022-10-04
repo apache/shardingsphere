@@ -32,16 +32,6 @@ import java.util.Set;
 public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String getLeftIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
     public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
         return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildDuplicateUpdateSQL(dataRecord, shardingColumnsMap);
     }

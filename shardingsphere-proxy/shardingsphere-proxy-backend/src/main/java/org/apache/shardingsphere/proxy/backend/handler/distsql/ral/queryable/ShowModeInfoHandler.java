@@ -41,11 +41,9 @@ public final class ShowModeInfoHandler extends QueryableRALBackendHandler<ShowMo
     
     private static final String PROPS = "props";
     
-    private static final String OVERWRITE = "overwrite";
-    
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(TYPE, REPOSITORY, PROPS, OVERWRITE);
+        return Arrays.asList(TYPE, REPOSITORY, PROPS);
     }
     
     @Override
@@ -55,7 +53,6 @@ public final class ShowModeInfoHandler extends QueryableRALBackendHandler<ShowMo
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
         String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
-        String overwrite = String.valueOf(instanceContext.getModeConfiguration().isOverwrite());
-        return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props, overwrite));
+        return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props));
     }
 }

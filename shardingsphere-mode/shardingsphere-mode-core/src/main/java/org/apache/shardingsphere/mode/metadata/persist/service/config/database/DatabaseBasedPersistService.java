@@ -25,13 +25,12 @@ package org.apache.shardingsphere.mode.metadata.persist.service.config.database;
 public interface DatabaseBasedPersistService<T> {
     
     /**
-     * Persist configurations.
+     * Conditional persist configurations.
      *
      * @param databaseName database name
      * @param configs configurations
-     * @param isOverwrite is overwrite
      */
-    void persist(String databaseName, T configs, boolean isOverwrite);
+    void conditionalPersist(String databaseName, T configs);
     
     /**
      * Persist configurations.

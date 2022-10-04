@@ -21,9 +21,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingAuditor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Alter sharding auditor statement test case.
@@ -31,6 +31,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 public final class AlterShardingAuditorStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "shardingAuditor")
+    @XmlElement(name = "sharding-auditor")
     private final List<ExpectedShardingAuditor> shardingAuditors = new LinkedList<>();
 }

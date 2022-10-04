@@ -28,7 +28,7 @@ public final class ContextManagerBuilderFactoryTest {
     
     @Test
     public void assertGetInstanceWithModeConfiguration() {
-        assertThat(ContextManagerBuilderFactory.getInstance(new ModeConfiguration("FIXTURE", null, true)), instanceOf(ContextManagerBuilderFixture.class));
+        assertThat(ContextManagerBuilderFactory.getInstance(new ModeConfiguration("FIXTURE", null)), instanceOf(ContextManagerBuilderFixture.class));
     }
     
     @Test

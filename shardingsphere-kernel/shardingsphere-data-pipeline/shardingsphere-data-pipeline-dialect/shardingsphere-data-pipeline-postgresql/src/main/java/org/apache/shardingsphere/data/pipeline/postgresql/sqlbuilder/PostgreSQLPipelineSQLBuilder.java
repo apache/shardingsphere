@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -32,18 +33,8 @@ import java.util.Set;
 public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String buildCreateSchemaSQL(final String schemaName) {
-        return "CREATE SCHEMA IF NOT EXISTS " + quote(schemaName);
-    }
-    
-    @Override
-    public String getLeftIdentifierQuoteString() {
-        return "\"";
-    }
-    
-    @Override
-    public String getRightIdentifierQuoteString() {
-        return "\"";
+    public Optional<String> buildCreateSchemaSQL(final String schemaName) {
+        return Optional.of(String.format("CREATE SCHEMA IF NOT EXISTS %s", quote(schemaName)));
     }
     
     @Override
