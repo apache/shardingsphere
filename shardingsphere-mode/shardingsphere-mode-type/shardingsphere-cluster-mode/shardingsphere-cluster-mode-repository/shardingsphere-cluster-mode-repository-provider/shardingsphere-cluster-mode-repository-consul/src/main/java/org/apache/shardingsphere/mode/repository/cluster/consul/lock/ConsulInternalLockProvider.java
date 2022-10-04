@@ -267,7 +267,7 @@ public class ConsulInternalLockProvider implements InternalLockProvider {
             session.setName(lockName);
             // lock was released by force while session is invalid
             session.setBehavior(Session.Behavior.RELEASE);
-            session.setTtl(consulProperties.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS));
+            session.setTtl(consulProperties.getValue(ConsulPropertyKey.TIME_TO_LIVE_IN_SECONDS) + "s");
             return this.consulClient.sessionCreate(session, null).getValue();
         }
         

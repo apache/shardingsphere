@@ -28,17 +28,17 @@ public final class ConsulPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        assertThat(new ConsulProperties(createProperties()).getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_TO_SECONDS), is(60L));
+        assertThat(new ConsulProperties(createProperties()).getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_IN_SECONDS), is(60L));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty(ConsulPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50");
+        result.setProperty(ConsulPropertyKey.TIME_TO_LIVE_IN_SECONDS.getKey(), "50");
         return result;
     }
     
     @Test
     public void assertGetDefaultValue() {
-        assertThat(new ConsulProperties(new Properties()).getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
+        assertThat(new ConsulProperties(new Properties()).getValue(ConsulPropertyKey.TIME_TO_LIVE_IN_SECONDS), is(30L));
     }
 }

@@ -29,19 +29,14 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 public enum ConsulPropertyKey implements TypedPropertyKey {
     
     /**
-     * Time to live seconds.
+     * Time to live in seconds.
      */
-    TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30s", String.class),
+    TIME_TO_LIVE_IN_SECONDS("timeToLiveInSeconds", "30", long.class),
     
     /**
-     *Time to live seconds.
+     * Block query time in seconds.
      */
-    LOCK_DELAY_TO_MICORSENDS("lockDelayToMicorsends", "2", String.class),
-    
-    /**
-     *Block query time seconds.
-     */
-    BLOCK_QUERY_TIME_TO_SECONDS("blockQueryTimeToSeconds", "60", long.class);
+    BLOCK_QUERY_TIME_IN_SECONDS("blockQueryTimeInSeconds", "60", long.class);
     
     private final String key;
     

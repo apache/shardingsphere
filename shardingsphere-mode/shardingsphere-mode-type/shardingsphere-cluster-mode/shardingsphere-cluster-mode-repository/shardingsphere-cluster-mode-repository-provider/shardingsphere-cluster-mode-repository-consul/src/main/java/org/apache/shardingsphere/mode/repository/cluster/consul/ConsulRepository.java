@@ -96,7 +96,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         NewSession session = new NewSession();
         session.setName(key);
         session.setBehavior(Session.Behavior.DELETE);
-        session.setTtl(this.consulProperties.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS));
+        session.setTtl(this.consulProperties.getValue(ConsulPropertyKey.TIME_TO_LIVE_IN_SECONDS) + "s");
         Response<String> response = this.consulClient.sessionCreate(session, QueryParams.DEFAULT);
         final String sessionId = response.getValue();
         PutParams putParams = new PutParams();
@@ -140,7 +140,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         long currentIndex = 0;
         while (running.get()) {
             Response<List<GetValue>> response = consulClient.getKVValues(key,
-                    new QueryParams(consulProperties.getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_TO_SECONDS), currentIndex));
+                    new QueryParams(consulProperties.getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_IN_SECONDS), currentIndex));
             Long index = response.getConsulIndex();
             if (index != null && currentIndex == 0) {
                 currentIndex = index;
