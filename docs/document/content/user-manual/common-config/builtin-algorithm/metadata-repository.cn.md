@@ -69,6 +69,19 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 | maxRetries                   | int       | 客户端检查数据可用性的最大重试次数  | 3               |
 | timeToLiveSeconds            | int       | 临时实例失效的秒数               | 30              |
 
+### Consul 持久化
+
+类型：Consul
+
+适用模式：Cluster
+
+可配置属性：
+
+| *名称*                        | *数据类型* | *说明*                         | *默认值*         |
+| ---------------------------- | --------- | ----------------------------- | --------------- |
+| timeToLiveSeconds            | String    | 临时实例失效的秒数               | 30s             |
+| blockQueryTimeToSeconds      | long      | 查询请求超时秒数                 | 60              |
+
 ## 操作步骤
 
 1. 在 server.yaml 中配置 Mode 运行模式
