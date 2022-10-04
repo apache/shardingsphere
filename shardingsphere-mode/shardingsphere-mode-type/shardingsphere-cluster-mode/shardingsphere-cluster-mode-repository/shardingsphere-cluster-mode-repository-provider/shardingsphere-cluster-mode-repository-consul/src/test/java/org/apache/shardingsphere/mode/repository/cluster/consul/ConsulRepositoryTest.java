@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.plugins.MemberAccessor;
@@ -152,8 +153,15 @@ public final class ConsulRepositoryTest {
         repository.watch(key, event -> {
         });
         client.setKVValue(k1, "value1-1");
-        Thread.sleep(100L);
-        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
+        while (true) {
+            Thread.sleep(100L);
+            try {
+                verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
+                break;
+            } catch (MockitoException e) {
+                continue;
+            }
+        }
     }
     
     @Test
@@ -172,8 +180,15 @@ public final class ConsulRepositoryTest {
         repository.watch(key, event -> {
         });
         client.deleteKVValue(k2);
-        Thread.sleep(100L);
-        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
+        while (true) {
+            Thread.sleep(100L);
+            try {
+                verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
+                break;
+            } catch (MockitoException e) {
+                continue;
+            }
+        }
     }
     
     @Test
