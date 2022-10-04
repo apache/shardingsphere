@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Docker:Publish Image per Commit
+name: Docker - Publish Image per Commit
 
 on:
   push:
