@@ -19,24 +19,18 @@ package org.apache.shardingsphere.mode.repository.cluster.consul;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.ConsulRawClient;
+import lombok.Getter;
 
 /**
  * ShardingSphere consul client support use raw client.
  */
-public class ShardingSphereConsulClient extends ConsulClient {
+@Getter
+public final class ShardingSphereConsulClient extends ConsulClient {
     
-    private ConsulRawClient rawClient;
+    private final ConsulRawClient rawClient;
     
     public ShardingSphereConsulClient(final ConsulRawClient rawClient) {
         super(rawClient);
         this.rawClient = rawClient;
-    }
-    
-    /**
-     * Get consul raw client.
-     * @return raw consul client
-     */
-    public ConsulRawClient getRawClient() {
-        return rawClient;
     }
 }

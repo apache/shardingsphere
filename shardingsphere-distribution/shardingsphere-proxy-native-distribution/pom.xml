@@ -16,57 +16,56 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>shardingsphere-distribution</artifactId>
         <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-distribution</artifactId>
         <version>5.2.1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
+    
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
-
+    
     <properties>
         <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <native.maven.plugin.version>0.9.14</native.maven.plugin.version>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-bootstrap</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>org.opengauss</groupId>
             <artifactId>opengauss-jdbc</artifactId>
             <scope>runtime</scope>
         </dependency>
-
+        
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-
+    
     <profiles>
         <profile>
             <id>native</id>
@@ -87,6 +86,21 @@
                         <artifactId>native-maven-plugin</artifactId>
                         <version>${native.maven.plugin.version}</version>
                         <extensions>true</extensions>
+                        <configuration>
+                            <imageName>${native.image.name}</imageName>
+                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
+                            <fallback>false</fallback>
+                            <verbose>true</verbose>
+                            <buildArgs>
+                                <arg>--report-unsupported-elements-at-runtime</arg>
+                            </buildArgs>
+                            <jvmArgs>
+                                <arg>--enable-preview</arg>
+                            </jvmArgs>
+                            <metadataRepository>
+                                <enabled>true</enabled>
+                            </metadataRepository>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>build-native</id>
@@ -103,21 +117,6 @@
                                 <phase>test</phase>
                             </execution>
                         </executions>
-                        <configuration>
-                            <imageName>${native.image.name}</imageName>
-                            <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
-                            <fallback>false</fallback>
-                            <verbose>true</verbose>
-                            <buildArgs>
-                                <arg>--report-unsupported-elements-at-runtime</arg>
-                            </buildArgs>
-                            <jvmArgs>
-                                <arg>--enable-preview</arg>
-                            </jvmArgs>
-                            <metadataRepository>
-                                <enabled>true</enabled>
-                            </metadataRepository>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

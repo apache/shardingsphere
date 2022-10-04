@@ -34,11 +34,6 @@ public enum ConsulPropertyKey implements TypedPropertyKey {
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30s", String.class),
     
     /**
-     *Time to live seconds.
-     */
-    LOCK_DELAY_TO_MICORSENDS("lockDelayToMicorsends", "2", String.class),
-    
-    /**
      *Block query time seconds.
      */
     BLOCK_QUERY_TIME_TO_SECONDS("blockQueryTimeToSeconds", "60", long.class);
