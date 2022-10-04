@@ -29,10 +29,10 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-integration-agent-test-metrics</module>
-        <module>shardingsphere-integration-agent-test-common</module>
-        <module>shardingsphere-integration-agent-test-zipkin</module>
-        <module>shardingsphere-integration-agent-test-jaeger</module>
-        <module>shardingsphere-integration-agent-test-opentelemetry</module>
+        <module>metrics</module>
+        <module>common</module>
+        <module>zipkin</module>
+        <module>jaeger</module>
+        <module>opentelemetry</module>
     </modules>
 </project>
