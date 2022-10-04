@@ -31,9 +31,9 @@ on:
       - '!kernel/data-pipeline/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/integration-test-fixture/**'
-      - 'test/integration-test/integration-test-env/**'
-      - 'test/integration-test/integration-test-suite/**'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/test-suite/**'
       - 'test/integration-agent-test/**'
       - '!*.md'
   pull_request:
@@ -49,9 +49,9 @@ on:
       - '!kernel/data-pipeline/**'
       - '!test/**'
       - 'test/pom.xml'
-      - 'test/integration-test/integration-test-fixture/**'
-      - 'test/integration-test/integration-test-env/**'
-      - 'test/integration-test/integration-test-suite/**'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/suite/**'
       - 'test/integration-agent-test/**'
       - '!*.md'
 
@@ -84,9 +84,9 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/integration-test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
-        run: ./mvnw -B install -pl test/integration-test/integration-test-suite -Dspotless.apply.skip=true
+        run: ./mvnw -B install -pl test/integration-test/test-suite -Dspotless.apply.skip=true
       - name: Save IT image
         run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - name: Upload IT image
