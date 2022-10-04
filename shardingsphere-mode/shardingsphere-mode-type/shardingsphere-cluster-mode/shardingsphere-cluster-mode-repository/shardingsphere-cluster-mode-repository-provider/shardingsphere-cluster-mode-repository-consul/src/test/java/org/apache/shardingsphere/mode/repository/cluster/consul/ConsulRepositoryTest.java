@@ -152,7 +152,7 @@ public final class ConsulRepositoryTest {
         repository.watch(key, event -> {
         });
         client.setKVValue(k1, "value1-1");
-        Thread.sleep(1000L);
+        Thread.sleep(100L);
         verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
     }
     
@@ -172,7 +172,7 @@ public final class ConsulRepositoryTest {
         repository.watch(key, event -> {
         });
         client.deleteKVValue(k2);
-        Thread.sleep(1000L);
+        Thread.sleep(100L);
         verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
     }
     
