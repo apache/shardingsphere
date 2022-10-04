@@ -224,7 +224,7 @@
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR user_id = ? ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -237,7 +237,7 @@
         <assertion parameters="1000:int, init:String, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?))))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?)))) ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
