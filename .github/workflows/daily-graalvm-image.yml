@@ -14,11 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: GraalVM Native Image Daily Continuous Integration
+name: Daily - GraalVM Native Image CI
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 20 */1 * *'  # once a day. UTC time
     
 env:
   HUB: ghcr.io/apache/shardingsphere
