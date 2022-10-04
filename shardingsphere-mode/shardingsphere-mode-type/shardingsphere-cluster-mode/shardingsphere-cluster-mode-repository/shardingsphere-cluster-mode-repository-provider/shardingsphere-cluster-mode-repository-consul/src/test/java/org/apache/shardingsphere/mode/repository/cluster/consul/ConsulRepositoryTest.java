@@ -34,16 +34,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.plugins.MemberAccessor;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ConsulRepositoryTest {
@@ -120,7 +122,6 @@ public final class ConsulRepositoryTest {
     
     @Test
     public void assertGetChildrenKeys() {
-        final String key = "/key";
         String k1 = "/key/key1/key1-1";
         String v1 = "value1";
         client.setKVValue(k1, v1);
@@ -129,6 +130,7 @@ public final class ConsulRepositoryTest {
         client.setKVValue(k2, v2);
         List<String> getValues = Arrays.asList(k1, k2);
         when(responseList.getValue()).thenReturn(getValues);
+        String key = "/key";
         List<String> actual = repository.getChildrenKeys(key);
         assertThat(actual.size(), is(2));
         Iterator<String> iterator = actual.iterator();
@@ -152,50 +154,49 @@ public final class ConsulRepositoryTest {
     
     @Test
     public void assertWatchUpdate() {
-        final String key = "sharding/key";
-        final String k1 = "sharding/key/key1";
-        final String v1 = "value1";
+        String k1 = "sharding/key/key1";
+        String v1 = "value1";
         client.setKVValue(k1, v1);
         GetValue getValue1 = new GetValue();
         getValue1.setKey(k1);
         getValue1.setValue(v1);
-        List<GetValue> getValues = Arrays.asList(getValue1);
+        List<GetValue> getValues = Collections.singletonList(getValue1);
         when(responseGetValueList.getValue()).thenReturn(getValues);
+        String key = "sharding/key";
         repository.watch(key, event -> {
         });
         client.setKVValue(k1, "value1-1");
-        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
     }
     
     @Test
     public void assertWatchDelete() {
-        final String key = "sharding/key";
-        final String k1 = "sharding/key/key1";
-        final String v1 = "value1";
-        final String k2 = "sharding/key/key2";
-        final String v2 = "value1";
+        String k1 = "sharding/key/key1";
+        String v1 = "value1";
+        String k2 = "sharding/key/key2";
+        String v2 = "value1";
         client.setKVValue(k1, v1);
         client.setKVValue(k2, v2);
         GetValue getValue1 = new GetValue();
         getValue1.setKey(k1);
         getValue1.setValue(v1);
-        List<GetValue> getValues = Arrays.asList(getValue1);
+        List<GetValue> getValues = Collections.singletonList(getValue1);
         when(responseGetValueList.getValue()).thenReturn(getValues);
+        String key = "sharding/key";
         repository.watch(key, event -> {
         });
         client.deleteKVValue(k2);
-        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
     }
     
     @Test

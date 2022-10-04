@@ -124,13 +124,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        Thread watchThread = new Thread(new Runnable() {
-            
-            @Override
-            public void run() {
-                watchChildKeyChangeEvent(key, listener);
-            }
-        });
+        Thread watchThread = new Thread(() -> watchChildKeyChangeEvent(key, listener));
         watchThread.setDaemon(true);
         watchThread.start();
     }
