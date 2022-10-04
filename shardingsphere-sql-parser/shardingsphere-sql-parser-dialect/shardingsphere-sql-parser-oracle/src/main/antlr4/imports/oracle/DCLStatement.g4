@@ -320,9 +320,10 @@ dropRole
 
 alterRole
     : ALTER ROLE roleName ( NOT IDENTIFIED | IDENTIFIED (
-    | BY password | USING packageName | EXTERNALLY | GLOBALLY AS SQ_ (
-    | domain | AZURE_ROLE EQ_ attributeValue | IAM_GROUP_NAME EQ_ attributeValue)? SQ_ )
-    ) (CONTAINER EQ_ (CURRENT | ALL))?
+    | BY password 
+    | USING packageName 
+    | EXTERNALLY 
+    | GLOBALLY AS (STRING_ | SQ_ AZURE_ROLE EQ_ identifier SQ_ | SQ_ IAM_GROUP_NAME EQ_ identifier SQ_) ) ) (CONTAINER EQ_ (CURRENT | ALL))?
     ;
 
 setRole

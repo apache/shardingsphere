@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <alter-role sql-case-id="alter_no_identified_role" />
     <alter-role sql-case-id="alter_external_role" />
-    <alter-role sql-case-id="alter_global_role" />
+    <alter-role sql-case-id="alter_role_globally"/>
     <alter-role sql-case-id="alter_role_with_password" />
     <alter-role sql-case-id="alter_role_with_container" />
     <alter-role sql-case-id="alter_role_with_password_postgresql" />

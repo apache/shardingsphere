@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="alter_no_identified_role" value="ALTER ROLE role1 NOT IDENTIFIED" db-types="Oracle" />
     <sql-case id="alter_external_role" value="ALTER ROLE role1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
-    <sql-case id="alter_global_role" value="ALTER ROLE role1 IDENTIFIED GLOBALLY AS 'AZURE_ROLE = mgmt'" db-types="Oracle" />
+    <sql-case id="alter_role_globally" value="ALTER ROLE role1 IDENTIFIED GLOBALLY AS 'AZURE_ROLE = accountant'" db-types="Oracle" />
     <sql-case id="alter_role_with_password" value="ALTER ROLE role1 IDENTIFIED BY password" db-types="Oracle" />
     <sql-case id="alter_role_with_container" value="ALTER ROLE role1 NOT IDENTIFIED CONTAINER = ALL" db-types="Oracle" />
     <sql-case id="alter_role_with_password_postgresql" value="ALTER ROLE role1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL,openGauss" />
