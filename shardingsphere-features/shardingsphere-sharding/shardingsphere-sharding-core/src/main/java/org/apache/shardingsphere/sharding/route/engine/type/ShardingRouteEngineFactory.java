@@ -230,10 +230,10 @@ public final class ShardingRouteEngineFactory {
                                                                          final ConfigurationProperties props, final Collection<String> tableNames) {
         boolean allBindingTables = tableNames.size() > 1 && shardingRule.isAllBindingTables(database, sqlStatementContext, tableNames);
         if (isShardingStandardQuery(shardingRule, tableNames, allBindingTables)) {
-            return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, props);
+            return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, tableNames), shardingConditions, sqlStatementContext, props);
         }
         // TODO config for cartesian set
-        return new ShardingComplexRoutingEngine(shardingConditions, props, tableNames);
+        return new ShardingComplexRoutingEngine(shardingConditions, sqlStatementContext, props, tableNames);
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {

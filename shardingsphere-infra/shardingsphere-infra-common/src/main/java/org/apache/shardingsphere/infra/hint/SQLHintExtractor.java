@@ -101,6 +101,17 @@ public final class SQLHintExtractor {
     }
     
     /**
+     * Judge contains hint sharding databases value or not.
+     *
+     * @param tableName table name
+     * @return contains hint sharding databases value or not
+     */
+    public boolean containsHintShardingDatabaseValue(final String tableName) {
+        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key) || sqlHintProperties.getProps().containsKey(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+    }
+    
+    /**
      * Get hint sharding table value.
      *
      * @return sharding table value
@@ -121,5 +132,16 @@ public final class SQLHintExtractor {
             return Integer.valueOf(sqlHintProperties.getProps().getProperty(key));
         }
         return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+    }
+    
+    /**
+     * Judge contains hint table databases value or not.
+     *
+     * @param tableName table name
+     * @return Contains hint table databases value or not
+     */
+    public boolean containsHintShardingTableValue(final String tableName) {
+        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key) || sqlHintProperties.getProps().containsKey(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
     }
 }

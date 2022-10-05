@@ -86,4 +86,36 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     public boolean isHintWriteRouteOnly() {
         return sqlHintExtractor.isHintWriteRouteOnly();
     }
+    
+    /**
+     * Get hint sharding database value.
+     *
+     * @param tableName table name
+     * @return sharding database value
+     */
+    public int getHintShardingDatabaseValue(final String tableName) {
+        return sqlHintExtractor.getHintShardingDatabaseValue(tableName);
+    }
+    
+    /**
+     * Get hint sharding table value.
+     *
+     * @param tableName table name
+     * @return sharding table value
+     */
+    public int getHintShardingTableValue(final String tableName) {
+        return sqlHintExtractor.getHintShardingTableValue(tableName);
+    }
+    
+    public boolean containsHintShardingDatabaseValue(final String tableName) {
+        return sqlHintExtractor.containsHintShardingDatabaseValue(tableName);
+    }
+    
+    public boolean containsHintShardingTableValue(final String tableName) {
+        return sqlHintExtractor.containsHintShardingTableValue(tableName);
+    }
+    
+    public boolean containsHintShardingValue(final String tableName) {
+        return containsHintShardingDatabaseValue(tableName) || containsHintShardingTableValue(tableName);
+    }
 }
