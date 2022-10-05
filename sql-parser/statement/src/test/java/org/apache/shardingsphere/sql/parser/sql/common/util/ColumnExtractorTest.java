@@ -22,30 +22,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-
-import com.google.common.collect.Lists;
-
-import lombok.RequiredArgsConstructor;
 
 public final class ColumnExtractorTest {
-
+    
     @Test
     public void assertExtractColumnSegments() {
         final List<ColumnSegment> list = new ArrayList<>();
@@ -53,12 +41,12 @@ public final class ColumnExtractorTest {
         final ColumnSegment pwnCol = new ColumnSegment(30, 32, new IdentifierValue("pwd"));
         final List<WhereSegment> wheres = Collections.singletonList(createWhereSegment(nameCol, pwnCol));
         ColumnExtractor.extractColumnSegments(list, wheres);
-
+        
         assertThat(list.size(), is(2));
         assertThat(list, contains(nameCol, pwnCol));
     }
-
-    private static WhereSegment createWhereSegment(ColumnSegment col1, ColumnSegment col2) {
+    
+    private static WhereSegment createWhereSegment(final ColumnSegment col1, final ColumnSegment col2) {
         BinaryOperationExpression nameExpression = new BinaryOperationExpression(10, 24,
                 col1, new LiteralExpressionSegment(18, 22, "LiLei"), "=", "name = 'LiLei'");
         BinaryOperationExpression pwdExpression = new BinaryOperationExpression(30, 44,
