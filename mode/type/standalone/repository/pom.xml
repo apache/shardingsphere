@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-standalone-mode-repository-api</module>
-        <module>shardingsphere-standalone-mode-repository-provider</module>
+        <module>api</module>
+        <module>provider</module>
     </modules>
 </project>
