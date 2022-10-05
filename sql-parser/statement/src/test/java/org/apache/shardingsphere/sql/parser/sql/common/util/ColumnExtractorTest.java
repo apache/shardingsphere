@@ -41,7 +41,6 @@ public final class ColumnExtractorTest {
         final ColumnSegment pwnCol = new ColumnSegment(30, 32, new IdentifierValue("pwd"));
         final List<WhereSegment> wheres = Collections.singletonList(createWhereSegment(nameCol, pwnCol));
         ColumnExtractor.extractColumnSegments(list, wheres);
-        
         assertThat(list.size(), is(2));
         assertThat(list, contains(nameCol, pwnCol));
     }
