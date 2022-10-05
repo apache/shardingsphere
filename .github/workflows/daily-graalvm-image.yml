@@ -53,4 +53,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push docker image
-        run: ./mvnw -am -pl distribution/proxy-native-distribution -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true -Pnative,docker.buildx.push.native -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean package
+        run: ./mvnw -am -pl distribution/proxy-native -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true -Pnative,docker.buildx.push.native -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean package
