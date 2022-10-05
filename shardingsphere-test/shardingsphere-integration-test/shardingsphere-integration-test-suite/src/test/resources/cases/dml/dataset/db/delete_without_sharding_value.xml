@@ -20,5 +20,8 @@
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
+        <column name="merchant_id" type="numeric" />
+        <column name="remark" type="varchar" />
+        <column name="creation_date" type="datetime" />
     </metadata>
 </dataset>

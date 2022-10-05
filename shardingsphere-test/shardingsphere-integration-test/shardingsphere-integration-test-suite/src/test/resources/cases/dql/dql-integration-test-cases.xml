@@ -166,8 +166,8 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
-        <assertion parameters="init:String, 100000:int, 100001:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order o WHERE o.status REGEXP ? AND o.order_id IN (?, ?)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion parameters="init:String, 1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
     <test-case sql="SELECT SUM(order_id) AS orders_sum, user_id FROM t_order GROUP BY user_id ORDER BY user_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
@@ -224,7 +224,7 @@
         <assertion parameters="1000:int, 1001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR user_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE order_id = ? OR user_id = ? ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -237,7 +237,7 @@
         <assertion parameters="1000:int, init:String, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?))))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?)))) ORDER BY order_id" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="init:String, 1000:int, 1100:int, 10:int, 11:int" expected-data-source-name="read_dataset" />
     </test-case>
     
