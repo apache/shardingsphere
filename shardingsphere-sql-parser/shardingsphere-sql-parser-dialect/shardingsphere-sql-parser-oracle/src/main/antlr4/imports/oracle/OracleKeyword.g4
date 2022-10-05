@@ -3072,6 +3072,14 @@ CONNECT_TIME
     : C O N N E C T UL_ T I M E
     ;
 
+AZURE_ROLE
+    : A Z U R E UL_ R O L E
+    ;
+
+IAM_GROUP_NAME
+    : I A M UL_ G R O U P UL_ N A M E
+    ;
+
 LOGICAL_READS_PER_SESSION
     : L O G I C A L UL_ R E A D S UL_ P E R UL_ S E S S I O N
     ;
