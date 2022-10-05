@@ -20,27 +20,30 @@
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
+        <column name="merchant_id" type="numeric" />
+        <column name="remark" type="varchar" />
+        <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="tbl.t_order_0" values="1000, 10, init" />
-    <row data-node="tbl.t_order_1" values="1, 1, insert" />
-    <row data-node="tbl.t_order_1" values="1001, 10, init" />
-    <row data-node="tbl.t_order_2" values="2, 2, insert" />
-    <row data-node="tbl.t_order_2" values="1002, 10, init" />
-    <row data-node="tbl.t_order_3" values="1003, 10, init" />
-    <row data-node="tbl.t_order_4" values="1004, 10, init" />
-    <row data-node="tbl.t_order_5" values="1005, 10, init" />
-    <row data-node="tbl.t_order_6" values="1006, 10, init" />
-    <row data-node="tbl.t_order_7" values="1007, 10, init" />
-    <row data-node="tbl.t_order_8" values="1008, 10, init" />
-    <row data-node="tbl.t_order_9" values="1009, 10, init" />
-    <row data-node="tbl.t_order_0" values="1100, 11, init" />
-    <row data-node="tbl.t_order_1" values="1101, 11, init" />
-    <row data-node="tbl.t_order_2" values="1102, 11, init" />
-    <row data-node="tbl.t_order_3" values="1103, 11, init" />
-    <row data-node="tbl.t_order_4" values="1104, 11, init" />
-    <row data-node="tbl.t_order_5" values="1105, 11, init" />
-    <row data-node="tbl.t_order_6" values="1106, 11, init" />
-    <row data-node="tbl.t_order_7" values="1107, 11, init" />
-    <row data-node="tbl.t_order_8" values="1108, 11, init" />
-    <row data-node="tbl.t_order_9" values="1109, 11, init" />
+    <row data-node="tbl.t_order_0" values="1000, 10, init, 1, test, 2017-08-08" />
+    <row data-node="tbl.t_order_1" values="1, 1, insert, 1, test, 2017-08-08" />
+    <row data-node="tbl.t_order_1" values="1001, 10, init, 2, test, 2017-08-08" />
+    <row data-node="tbl.t_order_2" values="2, 2, insert, 2, test, 2017-08-08" />
+    <row data-node="tbl.t_order_2" values="1002, 10, init, 3, test, 2017-08-08" />
+    <row data-node="tbl.t_order_3" values="1003, 10, init, 4, test, 2017-08-08" />
+    <row data-node="tbl.t_order_4" values="1004, 10, init, 5, test, 2017-08-08" />
+    <row data-node="tbl.t_order_5" values="1005, 10, init, 6, test, 2017-08-08" />
+    <row data-node="tbl.t_order_6" values="1006, 10, init, 7, test, 2017-08-08" />
+    <row data-node="tbl.t_order_7" values="1007, 10, init, 8, test, 2017-08-08" />
+    <row data-node="tbl.t_order_8" values="1008, 10, init, 9, test, 2017-08-08" />
+    <row data-node="tbl.t_order_9" values="1009, 10, init, 10, test, 2017-08-08" />
+    <row data-node="tbl.t_order_0" values="1100, 11, init, 11, test, 2017-08-08" />
+    <row data-node="tbl.t_order_1" values="1101, 11, init, 12, test, 2017-08-08" />
+    <row data-node="tbl.t_order_2" values="1102, 11, init, 13, test, 2017-08-08" />
+    <row data-node="tbl.t_order_3" values="1103, 11, init, 14, test, 2017-08-08" />
+    <row data-node="tbl.t_order_4" values="1104, 11, init, 15, test, 2017-08-08" />
+    <row data-node="tbl.t_order_5" values="1105, 11, init, 16, test, 2017-08-08" />
+    <row data-node="tbl.t_order_6" values="1106, 11, init, 17, test, 2017-08-08" />
+    <row data-node="tbl.t_order_7" values="1107, 11, init, 18, test, 2017-08-08" />
+    <row data-node="tbl.t_order_8" values="1108, 11, init, 19, test, 2017-08-08" />
+    <row data-node="tbl.t_order_9" values="1109, 11, init, 20, test, 2017-08-08" />
 </dataset>

@@ -133,5 +133,6 @@ execute
     | dropMaterializedViewLog
     | dropMaterializedZonemap
     | alterResourceCost
+    | alterRole
     ) SEMI_?
     ;
