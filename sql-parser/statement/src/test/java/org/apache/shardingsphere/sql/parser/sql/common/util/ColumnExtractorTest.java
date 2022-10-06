@@ -19,10 +19,10 @@ package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -36,13 +36,15 @@ public final class ColumnExtractorTest {
     
     @Test
     public void assertExtractColumnSegments() {
-        final List<ColumnSegment> list = new ArrayList<>();
-        final ColumnSegment nameCol = new ColumnSegment(10, 13, new IdentifierValue("name"));
-        final ColumnSegment pwnCol = new ColumnSegment(30, 32, new IdentifierValue("pwd"));
-        final List<WhereSegment> wheres = Collections.singletonList(createWhereSegment(nameCol, pwnCol));
-        ColumnExtractor.extractColumnSegments(list, wheres);
-        assertThat(list.size(), is(2));
-        assertThat(list, contains(nameCol, pwnCol));
+        ColumnSegment nameCol = new ColumnSegment(10, 13, new IdentifierValue("name"));
+        ColumnSegment pwnCol = new ColumnSegment(30, 32, new IdentifierValue("pwd"));
+        List<WhereSegment> wheres = Collections.singletonList(createWhereSegment(nameCol, pwnCol));
+        List<ColumnSegment> columnSegments = new ArrayList<>();
+        ColumnExtractor.extractColumnSegments(columnSegments, wheres);
+        assertThat(columnSegments.size(), is(2));
+        Iterator<ColumnSegment> iterator = columnSegments.iterator();
+        assertThat(iterator.next(), is(nameCol));
+        assertThat(iterator.next(), is(pwnCol));
     }
     
     private static WhereSegment createWhereSegment(final ColumnSegment col1, final ColumnSegment col2) {
