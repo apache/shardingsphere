@@ -32,7 +32,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Slf4j
 @ToString(exclude = {"source", "target"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     

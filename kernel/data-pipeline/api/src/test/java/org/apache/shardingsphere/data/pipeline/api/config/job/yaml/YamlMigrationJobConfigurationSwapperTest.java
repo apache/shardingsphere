@@ -15,31 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config;
+package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlMigrationJobConfigurationSwapper;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MigrationJobConfigurationTest {
-    
-    private static final YamlMigrationJobConfigurationSwapper JOB_CONFIG_SWAPPER = new YamlMigrationJobConfigurationSwapper();
+public final class YamlMigrationJobConfigurationSwapperTest {
     
     @Test
-    public void assertGetJobShardingCountByNull() {
+    public void assertSwapToObject() {
         YamlMigrationJobConfiguration yamlJobConfig = new YamlMigrationJobConfiguration();
-        MigrationJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
-        assertThat(jobConfig.getJobShardingCount(), is(1));
-    }
-    
-    @Test
-    public void assertGetJobShardingCount() {
-        YamlMigrationJobConfiguration yamlJobConfig = new YamlMigrationJobConfiguration();
-        MigrationJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
-        assertThat(jobConfig.getJobShardingCount(), is(1));
+        MigrationJobConfiguration actual = new YamlMigrationJobConfigurationSwapper().swapToObject(yamlJobConfig);
+        assertThat(actual.getJobShardingCount(), is(1));
     }
 }

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 /**
  * YAML migration job configuration swapper.
  */
-// TODO add test
 public final class YamlMigrationJobConfigurationSwapper implements YamlConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
     
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
