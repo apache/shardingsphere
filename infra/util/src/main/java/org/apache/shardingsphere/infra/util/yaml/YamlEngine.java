@@ -93,7 +93,7 @@ public final class YamlEngine {
      * @return object from YAML
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean skipMissingProps) {
-        Representer representer = new Representer();
+        Representer representer = new Representer(new DumperOptions());
         representer.getPropertyUtils().setSkipMissingProperties(skipMissingProps);
         return new Yaml(new ShardingSphereYamlConstructor(classType), representer).loadAs(yamlContent, classType);
     }
@@ -108,8 +108,8 @@ public final class YamlEngine {
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
         if (value instanceof Collection) {
-            return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+            return new Yaml(new ShardingSphereYamlRepresenter(dumperOptions)).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
         }
-        return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAsMap(value);
+        return new Yaml(new ShardingSphereYamlRepresenter(dumperOptions)).dumpAsMap(value);
     }
 }

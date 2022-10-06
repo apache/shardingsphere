@@ -300,7 +300,7 @@ The text of each license is the standard Apache 2.0 license.
     simpleclient_tracer_otel 0.11.0: https://github.com/prometheus/client_java, Apache 2.0
     simpleclient_tracer_otel_agent 0.11.0: https://github.com/prometheus/client_java, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
-    snakeyaml 1.32: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
+    snakeyaml 1.33: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
     vertx-mysql-client 4.3.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
     vertx-sql-client 4.3.3: https://github.com/eclipse-vertx/vertx-sql-client, Apache 2.0
