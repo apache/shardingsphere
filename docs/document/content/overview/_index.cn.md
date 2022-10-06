@@ -73,15 +73,6 @@ ShardingSphere-Proxy 定位为透明化的数据库代理端，通过实现数�
 
 通过多层次（内核、功能、生态）插件化能力，为用户提供可定制满足自身特殊需求的独有系统。
 
-### 线路规划
-
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_cn.png)
-
-### 如何参与
-
-ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
-欢迎通过[邮件列表](mailto:dev@shardingsphere.apache.org)参与讨论。
-
 ## 设计哲学
 
 ShardingSphere 采用 Database Plus 设计哲学，该理念致力于构建数据库上层的标准和生态，在生态中补充数据库所缺失的能力。
@@ -120,12 +111,10 @@ Apache ShardingSphere 的可插拔架构划分为 3 层，它们是：L1 内核�
 
 ## 部署形态
 
-### 部署形态
-
 Apache ShardingSphere 由 ShardingSphere-JDBC 和 ShardingSphere-Proxy 这 2 款既能够独立部署，又支持混合部署配合使用的产品组成。
 它们均提供标准化的基于数据库作为存储节点的增量功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。
 
-#### ShardingSphere-JDBC 独立部署
+### ShardingSphere-JDBC 独立部署
 
 ShardingSphere-JDBC 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供的额外服务。
 它使用客户端直连数据库，以 jar 包形式提供服务，无需额外部署和依赖，可理解为增强版的 JDBC 驱动，完全兼容 JDBC 和各种 ORM 框架。
@@ -145,7 +134,7 @@ ShardingSphere-JDBC 定位为轻量级 Java 框架，在 Java 的 JDBC 层提供
 | 无中心化   | `是`                 | 否                    |
 | 静态入口   | `无`                 | 有                    |
 
-#### ShardingSphere-Proxy 独立部署
+### ShardingSphere-Proxy 独立部署
 
 ShardingSphere-Proxy 定位为透明化的数据库代理端，通过实现数据库二进制协议，对异构语言提供支持。
 目前提供 MySQL 和 PostgreSQL 协议，透明化数据库操作，对 DBA 更加友好。
@@ -165,7 +154,7 @@ ShardingSphere-Proxy 定位为透明化的数据库代理端，通过实现数�
 | 无中心化   | 是                   | `否`                  |
 | 静态入口   | 无                   | `有`                  |
 
-#### 混合部署架构
+### 混合部署架构
 
 ShardingSphere-JDBC 采用无中心化架构，与应用程序共享资源，适用于 Java 开发的高性能的轻量级 OLTP 应用；
 ShardingSphere-Proxy 提供静态入口以及异构语言的支持，独立于应用程序部署，适用于 OLAP 应用以及对分片数据库进行管理和运维的场景。
@@ -175,20 +164,29 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
 
-### 运行模式
+## 运行模式
 
 Apache ShardingSphere 提供了两种运行模式，分别是单机模式和集群模式。
 
-#### 单机模式
+### 单机模式
 
 能够将数据源和规则等元数据信息持久化，但无法将元数据同步至多个 Apache ShardingSphere 实例，无法在集群环境中相互感知。
 通过某一实例更新元数据之后，会导致其他实例由于获取不到最新的元数据而产生不一致的错误。
 
 适用于工程师在本地搭建 Apache ShardingSphere 环境。
 
-#### 集群模式
+### 集群模式
 
 提供了多个 Apache ShardingSphere 实例之间的元数据共享和分布式场景下状态协调的能力。
 它能够提供计算能力水平扩展和高可用等分布式系统必备的能力，集群环境需要通过独立部署的注册中心来存储元数据和协调节点状态。
 
 在生产环境建议使用集群模式。
+
+## 线路规划
+
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_cn.png)
+
+## 如何参与
+
+ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
+欢迎通过[邮件列表](mailto:dev@shardingsphere.apache.org)参与讨论。

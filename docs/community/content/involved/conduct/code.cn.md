@@ -58,6 +58,7 @@ chapter = true
  - 公开的类和方法必须有 javadoc，其他类和方法以及覆盖自父类的方法无需 javadoc。
  - 条件运算符（<表达式1> ? <表达式2> : <表达式3>）禁止 `嵌套使用`。
  - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
+ - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
 
 ## 单元测试规范
 
@@ -74,7 +75,7 @@ chapter = true
  - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
  - 每个测试用例需精确断言。
  - 准备环境的代码和测试代码分离。
- - 只有 junit `Assert`，hamcrest `CoreMatchers`，Mockito 相关可以使用 static import。
+ - 只有 Mockito，junit `Assert`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
  - 单数据断言，应使用 `assertTrue`，`assertFalse`，`assertNull` 和 `assertNotNull`。
  - 多数据断言，应使用 `assertThat`。
  - 精确断言，尽量不使用 `not`，`containsString` 断言。

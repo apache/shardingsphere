@@ -25,16 +25,16 @@ on:
       - '**/pom.xml'
       - '**/src/main/**'
       - '!examples/**'
-      - '!shardingsphere-distribution/**'
-      - 'shardingsphere-distribution/shardingsphere-proxy-distribution/**'
-      - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
-      - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
-      - '!shardingsphere-test/**'
-      - 'shardingsphere-test/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
-      - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
+      - '!distribution/**'
+      - 'distribution/proxy/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/test-suite/**'
+      - 'test/integration-agent-test/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -43,16 +43,16 @@ on:
       - '**/pom.xml'
       - '**/src/main/**'
       - '!examples/**'
-      - '!shardingsphere-distribution/**'
-      - 'shardingsphere-distribution/shardingsphere-proxy-distribution/**'
-      - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
-      - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
-      - '!shardingsphere-test/**'
-      - 'shardingsphere-test/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
-      - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
+      - '!distribution/**'
+      - 'distribution/proxy/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/test-suite/**'
+      - 'test/integration-agent-test/**'
       - '!*.md'
 
 concurrency:
@@ -84,9 +84,9 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Build IT image
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+        run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
-        run: ./mvnw -B install -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Dspotless.apply.skip=true --offline
+        run: ./mvnw -B install -pl test/integration-test/test-suite -Dspotless.apply.skip=true
       - name: Save IT image
         run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - name: Upload IT image
@@ -104,8 +104,8 @@ jobs:
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
-        scenario: [ empty_rules ]
+        database: [ MySQL, PostgreSQL, openGauss ]
+        scenario: [ empty_rules, rdl_empty_rules ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -128,7 +128,7 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-single-rule:
     name: single rule
@@ -140,7 +140,7 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
         exclude:
           - adapter: jdbc
@@ -167,7 +167,7 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+        run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   it-mixture-rule:
     name: mixture rule
@@ -179,7 +179,7 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
         exclude:
           - adapter: jdbc
@@ -206,7 +206,7 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+        run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
@@ -231,9 +231,9 @@ jobs:
         run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Verify
         run: |
-          ./mvnw -B clean verify -pl shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics -DskipITs -DskipTests -Dspotless.apply.skip=true
-          ./mvnw -B clean verify -pl shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry -DskipITs -DskipTests -Dspotless.apply.skip=true
+          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/metrics -DskipITs -DskipTests -Dspotless.apply.skip=true
+          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/opentelemetry -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Integration Test
         run: |
-          ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
-          ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
+          ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
+          ./mvnw -B clean install -f test/integration-agent-test/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry

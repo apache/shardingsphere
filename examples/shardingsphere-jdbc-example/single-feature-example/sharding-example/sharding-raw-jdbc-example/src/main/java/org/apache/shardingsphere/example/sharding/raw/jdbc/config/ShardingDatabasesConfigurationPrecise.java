@@ -56,7 +56,7 @@ public final class ShardingDatabasesConfigurationPrecise implements ExampleConfi
     }
     
     private ModeConfiguration createModeConfiguration() {
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()));
     }
     
     private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {

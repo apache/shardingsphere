@@ -22,7 +22,6 @@ mode:
     props:
       namespace: demo_yaml_readwrite_ds
       server-lists: localhost:2181
-  overwrite: true
 
 dataSources:
   write_ds:
