@@ -252,7 +252,11 @@ The text of each license is the standard Apache 2.0 license.
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 3.4.2: https://github.com/brettwooldridge/HikariCP, Apache 2.0
+    httpasyncclient 4.1.3: https://hc.apache.org/httpcomponents-asyncclient-4.1.x, Apache 2.0
+    httpclient 4.5.3: https://hc.apache.org/httpcomponents-client-4.5.x, Apache 2.0
     httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
+    httpcore 4.4.6: https://hc.apache.org/httpcomponents-core-4.4.x, Apache 2.0
+    httpcore-nio 4.4.6: https://hc.apache.org/httpcomponents-core-4.4.x, Apache 2.0
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     jackson-annotations 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
@@ -268,6 +272,9 @@ The text of each license is the standard Apache 2.0 license.
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
+    nacos-api 1.4.2: https://github.com/alibaba/nacos, Apache 2.0
+    nacos-client 1.4.2: https://github.com/alibaba/nacos, Apache 2.0
+    nacos-common 1.4.2: https://github.com/alibaba/nacos, Apache 2.0
     netty-buffer 4.1.80.Final: https://github.com/netty, Apache 2.0
     netty-codec 4.1.80.Final: https://github.com/netty, Apache 2.0
     netty-codec-dns 4.1.80.Final: https://github.com/netty, Apache 2.0
@@ -288,6 +295,10 @@ The text of each license is the standard Apache 2.0 license.
     proto-google-common-protos 2.0.1: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
     quartz 2.3.2: https://github.com/quartz-scheduler/quartz, Apache 2.0
+    simpleclient 0.11.0: https://github.com/prometheus/client_java, Apache 2.0
+    simpleclient_tracer_common 0.11.0: https://github.com/prometheus/client_java, Apache 2.0
+    simpleclient_tracer_otel 0.11.0: https://github.com/prometheus/client_java, Apache 2.0
+    simpleclient_tracer_otel_agent 0.11.0: https://github.com/prometheus/client_java, Apache 2.0
     sketches-core 0.9.0, Apache 2.0
     snakeyaml 1.32: https://bitbucket.org/snakeyaml/snakeyaml, Apache 2.0
     uzaygezen-core 0.2: https://code.google.com/p/uzaygezen, Apache 2.0
