@@ -38,7 +38,8 @@ import java.util.Map.Entry;
  */
 public final class ShardingSphereYamlRepresenter extends Representer {
     
-    public ShardingSphereYamlRepresenter() {
+    public ShardingSphereYamlRepresenter(final DumperOptions dumperOptions) {
+        super(dumperOptions);
         ShardingSphereYamlShortcutsFactory.getAllYamlShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
     }
     
