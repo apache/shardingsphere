@@ -60,7 +60,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 break;
             case DELETED:
                 log.info("deleted jobId={}", jobId);
-                new MigrationJobPreparer().cleanup(YamlMigrationJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter()));
+                new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter()));
                 PipelineJobCenter.stop(jobId);
                 break;
             default:
