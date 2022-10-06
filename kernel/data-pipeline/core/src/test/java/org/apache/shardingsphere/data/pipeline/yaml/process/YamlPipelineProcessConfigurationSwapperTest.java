@@ -32,32 +32,37 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
     
     @Test
     public void assertSwap() {
-        YamlPipelineProcessConfiguration yamlConfig = new YamlPipelineProcessConfiguration();
-        Properties rateLimiterProps = new Properties();
-        rateLimiterProps.setProperty("batch-size", "1000");
-        rateLimiterProps.setProperty("qps", "50");
-        YamlPipelineReadConfiguration yamlInputConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
-        yamlConfig.setRead(yamlInputConfig);
-        yamlInputConfig.setRateLimiter(new YamlAlgorithmConfiguration("INPUT", rateLimiterProps));
-        YamlPipelineWriteConfiguration yamlOutputConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
-        yamlOutputConfig.setRateLimiter(new YamlAlgorithmConfiguration("OUTPUT", rateLimiterProps));
-        yamlConfig.setWrite(yamlOutputConfig);
-        Properties streamChannelProps = new Properties();
-        streamChannelProps.setProperty("block-queue-size", "10000");
-        yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", streamChannelProps));
+        YamlPipelineProcessConfiguration yamlConfig = createYamlPipelineProcessConfiguration();
         YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
         PipelineProcessConfiguration actualConfig = swapper.swapToObject(yamlConfig);
         YamlPipelineProcessConfiguration actualYamlConfig = swapper.swapToYamlConfiguration(actualConfig);
         assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
     
+    private YamlPipelineProcessConfiguration createYamlPipelineProcessConfiguration() {
+        YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
+        Properties rateLimiterProps = new Properties();
+        rateLimiterProps.setProperty("batch-size", "1000");
+        rateLimiterProps.setProperty("qps", "50");
+        YamlPipelineReadConfiguration yamlInputConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        yamlInputConfig.setRateLimiter(new YamlAlgorithmConfiguration("INPUT", rateLimiterProps));
+        result.setRead(yamlInputConfig);
+        YamlPipelineWriteConfiguration yamlOutputConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
+        yamlOutputConfig.setRateLimiter(new YamlAlgorithmConfiguration("OUTPUT", rateLimiterProps));
+        result.setWrite(yamlOutputConfig);
+        Properties streamChannelProps = new Properties();
+        streamChannelProps.setProperty("block-queue-size", "10000");
+        result.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", streamChannelProps));
+        return result;
+    }
+    
     @Test
-    public void assertYamlConfigNull() {
+    public void assertSwapToYamlConfigurationWithNull() {
         assertNull(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
-    public void assertConfigNull() {
+    public void assertSwapToObjectWithNull() {
         assertNull(new YamlPipelineProcessConfigurationSwapper().swapToObject(null));
     }
 }
