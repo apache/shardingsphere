@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.process;
 
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -29,8 +29,6 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class YamlPipelineProcessConfigurationSwapperTest {
-    
-    private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();
     
     @Test
     public void assertSwap() {
@@ -47,18 +45,19 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
         Properties streamChannelProps = new Properties();
         streamChannelProps.setProperty("block-queue-size", "10000");
         yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", streamChannelProps));
-        PipelineProcessConfiguration actualConfig = SWAPPER.swapToObject(yamlConfig);
-        YamlPipelineProcessConfiguration actualYamlConfig = SWAPPER.swapToYamlConfiguration(actualConfig);
+        YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
+        PipelineProcessConfiguration actualConfig = swapper.swapToObject(yamlConfig);
+        YamlPipelineProcessConfiguration actualYamlConfig = swapper.swapToYamlConfiguration(actualConfig);
         assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
     
     @Test
     public void assertYamlConfigNull() {
-        assertNull(SWAPPER.swapToYamlConfiguration(null));
+        assertNull(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
     public void assertConfigNull() {
-        assertNull(SWAPPER.swapToObject(null));
+        assertNull(new YamlPipelineProcessConfigurationSwapper().swapToObject(null));
     }
 }
