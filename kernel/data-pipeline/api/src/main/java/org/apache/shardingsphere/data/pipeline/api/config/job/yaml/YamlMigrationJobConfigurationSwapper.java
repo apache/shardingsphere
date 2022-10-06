@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 // TODO add test
 public final class YamlMigrationJobConfigurationSwapper implements YamlConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
     
-    private static final YamlMigrationJobConfigurationSwapper JOB_CONFIG_SWAPPER = new YamlMigrationJobConfigurationSwapper();
-    
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
     private final YamlPipelineColumnMetaDataSwapper pipelineColumnMetaDataSwapper = new YamlPipelineColumnMetaDataSwapper();
@@ -68,13 +66,12 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     }
     
     /**
-     * Swap to job configuration from text.
+     * Swap to migration job configuration from YAML text.
      *
-     * @param jobParameter job parameter
-     * @return job configuration
+     * @param jobParameter job parameter YAML text
+     * @return migration job configuration
      */
-    public static MigrationJobConfiguration swapToObject(final String jobParameter) {
-        YamlMigrationJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlMigrationJobConfiguration.class, true);
-        return JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
+    public MigrationJobConfiguration swapToObject(final String jobParameter) {
+        return swapToObject(YamlEngine.unmarshal(jobParameter, YamlMigrationJobConfiguration.class, true));
     }
 }
