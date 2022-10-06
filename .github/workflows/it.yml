@@ -51,7 +51,7 @@ on:
       - 'test/pom.xml'
       - 'test/integration-test/fixture/**'
       - 'test/integration-test/env/**'
-      - 'test/integration-test/suite/**'
+      - 'test/integration-test/test-suite/**'
       - 'test/integration-agent-test/**'
       - '!*.md'
 
