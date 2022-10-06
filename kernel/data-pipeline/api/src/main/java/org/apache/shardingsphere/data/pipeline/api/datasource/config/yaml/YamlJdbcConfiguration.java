@@ -39,7 +39,7 @@ public final class YamlJdbcConfiguration implements YamlConfiguration {
      *
      * @param url JDBC URL
      */
-    // TODO check why need alias here. Use DataSourcePoolCreator if alias necessary, or remove alias otherwise 
+    // TODO check why need alias here. Use DataSourcePoolCreator if alias necessary, or remove alias otherwise
     public void setUrl(final String url) {
         this.jdbcUrl = url;
     }

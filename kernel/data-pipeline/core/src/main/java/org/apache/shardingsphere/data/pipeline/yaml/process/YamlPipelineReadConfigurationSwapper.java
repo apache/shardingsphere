@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.process;
 
-import lombok.Data;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
@@ -25,10 +24,9 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorit
 /**
  * YAML pipeline read configuration swapper.
  */
-@Data
 public final class YamlPipelineReadConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineReadConfiguration, PipelineReadConfiguration> {
     
-    private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
+    private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     @Override
     public YamlPipelineReadConfiguration swapToYamlConfiguration(final PipelineReadConfiguration data) {
@@ -39,7 +37,7 @@ public final class YamlPipelineReadConfigurationSwapper implements YamlConfigura
         result.setWorkerThread(data.getWorkerThread());
         result.setBatchSize(data.getBatchSize());
         result.setShardingSize(data.getShardingSize());
-        result.setRateLimiter(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRateLimiter()));
+        result.setRateLimiter(algorithmSwapper.swapToYamlConfiguration(data.getRateLimiter()));
         return result;
     }
     
@@ -47,7 +45,6 @@ public final class YamlPipelineReadConfigurationSwapper implements YamlConfigura
     public PipelineReadConfiguration swapToObject(final YamlPipelineReadConfiguration yamlConfig) {
         return null == yamlConfig
                 ? null
-                : new PipelineReadConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
-                        ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
+                : new PipelineReadConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(), algorithmSwapper.swapToObject(yamlConfig.getRateLimiter()));
     }
 }
