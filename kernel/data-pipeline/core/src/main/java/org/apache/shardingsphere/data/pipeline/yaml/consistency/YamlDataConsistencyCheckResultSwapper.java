@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyContentCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.yaml.YamlDataConsistencyCheckResult.YamlDataConsistencyCountCheckResult;
+import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult.YamlDataConsistencyContentCheckResult;
+import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult.YamlDataConsistencyCountCheckResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
  * Yaml data consistency check result swapper.
  */
 public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigurationSwapper<YamlDataConsistencyCheckResult, DataConsistencyCheckResult> {
-    
-    private static final YamlDataConsistencyCheckResultSwapper CONFIG_SWAPPER = new YamlDataConsistencyCheckResultSwapper();
     
     @Override
     public YamlDataConsistencyCheckResult swapToYamlConfiguration(final DataConsistencyCheckResult data) {
@@ -62,8 +60,7 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
      * @param parameter parameter
      * @return data consistency check result
      */
-    public static DataConsistencyCheckResult swapToObject(final String parameter) {
-        YamlDataConsistencyCheckResult yamlDataCheckResult = YamlEngine.unmarshal(parameter, YamlDataConsistencyCheckResult.class, true);
-        return CONFIG_SWAPPER.swapToObject(yamlDataCheckResult);
+    public DataConsistencyCheckResult swapToObject(final String parameter) {
+        return swapToObject(YamlEngine.unmarshal(parameter, YamlDataConsistencyCheckResult.class, true));
     }
 }
