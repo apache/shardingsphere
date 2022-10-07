@@ -67,10 +67,6 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
-    public ShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions, final ConfigurationProperties properties) {
-        this(logicTableName, shardingConditions, null, properties);
-    }
-    
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
@@ -98,9 +94,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
-        return (shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
-                && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration)
-                || isRoutingBySQLHint();
+        return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
+                && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
     }
     
     private boolean isRoutingBySQLHint() {
@@ -279,9 +274,6 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,
                                                     final String defaultShardingColumn) {
-        if (isRoutingBySQLHint()) {
-            return new HintShardingStrategy(shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()));
-        }
         return null == shardingStrategyConfig ? new NoneShardingStrategy()
                 : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()), defaultShardingColumn);
     }

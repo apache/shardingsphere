@@ -47,10 +47,6 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
-    public ShardingComplexRoutingEngine(final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<String> logicTables) {
-        this(shardingConditions, null, props, logicTables);
-    }
-    
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
