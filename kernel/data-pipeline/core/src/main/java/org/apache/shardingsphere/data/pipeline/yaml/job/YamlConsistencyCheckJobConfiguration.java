@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 
 import java.util.Properties;
 
