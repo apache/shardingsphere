@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.metadata;
 
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
