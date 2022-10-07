@@ -19,13 +19,14 @@ package org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * JDBC configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlJdbcConfiguration {
+public final class YamlJdbcConfiguration implements YamlConfiguration {
     
     private String jdbcUrl;
     
@@ -38,6 +39,7 @@ public final class YamlJdbcConfiguration {
      *
      * @param url JDBC URL
      */
+    // TODO check why need alias here. Use DataSourcePoolCreator if alias necessary, or remove alias otherwise
     public void setUrl(final String url) {
         this.jdbcUrl = url;
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.process;
 
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
@@ -26,11 +26,11 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorit
  */
 public final class YamlPipelineProcessConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineProcessConfiguration, PipelineProcessConfiguration> {
     
-    private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
+    private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
-    private static final YamlPipelineReadConfigurationSwapper READ_CONFIG_SWAPPER = new YamlPipelineReadConfigurationSwapper();
+    private final YamlPipelineReadConfigurationSwapper readConfigSwapper = new YamlPipelineReadConfigurationSwapper();
     
-    private static final YamlPipelineWriteConfigurationSwapper WRITE_CONFIG_SWAPPER = new YamlPipelineWriteConfigurationSwapper();
+    private final YamlPipelineWriteConfigurationSwapper writeConfigSwapper = new YamlPipelineWriteConfigurationSwapper();
     
     @Override
     public YamlPipelineProcessConfiguration swapToYamlConfiguration(final PipelineProcessConfiguration data) {
@@ -38,20 +38,17 @@ public final class YamlPipelineProcessConfigurationSwapper implements YamlConfig
             return null;
         }
         YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
-        result.setRead(READ_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRead()));
-        result.setWrite(WRITE_CONFIG_SWAPPER.swapToYamlConfiguration(data.getWrite()));
-        result.setStreamChannel(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getStreamChannel()));
+        result.setRead(readConfigSwapper.swapToYamlConfiguration(data.getRead()));
+        result.setWrite(writeConfigSwapper.swapToYamlConfiguration(data.getWrite()));
+        result.setStreamChannel(algorithmSwapper.swapToYamlConfiguration(data.getStreamChannel()));
         return result;
     }
     
     @Override
     public PipelineProcessConfiguration swapToObject(final YamlPipelineProcessConfiguration yamlConfig) {
-        if (null == yamlConfig) {
-            return null;
-        }
-        return new PipelineProcessConfiguration(
-                READ_CONFIG_SWAPPER.swapToObject(yamlConfig.getRead()),
-                WRITE_CONFIG_SWAPPER.swapToObject(yamlConfig.getWrite()),
-                ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getStreamChannel()));
+        return null == yamlConfig
+                ? null
+                : new PipelineProcessConfiguration(
+                        readConfigSwapper.swapToObject(yamlConfig.getRead()), writeConfigSwapper.swapToObject(yamlConfig.getWrite()), algorithmSwapper.swapToObject(yamlConfig.getStreamChannel()));
     }
 }

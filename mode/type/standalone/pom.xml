@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-standalone-mode-core</module>
-        <module>shardingsphere-standalone-mode-repository</module>
+        <module>core</module>
+        <module>repository</module>
     </modules>
 </project>

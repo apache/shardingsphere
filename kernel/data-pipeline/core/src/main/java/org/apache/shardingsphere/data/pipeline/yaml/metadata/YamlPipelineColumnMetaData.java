@@ -15,34 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.metadata;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.Properties;
+import lombok.Data;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Consistency check job configuration for YAML.
+ * Yaml pipeline column meta data.
  */
-@Getter
-@Setter
-@Slf4j
-@ToString
-public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
+@Data
+public final class YamlPipelineColumnMetaData implements YamlConfiguration {
     
-    private String jobId;
+    private int ordinalPosition;
     
-    private String parentJobId;
+    private String name;
     
-    private String algorithmTypeName;
+    private int dataType;
     
-    private Properties algorithmProps;
+    private String dataTypeName;
     
-    @Override
-    public String getTargetDatabaseName() {
-        throw new UnsupportedOperationException("");
-    }
+    private boolean nullable;
+    
+    private boolean primaryKey;
+    
+    private boolean uniqueKey;
 }

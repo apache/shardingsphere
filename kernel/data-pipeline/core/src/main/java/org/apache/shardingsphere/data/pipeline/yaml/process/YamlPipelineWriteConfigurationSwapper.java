@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.process;
 
-import lombok.Data;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
@@ -25,10 +24,9 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorit
 /**
  * YAML pipeline write configuration swapper.
  */
-@Data
 public final class YamlPipelineWriteConfigurationSwapper implements YamlConfigurationSwapper<YamlPipelineWriteConfiguration, PipelineWriteConfiguration> {
     
-    private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
+    private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     @Override
     public YamlPipelineWriteConfiguration swapToYamlConfiguration(final PipelineWriteConfiguration data) {
@@ -38,7 +36,7 @@ public final class YamlPipelineWriteConfigurationSwapper implements YamlConfigur
         YamlPipelineWriteConfiguration result = new YamlPipelineWriteConfiguration();
         result.setWorkerThread(data.getWorkerThread());
         result.setBatchSize(data.getBatchSize());
-        result.setRateLimiter(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRateLimiter()));
+        result.setRateLimiter(algorithmSwapper.swapToYamlConfiguration(data.getRateLimiter()));
         return result;
     }
     
@@ -46,6 +44,6 @@ public final class YamlPipelineWriteConfigurationSwapper implements YamlConfigur
     public PipelineWriteConfiguration swapToObject(final YamlPipelineWriteConfiguration yamlConfig) {
         return null == yamlConfig
                 ? null
-                : new PipelineWriteConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
+                : new PipelineWriteConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), algorithmSwapper.swapToObject(yamlConfig.getRateLimiter()));
     }
 }

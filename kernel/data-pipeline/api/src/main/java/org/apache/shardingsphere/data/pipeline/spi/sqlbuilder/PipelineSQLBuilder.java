@@ -45,16 +45,28 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
     }
     
     /**
-     * Build inventory dump first SQL.
+     * Build divisible inventory dump first SQL.
      *
      * @param schemaName schema name
      * @param tableName table name
      * @param uniqueKey unique key
      * @param uniqueKeyDataType unique key data type
      * @param firstQuery whether it's the first time query
-     * @return inventory dump SQL
+     * @return divisible inventory dump SQL
      */
-    String buildInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    String buildDivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
+    
+    /**
+     * Build indivisible inventory dump first SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @param uniqueKeyDataType unique key data type
+     * @param firstQuery whether it's the first time query
+     * @return indivisible inventory dump SQL
+     */
+    String buildIndivisibleInventoryDumpSQL(String schemaName, String tableName, String uniqueKey, int uniqueKeyDataType, boolean firstQuery);
     
     /**
      * Build insert SQL.

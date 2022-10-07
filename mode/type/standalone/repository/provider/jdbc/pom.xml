@@ -28,7 +28,7 @@
     <packaging>pom</packaging>
     
     <modules>
-        <module>shardingsphere-standalone-mode-repository-jdbc-core</module>
-        <module>shardingsphere-standalone-mode-repository-jdbc-h2</module>
+        <module>core</module>
+        <module>h2</module>
     </modules>
 </project>

@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.job;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
 
 import java.util.List;
 
@@ -32,7 +32,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@Slf4j
 @ToString(exclude = {"source", "target"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     

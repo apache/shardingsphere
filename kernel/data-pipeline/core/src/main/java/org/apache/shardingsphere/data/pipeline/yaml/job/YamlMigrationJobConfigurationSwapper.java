@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.job;
 
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.api.metadata.yaml.YamlPipelineColumnMetaDataSwapper;
+import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML migration job configuration swapper.
  */
-// TODO add test
 public final class YamlMigrationJobConfigurationSwapper implements YamlConfigurationSwapper<YamlMigrationJobConfiguration, MigrationJobConfiguration> {
-    
-    private static final YamlMigrationJobConfigurationSwapper JOB_CONFIG_SWAPPER = new YamlMigrationJobConfigurationSwapper();
     
     private final YamlPipelineDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlPipelineDataSourceConfigurationSwapper();
     
@@ -68,13 +65,12 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     }
     
     /**
-     * Swap to job configuration from text.
+     * Swap to migration job configuration from YAML text.
      *
-     * @param jobParameter job parameter
-     * @return job configuration
+     * @param jobParameter job parameter YAML text
+     * @return migration job configuration
      */
-    public static MigrationJobConfiguration swapToObject(final String jobParameter) {
-        YamlMigrationJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlMigrationJobConfiguration.class, true);
-        return JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
+    public MigrationJobConfiguration swapToObject(final String jobParameter) {
+        return swapToObject(YamlEngine.unmarshal(jobParameter, YamlMigrationJobConfiguration.class, true));
     }
 }

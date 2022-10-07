@@ -20,8 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedPipelineJobUniqueKeyDataTypeException;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,17 +30,18 @@ import java.util.Set;
 public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String buildInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+    public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
-        if (PipelineJdbcUtils.isIntegerColumn(uniqueKeyDataType)) {
-            return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC) WHERE ROWNUM<=?",
-                    qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey, quotedUniqueKey);
-        }
-        if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType)) {
-            return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? ORDER BY %s ASC) WHERE ROWNUM<=?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey);
-        }
-        throw new UnsupportedPipelineJobUniqueKeyDataTypeException(uniqueKeyDataType);
+        return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? AND %s<=? ORDER BY %s ASC) WHERE ROWNUM<=?",
+                qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey, quotedUniqueKey);
+    }
+    
+    @Override
+    public String buildIndivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        String quotedUniqueKey = quote(uniqueKey);
+        return String.format("SELECT * FROM (SELECT * FROM %s WHERE %s%s? ORDER BY %s ASC) WHERE ROWNUM<=?", qualifiedTableName, quotedUniqueKey, firstQuery ? ">=" : ">", quotedUniqueKey);
     }
     
     @Override
