@@ -50,7 +50,7 @@ jobs:
         uses: burnett01/rsync-deployments@5.2
         with:
           switches: -avzr
-          path: shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-*.tar.gz
+          path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
           remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere
           remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
           remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}

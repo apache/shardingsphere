@@ -29,9 +29,9 @@ on:
       - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
-      - '!shardingsphere-distribution/**'
-      - '!shardingsphere-test/shardingsphere-integration-*/**'
-      - 'shardingsphere-test/shardingsphere-integration-driver-test/**'
+      - '!distribution/**'
+      - '!test/integration-*/**'
+      - 'test/integration-driver-test/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -41,9 +41,9 @@ on:
       - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
-      - '!shardingsphere-distribution/**'
-      - '!shardingsphere-test/shardingsphere-integration-*/**'
-      - 'shardingsphere-test/shardingsphere-integration-driver-test/**'
+      - '!distribution/**'
+      - '!test/integration-*/**'
+      - 'test/integration-driver-test/**'
       - '!*.md'
   repository_dispatch:
     types: [rerun-ci]

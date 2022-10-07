@@ -24,9 +24,9 @@ on:
       - '**/pom.xml'
       - '**/src/main/**'
       - '!examples/**'
-      - '!shardingsphere-distribution/**'
-      - 'shardingsphere-distribution/shardingsphere-proxy-distribution/**'
-      - '!shardingsphere-test/**'
+      - '!distribution/**'
+      - 'distribution/proxy/**'
+      - '!test/**'
       - '!*.md'
 
 env:
@@ -66,4 +66,4 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Push docker image
-        run: ./mvnw -am -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
+        run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
