@@ -26,9 +26,13 @@ import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.strategy.ShardingStrategy;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Objects;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * Hint sharding strategy.
@@ -38,9 +42,9 @@ public final class HintShardingStrategy implements ShardingStrategy {
     
     private final Collection<String> shardingColumns;
     
-    private final HintShardingAlgorithm<?> shardingAlgorithm;
+    private final ShardingAlgorithm shardingAlgorithm;
     
-    public HintShardingStrategy(final HintShardingAlgorithm<?> shardingAlgorithm) {
+    public HintShardingStrategy(final ShardingAlgorithm shardingAlgorithm) {
         Preconditions.checkNotNull(shardingAlgorithm, "Sharding algorithm cannot be null.");
         shardingColumns = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         this.shardingAlgorithm = shardingAlgorithm;
@@ -50,11 +54,28 @@ public final class HintShardingStrategy implements ShardingStrategy {
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final Collection<ShardingConditionValue> shardingConditionValues,
                                          final DataNodeInfo dataNodeInfo, final ConfigurationProperties props) {
-        ListShardingConditionValue<?> shardingValue = (ListShardingConditionValue) shardingConditionValues.iterator().next();
-        Collection<String> shardingResult = shardingAlgorithm.doSharding(availableTargetNames,
+        if (shardingAlgorithm instanceof HintShardingAlgorithm) {
+            ListShardingConditionValue<?> shardingValue = (ListShardingConditionValue) shardingConditionValues.iterator().next();
+            Collection<String> shardingResult = ((HintShardingAlgorithm) shardingAlgorithm).doSharding(availableTargetNames,
                 new HintShardingValue(shardingValue.getTableName(), shardingValue.getColumnName(), shardingValue.getValues()));
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
-        result.addAll(shardingResult);
-        return result;
+            Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+            result.addAll(shardingResult);
+            return result;
+        } else {
+            Collection<String> result = new LinkedList<>();
+            ListShardingConditionValue<?> shardingValue = (ListShardingConditionValue) shardingConditionValues.iterator().next();
+            Collection<String> values = shardingValue.getValues().stream().map(this::convert).collect(Collectors.toList());
+            for (String each : values) {
+                String target = dataNodeInfo.getPrefix() + each;
+                if (availableTargetNames.contains(target)) {
+                    result.add(target);
+                }
+            }
+            return result.isEmpty() ? availableTargetNames : result;
+        }
+    }
+    
+    private String convert(final Comparable<?> shardingValue) {
+        return Objects.toString(shardingValue);
     }
 }
