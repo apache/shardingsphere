@@ -17,7 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Optional;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -29,20 +42,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Loc
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class TableExtractorTest {
     
@@ -92,6 +96,19 @@ public final class TableExtractorTest {
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
         assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");
         assertTableSegment(tableSegmentIterator.next(), 130, 132, "t_order");
+    }
+
+    @Test
+    public void assertNotExistTableFromRoutineBody() {
+        RoutineBodySegment routineBodySegment = new RoutineBodySegment(0, 3);
+        ValidStatementSegment validStatement = new ValidStatementSegment(0, 1);
+        validStatement.setSqlStatement(() -> 0);
+        routineBodySegment.getValidStatements().add(validStatement);
+        ValidStatementSegment newValidStatement = new ValidStatementSegment(0, 1);
+        validStatement.setSqlStatement(mock(CreateTableStatement.class));
+        routineBodySegment.getValidStatements().add(newValidStatement);
+        Collection<SimpleTableSegment> nonExistingTables = tableExtractor.extractNotExistTableFromRoutineBody(routineBodySegment);
+        assertThat(nonExistingTables, hasSize(1));
     }
     
     private void assertTableSegment(final SimpleTableSegment actual, final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {
