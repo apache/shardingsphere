@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.metadata.yaml;
+package org.apache.shardingsphere.data.pipeline.yaml.metadata;
 
 import lombok.Data;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
