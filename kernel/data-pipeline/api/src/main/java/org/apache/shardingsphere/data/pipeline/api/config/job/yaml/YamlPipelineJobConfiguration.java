@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.yaml.job;
+package org.apache.shardingsphere.data.pipeline.api.config.job.yaml;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
