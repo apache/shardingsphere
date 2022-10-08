@@ -37,6 +37,21 @@ public interface ClusterPersistRepository extends PersistRepository {
     void init(ClusterPersistRepositoryConfiguration config);
     
     /**
+     * Get current time from registry center.
+     *
+     * @param key key
+     * @return current time from registry center
+     */
+    long getRegistryCenterTime(String key);
+    
+    /**
+     * Get raw client for registry center client.
+     **
+     * @return registry center raw client
+     */
+    Object getRawClient();
+    
+    /**
      * Get children number.
      *
      * @param key key

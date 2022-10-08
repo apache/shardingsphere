@@ -81,21 +81,6 @@ public interface PersistRepository extends TypedSPI {
     void delete(String key);
     
     /**
-     * Get current time from registry center.
-     *
-     * @param key key
-     * @return current time from registry center
-     */
-    long getRegistryCenterTime(String key);
-    
-    /**
-     * Get raw client for registry center client.
-     **
-     * @return registry center raw client
-     */
-    Object getRawClient();
-    
-    /**
      * Close.
      */
     void close();

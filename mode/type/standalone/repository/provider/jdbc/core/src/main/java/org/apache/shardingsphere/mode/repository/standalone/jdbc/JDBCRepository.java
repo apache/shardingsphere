@@ -116,10 +116,14 @@ public final class JDBCRepository implements StandalonePersistRepository {
     }
     
     @Override
+    public boolean isExisted(final String key) {
+        return !Strings.isNullOrEmpty(get(key));
+    }
+    
+    @Override
     public void persist(final String key, final String value) {
         try {
-            String oldValue = get(key);
-            if (!Strings.isNullOrEmpty(oldValue)) {
+            if (isExisted(key)) {
                 update(key, value);
                 return;
             }
@@ -157,13 +161,16 @@ public final class JDBCRepository implements StandalonePersistRepository {
         }
     }
     
-    private void update(final String key, final String value) throws SQLException {
+    @Override
+    public void update(final String key, final String value) {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.updateSQL())) {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            log.error("Update {} data to key: {} failed", getType(), key, ex);
         }
     }
     

@@ -70,7 +70,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public int getNumChildren(String key) {
+    public int getNumChildren(final String key) {
         return 0;
     }
     
