@@ -21,43 +21,43 @@
 # 
 ######################################################################################################
 
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: governance_ds
-      server-lists: localhost:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      server-lists: localhost:2181
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
+#    provider:
+#      type: ALL_PERMITTED
+#  - !TRANSACTION
+#    defaultType: XA
+#    providerType: Atomikos
+#  - !SQL_PARSER
+#    sqlCommentParseEnabled: true
+#    sqlStatementCache:
+#      initialCapacity: 2000
+#      maximumSize: 65535
+#    parseTreeCache:
+#      initialCapacity: 128
+#      maximumSize: 1024
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-      - sharding@:sharding
-    provider:
-      type: ALL_PERMITTED
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Atomikos
-  - !SQL_PARSER
-    sqlCommentParseEnabled: true
-    sqlStatementCache:
-      initialCapacity: 2000
-      maximumSize: 65535
-    parseTreeCache:
-      initialCapacity: 128
-      maximumSize: 1024
-
-props:
-  sql-show: true
+#props:
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
 #  proxy-hint-enabled: false
+#  sql-show: false
 #  check-table-metadata-enabled: false
 #    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
 #    # The default value is -1, which means set the minimum value for different JDBC drivers.
