@@ -224,7 +224,9 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean isExisted(final String key) { return false; }
+    public boolean isExisted(final String key) {
+        return false;
+    }
     
     @Override
     public void persist(final String key, final String value) {
