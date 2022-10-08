@@ -44,11 +44,11 @@ How about starting with a task and training hands? The tasks currently announced
 
 - Implement rule configuration of Sharding-SpringBoot using Inline expression
 
-  https://github.com/sharding-sphere/sharding-sphere/issues/1686
+  https://github.com/apache/shardingsphere/issues/1686
 
 - Implement the rule configuration of Sharding-SpringBoot using SpringBoot placeholder
 
-  https://github.com/sharding-sphere/sharding-sphere/issues/1687
+  https://github.com/apache/shardingsphere/issues/1687
 
 
 We will also regularly publish some development function tasks in the form of issue on GitHub in the future. Welcome to follow us by subscribing to our mailing list. For details, please refer to the official website:
