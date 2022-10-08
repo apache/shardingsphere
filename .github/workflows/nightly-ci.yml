@@ -15,19 +15,19 @@
 # limitations under the License.
 #
 
-name: Daily - Continuous Integration
+name: Nightly - CI
 
 on:
   schedule:
     - cron: '0 18 */1 * *'  # once a day. UTC time
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3  -Drat.skip=true -Dcheckstyle.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
 
 jobs:
   ci:
     if: github.repository == 'apache/shardingsphere'
-    name: JDK ${{ matrix.java_version }} - on ${{ matrix.os }}
+    name: CI - JDK ${{ matrix.java_version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -40,19 +40,17 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{ matrix.java_version }}
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java_version }}
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Build with Maven
+      - name: Build prod with Maven
         run: ./mvnw -B -ntp clean install
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package
