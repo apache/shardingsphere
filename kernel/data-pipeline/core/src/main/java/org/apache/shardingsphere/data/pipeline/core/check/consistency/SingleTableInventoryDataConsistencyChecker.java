@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumn
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -71,6 +71,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
     private final SchemaTableName targetTable;
     
     private final PipelineColumnMetaData uniqueKey;
+    
+    private final PipelineTableMetaDataLoader metaDataLoader;
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
@@ -145,7 +147,6 @@ public final class SingleTableInventoryDataConsistencyChecker {
     private DataConsistencyContentCheckResult checkData(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final ThreadPoolExecutor executor) {
         String sourceDatabaseType = sourceDataSource.getDatabaseType().getType();
         String targetDatabaseType = targetDataSource.getDatabaseType().getType();
-        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
         String sourceTableName = sourceTable.getTableName().getOriginal();
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(sourceTable.getSchemaName().getOriginal(), sourceTableName);
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(sourceTableName));
@@ -154,8 +155,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 sourceDataSource, sourceTable.getSchemaName().getOriginal(), sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
         DataConsistencyCalculateParameter targetParameter = buildParameter(
                 targetDataSource, targetTable.getSchemaName().getOriginal(), targetTable.getTableName().getOriginal(), columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
-        Iterator<Object> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
-        Iterator<Object> targetCalculatedResults = calculateAlgorithm.calculate(targetParameter).iterator();
+        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
+        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParameter).iterator();
         boolean contentMatched = true;
         while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
             if (null != readRateLimitAlgorithm) {

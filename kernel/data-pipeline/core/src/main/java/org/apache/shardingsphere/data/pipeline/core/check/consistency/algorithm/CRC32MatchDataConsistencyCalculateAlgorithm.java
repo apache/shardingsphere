@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
@@ -34,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -54,12 +58,13 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     }
     
     @Override
-    public Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
+    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        return Collections.unmodifiableList(parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList()));
+        List<CalculatedItem> calculatedItems = parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList());
+        return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private long calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
+    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getSchemaName();
         Optional<String> sql = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName);
@@ -67,13 +72,15 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
         return calculateCRC32(parameter.getDataSource(), logicTableName, sql.get());
     }
     
-    private long calculateCRC32(final DataSource dataSource, final String logicTableName, final String sql) {
+    private CalculatedItem calculateCRC32(final DataSource dataSource, final String logicTableName, final String sql) {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return resultSet.getLong(1);
+            long crc32 = resultSet.getLong(1);
+            int recordsCount = resultSet.getInt(2);
+            return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(logicTableName);
         }
@@ -92,5 +99,24 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     @Override
     public String getDescription() {
         return "Match CRC32 of records.";
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class CalculatedItem {
+        
+        private final long crc32;
+        
+        private final int recordsCount;
+    }
+    
+    @RequiredArgsConstructor
+    @EqualsAndHashCode
+    @Getter
+    private static final class CalculatedResult implements DataConsistencyCalculatedResult {
+        
+        private final int recordsCount;
+        
+        private final Collection<Long> columnsCrc32;
     }
 }

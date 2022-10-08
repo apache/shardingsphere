@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
@@ -69,7 +70,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
         PreparedStatement preparedStatement1 = mockPreparedStatement(1L);
         when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
-        Iterator<Object> actual = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter).iterator();
+        Iterator<DataConsistencyCalculatedResult> actual = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter).iterator();
         assertThat(actual.next(), is(0L));
         assertThat(actual.next(), is(1L));
         assertFalse(actual.hasNext());
