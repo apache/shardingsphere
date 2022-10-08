@@ -644,6 +644,10 @@
         <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />
     </test-case>
 
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
 <!--    TODO FIX ME Expected: is "true" but was "1"-->
 <!--    <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL" scenario-types="sharding_and_shadow">-->
 <!--        <assertion parameters="1:int" expected-data-source-name="prod_dataset" />-->

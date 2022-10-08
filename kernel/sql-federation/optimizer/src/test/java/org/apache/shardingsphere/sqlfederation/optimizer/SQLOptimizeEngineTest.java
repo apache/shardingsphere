@@ -37,7 +37,6 @@ import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigu
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.TranslatableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +48,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class SQLOptimizeEngineTest {
@@ -143,7 +143,7 @@ public final class SQLOptimizeEngineTest {
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 13), null]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -152,7 +152,7 @@ public final class SQLOptimizeEngineTest {
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
         String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[=(CAST($0):INTEGER, 12), null]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -161,7 +161,7 @@ public final class SQLOptimizeEngineTest {
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
         String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 12)]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -175,7 +175,7 @@ public final class SQLOptimizeEngineTest {
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -189,7 +189,7 @@ public final class SQLOptimizeEngineTest {
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -203,7 +203,7 @@ public final class SQLOptimizeEngineTest {
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 13), null]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -212,7 +212,7 @@ public final class SQLOptimizeEngineTest {
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
         String expected = "TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[>(CAST($0):INTEGER, 1), null]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -226,7 +226,7 @@ public final class SQLOptimizeEngineTest {
                 + "    EnumerableAggregate(group=[{}], agg#0=[MIN($0)])" + LINE_SEPARATOR
                 + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], $f0=[$t2])" + LINE_SEPARATOR
                 + "        TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[=(CAST($cor0.user_id):VARCHAR, CAST($0):VARCHAR), null]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -239,7 +239,7 @@ public final class SQLOptimizeEngineTest {
                 + "    TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "    EnumerableAggregate(group=[{0}])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -256,7 +256,7 @@ public final class SQLOptimizeEngineTest {
                 + "          TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 1)]])" + LINE_SEPARATOR
                 + "    EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])" + LINE_SEPARATOR
                 + "      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 3)]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -268,7 +268,7 @@ public final class SQLOptimizeEngineTest {
                 + "  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR
                 + "  EnumerableCalc(expr#0=[{inputs}], expr#1=['1':VARCHAR], EXPR$0=[$t1], user_id=[$t0])" + LINE_SEPARATOR
                 + "    TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($1):VARCHAR, 'before'), null]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
     
     @Test
@@ -278,6 +278,6 @@ public final class SQLOptimizeEngineTest {
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
         String expected = "EnumerableLimit(fetch=[1])" + LINE_SEPARATOR
                 + "  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR;
-        MatcherAssert.assertThat(actual, is(expected));
+        assertThat(actual, is(expected));
     }
 }
