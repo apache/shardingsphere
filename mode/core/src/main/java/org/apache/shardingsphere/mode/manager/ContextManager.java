@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDataFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -400,7 +402,8 @@ public final class ContextManager implements AutoCloseable {
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
                 GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, instanceContext, props));
-        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props));
+        ShardingSphereMetaData changedMetaData = new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props);
+        return newMetaDataContexts(changedMetaData, ShardingSphereDataFactory.init(changedMetaData));
     }
     
     private Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
@@ -421,8 +424,8 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
-        return new MetaDataContexts(metaDataContexts.getPersistService(), metaData);
+    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData) {
+        return new MetaDataContexts(metaDataContexts.getPersistService(), metaData, shardingSphereData);
     }
     
     private Map<String, ShardingSphereSchema> newShardingSphereSchemas(final ShardingSphereDatabase database) {
@@ -456,7 +459,7 @@ public final class ContextManager implements AutoCloseable {
                 GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaData().getDatabases(), instanceContext, metaDataContexts.getMetaData().getProps()));
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getDatabases(), toBeChangedGlobalRuleMetaData, metaDataContexts.getMetaData().getProps());
-        metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
+        metaDataContexts = newMetaDataContexts(toBeChangedMetaData, metaDataContexts.getShardingSphereData());
     }
     
     /**
@@ -467,7 +470,7 @@ public final class ContextManager implements AutoCloseable {
     public synchronized void alterProperties(final Properties props) {
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
-        metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
+        metaDataContexts = newMetaDataContexts(toBeChangedMetaData, metaDataContexts.getShardingSphereData());
     }
     
     /**
