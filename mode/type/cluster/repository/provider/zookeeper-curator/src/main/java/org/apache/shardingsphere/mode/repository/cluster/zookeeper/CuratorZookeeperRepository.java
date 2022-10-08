@@ -164,7 +164,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
         // TODO
     }
     
