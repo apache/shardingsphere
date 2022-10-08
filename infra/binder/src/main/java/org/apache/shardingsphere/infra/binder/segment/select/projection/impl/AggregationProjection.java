@@ -72,6 +72,6 @@ public class AggregationProjection implements Projection {
     @Override
     public String getColumnLabel() {
         boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
-        return getAlias().orElseGet(() -> isPostgreSQLOpenGaussStatement ? type.name() : getExpression());
+        return getAlias().orElseGet(() -> isPostgreSQLOpenGaussStatement ? type.name().toLowerCase() : getExpression());
     }
 }
