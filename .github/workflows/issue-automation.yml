@@ -37,7 +37,7 @@ jobs:
           token: ${{ secrets.PERSONAL_TOKEN }}
           repo: shardingsphere
           owner: ${{ github.actor }}
-          event_type: rerun-ci
+          event_type: ci-completed
   remove-inactive:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'issues' && github.event.action == 'reopened' }}
