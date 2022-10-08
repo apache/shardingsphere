@@ -224,9 +224,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean isExisted(String key) {
-        return false;
-    }
+    public boolean isExisted(final String key) { return false; }
     
     @Override
     public void persist(final String key, final String value) {
@@ -246,6 +244,19 @@ public final class NacosRepository implements ClusterPersistRepository {
     @Override
     public void update(final String key, final String value) {
         // TODO
+    }
+    
+    private void update(final Instance instance, final String value) throws NacosException {
+        Map<String, String> metadataMap = instance.getMetadata();
+        String key = NacosMetaDataUtil.getKey(instance);
+        metadataMap.put(key, value);
+        metadataMap.put(NacosMetaDataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(NacosMetaDataUtil.getTimestamp()));
+        instance.setMetadata(metadataMap);
+        ServiceMetadata persistentService = serviceController.getPersistentService();
+        client.registerInstance(persistentService.getServiceName(), instance);
+        Collection<KeyValue> keyValues = new LinkedList<>();
+        keyValues.add(new KeyValue(key, value, instance.isEphemeral()));
+        waitValue(keyValues);
     }
     
     private void put(final String key, final String value, final boolean ephemeral) throws NacosException {
@@ -303,19 +314,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         metadataMap.put(PreservedMetadataKeys.HEART_BEAT_INTERVAL, String.valueOf(timeToLiveSeconds * 1000 / 3));
         metadataMap.put(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, String.valueOf(timeToLiveSeconds * 1000 * 2 / 3));
         metadataMap.put(PreservedMetadataKeys.IP_DELETE_TIMEOUT, String.valueOf(timeToLiveSeconds * 1000));
-    }
-    
-    private void update(final Instance instance, final String value) throws NacosException {
-        Map<String, String> metadataMap = instance.getMetadata();
-        String key = NacosMetaDataUtil.getKey(instance);
-        metadataMap.put(key, value);
-        metadataMap.put(NacosMetaDataUtil.UTC_ZONE_OFFSET.toString(), String.valueOf(NacosMetaDataUtil.getTimestamp()));
-        instance.setMetadata(metadataMap);
-        ServiceMetadata persistentService = serviceController.getPersistentService();
-        client.registerInstance(persistentService.getServiceName(), instance);
-        Collection<KeyValue> keyValues = new LinkedList<>();
-        keyValues.add(new KeyValue(key, value, instance.isEphemeral()));
-        waitValue(keyValues);
     }
     
     @Override
