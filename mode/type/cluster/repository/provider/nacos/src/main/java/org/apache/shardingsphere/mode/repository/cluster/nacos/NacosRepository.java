@@ -27,6 +27,7 @@ import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEv
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtil;
+import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -71,6 +73,37 @@ public final class NacosRepository implements ClusterPersistRepository {
         nacosProps = new NacosProperties(config.getProps());
         client = createClient(config);
         initServiceMetadata();
+    }
+    
+    @Override
+    public int getNumChildren(String key) {
+        return 0;
+    }
+    
+    @Override
+    public void addCacheData(String cachePath) {
+        // TODO
+    }
+    
+    @Override
+    public void evictCacheData(String cachePath) {
+        // TODO
+    }
+    
+    @Override
+    public Object getRawCache(String cachePath) {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public void executeInLeader(String key, LeaderExecutionCallback callback) {
+        // TODO
+    }
+    
+    @Override
+    public void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception {
+        // TODO
     }
     
     private NamingService createClient(final ClusterPersistRepositoryConfiguration config) {
@@ -191,6 +224,11 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
+    public boolean isExisted(String key) {
+        return false;
+    }
+    
+    @Override
     public void persist(final String key, final String value) {
         try {
             Preconditions.checkNotNull(value, "Value can not be null");
@@ -203,6 +241,11 @@ public final class NacosRepository implements ClusterPersistRepository {
         } catch (final NacosException ex) {
             throw new ClusterPersistRepositoryException(ex);
         }
+    }
+    
+    @Override
+    public void update(String key, String value) {
+    
     }
     
     private void put(final String key, final String value, final boolean ephemeral) throws NacosException {
@@ -295,6 +338,16 @@ public final class NacosRepository implements ClusterPersistRepository {
         } catch (final NacosException ex) {
             throw new ClusterPersistRepositoryException(ex);
         }
+    }
+    
+    @Override
+    public long getRegistryCenterTime(String key) {
+        return 0;
+    }
+    
+    @Override
+    public Object getRawClient() {
+        return client;
     }
     
     private Collection<Instance> findExistedInstance(final String key, final boolean ephemeral) throws NacosException {

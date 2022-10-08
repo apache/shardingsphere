@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
+import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
+
+import java.util.List;
 
 /**
  * Cluster persist repository.
@@ -31,6 +35,52 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @param config cluster persist repository configuration
      */
     void init(ClusterPersistRepositoryConfiguration config);
+    
+    /**
+     * Get children number.
+     *
+     * @param key key
+     * @return children number
+     */
+    int getNumChildren(String key);
+    
+    /**
+     * Add data to cache.
+     *
+     * @param cachePath cache path
+     */
+    void addCacheData(String cachePath);
+    
+    /**
+     * Evict data from cache.
+     *
+     * @param cachePath cache path
+     */
+    void evictCacheData(String cachePath);
+    
+    /**
+     * Get raw cache object of registry center.
+     *
+     * @param cachePath cache path
+     * @return raw cache object of registry center
+     */
+    Object getRawCache(String cachePath);
+    
+    /**
+     * Execute in leader.
+     *
+     * @param key key
+     * @param callback callback of leader
+     */
+    void executeInLeader(String key, LeaderExecutionCallback callback);
+    
+    /**
+     * Execute oprations in transaction.
+     *
+     * @param transactionOperations operations
+     * @throws Exception exception
+     */
+    void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception;
     
     /**
      * Persist ephemeral data.

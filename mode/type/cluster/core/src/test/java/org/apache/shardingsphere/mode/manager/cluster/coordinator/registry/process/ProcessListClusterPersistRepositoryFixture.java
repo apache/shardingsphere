@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process;
 
+import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,6 +37,36 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
+    public int getNumChildren(String key) {
+        return 0;
+    }
+    
+    @Override
+    public void addCacheData(String cachePath) {
+    
+    }
+    
+    @Override
+    public void evictCacheData(String cachePath) {
+    
+    }
+    
+    @Override
+    public Object getRawCache(String cachePath) {
+        return null;
+    }
+    
+    @Override
+    public void executeInLeader(String key, LeaderExecutionCallback callback) {
+    
+    }
+    
+    @Override
+    public void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception {
+    
+    }
+    
+    @Override
     public String get(final String key) {
         return REGISTRY_DATA.get(key);
     }
@@ -45,8 +77,18 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
+    public boolean isExisted(String key) {
+        return false;
+    }
+    
+    @Override
     public void persist(final String key, final String value) {
         REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
+    public void update(String key, String value) {
+    
     }
     
     @Override
@@ -61,6 +103,16 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     @Override
     public void delete(final String key) {
         REGISTRY_DATA.remove(key);
+    }
+    
+    @Override
+    public long getRegistryCenterTime(String key) {
+        return 0;
+    }
+    
+    @Override
+    public Object getRawClient() {
+        return null;
     }
     
     @Override
