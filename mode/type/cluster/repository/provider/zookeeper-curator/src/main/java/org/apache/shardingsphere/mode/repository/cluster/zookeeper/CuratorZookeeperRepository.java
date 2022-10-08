@@ -143,28 +143,28 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void addCacheData(String cachePath) {
+    public void addCacheData(final String cachePath) {
         // TODO
     }
     
     @Override
-    public void evictCacheData(String cachePath) {
+    public void evictCacheData(final String cachePath) {
         // TODO
     }
     
     @Override
-    public Object getRawCache(String cachePath) {
+    public Object getRawCache(final String cachePath) {
         // TODO
         return null;
     }
     
     @Override
-    public void executeInLeader(String key, LeaderExecutionCallback callback) {
+    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
         // TODO
     }
     
     @Override
-    public void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception {
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
         // TODO
     }
     
@@ -278,7 +278,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public long getRegistryCenterTime(String key) {
+    public long getRegistryCenterTime(final String key) {
         long result = 0L;
         try {
             persist(key, "");

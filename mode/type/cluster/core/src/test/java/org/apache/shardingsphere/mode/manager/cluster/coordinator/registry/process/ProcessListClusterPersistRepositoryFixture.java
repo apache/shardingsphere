@@ -37,32 +37,32 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public int getNumChildren(String key) {
+    public int getNumChildren(final String key) {
         return 0;
     }
     
     @Override
-    public void addCacheData(String cachePath) {
+    public void addCacheData(final String cachePath) {
     
     }
     
     @Override
-    public void evictCacheData(String cachePath) {
+    public void evictCacheData(final String cachePath) {
     
     }
     
     @Override
-    public Object getRawCache(String cachePath) {
+    public Object getRawCache(final String cachePath) {
         return null;
     }
     
     @Override
-    public void executeInLeader(String key, LeaderExecutionCallback callback) {
+    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
     
     }
     
     @Override
-    public void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception {
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
     
     }
     
@@ -87,7 +87,7 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public void update(String key, String value) {
+    public void update(final String key, final String value) {
     
     }
     
@@ -106,7 +106,7 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public long getRegistryCenterTime(String key) {
+    public long getRegistryCenterTime(final String key) {
         return 0;
     }
     
