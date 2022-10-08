@@ -40,7 +40,6 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
-import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
@@ -119,11 +118,7 @@ public abstract class BaseITCase {
         containerComposer = initializeContainerComposer(parameterized);
         commonSQLCommand = loadCommonSQLCommand();
         initActualDataSources();
-        if (isProxyAdapter(parameterized)) {
-            createProxyDatabase();
-        } else {
-            createJdbcDataSource();
-        }
+        dataSource = isProxyAdapter(parameterized) ? createProxyDataSource() : createJdbcDataSource();
     }
     
     private BaseContainerComposer initializeContainerComposer(final TransactionParameterized parameterized) {
@@ -139,27 +134,11 @@ public abstract class BaseITCase {
     }
     
     private void initActualDataSources() throws SQLException {
-        String jdbcUrl = containerComposer.getProxyJdbcUrl("");
-        dropDatabases(jdbcUrl);
-        createDatabases(jdbcUrl);
-    }
-    
-    private void dropDatabases(final String jdbcUrl) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
+        DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
+        String jdbcUrl = storageContainer.getJdbcUrl("");
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, storageContainer.getUsername(), storageContainer.getPassword())) {
             for (String each : ALL_DATA_SOURCES) {
-                executeWithLog(connection, String.format("DROP DATABASE IF EXISTS %s", each));
-            }
-        }
-    }
-    
-    private void createDatabases(final String jdbcUrl) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
-            for (String each : ALL_DATA_SOURCES) {
-                try {
-                    executeWithLog(connection, String.format("CREATE DATABASE %s", each));
-                } catch (final SQLException ex) {
-                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
-                }
+                executeWithLog(connection, String.format("CREATE DATABASE %s", each));
             }
         }
     }
@@ -168,15 +147,16 @@ public abstract class BaseITCase {
         return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
     }
     
-    private void createProxyDatabase() throws SQLException {
+    private ProxyDataSource createProxyDataSource() throws SQLException {
+        initProxyDatabase();
+        return new ProxyDataSource(containerComposer, SHARDING_DB, ENV.getProxyUserName(), ENV.getProxyPassword());
+    }
+    
+    private void initProxyDatabase() throws SQLException {
         String jdbcUrl = getProxyJdbcUrl(databaseType);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
-            if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE) {
-                executeWithLog(connection, "DROP DATABASE IF EXISTS " + SHARDING_DB);
-            }
             executeWithLog(connection, "CREATE DATABASE " + SHARDING_DB);
         }
-        dataSource = new ProxyDataSource(containerComposer, SHARDING_DB, ENV.getProxyUserName(), ENV.getProxyPassword());
     }
     
     private String getProxyJdbcUrl(final DatabaseType databaseType) {
@@ -197,15 +177,13 @@ public abstract class BaseITCase {
         return result;
     }
     
-    private void createJdbcDataSource() {
-        if (containerComposer instanceof DockerContainerComposer) {
-            DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
-            DockerStorageContainer storageContainer = dockerContainerComposer.getStorageContainer();
-            Map<String, DataSource> actualDataSourceMap = storageContainer.getActualDataSourceMap();
-            actualDataSourceMap.put("ds_0", createDataSource(storageContainer, DATA_SOURCE_0));
-            actualDataSourceMap.put("ds_1", createDataSource(storageContainer, DATA_SOURCE_1));
-            dataSource = new JdbcDataSource(dockerContainerComposer);
-        }
+    private JdbcDataSource createJdbcDataSource() {
+        DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
+        DockerStorageContainer storageContainer = dockerContainerComposer.getStorageContainer();
+        Map<String, DataSource> actualDataSourceMap = storageContainer.getActualDataSourceMap();
+        actualDataSourceMap.put("ds_0", createDataSource(storageContainer, DATA_SOURCE_0));
+        actualDataSourceMap.put("ds_1", createDataSource(storageContainer, DATA_SOURCE_1));
+        return new JdbcDataSource(dockerContainerComposer);
     }
     
     private DataSource createDataSource(final DockerStorageContainer storageContainer, final String dataSourceName) {
