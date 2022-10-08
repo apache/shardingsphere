@@ -69,18 +69,18 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
       - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
@@ -204,18 +204,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Maven Resolve Ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
       - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Verify

@@ -52,8 +52,6 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -64,6 +62,8 @@ jobs:
           key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build with Maven
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Prepare environments
