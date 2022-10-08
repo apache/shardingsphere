@@ -58,7 +58,7 @@ import java.util.Optional;
 @Slf4j
 public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl implements ConsistencyCheckJobAPI {
     
-    private static final YamlConsistencyCheckJobProgressSwapper PROGRESS_SWAPPER = new YamlConsistencyCheckJobProgressSwapper();
+    private final YamlConsistencyCheckJobProgressSwapper swapper = new YamlConsistencyCheckJobProgressSwapper();
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
@@ -105,7 +105,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         ConsistencyCheckJobProgress jobProgress = new ConsistencyCheckJobProgress();
         jobProgress.setStatus(jobItemContext.getStatus());
-        YamlConsistencyCheckJobProgress yamlJobProgress = PROGRESS_SWAPPER.swapToYamlConfiguration(jobProgress);
+        YamlConsistencyCheckJobProgress yamlJobProgress = swapper.swapToYamlConfiguration(jobProgress);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), YamlEngine.marshal(yamlJobProgress));
     }
     
@@ -115,7 +115,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         if (StringUtils.isBlank(progress)) {
             return null;
         }
-        ConsistencyCheckJobProgress jobProgress = PROGRESS_SWAPPER.swapToObject(YamlEngine.unmarshal(progress, YamlConsistencyCheckJobProgress.class, true));
+        ConsistencyCheckJobProgress jobProgress = swapper.swapToObject(YamlEngine.unmarshal(progress, YamlConsistencyCheckJobProgress.class, true));
         ConsistencyCheckJobProgress result = new ConsistencyCheckJobProgress();
         result.setStatus(jobProgress.getStatus());
         return result;
@@ -129,7 +129,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
             return;
         }
         jobProgress.setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(PROGRESS_SWAPPER.swapToYamlConfiguration(jobProgress)));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(swapper.swapToYamlConfiguration(jobProgress)));
     }
     
     @Override
@@ -163,7 +163,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     protected ConsistencyCheckJobConfiguration getJobConfiguration(final JobConfigurationPOJO jobConfigPOJO) {
-        return YamlConsistencyCheckJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+        return new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter());
     }
     
     @Override
