@@ -66,21 +66,21 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     @Test
     public void assertCalculateSuccess() throws SQLException {
-        PreparedStatement preparedStatement0 = mockPreparedStatement(0L);
+        PreparedStatement preparedStatement0 = mockPreparedStatement(123L, 10);
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
-        PreparedStatement preparedStatement1 = mockPreparedStatement(1L);
+        PreparedStatement preparedStatement1 = mockPreparedStatement(456L, 10);
         when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
         Iterator<DataConsistencyCalculatedResult> actual = new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter).iterator();
-        assertThat(actual.next(), is(0L));
-        assertThat(actual.next(), is(1L));
+        assertThat(actual.next().getRecordsCount(), is(10));
         assertFalse(actual.hasNext());
     }
     
-    private PreparedStatement mockPreparedStatement(final long expectedCRC32Result) throws SQLException {
+    private PreparedStatement mockPreparedStatement(final long expectedCRC32Result, final int expectedRecordsCount) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         PreparedStatement result = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
         when(result.executeQuery()).thenReturn(resultSet);
         when(resultSet.getLong(1)).thenReturn(expectedCRC32Result);
+        when(resultSet.getInt(2)).thenReturn(expectedRecordsCount);
         return result;
     }
     
