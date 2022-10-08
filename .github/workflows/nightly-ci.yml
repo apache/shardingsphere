@@ -40,7 +40,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
