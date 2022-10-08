@@ -15,9 +15,6 @@
 # limitations under the License.
 #
 
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
 name: Daily - Example Generator IT
 
 on:
