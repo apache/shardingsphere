@@ -48,7 +48,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         }
         addTableDataNodes(deciderContext, rule, tableNames);
         ShardingConditions shardingConditions = createShardingConditions(queryContext, database, rule);
-        if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
+        if (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition()) {
             return;
         }
         if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsCombine() || select.isContainsPartialDistinctAggregation()) {
