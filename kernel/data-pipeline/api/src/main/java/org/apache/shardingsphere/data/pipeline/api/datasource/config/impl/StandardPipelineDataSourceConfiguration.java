@@ -76,6 +76,10 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         }
         dataSourceProperties = new YamlDataSourceConfigurationSwapper().swapToDataSourceProperties(yamlConfig);
         yamlConfig.remove(DATA_SOURCE_CLASS_NAME);
+        if (yamlConfig.containsKey("jdbcUrl")) {
+            yamlConfig.put("url", yamlConfig.get("jdbcUrl"));
+            yamlConfig.remove("jdbcUrl");
+        }
         jdbcConfig = YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlJdbcConfiguration.class, true);
         databaseType = DatabaseTypeEngine.getDatabaseType(jdbcConfig.getUrl());
         appendJdbcQueryProperties(databaseType.getType());
