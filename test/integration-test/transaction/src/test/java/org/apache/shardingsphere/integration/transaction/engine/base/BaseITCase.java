@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.transaction.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTestCaseRegistry;
@@ -41,6 +40,7 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
@@ -85,9 +85,6 @@ public abstract class BaseITCase {
     
     protected static final String DATA_SOURCE_1 = TRANSACTION_IT + "_1";
     
-    /**
-     * For adding resource tests.
-     */
     protected static final String DATA_SOURCE_2 = TRANSACTION_IT + "_2";
     
     protected static final Collection<String> ALL_DATA_SOURCES = Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1, DATA_SOURCE_2);
@@ -100,6 +97,7 @@ public abstract class BaseITCase {
     
     private final BaseContainerComposer containerComposer;
     
+    @Getter(AccessLevel.PUBLIC)
     private final CommonSQLCommand commonSQLCommand;
     
     private final DatabaseType databaseType;
@@ -141,38 +139,21 @@ public abstract class BaseITCase {
     }
     
     private void initActualDataSources() throws SQLException {
-        JdbcInfoEntity jdbcInfo = getJdbcInfoEntity();
-        String jdbcUrl = getJdbcUrl(jdbcInfo);
-        dropDatabases(jdbcUrl, jdbcInfo);
-        createDatabases(jdbcUrl, jdbcInfo);
+        String jdbcUrl = containerComposer.getProxyJdbcUrl("");
+        dropDatabases(jdbcUrl);
+        createDatabases(jdbcUrl);
     }
     
-    private JdbcInfoEntity getJdbcInfoEntity() {
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
-            return new JdbcInfoEntity(storageContainer.getUsername(), storageContainer.getPassword(), storageContainer.getExposedPort());
-        }
-        return ENV.getActualDatabaseJdbcInfo(getDatabaseType());
-    }
-    
-    private String getJdbcUrl(final JdbcInfoEntity jdbcInfo) {
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
-            return storageContainer.getJdbcUrl("");
-        }
-        return DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
-    }
-    
-    private void dropDatabases(final String jdbcUrl, final JdbcInfoEntity jdbcInfo) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+    private void dropDatabases(final String jdbcUrl) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             for (String each : ALL_DATA_SOURCES) {
                 executeWithLog(connection, String.format("DROP DATABASE IF EXISTS %s", each));
             }
         }
     }
     
-    private void createDatabases(final String jdbcUrl, final JdbcInfoEntity jdbcInfo) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+    private void createDatabases(final String jdbcUrl) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD)) {
             for (String each : ALL_DATA_SOURCES) {
                 try {
                     executeWithLog(connection, String.format("CREATE DATABASE %s", each));
@@ -402,34 +383,22 @@ public abstract class BaseITCase {
     }
     
     /**
-     * Add ds_2 resource to proxy.
+     * Add resource.
      *
      * @param connection connection
+     * @param databaseName database name
      * @throws SQLException SQL exception
      */
     @SneakyThrows(InterruptedException.class)
-    public final void addNewResource(final Connection connection) throws SQLException {
+    public final void addResource(final Connection connection, final String databaseName) throws SQLException {
         String addSourceResource = commonSQLCommand.getSourceAddNewResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
                 .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
-                .replace("${ds2}", getActualJdbcUrlTemplate(DATA_SOURCE_2));
+                .replace("${ds2}", getActualJdbcUrlTemplate(databaseName));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
         Thread.sleep(5000L);
         assertThat(resourceCount, is(3));
-    }
-    
-    /**
-     * Drop previous account table rule and create the table rule with three data sources.
-     *
-     * @param connection connection
-     * @throws SQLException SQL exception
-     */
-    public final void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
-        executeWithLog(connection, getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
-        int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
-        assertThat(ruleCount, is(3));
     }
     
     /**
