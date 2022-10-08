@@ -51,6 +51,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build prod with Maven
-        run: ./mvnw -B -ntp clean install
+        run: ./mvnw -B -T1C -ntp clean install
       - name: Build examples with Maven
-        run: ./mvnw -B -f examples/pom.xml clean package
+        run: ./mvnw -B -T1C -f examples/pom.xml clean package
