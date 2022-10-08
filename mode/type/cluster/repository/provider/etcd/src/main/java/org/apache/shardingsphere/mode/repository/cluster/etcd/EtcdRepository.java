@@ -96,7 +96,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
         // TODO
     }
     

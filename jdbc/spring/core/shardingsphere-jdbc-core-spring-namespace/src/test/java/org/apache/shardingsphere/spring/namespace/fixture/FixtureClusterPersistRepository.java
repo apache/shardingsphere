@@ -45,12 +45,10 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void addCacheData(final String cachePath) {
-    
     }
     
     @Override
     public void evictCacheData(final String cachePath) {
-    
     }
     
     @Override
@@ -60,12 +58,10 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-    
     }
     
     @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
-    
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
     }
     
     @Override
@@ -90,7 +86,6 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void update(final String key, final String value) {
-    
     }
     
     @Override

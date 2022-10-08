@@ -62,8 +62,7 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
-    
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
     }
     
     @Override
