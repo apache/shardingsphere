@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'issue_comment' }}
     steps:
-      - name: Trigger The CI Workflow
+      - name: Trigger the CI workflow
         if: ${{ contains( github.event.comment.body , '/run ci') }} 
         uses: mvasigh/dispatch-action@main
         with:
@@ -55,7 +55,7 @@ jobs:
     concurrency: check-inactive  # singleton-run-stage
     if: ${{ github.repository == 'apache/shardingsphere' && github.event_name == 'schedule' }}
     steps:
-      - name: check-inactive   # add `status: inactive` label
+      - name: Check inactive   # add `status: inactive` label
         uses: actions-cool/issues-helper@v2.2.1 
         with: 
           actions: 'check-inactive' 
@@ -63,7 +63,7 @@ jobs:
           inactive-day: 15
           inactive-label: "status: inactive"
           body: |
-            Hello ${{ github.event.issue.user.login }}, this issue has not received a reply for serveral days.
+            Hello ${{ github.event.issue.user.login }}, this issue has not received a reply for several days.
             This issue is supposed to be closed.
           contents: "heart"
   close-issue:
