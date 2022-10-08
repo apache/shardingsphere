@@ -67,11 +67,6 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildCountSQL(final String schemaName, final String tableName) {
-        return "";
-    }
-    
-    @Override
     public String buildChunkedQuerySQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
         return "";
     }
