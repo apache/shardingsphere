@@ -58,11 +58,11 @@ public final class OpenGaussLogicalReplication {
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
         try {
-            return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
+            return DriverManager.getConnection(jdbcConfig.getUrl(), props);
         } catch (final SQLException ex) {
             if (failedBecauseOfNonHAPort(ex)) {
                 log.info("Failed to connect to openGauss caused by: {} - {}. Try connecting to HA port.", ex.getSQLState(), ex.getMessage());
-                return tryConnectingToHAPort(jdbcConfig.getJdbcUrl(), props);
+                return tryConnectingToHAPort(jdbcConfig.getUrl(), props);
             }
             throw ex;
         }

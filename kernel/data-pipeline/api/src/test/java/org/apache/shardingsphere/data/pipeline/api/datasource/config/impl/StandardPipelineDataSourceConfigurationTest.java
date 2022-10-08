@@ -66,7 +66,7 @@ public final class StandardPipelineDataSourceConfigurationTest {
     }
     
     private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
-        assertThat(actual.getJdbcUrl(), is(JDBC_URL));
+        assertThat(actual.getUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
     }
