@@ -54,19 +54,19 @@ env:
 
 jobs:
   ci:
-    name: CI - JDK ${{ matrix.java_version }} on ${{ matrix.os }}
+    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
       matrix:
-        java_version: [ 8, 19 ]
+        java-version: [ 8, 19 ]
         os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java_version }}
+          java-version: ${{ matrix.java-version }}
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - uses: actions/cache@v2
