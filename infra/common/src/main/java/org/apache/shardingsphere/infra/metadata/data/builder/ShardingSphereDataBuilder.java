@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.infra.metadata.data.builder;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Sharding sphere row data.
+ * Sharding sphere data Builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereRowData {
+@SingletonSPI
+public interface ShardingSphereDataBuilder extends TypedSPI {
     
-    private final List<Object> rows;
+    /**
+     * Build sharding sphere data.
+     *
+     * @param metaData meta data
+     * @return sharding sphere data
+     */
+    ShardingSphereData build(ShardingSphereMetaData metaData);
 }

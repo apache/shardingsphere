@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDataFactory;
+import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -99,7 +99,8 @@ public final class MetaDataContextsFactory {
     }
     
     private static ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData, final InstanceContext instanceContext) {
-        ShardingSphereData result = persistService.getShardingSphereDataPersistService().load().orElse(ShardingSphereDataFactory.init(metaData));
+        ShardingSphereData result = persistService.getShardingSphereDataPersistService().load().orElse(ShardingSphereDataBuilderFactory
+                .getInstance(metaData.getDatabases().values().iterator().next().getProtocolType()).map(builder -> builder.build(metaData)).orElseGet(ShardingSphereData::new));
         // TODO register to calcite
         return result;
     }

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDataFactory;
+import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -403,7 +403,8 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
                 GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, instanceContext, props));
         ShardingSphereMetaData changedMetaData = new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props);
-        return newMetaDataContexts(changedMetaData, ShardingSphereDataFactory.init(changedMetaData));
+        return newMetaDataContexts(changedMetaData, ShardingSphereDataBuilderFactory.getInstance(changedMetaData.getDatabases().values().iterator().next().getProtocolType())
+                .map(builder -> builder.build(changedMetaData)).orElseGet(ShardingSphereData::new));
     }
     
     private Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
