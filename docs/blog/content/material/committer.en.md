@@ -36,7 +36,7 @@ Imagine if your friends see your name when they browse the Apache website, or wh
 The following is the focus of this article. What needs to be done to become an officially recognized committer?
 
 
-Actively participate in the Apache project, such as Apache ShardingSphere (Incubating).
+Actively participate in the Apache project, such as Apache ShardingSphere.
 
 
 
@@ -63,11 +63,11 @@ The following is the migrated URL:
 
 Official website (http://shardingsphere.apache.org/) 
 
-GitHub (https://github.com/apache/incubator-shardingsphere) 
+GitHub (https://github.com/apache/shardingsphere) 
 
 ### Conclusion
 
-Since Apache ShardingSphere (Incubating) was open sourced in 2016, it has been constantly improving and developing, and is recognized by more and more enterprises and individuals: 6000+ stars and 70+ company success stories have been harvested on Github. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere (Incubating), which has contributed tremendously to its growth and development.
+Since Apache ShardingSphere was open sourced in 2016, it has been constantly improving and developing, and is recognized by more and more enterprises and individuals: 6000+ stars and 70+ company success stories have been harvested on Github. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere, which has contributed tremendously to its growth and development.
 
 We have never stopped, listen to the needs and suggestions of community partners, and continue to develop new and powerful functions to make them robust and reliable!
 
@@ -77,7 +77,7 @@ So, can you, who are reading this article, help us? Sharing, forwarding, using, 
 
 Project address：
 
-https://github.com/apache/incubator-shardingsphere
+https://github.com/apache/shardingsphere
 
 
 For more information, please visit the official website：
