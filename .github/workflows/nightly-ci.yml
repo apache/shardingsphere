@@ -22,7 +22,7 @@ on:
     - cron: '0 18 */1 * *'  # once a day. UTC time
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
+  MAVEN_OPTS: -T1C -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
 
 jobs:
   ci:
@@ -51,6 +51,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build prod with Maven
-        run: ./mvnw -B -T1C -ntp clean install
+        run: ./mvnw -B -ntp clean install
       - name: Build examples with Maven
-        run: ./mvnw -B -T1C -f examples/pom.xml clean package
+        run: ./mvnw -B -f examples/pom.xml clean package
