@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Single table inventory data consistency checker.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class SingleTableInventoryDataConsistencyChecker {
     
@@ -91,8 +92,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
         try {
             Future<Long> sourceFuture = executor.submit(() -> count(sourceDataSource, sourceTable));
             Future<Long> targetFuture = executor.submit(() -> count(targetDataSource, targetTable));
-            long sourceCount = waitCountFuture(sourceFuture);
-            long targetCount = waitCountFuture(targetFuture);
+            long sourceCount = waitFuture(sourceFuture);
+            long targetCount = waitFuture(targetFuture);
             return new DataConsistencyCountCheckResult(sourceCount, targetCount);
         } finally {
             executor.shutdown();
@@ -100,17 +101,15 @@ public final class SingleTableInventoryDataConsistencyChecker {
         }
     }
     
-    private long waitCountFuture(final Future<Long> future) {
-        long count;
+    private <T> T waitFuture(final Future<T> future) {
         try {
-            count = future.get();
+            return future.get();
         } catch (final InterruptedException | ExecutionException ex) {
             if (ex.getCause() instanceof PipelineSQLException) {
                 throw (PipelineSQLException) ex.getCause();
             }
             throw new SQLWrapperException(new SQLException(ex));
         }
-        return count;
     }
     
     // TODO use digest (crc32, murmurhash)
@@ -136,44 +135,48 @@ public final class SingleTableInventoryDataConsistencyChecker {
         ThreadFactory threadFactory = ExecutorThreadFactoryBuilder.build("job-" + getJobIdDigest(jobId) + "-data-check-%d");
         ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(2), threadFactory);
         try {
-            String sourceDatabaseType = sourceDataSource.getDatabaseType().getType();
-            String targetDatabaseType = targetDataSource.getDatabaseType().getType();
-            PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
-            String sourceTableName = sourceTable.getTableName().getOriginal();
-            PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(sourceTable.getSchemaName().getOriginal(), sourceTableName);
-            ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(sourceTableName));
-            Collection<String> columnNames = tableMetaData.getColumnNames();
-            DataConsistencyCalculateParameter sourceParameter = buildParameter(sourceDataSource, tableNameSchemaNameMapping, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
-            DataConsistencyCalculateParameter targetParameter = buildParameter(
-                    targetDataSource, tableNameSchemaNameMapping, targetTable.getTableName().getOriginal(), columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
-            Iterator<Object> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
-            Iterator<Object> targetCalculatedResults = calculateAlgorithm.calculate(targetParameter).iterator();
-            boolean contentMatched = true;
-            while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
-                if (null != readRateLimitAlgorithm) {
-                    readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
-                }
-                Future<Object> sourceFuture = executor.submit(sourceCalculatedResults::next);
-                Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);
-                Object sourceCalculatedResult = sourceFuture.get();
-                Object targetCalculatedResult = targetFuture.get();
-                contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
-                if (!contentMatched) {
-                    break;
-                }
-            }
-            return new DataConsistencyContentCheckResult(contentMatched);
-        } catch (final ExecutionException | InterruptedException ex) {
-            throw new SQLWrapperException(new SQLException(ex.getCause()));
+            return checkData(calculateAlgorithm, executor);
         } finally {
             executor.shutdown();
             executor.shutdownNow();
         }
     }
     
-    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource, final TableNameSchemaNameMapping tableNameSchemaNameMapping,
-                                                             final String tableName, final Collection<String> columnNames,
+    private DataConsistencyContentCheckResult checkData(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final ThreadPoolExecutor executor) {
+        String sourceDatabaseType = sourceDataSource.getDatabaseType().getType();
+        String targetDatabaseType = targetDataSource.getDatabaseType().getType();
+        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
+        String sourceTableName = sourceTable.getTableName().getOriginal();
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(sourceTable.getSchemaName().getOriginal(), sourceTableName);
+        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(sourceTableName));
+        Collection<String> columnNames = tableMetaData.getColumnNames();
+        DataConsistencyCalculateParameter sourceParameter = buildParameter(
+                sourceDataSource, sourceTable.getSchemaName().getOriginal(), sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+        DataConsistencyCalculateParameter targetParameter = buildParameter(
+                targetDataSource, targetTable.getSchemaName().getOriginal(), targetTable.getTableName().getOriginal(), columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
+        Iterator<Object> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
+        Iterator<Object> targetCalculatedResults = calculateAlgorithm.calculate(targetParameter).iterator();
+        boolean contentMatched = true;
+        while (sourceCalculatedResults.hasNext() && targetCalculatedResults.hasNext()) {
+            if (null != readRateLimitAlgorithm) {
+                readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
+            }
+            Future<Object> sourceFuture = executor.submit(sourceCalculatedResults::next);
+            Future<Object> targetFuture = executor.submit(targetCalculatedResults::next);
+            Object sourceCalculatedResult = waitFuture(sourceFuture);
+            Object targetCalculatedResult = waitFuture(targetFuture);
+            contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
+            if (!contentMatched) {
+                log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", jobId, sourceTable, targetTable, uniqueKey);
+                break;
+            }
+        }
+        return new DataConsistencyContentCheckResult(contentMatched);
+    }
+    
+    private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource,
+                                                             final String schemaName, final String tableName, final Collection<String> columnNames,
                                                              final String sourceDatabaseType, final String targetDatabaseType, final PipelineColumnMetaData uniqueKey) {
-        return new DataConsistencyCalculateParameter(sourceDataSource, tableNameSchemaNameMapping, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+        return new DataConsistencyCalculateParameter(sourceDataSource, schemaName, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
     }
 }
