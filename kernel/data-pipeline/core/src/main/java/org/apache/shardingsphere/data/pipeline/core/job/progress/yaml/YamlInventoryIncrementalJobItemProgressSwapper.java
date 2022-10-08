@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
  */
 public final class YamlInventoryIncrementalJobItemProgressSwapper implements YamlConfigurationSwapper<YamlInventoryIncrementalJobItemProgress, InventoryIncrementalJobItemProgress> {
     
-    private static final YamlJobItemInventoryTasksProgressSwapper INVENTORY_PROGRESS_SWAPPER = new YamlJobItemInventoryTasksProgressSwapper();
+    private final YamlJobItemInventoryTasksProgressSwapper inventoryTasksProgressSwapper = new YamlJobItemInventoryTasksProgressSwapper();
     
-    private static final YamlJobItemIncrementalTasksProgressSwapper INCREMENTAL_PROGRESS_SWAPPER = new YamlJobItemIncrementalTasksProgressSwapper();
+    private final YamlJobItemIncrementalTasksProgressSwapper incrementalTasksProgressSwapper = new YamlJobItemIncrementalTasksProgressSwapper();
     
     @Override
     public YamlInventoryIncrementalJobItemProgress swapToYamlConfiguration(final InventoryIncrementalJobItemProgress progress) {
@@ -36,8 +36,8 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
         result.setStatus(progress.getStatus().name());
         result.setSourceDatabaseType(progress.getSourceDatabaseType());
         result.setDataSourceName(progress.getDataSourceName());
-        result.setInventory(INVENTORY_PROGRESS_SWAPPER.swapToYaml(progress.getInventory()));
-        result.setIncremental(INCREMENTAL_PROGRESS_SWAPPER.swapToYaml(progress.getIncremental()));
+        result.setInventory(inventoryTasksProgressSwapper.swapToYaml(progress.getInventory()));
+        result.setIncremental(incrementalTasksProgressSwapper.swapToYaml(progress.getIncremental()));
         result.setProcessedRecordsCount(progress.getProcessedRecordsCount());
         return result;
     }
@@ -48,8 +48,8 @@ public final class YamlInventoryIncrementalJobItemProgressSwapper implements Yam
         result.setStatus(JobStatus.valueOf(yamlProgress.getStatus()));
         result.setSourceDatabaseType(yamlProgress.getSourceDatabaseType());
         result.setDataSourceName(yamlProgress.getDataSourceName());
-        result.setInventory(INVENTORY_PROGRESS_SWAPPER.swapToObject(yamlProgress.getInventory()));
-        result.setIncremental(INCREMENTAL_PROGRESS_SWAPPER.swapToObject(yamlProgress.getSourceDatabaseType(), yamlProgress.getIncremental()));
+        result.setInventory(inventoryTasksProgressSwapper.swapToObject(yamlProgress.getInventory()));
+        result.setIncremental(incrementalTasksProgressSwapper.swapToObject(yamlProgress.getSourceDatabaseType(), yamlProgress.getIncremental()));
         result.setProcessedRecordsCount(yamlProgress.getProcessedRecordsCount());
         return result;
     }
