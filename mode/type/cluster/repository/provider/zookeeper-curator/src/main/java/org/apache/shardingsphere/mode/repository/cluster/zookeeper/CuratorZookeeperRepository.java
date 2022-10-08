@@ -128,7 +128,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public int getNumChildren(String key) {
+    public int getNumChildren(final String key) {
         try {
             Stat stat = client.checkExists().forPath(key);
             if (null != stat) {

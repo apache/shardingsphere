@@ -77,7 +77,7 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public boolean isExisted(String key) {
+    public boolean isExisted(final String key) {
         return false;
     }
     
