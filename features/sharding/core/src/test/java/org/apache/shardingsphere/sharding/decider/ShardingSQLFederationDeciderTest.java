@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDecid
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -180,7 +180,7 @@ public final class ShardingSQLFederationDeciderTest {
     private static SelectStatementContext createStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("t_order", "t_order_item"));
-        when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         return result;
     }
     
