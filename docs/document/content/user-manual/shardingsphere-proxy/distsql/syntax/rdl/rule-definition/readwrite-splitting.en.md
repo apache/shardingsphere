@@ -14,7 +14,7 @@ DROP READWRITE_SPLITTING RULE ruleName [, ruleName] ...
 
 readwriteSplittingRuleDefinition:
     ruleName ([staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition] 
-              [, loadBanlancerDefinition])
+              [, loadBalancerDefinition])
 
 staticReadwriteSplittingRuleDefinition:
     WRITE_RESOURCE=writeResourceName, READ_RESOURCES(resourceName [, resourceName] ... )
@@ -22,8 +22,8 @@ staticReadwriteSplittingRuleDefinition:
 dynamicReadwriteSplittingRuleDefinition:
     AUTO_AWARE_RESOURCE=resourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
 
-loadBanlancerDefinition:
-    TYPE(NAME=loadBanlancerType [, PROPERTIES([algorithmProperties] )] )
+loadBalancerDefinition:
+    TYPE(NAME=loadBalancerType [, PROPERTIES([algorithmProperties] )] )
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -49,7 +49,7 @@ writeDataSourceQueryEnabled:
 
 - Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules
 - Dynamic readwrite-splitting rules rely on database discovery rules
-- `loadBanlancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/)
+- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/)
 - Duplicate `ruleName` will not be created
 
 ## Example
