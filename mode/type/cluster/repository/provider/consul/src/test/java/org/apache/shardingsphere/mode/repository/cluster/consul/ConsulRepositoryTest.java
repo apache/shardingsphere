@@ -110,7 +110,7 @@ public final class ConsulRepositoryTest {
     
     @Test
     public void assertGetKey() {
-        repository.get("key");
+        repository.getDirectly("key");
         verify(client).getKVValue("key");
         verify(response).getValue();
     }

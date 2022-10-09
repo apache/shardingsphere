@@ -133,7 +133,7 @@ public final class EtcdRepositoryTest {
     
     @Test
     public void assertGetKey() {
-        repository.get("key");
+        repository.getDirectly("key");
         verify(kv).get(ByteSequence.from("key", StandardCharsets.UTF_8));
         verify(getResponse).getKvs();
     }
@@ -220,7 +220,7 @@ public final class EtcdRepositoryTest {
     public void assertGetKeyWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {
-            repository.get("key");
+            repository.getDirectly("key");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -232,7 +232,7 @@ public final class EtcdRepositoryTest {
     public void assertGetKeyWhenThrowExecutionException() throws ExecutionException, InterruptedException {
         doThrow(ExecutionException.class).when(getFuture).get();
         try {
-            repository.get("key");
+            repository.getDirectly("key");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

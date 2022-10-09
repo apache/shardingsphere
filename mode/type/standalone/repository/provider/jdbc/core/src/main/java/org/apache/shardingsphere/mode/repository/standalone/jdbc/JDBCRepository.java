@@ -76,6 +76,12 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public String get(final String key) {
+        // TODO
+       return null;
+    }
+    
+    @Override
+    public String getDirectly(String key) {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByKeySQL())) {
@@ -117,7 +123,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public boolean isExisted(final String key) {
-        return !Strings.isNullOrEmpty(get(key));
+        return !Strings.isNullOrEmpty(getDirectly(key));
     }
     
     @Override
@@ -133,7 +139,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             // Create key level directory recursively.
             for (int i = 0; i < paths.length - 1; i++) {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
-                String tempKeyVal = get(tempKey);
+                String tempKeyVal = getDirectly(tempKey);
                 if (Strings.isNullOrEmpty(tempKeyVal)) {
                     if (i != 0) {
                         parent = tempPrefix;

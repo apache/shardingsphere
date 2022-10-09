@@ -79,7 +79,7 @@ public final class ComputeNodeStatusServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         new ComputeNodeStatusService(repository).loadInstanceLabels(instanceId);
-        verify(repository).get(ComputeNode.getInstanceLabelsNodePath(instanceId));
+        verify(repository).getDirectly(ComputeNode.getInstanceLabelsNodePath(instanceId));
     }
     
     @Test
@@ -87,7 +87,7 @@ public final class ComputeNodeStatusServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         new ComputeNodeStatusService(repository).loadInstanceStatus(instanceId);
-        verify(repository).get(ComputeNode.getInstanceStatusNodePath(instanceId));
+        verify(repository).getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
     }
     
     @Test
@@ -95,14 +95,14 @@ public final class ComputeNodeStatusServiceTest {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
         new ComputeNodeStatusService(repository).loadInstanceWorkerId(instanceId);
-        verify(repository).get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
+        verify(repository).getDirectly(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
     }
     
     @Test
     public void assertLoadAllComputeNodeInstances() {
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("foo_instance_3307"));
         when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("foo_instance_3308"));
-        when(repository.get("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn("127.0.0.1@3308");
+        when(repository.getDirectly("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn("127.0.0.1@3308");
         List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getMetaData().getId(), is("foo_instance_3307"));

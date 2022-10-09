@@ -55,7 +55,7 @@ public final class ComputeNodeStatusSubscriber {
     @Subscribe
     public void update(final ComputeNodeStatusChangedEvent event) {
         String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(event.getInstanceId());
-        String yamlContext = repository.get(computeStatusNodePath);
+        String yamlContext = repository.getDirectly(computeStatusNodePath);
         Collection<String> status = Strings.isNullOrEmpty(yamlContext) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContext, Collection.class);
         if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAK) {
             status.add(ComputeNodeStatus.CIRCUIT_BREAK.name());

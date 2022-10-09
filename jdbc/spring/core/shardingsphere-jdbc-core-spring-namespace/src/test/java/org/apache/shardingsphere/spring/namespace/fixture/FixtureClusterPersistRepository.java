@@ -76,6 +76,11 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     }
     
     @Override
+    public String getDirectly(String key) {
+        return null;
+    }
+    
+    @Override
     public List<String> getChildrenKeys(final String key) {
         return registryData.containsKey(key) ? Collections.singletonList(registryData.get(key)) : Collections.emptyList();
     }

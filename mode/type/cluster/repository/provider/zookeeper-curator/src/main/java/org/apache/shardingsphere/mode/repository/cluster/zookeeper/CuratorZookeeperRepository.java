@@ -23,14 +23,15 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.transaction.CuratorOp;
 import org.apache.curator.framework.api.transaction.TransactionOp;
+import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
-import org.apache.shardingsphere.elasticjob.reg.exception.RegExceptionHandler;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -53,10 +54,12 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.Optional;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -146,18 +149,28 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void addCacheData(final String cachePath) {
-        // TODO
+        CuratorCache cache = CuratorCache.build(client, cachePath);
+        try {
+            cache.start();
+            //CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            //CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+        caches.put(cachePath + "/", cache);
     }
     
     @Override
     public void evictCacheData(final String cachePath) {
-        // TODO
+        CuratorCache cache = caches.remove(cachePath + "/");
+        if (null != cache) {
+            cache.close();
+        }
     }
     
     @Override
     public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
+        return caches.get(cachePath + "/");
     }
     
     @Override
@@ -166,8 +179,38 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
-        // TODO
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
+        client.transaction().forOperations(toCuratorOps(transactionOperations));
+    }
+    
+    private List<CuratorOp> toCuratorOps(final List<TransactionOperation> transactionOperations) {
+        List<CuratorOp> result = new ArrayList<>(transactionOperations.size());
+        TransactionOp transactionOp = client.transactionOp();
+        for (TransactionOperation each : transactionOperations) {
+            result.add(toCuratorOp(each, transactionOp));
+        }
+        return result;
+    }
+    
+    private CuratorOp toCuratorOp(final TransactionOperation each, final TransactionOp transactionOp) {
+        try {
+            switch (each.getType()) {
+                case CHECK_EXISTS:
+                    return transactionOp.check().forPath(each.getKey());
+                case ADD:
+                    return transactionOp.create().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
+                case UPDATE:
+                    return transactionOp.setData().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
+                case DELETE:
+                    return transactionOp.delete().forPath(each.getKey());
+                default:
+                    throw new UnsupportedOperationException(each.toString());
+            }
+            //CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            //CHECKSTYLE:ON
+            throw new ClusterPersistRepositoryException(ex);
+        }
     }
     
     @Override
@@ -184,7 +227,21 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public String get(final String key) {
-        return getDirectly(key);
+        CuratorCache cache = findCuratorCache(key);
+        if (null == cache) {
+            return getDirectly(key);
+        }
+        Optional<ChildData> resultInCache = cache.get(key);
+        return resultInCache.map(v -> null == v.getData() ? null : new String(v.getData(), StandardCharsets.UTF_8)).orElseGet(() -> getDirectly(key));
+    }
+    
+    private CuratorCache findCuratorCache(final String key) {
+        for (Map.Entry<String, CuratorCache> entry : caches.entrySet()) {
+            if (key.startsWith(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
     
     @Override
@@ -227,7 +284,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         }
     }
     
-    private String getDirectly(final String key) {
+    @Override
+    public String getDirectly(final String key) {
         try {
             return new String(client.getData().forPath(key), StandardCharsets.UTF_8);
             // CHECKSTYLE:OFF
@@ -300,7 +358,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             //CHECKSTYLE:OFF
         } catch (final Exception ex) {
             //CHECKSTYLE:ON
-            RegExceptionHandler.handleException(ex);
+            CuratorZookeeperExceptionHandler.handleException(ex);
         }
         Preconditions.checkState(0L != result, "Cannot get registry center time.");
         return result;

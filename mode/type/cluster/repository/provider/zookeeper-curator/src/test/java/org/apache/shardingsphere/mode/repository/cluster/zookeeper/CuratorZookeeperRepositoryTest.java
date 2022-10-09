@@ -38,10 +38,12 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.data.Stat;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,11 +61,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -303,5 +307,28 @@ public final class CuratorZookeeperRepositoryTest {
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
+    }
+    
+    @Test
+    public void assertExecuteInTransactionSucceeded() throws Exception {
+        List<TransactionOperation> operations = new ArrayList<>(3);
+        operations.add(TransactionOperation.opCheckExists("/test"));
+        operations.add(TransactionOperation.opCheckExists("/test/child"));
+        operations.add(TransactionOperation.opCheckExists("/test/deep/nested"));
+        operations.add(TransactionOperation.opAdd("/test/transaction", "transaction"));
+        REPOSITORY.executeInTransaction(operations);
+        assertThat(REPOSITORY.getDirectly("/test/transaction"), is("transaction"));
+    }
+    
+    @Test
+    public void assertExecuteInTransactionFailed() throws Exception {
+        List<TransactionOperation> operations = new ArrayList<>(3);
+        operations.add(TransactionOperation.opAdd("/test/shouldnotexists", ""));
+        operations.add(TransactionOperation.opCheckExists("/test/notexists"));
+        try {
+            REPOSITORY.executeInTransaction(operations);
+        } catch (KeeperException ignored) {
+        }
+        assertFalse(REPOSITORY.isExisted("/test/shouldnotexists"));
     }
 }

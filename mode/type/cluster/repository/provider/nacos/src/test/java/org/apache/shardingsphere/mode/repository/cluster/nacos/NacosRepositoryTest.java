@@ -100,7 +100,7 @@ public final class NacosRepositoryTest {
         }
         ServiceMetadata persistentService = serviceController.getPersistentService();
         when(client.getAllInstances(persistentService.getServiceName(), false)).thenReturn(instances);
-        String value = REPOSITORY.get(key);
+        String value = REPOSITORY.getDirectly(key);
         assertThat(value, is("value2"));
     }
     

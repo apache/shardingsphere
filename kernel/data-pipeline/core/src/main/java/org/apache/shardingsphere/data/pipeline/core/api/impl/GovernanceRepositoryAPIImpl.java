@@ -51,7 +51,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public boolean isExisted(final String key) {
-        return null != repository.get(key);
+        return null != repository.getDirectly(key);
     }
     
     @Override
@@ -61,12 +61,12 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public String getJobItemProgress(final String jobId, final int shardingItem) {
-        return repository.get(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
+        return repository.getDirectly(PipelineMetaDataNode.getJobOffsetItemPath(jobId, shardingItem));
     }
     
     @Override
     public Optional<String> getCheckLatestJobId(final String jobId) {
-        return Optional.ofNullable(repository.get(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId)));
+        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId)));
     }
     
     @Override
@@ -79,7 +79,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String jobId, final String checkJobId) {
         Map<String, DataConsistencyCheckResult> result = new HashMap<>();
-        String yamlCheckResultMapText = repository.get(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
         if (StringUtils.isBlank(yamlCheckResultMapText)) {
             return Collections.emptyMap();
         }
@@ -147,7 +147,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public String getMetaDataDataSources(final JobType jobType) {
-        return repository.get(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
+        return repository.getDirectly(PipelineMetaDataNode.getMetaDataDataSourcesPath(jobType));
     }
     
     @Override
@@ -157,7 +157,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public String getMetaDataProcessConfiguration(final JobType jobType) {
-        return repository.get(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
+        return repository.getDirectly(PipelineMetaDataNode.getMetaDataProcessConfigPath(jobType));
     }
     
     @Override
@@ -167,7 +167,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public String getJobItemErrorMessage(final String jobId, final int shardingItem) {
-        return repository.get(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
+        return repository.getDirectly(PipelineMetaDataNode.getJobItemErrorMessagePath(jobId, shardingItem));
     }
     
     @Override

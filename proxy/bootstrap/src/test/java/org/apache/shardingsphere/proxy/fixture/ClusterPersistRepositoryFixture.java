@@ -76,6 +76,11 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
+    public String getDirectly(String key) {
+        return null;
+    }
+    
+    @Override
     public List<String> getChildrenKeys(final String key) {
         return Collections.singletonList("db");
     }

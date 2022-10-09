@@ -96,7 +96,7 @@ public final class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString(eq("value"))).thenReturn(value);
-        String actualResponse = repository.get(key);
+        String actualResponse = repository.getDirectly(key);
         verify(mockPreparedStatement).setString(eq(1), eq(key));
         assertEquals(value, actualResponse);
     }
@@ -104,7 +104,7 @@ public final class JDBCRepositoryTest {
     @Test
     public void assertGetFailure() throws Exception {
         when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-        String actualResponse = repository.get("key");
+        String actualResponse = repository.getDirectly("key");
         assertEquals("", actualResponse);
     }
     

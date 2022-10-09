@@ -194,6 +194,12 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     @Override
     public String get(final String key) {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(String key) {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 Optional<Instance> instance = findExistedInstance(key, each.isEphemeral()).stream().max(Comparator.comparing(NacosMetaDataUtil::getTimestamp));

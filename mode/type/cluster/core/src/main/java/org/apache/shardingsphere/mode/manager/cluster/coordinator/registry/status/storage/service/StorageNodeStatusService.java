@@ -45,7 +45,7 @@ public final class StorageNodeStatusService {
         Collection<String> storageNodes = repository.getChildrenKeys(StorageNode.getRootPath());
         Map<String, StorageNodeDataSource> result = new HashMap<>(storageNodes.size(), 1);
         storageNodes.forEach(each -> {
-            String yamlContext = repository.get(StorageNode.getStorageNodesDataSourcePath(each));
+            String yamlContext = repository.getDirectly(StorageNode.getStorageNodesDataSourcePath(each));
             if (!Strings.isNullOrEmpty(yamlContext)) {
                 result.put(each, YamlEngine.unmarshal(yamlContext, StorageNodeDataSource.class));
             }

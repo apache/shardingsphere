@@ -40,7 +40,7 @@ public final class PropertiesPersistServiceTest {
     
     @Test
     public void assertLoad() {
-        when(repository.get("/props")).thenReturn(PROPS_YAML);
+        when(repository.getDirectly("/props")).thenReturn(PROPS_YAML);
         Properties actual = new PropertiesPersistService(repository).load();
         assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));
     }

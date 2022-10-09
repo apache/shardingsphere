@@ -56,7 +56,7 @@ public final class ProcessRegistrySubscriberTest {
     public void assertLoadShowProcessListData() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
-        when(repository.get(any())).thenReturn(null);
+        when(repository.getDirectly(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
         verify(repository, times(1)).persist(any(), any());
