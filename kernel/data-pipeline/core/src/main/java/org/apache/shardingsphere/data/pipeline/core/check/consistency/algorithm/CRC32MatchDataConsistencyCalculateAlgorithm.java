@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
  * CRC32 match data consistency calculate algorithm.
  */
 @Getter
+@Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getType());
@@ -111,12 +113,41 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm implements DataCo
     }
     
     @RequiredArgsConstructor
-    @EqualsAndHashCode
     @Getter
     private static final class CalculatedResult implements DataConsistencyCalculatedResult {
         
         private final int recordsCount;
         
+        @NonNull
         private final Collection<Long> columnsCrc32;
+        
+        @Override
+        public boolean equals(final @NonNull Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (getClass() != o.getClass()) {
+                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
+                return false;
+            }
+            final CalculatedResult that = (CalculatedResult) o;
+            if (recordsCount != that.recordsCount) {
+                log.info("recordsCount not match, recordsCount={}, that.recordsCount={}", recordsCount, that.recordsCount);
+                return false;
+            }
+            if (!columnsCrc32.equals(that.columnsCrc32)) {
+                log.info("columnsCrc32 not match, columnsCrc32={}, that.columnsCrc32={}", columnsCrc32, that.columnsCrc32);
+                return false;
+            } else {
+                return true;
+            }
+        }
+        
+        @Override
+        public int hashCode() {
+            int result = recordsCount;
+            result = 31 * result + columnsCrc32.hashCode();
+            return result;
+        }
     }
 }
