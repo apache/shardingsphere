@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -63,6 +64,11 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
+    
     }
     
     @Override
@@ -115,16 +121,17 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
     
     @Override
     public void unlock(final String lockKey) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    
     }
     
     @Override

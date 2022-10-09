@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * Cluster persist repository.
@@ -98,6 +99,14 @@ public interface ClusterPersistRepository extends PersistRepository {
     void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception;
     
     /**
+     * Update data in transaction.
+     *
+     * @param key key
+     * @param value value
+     */
+    void updateInTransaction(String key, String value);
+    
+    /**
      * Persist ephemeral data.
      *
      * @param key key of data
@@ -134,6 +143,7 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key key of data
      * @param listener data changed event listener
+     * @param executor event notify executor
      */
-    void watch(String key, DataChangedEventListener listener);
+    void watch(String key, DataChangedEventListener listener, Executor executor);
 }

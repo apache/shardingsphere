@@ -130,7 +130,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        repository.watch(key, listener);
+        repository.watch(key, listener, null);
     }
     
     @Override

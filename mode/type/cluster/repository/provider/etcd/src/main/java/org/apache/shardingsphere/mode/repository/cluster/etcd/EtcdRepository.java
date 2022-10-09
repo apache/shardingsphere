@@ -45,6 +45,7 @@ import org.apache.shardingsphere.mode.repository.cluster.transaction.Transaction
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -97,6 +98,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     @Override
     public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
+        // TODO
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
         // TODO
     }
     
@@ -184,7 +190,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener, final Executor executor) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
                 Type type = getEventChangedType(each);

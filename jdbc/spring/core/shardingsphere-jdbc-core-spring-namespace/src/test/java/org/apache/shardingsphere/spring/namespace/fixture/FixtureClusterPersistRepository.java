@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public final class FixtureClusterPersistRepository implements ClusterPersistRepository {
     
@@ -62,6 +63,11 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
+    
     }
     
     @Override
@@ -112,7 +118,7 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
     }
     
     @Override

@@ -23,6 +23,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -54,9 +55,10 @@ import org.apache.zookeeper.data.Stat;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -64,7 +66,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRepository implements ClusterPersistRepository, InstanceContextAware {
     
-    private final Map<String, CuratorCache> caches = new HashMap<>();
+    private final Map<String, CuratorCache> caches = new ConcurrentHashMap<>();
     
     private final Builder builder = CuratorFrameworkFactory.builder();
     
@@ -166,6 +168,18 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
         // TODO
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
+        try {
+            TransactionOp transactionOp = client.transactionOp();
+            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
+            //CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            //CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
     }
     
     @Override
@@ -298,7 +312,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
         CuratorCache cache = caches.get(key);
         if (null == cache) {
             cache = CuratorCache.build(client, key);
@@ -312,7 +326,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-        cache.listenable().addListener(curatorCacheListener);
+        if (null != executor) {
+            cache.listenable().addListener(curatorCacheListener, executor);
+        } else {
+            cache.listenable().addListener(curatorCacheListener);
+        }
         start(cache);
     }
     
