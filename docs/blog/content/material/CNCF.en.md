@@ -30,4 +30,4 @@ We are hoping that more supporters of open source and cloud-native communities c
 
 ![](https://shardingsphere.apache.org/blog/img/CNCF3.jpg)
 
-Since Apache ShardingSphere (Incubating) has been open sourced in 2016, it has been constantly improving and developing, and has been recognized by more and more companies and individuals: 8000+ stars have been harvested on Github, and successful cases of nearly 100 companies. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere (Incubating), which has contributed tremendously to its growth and development.
+Since Apache ShardingSphere has been open sourced in 2016, it has been constantly improving and developing, and has been recognized by more and more companies and individuals: 8000+ stars have been harvested on Github, and successful cases of nearly 100 companies. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere, which has contributed tremendously to its growth and development.

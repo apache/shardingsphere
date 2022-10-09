@@ -44,12 +44,12 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void addCacheData(final String cachePath) {
-    
+        
     }
     
     @Override
     public void evictCacheData(final String cachePath) {
-    
+        
     }
     
     @Override
