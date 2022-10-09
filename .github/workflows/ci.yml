@@ -50,7 +50,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true
 
 jobs:
   ci:
@@ -76,9 +76,9 @@ jobs:
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build prod with Maven
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -Djacoco.skip=true 
+        run: ./mvnw -T1C -B -ntp clean install
       - name: Build examples with Maven
-        run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
+        run: ./mvnw -T1C -B -f examples/pom.xml clean package -DskipTests
 
   test-coverage:
     if: github.repository == 'apache/shardingsphere'
@@ -98,6 +98,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+        run: ./mvnw -T1C -B -ntp clean install cobertura:cobertura -Djacoco.skip=false
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
