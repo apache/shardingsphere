@@ -30,6 +30,8 @@ import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -91,7 +93,9 @@ public final class MetaDataContextsFactory {
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         databases.putAll(reloadDatabases(databases, persistService));
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext, props));
-        return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
+        ShardingSphereData shardingSphereData = initShardingSphereData(persistService, metaData, instanceContext);
+        return new MetaDataContexts(persistService, metaData, shardingSphereData);
     }
     
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
@@ -135,6 +139,13 @@ public final class MetaDataContextsFactory {
             result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
                     value.getProtocolType(), value.getResource(), value.getRuleMetaData(), schemas.isEmpty() ? value.getSchemas() : schemas));
         });
+        return result;
+    }
+    
+    private static ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData, final InstanceContext instanceContext) {
+        ShardingSphereData result = persistService.getShardingSphereDataPersistService().load().orElse(ShardingSphereDataBuilderFactory
+                .getInstance(metaData.getDatabases().values().iterator().next().getProtocolType()).map(builder -> builder.build(metaData)).orElseGet(ShardingSphereData::new));
+        // TODO register to calcite
         return result;
     }
 }

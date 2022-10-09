@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata;
+package org.apache.shardingsphere.infra.metadata.data.builder;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Meta data contexts.
+ * ShardingSphere data Builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MetaDataContexts implements AutoCloseable {
+@SingletonSPI
+public interface ShardingSphereDataBuilder extends TypedSPI {
     
-    private final MetaDataPersistService persistService;
-    
-    private final ShardingSphereMetaData metaData;
-    
-    private final ShardingSphereData shardingSphereData;
-    
-    @Override
-    public void close() {
-        persistService.getRepository().close();
-        metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
-        metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
-    }
+    /**
+     * Build ShardingSphere data.
+     *
+     * @param metaData meta data
+     * @return ShardingSphere data
+     */
+    ShardingSphereData build(ShardingSphereMetaData metaData);
 }

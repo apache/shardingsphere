@@ -25,14 +25,15 @@ import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -164,7 +165,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
         databases.put("sharding_db", mock(ShardingSphereDatabase.class));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class),
-                new ConfigurationProperties(new Properties())));
+                new ConfigurationProperties(new Properties())), new ShardingSphereData());
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
