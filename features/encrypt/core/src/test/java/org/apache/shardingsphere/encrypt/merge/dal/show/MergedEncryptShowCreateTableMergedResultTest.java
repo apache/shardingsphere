@@ -65,7 +65,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
                         + "`user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         MergedEncryptShowCreateTableMergedResult actual =
-                createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(new EncryptColumn("user_id_cipher", null, "user_id", null, false)));
+                createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(new EncryptColumn("user_id_cipher", null, null, "user_id", null, false)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
                 is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
@@ -78,7 +78,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
                         + "`user_id_assisted` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         MergedEncryptShowCreateTableMergedResult actual =
-                createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(new EncryptColumn("user_id_cipher", "user_id_assisted", null, null, false)));
+                createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(new EncryptColumn("user_id_cipher", "user_id_assisted", null, null, null, false)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
                 is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
@@ -91,7 +91,7 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, `user_id` VARCHAR(100) NOT NULL, "
                         + "`user_id_assisted` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         MergedEncryptShowCreateTableMergedResult actual =
-                createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(new EncryptColumn("user_id_cipher", "user_id_assisted", "user_id", null, false)));
+                createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(new EncryptColumn("user_id_cipher", "user_id_assisted", null, "user_id", null, false)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
                 is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));

@@ -41,8 +41,8 @@ public final class EncryptTable {
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getEncryptorName(),
-                    each.getAssistedQueryEncryptorName(), each.getQueryWithCipherColumn()));
+            columns.put(each.getLogicColumn(), new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(), each.getFuzzyQueryColumn(),
+                    each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getFuzzyQueryEncryptorName(), each.getQueryWithCipherColumn()));
         }
         queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
@@ -68,6 +68,16 @@ public final class EncryptTable {
     }
     
     /**
+     * Find fuzzy query encrypt algorithm name.
+     *
+     * @param logicColumn column name
+     * @return fuzzy encrypt  algorithm name
+     */
+    public Optional<String> findFuzzyQueryEncryptorName(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? Optional.ofNullable(columns.get(logicColumn).getFuzzyQueryEncryptorName()) : Optional.empty();
+    }
+    
+    /**
      * Get logic columns.
      *
      * @return logic column
@@ -78,7 +88,7 @@ public final class EncryptTable {
     
     /**
      * Get logic column by cipher column.
-     * 
+     *
      * @param cipherColumn cipher column
      * @return logic column
      */
@@ -142,6 +152,21 @@ public final class EncryptTable {
     }
     
     /**
+     * Get fuzzy query columns.
+     *
+     * @return fuzzy query columns
+     */
+    public Collection<String> getFuzzyQueryColumns() {
+        Collection<String> result = new LinkedList<>();
+        for (EncryptColumn each : columns.values()) {
+            if (each.getFuzzyQueryColumn().isPresent()) {
+                result.add(each.getFuzzyQueryColumn().get());
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Find assisted query column.
      *
      * @param logicColumn column name
@@ -149,6 +174,16 @@ public final class EncryptTable {
      */
     public Optional<String> findAssistedQueryColumn(final String logicColumn) {
         return columns.containsKey(logicColumn) ? columns.get(logicColumn).getAssistedQueryColumn() : Optional.empty();
+    }
+    
+    /**
+     * Find fuzzy query column.
+     *
+     * @param logicColumn column name
+     * @return fuzzy query column
+     */
+    public Optional<String> findFuzzyQueryColumn(final String logicColumn) {
+        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getFuzzyQueryColumn() : Optional.empty();
     }
     
     /**
@@ -201,7 +236,7 @@ public final class EncryptTable {
     
     /**
      * Find encrypt column.
-     * 
+     *
      * @param logicColumn logic column
      * @return encrypt column
      */

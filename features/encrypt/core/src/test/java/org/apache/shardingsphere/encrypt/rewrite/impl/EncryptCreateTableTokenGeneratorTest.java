@@ -101,6 +101,6 @@ public final class EncryptCreateTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "certificate_number_plain", "test", null);
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "fuzzy_certificate_number", "certificate_number_plain", "test", null);
     }
 }

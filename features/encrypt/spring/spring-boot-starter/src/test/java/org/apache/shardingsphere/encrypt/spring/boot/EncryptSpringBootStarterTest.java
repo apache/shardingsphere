@@ -90,7 +90,9 @@ public class EncryptSpringBootStarterTest {
         assertThat(columnRuleConfig.getLogicColumn(), is("credit_card"));
         assertThat(columnRuleConfig.getCipherColumn(), is("credit_card_cipher"));
         assertThat(columnRuleConfig.getAssistedQueryColumn(), is("credit_card_assisted_query"));
+        assertThat(columnRuleConfig.getFuzzyQueryColumn(), is("credit_card_fuzzy_query"));
         assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
+        assertThat(columnRuleConfig.getFuzzyQueryEncryptorName(), is("fuzzyCnEncryptor"));
     }
 }

@@ -185,7 +185,8 @@ public final class EncryptRuleTest {
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
         AlgorithmConfiguration queryAssistedEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
         AlgorithmConfiguration metaDataAwareEncryptConfig = new AlgorithmConfiguration("CORE.METADATA_AWARE.FIXTURE", new Properties());
-        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "test_encryptor", null);
+        EncryptColumnRuleConfiguration pwdColumnConfig =
+                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_fuzzy", "pwd_plain", "test_encryptor", "test_encryptor", "fuzzy_encryptor", null);
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "credit_card_plain", "test_encryptor", null);
         EncryptColumnRuleConfiguration nameColumnConfig = new EncryptColumnRuleConfiguration("name", "name_cipher", "", "name_plain", "customized_encryptor", null);
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig, nameColumnConfig), null);
@@ -194,8 +195,16 @@ public final class EncryptRuleTest {
     
     @Test
     public void assertAssistedQueryEncryptorNameSpecified() {
-        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "assisted_query_test_encryptor", null);
+        EncryptColumnRuleConfiguration pwdColumnConfig =
+                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "", "pwd_plain", "test_encryptor", "assisted_query_test_encryptor", null, null);
         assertThat(pwdColumnConfig.getAssistedQueryEncryptorName(), is("assisted_query_test_encryptor"));
+    }
+    
+    @Test
+    public void assertFuzzyQueryEncryptorNameSpecified() {
+        EncryptColumnRuleConfiguration pwdColumnConfig =
+                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_fuzzy", "pwd_plain", "test_encryptor", "", "fuzzy_query_test_encryptor", null);
+        assertThat(pwdColumnConfig.getFuzzyQueryEncryptorName(), is("fuzzy_query_test_encryptor"));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
