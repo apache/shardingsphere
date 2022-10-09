@@ -648,8 +648,8 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_order_item i WHERE o.user_id = 10 ORDER BY o.order_id, ? LIMIT ?" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="7:int, 10:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, ? LIMIT 10, 10" db-types="openGauss" scenario-types="db">
+        <assertion parameters="10:int, 7:int" expected-data-source-name="read_dataset" />
     </test-case>
     
 <!--    TODO FIX ME Expected: is "true" but was "1"-->
