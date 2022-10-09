@@ -118,6 +118,15 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
     String buildDropSQL(String schemaName, String tableName);
     
     /**
+     * Build count SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return count SQL
+     */
+    String buildCountSQL(String schemaName, String tableName);
+    
+    /**
      * Build query SQL.
      *
      * @param schemaName schema name

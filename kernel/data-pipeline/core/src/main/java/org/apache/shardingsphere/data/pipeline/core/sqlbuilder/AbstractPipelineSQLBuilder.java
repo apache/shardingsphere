@@ -160,6 +160,11 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public String buildCountSQL(final String schemaName, final String tableName) {
+        return String.format("SELECT COUNT(*) FROM %s", getQualifiedTableName(schemaName, tableName));
+    }
+    
+    @Override
     public String buildChunkedQuerySQL(final String schemaName, final @NonNull String tableName, final @NonNull String uniqueKey, final boolean firstQuery) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
