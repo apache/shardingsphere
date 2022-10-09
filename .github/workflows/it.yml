@@ -226,3 +226,34 @@ jobs:
         run: |
           ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
           ./mvnw -B clean install -f test/integration-agent-test/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
+
+  dynamic-loading-test-case:
+    name: Dynamic Loading SQL Parser
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        database: [ MySQL, PostgreSQL ]
+        include:
+          - database: MySQL
+            url: https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t
+          - database: PostgreSQL
+            url: https://github.com/postgres/postgres/tree/master/src/test/regress/sql
+    steps:
+      - uses: actions/checkout@v2
+      - name: Maven Resolve Ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build Project
+        run: ./mvnw -B clean install -DskipITs -DskipTests
+      - name: Run Parameterized Test
+        run: |
+          ./mvnw -B clean install -f test/parser/pom.xml -Pit.dynamic.loading -Dspotless.apply.skip=true -Ddatabase=${{ matrix.database }} -Durl=${{ matrix.url }}
