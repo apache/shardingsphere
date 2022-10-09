@@ -47,8 +47,10 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
         canceling = true;
         Statement statement = currentStatement;
         if (null == statement || statement.isClosed()) {
+            log.info("cancel, statement is null or closed");
             return;
         }
+        long startTimeMillis = System.currentTimeMillis();
         try {
             statement.cancel();
         } catch (final SQLFeatureNotSupportedException ex) {
@@ -56,5 +58,6 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
         } catch (final SQLException ex) {
             log.info("cancel failed: {}", ex.getMessage());
         }
+        log.info("cancel cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
 }
