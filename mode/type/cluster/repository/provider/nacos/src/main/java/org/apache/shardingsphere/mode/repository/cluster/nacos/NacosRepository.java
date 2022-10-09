@@ -53,6 +53,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -103,6 +104,11 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     @Override
     public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
+        // TODO
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
         // TODO
     }
     
@@ -168,7 +174,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 NamingEventListener eventListener = each.getListener();
@@ -188,6 +194,12 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     @Override
     public String get(final String key) {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 Optional<Instance> instance = findExistedInstance(key, each.isEphemeral()).stream().max(Comparator.comparing(NacosMetaDataUtil::getTimestamp));

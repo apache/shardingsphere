@@ -55,12 +55,12 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
     @SuppressWarnings("unchecked")
     public Collection<RuleConfiguration> load() {
         return isExisted()
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(GlobalNode.getGlobalRuleNode()), Collection.class))
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(GlobalNode.getGlobalRuleNode()), Collection.class))
                 : Collections.emptyList();
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(GlobalNode.getGlobalRuleNode()));
+        return !Strings.isNullOrEmpty(repository.getDirectly(GlobalNode.getGlobalRuleNode()));
     }
     
     /**

@@ -127,14 +127,14 @@ public final class ProcessRegistrySubscriber {
     }
     
     private boolean isReady(final Collection<String> paths) {
-        return paths.stream().noneMatch(each -> null != repository.get(each));
+        return paths.stream().noneMatch(each -> null != repository.getDirectly(each));
     }
     
     private void sendShowProcessList(final String processListId) {
         List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(processListId));
         Collection<String> batchProcessContexts = new LinkedList<>();
         for (String each : childrenKeys) {
-            batchProcessContexts.add(repository.get(ProcessNode.getProcessListInstancePath(processListId, each)));
+            batchProcessContexts.add(repository.getDirectly(ProcessNode.getProcessListInstancePath(processListId, each)));
         }
         eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
     }

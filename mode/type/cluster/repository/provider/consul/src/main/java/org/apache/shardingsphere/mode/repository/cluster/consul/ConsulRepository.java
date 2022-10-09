@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -95,7 +96,18 @@ public class ConsulRepository implements ClusterPersistRepository {
     }
     
     @Override
+    public void updateInTransaction(final String key, final String value) {
+        // TODO
+    }
+    
+    @Override
     public String get(final String key) {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         Response<GetValue> response = consulClient.getKVValue(key);
         return null == response ? null : response.getValue().getValue();
     }
@@ -175,7 +187,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
         Thread watchThread = new Thread(() -> watchChildKeyChangeEvent(key, listener));
         watchThread.setDaemon(true);
         watchThread.start();

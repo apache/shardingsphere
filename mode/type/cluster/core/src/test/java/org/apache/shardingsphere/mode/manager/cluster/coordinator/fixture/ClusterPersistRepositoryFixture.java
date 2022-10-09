@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.repository.cluster.transaction.Transaction
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -59,7 +60,17 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
+    public void updateInTransaction(final String key, final String value) {
+    
+    }
+    
+    @Override
     public String get(final String key) {
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         return "";
     }
     
@@ -104,16 +115,17 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
     
     @Override
     public void unlock(final String lockKey) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    
     }
     
     @Override

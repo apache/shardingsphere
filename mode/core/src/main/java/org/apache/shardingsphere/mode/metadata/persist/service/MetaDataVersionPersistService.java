@@ -39,7 +39,7 @@ public final class MetaDataVersionPersistService {
      * @return active database version
      */
     public Optional<String> getActiveVersion(final String databaseName) {
-        return Optional.ofNullable(repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
+        return Optional.ofNullable(repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
     }
     
     /**
@@ -66,9 +66,9 @@ public final class MetaDataVersionPersistService {
             return Optional.empty();
         }
         String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
         repository.persist(
-                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
+                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
         return Optional.of(newVersion);
     }
     
