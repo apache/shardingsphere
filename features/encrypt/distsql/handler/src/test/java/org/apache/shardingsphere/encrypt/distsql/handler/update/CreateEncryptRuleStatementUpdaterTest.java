@@ -56,8 +56,9 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithIncompleteDataType() {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
-                "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()),
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "fuzzy_column",
+                "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
+                new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("test", new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
@@ -65,8 +66,10 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
-                new AlgorithmSegment(encryptorName, new Properties()), new AlgorithmSegment(encryptorName, new Properties()));
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "fuzzy_column",
+                new AlgorithmSegment(encryptorName, new Properties()),
+                new AlgorithmSegment(encryptorName, new Properties()),
+                new AlgorithmSegment(encryptorName, new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         return new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
     }

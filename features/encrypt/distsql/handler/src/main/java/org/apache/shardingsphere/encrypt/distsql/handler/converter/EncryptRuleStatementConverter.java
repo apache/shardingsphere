@@ -60,8 +60,9 @@ public final class EncryptRuleStatementConverter {
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
-        return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(), null,
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null, null);
+        String fuzzyQueryEncryptorName = null == columnSegment.getFuzzyQueryEncryptor() ? null : getFuzzyQueryEncryptorName(tableName, columnSegment.getName());
+        return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
+                columnSegment.getFuzzyQueryColumn(), columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, fuzzyQueryEncryptorName, null);
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
@@ -70,6 +71,9 @@ public final class EncryptRuleStatementConverter {
             result.put(getEncryptorName(ruleSegment.getTableName(), each.getName()), createEncryptorConfiguration(each));
             if (null != each.getAssistedQueryEncryptor()) {
                 result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
+            }
+            if (null != each.getFuzzyQueryEncryptor()) {
+                result.put(getFuzzyQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createFuzzyQueryEncryptorConfiguration(each));
             }
         }
         return result;
@@ -83,11 +87,19 @@ public final class EncryptRuleStatementConverter {
         return new AlgorithmConfiguration(columnSegment.getAssistedQueryEncryptor().getName(), columnSegment.getAssistedQueryEncryptor().getProps());
     }
     
+    private static AlgorithmConfiguration createFuzzyQueryEncryptorConfiguration(final EncryptColumnSegment columnSegment) {
+        return new AlgorithmConfiguration(columnSegment.getFuzzyQueryEncryptor().getName(), columnSegment.getFuzzyQueryEncryptor().getProps());
+    }
+    
     private static String getEncryptorName(final String tableName, final String columnName) {
         return String.format("%s_%s", tableName, columnName);
     }
     
     private static String getAssistedQueryEncryptorName(final String tableName, final String columnName) {
         return String.format("assist_%s_%s", tableName, columnName);
+    }
+    
+    private static String getFuzzyQueryEncryptorName(final String tableName, final String columnName) {
+        return String.format("fuzzy_%s_%s", tableName, columnName);
     }
 }
