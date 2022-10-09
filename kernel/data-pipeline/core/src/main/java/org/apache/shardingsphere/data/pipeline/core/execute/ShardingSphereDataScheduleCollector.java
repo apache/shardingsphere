@@ -58,7 +58,7 @@ public final class ShardingSphereDataScheduleCollector {
      * Start.
      */
     public void start() {
-        dataCollectorExecutor.scheduleWithFixedDelay(new ShardingSphereDataCollectorRunnable(contextManager), 0, 1, TimeUnit.SECONDS);
+        dataCollectorExecutor.scheduleWithFixedDelay(new ShardingSphereDataCollectorRunnable(contextManager), 0, 30, TimeUnit.SECONDS);
     }
     
     @RequiredArgsConstructor
