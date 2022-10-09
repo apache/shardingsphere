@@ -60,7 +60,7 @@ public final class EncryptCreateTableTokenGeneratorTest {
     @Test
     public void assertGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildCreateTableStatementContext());
-        assertThat(sqlTokens.size(), is(4));
+        assertThat(sqlTokens.size(), is(5));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
         assertThat(iterator.next(), instanceOf(RemoveToken.class));
         SubstitutableColumnNameToken cipherToken = (SubstitutableColumnNameToken) iterator.next();
@@ -71,6 +71,10 @@ public final class EncryptCreateTableTokenGeneratorTest {
         assertThat(assistedToken.toString(mock(RouteUnit.class)), is(", assisted_certificate_number"));
         assertThat(assistedToken.getStartIndex(), is(79));
         assertThat(assistedToken.getStopIndex(), is(42));
+        SubstitutableColumnNameToken fuzzyToken = (SubstitutableColumnNameToken) iterator.next();
+        assertThat(fuzzyToken.toString(mock(RouteUnit.class)), is(", fuzzy_certificate_number"));
+        assertThat(fuzzyToken.getStartIndex(), is(79));
+        assertThat(fuzzyToken.getStopIndex(), is(42));
         SubstitutableColumnNameToken plainToken = (SubstitutableColumnNameToken) iterator.next();
         assertThat(plainToken.toString(mock(RouteUnit.class)), is(", certificate_number_plain"));
         assertThat(plainToken.getStartIndex(), is(79));
@@ -96,6 +100,7 @@ public final class EncryptCreateTableTokenGeneratorTest {
         when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());
         when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(column.getPlainColumn());
         when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQueryColumn());
+        when(result.findFuzzyQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getFuzzyQueryColumn());
         when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }

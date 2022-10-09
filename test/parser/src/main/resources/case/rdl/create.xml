@@ -337,6 +337,22 @@
         </rule>
     </create-encrypt-rule>
     
+    <create-encrypt-rule sql-case-id="create-encrypt-rule-with-fuzzy-query-column">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" fuzzy-query-column="fuzzy_column">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+                <fuzzy-query-encryptor algorithm-name="FUZZY_CN" />
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </create-encrypt-rule>
+    
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
         <rule name="encrypt" queryWithCipherColumn="false">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">

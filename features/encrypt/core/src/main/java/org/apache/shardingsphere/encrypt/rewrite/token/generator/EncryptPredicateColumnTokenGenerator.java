@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
@@ -30,6 +31,11 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQL
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,14 +62,22 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     @Override
     public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<ColumnSegment> columnSegments = sqlStatementContext instanceof WhereAvailable ? ((WhereAvailable) sqlStatementContext).getColumnSegments() : Collections.emptyList();
+        Collection<ColumnSegment> columnSegments = Collections.emptyList();
+        Collection<WhereSegment> whereSegments = Collections.emptyList();
+        if (sqlStatementContext instanceof WhereAvailable) {
+            columnSegments = ((WhereAvailable) sqlStatementContext).getColumnSegments();
+            whereSegments = ((WhereAvailable) sqlStatementContext).getWhereSegments();
+        }
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         Map<String, String> columnExpressionTableNames = sqlStatementContext.getTablesContext().findTableNamesByColumnSegment(columnSegments, schema);
-        return generateSQLTokens(columnSegments, columnExpressionTableNames);
+        return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames) {
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(
+            final Collection<ColumnSegment> columnSegments,
+            final Map<String, String> columnExpressionTableNames,
+            final Collection<WhereSegment> whereSegments) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
@@ -81,12 +95,55 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
                     continue;
                 }
             }
+            BinaryOperationExpression boe = findBinaryOperationExpression(whereSegments, each);
+            if (boe != null && boe.getOperator().equalsIgnoreCase("LIKE")) {
+                Optional<String> fuzzyQueryColumn = encryptTable.get()
+                        .findFuzzyQueryColumn(each.getIdentifier().getValue());
+                if (!fuzzyQueryColumn.isPresent()) {
+                    throw new UnsupportedEncryptSQLException("LIKE");
+                } else {
+                    result.add(new SubstitutableColumnNameToken(startIndex,
+                            stopIndex, createColumnProjections(fuzzyQueryColumn.get())));
+                    continue;
+                }
+            }
+            
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getIdentifier().getValue());
             SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName)))
                     .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(each.getIdentifier().getValue()))));
             result.add(encryptColumnNameToken);
         }
         return result;
+    }
+    
+    private BinaryOperationExpression findBinaryOperationExpression(
+            final Collection<WhereSegment> whereSegments,
+            final ColumnSegment columnSegment) {
+        for (WhereSegment whereSegment : whereSegments) {
+            Collection<AndPredicate> andPredicates =
+                    ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr());
+            for (AndPredicate andPredicate : andPredicates) {
+                for (ExpressionSegment predicate : andPredicate.getPredicates()) {
+                    if (predicate instanceof BinaryOperationExpression) {
+                        BinaryOperationExpression boe = (BinaryOperationExpression) predicate;
+                        if (columnMatch(columnSegment, boe.getLeft())) {
+                            return boe;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private boolean columnMatch(final ColumnSegment columnSegment, final ExpressionSegment left) {
+        if (left instanceof ColumnSegment) {
+            ColumnSegment leftCol = (ColumnSegment) left;
+            if (leftCol.getStartIndex() == columnSegment.getStartIndex() && left.getStopIndex() == columnSegment.getStopIndex()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private Collection<ColumnProjection> createColumnProjections(final String columnName) {

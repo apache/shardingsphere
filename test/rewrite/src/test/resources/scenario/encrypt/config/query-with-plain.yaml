@@ -20,80 +20,96 @@ dataSources:
     dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
 
 rules:
-- !ENCRYPT
-  tables:
-    t_account:
-      columns:
-        certificate_number:
-          cipherColumn: cipher_certificate_number
-          assistedQueryColumn: assisted_query_certificate_number
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        password:
-          cipherColumn: cipher_password
-          assistedQueryColumn: assisted_query_password
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        amount:
-          cipherColumn: cipher_amount
-          encryptorName: rewrite_normal_fixture
-        amount_new:
-          cipherColumn: amount_new_cipher
-          encryptorName: rewrite_normal_fixture
-    t_account_bak:
-      columns:
-        certificate_number:
-          cipherColumn: cipher_certificate_number
-          assistedQueryColumn: assisted_query_certificate_number
-          plainColumn: plain_certificate_number
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        password:
-          cipherColumn: cipher_password
-          assistedQueryColumn: assisted_query_password
-          plainColumn: plain_password
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        password_new:
-          cipherColumn: password_new_cipher
-          assistedQueryColumn: password_new_assisted
-          plainColumn: password_new_plain
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        amount:
-          cipherColumn: cipher_amount
-          plainColumn: plain_amount
-          encryptorName: rewrite_normal_fixture
-    t_account_detail:
-      columns:
-        certificate_number:
-          cipherColumn: cipher_certificate_number
-          assistedQueryColumn: assisted_query_certificate_number
-          plainColumn: plain_certificate_number
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        password:
-          cipherColumn: cipher_password
-          assistedQueryColumn: assisted_query_password
-          plainColumn: plain_password
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-        amount:
-          cipherColumn: cipher_amount
-          plainColumn: plain_amount
-          encryptorName: rewrite_normal_fixture
-      queryWithCipherColumn: true
-    t_order:
-      columns:
-        CONTENT:
-          cipherColumn: CIPHER_CONTENT
-          plainColumn: PLAIN_CONTENT
-          encryptorName: rewrite_metadata_aware_fixture
-  encryptors:
-    rewrite_normal_fixture:
-      type: REWRITE.NORMAL.FIXTURE
-    rewrite_metadata_aware_fixture:
-      type: REWRITE.METADATA_AWARE.FIXTURE
-    rewrite_assisted_query_fixture:
-      type: REWRITE.ASSISTED_QUERY.FIXTURE
-  queryWithCipherColumn: false
+  - !ENCRYPT
+    tables:
+      t_account:
+        columns:
+          certificate_number:
+            cipherColumn: cipher_certificate_number
+            assistedQueryColumn: assisted_query_certificate_number
+            fuzzyQueryColumn: fuzzy_query_certificate_number
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          password:
+            cipherColumn: cipher_password
+            assistedQueryColumn: assisted_query_password
+            fuzzyQueryColumn: fuzzy_query_password
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          amount:
+            cipherColumn: cipher_amount
+            encryptorName: rewrite_normal_fixture
+          amount_new:
+            cipherColumn: amount_new_cipher
+            encryptorName: rewrite_normal_fixture
+      t_account_bak:
+        columns:
+          certificate_number:
+            cipherColumn: cipher_certificate_number
+            assistedQueryColumn: assisted_query_certificate_number
+            fuzzyQueryColumn: fuzzy_query_certificate_number
+            plainColumn: plain_certificate_number
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          password:
+            cipherColumn: cipher_password
+            assistedQueryColumn: assisted_query_password
+            fuzzyQueryColumn: fuzzy_query_password
+            plainColumn: plain_password
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          password_new:
+            cipherColumn: password_new_cipher
+            assistedQueryColumn: password_new_assisted
+            fuzzyQueryColumn: password_new_fuzzy
+            plainColumn: password_new_plain
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          amount:
+            cipherColumn: cipher_amount
+            plainColumn: plain_amount
+            encryptorName: rewrite_normal_fixture
+      t_account_detail:
+        columns:
+          certificate_number:
+            cipherColumn: cipher_certificate_number
+            assistedQueryColumn: assisted_query_certificate_number
+            fuzzyQueryColumn: fuzzy_query_certificate_number
+            plainColumn: plain_certificate_number
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          password:
+            cipherColumn: cipher_password
+            assistedQueryColumn: assisted_query_password
+            fuzzyQueryColumn: fuzzy_query_password
+            plainColumn: plain_password
+            encryptorName: rewrite_normal_fixture
+            assistedQueryEncryptorName: rewrite_assisted_query_fixture
+            fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          amount:
+            cipherColumn: cipher_amount
+            plainColumn: plain_amount
+            encryptorName: rewrite_normal_fixture
+        queryWithCipherColumn: true
+      t_order:
+        columns:
+          CONTENT:
+            cipherColumn: CIPHER_CONTENT
+            plainColumn: PLAIN_CONTENT
+            encryptorName: rewrite_metadata_aware_fixture
+    encryptors:
+      rewrite_normal_fixture:
+        type: REWRITE.NORMAL.FIXTURE
+      rewrite_metadata_aware_fixture:
+        type: REWRITE.METADATA_AWARE.FIXTURE
+      rewrite_assisted_query_fixture:
+        type: REWRITE.ASSISTED_QUERY.FIXTURE
+      rewrite_fuzzy_query_fixture:
+        type: REWRITE.FUZZY_QUERY.FIXTURE
+    queryWithCipherColumn: false

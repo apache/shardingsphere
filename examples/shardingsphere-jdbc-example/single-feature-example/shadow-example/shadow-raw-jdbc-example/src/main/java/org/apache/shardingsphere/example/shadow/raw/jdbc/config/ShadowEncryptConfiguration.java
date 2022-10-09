@@ -80,8 +80,8 @@ public final class ShadowEncryptConfiguration extends BaseShadowConfiguration {
     private Collection<EncryptTableRuleConfiguration> getEncryptTableRuleConfigurations() {
         Collection<EncryptTableRuleConfiguration> result = new LinkedList<>();
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
-        columns.add(new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null));
-        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null));
+        columns.add(new EncryptColumnRuleConfiguration("username", "username", "", "", "username_plain", "name_encryptor", null));
+        columns.add(new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "", "pwd_encryptor", null));
         result.add(new EncryptTableRuleConfiguration("t_user", columns, null));
         return result;
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.spring.boot;
 
 import org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.FuzzyChineseEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -65,10 +66,11 @@ public class EncryptSpringBootStarterTest {
     }
     
     private void assertEncryptors(final Map<String, EncryptAlgorithm<?, ?>> encryptors) {
-        assertThat(encryptors.size(), is(2));
+        assertThat(encryptors.size(), is(3));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
         assertThat(encryptors.get("md5Encryptor"), instanceOf(MD5EncryptAlgorithm.class));
+        assertThat(encryptors.get("fuzzyCnEncryptor"), instanceOf(FuzzyChineseEncryptAlgorithm.class));
     }
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
