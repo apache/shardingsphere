@@ -44,12 +44,12 @@ jobs:
           key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true $MAVEN_OPTS'
+        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Djacoco.skip=true $MAVEN_OPTS'
       - name: Build docker image
         run: |
           ./mvnw -B -Prelease,docker -DskipTests clean install

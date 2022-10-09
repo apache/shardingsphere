@@ -15,28 +15,28 @@
 # limitations under the License.
 #
 
-name: Daily - Example Generator IT
+name: Nightly - IT Example Generator
 
 on:
   schedule:
     - cron: '0 19 */1 * *'  # once a day. UTC time
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3  -Drat.skip=true -Dcheckstyle.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
 
 jobs:
-  shardingsphere-example-generator:
+  example-generator:
     if: github.repository == 'apache/shardingsphere'
-    name: ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
+    name: Example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        product: [ jdbc ]
-        mode: [ standalone ]
-        transaction: [ local, xa-atomikos, xa-bitronix, xa-narayana ]
         feature: [ sharding, readwrite-splitting, encrypt, shadow ]
         framework: [ jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jdbc, spring-namespace-jpa, spring-namespace-mybatis ]
+        mode: [ standalone ]
+        transaction: [ local, xa-atomikos, xa-bitronix, xa-narayana ]
+        product: [ jdbc ]
         exclude: 
           - feature: shadow
             framework: spring-boot-starter-jpa
@@ -52,16 +52,21 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v3
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '8'
-          cache: 'maven'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build with Maven
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
-      - name: Prepare Env
+      - name: Prepare environments
         run: |
           mysql -uroot -h127.0.0.1 -p123456 -e 'CREATE DATABASE IF NOT EXISTS demo_ds_0;CREATE DATABASE IF NOT EXISTS demo_ds_1;CREATE DATABASE IF NOT EXISTS demo_ds_2;'
           mysql -uroot -h127.0.0.1 -p123456 -e 'use demo_ds_1;CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));'
@@ -70,7 +75,7 @@ jobs:
           mysql -uroot -h127.0.0.1 -p123456 -e 'use demo_ds_2;CREATE TABLE IF NOT EXISTS t_order_item(order_item_id BIGINT NOT NULL AUTO_INCREMENT, order_id BIGINT NOT NULL, user_id INT NOT NULL, phone VARCHAR(50), status VARCHAR(50), PRIMARY KEY (order_item_id));'
           mysql -uroot -h127.0.0.1 -p123456 -e 'use demo_ds_1;CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));'
           mysql -uroot -h127.0.0.1 -p123456 -e 'use demo_ds_2;CREATE TABLE IF NOT EXISTS t_address (address_id BIGINT NOT NULL, address_name VARCHAR(100) NOT NULL, PRIMARY KEY (address_id));'
-      - name: Example generator
+      - name: Generate examples
         run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
-      - name: Example Test
+      - name: Test examples
         run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false 

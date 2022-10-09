@@ -17,11 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
@@ -36,16 +31,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.worke
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Cluster context manager builder.
@@ -63,33 +54,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (persistRepository instanceof InstanceContextAware) {
             ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
         }
-        checkDataSourceStates(parameter.getDatabaseConfigs(), registryCenter, parameter.isForce());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         registerOnline(persistService, registryCenter, parameter, result);
-        return result;
-    }
-    
-    private void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final RegistryCenter registryCenter, final boolean force) {
-        Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
-        Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
-        databaseConfigs.forEach((key, value) -> {
-            if (null != value.getDataSources()) {
-                DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), storageDataSourceStates, force);
-            }
-        });
-    }
-    
-    private Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, StorageNodeDataSource> storageDataSourceStates) {
-        Map<String, DataSourceState> result = new HashMap<>(storageDataSourceStates.size(), 1);
-        storageDataSourceStates.forEach((key, value) -> {
-            List<String> values = Splitter.on(".").splitToList(key);
-            Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");
-            String databaseName = values.get(0);
-            String dataSourceName = values.get(2);
-            result.put(databaseName + "." + dataSourceName, DataSourceState.valueOf(value.getStatus().toUpperCase()));
-        });
         return result;
     }
     
