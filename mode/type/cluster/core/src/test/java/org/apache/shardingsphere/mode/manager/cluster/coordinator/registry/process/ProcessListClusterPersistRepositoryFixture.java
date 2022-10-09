@@ -44,12 +44,10 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void addCacheData(final String cachePath) {
-        
     }
     
     @Override
     public void evictCacheData(final String cachePath) {
-        
     }
     
     @Override
@@ -59,7 +57,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        
     }
     
     @Override
@@ -68,7 +65,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void updateInTransaction(final String key, final String value) {
-    
     }
     
     @Override
@@ -98,7 +94,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void update(final String key, final String value) {
-        
     }
     
     @Override
@@ -136,7 +131,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
-    
     }
     
     @Override

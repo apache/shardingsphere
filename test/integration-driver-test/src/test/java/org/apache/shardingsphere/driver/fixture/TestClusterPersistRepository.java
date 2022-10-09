@@ -67,7 +67,6 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     
     @Override
     public void updateInTransaction(final String key, final String value) {
-    
     }
     
     @Override
@@ -133,7 +132,6 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
-    
     }
     
     @Override
