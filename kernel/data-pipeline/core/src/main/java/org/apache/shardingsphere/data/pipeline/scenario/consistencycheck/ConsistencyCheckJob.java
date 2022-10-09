@@ -61,8 +61,8 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
     @Override
     public void stop() {
         setStopping(true);
-        if (null != getOneOffJobBootstrap()) {
-            getOneOffJobBootstrap().shutdown();
+        if (null != getJobBootstrap()) {
+            getJobBootstrap().shutdown();
         }
         if (null == getJobId()) {
             log.info("stop consistency check job, jobId is null, ignore");

@@ -72,7 +72,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
         MigrationJob job = new MigrationJob();
         PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
-        job.setOneOffJobBootstrap(oneOffJobBootstrap);
+        job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     
