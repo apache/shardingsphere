@@ -134,9 +134,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             if (null != stat) {
                 return stat.getNumChildren();
             }
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
         return 0;
@@ -283,9 +283,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         try {
             persist(key, "");
             result = client.checkExists().forPath(key).getMtime();
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             RegExceptionHandler.handleException(ex);
         }
         Preconditions.checkState(0L != result, "Cannot get registry center time.");

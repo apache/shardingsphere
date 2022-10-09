@@ -99,6 +99,7 @@ public final class SQLFederationPlannerUtil {
         HepProgramBuilder builder = new HepProgramBuilder();
         builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getAggregationRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getCalcRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
@@ -169,6 +170,13 @@ public final class SQLFederationPlannerUtil {
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
         result.add(TranslatableFilterRule.INSTANCE);
         result.add(TranslatableProjectFilterRule.INSTANCE);
+        return result;
+    }
+    
+    private static Collection<RelOptRule> getAggregationRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(CoreRules.AGGREGATE_MERGE);
+        result.add(CoreRules.AGGREGATE_REDUCE_FUNCTIONS);
         return result;
     }
     
