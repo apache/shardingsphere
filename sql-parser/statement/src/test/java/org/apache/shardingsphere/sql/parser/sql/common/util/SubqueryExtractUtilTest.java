@@ -170,7 +170,7 @@ public final class SubqueryExtractUtilTest {
     @Test
     public void assertGetSubquerySegmentsWithCombineSegment() {
         SelectStatement selectStatement = new MySQLSelectStatement();
-        selectStatement.getCombines().add(new CombineSegment(0, 0, CombineType.UNION, createSelectStatementForCombineSegment()));
+        selectStatement.setCombine(new CombineSegment(0, 0, CombineType.UNION, createSelectStatementForCombineSegment()));
         Collection<SubquerySegment> actual = SubqueryExtractUtil.getSubquerySegments(selectStatement);
         assertThat(actual.size(), is(1));
     }
