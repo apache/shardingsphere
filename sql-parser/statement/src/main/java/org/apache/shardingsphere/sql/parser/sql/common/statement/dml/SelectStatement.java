@@ -92,7 +92,7 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     /**
      * Get combine segment.
      *
-     * @return order by segment
+     * @return combine segment
      */
     public Optional<CombineSegment> getCombine() {
         return Optional.ofNullable(combine);
