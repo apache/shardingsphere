@@ -93,7 +93,7 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
      * @param tableName table name
      * @return sharding database value
      */
-    public int getHintShardingDatabaseValue(final String tableName) {
+    public Comparable<?> getHintShardingDatabaseValue(final String tableName) {
         return sqlHintExtractor.getHintShardingDatabaseValue(tableName);
     }
     
@@ -103,7 +103,7 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
      * @param tableName table name
      * @return sharding table value
      */
-    public int getHintShardingTableValue(final String tableName) {
+    public Comparable<?> getHintShardingTableValue(final String tableName) {
         return sqlHintExtractor.getHintShardingTableValue(tableName);
     }
     
