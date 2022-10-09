@@ -92,6 +92,8 @@ public final class SQLOptimizeEngineTest {
     
     private static final String SELECT_LIMIT = "SELECT order_id, user_id FROM t_order_federate LIMIT 1";
     
+    private static final String SELECT_AGGREGATION = "SELECT MAX(order_id), MIN(order_id), SUM(order_id), AVG(order_id), COUNT(1) FROM t_order_federate GROUP BY user_id";
+    
     private static final String SCHEMA_NAME = "federate_jdbc";
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
@@ -278,6 +280,21 @@ public final class SQLOptimizeEngineTest {
         String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
         String expected = "EnumerableLimit(fetch=[1])" + LINE_SEPARATOR
                 + "  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])" + LINE_SEPARATOR;
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertSelectAggregationFunction() {
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_AGGREGATION, false);
+        String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
+        String expected =
+                "EnumerableCalc(expr#0..5=[{inputs}], expr#6=[0], expr#7=[=($t4, $t6)], expr#8=[null:DECIMAL(19, 9)], "
+                        + "expr#9=[CASE($t7, $t8, $t3)], expr#10=[/($t9, $t4)], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t9], EXPR$3=[$t10], EXPR$4=[$t5])"
+                        + LINE_SEPARATOR
+                        + "  EnumerableAggregate(group=[{0}], EXPR$0=[MAX($1)], EXPR$1=[MIN($1)], EXPR$2=[$SUM0($2)], agg#3=[COUNT($2)], EXPR$4=[COUNT()])" + LINE_SEPARATOR
+                        + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):DECIMAL(19, 9)], user_id=[$t1], order_id=[$t0], $f2=[$t2])" + LINE_SEPARATOR
+                        + "      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[1, 0]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
 }

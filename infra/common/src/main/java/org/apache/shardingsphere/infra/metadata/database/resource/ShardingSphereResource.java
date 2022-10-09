@@ -54,7 +54,7 @@ public final class ShardingSphereResource {
     }
     
     private DatabaseType getDatabaseType(final Map<String, DataSource> dataSources) {
-        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
+        return DatabaseTypeEngine.getDatabaseType(dataSources.values());
     }
     
     private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources) {
