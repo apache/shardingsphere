@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * MySQL Sharding sphere data Builder.
+ * MySQL ShardingSphere data Builder.
  */
 
 public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataBuilder {

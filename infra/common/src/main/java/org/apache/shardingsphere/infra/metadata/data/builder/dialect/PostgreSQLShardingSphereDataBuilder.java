@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Postgre SQL Sharding sphere data Builder.
+ * Postgre SQL ShardingSphere data Builder.
  */
 
 public final class PostgreSQLShardingSphereDataBuilder implements ShardingSphereDataBuilder {

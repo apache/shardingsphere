@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Sharding sphere table data.
+ * ShardingSphere table data.
  */
 @RequiredArgsConstructor
 @Getter

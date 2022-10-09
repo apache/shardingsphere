@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import java.util.Optional;
 
 /**
- * Sharding sphere data builder factory.
+ * ShardingSphere data builder factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDataBuilderFactory {
@@ -37,7 +37,7 @@ public final class ShardingSphereDataBuilderFactory {
     }
     
     /**
-     * Find instance of dialect sharding sphere data builder.
+     * Find instance of dialect ShardingSphere data builder.
      *
      * @param databaseType database type
      * @return found instance

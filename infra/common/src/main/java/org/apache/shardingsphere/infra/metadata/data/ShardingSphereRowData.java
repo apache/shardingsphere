@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Sharding sphere row data.
+ * ShardingSphere row data.
  */
 @RequiredArgsConstructor
 @Getter

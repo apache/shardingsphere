@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import java.util.Optional;
 
 /**
- * Sharding sphere data persist service.
+ * ShardingSphere data persist service.
  */
 @Getter
 public final class ShardingSphereDataPersistService {
@@ -38,10 +38,10 @@ public final class ShardingSphereDataPersistService {
     /**
      * Load.
      * 
-     * @return sharding sphere data
+     * @return ShardingSphere data
      */
     public Optional<ShardingSphereData> load() {
-        // TODO add load sharding sphere data logic
+        // TODO add load ShardingSphere data logic
         return Optional.empty();
     }
 }

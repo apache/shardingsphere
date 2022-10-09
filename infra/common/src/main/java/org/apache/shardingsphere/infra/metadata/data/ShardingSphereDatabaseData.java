@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Sharding sphere database data.
+ * ShardingSphere database data.
  */
 @Getter
 public final class ShardingSphereDatabaseData {

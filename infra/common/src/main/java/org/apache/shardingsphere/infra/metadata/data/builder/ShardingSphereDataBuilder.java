@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Sharding sphere data Builder.
+ * ShardingSphere data Builder.
  */
 @SingletonSPI
 public interface ShardingSphereDataBuilder extends TypedSPI {
     
     /**
-     * Build sharding sphere data.
+     * Build ShardingSphere data.
      *
      * @param metaData meta data
-     * @return sharding sphere data
+     * @return ShardingSphere data
      */
     ShardingSphereData build(ShardingSphereMetaData metaData);
 }
