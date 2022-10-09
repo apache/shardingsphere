@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ModelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -43,13 +43,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.w
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.with.WithClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 
-import java.util.Collection;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -76,7 +75,7 @@ public final class SelectStatementAssert {
         assertTable(assertContext, actual, expected);
         assertLockClause(assertContext, actual, expected);
         assertWithClause(assertContext, actual, expected);
-        assertCombines(assertContext, actual, expected);
+        assertCombineClause(assertContext, actual, expected);
         assertModelClause(assertContext, actual, expected);
     }
     
@@ -181,19 +180,15 @@ public final class SelectStatementAssert {
         }
     }
     
-    private static void assertCombines(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
-        if (expected.getCombine().isEmpty()) {
-            return;
-        }
-        Collection<CombineSegment> combineSegments = actual.getCombines();
-        assertFalse(assertContext.getText("Actual combine segment should exist."), combineSegments.isEmpty());
-        assertThat(assertContext.getText("Combine size assertion error: "), combineSegments.size(), is(expected.getCombine().size()));
-        int count = 0;
-        for (CombineSegment each : combineSegments) {
-            assertThat(assertContext.getText("Combine type assertion error: "), each.getCombineType().name(), is(expected.getCombine().get(count).getCombineType()));
-            SQLSegmentAssert.assertIs(assertContext, each, expected.getCombine().get(count));
-            assertIs(assertContext, each.getSelectStatement(), expected.getCombine().get(count).getSelectClause());
-            count++;
+    private static void assertCombineClause(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {
+        Optional<CombineSegment> combineSegment = actual.getCombine();
+        if (null == expected.getCombineClause()) {
+            assertFalse(assertContext.getText("Actual combine segment should not exist."), combineSegment.isPresent());
+        } else {
+            assertTrue(assertContext.getText("Actual combine segment should exist."), combineSegment.isPresent());
+            assertThat(assertContext.getText("Combine type assertion error: "), combineSegment.get().getCombineType().name(), is(expected.getCombineClause().getCombineType()));
+            SQLSegmentAssert.assertIs(assertContext, combineSegment.get(), expected.getCombineClause());
+            assertIs(assertContext, combineSegment.get().getSelectStatement(), expected.getCombineClause().getSelectClause());
         }
     }
     

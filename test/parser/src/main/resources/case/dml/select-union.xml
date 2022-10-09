@@ -43,7 +43,7 @@
         <from>
             <simple-table name="table1" start-index="14" stop-index="19" />
         </from>
-        <union union-type="UNION_ALL" start-index="21" stop-index="50">
+        <combine combine-type="UNION_ALL" start-index="21" stop-index="50">
             <select>
                 <projections start-index="38" stop-index="38">
                     <shorthand-projection start-index="38" stop-index="38" />
@@ -52,7 +52,7 @@
                     <simple-table name="table2" start-index="45" stop-index="50" />
                 </from>
             </select>
-        </union>
+        </combine>
     </select>
 
     <select sql-case-id="select_union">
@@ -89,16 +89,16 @@
                 <from>
                     <simple-table name="table2" start-index="45" stop-index="50" />
                 </from>
-            </select>
-        </combine>
-        <combine combine-type="INTERSECT" start-index="52" stop-index="81">
-            <select>
-                <projections start-index="69" stop-index="69">
-                    <shorthand-projection start-index="69" stop-index="69" />
-                </projections>
-                <from>
-                    <simple-table name="table3" start-index="76" stop-index="81" />
-                </from>
+                <combine combine-type="INTERSECT" start-index="52" stop-index="81">
+                    <select>
+                        <projections start-index="69" stop-index="69">
+                            <shorthand-projection start-index="69" stop-index="69" />
+                        </projections>
+                        <from>
+                            <simple-table name="table3" start-index="76" stop-index="81" />
+                        </from>
+                    </select>
+                </combine>
             </select>
         </combine>
     </select>
@@ -118,16 +118,16 @@
                 <from>
                     <simple-table name="table2" start-index="46" stop-index="51" />
                 </from>
-            </select>
-        </combine>
-        <combine combine-type="EXCEPT_ALL" start-index="53" stop-index="83">
-            <select>
-                <projections start-index="71" stop-index="71">
-                    <shorthand-projection start-index="71" stop-index="71" />
-                </projections>
-                <from>
-                    <simple-table name="table3" start-index="78" stop-index="83" />
-                </from>
+                <combine combine-type="EXCEPT_ALL" start-index="53" stop-index="83">
+                    <select>
+                        <projections start-index="71" stop-index="71">
+                            <shorthand-projection start-index="71" stop-index="71" />
+                        </projections>
+                        <from>
+                            <simple-table name="table3" start-index="78" stop-index="83" />
+                        </from>
+                    </select>
+                </combine>
             </select>
         </combine>
     </select>

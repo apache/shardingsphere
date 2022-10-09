@@ -109,18 +109,7 @@ public final class SQLFederationPlannerUtil {
     private static void setUpRules(final RelOptPlanner planner) {
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
-        planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_UNION_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_FILTER_TO_CALC_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_PROJECT_TO_CALC_RULE);
+        EnumerableRules.rules().forEach(planner::addRule);
     }
     
     private static Collection<RelOptRule> getSubQueryRules() {
