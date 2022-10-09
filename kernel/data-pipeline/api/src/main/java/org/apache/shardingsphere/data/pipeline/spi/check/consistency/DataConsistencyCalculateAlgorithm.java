@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.util.spi.aware.SPIMetadataAware;
 
+import java.sql.SQLException;
+
 /**
  * Data consistency calculate algorithm.
  */
@@ -34,4 +36,11 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
      * @return calculated result
      */
     Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter parameter);
+    
+    /**
+     * Cancel calculation.
+     *
+     * @throws SQLException SQL exception if cancel underlying SQL execution failure
+     */
+    void cancel() throws SQLException;
 }

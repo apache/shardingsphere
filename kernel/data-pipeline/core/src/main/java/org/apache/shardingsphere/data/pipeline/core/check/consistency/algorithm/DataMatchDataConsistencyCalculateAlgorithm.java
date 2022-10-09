@@ -93,7 +93,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String sql = getQuerySQL(parameter);
         try (
                 Connection connection = parameter.getDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
             preparedStatement.setFetchSize(chunkSize);
             if (null == previousCalculatedResult) {
                 preparedStatement.setInt(1, chunkSize);
@@ -106,6 +106,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
                 while (resultSet.next()) {
+                    if (isCanceling()) {
+                        log.info("canceling, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName());
+                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+                    }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
                     Collection<Object> record = new LinkedList<>();
