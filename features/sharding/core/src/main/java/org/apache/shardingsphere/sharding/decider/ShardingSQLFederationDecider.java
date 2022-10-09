@@ -50,7 +50,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         }
         addTableDataNodes(deciderContext, rule, tableNames);
         ShardingConditions shardingConditions = createShardingConditions(queryContext, database, rule);
-        // TODO remove this judge logic when we support issue#21392 
+        // TODO remove this judge logic when we support issue#21392
         if (select.getPaginationContext().isHasPagination() && !(select.getDatabaseType() instanceof PostgreSQLDatabaseType) && !(select.getDatabaseType() instanceof OpenGaussDatabaseType)) {
             return;
         }

@@ -22,12 +22,12 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.type.CombineOperatorConverter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.type.CombineOperatorConverter;
 
 import java.util.Arrays;
 
@@ -45,13 +45,22 @@ public final class SQLNodeConverterEngine {
      */
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            SqlNode sqlNode = new SelectStatementConverter().convert((SelectStatement) statement);
-            for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
-                SqlNode combineSqlNode = convert(each.getSelectStatement());
-                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), Arrays.asList(sqlNode, combineSqlNode), SqlParserPos.ZERO);
+            SqlNode result = new SelectStatementConverter().convert((SelectStatement) statement);
+            if (((SelectStatement) statement).getCombine().isPresent()) {
+                return convert(result, ((SelectStatement) statement));
             }
-            return sqlNode;
+            return result;
         }
         throw new OptimizationSQLNodeConvertException(statement);
+    }
+    
+    private static SqlNode convert(final SqlNode sqlNode, final SelectStatement selectStatement) {
+        if (selectStatement.getCombine().isPresent()) {
+            CombineSegment combineSegment = selectStatement.getCombine().get();
+            SqlNode combineSqlNode = new SqlBasicCall(CombineOperatorConverter.convert(combineSegment.getCombineType()),
+                    Arrays.asList(sqlNode, new SelectStatementConverter().convert(combineSegment.getSelectStatement())), SqlParserPos.ZERO);
+            return convert(combineSqlNode, combineSegment.getSelectStatement());
+        }
+        return sqlNode;
     }
 }
