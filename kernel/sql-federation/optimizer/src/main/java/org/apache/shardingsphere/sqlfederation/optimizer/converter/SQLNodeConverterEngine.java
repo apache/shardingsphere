@@ -47,7 +47,7 @@ public final class SQLNodeConverterEngine {
         if (statement instanceof SelectStatement) {
             SqlNode result = new SelectStatementConverter().convert((SelectStatement) statement);
             if (((SelectStatement) statement).getCombine().isPresent()) {
-                return convert(result, ((SelectStatement) statement));
+                return convert(result, (SelectStatement) statement);
             }
             return result;
         }
