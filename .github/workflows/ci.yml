@@ -59,7 +59,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        java-version: [ 8, 19 ]
+        java-version: [ 11, 19 ]
         os: [ ubuntu-latest ]
     steps:
       - uses: actions/checkout@v3
@@ -96,7 +96,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Test with Maven
         run: ./mvnw -T1C -B -ntp clean install cobertura:cobertura -Djacoco.skip=false
       - name: Upload to Codecov

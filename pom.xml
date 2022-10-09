@@ -52,7 +52,7 @@
     </modules>
     
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.locale>zh_CN</project.build.locale>
@@ -779,6 +779,7 @@
                         <excludes>
                             <exclude />
                         </excludes>
+                        <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -1223,29 +1224,4 @@
         <url>https://github.com/apache/shardingsphere.git</url>
         <tag>HEAD</tag>
     </scm>
-    
-    <profiles>
-        <profile>
-            <id>jdk11+</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <configuration>
-                                <trimStackTrace>false</trimStackTrace>
-                                <excludes>
-                                    <exclude />
-                                </excludes>
-                                <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-    </profiles>
 </project>

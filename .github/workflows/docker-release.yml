@@ -47,7 +47,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Set environment
         run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Djacoco.skip=true $MAVEN_OPTS'
       - name: Build docker image

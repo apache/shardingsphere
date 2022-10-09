@@ -91,7 +91,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Build Scaling IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
       - name: Run Scaling MySQL Integration Test
@@ -121,7 +121,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Build Scaling IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
       - name: Run Scaling Daily MySQL Integration Test

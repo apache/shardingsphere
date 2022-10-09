@@ -80,7 +80,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: 8
+          java-version: 11
       - name: Build Transaction IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/transaction -Pit.env.docker -DskipTests
       - name: Run MySQL Transaction Integration Test
