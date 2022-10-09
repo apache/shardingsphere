@@ -53,7 +53,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
     public void execute(final ShardingContext shardingContext) {
         String checkJobId = shardingContext.getJobName();
         setJobId(checkJobId);
-        ConsistencyCheckJobConfiguration consistencyCheckJobConfig = YamlConsistencyCheckJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
+        ConsistencyCheckJobConfiguration consistencyCheckJobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         JobStatus status = JobStatus.RUNNING;
         ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(consistencyCheckJobConfig, 0, status);
         jobAPI.persistJobItemProgress(jobItemContext);

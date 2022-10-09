@@ -37,8 +37,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PipelineProcessConfigurationPersistServiceTest {
     
-    private static final YamlPipelineProcessConfigurationSwapper PROCESS_CONFIG_SWAPPER = new YamlPipelineProcessConfigurationSwapper();
-    
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
@@ -56,11 +54,11 @@ public final class PipelineProcessConfigurationPersistServiceTest {
         YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties());
         yamlProcessConfig.setStreamChannel(yamlStreamChannel);
         String expectedYamlText = YamlEngine.marshal(yamlProcessConfig);
-        PipelineProcessConfiguration processConfig = PROCESS_CONFIG_SWAPPER.swapToObject(yamlProcessConfig);
+        PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
         PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
         JobType jobType = JobType.MIGRATION;
         persistService.persist(jobType, processConfig);
-        String actualYamlText = YamlEngine.marshal(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(persistService.load(jobType)));
+        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(jobType)));
         assertThat(actualYamlText, is(expectedYamlText));
     }
 }

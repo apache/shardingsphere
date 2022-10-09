@@ -27,6 +27,9 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * Integration test of add resource.
  */
@@ -44,12 +47,19 @@ public final class AddResourceTestCase extends BaseTransactionTestCase {
     
     private void assertAddResource() throws SQLException {
         Connection conn = getDataSource().getConnection();
-        getBaseTransactionITCase().addNewResource(conn);
-        getBaseTransactionITCase().createThreeDataSourceAccountTableRule(conn);
+        getBaseTransactionITCase().addResource(conn, "transaction_it_2");
+        createThreeDataSourceAccountTableRule(conn);
         reCreateAccountTable(conn);
         assertRollback();
         assertCommit();
         conn.close();
+    }
+    
+    private void createThreeDataSourceAccountTableRule(final Connection connection) throws SQLException {
+        executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
+        executeWithLog(connection, getBaseTransactionITCase().getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
+        int ruleCount = countWithLog(connection, "SHOW SHARDING TABLE RULES FROM sharding_db;");
+        assertThat(ruleCount, is(3));
     }
     
     private void reCreateAccountTable(final Connection conn) throws SQLException {
