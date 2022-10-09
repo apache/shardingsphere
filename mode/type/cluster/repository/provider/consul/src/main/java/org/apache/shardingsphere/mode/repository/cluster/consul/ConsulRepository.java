@@ -107,7 +107,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public String getDirectly(String key) {
+    public String getDirectly(final String key) {
         Response<GetValue> response = consulClient.getKVValue(key);
         return null == response ? null : response.getValue().getValue();
     }

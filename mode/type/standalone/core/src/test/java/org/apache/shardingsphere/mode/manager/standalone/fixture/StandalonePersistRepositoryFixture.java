@@ -35,6 +35,11 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     
     @Override
     public String get(final String key) {
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         return persistMap.get(key);
     }
     

@@ -72,12 +72,12 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public String get(final String key) {
-        return registryData.get(key);
+        return null;
     }
     
     @Override
-    public String getDirectly(String key) {
-        return null;
+    public String getDirectly(final String key) {
+        return registryData.get(key);
     }
     
     @Override

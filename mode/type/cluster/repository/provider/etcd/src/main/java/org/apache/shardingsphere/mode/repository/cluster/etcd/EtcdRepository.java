@@ -114,7 +114,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
-    public String getDirectly(String key) {
+    public String getDirectly(final String key) {
         List<KeyValue> keyValues = client.getKVClient().get(ByteSequence.from(key, StandardCharsets.UTF_8)).get().getKvs();
         return keyValues.isEmpty() ? null : keyValues.iterator().next().getValue().toString(StandardCharsets.UTF_8);
     }

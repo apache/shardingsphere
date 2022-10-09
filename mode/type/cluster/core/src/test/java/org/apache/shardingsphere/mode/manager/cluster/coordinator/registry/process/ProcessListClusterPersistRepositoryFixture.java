@@ -73,12 +73,12 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public String get(final String key) {
-        return REGISTRY_DATA.get(key);
+        return null;
     }
     
     @Override
-    public String getDirectly(String key) {
-        return null;
+    public String getDirectly(final String key) {
+        return REGISTRY_DATA.get(key);
     }
     
     @Override

@@ -81,7 +81,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     }
     
     @Override
-    public String getDirectly(String key) {
+    public String getDirectly(final String key) {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByKeySQL())) {
