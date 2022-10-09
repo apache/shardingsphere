@@ -644,6 +644,18 @@
         <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />
     </test-case>
 
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > ? ORDER BY max_price" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
 <!--    TODO FIX ME Expected: is "true" but was "1"-->
 <!--    <test-case sql="SELECT order_id, user_id, order_name, type_char, type_boolean, type_smallint, type_enum, type_decimal, type_date, type_time, type_timestamp FROM t_shadow WHERE user_id = ?" db-types="MySQL" scenario-types="sharding_and_shadow">-->
 <!--        <assertion parameters="1:int" expected-data-source-name="prod_dataset" />-->

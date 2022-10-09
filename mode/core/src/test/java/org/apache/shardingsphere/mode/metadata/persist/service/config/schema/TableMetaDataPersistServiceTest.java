@@ -56,7 +56,7 @@ public final class TableMetaDataPersistServiceTest {
     public void assertLoad() {
         TableMetaDataPersistService tableMetaDataPersistService = new TableMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));
-        when(repository.get("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
+        when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
         Map<String, ShardingSphereTable> tables = tableMetaDataPersistService.load("foo_db", "foo_schema");
         assertThat(tables.size(), is(1));
         assertThat(tables.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));

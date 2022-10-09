@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Daily - GraalVM Native Image CI
+name: Nightly - Build GraalVM Native Image
 
 on:
   schedule:
@@ -46,11 +46,10 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: 'maven'
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1.10.0
+      - uses: docker/login-action@v1.10.0
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push docker image
-        run: ./mvnw -am -pl distribution/proxy-native -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true -Pnative,docker.buildx.push.native -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean package
+        run: ./mvnw -am -pl distribution/proxy-native -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Pnative,docker.buildx.push.native -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean package

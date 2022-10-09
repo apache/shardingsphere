@@ -59,7 +59,7 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     private Map<String, ShardingSphereTable> getTableMetaDataByTableNames(final String databaseName, final String schemaName, final Collection<String> tableNames) {
         Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1);
         tableNames.forEach(each -> {
-            String table = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
+            String table = repository.getDirectly(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
             if (!StringUtils.isEmpty(table)) {
                 result.put(each.toLowerCase(), new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(table, YamlShardingSphereTable.class)));
             }

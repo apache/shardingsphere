@@ -46,11 +46,11 @@ public final class PropertiesPersistService implements GlobalPersistService<Prop
     }
     
     private boolean isExisted() {
-        return !Strings.isNullOrEmpty(repository.get(GlobalNode.getPropsPath()));
+        return !Strings.isNullOrEmpty(repository.getDirectly(GlobalNode.getPropsPath()));
     }
     
     @Override
     public Properties load() {
-        return Strings.isNullOrEmpty(repository.get(GlobalNode.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.get(GlobalNode.getPropsPath()), Properties.class);
+        return Strings.isNullOrEmpty(repository.getDirectly(GlobalNode.getPropsPath())) ? new Properties() : YamlEngine.unmarshal(repository.getDirectly(GlobalNode.getPropsPath()), Properties.class);
     }
 }

@@ -34,10 +34,7 @@ public final class CombineOperatorConverterTest {
         assertThat(CombineOperatorConverter.convert(CombineType.INTERSECT), is(SqlStdOperatorTable.INTERSECT));
         assertThat(CombineOperatorConverter.convert(CombineType.EXCEPT_ALL), is(SqlStdOperatorTable.EXCEPT_ALL));
         assertThat(CombineOperatorConverter.convert(CombineType.EXCEPT), is(SqlStdOperatorTable.EXCEPT));
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertConvertFailure() {
-        CombineOperatorConverter.convert(CombineType.MINUS);
+        assertThat(CombineOperatorConverter.convert(CombineType.MINUS_ALL), is(SqlStdOperatorTable.EXCEPT_ALL));
+        assertThat(CombineOperatorConverter.convert(CombineType.MINUS), is(SqlStdOperatorTable.EXCEPT));
     }
 }

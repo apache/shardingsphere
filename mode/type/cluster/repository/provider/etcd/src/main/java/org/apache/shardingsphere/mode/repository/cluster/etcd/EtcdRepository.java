@@ -31,6 +31,7 @@ import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockProvider;
@@ -39,10 +40,12 @@ import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperty
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -67,9 +70,51 @@ public final class EtcdRepository implements ClusterPersistRepository {
         etcdInternalLockHolder = new EtcdInternalLockProvider(client, etcdProps);
     }
     
-    @SneakyThrows({InterruptedException.class, ExecutionException.class})
+    @Override
+    public int getNumChildren(final String key) {
+        return 0;
+    }
+    
+    @Override
+    public void addCacheData(final String cachePath) {
+        // TODO
+    }
+    
+    @Override
+    public void evictCacheData(final String cachePath) {
+        // TODO
+    }
+    
+    @Override
+    public Object getRawCache(final String cachePath) {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
+        // TODO
+    }
+    
+    @Override
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
+        // TODO
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
+        // TODO
+    }
+    
     @Override
     public String get(final String key) {
+        // TODO
+        return null;
+    }
+    
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
+    @Override
+    public String getDirectly(final String key) {
         List<KeyValue> keyValues = client.getKVClient().get(ByteSequence.from(key, StandardCharsets.UTF_8)).get().getKvs();
         return keyValues.isEmpty() ? null : keyValues.iterator().next().getValue().toString(StandardCharsets.UTF_8);
     }
@@ -84,6 +129,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
         return keyValues.stream().map(each -> getSubNodeKeyName(prefix, each.getKey().toString(StandardCharsets.UTF_8))).distinct().collect(Collectors.toList());
     }
     
+    @Override
+    public boolean isExisted(final String key) {
+        return false;
+    }
+    
     private String getSubNodeKeyName(final String prefix, final String fullPath) {
         String pathWithoutPrefix = fullPath.substring(prefix.length());
         return pathWithoutPrefix.contains(PATH_SEPARATOR) ? pathWithoutPrefix.substring(0, pathWithoutPrefix.indexOf(PATH_SEPARATOR)) : pathWithoutPrefix;
@@ -94,6 +144,11 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public void persist(final String key, final String value) {
         buildParentPath(key);
         client.getKVClient().put(ByteSequence.from(key, StandardCharsets.UTF_8), ByteSequence.from(value, StandardCharsets.UTF_8)).get();
+    }
+    
+    @Override
+    public void update(final String key, final String value) {
+        // TODO
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -131,7 +186,17 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public long getRegistryCenterTime(final String key) {
+        return 0;
+    }
+    
+    @Override
+    public Object getRawClient() {
+        return client;
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener, final Executor executor) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
                 Type type = getEventChangedType(each);

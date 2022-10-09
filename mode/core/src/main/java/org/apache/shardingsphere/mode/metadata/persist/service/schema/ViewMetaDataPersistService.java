@@ -59,7 +59,7 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     private Map<String, ShardingSphereView> getViewMetaDataByViewNames(final String databaseName, final String schemaName, final Collection<String> viewNames) {
         Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewNames.size(), 1);
         viewNames.forEach(each -> {
-            String view = repository.get(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, each));
+            String view = repository.getDirectly(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, each));
             if (!StringUtils.isEmpty(view)) {
                 result.put(each.toLowerCase(), new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class)));
             }

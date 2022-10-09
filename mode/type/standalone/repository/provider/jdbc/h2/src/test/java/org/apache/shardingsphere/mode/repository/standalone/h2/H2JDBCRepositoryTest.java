@@ -50,9 +50,9 @@ public final class H2JDBCRepositoryTest {
     @Test
     public void assertPersistAndGet() {
         repository.persist("/testPath/test1", "test1_content");
-        assertThat(repository.get("/testPath/test1"), is("test1_content"));
+        assertThat(repository.getDirectly("/testPath/test1"), is("test1_content"));
         repository.persist("/testPath/test1", "modify_content");
-        assertThat(repository.get("/testPath/test1"), is("modify_content"));
+        assertThat(repository.getDirectly("/testPath/test1"), is("modify_content"));
     }
     
     @Test
@@ -67,6 +67,6 @@ public final class H2JDBCRepositoryTest {
     @Test
     public void assertDelete() {
         repository.delete("/testPath");
-        assertThat(repository.get("/testPath"), is(""));
+        assertThat(repository.getDirectly("/testPath"), is(""));
     }
 }

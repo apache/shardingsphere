@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Integration Test
+name: IT
 
 on:
   push:
@@ -24,17 +24,17 @@ on:
       - '.github/workflows/it.yml'
       - '**/pom.xml'
       - '**/src/main/**'
-      - '!examples/**'
-      - '!distribution/**'
       - 'distribution/proxy/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
       - 'test/pom.xml'
       - 'test/integration-test/fixture/**'
       - 'test/integration-test/env/**'
       - 'test/integration-test/test-suite/**'
       - 'test/integration-agent-test/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -42,17 +42,17 @@ on:
       - '.github/workflows/it.yml'
       - '**/pom.xml'
       - '**/src/main/**'
-      - '!examples/**'
-      - '!distribution/**'
       - 'distribution/proxy/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
       - 'test/pom.xml'
       - 'test/integration-test/fixture/**'
       - 'test/integration-test/env/**'
       - 'test/integration-test/test-suite/**'
       - 'test/integration-agent-test/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
       - '!*.md'
 
 concurrency:
@@ -60,37 +60,34 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
 
 jobs:
   build-it-image:
-    name: build-it-image
+    name: Build IT image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v2
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Verify Suite CI Run
         run: ./mvnw -B install -pl test/integration-test/test-suite -Dspotless.apply.skip=true
       - name: Save IT image
         run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
-      - name: Upload IT image
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: it-image
           path: /tmp/shardingsphere-proxy-test.tar
@@ -108,13 +105,11 @@ jobs:
         scenario: [ empty_rules, rdl_empty_rules ]
     steps:
       - uses: actions/checkout@v2
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-it-cache-${{ github.sha }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
@@ -147,13 +142,11 @@ jobs:
             mode: Cluster
     steps:
       - uses: actions/checkout@v2
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-it-cache-${{ github.sha }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
@@ -186,13 +179,11 @@ jobs:
             mode: Cluster
     steps:
       - uses: actions/checkout@v2
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-it-cache-${{ github.sha }}
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
@@ -213,20 +204,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Maven Resolve Ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Verify

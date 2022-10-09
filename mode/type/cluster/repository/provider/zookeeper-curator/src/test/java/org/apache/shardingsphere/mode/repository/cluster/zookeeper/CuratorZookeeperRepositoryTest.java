@@ -207,7 +207,7 @@ public final class CuratorZookeeperRepositoryTest {
         ChildData data = new ChildData("/test/children_updated/1", null, "value2".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CHANGED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
+        REPOSITORY.watch("/test/children_updated/1", settableFuture::set, null);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
@@ -221,7 +221,7 @@ public final class CuratorZookeeperRepositoryTest {
         ChildData data = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_DELETED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_deleted/5", settableFuture::set);
+        REPOSITORY.watch("/test/children_deleted/5", settableFuture::set, null);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
@@ -234,7 +234,7 @@ public final class CuratorZookeeperRepositoryTest {
         ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CREATED, null, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_added/4", settableFuture::set);
+        REPOSITORY.watch("/test/children_added/4", settableFuture::set, null);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(Type.ADDED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_added/4"));

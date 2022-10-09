@@ -872,8 +872,13 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
             PostgreSQLSelectStatement result = (PostgreSQLSelectStatement) visit(ctx.selectClauseN(0));
-            result.getCombines().add(new CombineSegment(
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombineType(ctx), (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1))));
+            CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombineType(ctx),
+                    (PostgreSQLSelectStatement) visit(ctx.selectClauseN(1)));
+            if (result.getCombine().isPresent()) {
+                result.getCombine().get().getSelectStatement().setCombine(combineSegment);
+            } else {
+                result.setCombine(combineSegment);
+            }
             return result;
         }
         return visit(ctx.selectWithParens());

@@ -42,6 +42,14 @@ public interface PersistRepository extends TypedSPI {
     String get(String key);
     
     /**
+     * Get value from registry center directly.
+     *
+     * @param key key
+     * @return value
+     */
+    String getDirectly(String key);
+    
+    /**
      * Get names of sub-node.
      *
      * @param key key of data
@@ -50,12 +58,28 @@ public interface PersistRepository extends TypedSPI {
     List<String> getChildrenKeys(String key);
     
     /**
+     * Judge node is exist or not.
+     *
+     * @param key key
+     * @return node is exist or not
+     */
+    boolean isExisted(String key);
+    
+    /**
      * Persist data.
      *
      * @param key key of data
      * @param value value of data
      */
     void persist(String key, String value);
+    
+    /**
+     * Update data.
+     *
+     * @param key key
+     * @param value value
+     */
+    void update(String key, String value);
     
     /**
      * Delete node.

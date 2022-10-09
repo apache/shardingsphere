@@ -47,7 +47,7 @@ public abstract class BaseTransactionTestCase {
     
     /**
      * Execute test cases.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void execute() throws SQLException {
@@ -104,5 +104,15 @@ public abstract class BaseTransactionTestCase {
             log.info("Connection execute: {}.", each);
             conn.createStatement().execute(each);
         }
+    }
+    
+    protected int countWithLog(final Connection conn, final String sql) throws SQLException {
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+        int result = 0;
+        while (rs.next()) {
+            result++;
+        }
+        return result;
     }
 }

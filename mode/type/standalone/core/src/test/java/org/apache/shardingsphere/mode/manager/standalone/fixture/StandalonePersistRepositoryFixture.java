@@ -35,6 +35,11 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     
     @Override
     public String get(final String key) {
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         return persistMap.get(key);
     }
     
@@ -53,8 +58,18 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     }
     
     @Override
+    public boolean isExisted(final String key) {
+        return false;
+    }
+    
+    @Override
     public void persist(final String key, final String value) {
         persistMap.put(key, value);
+    }
+    
+    @Override
+    public void update(final String key, final String value) {
+        
     }
     
     @Override

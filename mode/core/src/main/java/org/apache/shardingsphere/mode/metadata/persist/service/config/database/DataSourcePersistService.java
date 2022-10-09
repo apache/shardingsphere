@@ -68,13 +68,13 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName) {
-        return isExisted(databaseName) ? getDataSourceProperties(repository.get(
+        return isExisted(databaseName) ? getDataSourceProperties(repository.getDirectly(
                 DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)))) : new LinkedHashMap<>();
     }
     
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
-        String yamlContent = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version));
+        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : getDataSourceProperties(yamlContent);
     }
     
@@ -91,7 +91,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     
     @Override
     public boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
+        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName)) && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName,
                 getDatabaseActiveVersion(databaseName))));
     }
     
@@ -108,6 +108,6 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
+        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

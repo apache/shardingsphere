@@ -55,7 +55,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPipelineJobAPIImpl implements InventoryIncrementalJobAPI, InventoryIncrementalJobPublicAPI {
     
-    private static final YamlPipelineProcessConfigurationSwapper PROCESS_CONFIG_SWAPPER = new YamlPipelineProcessConfigurationSwapper();
+    private final YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
     
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
@@ -77,14 +77,14 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
         // TODO check rateLimiter type match or not
         YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
-        targetYamlProcessConfig.copyNonNullFields(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
-        processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
+        targetYamlProcessConfig.copyNonNullFields(swapper.swapToYamlConfiguration(processConfig));
+        processConfigPersistService.persist(getJobType(), swapper.swapToObject(targetYamlProcessConfig));
     }
     
     private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
         PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
         ShardingSpherePreconditions.checkNotNull(existingProcessConfig, AlterNotExistProcessConfigurationException::new);
-        return PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(existingProcessConfig);
+        return swapper.swapToYamlConfiguration(existingProcessConfig);
     }
     
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         PipelineProcessConfigurationUtil.verifyConfPath(confPath);
         YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
         PipelineProcessConfigurationUtil.setFieldsNullByConfPath(targetYamlProcessConfig, finalConfPath);
-        processConfigPersistService.persist(getJobType(), PROCESS_CONFIG_SWAPPER.swapToObject(targetYamlProcessConfig));
+        processConfigPersistService.persist(getJobType(), swapper.swapToObject(targetYamlProcessConfig));
     }
     
     @Override

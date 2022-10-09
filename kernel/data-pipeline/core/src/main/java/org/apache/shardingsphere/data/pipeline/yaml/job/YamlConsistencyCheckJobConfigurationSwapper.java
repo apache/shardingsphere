@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
  */
 public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobConfiguration, ConsistencyCheckJobConfiguration> {
     
-    private static final YamlConsistencyCheckJobConfigurationSwapper JOB_CONFIG_SWAPPER = new YamlConsistencyCheckJobConfigurationSwapper();
-    
     @Override
     public YamlConsistencyCheckJobConfiguration swapToYamlConfiguration(final ConsistencyCheckJobConfiguration data) {
         YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
@@ -49,11 +47,7 @@ public final class YamlConsistencyCheckJobConfigurationSwapper implements YamlCo
      * @param jobParameter job parameter
      * @return job configuration
      */
-    public static ConsistencyCheckJobConfiguration swapToObject(final String jobParameter) {
-        if (null == jobParameter) {
-            return null;
-        }
-        YamlConsistencyCheckJobConfiguration yamlJobConfig = YamlEngine.unmarshal(jobParameter, YamlConsistencyCheckJobConfiguration.class, true);
-        return JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
+    public ConsistencyCheckJobConfiguration swapToObject(final String jobParameter) {
+        return null == jobParameter ? null : swapToObject(YamlEngine.unmarshal(jobParameter, YamlConsistencyCheckJobConfiguration.class, true));
     }
 }

@@ -15,10 +15,7 @@
 # limitations under the License.
 #
 
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Check - Checkstyle and License Check
+name: Check
 
 on:
   push:
@@ -41,30 +38,29 @@ on:
       - '!*.md'
 
 concurrency:
-  group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
+  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  checkstyle-check:
+  check-checkstyle:
+    name: Check - checkstyle
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Run Checkstyle
+      - name: Run checkstyle
         run: ./mvnw checkstyle:check -T1C
 
   check-license:
-    name: license-check
+    name: Check - license
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Check License Header
-        uses: apache/skywalking-eyes@v0.4.0
+      - uses: actions/checkout@v3
+      - uses: apache/skywalking-eyes@v0.4.0

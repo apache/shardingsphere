@@ -85,7 +85,7 @@ public final class ComputeNodeStatusService {
      */
     @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
-        String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
+        String yamlContent = repository.getDirectly(ComputeNode.getInstanceLabelsNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -97,7 +97,7 @@ public final class ComputeNodeStatusService {
      */
     @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceStatus(final String instanceId) {
-        String yamlContent = repository.get(ComputeNode.getInstanceStatusNodePath(instanceId));
+        String yamlContent = repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
         return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
@@ -109,7 +109,7 @@ public final class ComputeNodeStatusService {
      */
     public Optional<Long> loadInstanceWorkerId(final String instanceId) {
         try {
-            String workerId = repository.get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
+            String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
             return Strings.isNullOrEmpty(workerId) ? Optional.empty() : Optional.of(Long.valueOf(workerId));
         } catch (final NumberFormatException ex) {
             log.error("Invalid worker id for instance: {}", instanceId);
@@ -133,7 +133,7 @@ public final class ComputeNodeStatusService {
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
         return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
-                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
+                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.getDirectly(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
     }
     
     /**
@@ -158,7 +158,7 @@ public final class ComputeNodeStatusService {
         Set<Long> result = new LinkedHashSet<>();
         List<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
         for (String each : childrenKeys) {
-            String workerId = repository.get(ComputeNode.getInstanceWorkerIdNodePath(each));
+            String workerId = repository.getDirectly(ComputeNode.getInstanceWorkerIdNodePath(each));
             if (null != workerId) {
                 result.add(Long.parseLong(workerId));
             }
