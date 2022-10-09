@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="set_global_transaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL" />
+    <sql-case id="set_session_transaction" value="SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="PostgreSQL,openGauss" />
+    <sql-case id="set_transaction_read_only" value="SET TRANSACTION READ ONLY" db-types="MySQL,Oracle" />
+    <sql-case id="set_transaction_read_write_with_name" value="SET TRANSACTION READ WRITE NAME 'Toronto'" db-types="Oracle" />
+    <sql-case id="set_transaction_isolation_level_serializable" value="SET TRANSACTION ISOLATION LEVEL SERIALIZABLE" db-types="Oracle, SQLServer" />
+    <sql-case id="set_transaction_isolation_level_read_committed" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="Oracle, SQLServer" />
+    <sql-case id="set_transaction_isolation_level_snapshot" value="SET TRANSACTION ISOLATION LEVEL SNAPSHOT" db-types="SQLServer" />
+    <sql-case id="set_transaction_use_rollback_segment" value="SET TRANSACTION USE ROLLBACK SEGMENT rbs_ts" db-types="Oracle" />
+    <sql-case id="set_transaction_with_name" value="SET TRANSACTION NAME 'comment1'" db-types="Oracle" />
+    <sql-case id="set_transaction_snapshot" value="SET TRANSACTION SNAPSHOT 'snapshot1'" db-types="PostgreSQL,openGauss" />
+    <sql-case id="xa_recover" value="XA RECOVER" db-types="MySQL" />
+    <sql-case id="xa_start" value="XA start 'abcdef7' join" db-types="MySQL" />
+    <sql-case id="xa_begin" value="XA begin 'abcdef7' join" db-types="MySQL" />
+    <sql-case id="xa_end" value="XA end 'abcdef7'" db-types="MySQL" />
+    <sql-case id="xa_prepare" value="XA prepare 'abcdef7'" db-types="MySQL" />
+    <sql-case id="xa_commit" value="XA commit 'abcdef7'" db-types="MySQL" />
+    <sql-case id="xa_rollback" value="XA rollback 'abcdef7'" db-types="MySQL" />
+</sql-cases>

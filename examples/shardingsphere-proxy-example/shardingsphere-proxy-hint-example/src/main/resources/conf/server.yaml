@@ -33,20 +33,18 @@
 #      timeToLiveSeconds: 60
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
-#  overwrite: false
 
 rules:
   - !AUTHORITY
     users:
       - root@:root
     provider:
-      type: ALL_PRIVILEGES_PERMITTED
+      type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-  proxy-opentracing-enabled: false
   proxy-hint-enabled: true
   sql-show: true
   check-table-metadata-enabled: false

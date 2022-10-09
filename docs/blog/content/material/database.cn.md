@@ -4,8 +4,6 @@ weight = 10
 chapter = true
 +++
 
-## 我们是怎样打造一款分布式数据库的
-
 作者 | 张亮
 
 关系型数据库在过去数十年的数据库领域一直占据着绝对主导的地位，它所带来的稳定性、安全性和易用性，成为了构建现代化系统的基石。随着的互联网高速发展，构架于单机系统的数据库已无法满足越来越高的并发请求和越来越大的数据存储需求，因此，分布式数据库被愈加广泛的采用。  
@@ -61,7 +59,7 @@ Sharding-JDBC 采用无中心化架构，适用于 Java 开发的高性能的轻
 
 ![](https://shardingsphere.apache.org/blog/img/database4.jpg)
 
-Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合与当前业务的最佳系统架构。
+Apache ShardingSphere 是多接入端共同组成的生态圈。通过混合使用 Sharding-JDBC 和 Sharding-Proxy，并采用同一配置中心统一配置分片策略，能够灵活的搭建适用于各种场景的应用系统，使得架构师更加自由地调整适合于当前业务的最佳系统架构。
 
 ![](https://shardingsphere.apache.org/blog/img/database5.jpg)
 
@@ -288,7 +286,7 @@ Apache ShardingSphere 在 2016 年 1 月 17 日在 GitHub 平台首次开源，�
 
 **项目地址：**
 
-https://github.com/apache/incubator-shardingsphere
+https://github.com/apache/shardingsphere
 
 ### 6 作者介绍
 

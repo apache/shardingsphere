@@ -7,6 +7,8 @@ target/
 *.tar
 *.tar.gz
 dependency-reduced-pom.xml
+.flattened-pom.xml
+pom.xml.versionsBackup
 
 # maven plugin ignore
 release.properties
@@ -21,18 +23,24 @@ cobertura.ser
 
 # idea ignore
 .idea/
+!/.idea/icon.png
 *.ipr
 *.iml
 *.iws
 
+# vscode ignore
+.vscode/
+
 # temp ignore
 logs/
 *.log
+*.tlog
 *.doc
 *.cache
 *.diff
 *.patch
 *.tmp
+.hugo_build.lock
 
 # system ignore
 .DS_Store
@@ -42,5 +50,3 @@ Thumbs.db
 gen/
 *.tokens
 
-# agent build ignore
-/agent/

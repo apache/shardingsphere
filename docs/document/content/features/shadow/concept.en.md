@@ -1,39 +1,21 @@
 +++
-pre = "<b>4.7.1. </b>"
 title = "Core Concept"
 weight = 1
 +++
 
-## Shadow DB Switch
+## Production Database
 
-Shadow library switch.
+Database for production data
 
-A stress test is a demand for a specific period of time, and it can be turned on when needed.
+## Shadow Database
 
-## Production DB
-
-The database used for production data.
-
-## Shadow DB
-
-The database used for the test data.
-
-## Shadow Table
-
-Perform pressure test data related tables.
-
-It has the same table structure as the corresponding table in the production database.
+The Database for stress test data isolation. Configurations should be the same as the Production Database.
 
 ## Shadow Algorithm
 
-Provides 2 types of shadow algorithms.
+Shadow Algorithm, which is closely related to business operations, currently has 2 types.
 
-Since the shadow algorithm is closely related to business implementation, no default shadow algorithm is provided.
-
-- Column shadow algorithm
-  
-It is suitable for scenarios where the value of a field involved in the executed SQL satisfies certain matching conditions in the test.
-
-- Note shadow algorithm
-
-It is suitable for scenarios where the field values involved in executing SQL cannot meet certain matching conditions in the test.
+- Column based shadow algorithm
+Routing to shadow database by recognizing data from SQL. Suitable for stress test scenario that has an emphasis on data list.
+- Hint based shadow algorithm
+Routing to shadow database by recognizing comments from SQL. Suitable for stress test driven by the identification of upstream system passage.

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_function" value="CREATE FUNCTION add(integer, integer) RETURNS integer
+        AS 'select $1 + $2;'
+        LANGUAGE SQL
+        IMMUTABLE
+        RETURNS NULL ON NULL INPUT" db-types="PostgreSQL,openGauss" />
+<!--    TODO Fix me. -->
+<!--    <sql-case id="create_function_with_argname" value="CREATE OR REPLACE FUNCTION increment(i integer) RETURNS integer AS-->
+<!--        $$-->
+<!--            BEGIN-->
+<!--                RETURN i + 1;-->
+<!--            END;-->
+<!--        $$ LANGUAGE plpgsql" db-types="PostgreSQL,openGauss" />-->
+<!--    <sql-case id="create_function_with_multiple_output_parameters" value="CREATE FUNCTION dup(in int, out f1 int, out f2 text)-->
+<!--        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$-->
+<!--        LANGUAGE SQL" db-types="PostgreSQL,openGauss" />-->
+<!--    <sql-case id="create_function_return_table" value="CREATE FUNCTION dup(int) RETURNS TABLE(f1 int, f2 text)-->
+<!--        AS $$ SELECT $1, CAST($1 AS text) || ' is text' $$-->
+<!--        LANGUAGE SQL" db-types="PostgreSQL,openGauss" />-->
+    <sql-case id="create_function_with_execute" value="CREATE FUNCTION dbo.ISOweek (@DATE datetime)
+        RETURNS int WITH EXECUTE AS CALLER AS
+        BEGIN
+            DECLARE @ISOweek int;
+            SET @ISOweek= DATEPART(wk,@DATE)+1-DATEPART(wk,CAST(DATEPART(yy,@DATE) as CHAR(4))+'0104');
+            SET @ISOweek=dbo.ISOweek(CAST(DATEPART(yy,@DATE)-1 AS CHAR(4))+'12'+ CAST(24+DATEPART(DAY,@DATE) AS CHAR(2)))+1;
+            SET @ISOweek=1;
+            RETURN(@ISOweek);
+        END" db-types="SQLServer" />
+    <sql-case id="create_function_inline_table" value="CREATE FUNCTION Sales.ufn_SalesByStore (@storeid int)
+        RETURNS TABLE AS RETURN (
+            SELECT P.ProductID, P.Name, SUM(SD.LineTotal) AS 'Total'
+            FROM Production.Product AS P
+            JOIN Sales.SalesOrderDetail AS SD ON SD.ProductID = P.ProductID
+            JOIN Sales.SalesOrderHeader AS SH ON SH.SalesOrderID = SD.SalesOrderID
+            JOIN Sales.Customer AS C ON SH.CustomerID = C.CustomerID
+            WHERE C.StoreID = @storeid
+            GROUP BY P.ProductID, P.Name
+        );" db-types="SQLServer" />
+    <sql-case id="create_function_declare_without_at" value="CREATE FUNCTION bug13575 ( p1 integer ) returns varchar(3)
+        BEGIN
+            DECLARE v1 VARCHAR(10) DEFAULT null;
+            SELECT f2 INTO v1 FROM t3 WHERE f1 = p1; RETURN v1;
+        END" db-types="MySQL" />
+    <sql-case id="create_function_call_spec_java" value="CREATE FUNCTION SecondMax (input NUMBER) RETURN NUMBER
+        PARALLEL_ENABLE AGGREGATE USING SecondMaxImpl AS LANGUAGE JAVA NAME 'name'" db-types="Oracle" />
+    <sql-case id="create_function_call_spec_c" value="CREATE FUNCTION get_val
+        (x_val IN NUMBER,
+         y_val IN NUMBER,
+         image IN LONG RAW)
+        RETURN BINARY_INTEGER AS LANGUAGE C
+          NAME &quot;c_get_val&quot;
+          LIBRARY c_utils
+          PARAMETERS (CONTEXT)" db-types="Oracle" />
+    
+    <sql-case id="create_function_with_set_var" value="CREATE DEFINER = u1@localhost FUNCTION f2() RETURNS int BEGIN DECLARE n int; DECLARE m int; SET n:= (SELECT min(a) FROM t1); SET m:= (SELECT max(a) FROM t1); RETURN n &lt; m; END ;" db-types="MySQL" />
+    <sql-case id="create_function_with_create_view" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create view v1 as select 1; return 1; END" db-types="MySQL" />
+</sql-cases>

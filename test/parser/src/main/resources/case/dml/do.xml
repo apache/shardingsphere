@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <do sql-case-id="do_constant">
+        <parameters>
+            <parameter>
+                <literal-expression value="1" start-index="3" stop-index="3"/>
+            </parameter>
+        </parameters>
+    </do>
+
+    <do sql-case-id="do_sleep">
+        <parameters>
+            <parameter>
+                <literal-expression value="SLEEP(1)" start-index="3" stop-index="10"/>
+            </parameter>
+        </parameters>
+    </do>
+
+    <do sql-case-id="do_multiple_sleep">
+        <parameters>
+            <parameter>
+                <literal-expression value="SLEEP(1)" start-index="3" stop-index="10"/>
+            </parameter>
+            <parameter>
+                <literal-expression value="SLEEP(2)" start-index="13" stop-index="20"/>
+            </parameter>
+        </parameters>
+    </do>
+
+    <do sql-case-id="do_with_function_1">
+        <parameters>
+            <parameter>
+                <literal-expression value="FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" start-index="3" stop-index="54"/>
+            </parameter>
+        </parameters>
+    </do>
+
+    <do sql-case-id="do_with_function_2">
+        <parameters>
+            <parameter>
+                <literal-expression value="FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))" start-index="3" stop-index="45"/>
+            </parameter>
+        </parameters>
+    </do>
+
+    <do sql-case-id="do_with_function_3">
+        <parameters>
+            <parameter>
+                <literal-expression value="COUNT(DISTINCT ROUND(CAST(SLEEP(0) AS DECIMAL), NULL))" start-index="3" stop-index="56"/>
+            </parameter>
+        </parameters>
+    </do>
+
+    <do sql-case-id="do_with_crc32_function">
+        <parameters>
+            <parameter>
+                <literal-expression value="CRC32(CHAR(1.134475E+308))" start-index="3" stop-index="28"/>
+            </parameter>
+        </parameters>
+    </do>
+</sql-parser-test-cases>

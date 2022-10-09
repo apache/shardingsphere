@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <fetch sql-case-id="fetch_cursor">
+        <cursor-name name="t_order_cursor" start-index="6" stop-index="19" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_from">
+        <cursor-name name="t_order_cursor" start-index="11" stop-index="24" />
+    </fetch>
+    
+    <fetch sql-case-id="fetch_cursor_with_next">
+        <cursor-name name="t_order_cursor" start-index="16" stop-index="29" />
+        <direction direction-type="NEXT" start-index="6" stop-index="9" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_prior">
+        <cursor-name name="t_order_cursor" start-index="17" stop-index="30" />
+        <direction direction-type="PRIOR" start-index="6" stop-index="10" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_first">
+        <cursor-name name="t_order_cursor" start-index="17" stop-index="30" />
+        <direction direction-type="FIRST" start-index="6" stop-index="10" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_last">
+        <cursor-name name="t_order_cursor" start-index="16" stop-index="29" />
+        <direction direction-type="LAST" start-index="6" stop-index="9" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_absolute_count">
+        <cursor-name name="t_order_cursor" start-index="23" stop-index="36" />
+        <direction direction-type="ABSOLUTE_COUNT" count="10" start-index="6" stop-index="16" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_relative_count">
+        <cursor-name name="t_order_cursor" start-index="23" stop-index="36" />
+        <direction direction-type="RELATIVE_COUNT" count="10" start-index="6" stop-index="16" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_count">
+        <cursor-name name="t_order_cursor" start-index="14" stop-index="27" />
+        <direction direction-type="COUNT" count="10" start-index="6" stop-index="7" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_all">
+        <cursor-name name="t_order_cursor" start-index="15" stop-index="28" />
+        <direction direction-type="ALL" start-index="6" stop-index="8" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_forward">
+        <cursor-name name="t_order_cursor" start-index="19" stop-index="32" />
+        <direction direction-type="FORWARD" start-index="6" stop-index="12" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_forward_count">
+        <cursor-name name="t_order_cursor" start-index="22" stop-index="35" />
+        <direction direction-type="FORWARD_COUNT" count="10" start-index="6" stop-index="15" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_forward_all">
+        <cursor-name name="t_order_cursor" start-index="23" stop-index="36" />
+        <direction direction-type="FORWARD_ALL" start-index="6" stop-index="16" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_backward">
+        <cursor-name name="t_order_cursor" start-index="20" stop-index="33" />
+        <direction direction-type="BACKWARD" start-index="6" stop-index="13" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_backward_count">
+        <cursor-name name="t_order_cursor" start-index="23" stop-index="36" />
+        <direction direction-type="BACKWARD_COUNT" count="10" start-index="6" stop-index="16" />
+    </fetch>
+
+    <fetch sql-case-id="fetch_cursor_with_backward_all">
+        <cursor-name name="t_order_cursor" start-index="24" stop-index="37" />
+        <direction direction-type="BACKWARD_ALL" start-index="6" stop-index="17" />
+    </fetch>
+</sql-parser-test-cases>

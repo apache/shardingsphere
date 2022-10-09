@@ -1,0 +1,55 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+dataSources:
+  ds_statistics:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
+
+rules:
+- !SHARDING
+  tables:
+    order_statistics_info:
+      actualDataNodes: ds_statistics.order_statistics_info_${2021..2022}
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+      tableStrategy:
+        standard:
+          shardingColumn: order_date
+          shardingAlgorithmName: database-interval
+
+  shardingAlgorithms:
+    database-interval:
+      type: INTERVAL
+      props:
+        datetime-pattern: 'yyyy-MM-dd HH:mm:ss'
+        datetime-lower: '2021-01-01 00:00:00'
+        datetime-upper: '2025-01-01 00:00:00'
+        sharding-suffix-pattern: 'yyyy'
+        datetime-interval-amount: 1
+        datetime-interval-unit: 'YEARS'
+
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+
+props:
+  sql-show: false

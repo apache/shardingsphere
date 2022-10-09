@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="scenario/sharding/config/sharding-rule.yaml">
+    <rewrite-assertion id="create_index" db-types="MySQL,PostgreSQL,openGauss">
+        <input sql="CREATE INDEX status_idx ON t_account (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_0 ON t_account_0 (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_1 ON t_account_1 (status)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="create_index_with_schema" db-types="PostgreSQL,openGauss">
+        <input sql="CREATE INDEX status_idx ON public.t_account (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_0 ON public.t_account_0 (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_1 ON public.t_account_1 (status)" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="create_index_without_index_name_with_single_column_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="CREATE INDEX ON t_account (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_0 ON t_account_0 (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_1 ON t_account_1 (status)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="create_index_without_index_name_with_single_column_with_schema_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="CREATE INDEX ON public.t_account (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_0 ON public.t_account_0 (status)" />
+        <output sql="CREATE INDEX status_idx_t_account_1 ON public.t_account_1 (status)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="create_index_without_index_name_with_multi_column_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="CREATE INDEX ON t_account (status, account_id)" />
+        <output sql="CREATE INDEX status_account_id_idx_t_account_0 ON t_account_0 (status, account_id)" />
+        <output sql="CREATE INDEX status_account_id_idx_t_account_1 ON t_account_1 (status, account_id)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="create_index_without_index_name_with_multi_column_with_schema_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="CREATE INDEX ON public.t_account (status, account_id)" />
+        <output sql="CREATE INDEX status_account_id_idx_t_account_0 ON public.t_account_0 (status, account_id)" />
+        <output sql="CREATE INDEX status_account_id_idx_t_account_1 ON public.t_account_1 (status, account_id)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="alter_index_rename_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="ALTER INDEX status_idx_exist RENAME TO status_idx_new" />
+        <output sql="ALTER INDEX status_idx_exist_t_account_0 RENAME TO status_idx_new_t_account_0" />
+        <output sql="ALTER INDEX status_idx_exist_t_account_1 RENAME TO status_idx_new_t_account_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="alter_index_rename_with_schema_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="ALTER INDEX public.status_idx_exist RENAME TO status_idx_new" />
+        <output sql="ALTER INDEX public.status_idx_exist_t_account_0 RENAME TO status_idx_new_t_account_0" />
+        <output sql="ALTER INDEX public.status_idx_exist_t_account_1 RENAME TO status_idx_new_t_account_1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="drop_index_for_mysql" db-types="MySQL">
+        <input sql="DROP INDEX status_idx_exist ON t_account" />
+        <output sql="DROP INDEX status_idx_exist_t_account_0 ON t_account_0" />
+        <output sql="DROP INDEX status_idx_exist_t_account_1 ON t_account_1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="drop_index_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="DROP INDEX status_idx_exist" />
+        <output sql="DROP INDEX status_idx_exist_t_account_0" />
+        <output sql="DROP INDEX status_idx_exist_t_account_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="drop_index_with_schema_for_postgresql" db-types="PostgreSQL,openGauss">
+        <input sql="DROP INDEX public.status_idx_exist" />
+        <output sql="DROP INDEX public.status_idx_exist_t_account_0" />
+        <output sql="DROP INDEX public.status_idx_exist_t_account_1" />
+    </rewrite-assertion>
+</rewrite-assertions>

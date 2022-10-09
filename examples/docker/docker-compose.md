@@ -14,7 +14,7 @@ before we use docker compose, please install docker and docker-compose first : h
 
 1. access the docker folder (cd docker/shardingsphere-proxy/sharding)
 2. launch the environment by docker compose (docker-compose up -d)
-3. access proxy by `mysql -h127.0.0.1 -P13308 -proot -uroot`
+3. access proxy by `psql -d sharding_db -h 127.0.0.1 -U root -p 3308 -W`, default password for example: root
 4. if there is conflict on port, just modify the corresponding port defined in docker-compose.yml and then launch docker compose again(docker-compose up -d)
 5. if you want to stop the environment, use command docker-compose down
 

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>single-feature-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>encrypt-example</artifactId>
     <name>${project.artifactId}</name>
@@ -33,6 +33,8 @@
     <modules>
         <module>encrypt-raw-jdbc-example</module>
         <module>encrypt-spring-boot-mybatis-example</module>
+        <module>encrypt-spring-boot-jpa-example</module>
         <module>encrypt-spring-namespace-mybatis-example</module>
+        <module>encrypt-spring-namespace-jpa-example</module>
     </modules>
 </project>

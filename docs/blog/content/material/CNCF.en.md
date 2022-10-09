@@ -4,11 +4,9 @@ weight = 8
 chapter = true
 +++
 
-## Apache ShardingSphere is included in CNCF Landscape
-
 ### CNCF
 
-(Cloud Native Computing Foundation)，is a cloud native computing open source software foundation founded by Google. It is committed to the popularization and sustainable development of Cloud Native technology. Cloud native technology helps enterprises and organizations to build and run agile and scalable applications in modern dynamic environments (such as public clouds, private clouds, and hybrid clouds) through a series of software, specifications, and standards. The representative cloud-native technologies including containers, micro-services, micro-service governance, and declarative APIs, etc.
+(Cloud Native Computing Foundation), is a cloud native computing open source software foundation founded by Google. It is committed to the popularization and sustainable development of Cloud Native technology. Cloud native technology helps enterprises and organizations to build and run agile and scalable applications in modern dynamic environments (such as public clouds, private clouds, and hybrid clouds) through a series of software, specifications, and standards. The representative cloud-native technologies including containers, micro-services, micro-service governance, and declarative APIs, etc.
 
 ### CNCF Landscape
 
@@ -32,4 +30,4 @@ We are hoping that more supporters of open source and cloud-native communities c
 
 ![](https://shardingsphere.apache.org/blog/img/CNCF3.jpg)
 
-Since Apache ShardingSphere (Incubating) has been open sourced in 2016, it has been constantly improving and developing, and has been recognized by more and more companies and individuals: 8000+ stars have been harvested on Github, and successful cases of nearly 100 companies. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere (Incubating), which has contributed tremendously to its growth and development.
+Since Apache ShardingSphere has been open sourced in 2016, it has been constantly improving and developing, and has been recognized by more and more companies and individuals: 8000+ stars have been harvested on Github, and successful cases of nearly 100 companies. In addition, more and more enterprises and individuals have joined the open source project of Apache ShardingSphere, which has contributed tremendously to its growth and development.

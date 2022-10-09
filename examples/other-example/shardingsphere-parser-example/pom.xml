@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>other-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-parser-example</artifactId>
     <name>${project.artifactId}</name>
@@ -32,32 +32,30 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-engine</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-mysql</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-oracle</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-sql92</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
-            <version>5.0.0-RC1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-opengauss</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: databases_tables
+databaseName: databases_tables
 
 dataSources:
   ds_0:
@@ -76,5 +76,3 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123

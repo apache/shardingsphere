@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.example.sharding.raw.jdbc.factory;
 
-import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ReadwriteSplittingConfiguration;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesAndTablesConfigurationRange;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingDatabasesConfigurationRange;
 import org.apache.shardingsphere.example.sharding.raw.jdbc.config.ShardingTablesConfigurationRange;
@@ -36,8 +35,6 @@ public final class RangeDataSourceFactory {
                 return new ShardingTablesConfigurationRange().getDataSource();
             case SHARDING_DATABASES_AND_TABLES:
                 return new ShardingDatabasesAndTablesConfigurationRange().getDataSource();
-            case READWRITE_SPLITTING:
-                return new ReadwriteSplittingConfiguration().getDataSource();
             default:
                 throw new UnsupportedOperationException(shardingType.name());
         }

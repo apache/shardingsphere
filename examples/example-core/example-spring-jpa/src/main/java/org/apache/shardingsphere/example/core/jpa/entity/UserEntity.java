@@ -37,10 +37,10 @@ public final class UserEntity extends User {
         return super.getUserId();
     }
     
-    @Column(name = "user_name")
+    @Column(name = "username")
     @Override
-    public String getUserName() {
-        return super.getUserName();
+    public String getUsername() {
+        return super.getUsername();
     }
     
     @Column(name = "pwd")

@@ -20,11 +20,12 @@ package org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -64,9 +65,9 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
         result.getBroadcastTables().add("t_address");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "standard_test_db"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
-        result.getShardingAlgorithms() .put("standard_test_db", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
-        result.getShardingAlgorithms() .put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", getProperties()));
+        result.getShardingAlgorithms() .put("standard_test_db", new AlgorithmConfiguration("STANDARD_TEST_DB", new Properties()));
+        result.getShardingAlgorithms() .put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     
@@ -86,15 +87,18 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
     
     private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "", "demo_write_ds_0", Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1"), null, false);
+                "ds_0", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds_0",
+                Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1")), null,null);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_1", "", "demo_write_ds_1", Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1"), null, false);
+                "ds_1", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds_1",
+                Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1")), null,null);
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     
-    private static Properties getProperties() {
+    private Properties getReadWriteProperties(final String writeDataSourceName, final String readDataSourceNames) {
         Properties result = new Properties();
-        result.setProperty("worker-id", "123");
+        result.setProperty("write-data-source-name", writeDataSourceName);
+        result.setProperty("read-data-source-names", readDataSourceNames);
         return result;
     }
     

@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.example.parser.postgresql.statement;
 
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 import java.util.Arrays;
@@ -51,10 +52,11 @@ public final class PostgreSQLParserStatementExample {
     
     public static void main(String[] args) {
         POSTGRESQL_PARSER_STATEMENT_LIST.forEach(sql -> {
-            SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL", false);
-            ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("PostgreSQL", "STATEMENT", new Properties());
-            PostgreSQLStatement sqlStatement = visitorEngine.visit(parseContext);
+            CacheOption cacheOption = new CacheOption(128, 1024L);
+            SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL", cacheOption);
+            ParseASTNode parseASTNode = parserEngine.parse(sql, false);
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("PostgreSQL", "STATEMENT", false, new Properties());
+            PostgreSQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });
     }

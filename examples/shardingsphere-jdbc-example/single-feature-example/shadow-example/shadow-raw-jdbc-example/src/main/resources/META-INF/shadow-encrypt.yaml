@@ -19,13 +19,13 @@ dataSources:
   ds:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
   ds_shadow:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_shadow?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/shadow_demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
 
@@ -34,27 +34,26 @@ rules:
   tables:
     t_user:
       columns:
-        user_name:
-          plainColumn: user_name_plain
-          cipherColumn: user_name
+        username:
+          plainColumn: username_plain
+          cipherColumn: username
           encryptorName: name_encryptor
         pwd:
           cipherColumn: pwd
           assistedQueryColumn: assisted_query_pwd
-          encryptorName: pwd_encryptor
+          encryptorName: pwd-encryptor
   encryptors:
     name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-    pwd_encryptor:
+    pwd-encryptor:
       type: assistedTest
 
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource:
-      sourceDataSourceName: ds
+      productionDataSourceName: ds
       shadowDataSourceName: ds_shadow
   tables:
     t_user:
@@ -65,32 +64,33 @@ rules:
         - user-id-select-match-algorithm
         - user-id-update-match-algorithm
         - user-id-delete-match-algorithm
-        - simple-note-algorithm
+        - simple-hint-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: REGEX_MATCH
       props:
         operation: insert
-        column: user_id
+        column: user_type
         regex: "[1]"
     user-id-select-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: REGEX_MATCH
       props:
         operation: select
-        column: user_id
+        column: user_type
         regex: "[1]"
     user-id-delete-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: REGEX_MATCH
       props:
         operation: delete
-        column: user_id
+        column: user_type
         regex: "[1]"
-    simple-note-algorithm:
-      type: SIMPLE_NOTE
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
       props:
         shadow: true
         foo: bar
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 
 props:
   sql-show: true
-  sql-comment-parse-enabled: true

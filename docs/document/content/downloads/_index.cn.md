@@ -1,7 +1,7 @@
 +++
-pre = "<b>7. </b>"
+pre = "<b>9. </b>"
 title = "下载"
-weight = 7
+weight = 9
 chapter = true
 extracss = true
 +++
@@ -11,17 +11,12 @@ extracss = true
 Apache ShardingSphere 的发布版包括源码包及其对应的二进制包。
 由于下载内容分布在镜像服务器上，所以下载后应该进行 GPG 或 SHA-512 校验，以此来保证内容没有被篡改。
 
-##### Apache ShardingSphere - 版本: 5.0.0-beta ( 发布日期: Jun 19th, 2021 )
+##### Apache ShardingSphere - 版本: 5.2.0 ( 发布日期: Sept 8th, 2022 )
 
-- 源码: [ [<u>SRC</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-src.zip) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-src.zip.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-src.zip.sha512) ]
-- ShardingSphere-JDBC 二进制包: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-jdbc-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-jdbc-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-jdbc-bin.tar.gz.sha512) ]
-- ShardingSphere-Proxy 二进制包: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-proxy-bin.tar.gz.sha512) ]
-- ShardingSphere-Scaling 二进制包: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-scaling-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-scaling-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.0.0-beta/apache-shardingsphere-5.0.0-beta-shardingsphere-scaling-bin.tar.gz.sha512) ]
-
-##### ShardingSphere UI - 版本: 5.0.0-alpha ( 发布日期: Nov 22ed, 2020 )
-
-- 源码: [ [<u>SRC</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-src.zip ) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-src.zip.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-src.zip.sha512) ]
-- ShardingSphere-UI 二进制包: [ [<u>TAR</u>](https://www.apache.org/dyn/closer.cgi/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-bin.tar.gz) ] [ [<u>ASC</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-bin.tar.gz.asc) ] [ [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/shardingsphere-ui-5.0.0-alpha/apache-shardingsphere-5.0.0-alpha-shardingsphere-ui-bin.tar.gz.sha512) ]
+- 源码: [<u>SRC</u>](https://www.apache.org/dyn/closer.lua/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-src.zip) ( [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-src.zip.asc), [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-src.zip.sha512) )
+- ShardingSphere-JDBC 二进制包: [<u>TAR</u>](https://www.apache.org/dyn/closer.lua/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-jdbc-bin.tar.gz) ( [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-jdbc-bin.tar.gz.asc), [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-jdbc-bin.tar.gz.sha512) )
+- ShardingSphere-Proxy 二进制包: [<u>TAR</u>](https://www.apache.org/dyn/closer.lua/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-proxy-bin.tar.gz) ( [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-proxy-bin.tar.gz.asc), [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-proxy-bin.tar.gz.sha512) )
+- ShardingSphere-Agent 二进制包: [<u>TAR</u>](https://www.apache.org/dyn/closer.lua/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-agent-bin.tar.gz) ( [<u>ASC</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-agent-bin.tar.gz.asc), [<u>SHA512</u>](https://downloads.apache.org/shardingsphere/5.2.0/apache-shardingsphere-5.2.0-shardingsphere-agent-bin.tar.gz.sha512) )
 
 ## 全部版本
 

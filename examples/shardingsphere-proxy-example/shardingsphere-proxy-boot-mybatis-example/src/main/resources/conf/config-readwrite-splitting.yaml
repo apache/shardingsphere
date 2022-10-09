@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 
-schemaName: readwrite-splitting_db
+databaseName: readwrite-splitting_db
 
 dataSources:
   write_ds:
@@ -56,8 +56,9 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames:
-        - read_ds_0
-        - read_ds_1
+    readwrite_ds:
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1

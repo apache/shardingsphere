@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="deny_user" value="DENY UPDATE ON t_order TO user_dev CASCADEK" db-types="SQLServer" />
+    <sql-case id="deny_select" value="DENY SELECT ON t_order TO user1" db-types="SQLServer" />
+    <sql-case id="deny_select_column" value="DENY SELECT (order_id) ON t_order TO user1" db-types="SQLServer" />
+    <sql-case id="deny_select_to_users" value="DENY SELECT (order_id) ON t_order TO user1, user2" db-types="SQLServer" />
+    <sql-case id="deny_crud" value="DENY INSERT, SELECT, UPDATE, DELETE ON t_order TO user1" db-types="SQLServer" />
+    <sql-case id="deny_all" value="DENY ALL PRIVILEGES ON t_order TO user1" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_on_availability_group_to_login" value="DENY VIEW DEFINITION ON AVAILABILITY GROUP::group1 TO login1" db-types="SQLServer" />
+    <sql-case id="deny_take_ownership_on_availability_group_to_user" value="DENY TAKE OWNERSHIP ON AVAILABILITY GROUP::group1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_create_certificate_to_user" value="DENY CREATE CERTIFICATE TO user1" db-types="SQLServer" />
+    <sql-case id="deny_references_to_role" value="DENY REFERENCES TO role1" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_to_user" value="DENY VIEW DEFINITION TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_control_on_user" value="DENY CONTROL ON USER::user1 TO user2" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_on_role_to_user" value="DENY VIEW DEFINITION ON ROLE::role1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_impersonate_on_user_to_role" value="DENY IMPERSONATE ON USER::user1 TO role1" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_on_endpoint_to_login" value="DENY VIEW DEFINITION ON ENDPOINT::endpoint1 TO login1" db-types="SQLServer" />
+    <sql-case id="deny_take_ownership_on_endpoint_to_user" value="DENY TAKE OWNERSHIP ON ENDPOINT::endpoint1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_select_on_object_to_user" value="DENY SELECT ON OBJECT::db1.t_order TO user1" db-types="SQLServer" />
+    <sql-case id="deny_execute_on_object_to_role" value="DENY EXECUTE ON OBJECT::db1.t_order TO role1" db-types="SQLServer" />
+    <sql-case id="deny_references_on_object_to_user" value="DENY REFERENCES (order_id) ON OBJECT::db1.t_order TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_connect_sql_to_login" value="DENY CONNECT SQL TO login1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_create_endpoint_to_user_as_principal" value="DENY CREATE ENDPOINT TO user1 AS principal1" db-types="SQLServer" />
+    <sql-case id="deny_impersonate_on_login_to_windows_user" value="DENY IMPERSONATE ON LOGIN::login1 TO [windows\user]" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_on_login" value="DENY VIEW DEFINITION ON LOGIN::login1 TO login2 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_on_server_role" value="DENY VIEW DEFINITION ON SERVER ROLE::role1 TO role2" db-types="SQLServer" />
+    <sql-case id="deny_alter_on_symmetric_key_to_user" value="DENY ALTER ON SYMMETRIC KEY::key1 TO user1" db-types="SQLServer" />
+    <sql-case id="deny_execute_on_system_object" value="DENY EXECUTE ON sys.xp_cmdshell TO public" db-types="SQLServer" />
+    <sql-case id="deny_view_definition_on_type_to_user" value="DENY VIEW DEFINITION ON TYPE::schema1.type1 TO user1 CASCADE" db-types="SQLServer" />
+    <sql-case id="deny_execute_on_xml_schema_collection_to_user" value="DENY EXECUTE ON XML SCHEMA COLLECTION::schema1.xmlschemacollection1 TO user1" db-types="SQLServer" />
+</sql-cases>

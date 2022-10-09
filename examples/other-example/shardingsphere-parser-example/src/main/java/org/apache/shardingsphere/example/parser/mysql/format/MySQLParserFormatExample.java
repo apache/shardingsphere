@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.example.parser.mysql.format;
 
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseContext;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -51,13 +52,14 @@ public final class MySQLParserFormatExample {
     }
     
     public static void main(String[] args) {
-        MYSQL_FORMAT_SQL_LIST.stream().forEach(sql -> {
+        MYSQL_FORMAT_SQL_LIST.forEach(each -> {
             Properties props = new Properties();
-            props.setProperty("parameterized", "false");
-            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", false);
-            ParseContext parseContext = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", props);
-            String result = visitorEngine.visit(parseContext);
+            props.setProperty("parameterized", Boolean.FALSE.toString());
+            CacheOption cacheOption = new CacheOption(128, 1024L);
+            SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
+            ParseASTNode parseASTNode = parserEngine.parse(each, false);
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", false, props);
+            String result = visitorEngine.visit(parseASTNode);
             System.out.println(result);
         });
     }

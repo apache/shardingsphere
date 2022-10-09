@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_dimension" value="CREATE DIMENSION customers_dim 
+       LEVEL customer   IS (customers.cust_id)
+       LEVEL city       IS (customers.cust_city) 
+       LEVEL state      IS (customers.cust_state_province) 
+       LEVEL country    IS (countries.country_id) 
+       LEVEL subregion  IS (countries.country_subregion) 
+       LEVEL region     IS (countries.country_region) 
+       HIERARCHY geog_rollup (
+          customer      CHILD OF
+          city          CHILD OF 
+          state         CHILD OF 
+          country       CHILD OF 
+          subregion     CHILD OF 
+          region 
+       JOIN KEY (customers.country_id) REFERENCES country
+       )
+       ATTRIBUTE customer DETERMINES
+       (cust_first_name, cust_last_name, cust_gender, 
+        cust_marital_status, cust_year_of_birth, 
+        cust_income_level, cust_credit_limit) 
+       ATTRIBUTE country DETERMINES (countries.country_name)" db-types="Oracle" />
+    <sql-case id="create_dimension_extended_attributes" value="CREATE DIMENSION customers_dim 
+       LEVEL customer   IS (customers.cust_id)
+       LEVEL city       IS (customers.cust_city) 
+       LEVEL state      IS (customers.cust_state_province) 
+       LEVEL country    IS (countries.country_id) 
+       LEVEL subregion  IS (countries.country_subregion) 
+       LEVEL region     IS (countries.country_region) 
+       HIERARCHY geog_rollup (
+          customer      CHILD OF
+          city          CHILD OF 
+          state         CHILD OF 
+          country       CHILD OF 
+          subregion     CHILD OF 
+          region 
+       JOIN KEY (customers.country_id) REFERENCES country
+       )
+       ATTRIBUTE customer_info LEVEL customer DETERMINES
+       (cust_first_name, cust_last_name, cust_gender, 
+        cust_marital_status, cust_year_of_birth, 
+        cust_income_level, cust_credit_limit) 
+       ATTRIBUTE country DETERMINES (countries.country_name)" db-types="Oracle" />
+    <sql-case id="create_dimension_null_column" value="CREATE DIMENSION customers_dim 
+       LEVEL customer IS (customers.cust_id)
+       LEVEL status IS (customers.cust_marital_status) SKIP WHEN NULL
+       LEVEL city IS (customers.cust_city)
+       LEVEL state IS (customers.cust_state_province)
+       LEVEL country IS (countries.country_id)
+       LEVEL subregion IS (countries.country_subregion) SKIP WHEN NULL
+       LEVEL region IS (countries.country_region)
+       HIERARCHY geog_rollup (
+          customer CHILD OF
+          city CHILD OF
+          state CHILD OF
+          country CHILD OF
+          subregion CHILD OF
+          region
+       JOIN KEY (customers.country_id) REFERENCES country
+       )
+       ATTRIBUTE customer DETERMINES
+       (cust_first_name, cust_last_name, cust_gender,
+        cust_marital_status, cust_year_of_birth,
+        cust_income_level, cust_credit_limit)
+       ATTRIBUTE country DETERMINES (countries.country_name)" db-types="Oracle" />
+</sql-cases>

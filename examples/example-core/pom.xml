@@ -22,8 +22,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <artifactId>shardingsphere-examples</artifactId>
+        <version>${revision}</version>
     </parent>
     <artifactId>example-core</artifactId>
     <packaging>pom</packaging>
@@ -36,4 +36,34 @@
         <module>example-spring-mybatis</module>
         <module>example-spring-jpa</module>
     </modules>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <pluginExecutions>
+                            <pluginExecution>
+                                <pluginExecutionFilter>
+                                    <groupId>org.codehaus.mojo</groupId>
+                                    <artifactId>flatten-maven-plugin</artifactId>
+                                    <versionRange>[1.1.0,)</versionRange>
+                                    <goals>
+                                        <goal>flatten</goal>
+                                    </goals>
+                                </pluginExecutionFilter>
+                                <action>
+                                    <ignore />
+                                </action>
+                            </pluginExecution>
+                        </pluginExecutions>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

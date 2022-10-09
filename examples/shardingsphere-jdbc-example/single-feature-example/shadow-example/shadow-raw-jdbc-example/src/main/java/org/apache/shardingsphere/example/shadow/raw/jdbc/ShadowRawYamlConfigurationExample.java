@@ -31,6 +31,7 @@ import java.sql.SQLException;
 public final class ShadowRawYamlConfigurationExample {
     
     private static ShardingType shardingType = ShardingType.SHADOW;
+//    private static ShardingType shardingType = ShardingType.SHADOW_DEFAULT_ALGORITHM;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT_SHADOW;
     
     public static void main(final String[] args) throws SQLException, IOException {

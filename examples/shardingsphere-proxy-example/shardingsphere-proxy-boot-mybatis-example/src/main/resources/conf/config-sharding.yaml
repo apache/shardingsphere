@@ -22,7 +22,7 @@
 #
 ######################################################################################################
 
-schemaName: sharding_db
+databaseName: sharding_db
 
 dataSources:
   ds_0:
@@ -78,9 +78,9 @@ rules:
   
   shardingAlgorithms:
     database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${user_id % 2}
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
     t_order_inline:
       type: INLINE
       props:
@@ -93,5 +93,3 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123

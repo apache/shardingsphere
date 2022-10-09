@@ -36,15 +36,24 @@ rules:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
       databaseStrategy:
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: hint-test
       tableStrategy:
         hint:
-          shardingAlgorithmName: hint_test
+          shardingAlgorithmName: hint-test
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      databaseStrategy:
+        hint:
+          shardingAlgorithmName: hint-test
+      tableStrategy:
+        hint:
+          shardingAlgorithmName: hint-test
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -53,14 +62,14 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database_inline
+      shardingAlgorithmName: database-inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    hint_test:
+    hint-test:
       type: HINT_TEST
-    database_inline:
+    database-inline:
       type: INLINE
       props:
         algorithm-expression: ds_${user_id % 2}
@@ -68,8 +77,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 props:
   sql-show: true

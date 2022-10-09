@@ -4,8 +4,6 @@ weight = 1
 chapter = true
 +++
 
-## Revealing Sharding-Proxy —— Database Middleware Oriented DBA 
-
 ### Lecturer introduction
 
 **Yonglun Zhang**: Senior software engineer of operation and maintenance department at JD Finance
@@ -202,8 +200,8 @@ Let's analyze the reason, and then I'll introduce second optimization: Current l
 
 Main settings about cache as follows:: 
 
-*   SO_RCVBUF/SO_SNDBUF is for TCP cache；
-    
+*   SO_RCVBUF/SO_SNDBUF is for TCP cache;    
+
 *   ChannelOutboundBuffer is for Netty writing cache.
     
 
@@ -249,7 +247,7 @@ If you feel confused, please keep it in mind CONNECTION_STRICTLY is a scenario t
 ### 03 Summary
 Sharding-Sphere has been continuous improvement and development since 2016. A growing number of companies and individuals uses it, and they provide many successful cases for us.  We will move forward to improve current features, achieve soft transaction, data governance and so on in succession. If someone has good ideas or wants to do proposals, welcome to join Sharding-Sphere open source project.
 
-*   https://github.com/sharding-sphere/sharding-sphere/
+*   https://github.com/apache/shardingsphere
     
 *   https://gitee.com/sharding-sphere/sharding-sphere/
     

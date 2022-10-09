@@ -15,99 +15,214 @@
 # limitations under the License.
 #
 
-name: Integration Test
+name: IT
 
 on:
   push:
     branches: [ master, dev ]
+    paths:
+      - '.github/workflows/it.yml'
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - 'distribution/proxy/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/test-suite/**'
+      - 'test/integration-agent-test/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
+      - '!*.md'
   pull_request:
     branches: [ master ]
+    paths:
+      - '.github/workflows/it.yml'
+      - '**/pom.xml'
+      - '**/src/main/**'
+      - 'distribution/proxy/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/test-suite/**'
+      - 'test/integration-agent-test/**'
+      - '!examples/**'
+      - '!distribution/**'
+      - '!distribution/proxy/src/main/release-docs/**'
+      - '!kernel/data-pipeline/**'
+      - '!test/**'
+      - '!*.md'
+
+concurrency:
+  group: it-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
 
 jobs:
-  integration-test-docker:
-    name: Integration Test in Docker
+  build-it-image:
+    name: Build IT image
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+      - name: Build IT image
+        run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
+      - name: Verify Suite CI Run
+        run: ./mvnw -B install -pl test/integration-test/test-suite -Dspotless.apply.skip=true
+      - name: Save IT image
+        run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
+      - uses: actions/upload-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/shardingsphere-proxy-test.tar
+          retention-days: 1
+
+  it-empty-rule:
+    name: empty rule
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build-it-image
     strategy:
-      fail-fast: false
       matrix:
-        env: [ docker ]
         adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
-        scenario: [ db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,readwrite_splitting,empty_rules ]
+        database: [ MySQL, PostgreSQL, openGauss ]
+        scenario: [ empty_rules, rdl_empty_rules ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Download IT image
+        if: matrix.adapter == 'proxy'
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/
+      - name: Load IT image
+        if: matrix.adapter == 'proxy'
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+      - name: Run Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
+
+  it-single-rule:
+    name: single rule
+    needs: it-empty-rule
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 10
+      matrix:
+        adapter: [ proxy, jdbc ]
+        mode: [ Standalone, Cluster ]
+        database: [ MySQL, PostgreSQL, openGauss ]
+        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
         exclude:
           - adapter: jdbc
-            database: PostgreSQL
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: tbl
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: dbtbl_with_readwrite_splitting_and_encrypt
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: empty_rules
+            mode: Cluster
     steps:
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v1
+          key: shardingsphere-it-cache-${{ github.sha }}
+      - uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'
           java-version: 8
-      - name: set environment
-        run: export MAVEN_OPTS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true ${MAVEN_OPTS}'
-      - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests
+      - name: Download IT image
+        if: matrix.adapter == 'proxy'
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/
+      - name: Load IT image
+        if: matrix.adapter == 'proxy'
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
+        run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
-  mysql-proxy-agent-metrics:
-    name: MySQL-Proxy with Agent Metrics
+  it-mixture-rule:
+    name: mixture rule
+    needs: it-single-rule
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      max-parallel: 8
+      matrix:
+        adapter: [ proxy, jdbc ]
+        mode: [ Standalone, Cluster ]
+        database: [ MySQL, PostgreSQL, openGauss ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
+        exclude:
+          - adapter: jdbc
+            mode: Cluster
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Download IT image
+        if: matrix.adapter == 'proxy'
+        uses: actions/download-artifact@v3
+        with:
+          name: it-image
+          path: /tmp/
+      - name: Load IT image
+        if: matrix.adapter == 'proxy'
+        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+      - name: Run Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+
+  mysql-proxy-agent:
+    name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
     steps:
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
+        run: ./mvnw -B clean install -DskipITs -DskipTests
+      - name: Verify
+        run: |
+          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/metrics -DskipITs -DskipTests -Dspotless.apply.skip=true
+          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/opentelemetry -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Pit.env.metrics
-
-  mysql-proxy-agent-tracing-opentelemetry:
-    name: MySQL-Proxy with Agent Tracing OpenTelemetry
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
-      - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
-      - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-opentelemetry/pom.xml -Pit.env.opentelemetry
+        run: |
+          ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
+          ./mvnw -B clean install -f test/integration-agent-test/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry

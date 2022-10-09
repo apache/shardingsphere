@@ -19,22 +19,21 @@ dataSources:
   ds:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
   ds_shadow:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/ds_shadow?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    jdbcUrl: jdbc:mysql://localhost:3306/shadow_demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password:
 
 rules:
 - !SHADOW
-  enable: true
   dataSources:
     shadowDataSource:
-      sourceDataSourceName: ds
+      productionDataSourceName: ds
       shadowDataSourceName: ds_shadow
   tables:
     t_user:
@@ -45,32 +44,33 @@ rules:
         - user-id-select-match-algorithm
         - user-id-update-match-algorithm
         - user-id-delete-match-algorithm
-        - simple-note-algorithm
+        - simple-hint-algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: VALUE_MATCH
       props:
         operation: insert
-        column: user_id
-        regex: "[1]"
+        column: user_type
+        value: 1
     user-id-select-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: VALUE_MATCH
       props:
         operation: select
-        column: user_id
-        regex: "[1]"
+        column: user_type
+        value: 1
     user-id-delete-match-algorithm:
-      type: COLUMN_REGEX_MATCH
+      type: VALUE_MATCH
       props:
         operation: delete
-        column: user_id
-        regex: "[1]"
-    simple-note-algorithm:
-      type: SIMPLE_NOTE
+        column: user_type
+        value: 1
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
       props:
         shadow: true
         foo: bar
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 
 props:
   sql-show: true
-  sql-comment-parse-enabled: true

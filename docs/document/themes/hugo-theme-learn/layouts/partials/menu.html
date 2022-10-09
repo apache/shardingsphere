@@ -3,15 +3,16 @@
 {{ $currentNode := . }}
 {{ $showvisitedlinks := .Site.Params.showVisitedLinks }}
   <div id="header-wrapper">
-    <div id="header">
+    <!-- <div id="header">
       {{ partial "logo.html" . }}
-    </div>
+    </div> -->
     {{if not .Site.Params.disableSearch}}
         {{ partial "search.html" . }}
     {{end}}
   </div>
 
     <div class="highlightable">
+    <div class="leftMenu">
     <ul class="topics">
 
         {{if eq .Site.Params.ordersectionsby "title"}}  
@@ -38,61 +39,18 @@
         </ul>
       </section>
     {{end}}
-
-    {{ if or .Site.IsMultiLingual $showvisitedlinks }}
-    <section id="prefooter">
-      <hr/>
-      <ul>
-      {{ if and .Site.IsMultiLingual (not .Site.Params.DisableLanguageSwitchingButton)}}
-        <li>
-          <a class="padding">
-            <i class="fa fa-fw fa-language"></i>
-          <div class="select-style">
-            <select id="select-language" onchange="location = this.value;">
-          {{ $siteLanguages := .Site.Languages}}
-          {{ $pageLang := .Page.Lang}}
-          {{ range .Page.AllTranslations }}
-              {{ $translation := .}}
-              {{ range $siteLanguages }}
-                  {{ if eq $translation.Lang .Lang }}
-                    {{ $selected := false }}
-                    {{ if eq $pageLang .Lang}}
-                      <option id="{{ $translation.Language }}" value="{{ $translation.URL }}" selected>{{ .LanguageName }}</option>
-                    {{ else }}
-                      <option id="{{ $translation.Language }}" value="{{ $translation.URL }}">{{ .LanguageName }}</option>
-                    {{ end }}
-                  {{ end }}
-              {{ end }}
-          {{ end }}
-        </select>
-        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
-          <g>
-            <g id="arrow-drop-down">
-              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
-            </g>
-          </g>
-        </svg>
-        </div>
-        </a>
-        </li>
-      {{end}} 
-      
-      {{ if $showvisitedlinks}}
-        <li><a class="padding" href="#" data-clear-history-toggle=""><i class="fa fa-fw fa-history"></i> {{T "Clear-History"}}</a></li>         
-      {{ end }}
-      </ul>
-    </section>
-    {{ end }}
+    
+    </div>
+    <!-- {{ partial "language.html" . }} -->
 
     <!-- download button -->
-    <hr />
+    <!-- <hr /> -->
     {{ if eq .Lang "en"}}
       <a class="padding" href="{{"https://shardingsphere.apache.org/pdf/shardingsphere_docs_en.pdf" | absURL}}">
-        <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;Download PDF&nbsp;&nbsp;<!-- &nbsp; is a placeholder -->
+        <!--i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;-->Download PDF<!--&nbsp;&nbsp;&nbsp; is a placeholder-->
     {{ else }}  
       <a class="padding" href="{{"https://shardingsphere.apache.org/pdf/shardingsphere_docs_cn.pdf" | absURL}}">
-        <i class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;下载PDF文档&nbsp;&nbsp;<!-- &nbsp; is a placeholder -->
+        <!-- class="fa fa-fw fa-file-pdf-o" ></i>&nbsp;-->下载PDF文档<!--&nbsp;&nbsp; &nbsp; is a placeholder -->
     {{end}}
     </a>
     

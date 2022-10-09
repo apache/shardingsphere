@@ -20,9 +20,8 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: demo_yaml_pr_ds
+      namespace: demo_yaml_readwrite_ds
       server-lists: localhost:2181
-  overwrite: true
 
 dataSources:
   write_ds:
@@ -47,9 +46,12 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames: [read_ds_0, read_ds_1]
+    readwrite_ds:
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1
 
 props:
   sql-show: true

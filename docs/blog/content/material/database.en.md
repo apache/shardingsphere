@@ -4,8 +4,6 @@ weight = 10
 chapter = true
 +++
 
-## How we build a distributed database
-
 Author | Liang Zhang
 
  Relational databases have dominated the database field for the past few decades, and the stability, security, and ease of use they bring have become the cornerstone for building modern systems. With the rapid development of the Internet, the database structured in a stand-alone system has been unable to meet the increasingly high concurrent requests and increasingly large data storage needs, therefore, distributed database are more widely adopted.
@@ -48,7 +46,7 @@ Defines itself as a transparent database proxy, providing a database server that
 
 ![](https://shardingsphere.apache.org/blog/img/database2.jpg)
 
-**Sharding-Sidecar（Planned）**
+**Sharding-Sidecar (Planned) **
 
 Defines itself as a cloud native database agent of the Kubernetes environment, in charge of all the access to the database in the form of sidecar. It provides a mesh layer interacting with the database, we call this as Database Mesh.
 

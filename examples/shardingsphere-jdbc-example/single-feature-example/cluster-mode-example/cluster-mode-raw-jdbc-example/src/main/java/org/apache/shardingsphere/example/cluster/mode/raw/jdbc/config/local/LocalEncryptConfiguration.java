@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.local;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.example.config.ExampleConfiguration;
 import org.apache.shardingsphere.example.core.api.DataSourceUtil;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 
 import javax.sql.DataSource;
@@ -46,17 +45,17 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptRuleConfiguration getEncryptRuleConfiguration() {
-        return new EncryptRuleConfiguration(Collections.singleton(createEncryptTableRuleConfiguration()), ImmutableMap.of("status_encryptor", createEncryptAlgorithmConfiguration()));
+        return new EncryptRuleConfiguration(Collections.singleton(createEncryptTableRuleConfiguration()), Collections.singletonMap("status_encryptor", createEncryptAlgorithmConfiguration()));
     }
     
     private EncryptTableRuleConfiguration createEncryptTableRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor");
-        return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfig));
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor", null);
+        return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfig), null);
     }
     
-    private ShardingSphereAlgorithmConfiguration createEncryptAlgorithmConfiguration() {
+    private AlgorithmConfiguration createEncryptAlgorithmConfiguration() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        return new ShardingSphereAlgorithmConfiguration("AES", props);
+        return new AlgorithmConfiguration("AES", props);
     }
 }

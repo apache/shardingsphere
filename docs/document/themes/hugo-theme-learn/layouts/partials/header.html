@@ -22,7 +22,26 @@
     {{end}}
 
     <script src="{{"js/jquery-2.x.min.js"| relURL}}{{ if $assetBusting }}?{{ now.Unix }}{{ end }}"></script>
-    
+    <!-- baidu Analytics -->
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?d5a1dc8dcf63a64ee55b80de01c7fb1a";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();   
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HETCF66YL0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-HETCF66YL0');
+    </script>
+
     <style type="text/css">
       :root #header + #content > #left > #rlblock_left{ 
           display:none !important;
@@ -68,6 +87,15 @@
     {{ partial "custom-header.html" . }}
   </head>
   <body class="" data-url="{{ .RelPermalink }}">
+    {{ partial "change-theme.html" . }}
+    <header>
+      <div class="wrap">
+        {{ partial "logo.html" . }}
+        
+        {{ partial "language.html" . }}
+      </div>
+    </header>
+    <div class="wrap">
     {{ partial "menu.html" . }}
         <section id="body">
         <div id="overlay"></div>

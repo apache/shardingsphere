@@ -58,9 +58,6 @@
     </sharding:sharding-algorithm>
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
-        <props>
-            <prop key="worker-id">123</prop>
-        </props>
     </sharding:key-generate-algorithm>
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
@@ -79,7 +76,7 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="shardingDataSource" schema-name="sharding-databases" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
+    <shardingsphere:data-source id="shardingDataSource" database-name="sharding-databases" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule" />
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="shardingDataSource" />

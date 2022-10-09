@@ -72,9 +72,6 @@
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="orderItemInlineStrategyShardingAlgorithm"/>
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
-        <props>
-            <prop key="worker-id">123</prop>
-        </props>
     </sharding:key-generate-algorithm>
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
@@ -93,7 +90,7 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     
-    <shardingsphere:data-source id="shardingDatabasesTablesDataSource" schema-name="sharding-databases-tables" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule">
+    <shardingsphere:data-source id="shardingDatabasesTablesDataSource" database-name="sharding-databases-tables" data-source-names="demo_ds_0, demo_ds_1" rule-refs="shardingRule">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
         <props>
             <prop key="sql-show">true</prop>

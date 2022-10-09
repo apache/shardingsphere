@@ -109,7 +109,7 @@
     
     <sharding:sharding-algorithm id="databaseAlgorithm" type="INLINE">
         <props>
-            <prop key="algorithm-expression">demo_pr_ds_${user_id % 2}</prop>
+            <prop key="algorithm-expression">demo_readwrite_ds_${user_id % 2}</prop>
         </props>
     </sharding:sharding-algorithm>
     <sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="databaseAlgorithm" />
@@ -129,9 +129,6 @@
     <sharding:standard-strategy id="orderItemTableStrategy" sharding-column="order_id" algorithm-ref="orderItemTableAlgorithm" />
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
-        <props>
-            <prop key="worker-id">123</prop>
-        </props>
     </sharding:key-generate-algorithm>
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
@@ -139,8 +136,8 @@
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
-            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_pr_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
-            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_pr_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
+            <sharding:table-rule logic-table="t_order" actual-data-nodes="demo_readwrite_ds_${0..1}.t_order_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderTableStrategy" key-generate-strategy-ref="orderKeyGenerator" />
+            <sharding:table-rule logic-table="t_order_item" actual-data-nodes="demo_readwrite_ds_${0..1}.t_order_item_${0..1}" database-strategy-ref="databaseStrategy" table-strategy-ref="orderItemTableStrategy" key-generate-strategy-ref="itemKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
             <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
@@ -150,8 +147,12 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="demo_pr_ds_0" write-data-source-name="demo_write_ds_0" read-data-source-names="demo_write_ds_0_read_0, demo_write_ds_0_read_1" load-balance-algorithm-ref="randomStrategy" query-consistent="false" />
-        <readwrite-splitting:data-source-rule id="demo_pr_ds_1" write-data-source-name="demo_write_ds_1" read-data-source-names="demo_write_ds_1_read_0, demo_write_ds_1_read_1" load-balance-algorithm-ref="randomStrategy" query-consistent="true" />
+        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_0" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="staticStrategyForDs0" write-data-source-name="demo_write_ds_0" read-data-source-names="demo_write_ds_0_read_0, demo_write_ds_0_read_1"/>
+        </readwrite-splitting:data-source-rule>
+        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_1" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="staticStrategyForDs0" write-data-source-name="demo_write_ds_1" read-data-source-names="demo_write_ds_1_read_0, demo_write_ds_1_read_1"/>
+        </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     
     <shardingsphere:data-source id="shardingDataSource" data-source-names="demo_write_ds_0,demo_write_ds_1,demo_write_ds_0_read_0, demo_write_ds_0_read_1,demo_write_ds_1_read_0, demo_write_ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule">

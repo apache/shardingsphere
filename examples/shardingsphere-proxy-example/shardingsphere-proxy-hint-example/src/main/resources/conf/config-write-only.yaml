@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: write_only
+databaseName: write_only
 
 dataSources:
   write_ds:
@@ -49,8 +49,9 @@ dataSources:
 rules:
 - !READWRITE_SPLITTING
   dataSources:
-    pr_ds:
-      writeDataSourceName: write_ds
-      readDataSourceNames:
-        - read_ds_0
-        - read_ds_1
+    readwrite_ds:
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1

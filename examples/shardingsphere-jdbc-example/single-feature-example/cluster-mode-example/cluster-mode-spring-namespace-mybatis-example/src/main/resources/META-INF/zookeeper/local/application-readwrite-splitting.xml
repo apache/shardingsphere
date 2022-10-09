@@ -58,7 +58,9 @@
     <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="demo_ds" write-data-source-name="demo_write_ds" read-data-source-names="demo_read_ds_0, demo_read_ds_1" load-balance-algorithm-ref="randomStrategy" />
+        <readwrite-splitting:data-source-rule id="demo_ds" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="demo_write_ds" read-data-source-names="demo_read_ds_0, demo_read_ds_1"/>
+        </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     
     <shardingsphere:data-source id="readWriteSplittingDataSource" data-source-names="demo_write_ds, demo_read_ds_0, demo_read_ds_1" rule-refs="readWriteSplittingRule">

@@ -32,8 +32,8 @@ public interface MybatisShadowUserRepository extends ShadowUserRepository {
     
     @Override
     default void createTableIfNotExists() throws SQLException {
-        createTableIfNotExistsShadow();
         createTableIfNotExistsNative();
+        createTableIfNotExistsShadow();
     }
     
     void createTableIfNotExistsNative();

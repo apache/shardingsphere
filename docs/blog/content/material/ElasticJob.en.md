@@ -5,8 +5,6 @@ weight = 12
 chapter = true
 +++
 
-## News! The distributed scheduling project ElasticJob set sail again
-
 [ElasticJob](https://github.com/elasticjob) is a distributed scheduling solution that provides distributed task sharding, elastic scaling, fully automated discovery. , multitasking based on time-driven, data-driven, resident and ad-hoc task types, task aggregation and dynamic resource provisioning, fault detection, auto-remediation, and failover.Main features are as follows:
 
  * Task aggregation

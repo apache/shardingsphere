@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: sharding-databases-tables
+databaseName: sharding-databases-tables
 
 mode:
   type: Cluster
@@ -24,7 +24,6 @@ mode:
     props:
       namespace: demo_yaml_ds_sharding
       server-lists: localhost:2181
-  overwrite: true
 
 dataSources:
   ds_0:
@@ -48,7 +47,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t_order_inline
+          shardingAlgorithmName: t-order-inline
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -57,7 +56,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: t_order_item_inline
+          shardingAlgorithmName: t-order-item-inline
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
@@ -66,20 +65,20 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: database_inline
+      shardingAlgorithmName: database-inline
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    database_inline:
+    database-inline:
       type: INLINE
       props:
         algorithm-expression: ds_${user_id % 2}
-    t_order_inline:
+    t-order-inline:
       type: INLINE
       props:
         algorithm-expression: t_order_${order_id % 2}
-    t_order_item_inline:
+    t-order-item-inline:
       type: INLINE
       props:
         algorithm-expression: t_order_item_${order_id % 2}
@@ -87,8 +86,6 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 props:
   sql-show: true

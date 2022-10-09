@@ -1,32 +1,22 @@
 +++
-pre = "<b>5.1. </b>"
+pre = "<b>4.1. </b>"
 title = "ShardingSphere-JDBC"
 weight = 1
 chapter = true
 +++
 
-## Introduction
+Configuration is the only module in ShardingSphere-JDBC that interacts with application developers,
+through which developers can quickly and clearly understand the functions provided by ShardingSphere-JDBC.
 
-As the first product and the predecessor of Apache ShardingSphere, 
-ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
-With the client end connecting directly to the database, it provides service in the form of jar and requires no extra deployment and dependence. 
-It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+This chapter is a configuration manual for ShardingSphere-JDBC, which can also be referred to as a dictionary if necessary.
 
-* Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC.
-* Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, Druid, HikariCP.
-* Support any kind of JDBC standard database: MySQL, Oracle, SQLServer, PostgreSQL and any SQL92 followed databases.
+ShardingSphere-JDBC has provided 4 kinds of configuration methods for different situations.
+By configuration, application developers can flexibly use data sharding, readwrite-splitting, data encryption, shadow database or the combination of them.
 
-![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
+Mixed rule configurations are very similar to single rule configuration, except for the differences from single rule to multiple rules.
 
-## Comparison
+It should be noted that the superposition between rules are data source and table name related.
+If the previous rule is data source oriented aggregation, the next rule needs to use the aggregated logical data source name configured by the previous rule when configuring the data source;
+Similarly, if the previous rule is table oriented aggregation, the next rule needs to use the aggregated logical table name configured by the previous rule when configuring the table.
 
-|                        | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
-| ---------------------- | --------------------- | ---------------------- | ------------------------ |
-| Database               | `Any`                 | MySQL/PostgreSQL       | MySQL/PostgreSQL         |
-| Connections Count Cost | `More`                | Less                   | More                     |
-| Supported Languages    | `Java Only`           | Any                    | Any                      |
-| Performance            | `Low loss`            | Relatively High loss   | Low loss                 |
-| Decentralization       | `Yes`                 | No                     | No                       |
-| Static Entry           | `No`                  | Yes                    | No                       |
-
-ShardingSphere-JDBC is suitable for java application.
+Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example) for more details.

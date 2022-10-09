@@ -9,47 +9,453 @@ chapter = true
 
 ### 项目管理委员会
 
-| 名字            | GitHub ID              |
-| :-------------- | :--------------------- |
-| Craig L Russell | craiglrussell, clr     |
-| 曹昊            | haocao                  |
-| 杜红军          | codefairy08             |
-| 高洪涛          | hanahmily               |
-| 潘娟            | tristaZero              |
-| 赵俊            | cherrylzhao             |
-| 张亮 (Chair)    | terrymanu               |
-| 陈清阳          | beckhampu               |
-| 吴晟            | wu-sheng                |
-| 冯嘉            | vongosling              |
-| 姜宁            | WillemJiang             |
-| 马晓光          | maxiaoguang64           |
-| 杨翊            | KomachiSion             |
-| 张永伦          | tuohai666, zhangyonglun |
-| 秦金卫          | kimmking                |
-| 孟浩然          | menghaoranss            |
+<table style="table-layout:fixed">
+    <tr>
+        <td>
+            <a href="https://github.com/terrymanu" target="_blank">
+               <img src="https://avatars.githubusercontent.com/u/5516298?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/tristaZero" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/27757146?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/craiglrussell" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/2467238?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/wu-sheng" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5441976?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/WillemJiang" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/219644?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/menghaoranss" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/60651792?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/kimmking" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/807508?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>张亮 (Chair)</b>
+        </td>
+        <td>
+            <b>潘娟</b>
+        </td>
+        <td>
+            <b>Craig L Russell</b>
+        </td>
+        <td>
+            <b>吴晟</b>
+        </td>
+        <td>
+            <b>姜宁</b>
+        </td>
+        <td>
+            <b>孟浩然</b>
+        </td>
+        <td>
+            <b>秦金卫</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/tuohai666" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/24643893?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/cherrylzhao" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/8317649?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/KomachiSion" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/37170243?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/beckhampu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/14846369?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/vongosling" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/635581?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/hanahmily" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/1960537?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/codefairy08" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/39583929?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>张永伦</b>
+        </td>
+        <td>
+            <b>赵俊</b>
+        </td>
+        <td>
+            <b>杨翊</b>
+        </td>
+        <td>
+            <b>陈清阳</b>
+        </td>
+        <td>
+            <b>冯嘉</b>
+        </td>
+        <td>
+            <b>高洪涛</b>
+        </td>
+        <td>
+            <b>杜红军</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/haocao" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/687732?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/maxiaoguang64" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6637227?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/TeslaCN" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/20503072?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/strongduanmu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>曹昊</b>
+        </td>
+        <td>
+            <b>马晓光</b>
+        </td>
+        <td>
+            <b>吴伟杰</b>
+        </td>
+        <td>
+            <b>端正强</b>
+        </td>
+    </tr>
+</table>
 
 ### 提交者
 
-| 名字   | GitHub ID   |
-| :---- | :---------- |
-| 王光远 | wgy8283335  |
-| 孙海生 | sunbufu     |
-| 王奇   | wqzwh       |
-| 李亚   | betterjava  |
-| 赵亚楠 | nancyzrh    |
-| 颜志一 | yanyzy      |
-| 欧阳文 | avalon566   |
-| 董宗磊 | dongzl      |
-| 蒋晓峰 | SteNicholas |
-| 岳令   | yue530tom   |
-| 肖宇   | yu199195    |
-| 陆敬尚 | jingshanglu |
-| 端正强 | strongduanmu|
-| 郭吉伟 | Technoboy-  |
-| 吴伟杰 | TeslaCN     |
-| 邱鹿   | Lucas-307   |
-| 钟红胜 | sandynz     |
-| 江龙滔 | RaigorJiang |
+ <table style="table-layout:fixed">
+    <tr>
+        <td>
+            <a href="https://github.com/wgy8283335" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/22066046?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/sunbufu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/14866067?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/wqzwh" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/16662470?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/betterjava" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/4453100?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/nancyzrh" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/50974817?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yanyzy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/30677017?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/avalon566" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/48051589?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>王小满</b>
+        </td>
+        <td>
+            <b>孙海生</b>
+        </td>
+        <td>
+            <b>王奇</b>
+        </td>
+        <td>
+            <b>李亚</b>
+        </td>
+        <td>
+            <b>赵亚楠</b>
+        </td>
+        <td>
+            <b>颜志一</b>
+        </td>
+        <td>
+            <b>欧阳文</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/dongzl" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5917359?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/SteNicholas" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/10048174?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yue530tom" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/7359865?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yu199195" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/9673503?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/jingshanglu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/16559542?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/Technoboy-" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/Lucas-307" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>董宗磊</b>
+        </td>
+        <td>
+            <b>蒋晓峰</b>
+        </td>
+        <td>
+            <b>岳令</b>
+        </td>
+        <td>
+            <b>肖宇</b>
+        </td>
+        <td>
+            <b>陆敬尚</b>
+        </td>
+        <td>
+            <b>郭吉伟</b>
+        </td>
+        <td>
+            <b>邱鹿</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/sandynz" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/RaigorJiang" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5668787?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/ThanoshanMV" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/48581379?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/lanchengx" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/52209337?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yx9o" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/12792261?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/totalo" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/LeeGuoPing" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>钟红胜</b>
+        </td>
+        <td>
+            <b>江龙滔</b>
+        </td>
+        <td>
+            <b>Thanoshan MV</b>
+        </td>
+        <td>
+            <b>兰城翔</b>
+        </td>
+        <td>
+            <b>杨肖</b>
+        </td>
+        <td>
+            <b>唐国城</b>
+        </td>
+        <td>
+            <b>李国平</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/zjcnb" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/tuichenchuxin" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86938616?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+         <td>
+            <a href="https://github.com/Liangda-w" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/66914151?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+         </td>
+        <td>
+            <a href="https://github.com/cheese8" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/25882819?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/soulasuna" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33794770?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/galaxylqx" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/mabaiwan" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>赵锦超</b>
+        </td>
+        <td>
+            <b>陈出新</b>
+        </td>
+        <td>
+            <b>汪亮达</b>
+        </td>
+        <td>
+            <b>尹伟红</b>
+        </td>
+        <td>
+            <b>侯阳</b>
+        </td>
+        <td>
+            <b>雷群星</b>
+        </td>
+        <td>
+            <b>马称</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/JiekerTime" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/Swastyy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yy2so" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+       <td>
+            <a href="https://github.com/natehuangting" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+       <td>
+            <a href="https://github.com/taojintianxia" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>张俊杰</b>        
+        </td>
+        <td>
+            <b>Swastika Gupta</b>
+        </td>
+        <td>
+            <b>Yacine Si Tayeb</b>
+        </td>
+        <td>
+            <b>黄挺</b>
+        </td>
+        <td>
+            <b>孙念君</b>
+        </td>
+    </tr>
+</table>
 
 ## 贡献者
 
@@ -60,7 +466,7 @@ chapter = true
 
 ## 成为提交者
 
-ShardingSphere 社区遵循[Apache 社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
+ShardingSphere 社区遵循 [Apache 社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
 当您积极参地与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
-您可以阅读[贡献者指南](/cn/contribute/contributor/)来参与社区，并通过[提交者指南](/cn/contribute/committer/)获取更多信息。
+您可以阅读[贡献者指南](/cn/involved/contribute/)来参与社区，并通过[提交者指南](/cn/involved/committer/)获取更多信息。

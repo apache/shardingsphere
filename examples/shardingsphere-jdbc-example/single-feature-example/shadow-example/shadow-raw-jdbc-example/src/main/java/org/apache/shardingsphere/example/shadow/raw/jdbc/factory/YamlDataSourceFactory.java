@@ -31,6 +31,8 @@ public final class YamlDataSourceFactory {
         switch (shardingType) {
             case SHADOW:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/shadow.yaml"));
+            case SHADOW_DEFAULT_ALGORITHM:
+                return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/shadow-default-algorithm.yaml"));
             case ENCRYPT_SHADOW:
                 return YamlShardingSphereDataSourceFactory.createDataSource(getFile("/META-INF/shadow-encrypt.yaml"));
             default:

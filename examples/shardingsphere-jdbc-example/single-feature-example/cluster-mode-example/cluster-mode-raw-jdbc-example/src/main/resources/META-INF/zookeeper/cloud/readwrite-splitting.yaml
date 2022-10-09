@@ -20,6 +20,5 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: demo_yaml_pr_ds
+      namespace: demo_yaml_readwrite_ds
       server-lists: localhost:2181
-  overwrite: false

@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>shardingsphere-jdbc-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>single-feature-example</artifactId>
     <packaging>pom</packaging>
@@ -36,5 +36,6 @@
         <module>shadow-example</module>
         <module>sharding-example</module>
         <module>transaction-example</module>
+        <module>readwrite-splitting-example</module>
     </modules>
 </project>

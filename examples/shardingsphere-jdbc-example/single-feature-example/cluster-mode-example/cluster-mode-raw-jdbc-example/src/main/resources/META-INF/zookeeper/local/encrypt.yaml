@@ -22,7 +22,6 @@ mode:
     props:
       namespace: demo_yaml_ds_encrypt
       server-lists: localhost:2181
-  overwrite: true
 
 dataSources:
   uinque_ds:
@@ -39,9 +38,9 @@ rules:
       columns:
         status:
           cipherColumn: status
-          encryptorName: status_encryptor
+          encryptorName: status-encryptor
   encryptors:
-    status_encryptor:
+    status-encryptor:
       type: AES
       props:
         aes-key-value: 123456abc

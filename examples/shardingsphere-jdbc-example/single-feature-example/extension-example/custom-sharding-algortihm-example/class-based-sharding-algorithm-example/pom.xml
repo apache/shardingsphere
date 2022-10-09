@@ -23,20 +23,16 @@
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
         <artifactId>custom-sharding-algortihm-example</artifactId>
-        <version>5.0.0-RC1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>class-based-sharding-algorithm-example</artifactId>
     <name>${project.artifactId}</name>
+    <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere.example</groupId>
-            <artifactId>example-raw-jdbc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>class-based-sharding-raw-jdbc-example</module>
+        <module>class-based-sharding-spring-namespace-mybatis-example</module>
+        <module>class-based-sharding-spring-boot-mybatis-example</module>
+        <module>class-based-sharding-spring-boot-jpa-example</module>
+    </modules>
 </project>

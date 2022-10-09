@@ -4,9 +4,6 @@ weight = 11
 chapter = true
 +++
 
-## Congratulations on graduation of Apache ShardingSphere as a Top-Level Project!
-
-
 Apache Software Foundation (ASF), The most popular open-source software foundation, announced Apache ShardingSphere as a Top-Level Project (TLP) on Wakefield, MA, 16th April 2020.
 
 ShardingSphere entered into the Apache incubator since 10th November 2018. With the help of mentors and the whole community, The Apache board approved its graduation proposal with 10 +1 votes successfully, which ends up its 17 months incubator and promotes it as TLP.

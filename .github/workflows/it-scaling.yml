@@ -1,0 +1,132 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Integration Test - Scaling
+
+on:
+  push:
+    branches: [ master, dev ]
+    paths:
+      - '.github/workflows/it-scaling.yml'
+      - 'infra/common/src/main/**'
+      - 'mode/**/src/main/**'
+      - 'proxy/**/src/main/**'
+      - 'jdbc/core/src/main/**'
+      - '**/*-distsql*/**/src/main/**'
+      - 'kernel/data-pipeline/**/src/main/**'
+      - 'kernel/data-pipeline/**/pom.xml'
+      - 'features/**/src/main/**/scaling/**'
+      - '**/src/main/**/data/pipeline/**'
+      - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/scaling/**'
+      - '!*.md'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/it-scaling.yml'
+      - 'infra/common/src/main/**'
+      - 'mode/**/src/main/**'
+      - 'proxy/**/src/main/**'
+      - 'jdbc/core/src/main/**'
+      - '**/*-distsql*/**/src/main/**'
+      - 'kernel/data-pipeline/**/src/main/**'
+      - 'kernel/data-pipeline/**/pom.xml'
+      - 'features/**/src/main/**/scaling/**'
+      - '**/src/main/**/data/pipeline/**'
+      - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/scaling/**'
+      - '!*.md'
+  schedule:
+    - cron: '0 22 */1 * *'  # once a day. UTC time
+
+concurrency:
+  group: it-scaling-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+
+jobs:
+  scaling-it-test:
+    if: (github.event_name != 'schedule')
+    name: scaling-it-test
+    runs-on: ubuntu-latest
+    env:
+      postgresql_version: postgres:12-alpine
+      mysql_version: mysql:5.7
+      opengauss_version: enmotech/opengauss:2.1.0
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache Maven Repos
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build Scaling IT image
+        run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
+      - name: Run Scaling MySQL Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run Scaling PostgreSQL Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Scaling openGauss Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}
+
+  scaling-daily-it-test:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    name: scaling-daily-it-test
+    runs-on: ubuntu-latest
+    env:
+      postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
+      mysql_version: mysql:5.7,mysql:8.0
+      opengauss_version: enmotech/opengauss:2.1.0,enmotech/opengauss:3.0.0
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache Maven Repos
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-it-cache-${{ github.sha }}
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Build Scaling IT image
+        run: ./mvnw -B clean install -am -pl test/integration-test/scaling -Pit.env.docker -DskipTests
+      - name: Run Scaling Daily MySQL Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run Scaling Daily PostgreSQL Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Scaling Daily openGauss Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/scaling/pom.xml -Dscaling.it.env.type=docker -Dscaling.it.docker.opengauss.version=${{ env.opengauss_version }}

@@ -1,98 +1,77 @@
 +++
-pre = "<b>6.3. </b>"
+pre = "<b>5.3. </b>"
 title = "内核"
 weight = 3
 chapter = true
 +++
 
-## DatabaseType
-
-| *SPI 名称*             | *详细说明*                |
-| ---------------------- | ------------------------ |
-| DatabaseType           | 支持的数据库类型           |
-
-| *已知实现类*            | *详细说明*                |
-| ---------------------- | ------------------------ |
-| SQL92DatabaseType      | 遵循 SQL92 标准的数据库类型 |
-| MySQLDatabaseType      | MySQL 数据库              |
-| MariaDBDatabaseType    | MariaDB 数据库            |
-| PostgreSQLDatabaseType | PostgreSQL 数据库         |
-| OracleDatabaseType     | Oracle 数据库             |
-| SQLServerDatabaseType  | SQLServer 数据库          |
-| H2DatabaseType         | H2 数据库                 |
-| OpenGaussDatabaseType  | OpenGauss 数据库          |
-
-## DialectTableMetaDataLoader
-
-| *SPI 名称*                   | *详细说明*                    |
-| ---------------------------- | ---------------------------- |
-| DialectTableMetaDataLoader   | 用于使用数据库方言快速加载元数据 |
-
-| *已知实现类*                   | *详细说明*                   |
-| ----------------------------- | --------------------------- |
-| MySQLTableMetaDataLoader      | 使用 MySQL 方言加载元数据      |
-| OracleTableMetaDataLoader     | 使用 Oracle 方言加载元数据     |
-| PostgreSQLTableMetaDataLoader | 使用 PostgreSQL 方言加载元数据 |
-| SQLServerTableMetaDataLoader  | 使用 SQLServer 方言加载元数据  |
-| H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
-| OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
-
 ## SQLRouter
 
-| *SPI 名称*                           | *详细说明*                 |
-| ----------------------------------- | ------------------------- |
-| SQLRouter                           | 用于处理路由结果             |
+### 全限定类名
 
-| *已知实现类*                          | *详细说明*                  |
-| ----------------------------------- | ------------------------- |
-| ReadwriteSplittingSQLRouter         | 用于处理读写分离路由结果       |
-| DatabaseDiscoverySQLRouter          | 用于处理数据库发现路由结果      |
-| SingleTableSQLRouter                | 用于处理单表路由结果           |
-| ShardingSQLRouter                   | 用于处理分片路由结果          |
-| ShadowSQLRouter                     | 用于处理影子库路由结果         |
+[`org.apache.shardingsphere.infra.route.SQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-route/src/main/java/org/apache/shardingsphere/infra/route/SQLRouter.java)
+
+### 定义
+
+用于处理路由结果
+
+### 已知实现
+
+| *配置标识*              | *详细说明*                | *全限定类名*                                               |
+| ---------------------- | ------------------------ | ---------------------------------------------------------- |
+| SingleTableRule        | 用于处理单表路由结果       | [`org.apache.shardingsphere.singletable.route.SingleTableSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-single-table/shardingsphere-single-table-core/src/main/java/org/apache/shardingsphere/singletable/route/SingleTableSQLRouter.java)      |
+| ShardingRule           | 用于处理分片路由结果       | [`org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-route/src/main/java/org/apache/shardingsphere/infra/route/SQLRouter.java)      |
+| ReadwriteSplittingRule | 用于处理读写分离路由结果   | [`org.apache.shardingsphere.readwritesplitting.route.ReadwriteSplittingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/route/ReadwriteSplittingSQLRouter.java)                          |
+| DatabaseDiscoveryRule  | 用于处理数据库发现路由结果 | [`org.apache.shardingsphere.dbdiscovery.route.DatabaseDiscoverySQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-core/src/main/java/org/apache/shardingsphere/dbdiscovery/route/DatabaseDiscoverySQLRouter.java) |
+| ShadowRule             | 用于处理影子库路由结果     | [`org.apache.shardingsphere.shadow.route.ShadowSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/route/ShadowSQLRouter.java)      |
 
 ## SQLRewriteContextDecorator
 
-| *SPI 名称*                         | *详细说明*                 |
-| ---------------------------------- | ------------------------- |
-| SQLRewriteContextDecorator         | 用于处理 SQL 改写结果       |
+### 全限定类名
 
-| *已知实现类*                        | *详细说明*                 |
-| ---------------------------------- | ------------------------- |
-| ShardingSQLRewriteContextDecorator | 用于处理分片 SQL 改写结果   |
-| EncryptSQLRewriteContextDecorator  | 用于处理加密 SQL 改写结果   |
-| ShadowSQLRewriteContextDecorator   | 用于处理影子库 SQL 改写结果 |
+[`org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-rewrite/src/main/java/org/apache/shardingsphere/infra/rewrite/context/SQLRewriteContextDecorator.java)
+
+### 定义
+
+用于处理 SQL 改写结果
+
+### 已知实现
+
+| *配置标识*          | *详细说明*              | *全限定类名*                                               |
+| ------------------ | ----------------------- | --------------------------------------------------------- |
+| ShardingRule       | 用于处理分片 SQL 改写结果 | [`org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/rewrite/context/ShardingSQLRewriteContextDecorator.java)               |
+| EncryptRule        | 用于处理加密 SQL 改写结果 | [`org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/rewrite/context/EncryptSQLRewriteContextDecorator.java) |
 
 ## SQLExecutionHook
 
-| *SPI 名称*                     | *详细说明*                        |
-| ----------------------------- | --------------------------------- |
-| SQLExecutionHook              | SQL执行过程监听器 |
+### 全限定类名
 
-| *已知实现类*                   | *详细说明*                         |
-| ----------------------------- | --------------------------------- |
-| TransactionalSQLExecutionHook | 基于事务的SQL执行过程监听器          |
+[`org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-executor/src/main/java/org/apache/shardingsphere/infra/executor/sql/hook/SQLExecutionHook.java)
+
+### 定义
+
+SQL 执行过程监听器
+
+### 已知实现
+
+| *配置标识*          | *详细说明*                              | *全限定类名*                                                                |
+| ------------------ | --------------------------------------- | -------------------------------------------------------------------------- |
+| 无                 | 基于事务的 SQL 执行过程监听器             | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-type/shardingsphere-transaction-base/shardingsphere-transaction-base-seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java)               |
+
 
 ## ResultProcessEngine
 
-| *SPI 名称*                   | *详细说明*           |
-| ---------------------------- | ------------------- |
-| ResultProcessEngine          | 用于处理结果集        |
+### 全限定类名
 
-| *已知实现类*                  | *详细说明*           |
-| ---------------------------- | ------------------- |
-| ShardingResultMergerEngine   | 用于处理分片结果集归并 |
-| EncryptResultDecoratorEngine | 用于处理加密结果集改写 |
+[`org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-merge/src/main/java/org/apache/shardingsphere/infra/merge/engine/ResultProcessEngine.java)
 
-## StoragePrivilegeHandler
+### 定义
 
-| *SPI 名称*                  | *详细说明*                      |
-| -------------------------- | ------------------------------ |
-| StoragePrivilegeHandler    | 使用数据库方言处理权限信息          |
+用于处理结果集
 
-| *已知实现类*                 | *详细说明*                      |
-| -------------------------- | ------------------------------ |
-| PostgreSQLPrivilegeHandler | 使用 PostgreSQL 方言处理权限信息   |
-| SQLServerPrivilegeHandler  | 使用 SQLServer 方言处理权限信息    |
-| OraclePrivilegeHandler     | 使用 Oracle 方言处理权限信息       |
-| MySQLPrivilegeHandler      | 使用 MySQL 方言处理权限信息        |
+### 已知实现
+
+| *配置标识*          | *详细说明*           | *全限定类名*                                            |
+| ------------------ | -------------------- | ------------------------------------------------------ |
+| ShardingRule       | 用于处理分片结果集归并 | [`org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/merge/ShardingResultMergerEngine.java)               |
+| EncryptRule        | 用于处理加密结果集改写 | [`org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/merge/ShardingResultMergerEngine.java) |

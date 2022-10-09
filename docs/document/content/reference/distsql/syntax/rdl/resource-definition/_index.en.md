@@ -1,0 +1,7 @@
++++
+title = "Resource Definition"
+weight = 1
+chapter = true
++++
+
+This chapter describes the syntax of resource definition.

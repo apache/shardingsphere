@@ -19,29 +19,37 @@ notifications:
   commits: notifications@shardingsphere.apache.org
   issues: notifications@shardingsphere.apache.org
   pullrequests: notifications@shardingsphere.apache.org
+  jobs: notifications@shardingsphere.apache.org
 
 github:
-  description: Build criterion and ecosystem above multi-model databases
+  description: Ecosystem to transform any database into a distributed database system, and enhance it with sharding, elastic scaling, encryption features & more
   labels:
     - database-plus
-    - shardingsphere
     - database
     - distributed-database
     - distributed-sql-database
     - distributed-transactions
-    - sql
     - database-cluster
+    - rdbms
+    - sql
     - mysql
     - postgresql
     - shard
-    - readwrite-splitting
     - encrypt
+    - dba
+    - oltp
+    - bigdata
     - hacktoberfest
   features:
     issues: true
     projects: true
     wiki: true
+  protected_branches:
+    master:
+      required_status_checks:
+        strict: true
+      required_pull_request_reviews:
+        dismiss_stale_reviews: true
+        required_approving_review_count: 1
   collaborators:
-    - booooodv
-    - yy2so
     - zhujunxxxxx

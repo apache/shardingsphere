@@ -1,0 +1,73 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+metrics:
+  - id: a
+    type: COUNTER
+    name: proxy_request_total
+    help: the shardingsphere proxy request total
+  - id: b
+    type: GAUGE
+    name: proxy_connection_total
+    help: the shardingsphere proxy connection total
+  - id: c
+    type: HISTOGRAM
+    name: proxy_execute_latency_millis
+    help: the shardingsphere proxy executor latency millis
+    labels:
+      - name
+    props:
+      buckets:
+        type: exp
+        start: 8
+        factor: 2
+        count: 10
+      good:
+        - value
+  - id: d
+    type: HISTOGRAM
+    name: proxy_execute_latency_seconds
+    props:
+      buckets:
+        type: linear
+        start: 0
+        width: 10
+        count: 10
+  - id: e
+    type: SUMMARY
+    name: proxy_execute_latency_mins
+    help: proxy execute latency mins
+    props:
+  - id: proxy_info
+    name: proxy_info
+    type: GaugeMetricFamily
+    help: proxy information
+    labels:
+      - name
+  - id: build_info
+    name: build_info
+    type: GaugeMetricFamily
+    help: build information
+    labels:
+      - version
+      - name
+  - id: meta_data_info
+    name: meta_data_info
+    type: GaugeMetricFamily
+    help: meta data information
+    labels:
+      - name

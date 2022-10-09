@@ -66,7 +66,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test_tbl
+          shardingAlgorithmName: standard-test-tbl
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
@@ -75,7 +75,7 @@ rules:
       tableStrategy:
         standard:
           shardingColumn: order_id
-          shardingAlgorithmName: standard_test_tbl
+          shardingAlgorithmName: standard-test-tbl
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -86,29 +86,33 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: standard_test_db
+      shardingAlgorithmName: standard-test-db
 
   shardingAlgorithms:
-    standard_test_db:
+    standard-test-db:
       type: STANDARD_TEST_DB
-    standard_test_tbl:
+    standard-test-tbl:
       type: STANDARD_TEST_TBL
 
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-      props:
-          worker-id: 123
 
 - !READWRITE_SPLITTING
   dataSources:
     ds_0:
-      writeDataSourceName: write_ds_0
-      readDataSourceNames: [write_ds_0_read_0, write_ds_0_read_1]
+      staticStrategy:
+        writeDataSourceName: write_ds_0
+        readDataSourceNames:
+          - write_ds_0_read_0
+          - write_ds_0_read_1
       loadBalancerName: roundRobin
     ds_1:
-      writeDataSourceName: write_ds_1
-      readDataSourceNames: [write_ds_1_read_0, write_ds_1_read_1]
+      staticStrategy:
+        writeDataSourceName: write_ds_1
+        readDataSourceNames:
+          - write_ds_1_read_0
+          - write_ds_1_read_1
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

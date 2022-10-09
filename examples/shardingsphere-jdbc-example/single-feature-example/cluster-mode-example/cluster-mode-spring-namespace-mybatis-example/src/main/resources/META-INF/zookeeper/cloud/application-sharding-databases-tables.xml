@@ -27,11 +27,12 @@
                         http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/tx
                         http://www.springframework.org/schema/tx/spring-tx.xsd
-                        http://shardingsphere.apache.org/schema/shardingsphere/datasource http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
+                        http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                        http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
     <import resource="classpath*:META-INF/zookeeper/registry-center.xml" />
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
-    <shardingsphere:data-source id="shardingDatabasesTablesDataSource" schema-name="sharding-databases-tables">
+    <shardingsphere:data-source id="shardingDatabasesTablesDataSource" database-name="sharding-databases-tables">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
     
