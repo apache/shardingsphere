@@ -165,19 +165,19 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     
     protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) throws SQLException {
         proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
-        List<Map<String, Object>> checkJobResults = Collections.emptyList();
+        List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
-            checkJobResults = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
-            List<String> checkEndTimeList = checkJobResults.stream().map(map -> map.get("check_end_time").toString()).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-            if (checkEndTimeList.size() == checkJobResults.size()) {
+            resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
+            List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            if (checkEndTimeList.size() == resultList.size()) {
                 break;
             }
             ThreadUtil.sleep(5, TimeUnit.SECONDS);
         }
-        log.info("check job results: {}", checkJobResults);
-        for (Map<String, Object> entry : checkJobResults) {
-            assertTrue(Boolean.parseBoolean(entry.get("check_result").toString()));
-            assertThat(entry.get("inventory_finished_percentage").toString(), is("100"));
+        log.info("check job results: {}", resultList);
+        for (Map<String, Object> entry : resultList) {
+            assertTrue(Boolean.parseBoolean(entry.get("result").toString()));
+            assertThat(entry.get("finished_percentage").toString(), is("100"));
         }
     }
 }

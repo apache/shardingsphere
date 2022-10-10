@@ -34,7 +34,7 @@ public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigu
         result.setCheckedRecordsCount(data.getCheckedRecordsCount());
         result.setCheckBeginTimeMillis(data.getCheckBeginTimeMillis());
         result.setCheckEndTimeMillis(data.getCheckEndTimeMillis());
-        result.setTableName(data.getTableName());
+        result.setTableNames(data.getTableNames());
         return result;
     }
     
@@ -46,7 +46,7 @@ public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigu
         result.setCheckedRecordsCount(yamlConfig.getCheckedRecordsCount());
         result.setCheckBeginTimeMillis(yamlConfig.getCheckBeginTimeMillis());
         result.setCheckEndTimeMillis(yamlConfig.getCheckEndTimeMillis());
-        result.setTableName(yamlConfig.getTableName());
+        result.setTableNames(yamlConfig.getTableNames());
         return result;
     }
 }

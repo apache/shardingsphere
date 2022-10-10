@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
@@ -98,10 +97,9 @@ public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, 
      * Do data consistency check.
      *
      * @param jobId job id
-     * @param jobProgressListener job progress listener
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, PipelineJobProgressListener jobProgressListener);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId);
     
     /**
      * Do data consistency check.
@@ -109,8 +107,7 @@ public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, 
      * @param jobId job id
      * @param algorithmType algorithm type
      * @param algorithmProps algorithm props. Nullable
-     * @param jobProgressListener consistency check job progress listener
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps, PipelineJobProgressListener jobProgressListener);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(String jobId, String algorithmType, Properties algorithmProps);
 }

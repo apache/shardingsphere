@@ -32,7 +32,7 @@ public final class ConsistencyCheckJobProgress implements PipelineJobItemProgres
     
     private JobStatus status = JobStatus.RUNNING;
     
-    private String tableName;
+    private String tableNames;
     
     private Long checkedRecordsCount;
     

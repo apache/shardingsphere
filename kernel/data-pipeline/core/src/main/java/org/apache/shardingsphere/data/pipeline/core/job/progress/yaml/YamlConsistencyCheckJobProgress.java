@@ -28,7 +28,7 @@ public final class YamlConsistencyCheckJobProgress implements YamlConfiguration 
     
     private String status;
     
-    private String tableName;
+    private String tableNames;
     
     private Long checkedRecordsCount;
     

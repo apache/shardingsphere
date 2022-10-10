@@ -116,7 +116,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         jobProgress.setRecordsCount(checkJobItemContext.getRecordsCount());
         jobProgress.setCheckBeginTimeMillis(checkJobItemContext.getCheckBeginTimeMillis());
         jobProgress.setCheckEndTimeMillis(checkJobItemContext.getCheckEndTimeMillis());
-        jobProgress.setTableName(checkJobItemContext.getTableName());
+        jobProgress.setTableNames(null == checkJobItemContext.getTableNames() ? null : String.join(",", checkJobItemContext.getTableNames()));
         YamlConsistencyCheckJobProgress yamlJobProgress = swapper.swapToYamlConfiguration(jobProgress);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), YamlEngine.marshal(yamlJobProgress));
     }
@@ -175,32 +175,33 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         if (null == jobItemProgress) {
             return result;
         }
-        int inventoryFinishedPercentage;
+        int finishedPercentage;
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
         if (null != jobItemProgress.getRecordsCount() && Objects.equals(jobItemProgress.getCheckedRecordsCount(), jobItemProgress.getRecordsCount())) {
-            inventoryFinishedPercentage = 100;
+            finishedPercentage = 100;
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
-            result.setCheckDuration(duration.toMillis() / 1000);
+            result.setDurationSeconds(duration.toMillis() / 1000);
             result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
-            result.setRemainingTime(0L);
+            result.setRemainingSeconds(0L);
         } else {
             if (null == jobItemProgress.getRecordsCount()) {
-                inventoryFinishedPercentage = 0;
+                finishedPercentage = 0;
             } else {
-                inventoryFinishedPercentage = BigDecimal.valueOf(Math.floorDiv(jobItemProgress.getCheckedRecordsCount() * 100, jobItemProgress.getRecordsCount())).intValue();
+                finishedPercentage = Math.min(100, BigDecimal.valueOf(Math.floorDiv(jobItemProgress.getCheckedRecordsCount() * 100, jobItemProgress.getRecordsCount())).intValue());
                 Duration duration = Duration.between(checkBeginTime, LocalDateTime.now());
                 long remainMills = jobItemProgress.getRecordsCount() * 100 / jobItemProgress.getCheckedRecordsCount() * duration.toMillis();
-                result.setRemainingTime(remainMills / 1000);
+                result.setRemainingSeconds(remainMills / 1000);
             }
         }
-        result.setInventoryFinishedPercentage(inventoryFinishedPercentage);
-        result.setTableName(Optional.ofNullable(jobItemProgress.getTableName()).orElse(""));
+        result.setFinishedPercentage(finishedPercentage);
+        String tableName = null == jobItemProgress.getTableNames() ? null : jobItemProgress.getTableNames().split(",")[0];
+        result.setTableName(Optional.ofNullable(tableName).orElse(""));
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
-        Optional<DataConsistencyCheckResult> dataConsistencyCheckResult = Optional.ofNullable(checkJobResult.get(jobItemProgress.getTableName()));
-        dataConsistencyCheckResult.ifPresent(optional -> result.setCheckResult(optional.getContentCheckResult().isMatched()));
+        Optional<DataConsistencyCheckResult> dataConsistencyCheckResult = Optional.ofNullable(checkJobResult.get(tableName));
+        dataConsistencyCheckResult.ifPresent(optional -> result.setResult(optional.getContentCheckResult().isMatched()));
         return result;
     }
     

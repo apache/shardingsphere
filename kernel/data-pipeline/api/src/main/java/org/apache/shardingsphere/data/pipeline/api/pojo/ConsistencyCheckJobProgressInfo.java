@@ -28,17 +28,17 @@ public final class ConsistencyCheckJobProgressInfo {
     
     private String tableName;
     
-    private Boolean checkResult;
+    private Boolean result;
     
-    private int inventoryFinishedPercentage;
+    private int finishedPercentage;
     
-    private Long remainingTime;
+    private Long remainingSeconds;
     
     private String checkBeginTime;
     
     private String checkEndTime;
     
-    private Long checkDuration;
+    private Long durationSeconds;
     
     private String errorMessage;
 }

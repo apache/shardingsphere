@@ -46,16 +46,16 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
         ShowMigrationCheckStatusStatement checkMigrationStatement = (ShowMigrationCheckStatusStatement) sqlStatement;
         ConsistencyCheckJobProgressInfo progressInfo = JOB_API.getJobProgressInfo(checkMigrationStatement.getJobId());
         List<Collection<Object>> result = new LinkedList<>();
-        String checkResult = null == progressInfo.getCheckResult() ? "" : progressInfo.getCheckResult().toString();
-        result.add(Arrays.asList(progressInfo.getTableName(), checkResult, String.valueOf(progressInfo.getInventoryFinishedPercentage()),
-                ObjectUtils.defaultIfNull(progressInfo.getRemainingTime(), ""), progressInfo.getCheckBeginTime(), ObjectUtils.defaultIfNull(progressInfo.getCheckEndTime(), ""),
-                ObjectUtils.defaultIfNull(progressInfo.getCheckDuration(), ""), progressInfo.getErrorMessage()));
+        String checkResult = null == progressInfo.getResult() ? "" : progressInfo.getResult().toString();
+        result.add(Arrays.asList(progressInfo.getTableName(), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
+                ObjectUtils.defaultIfNull(progressInfo.getRemainingSeconds(), ""), progressInfo.getCheckBeginTime(), ObjectUtils.defaultIfNull(progressInfo.getCheckEndTime(), ""),
+                ObjectUtils.defaultIfNull(progressInfo.getDurationSeconds(), ""), progressInfo.getErrorMessage()));
         data = result.iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table_name", "check_result", "inventory_finished_percentage", "remaining_time", "check_begin_time", "check_end_time", "check_duration", "error_message");
+        return Arrays.asList("table_name", "result", "finished_percentage", "remaining_seconds", "check_begin_time", "check_end_time", "duration_seconds", "error_message");
     }
     
     @Override

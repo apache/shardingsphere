@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -48,7 +49,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private volatile JobStatus status;
     
-    private String tableName;
+    private Collection<String> tableNames;
     
     private volatile Long recordsCount;
     
@@ -65,7 +66,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
         this.status = status;
-        this.checkBeginTimeMillis = System.currentTimeMillis();
+        checkBeginTimeMillis = System.currentTimeMillis();
     }
     
     @Override
