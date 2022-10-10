@@ -48,14 +48,14 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
         List<Collection<Object>> result = new LinkedList<>();
         String checkResult = null == progressInfo.getCheckResult() ? "" : progressInfo.getCheckResult().toString();
         result.add(Arrays.asList(progressInfo.getTableName(), checkResult, String.valueOf(progressInfo.getInventoryFinishedPercentage()),
-                progressInfo.getCheckBeginTime(), ObjectUtils.defaultIfNull(progressInfo.getCheckEndTime(), ""), ObjectUtils.defaultIfNull(progressInfo.getCheckDuration(), ""),
-                progressInfo.getErrorMessage()));
+                ObjectUtils.defaultIfNull(progressInfo.getRemainingTime(), ""), progressInfo.getCheckBeginTime(), ObjectUtils.defaultIfNull(progressInfo.getCheckEndTime(), ""),
+                ObjectUtils.defaultIfNull(progressInfo.getCheckDuration(), ""), progressInfo.getErrorMessage()));
         data = result.iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table_name", "check_result", "inventory_finished_percentage", "check_begin_time", "check_end_time", "check_duration", "error_message");
+        return Arrays.asList("table_name", "check_result", "inventory_finished_percentage", "remaining_time", "check_begin_time", "check_end_time", "check_duration", "error_message");
     }
     
     @Override

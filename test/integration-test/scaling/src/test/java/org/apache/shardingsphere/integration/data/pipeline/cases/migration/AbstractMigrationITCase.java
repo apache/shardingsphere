@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.command.MigrationDistSQLCommand;
@@ -167,16 +168,16 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         List<Map<String, Object>> checkJobResults = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
             checkJobResults = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
-            if (null != checkJobResults && !checkJobResults.isEmpty()) {
+            List<String> checkEndTimeList = checkJobResults.stream().map(map -> map.get("check_end_time").toString()).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            if (checkEndTimeList.size() == checkJobResults.size()) {
                 break;
             }
             ThreadUtil.sleep(5, TimeUnit.SECONDS);
         }
-        assertTrue(null != checkJobResults && !checkJobResults.isEmpty());
         log.info("check job results: {}", checkJobResults);
         for (Map<String, Object> entry : checkJobResults) {
             assertTrue(Boolean.parseBoolean(entry.get("check_result").toString()));
-            assertTrue(Boolean.parseBoolean(entry.get("check_result").toString()));
+            assertThat(entry.get("inventory_finished_percentage").toString(), is("100"));
         }
     }
 }
