@@ -30,10 +30,12 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public final class YamlEngineTest {
+    
+    private static final String LINE_SEPARATOR = System.lineSeparator();
     
     @Test
     public void assertUnmarshalWithFile() throws IOException {
@@ -68,7 +70,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalWithYamlContentClassTypeSkipMissingProperties() {
-        YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal("name: test\nnotExistsField: test", YamlShortcutsConfigurationFixture.class, true);
+        YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal("name: test" + LINE_SEPARATOR + "notExistsField: test", YamlShortcutsConfigurationFixture.class, true);
         assertThat(actual.getName(), is("test"));
     }
     

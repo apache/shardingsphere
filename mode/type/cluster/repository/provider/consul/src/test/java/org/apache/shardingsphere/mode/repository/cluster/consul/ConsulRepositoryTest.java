@@ -154,7 +154,8 @@ public final class ConsulRepositoryTest {
         getValue1.setKey(k1);
         getValue1.setValue(v1);
         when(responseGetValueList.getValue()).thenReturn(Collections.singletonList(getValue1));
-        repository.watch(key, event -> { }, null);
+        repository.watch(key, event -> {
+        }, null);
         client.setKVValue(k1, "value1-1");
         verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
         Thread.sleep(10000L);
@@ -174,7 +175,8 @@ public final class ConsulRepositoryTest {
         getValue1.setKey(k1);
         getValue1.setValue(v1);
         when(responseGetValueList.getValue()).thenReturn(Collections.singletonList(getValue1));
-        repository.watch(key, event -> { }, null);
+        repository.watch(key, event -> {
+        }, null);
         client.deleteKVValue(k2);
         verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
         Thread.sleep(10000L);
