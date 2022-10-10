@@ -152,8 +152,7 @@
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <caffeine.version>2.9.2</caffeine.version>
-        <jsoup.version>1.15.3</jsoup.version>
-        <testng.version>6.14.3</testng.version>
+        <github-api.version>1.313</github-api.version>
     </properties>
     
     <dependencyManagement>
@@ -695,16 +694,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jsoup</groupId>
-                <artifactId>jsoup</artifactId>
-                <version>${jsoup.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>${testng.version}</version>
-                <scope>compile</scope>
+                <groupId>org.kohsuke</groupId>
+                <artifactId>github-api</artifactId>
+                <version>${github-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
