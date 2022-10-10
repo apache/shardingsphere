@@ -152,9 +152,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         CuratorCache cache = CuratorCache.build(client, cachePath);
         try {
             cache.start();
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
         caches.put(cachePath + "/", cache);
@@ -206,9 +206,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                 default:
                     throw new UnsupportedOperationException(each.toString());
             }
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             throw new ClusterPersistRepositoryException(ex);
         }
     }
@@ -218,9 +218,9 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         try {
             TransactionOp transactionOp = client.transactionOp();
             client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
-            //CHECKSTYLE:OFF
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            //CHECKSTYLE:ON
+            // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
     }
