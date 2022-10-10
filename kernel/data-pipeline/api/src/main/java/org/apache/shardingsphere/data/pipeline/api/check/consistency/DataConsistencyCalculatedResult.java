@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.junit.Test;
-
-import java.util.Properties;
-
-public final class DataConsistencyCalculateAlgorithmFactoryTest {
+/**
+ * Data consistency calculated result.
+ */
+public interface DataConsistencyCalculatedResult {
     
-    @Test
-    public void assertNewInstanceSuccess() {
-        DataConsistencyCalculateAlgorithmFactory.newInstance("FIXTURE", new Properties());
-    }
+    /**
+     * Get records count.
+     *
+     * @return records count
+     */
+    int getRecordsCount();
 }

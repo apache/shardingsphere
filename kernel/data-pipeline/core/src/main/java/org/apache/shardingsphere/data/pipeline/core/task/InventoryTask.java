@@ -83,11 +83,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
     }
     
-    /**
-     * Start.
-     *
-     * @return future
-     */
+    @Override
     public CompletableFuture<?> start() {
         CompletableFuture<?> dumperFuture = inventoryDumperExecuteEngine.submit(dumper, new ExecuteCallback() {
             
@@ -138,9 +134,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         return null;
     }
     
-    /**
-     * Stop.
-     */
+    @Override
     public void stop() {
         dumper.stop();
         importer.stop();

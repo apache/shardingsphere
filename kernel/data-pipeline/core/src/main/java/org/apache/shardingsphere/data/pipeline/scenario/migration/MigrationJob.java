@@ -112,8 +112,8 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     public void stop() {
         setStopping(true);
         dataSourceManager.close();
-        if (null != getOneOffJobBootstrap()) {
-            getOneOffJobBootstrap().shutdown();
+        if (null != getJobBootstrap()) {
+            getJobBootstrap().shutdown();
         }
         String jobId = getJobId();
         if (null == jobId) {

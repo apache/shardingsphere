@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.junit.Test;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 
-import java.util.Properties;
-
-public final class DataConsistencyCalculateAlgorithmFactoryTest {
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Getter
+public final class FixtureDataConsistencyCalculatedResult implements DataConsistencyCalculatedResult {
     
-    @Test
-    public void assertNewInstanceSuccess() {
-        DataConsistencyCalculateAlgorithmFactory.newInstance("FIXTURE", new Properties());
-    }
+    private final int recordsCount;
 }

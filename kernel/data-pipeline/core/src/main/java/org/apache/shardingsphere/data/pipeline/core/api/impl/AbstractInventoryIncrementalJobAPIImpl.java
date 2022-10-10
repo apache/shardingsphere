@@ -152,18 +152,23 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
+    public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final PipelineJobConfiguration jobConfig, final String algorithmType, final Properties algorithmProps, 
+                                                                                    final PipelineJobProgressListener jobProgressListener) {
+        ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("algorithmType and jobConfig are null"));
+        if (null != algorithmType) {
+            return DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps);
+        }
+        return DataConsistencyCalculateAlgorithmChooser.choose(
+                DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)));
+    }
+    
+    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final PipelineJobProgressListener jobProgressListener) {
         checkModeConfig();
         log.info("Data consistency check for job {}", jobId);
         PipelineJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        return dataConsistencyCheck(jobConfig, jobProgressListener);
-    }
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final PipelineJobProgressListener jobProgressListener) {
-        DataConsistencyCalculateAlgorithm algorithm = DataConsistencyCalculateAlgorithmChooser.choose(
-                DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)));
-        return dataConsistencyCheck(jobConfig, algorithm, jobProgressListener);
+        DataConsistencyCalculateAlgorithm calculateAlgorithm = buildDataConsistencyCalculateAlgorithm(jobConfig, null, null, jobProgressListener);
+        return dataConsistencyCheck(jobConfig, calculateAlgorithm);
     }
     
     @Override
@@ -172,11 +177,12 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         checkModeConfig();
         log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
         PipelineJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps), jobProgressListener);
+        return dataConsistencyCheck(jobConfig, buildDataConsistencyCalculateAlgorithm(jobConfig, algorithmType, algorithmProps), jobProgressListener);
     }
     
-    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm,
-                                                                           final PipelineJobProgressListener jobProgressListener) {
+    @Override
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm,
+                                                                        final PipelineJobProgressListener jobProgressListener) {
         String jobId = jobConfig.getJobId();
         PipelineDataConsistencyChecker dataConsistencyChecker = buildPipelineDataConsistencyChecker(jobConfig, buildPipelineProcessContext(jobConfig), jobProgressListener);
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.check(calculateAlgorithm);

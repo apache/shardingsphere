@@ -19,10 +19,24 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Pipeline task interface.
  */
 public interface PipelineTask {
+    
+    /**
+     * Start task.
+     *
+     * @return future
+     */
+    CompletableFuture<?> start();
+    
+    /**
+     * Stop task.
+     */
+    void stop();
     
     /**
      * Get task id.

@@ -20,9 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Inventory incremental job API.
@@ -41,13 +43,25 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
     
     /**
+     * Build data consistency calculate algorithm.
+     *
+     * @param jobConfig job configuration
+     * @param algorithmType algorithm type
+     * @param algorithmProps algorithm properties
+     * @return calculate algorithm
+     */
+    DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(PipelineJobConfiguration jobConfig, String algorithmType, Properties algorithmProps);
+    
+    /**
      * Do data consistency check.
      *
      * @param pipelineJobConfig job configuration
+     * @param calculateAlgorithm calculate algorithm
      * @param checkJobProgressListener consistency check job progress listener
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, PipelineJobProgressListener checkJobProgressListener);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm, 
+                                                                 PipelineJobProgressListener checkJobProgressListener);
     
     /**
      * Aggregate data consistency check results.
