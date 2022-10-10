@@ -183,6 +183,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
             result.setCheckDuration(duration.toMillis() / 1000);
             result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
+            result.setRemainingTime(0L);
         } else {
             if (null == jobItemProgress.getRecordsCount()) {
                 inventoryFinishedPercentage = 0;
