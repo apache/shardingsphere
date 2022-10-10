@@ -31,7 +31,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.fixture.JDBCRepositoryProviderFixture;
 import org.h2.jdbc.JdbcCallableStatement;
 import org.h2.jdbc.JdbcConnection;
@@ -159,7 +158,7 @@ public final class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         repository.persist(key, value);
-        int depthOfDirectory = StringUtils.countMatches(key, "/");
+        int depthOfDirectory = (int) key.chars().filter(ch -> ch == '/').count();
         int beginIndex = 0;
         String parentDirectory = "/";
         for (int i = 0; i < depthOfDirectory; i++) {

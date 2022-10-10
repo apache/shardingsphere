@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
-import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
