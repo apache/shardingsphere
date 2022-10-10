@@ -55,6 +55,8 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private boolean isFirstNext;
     
+    private boolean isExecutedAllDirection;
+    
     public FetchStreamMergedResult(final List<QueryResult> queryResults, final FetchStatementContext fetchStatementContext,
                                    final ShardingSphereSchema schema, final ConnectionContext connectionContext) throws SQLException {
         orderByValuesQueue = new PriorityQueue<>(queryResults.size());
@@ -65,11 +67,15 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         List<FetchOrderByValueGroup> fetchOrderByValueGroups = getFetchOrderByValueGroups(queryResults, selectStatementContext, schema, cursorName, connectionContext);
         addOrderedResultSetsToQueue(fetchOrderByValueGroups, queryResults);
         setMinResultSetRowCount(cursorName, connectionContext);
+        handleExecutedAllDirections(connectionContext, cursorName);
         isFirstNext = true;
     }
     
     @Override
     public boolean next() throws SQLException {
+        if (isExecutedAllDirection) {
+            return false;
+        }
         if (orderByValuesQueue.isEmpty()) {
             return false;
         }
@@ -151,6 +157,15 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         }
         long minResultSetRowCount = DirectionType.isAllDirectionType(directionType) ? 0 : Collections.min(rowCounts) - fetchCount;
         connectionContext.getCursorConnectionContext().getMinGroupRowCounts().put(cursorName, Math.max(minResultSetRowCount, 0L));
+    }
+    
+    private void handleExecutedAllDirections(final ConnectionContext connectionContext, final String cursorName) {
+        if (connectionContext.getCursorConnectionContext().getExecutedAllDirections().containsKey(cursorName)) {
+            isExecutedAllDirection = true;
+        }
+        if (DirectionType.isAllDirectionType(directionType)) {
+            connectionContext.getCursorConnectionContext().getExecutedAllDirections().put(cursorName, true);
+        }
     }
     
     private long getGroupRowCount(final FetchOrderByValueGroup fetchOrderByValueGroup) {
