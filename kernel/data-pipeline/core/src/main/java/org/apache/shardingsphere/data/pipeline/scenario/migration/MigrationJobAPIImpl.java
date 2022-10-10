@@ -122,12 +122,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<MigrationJobInfo> list() {
-        return (List<MigrationJobInfo>) super.list();
-    }
-    
     @Override
     protected MigrationJobInfo getJobInfo(final String jobId) {
         MigrationJobInfo result = new MigrationJobInfo(jobId);
