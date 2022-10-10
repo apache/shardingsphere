@@ -86,12 +86,12 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected abstract PipelineJobInfo getJobInfo(String jobId);
     
-    protected void fillJobMetaData(final PipelineJobMetaData jobDetail, final JobConfigurationPOJO jobConfigPOJO) {
-        jobDetail.setActive(!jobConfigPOJO.isDisabled());
-        jobDetail.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
-        jobDetail.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
-        jobDetail.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        jobDetail.setJobParameter(jobConfigPOJO.getJobParameter());
+    protected void fillJobMetaData(final PipelineJobMetaData jobMetaData, final JobConfigurationPOJO jobConfigPOJO) {
+        jobMetaData.setActive(!jobConfigPOJO.isDisabled());
+        jobMetaData.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
+        jobMetaData.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
+        jobMetaData.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+        jobMetaData.setJobParameter(jobConfigPOJO.getJobParameter());
     }
     
     @Override
