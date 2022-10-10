@@ -126,7 +126,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     protected TableBasedPipelineJobInfo getJobInfo(final String jobId) {
         TableBasedPipelineJobInfo result = new TableBasedPipelineJobInfo(jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        fillJobInfo(result, jobConfigPOJO);
+        fillJobDetail(result.getJobDetail(), jobConfigPOJO);
         result.setTable(getJobConfiguration(jobConfigPOJO).getSourceTableName());
         return result;
     }
