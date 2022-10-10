@@ -18,22 +18,26 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
- * Table based pipeline job info.
+ * Pipeline job meta data.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
-public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
+public final class PipelineJobMetaData {
     
-    private final PipelineJobMetaData jobMetaData;
+    private final String jobId;
     
-    private String table;
+    private boolean active;
     
-    public TableBasedPipelineJobInfo(final String jobId) {
-        jobMetaData = new PipelineJobMetaData(jobId);
-    }
+    private int shardingTotalCount;
+    
+    private String createTime;
+    
+    private String stopTime;
+    
+    private transient String jobParameter;
 }
