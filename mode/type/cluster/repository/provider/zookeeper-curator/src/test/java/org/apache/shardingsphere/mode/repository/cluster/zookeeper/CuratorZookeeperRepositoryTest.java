@@ -304,4 +304,12 @@ public final class CuratorZookeeperRepositoryTest {
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
     }
+    
+    @Test
+    public void assertUpdate() throws Exception {
+        when(existsBuilder.forPath("/test")).thenReturn(new Stat());
+        REPOSITORY.persist("/test", "value2");
+        verify(setDataBuilder).forPath("/test", "value2".getBytes(StandardCharsets.UTF_8));
+    }
+    
 }
