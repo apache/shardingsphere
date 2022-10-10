@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -30,13 +27,4 @@ import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
  */
 @SingletonSPI
 public interface MigrationJobAPI extends InventoryIncrementalJobAPI, MigrationJobPublicAPI, RequiredSPI {
-    
-    @Override
-    MigrationJobConfiguration getJobConfiguration(String jobId);
-    
-    @Override
-    MigrationTaskConfiguration buildTaskConfiguration(PipelineJobConfiguration pipelineJobConfig, int jobShardingItem, PipelineProcessConfiguration pipelineProcessConfig);
-    
-    @Override
-    MigrationProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
 }

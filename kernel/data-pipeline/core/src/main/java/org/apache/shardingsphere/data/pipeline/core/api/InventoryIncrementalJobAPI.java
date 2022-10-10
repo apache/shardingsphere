@@ -36,9 +36,6 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      */
     Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(PipelineJobConfiguration pipelineJobConfig);
     
-    @Override
-    InventoryIncrementalJobItemProgress getJobItemProgress(String jobId, int shardingItem);
-    
     /**
      * Do data consistency check.
      *
