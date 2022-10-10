@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.Collection;
 
@@ -28,7 +27,6 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class DataConsistencyCheckAlgorithmInfo {
     
     private final String type;
