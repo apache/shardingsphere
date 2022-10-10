@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
  * Table based pipeline job info.
  */
 @Getter
-@Setter
 @ToString(callSuper = true)
 public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     
     private final PipelineJobMetaData jobMetaData;
     
-    private String table;
+    private final String table;
     
-    public TableBasedPipelineJobInfo(final String jobId) {
+    public TableBasedPipelineJobInfo(final String jobId, final String table) {
         jobMetaData = new PipelineJobMetaData(jobId);
+        this.table = table;
     }
 }
