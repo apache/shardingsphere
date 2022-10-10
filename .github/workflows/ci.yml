@@ -23,7 +23,6 @@ on:
     paths:
       - '.github/workflows/ci.yml'
       - '**/pom.xml'
-      - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
       - '!distribution/**'
@@ -35,7 +34,6 @@ on:
     paths:
       - '.github/workflows/ci.yml'
       - '**/pom.xml'
-      - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
       - '!distribution/**'
