@@ -31,7 +31,7 @@ public final class DataConsistencyCheckAlgorithmInfo {
     
     private final String type;
     
-    private final String description;
-    
     private final Collection<String> supportedDatabaseTypes;
+    
+    private final String description;
 }

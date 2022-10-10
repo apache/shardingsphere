@@ -142,7 +142,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
         return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream()
-                .map(each -> new DataConsistencyCheckAlgorithmInfo(each.getType(), each.getDescription(), each.getSupportedDatabaseTypes())).collect(Collectors.toList());
+                .map(each -> new DataConsistencyCheckAlgorithmInfo(each.getType(), each.getSupportedDatabaseTypes(), each.getDescription())).collect(Collectors.toList());
     }
     
     @Override
