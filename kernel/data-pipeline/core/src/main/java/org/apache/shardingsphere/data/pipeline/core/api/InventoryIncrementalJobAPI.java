@@ -60,7 +60,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param checkJobProgressListener consistency check job progress listener
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm, 
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm,
                                                                  PipelineJobProgressListener checkJobProgressListener);
     
     /**
