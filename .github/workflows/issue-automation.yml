@@ -17,13 +17,10 @@
 
 name: Issue Automation
 
+## TODO disable this workflow temporarily, will reopen when discussion about this robot is done.
 on:
-  schedule:
-    - cron: '0 16 */1 * *'  # once a day
-  issue_comment:
-    types: [created,edited]
-  issues:
-    types: [labeled,reopened]
+  project:
+    types: [created]
 
 jobs:
   comment-action:
