@@ -35,19 +35,6 @@ public final class YamlJdbcConfigurationTest {
     private static final String PASSWORD = "password";
     
     @Test
-    public void assertConstructionWithJdbcUrl() {
-        assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePropsWithJdbcUrl()), YamlJdbcConfiguration.class));
-    }
-    
-    private Map<String, String> getDataSourcePropsWithJdbcUrl() {
-        Map<String, String> result = new HashMap<>(3, 1);
-        result.put("jdbcUrl", JDBC_URL);
-        result.put("username", USERNAME);
-        result.put("password", PASSWORD);
-        return result;
-    }
-    
-    @Test
     public void assertConstructionWithUrl() {
         assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePropsWithUrl()), YamlJdbcConfiguration.class));
     }
@@ -61,7 +48,7 @@ public final class YamlJdbcConfigurationTest {
     }
     
     private void assertYamlJdbcConfiguration(final YamlJdbcConfiguration actual) {
-        assertThat(actual.getJdbcUrl(), is(JDBC_URL));
+        assertThat(actual.getUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
     }
