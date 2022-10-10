@@ -35,6 +35,7 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final ShardingSphereMetaData metaData;
     
+    // TODO remove from construct param
     private final ShardingSphereData shardingSphereData;
     
     @Override

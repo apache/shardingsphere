@@ -50,13 +50,13 @@ columns:
     primaryKey: false
   row_count:
     caseSensitive: false
-    dataType: -5
+    dataType: 3
     generated: false
     name: row_count
     primaryKey: false
   size:
     caseSensitive: false
-    dataType: -5
+    dataType: 3
     generated: false
     name: size
     primaryKey: false

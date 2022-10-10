@@ -94,7 +94,7 @@ public final class MetaDataContextsFactory {
         databases.putAll(reloadDatabases(databases, persistService));
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext, props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
-        ShardingSphereData shardingSphereData = initShardingSphereData(persistService, metaData, instanceContext);
+        ShardingSphereData shardingSphereData = initShardingSphereData(persistService, metaData);
         return new MetaDataContexts(persistService, metaData, shardingSphereData);
     }
     
@@ -142,10 +142,10 @@ public final class MetaDataContextsFactory {
         return result;
     }
     
-    private static ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData, final InstanceContext instanceContext) {
-        ShardingSphereData result = persistService.getShardingSphereDataPersistService().load().orElse(ShardingSphereDataBuilderFactory
+    private static ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        ShardingSphereData result = persistService.getShardingSphereDataPersistService().load().orElseGet(() -> ShardingSphereDataBuilderFactory
                 .getInstance(metaData.getDatabases().values().iterator().next().getProtocolType()).map(builder -> builder.build(metaData)).orElseGet(ShardingSphereData::new));
-        // TODO register to calcite
+        result.registerQueryEngine(metaData);
         return result;
     }
 }

@@ -15,33 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.query.ShardingSphereDataQueryEngine;
-import org.apache.shardingsphere.infra.metadata.data.query.ShardingSphereDataQueryEngineFactory;
 
-import java.util.LinkedHashMap;
+import java.sql.Connection;
 import java.util.Map;
 
 /**
- * ShardingSphere data.
+ * Fixture ShardingSphere data query engine.
  */
-@Getter
-public final class ShardingSphereData {
+public final class FixtureShardingSphereDataQueryEngine implements ShardingSphereDataQueryEngine {
     
-    private final Map<String, ShardingSphereDatabaseData> databaseData = new LinkedHashMap<>();
+    @Override
+    public void init(final ShardingSphereMetaData metaData, final Map<String, ShardingSphereDatabaseData> databaseData) {
+    }
     
-    private ShardingSphereDataQueryEngine queryEngine;
-    
-    /**
-     * Register query engine.
-     *
-     * @param metaData meta data
-     */
-    public void registerQueryEngine(final ShardingSphereMetaData metaData) {
-        queryEngine = ShardingSphereDataQueryEngineFactory.getInstance();
-        queryEngine.init(metaData, databaseData);
+    @Override
+    public Connection createConnection(final String databaseName, final String schemaName) {
+        return null;
     }
 }

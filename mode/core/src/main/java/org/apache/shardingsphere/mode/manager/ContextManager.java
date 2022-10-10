@@ -426,6 +426,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData) {
+        shardingSphereData.registerQueryEngine(metaData);
         return new MetaDataContexts(metaDataContexts.getPersistService(), metaData, shardingSphereData);
     }
     
