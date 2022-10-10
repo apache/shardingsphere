@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 222 companies.
+Total: 224 companies.
 
 ### Infra Software
 <ul>
@@ -133,6 +133,7 @@ Total: 222 companies.
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
     <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
     <li><a href="https://www.lingxing.com/" rel="nofollow">LINGXING</a></li>
+    <li><a href="http://sz.aisino.com/" rel="nofollow">Aisino</a></li>
 </ul>
 
 ### Transportation
@@ -184,11 +185,17 @@ Total: 222 companies.
     <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
     <li><a href="http://www.dayang.com.cn" rel="nofollow">DAYANG</a></li>
+</ul>
+
+### Social
+
+<ul>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="http://www.tuodan666.com" rel="nofollow">tuodan666</a></li>
 </ul>
 
 ### E-Learning
