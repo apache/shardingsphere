@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.listener.PipelineContextManagerLifecycleListener
-org.apache.shardingsphere.data.pipeline.core.listener.ShardingSphereDataContextManagerLifecycleListener
+org.apache.shardingsphere.sharding.metadata.data.ShardingStatisticsTableCollector
