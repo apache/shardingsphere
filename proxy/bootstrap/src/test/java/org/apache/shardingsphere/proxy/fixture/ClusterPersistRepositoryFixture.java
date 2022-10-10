@@ -65,7 +65,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void updateInTransaction(final String key, final String value) {
-        
     }
     
     @Override

@@ -124,7 +124,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
-        
     }
     
     @Override
