@@ -24,7 +24,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -86,18 +85,10 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected abstract PipelineJobInfo getJobInfo(String jobId);
     
-    protected void fillJobMetaData(final PipelineJobMetaData jobMetaData, final JobConfigurationPOJO jobConfigPOJO) {
-        jobMetaData.setActive(!jobConfigPOJO.isDisabled());
-        jobMetaData.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
-        jobMetaData.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
-        jobMetaData.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        jobMetaData.setJobParameter(jobConfigPOJO.getJobParameter());
-    }
-    
     @Override
     public Optional<String> start(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        Preconditions.checkState(0 != jobConfig.getJobShardingCount(), new PipelineJobCreationWithInvalidShardingCountException(jobId));
+        ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
         log.info("Start job by {}", jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
@@ -160,7 +151,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        Preconditions.checkNotNull(result, new PipelineJobNotFoundException(jobId));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
         return result;
     }
     
