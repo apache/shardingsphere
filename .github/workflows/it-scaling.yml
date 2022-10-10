@@ -84,9 +84,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-scaling-it-cache-${{ github.sha }}
           restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
+            shardingsphere-maven-third-party-scaling-it-cache-
             shardingsphere-maven-third-party-
       - name: Set up JDK 8
         uses: actions/setup-java@v3
@@ -117,9 +117,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-scaling-it-cache-${{ github.sha }}
           restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
+            shardingsphere-maven-third-party-scaling-it-cache-
             shardingsphere-maven-third-party-
       - name: Set up JDK 8
         uses: actions/setup-java@v3
