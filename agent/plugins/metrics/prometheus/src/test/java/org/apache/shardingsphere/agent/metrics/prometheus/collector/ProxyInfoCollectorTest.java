@@ -44,7 +44,7 @@ public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), new ShardingSphereData());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null), mock(LockContext.class),
-                new EventBusContext(), mock(ScheduleContext.class));
+                new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
     }

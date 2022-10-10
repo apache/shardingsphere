@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
-import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
 import java.sql.SQLException;
 
@@ -69,8 +68,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
         return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
-                parameter.getModeConfiguration(), new ShardingSphereLockContext(registryCenter.getLockPersistService()),
-                registryCenter.getEventBusContext(), ScheduleContextFactory.newInstance(parameter.getModeConfiguration()));
+                parameter.getModeConfiguration(), new ShardingSphereLockContext(registryCenter.getLockPersistService()), registryCenter.getEventBusContext());
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {

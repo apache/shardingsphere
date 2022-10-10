@@ -57,7 +57,7 @@ public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer 
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), new ShardingSphereData());
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null), mock(LockContext.class),
-                new EventBusContext(), mock(ScheduleContext.class));
+                new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
         new Socket().connect(new InetSocketAddress("localhost", 8090));
