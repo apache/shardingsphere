@@ -19,13 +19,12 @@ package org.apache.shardingsphere.data.pipeline.spi.data.collector;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -35,15 +34,15 @@ import java.util.Map;
 public interface ShardingSphereDataCollector extends TypedSPI {
     
     /**
-     * Collect ShardingSphere data.
+     * Collect.
      * 
      * @param shardingSphereData ShardingSphere data
      * @param databaseName database name
-     * @param rules rules
+     * @param ruleMetaData rule meta data
      * @param dataSources data sources
      * @param databaseType database type
      * @throws SQLException sql exception
      */
-    void collectShardingSphereData(ShardingSphereData shardingSphereData, String databaseName, Collection<ShardingSphereRule> rules,
-                                   Map<String, DataSource> dataSources, DatabaseType databaseType) throws SQLException;
+    void collect(ShardingSphereData shardingSphereData, String databaseName, ShardingSphereRuleMetaData ruleMetaData,
+                 Map<String, DataSource> dataSources, DatabaseType databaseType) throws SQLException;
 }

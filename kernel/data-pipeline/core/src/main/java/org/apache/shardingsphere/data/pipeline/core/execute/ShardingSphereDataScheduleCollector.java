@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
@@ -101,10 +100,9 @@ public final class ShardingSphereDataScheduleCollector {
         private void collectForEachDatabase(final ShardingSphereData shardingSphereData, final ShardingSphereTable table, final ShardingSphereDatabase database, final DatabaseType databaseType) {
             String databaseName = database.getName();
             Map<String, DataSource> dataSources = database.getResource().getDataSources();
-            Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
             ShardingSphereDataCollectorFactory.findInstance(table.getName()).ifPresent(shardingSphereDataCollector -> {
                 try {
-                    shardingSphereDataCollector.collectShardingSphereData(shardingSphereData, databaseName, rules, dataSources, databaseType);
+                    shardingSphereDataCollector.collect(shardingSphereData, databaseName, database.getRuleMetaData(), dataSources, databaseType);
                 } catch (SQLException ex) {
                     log.error("Collect data for sharding_table_statistics error!", ex);
                 }
