@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParame
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
@@ -155,7 +156,7 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
         initTableData(jobAPI.getJobConfiguration(jobId.get()));
-        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get(), new FixturePipelineJobProgressListener());
         assertThat(checkResultMap.size(), is(1));
     }
     
@@ -164,7 +165,7 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         initTableData(jobAPI.getJobConfiguration(jobId.get()));
-        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null);
+        Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null, new FixturePipelineJobProgressListener());
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
         assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));

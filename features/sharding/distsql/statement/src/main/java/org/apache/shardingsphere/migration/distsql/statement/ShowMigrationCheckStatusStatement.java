@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Show check migration status statement.
+ * Show migration check status statement.
  */
 @RequiredArgsConstructor
 @Getter

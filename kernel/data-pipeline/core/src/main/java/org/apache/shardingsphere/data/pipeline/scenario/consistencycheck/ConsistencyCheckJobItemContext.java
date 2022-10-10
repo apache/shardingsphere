@@ -24,6 +24,11 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJo
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Consistency check job item context.
@@ -31,7 +36,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 @Getter
 @Setter
 @Slf4j
-public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext {
+public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext, PipelineJobProgressListener {
     
     private final String jobId;
     
@@ -43,6 +48,16 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private volatile JobStatus status;
     
+    private String tableName;
+    
+    private volatile Long recordsCount;
+    
+    private final AtomicLong checkedRecordsCount = new AtomicLong(0);
+    
+    private final long checkBeginTimeMillis;
+    
+    private Long checkEndTimeMillis;
+    
     private final ConsistencyCheckJobConfiguration jobConfig;
     
     public ConsistencyCheckJobItemContext(final ConsistencyCheckJobConfiguration jobConfig, final int shardingItem, final JobStatus status) {
@@ -50,10 +65,17 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
         this.status = status;
+        this.checkBeginTimeMillis = System.currentTimeMillis();
     }
     
     @Override
     public PipelineProcessContext getJobProcessContext() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
+        checkedRecordsCount.addAndGet(parameter.getProcessedRecordsCount());
+        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
 }

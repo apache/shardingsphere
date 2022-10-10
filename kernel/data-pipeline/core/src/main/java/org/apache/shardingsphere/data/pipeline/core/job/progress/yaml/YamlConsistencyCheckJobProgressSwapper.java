@@ -30,6 +30,11 @@ public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigu
     public YamlConsistencyCheckJobProgress swapToYamlConfiguration(final ConsistencyCheckJobProgress data) {
         YamlConsistencyCheckJobProgress result = new YamlConsistencyCheckJobProgress();
         result.setStatus(data.getStatus().name());
+        result.setRecordsCount(data.getRecordsCount());
+        result.setCheckedRecordsCount(data.getCheckedRecordsCount());
+        result.setCheckBeginTimeMillis(data.getCheckBeginTimeMillis());
+        result.setCheckEndTimeMillis(data.getCheckEndTimeMillis());
+        result.setTableName(data.getTableName());
         return result;
     }
     
@@ -37,6 +42,11 @@ public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigu
     public ConsistencyCheckJobProgress swapToObject(final YamlConsistencyCheckJobProgress yamlConfig) {
         ConsistencyCheckJobProgress result = new ConsistencyCheckJobProgress();
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
+        result.setRecordsCount(yamlConfig.getRecordsCount());
+        result.setCheckedRecordsCount(yamlConfig.getCheckedRecordsCount());
+        result.setCheckBeginTimeMillis(yamlConfig.getCheckBeginTimeMillis());
+        result.setCheckEndTimeMillis(yamlConfig.getCheckEndTimeMillis());
+        result.setTableName(yamlConfig.getTableName());
         return result;
     }
 }

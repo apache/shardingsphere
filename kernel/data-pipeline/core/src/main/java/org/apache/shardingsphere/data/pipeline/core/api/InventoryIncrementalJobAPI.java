@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 
 import java.util.Map;
 
@@ -43,9 +44,10 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * Do data consistency check.
      *
      * @param pipelineJobConfig job configuration
+     * @param checkJobProgressListener consistency check job progress listener
      * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, PipelineJobProgressListener checkJobProgressListener);
     
     /**
      * Aggregate data consistency check results.

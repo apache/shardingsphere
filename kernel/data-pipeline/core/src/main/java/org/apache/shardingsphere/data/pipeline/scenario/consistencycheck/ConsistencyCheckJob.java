@@ -23,15 +23,16 @@ import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublic
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
@@ -57,6 +58,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         JobStatus status = JobStatus.RUNNING;
         ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(consistencyCheckJobConfig, 0, status);
         jobAPI.persistJobItemProgress(jobItemContext);
+        PipelineJobProgressPersistService.addJobProgressPersistContext(checkJobId, shardingContext.getShardingItem());
         String parentJobId = consistencyCheckJobConfig.getParentJobId();
         log.info("execute consistency check, job id:{}, referred job id:{}", checkJobId, parentJobId);
         JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
@@ -64,8 +66,8 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = Collections.emptyMap();
         try {
             dataConsistencyCheckResult = StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())
-                    ? jobPublicAPI.dataConsistencyCheck(parentJobId)
-                    : jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProps());
+                    ? jobPublicAPI.dataConsistencyCheck(parentJobId, jobItemContext)
+                    : jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProps(), jobItemContext);
             status = JobStatus.FINISHED;
         } catch (final SQLWrapperException ex) {
             log.error("data consistency check failed", ex);
@@ -74,6 +76,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
         jobItemContext.setStatus(status);
+        jobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.stop(checkJobId);
         log.info("execute consistency check job finished, job id:{}, parent job id:{}", checkJobId, parentJobId);
@@ -91,5 +94,6 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         }
         String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
         pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
 }

@@ -175,8 +175,8 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         assertTrue(null != checkJobResults && !checkJobResults.isEmpty());
         log.info("check job results: {}", checkJobResults);
         for (Map<String, Object> entry : checkJobResults) {
-            assertTrue(Boolean.parseBoolean(entry.get("records_count_matched").toString()));
-            assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
+            assertTrue(Boolean.parseBoolean(entry.get("check_result").toString()));
+            assertTrue(Boolean.parseBoolean(entry.get("check_result").toString()));
         }
     }
 }
