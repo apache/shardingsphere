@@ -18,22 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Data consistency check algorithm info.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
 public final class DataConsistencyCheckAlgorithmInfo {
     
-    private String type;
+    private final String type;
     
-    private String description;
+    private final Collection<String> supportedDatabaseTypes;
     
-    private Collection<String> supportedDatabaseTypes;
+    private final String description;
 }
