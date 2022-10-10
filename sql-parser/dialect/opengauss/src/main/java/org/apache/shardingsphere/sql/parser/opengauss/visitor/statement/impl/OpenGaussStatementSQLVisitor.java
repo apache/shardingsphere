@@ -902,8 +902,13 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
             OpenGaussSelectStatement result = (OpenGaussSelectStatement) visit(ctx.selectClauseN(0));
-            result.getCombines().add(new CombineSegment(
-                    ((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombineType(ctx), (OpenGaussSelectStatement) visit(ctx.selectClauseN(1))));
+            CombineSegment combineSegment = new CombineSegment(((TerminalNode) ctx.getChild(1)).getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), getCombineType(ctx),
+                    (OpenGaussSelectStatement) visit(ctx.selectClauseN(1)));
+            if (result.getCombine().isPresent()) {
+                result.getCombine().get().getSelectStatement().setCombine(combineSegment);
+            } else {
+                result.setCombine(combineSegment);
+            }
             return result;
         }
         return visit(ctx.selectWithParens());

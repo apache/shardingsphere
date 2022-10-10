@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
@@ -30,7 +29,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
@@ -40,7 +40,6 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobAP
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobItemContext;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,7 +66,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 @RunWith(MockitoJUnitRunner.class)
 public final class MigrationJobAPIImplTest {
     
@@ -95,18 +93,18 @@ public final class MigrationJobAPIImplTest {
     public void assertStartAndList() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        MigrationJobInfo jobInfo = getNonNullJobInfo(jobId.get());
-        assertTrue(jobInfo.isActive());
-        assertThat(jobInfo.getTable(), is("t_order"));
-        assertThat(jobInfo.getShardingTotalCount(), is(1));
+        PipelineJobInfo jobInfo = getNonNullJobInfo(jobId.get());
+        assertTrue(jobInfo.getJobMetaData().isActive());
+        assertThat(((TableBasedPipelineJobInfo) jobInfo).getTable(), is("t_order"));
+        assertThat(jobInfo.getJobMetaData().getShardingTotalCount(), is(1));
     }
     
-    private Optional<MigrationJobInfo> getJobInfo(final String jobId) {
-        return jobAPI.list().stream().filter(each -> Objects.equals(each.getJobId(), jobId)).reduce((a, b) -> a);
+    private Optional<? extends PipelineJobInfo> getJobInfo(final String jobId) {
+        return jobAPI.list().stream().filter(each -> Objects.equals(each.getJobMetaData().getJobId(), jobId)).reduce((a, b) -> a);
     }
     
-    private MigrationJobInfo getNonNullJobInfo(final String jobId) {
-        Optional<MigrationJobInfo> result = getJobInfo(jobId);
+    private PipelineJobInfo getNonNullJobInfo(final String jobId) {
+        Optional<? extends PipelineJobInfo> result = getJobInfo(jobId);
         assertTrue(result.isPresent());
         return result.get();
     }
@@ -115,11 +113,11 @@ public final class MigrationJobAPIImplTest {
     public void assertStartOrStopById() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        assertTrue(getNonNullJobInfo(jobId.get()).isActive());
+        assertTrue(getNonNullJobInfo(jobId.get()).getJobMetaData().isActive());
         jobAPI.stop(jobId.get());
-        assertFalse(getNonNullJobInfo(jobId.get()).isActive());
+        assertFalse(getNonNullJobInfo(jobId.get()).getJobMetaData().isActive());
         jobAPI.startDisabledJob(jobId.get());
-        assertTrue(getNonNullJobInfo(jobId.get()).isActive());
+        assertTrue(getNonNullJobInfo(jobId.get()).getJobMetaData().isActive());
     }
     
     @Test
@@ -133,7 +131,7 @@ public final class MigrationJobAPIImplTest {
     }
     
     @Test
-    public void assertCommit() throws SQLException {
+    public void assertCommit() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
@@ -156,11 +154,7 @@ public final class MigrationJobAPIImplTest {
         ReflectionUtil.setFieldValue(jobConfiguration, "uniqueKeyColumn", new PipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
         Optional<String> jobId = jobAPI.start(jobConfiguration);
         assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
-        if (null == jobConfig.getSource()) {
-            log.error("source is null, jobConfig={}", YamlEngine.marshal(jobConfig));
-        }
-        initTableData(jobConfig);
+        initTableData(jobAPI.getJobConfiguration(jobId.get()));
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.size(), is(1));
     }
@@ -169,8 +163,7 @@ public final class MigrationJobAPIImplTest {
     public void assertDataConsistencyCheckWithAlgorithm() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
-        initTableData(jobConfig);
+        initTableData(jobAPI.getJobConfiguration(jobId.get()));
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());

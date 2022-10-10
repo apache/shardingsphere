@@ -74,30 +74,30 @@
         <select>
             <!-- FIXME support VALUES (1) projection parse -->
             <projections start-index="-1" stop-index="-1" />
+            <combine combine-type="UNION_ALL" start-index="58" stop-index="107">
+                <select>
+                    <projections start-index="75" stop-index="77">
+                        <expression-projection text="n+1" start-index="75" stop-index="77" />
+                    </projections>
+                    <from>
+                        <simple-table name="nums_1_100" start-index="84" stop-index="93" />
+                    </from>
+                    <where start-index="95" stop-index="107">
+                        <expr>
+                            <binary-operation-expression start-index="101" stop-index="107">
+                                <left>
+                                    <column name="n" start-index="101" stop-index="101"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="100" start-index="105" stop-index="107"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </select>
+            </combine>
         </select>
-        <combine combine-type="UNION_ALL" start-index="58" stop-index="107">
-            <select>
-                <projections start-index="75" stop-index="77">
-                    <expression-projection text="n+1" alias="a" start-index="75" stop-index="77" />
-                </projections>
-                <from>
-                    <simple-table name="nums_1_100" start-index="84" stop-index="93" />
-                </from>
-                <where start-index="95" stop-index="107">
-                    <expr>
-                        <binary-operation-expression start-index="101" stop-index="107">
-                            <left>
-                                <column name="n" start-index="101" stop-index="101"/>
-                            </left>
-                            <right>
-                                <literal-expression value="100" start-index="105" stop-index="107"/>
-                            </right>
-                            <operator>=</operator>
-                        </binary-operation-expression>
-                    </expr>
-                </where>
-            </select>
-        </combine>
     </create-view>
     
     <create-view sql-case-id="create_view_with_option" view-definition="SELECT * FROM t_order">

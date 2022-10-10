@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Daily - Nightly Builds
+name: Nightly - build
 
 on:
   schedule:
@@ -30,24 +30,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
           key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
       - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
-      - name: Build Project
+      - name: Build project
         run: |
           ./mvnw -B clean install -Prelease
-      - name: rsync
-        uses: burnett01/rsync-deployments@5.2
+      - uses: burnett01/rsync-deployments@5.2
         with:
           switches: -avzr
           path: distribution/proxy/target/apache-shardingsphere-*.tar.gz

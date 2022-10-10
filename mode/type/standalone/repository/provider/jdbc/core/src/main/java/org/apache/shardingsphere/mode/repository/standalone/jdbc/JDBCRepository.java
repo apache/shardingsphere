@@ -76,6 +76,12 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public String get(final String key) {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByKeySQL())) {
@@ -116,10 +122,14 @@ public final class JDBCRepository implements StandalonePersistRepository {
     }
     
     @Override
+    public boolean isExisted(final String key) {
+        return !Strings.isNullOrEmpty(getDirectly(key));
+    }
+    
+    @Override
     public void persist(final String key, final String value) {
         try {
-            String oldValue = get(key);
-            if (!Strings.isNullOrEmpty(oldValue)) {
+            if (isExisted(key)) {
                 update(key, value);
                 return;
             }
@@ -129,7 +139,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
             // Create key level directory recursively.
             for (int i = 0; i < paths.length - 1; i++) {
                 String tempKey = tempPrefix + SEPARATOR + paths[i];
-                String tempKeyVal = get(tempKey);
+                String tempKeyVal = getDirectly(tempKey);
                 if (Strings.isNullOrEmpty(tempKeyVal)) {
                     if (i != 0) {
                         parent = tempPrefix;
@@ -157,13 +167,16 @@ public final class JDBCRepository implements StandalonePersistRepository {
         }
     }
     
-    private void update(final String key, final String value) throws SQLException {
+    @Override
+    public void update(final String key, final String value) {
         try (
                 Connection connection = hikariDataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.updateSQL())) {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            log.error("Update {} data to key: {} failed", getType(), key, ex);
         }
     }
     

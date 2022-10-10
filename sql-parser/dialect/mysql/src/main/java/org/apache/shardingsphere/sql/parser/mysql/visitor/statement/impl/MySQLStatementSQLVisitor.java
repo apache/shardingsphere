@@ -686,11 +686,16 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.queryExpressionBody()) {
             MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
-            result.getCombines().add((CombineSegment) visitCombineClause(ctx.combineClause()));
+            CombineSegment combineSegment = (CombineSegment) visitCombineClause(ctx.combineClause());
+            if (result.getCombine().isPresent()) {
+                result.getCombine().get().getSelectStatement().setCombine(combineSegment);
+            } else {
+                result.setCombine(combineSegment);
+            }
             return result;
         }
         MySQLSelectStatement result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
-        result.getCombines().add((CombineSegment) visitCombineClause(ctx.combineClause()));
+        result.setCombine((CombineSegment) visitCombineClause(ctx.combineClause()));
         return result;
     }
     

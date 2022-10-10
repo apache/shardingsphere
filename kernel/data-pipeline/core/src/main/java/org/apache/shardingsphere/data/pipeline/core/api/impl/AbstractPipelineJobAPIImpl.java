@@ -24,6 +24,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -85,12 +86,12 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected abstract PipelineJobInfo getJobInfo(String jobId);
     
-    protected void fillJobInfo(final PipelineJobInfo jobInfo, final JobConfigurationPOJO jobConfigPOJO) {
-        jobInfo.setActive(!jobConfigPOJO.isDisabled());
-        jobInfo.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
-        jobInfo.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
-        jobInfo.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        jobInfo.setJobParameter(jobConfigPOJO.getJobParameter());
+    protected void fillJobMetaData(final PipelineJobMetaData jobMetaData, final JobConfigurationPOJO jobConfigPOJO) {
+        jobMetaData.setActive(!jobConfigPOJO.isDisabled());
+        jobMetaData.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
+        jobMetaData.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
+        jobMetaData.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
+        jobMetaData.setJobParameter(jobConfigPOJO.getJobParameter());
     }
     
     @Override

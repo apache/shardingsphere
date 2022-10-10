@@ -30,8 +30,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMap
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
@@ -49,10 +47,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
-import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
@@ -67,6 +63,10 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipe
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.yaml.metadata.YamlPipelineColumnMetaDataSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -99,7 +99,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -109,9 +108,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAPIImpl implements MigrationJobAPI {
     
-    private static final YamlRuleConfigurationSwapperEngine RULE_CONFIG_SWAPPER_ENGINE = new YamlRuleConfigurationSwapperEngine();
+    private final YamlRuleConfigurationSwapperEngine swapperEngine = new YamlRuleConfigurationSwapperEngine();
     
-    private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_CONFIG_SWAPPER = new YamlDataSourceConfigurationSwapper();
+    private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
@@ -123,17 +122,11 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
-    public List<MigrationJobInfo> list() {
-        return (List<MigrationJobInfo>) super.list();
-    }
-    
-    @Override
-    protected MigrationJobInfo getJobInfo(final String jobId) {
-        MigrationJobInfo result = new MigrationJobInfo(jobId);
+    protected TableBasedPipelineJobInfo getJobInfo(final String jobId) {
+        TableBasedPipelineJobInfo result = new TableBasedPipelineJobInfo(jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        fillJobInfo(result, jobConfigPOJO);
+        fillJobMetaData(result.getJobMetaData(), jobConfigPOJO);
         result.setTable(getJobConfiguration(jobConfigPOJO).getSourceTableName());
         return result;
     }
@@ -372,7 +365,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     public String createJobAndStart(final CreateMigrationJobParameter parameter) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
-        Map<String, Object> sourceDataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(metaDataDataSource.get(parameter.getSourceResourceName()));
+        Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(parameter.getSourceResourceName()));
         YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfiguration = createYamlPipelineDataSourceConfiguration(StandardPipelineDataSourceConfiguration.TYPE,
                 YamlEngine.marshal(sourceDataSourceProps));
         result.setSource(sourcePipelineDataSourceConfiguration);
@@ -388,7 +381,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
         for (Entry<String, DataSource> entry : targetDatabase.getResource().getDataSources().entrySet()) {
-            Map<String, Object> dataSourceProps = DATA_SOURCE_CONFIG_SWAPPER.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
+            Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProperties.put(entry.getKey(), dataSourceProps);
         }
         String targetDatabaseName = parameter.getTargetDatabaseName();
@@ -416,7 +409,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setDatabaseName(databaseName);
         result.setDataSources(yamlDataSources);
-        Collection<YamlRuleConfiguration> yamlRuleConfigurations = RULE_CONFIG_SWAPPER_ENGINE.swapToYamlRuleConfigurations(rules);
+        Collection<YamlRuleConfiguration> yamlRuleConfigurations = swapperEngine.swapToYamlRuleConfigurations(rules);
         result.setRules(yamlRuleConfigurations);
         return result;
     }
@@ -431,8 +424,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     @Override
     public void startDisabledJob(final String jobId) {
         super.startDisabledJob(jobId);
-        Optional<String> optional = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId);
-        optional.ifPresent(s -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(s));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional));
     }
     
     @Override

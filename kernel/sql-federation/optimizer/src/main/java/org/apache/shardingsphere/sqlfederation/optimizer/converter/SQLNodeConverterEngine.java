@@ -19,17 +19,11 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.type.CombineOperatorConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-
-import java.util.Arrays;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLNodeConvertException;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
 /**
  * SQL node converter engine.
@@ -45,12 +39,7 @@ public final class SQLNodeConverterEngine {
      */
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
-            SqlNode sqlNode = new SelectStatementConverter().convert((SelectStatement) statement);
-            for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
-                SqlNode combineSqlNode = convert(each.getSelectStatement());
-                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), Arrays.asList(sqlNode, combineSqlNode), SqlParserPos.ZERO);
-            }
-            return sqlNode;
+            return new SelectStatementConverter().convert((SelectStatement) statement);
         }
         throw new OptimizationSQLNodeConvertException(statement);
     }

@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.transaction.CuratorOp;
+import org.apache.curator.framework.api.transaction.TransactionOp;
+import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -31,10 +35,12 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
@@ -45,13 +51,17 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Stat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Optional;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,7 +69,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CuratorZookeeperRepository implements ClusterPersistRepository, InstanceContextAware {
     
-    private final Map<String, CuratorCache> caches = new HashMap<>();
+    private final Map<String, CuratorCache> caches = new ConcurrentHashMap<>();
     
     private final Builder builder = CuratorFrameworkFactory.builder();
     
@@ -123,8 +133,115 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
+    public int getNumChildren(final String key) {
+        try {
+            Stat stat = client.checkExists().forPath(key);
+            if (null != stat) {
+                return stat.getNumChildren();
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+        return 0;
+    }
+    
+    @Override
+    public void addCacheData(final String cachePath) {
+        CuratorCache cache = CuratorCache.build(client, cachePath);
+        try {
+            cache.start();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+        caches.put(cachePath + "/", cache);
+    }
+    
+    @Override
+    public void evictCacheData(final String cachePath) {
+        CuratorCache cache = caches.remove(cachePath + "/");
+        if (null != cache) {
+            cache.close();
+        }
+    }
+    
+    @Override
+    public Object getRawCache(final String cachePath) {
+        return caches.get(cachePath + "/");
+    }
+    
+    @Override
+    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
+        // TODO
+    }
+    
+    @Override
+    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
+        client.transaction().forOperations(toCuratorOps(transactionOperations));
+    }
+    
+    private List<CuratorOp> toCuratorOps(final List<TransactionOperation> transactionOperations) {
+        List<CuratorOp> result = new ArrayList<>(transactionOperations.size());
+        TransactionOp transactionOp = client.transactionOp();
+        for (TransactionOperation each : transactionOperations) {
+            result.add(toCuratorOp(each, transactionOp));
+        }
+        return result;
+    }
+    
+    private CuratorOp toCuratorOp(final TransactionOperation each, final TransactionOp transactionOp) {
+        try {
+            switch (each.getType()) {
+                case CHECK_EXISTS:
+                    return transactionOp.check().forPath(each.getKey());
+                case ADD:
+                    return transactionOp.create().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
+                case UPDATE:
+                    return transactionOp.setData().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
+                case DELETE:
+                    return transactionOp.delete().forPath(each.getKey());
+                default:
+                    throw new UnsupportedOperationException(each.toString());
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new ClusterPersistRepositoryException(ex);
+        }
+    }
+    
+    @Override
+    public void updateInTransaction(final String key, final String value) {
+        try {
+            TransactionOp transactionOp = client.transactionOp();
+            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+    }
+    
+    @Override
     public String get(final String key) {
-        return getDirectly(key);
+        CuratorCache cache = findCuratorCache(key);
+        if (null == cache) {
+            return getDirectly(key);
+        }
+        Optional<ChildData> resultInCache = cache.get(key);
+        return resultInCache.map(v -> null == v.getData() ? null : new String(v.getData(), StandardCharsets.UTF_8)).orElseGet(() -> getDirectly(key));
+    }
+    
+    private CuratorCache findCuratorCache(final String key) {
+        for (Map.Entry<String, CuratorCache> entry : caches.entrySet()) {
+            if (key.startsWith(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
     
     @Override
@@ -156,7 +273,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         }
     }
     
-    private void update(final String key, final String value) {
+    @Override
+    public void update(final String key, final String value) {
         try {
             client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
@@ -166,7 +284,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         }
     }
     
-    private String getDirectly(final String key) {
+    @Override
+    public String getDirectly(final String key) {
         try {
             return new String(client.getData().forPath(key), StandardCharsets.UTF_8);
             // CHECKSTYLE:OFF
@@ -177,7 +296,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         }
     }
     
-    private boolean isExisted(final String key) {
+    @Override
+    public boolean isExisted(final String key) {
         try {
             return null != client.checkExists().forPath(key);
             // CHECKSTYLE:OFF
@@ -230,7 +350,27 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
+    public long getRegistryCenterTime(final String key) {
+        long result = 0L;
+        try {
+            persist(key, "");
+            result = client.checkExists().forPath(key).getMtime();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            CuratorZookeeperExceptionHandler.handleException(ex);
+        }
+        Preconditions.checkState(0L != result, "Cannot get registry center time.");
+        return result;
+    }
+    
+    @Override
+    public Object getRawClient() {
+        return client;
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
         CuratorCache cache = caches.get(key);
         if (null == cache) {
             cache = CuratorCache.build(client, key);
@@ -244,7 +384,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-        cache.listenable().addListener(curatorCacheListener);
+        if (null != executor) {
+            cache.listenable().addListener(curatorCacheListener, executor);
+        } else {
+            cache.listenable().addListener(curatorCacheListener);
+        }
         start(cache);
     }
     

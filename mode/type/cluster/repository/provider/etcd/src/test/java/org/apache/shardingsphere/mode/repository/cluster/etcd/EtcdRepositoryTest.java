@@ -133,7 +133,7 @@ public final class EtcdRepositoryTest {
     
     @Test
     public void assertGetKey() {
-        repository.get("key");
+        repository.getDirectly("key");
         verify(kv).get(ByteSequence.from("key", StandardCharsets.UTF_8));
         verify(getResponse).getKvs();
     }
@@ -173,7 +173,7 @@ public final class EtcdRepositoryTest {
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", event -> {
-        });
+        }, null);
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -185,7 +185,7 @@ public final class EtcdRepositoryTest {
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", event -> {
-        });
+        }, null);
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -197,7 +197,7 @@ public final class EtcdRepositoryTest {
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", event -> {
-        });
+        }, null);
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -223,7 +223,7 @@ public final class EtcdRepositoryTest {
     public void assertGetKeyWhenThrowInterruptedException() throws ExecutionException, InterruptedException {
         doThrow(InterruptedException.class).when(getFuture).get();
         try {
-            repository.get("key");
+            repository.getDirectly("key");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -235,7 +235,7 @@ public final class EtcdRepositoryTest {
     public void assertGetKeyWhenThrowExecutionException() throws ExecutionException, InterruptedException {
         doThrow(ExecutionException.class).when(getFuture).get();
         try {
-            repository.get("key");
+            repository.getDirectly("key");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

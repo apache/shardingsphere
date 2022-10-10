@@ -43,7 +43,7 @@ public final class MetaDataVersionPersistServiceTest {
     @Before
     public void setUp() {
         repository = mock(PersistRepository.class);
-        when(repository.get(contains("foo_db"))).thenReturn("1");
+        when(repository.getDirectly(contains("foo_db"))).thenReturn("1");
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
     }
     

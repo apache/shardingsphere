@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
  */
 public final class PipelineProcessConfigurationPersistService implements PipelineMetaDataPersistService<PipelineProcessConfiguration> {
     
-    private static final YamlPipelineProcessConfigurationSwapper PROCESS_CONFIG_SWAPPER = new YamlPipelineProcessConfigurationSwapper();
+    private final YamlPipelineProcessConfigurationSwapper swapper = new YamlPipelineProcessConfigurationSwapper();
     
     @Override
     public PipelineProcessConfiguration load(final JobType jobType) {
@@ -43,12 +43,12 @@ public final class PipelineProcessConfigurationPersistService implements Pipelin
         if (null == yamlConfig || yamlConfig.isAllFieldsNull()) {
             return null;
         }
-        return PROCESS_CONFIG_SWAPPER.swapToObject(yamlConfig);
+        return swapper.swapToObject(yamlConfig);
     }
     
     @Override
     public void persist(final JobType jobType, final PipelineProcessConfiguration processConfig) {
-        String yamlText = YamlEngine.marshal(PROCESS_CONFIG_SWAPPER.swapToYamlConfiguration(processConfig));
+        String yamlText = YamlEngine.marshal(swapper.swapToYamlConfiguration(processConfig));
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistMetaDataProcessConfiguration(jobType, yamlText);
     }
 }

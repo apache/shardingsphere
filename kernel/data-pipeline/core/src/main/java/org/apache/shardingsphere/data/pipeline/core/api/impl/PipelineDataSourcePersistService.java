@@ -35,7 +35,7 @@ import java.util.Map.Entry;
  */
 public final class PipelineDataSourcePersistService implements PipelineMetaDataPersistService<Map<String, DataSourceProperties>> {
     
-    private static final YamlDataSourceConfigurationSwapper DATA_SOURCE_CONFIG_SWAPPER = new YamlDataSourceConfigurationSwapper();
+    private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
     @Override
     @SuppressWarnings("unchecked")
@@ -46,7 +46,7 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
         }
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProperties, Map.class);
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size());
-        yamlDataSources.forEach((key, value) -> result.put(key, DATA_SOURCE_CONFIG_SWAPPER.swapToDataSourceProperties(value)));
+        yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourceProperties(value)));
         return result;
     }
     
@@ -54,7 +54,7 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     public void persist(final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size());
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
-            dataSourceMap.put(entry.getKey(), DATA_SOURCE_CONFIG_SWAPPER.swapToMap(entry.getValue()));
+            dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));
         }
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));
     }

@@ -117,7 +117,7 @@
         <!-- Imports -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.Assert.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
+            <property name="excludes" value="org.junit.Assert.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
         </module>
         <module name="IllegalImport">
             <property name="illegalClasses" value="org.mockito.junit.MockitoJUnitRunner.Silent" />

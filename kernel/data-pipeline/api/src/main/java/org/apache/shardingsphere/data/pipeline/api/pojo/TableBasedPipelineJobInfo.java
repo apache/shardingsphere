@@ -22,17 +22,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Migration job info.
+ * Table based pipeline job info.
  */
-
-@Setter
 @Getter
+@Setter
 @ToString(callSuper = true)
-public final class MigrationJobInfo extends PipelineJobInfo {
+public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
+    
+    private final PipelineJobMetaData jobMetaData;
     
     private String table;
     
-    public MigrationJobInfo(final String jobId) {
-        super(jobId);
+    public TableBasedPipelineJobInfo(final String jobId) {
+        jobMetaData = new PipelineJobMetaData(jobId);
     }
 }

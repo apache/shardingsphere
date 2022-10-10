@@ -25,8 +25,8 @@ import java.util.Properties;
 /**
  * Create consistency check job parameter.
  */
-@Data
 @RequiredArgsConstructor
+@Data
 public final class CreateConsistencyCheckJobParameter {
     
     private final String jobId;

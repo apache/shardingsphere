@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 
 import java.util.Iterator;
 import java.util.Optional;
@@ -33,10 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Getter
 @Slf4j
-public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
+public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
     @Override
-    public final Iterable<Object> calculate(final DataConsistencyCalculateParameter parameter) {
+    public final Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
         return new ResultIterable(parameter);
     }
     
@@ -46,30 +46,30 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm impleme
      * @param parameter data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<Object> calculateChunk(DataConsistencyCalculateParameter parameter);
+    protected abstract Optional<DataConsistencyCalculatedResult> calculateChunk(DataConsistencyCalculateParameter parameter);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
      */
     @RequiredArgsConstructor
-    final class ResultIterable implements Iterable<Object> {
+    final class ResultIterable implements Iterable<DataConsistencyCalculatedResult> {
         
         private final DataConsistencyCalculateParameter parameter;
         
         @Override
-        public Iterator<Object> iterator() {
+        public Iterator<DataConsistencyCalculatedResult> iterator() {
             return new ResultIterator(parameter);
         }
     }
     
     @RequiredArgsConstructor
-    final class ResultIterator implements Iterator<Object> {
+    final class ResultIterator implements Iterator<DataConsistencyCalculatedResult> {
         
         private final DataConsistencyCalculateParameter parameter;
         
         private final AtomicInteger calculationCount = new AtomicInteger(0);
         
-        private volatile Optional<Object> nextResult;
+        private volatile Optional<DataConsistencyCalculatedResult> nextResult;
         
         @Override
         public boolean hasNext() {
@@ -78,9 +78,9 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm impleme
         }
         
         @Override
-        public Object next() {
+        public DataConsistencyCalculatedResult next() {
             calculateIfNecessary();
-            Optional<Object> nextResult = this.nextResult;
+            Optional<DataConsistencyCalculatedResult> nextResult = this.nextResult;
             parameter.setPreviousCalculatedResult(nextResult.orElse(null));
             this.nextResult = null;
             return nextResult.orElse(null);

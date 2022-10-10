@@ -70,7 +70,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
         ConsistencyCheckJob job = new ConsistencyCheckJob();
         PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
-        job.setOneOffJobBootstrap(oneOffJobBootstrap);
+        job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }
     

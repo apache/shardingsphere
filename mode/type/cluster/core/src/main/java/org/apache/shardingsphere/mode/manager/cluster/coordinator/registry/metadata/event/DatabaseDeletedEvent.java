@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * database deleted event.
+ * Database deleted event.
  */
 @RequiredArgsConstructor
 @Getter

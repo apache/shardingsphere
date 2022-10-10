@@ -31,7 +31,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.fixture.JDBCRepositoryProviderFixture;
 import org.h2.jdbc.JdbcCallableStatement;
 import org.h2.jdbc.JdbcConnection;
@@ -96,7 +95,7 @@ public final class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString(eq("value"))).thenReturn(value);
-        String actualResponse = repository.get(key);
+        String actualResponse = repository.getDirectly(key);
         verify(mockPreparedStatement).setString(eq(1), eq(key));
         assertEquals(value, actualResponse);
     }
@@ -104,7 +103,7 @@ public final class JDBCRepositoryTest {
     @Test
     public void assertGetFailure() throws Exception {
         when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-        String actualResponse = repository.get("key");
+        String actualResponse = repository.getDirectly("key");
         assertEquals("", actualResponse);
     }
     
@@ -159,7 +158,7 @@ public final class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         repository.persist(key, value);
-        int depthOfDirectory = StringUtils.countMatches(key, "/");
+        int depthOfDirectory = (int) key.chars().filter(ch -> ch == '/').count();
         int beginIndex = 0;
         String parentDirectory = "/";
         for (int i = 0; i < depthOfDirectory; i++) {

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
@@ -59,8 +59,8 @@ public final class ViewMetaDataPersistService implements SchemaMetaDataPersistSe
     private Map<String, ShardingSphereView> getViewMetaDataByViewNames(final String databaseName, final String schemaName, final Collection<String> viewNames) {
         Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewNames.size(), 1);
         viewNames.forEach(each -> {
-            String view = repository.get(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, each));
-            if (!StringUtils.isEmpty(view)) {
+            String view = repository.getDirectly(DatabaseMetaDataNode.getViewMetaDataPath(databaseName, schemaName, each));
+            if (!Strings.isNullOrEmpty(view)) {
                 result.put(each.toLowerCase(), new YamlViewSwapper().swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class)));
             }
         });
