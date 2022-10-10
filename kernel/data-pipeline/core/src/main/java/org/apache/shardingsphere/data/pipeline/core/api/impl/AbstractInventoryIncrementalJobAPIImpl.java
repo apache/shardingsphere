@@ -141,23 +141,17 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream().map(each -> {
-            DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
-            result.setType(each.getType());
-            result.setDescription(each.getDescription());
-            result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-            return result;
-        }).collect(Collectors.toList());
+        return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream()
+                .map(each -> new DataConsistencyCheckAlgorithmInfo(each.getType(), each.getDescription(), each.getSupportedDatabaseTypes())).collect(Collectors.toList());
     }
     
     @Override
     public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final PipelineJobConfiguration jobConfig, final String algorithmType, final Properties algorithmProps) {
-        ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("algorithmType and jobConfig are null"));
-        if (null != algorithmType) {
-            return DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps);
-        }
-        return DataConsistencyCalculateAlgorithmChooser.choose(
-                DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)));
+        ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
+        return null == algorithmType
+                ? DataConsistencyCalculateAlgorithmChooser.choose(
+                        DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)))
+                : DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps);
     }
     
     @Override
