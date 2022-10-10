@@ -24,7 +24,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobDetail;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -86,7 +86,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected abstract PipelineJobInfo getJobInfo(String jobId);
     
-    protected void fillJobDetail(final PipelineJobDetail jobDetail, final JobConfigurationPOJO jobConfigPOJO) {
+    protected void fillJobMetaData(final PipelineJobMetaData jobDetail, final JobConfigurationPOJO jobConfigPOJO) {
         jobDetail.setActive(!jobConfigPOJO.isDisabled());
         jobDetail.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
         jobDetail.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));

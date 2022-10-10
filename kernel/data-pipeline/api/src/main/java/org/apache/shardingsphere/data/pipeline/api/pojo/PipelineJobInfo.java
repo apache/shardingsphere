@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 /**
- * Pipeline job info.
+ * Pipeline job meta data.
  */
 public interface PipelineJobInfo {
     
     /**
-     * Get job detail.
+     * Get job meta data.
      * 
-     * @return job detail
+     * @return job meta data
      */
-    PipelineJobDetail getJobDetail();
+    PipelineJobMetaData getJobMetaData();
 }

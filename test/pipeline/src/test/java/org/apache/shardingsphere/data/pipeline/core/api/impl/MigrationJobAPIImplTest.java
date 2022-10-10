@@ -94,13 +94,13 @@ public final class MigrationJobAPIImplTest {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         PipelineJobInfo jobInfo = getNonNullJobInfo(jobId.get());
-        assertTrue(jobInfo.getJobDetail().isActive());
+        assertTrue(jobInfo.getJobMetaData().isActive());
         assertThat(((TableBasedPipelineJobInfo) jobInfo).getTable(), is("t_order"));
-        assertThat(jobInfo.getJobDetail().getShardingTotalCount(), is(1));
+        assertThat(jobInfo.getJobMetaData().getShardingTotalCount(), is(1));
     }
     
     private Optional<? extends PipelineJobInfo> getJobInfo(final String jobId) {
-        return jobAPI.list().stream().filter(each -> Objects.equals(each.getJobDetail().getJobId(), jobId)).reduce((a, b) -> a);
+        return jobAPI.list().stream().filter(each -> Objects.equals(each.getJobMetaData().getJobId(), jobId)).reduce((a, b) -> a);
     }
     
     private PipelineJobInfo getNonNullJobInfo(final String jobId) {
@@ -113,11 +113,11 @@ public final class MigrationJobAPIImplTest {
     public void assertStartOrStopById() {
         Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        assertTrue(getNonNullJobInfo(jobId.get()).getJobDetail().isActive());
+        assertTrue(getNonNullJobInfo(jobId.get()).getJobMetaData().isActive());
         jobAPI.stop(jobId.get());
-        assertFalse(getNonNullJobInfo(jobId.get()).getJobDetail().isActive());
+        assertFalse(getNonNullJobInfo(jobId.get()).getJobMetaData().isActive());
         jobAPI.startDisabledJob(jobId.get());
-        assertTrue(getNonNullJobInfo(jobId.get()).getJobDetail().isActive());
+        assertTrue(getNonNullJobInfo(jobId.get()).getJobMetaData().isActive());
     }
     
     @Test

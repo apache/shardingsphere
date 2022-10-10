@@ -29,11 +29,11 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     
-    private final PipelineJobDetail jobDetail;
+    private final PipelineJobMetaData jobMetaData;
     
     private String table;
     
     public TableBasedPipelineJobInfo(final String jobId) {
-        jobDetail = new PipelineJobDetail(jobId);
+        jobMetaData = new PipelineJobMetaData(jobId);
     }
 }

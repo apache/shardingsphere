@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * Pipeline job detail.
+ * Pipeline job meta data.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class PipelineJobDetail {
+public final class PipelineJobMetaData {
     
     private final String jobId;
     
