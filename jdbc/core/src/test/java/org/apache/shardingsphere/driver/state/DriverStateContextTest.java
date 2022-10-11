@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
@@ -63,8 +62,9 @@ public final class DriverStateContextTest {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
-        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class)), new ShardingSphereData()));
+        MetaDataPersistService mockedPersistService = mock(MetaDataPersistService.class);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mockedPersistService, new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class)));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     
