@@ -78,7 +78,7 @@ public enum SystemSchemaBuilderRule {
     
     OPEN_GAUSS_PG_TOAST("openGauss", "pg_toast", Collections.emptySet()),
     
-    OPEN_GAUSS_pkg_util("openGauss", "pkg_util", Collections.emptySet()),
+    OPEN_GAUSS_PKG_UTIL("openGauss", "pkg_util", Collections.emptySet()),
     
     OPEN_GAUSS_SQLADVISOR("openGauss", "sqladvisor", Collections.emptySet()),
     

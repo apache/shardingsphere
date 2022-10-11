@@ -84,7 +84,7 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResources().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
+        when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
         return result;
     }
     

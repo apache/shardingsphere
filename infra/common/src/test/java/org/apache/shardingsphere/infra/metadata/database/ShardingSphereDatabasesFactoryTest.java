@@ -46,7 +46,7 @@ public final class ShardingSphereDatabasesFactoryTest {
         ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertThat(actual.getName(), is("foo_db"));
         assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
-        assertTrue(actual.getResources().getDataSources().isEmpty());
+        assertTrue(actual.getResourceMetaData().getDataSources().isEmpty());
     }
     
     @Test
@@ -57,7 +57,7 @@ public final class ShardingSphereDatabasesFactoryTest {
         Collection<ShardingSphereRule> rules = actual.get("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
-        assertTrue(actual.get("foo_db").getResources().getDataSources().isEmpty());
+        assertTrue(actual.get("foo_db").getResourceMetaData().getDataSources().isEmpty());
     }
     
     @Test
@@ -68,6 +68,6 @@ public final class ShardingSphereDatabasesFactoryTest {
         Collection<ShardingSphereRule> rules = actual.get("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
-        assertTrue(actual.get("foo_db").getResources().getDataSources().isEmpty());
+        assertTrue(actual.get("foo_db").getResourceMetaData().getDataSources().isEmpty());
     }
 }

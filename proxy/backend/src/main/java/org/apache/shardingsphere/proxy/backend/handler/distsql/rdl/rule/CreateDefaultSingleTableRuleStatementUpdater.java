@@ -40,7 +40,7 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     }
     
     private void checkResourceExist(final ShardingSphereDatabase database, final CreateDefaultSingleTableRuleStatement sqlStatement) {
-        Collection<String> resourceNames = database.getResources().getDataSources().keySet();
+        Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
         ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
                 () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
     }

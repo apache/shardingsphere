@@ -52,7 +52,7 @@ public abstract class AbstractSpringNamespaceTest extends AbstractJUnit4SpringCo
     
     @Test
     public void assertShardingSphereDataSource() {
-        assertDataSources(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResources().getDataSources());
+        assertDataSources(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getDataSources());
         assertDatabaseRules(getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules());
         assertGlobalRules(getContextManager(dataSource).getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     }

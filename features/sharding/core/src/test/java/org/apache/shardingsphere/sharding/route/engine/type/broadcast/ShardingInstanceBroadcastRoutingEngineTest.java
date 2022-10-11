@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;
@@ -41,15 +41,15 @@ public final class ShardingInstanceBroadcastRoutingEngineTest {
     private ShardingRule shardingRule;
     
     @Mock
-    private ShardingSphereResources resource;
+    private ShardingSphereResourceMetaData resources;
     
     private ShardingInstanceBroadcastRoutingEngine shardingInstanceBroadcastRoutingEngine;
     
     @Before
     public void setUp() {
         when(shardingRule.getDataSourceNames()).thenReturn(Collections.singletonList(DATASOURCE_NAME));
-        when(resource.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton(DATASOURCE_NAME));
-        shardingInstanceBroadcastRoutingEngine = new ShardingInstanceBroadcastRoutingEngine(resource);
+        when(resources.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton(DATASOURCE_NAME));
+        shardingInstanceBroadcastRoutingEngine = new ShardingInstanceBroadcastRoutingEngine(resources);
     }
     
     @Test

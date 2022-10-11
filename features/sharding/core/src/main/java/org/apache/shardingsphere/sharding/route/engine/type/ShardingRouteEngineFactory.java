@@ -115,7 +115,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (sqlStatement instanceof CreateTablespaceStatement || sqlStatement instanceof AlterTablespaceStatement || sqlStatement instanceof DropTablespaceStatement) {
-            return new ShardingInstanceBroadcastRoutingEngine(database.getResources());
+            return new ShardingInstanceBroadcastRoutingEngine(database.getResourceMetaData());
         }
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
@@ -163,7 +163,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (isResourceGroupStatement(sqlStatement)) {
-            return new ShardingInstanceBroadcastRoutingEngine(database.getResources());
+            return new ShardingInstanceBroadcastRoutingEngine(database.getResourceMetaData());
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(tableNames);
@@ -193,7 +193,7 @@ public final class ShardingRouteEngineFactory {
             Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
             return shardingRuleTableNames.isEmpty() ? new ShardingIgnoreRoutingEngine() : new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
         }
-        return new ShardingInstanceBroadcastRoutingEngine(database.getResources());
+        return new ShardingInstanceBroadcastRoutingEngine(database.getResourceMetaData());
     }
     
     private static boolean isDCLForSingleTable(final SQLStatementContext<?> sqlStatementContext) {

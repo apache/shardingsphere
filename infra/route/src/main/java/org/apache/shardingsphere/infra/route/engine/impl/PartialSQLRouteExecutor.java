@@ -60,8 +60,8 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
                 entry.getValue().decorateRouteContext(result, queryContext, database, entry.getKey(), props, connectionContext);
             }
         }
-        if (result.getRouteUnits().isEmpty() && 1 == database.getResources().getDataSources().size()) {
-            String singleDataSourceName = database.getResources().getDataSources().keySet().iterator().next();
+        if (result.getRouteUnits().isEmpty() && 1 == database.getResourceMetaData().getDataSources().size()) {
+            String singleDataSourceName = database.getResourceMetaData().getDataSources().keySet().iterator().next();
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
         }
         return result;

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
@@ -54,17 +54,17 @@ public final class ShardingSphereDatabase {
     
     private final DatabaseType protocolType;
     
-    private final ShardingSphereResources resources;
+    private final ShardingSphereResourceMetaData resourceMetaData;
     
     private final ShardingSphereRuleMetaData ruleMetaData;
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ShardingSphereResources resources,
+    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData,
                                   final ShardingSphereRuleMetaData ruleMetaData, final Map<String, ShardingSphereSchema> schemas) {
         this.name = name;
         this.protocolType = protocolType;
-        this.resources = resources;
+        this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
         this.schemas = new ConcurrentHashMap<>(schemas.size(), 1);
         schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
@@ -107,13 +107,13 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                  final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResources resources = createResources(name, databaseConfig.getDataSources());
+        ShardingSphereResourceMetaData resources = createResources(name, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         return new ShardingSphereDatabase(name, protocolType, resources, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResources createResources(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        return new ShardingSphereResources(databaseName, dataSourceMap);
+    private static ShardingSphereResourceMetaData createResources(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+        return new ShardingSphereResourceMetaData(databaseName, dataSourceMap);
     }
     
     /**
@@ -161,7 +161,7 @@ public final class ShardingSphereDatabase {
      * @return is completed or not
      */
     public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resources.getDataSources().isEmpty();
+        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getDataSources().isEmpty();
     }
     
     /**
@@ -170,7 +170,7 @@ public final class ShardingSphereDatabase {
      * @return contains data source or not
      */
     public boolean containsDataSource() {
-        return !resources.getDataSources().isEmpty();
+        return !resourceMetaData.getDataSources().isEmpty();
     }
     
     /**
@@ -183,7 +183,7 @@ public final class ShardingSphereDatabase {
         RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             ruleMetaData.getRules().removeAll(toBeReloadedRules);
-            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resources.getDataSources(), ruleMetaData.getRules()));
+            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resourceMetaData.getDataSources(), ruleMetaData.getRules()));
         });
     }
 }

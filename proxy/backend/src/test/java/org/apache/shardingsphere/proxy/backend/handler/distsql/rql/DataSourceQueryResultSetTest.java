@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQueryResultSet;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
@@ -46,8 +46,8 @@ public final class DataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResources resource = new ShardingSphereResources("sharding_db", Collections.singletonMap("foo_ds", createDataSource()));
-        when(database.getResources()).thenReturn(resource);
+        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", createDataSource()));
+        when(database.getResourceMetaData()).thenReturn(resource);
     }
     
     private MockedDataSource createDataSource() {

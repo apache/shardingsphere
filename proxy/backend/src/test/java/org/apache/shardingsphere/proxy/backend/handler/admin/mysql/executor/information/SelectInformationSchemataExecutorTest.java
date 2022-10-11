@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -135,16 +135,16 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
-    private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResources resource) {
+    private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResourceMetaData resource) {
         return new ShardingSphereDatabase(databaseName, new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName) {
-        return createDatabase(databaseName, new ShardingSphereResources("sharding_db", Collections.emptyMap()));
+        return createDatabase(databaseName, new ShardingSphereResourceMetaData("sharding_db", Collections.emptyMap()));
     }
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
-        return createDatabase("auth_db", new ShardingSphereResources("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
+        return createDatabase("auth_db", new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {

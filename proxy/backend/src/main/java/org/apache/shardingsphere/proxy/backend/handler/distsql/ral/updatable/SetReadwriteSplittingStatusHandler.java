@@ -123,7 +123,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) {
         Collection<String> notExistedResources = contextManager
-                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResources().getNotExistedResources(Collections.singleton(toBeDisabledResource));
+                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getNotExistedResources(Collections.singleton(toBeDisabledResource));
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     

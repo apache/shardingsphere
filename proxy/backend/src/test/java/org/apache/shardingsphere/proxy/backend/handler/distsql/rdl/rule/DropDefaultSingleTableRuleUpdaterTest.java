@@ -45,7 +45,7 @@ public final class DropDefaultSingleTableRuleUpdaterTest {
     @Before
     public void setUp() {
         when(database.getName()).thenReturn("sharding_db");
-        when(database.getResources().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
+        when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
     }
     
     @Test(expected = MissingRequiredRuleException.class)

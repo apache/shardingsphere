@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,11 +58,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResources resource;
+    private ShardingSphereResourceMetaData resources;
     
     @Before
     public void before() {
-        when(database.getResources()).thenReturn(resource);
+        when(database.getResourceMetaData()).thenReturn(resources);
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -75,7 +75,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() {
-        when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
+        when(resources.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "", "");
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), null);
     }

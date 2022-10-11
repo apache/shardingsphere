@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedRes
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.UnusedDataSourceQueryResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -57,9 +57,9 @@ public final class UnusedDataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResources resource = new ShardingSphereResources("sharding_db", createDataSources());
+        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", createDataSources());
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
-        when(database.getResources()).thenReturn(resource);
+        when(database.getResourceMetaData()).thenReturn(resource);
         when(database.getRuleMetaData()).thenReturn(metaData);
     }
     

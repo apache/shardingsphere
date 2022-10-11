@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -76,8 +76,8 @@ public final class SQLRewriteEntryTest {
         assertThat(sqlRewriteResult.getSqlRewriteUnits().size(), is(2));
     }
     
-    private ShardingSphereResources mockResource() {
-        ShardingSphereResources result = mock(ShardingSphereResources.class);
+    private ShardingSphereResourceMetaData mockResource() {
+        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
         return result;
     }

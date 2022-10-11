@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -63,7 +63,7 @@ public final class UnusedDataSourceQueryResultSet implements DatabaseDistSQLResu
     
     private static final String READ_ONLY = "readOnly";
     
-    private ShardingSphereResources resource;
+    private ShardingSphereResourceMetaData resource;
     
     private Map<String, DataSourceProperties> dataSourcePropsMap;
     
@@ -71,10 +71,10 @@ public final class UnusedDataSourceQueryResultSet implements DatabaseDistSQLResu
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        resource = database.getResources();
-        dataSourcePropsMap = new LinkedHashMap<>(database.getResources().getDataSources().size(), 1);
+        resource = database.getResourceMetaData();
+        dataSourcePropsMap = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1);
         Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
-        for (Entry<String, DataSource> entry : database.getResources().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
             if (inUsedMultiMap.containsKey(entry.getKey())) {
                 continue;
             }

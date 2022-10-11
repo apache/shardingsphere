@@ -59,7 +59,7 @@ public final class ExecutionContextBuilder {
     
     private static Collection<ExecutionUnit> build(final ShardingSphereDatabase database,
                                                    final GenericSQLRewriteResult sqlRewriteResult, final SQLStatementContext<?> sqlStatementContext) {
-        Collection<String> instanceDataSourceNames = database.getResources().getAllInstanceDataSourceNames();
+        Collection<String> instanceDataSourceNames = database.getResourceMetaData().getAllInstanceDataSourceNames();
         if (instanceDataSourceNames.isEmpty()) {
             return Collections.emptyList();
         }

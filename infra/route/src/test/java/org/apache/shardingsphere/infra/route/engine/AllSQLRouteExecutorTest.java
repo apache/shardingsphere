@@ -41,7 +41,7 @@ public final class AllSQLRouteExecutorTest {
     public void assertRouteSuccess() {
         String name = "test";
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResources().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
+        when(database.getResourceMetaData().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));
         AllSQLRouteExecutor allSQLRouteExecutor = new AllSQLRouteExecutor();
         RouteContext actual = allSQLRouteExecutor.route(new ConnectionContext(), mock(QueryContext.class), database);
         assertThat(actual.getRouteUnits().size(), is(1));

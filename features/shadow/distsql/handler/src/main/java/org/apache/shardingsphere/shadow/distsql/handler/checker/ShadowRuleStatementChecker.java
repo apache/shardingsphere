@@ -56,7 +56,7 @@ public class ShadowRuleStatementChecker {
      * @param database database
      */
     public static void checkResourceExist(final Collection<String> resources, final ShardingSphereDatabase database) {
-        Collection<String> notExistedResources = database.getResources().getNotExistedResources(resources);
+        Collection<String> notExistedResources = database.getResourceMetaData().getNotExistedResources(resources);
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(database.getName(), notExistedResources));
     }
     

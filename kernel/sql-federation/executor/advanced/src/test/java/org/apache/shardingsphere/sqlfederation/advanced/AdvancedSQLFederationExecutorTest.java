@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -69,8 +69,8 @@ public final class AdvancedSQLFederationExecutorTest {
         return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption))));
     }
     
-    private ShardingSphereResources mockResources() {
-        ShardingSphereResources result = mock(ShardingSphereResources.class);
+    private ShardingSphereResourceMetaData mockResources() {
+        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDatabaseType()).thenReturn(new H2DatabaseType());
         return result;
     }

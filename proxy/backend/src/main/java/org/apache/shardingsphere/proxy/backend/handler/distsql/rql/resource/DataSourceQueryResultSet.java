@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -53,7 +53,7 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     
     private static final String READ_ONLY = "readOnly";
     
-    private ShardingSphereResources resource;
+    private ShardingSphereResourceMetaData resource;
     
     private Map<String, DataSourceProperties> dataSourcePropsMap;
     
@@ -61,9 +61,9 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        resource = database.getResources();
-        dataSourcePropsMap = new LinkedHashMap<>(database.getResources().getDataSources().size(), 1);
-        for (Entry<String, DataSource> entry : database.getResources().getDataSources().entrySet()) {
+        resource = database.getResourceMetaData();
+        dataSourcePropsMap = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();

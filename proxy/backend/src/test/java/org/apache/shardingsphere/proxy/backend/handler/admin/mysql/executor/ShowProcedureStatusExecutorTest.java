@@ -64,7 +64,7 @@ public final class ShowProcedureStatusExecutorTest extends ProxyContextRestorer 
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.isComplete()).thenReturn(false);
-            when(database.getResources().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
@@ -76,11 +76,11 @@ public final class RenameTableStatementSchemaRefresherTest {
     
     private ShardingSphereDatabase createDatabaseMetaData() {
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType(),
-                mockShardingSphereResource(), new ShardingSphereRuleMetaData(new LinkedList<>()), Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class)));
+                mockShardingSphereResources(), new ShardingSphereRuleMetaData(new LinkedList<>()), Collections.singletonMap("foo_schema", mock(ShardingSphereSchema.class)));
     }
     
-    private ShardingSphereResources mockShardingSphereResource() {
-        ShardingSphereResources result = mock(ShardingSphereResources.class);
+    private ShardingSphereResourceMetaData mockShardingSphereResources() {
+        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDataSources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()));
         when(result.getDatabaseType()).thenReturn(new SQL92DatabaseType());
         return result;

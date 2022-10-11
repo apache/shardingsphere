@@ -35,7 +35,7 @@ public final class AllSQLRouteExecutor implements SQLRouteExecutor {
     @Override
     public RouteContext route(final ConnectionContext connectionContext, final QueryContext queryContext, final ShardingSphereDatabase database) {
         RouteContext result = new RouteContext();
-        for (String each : database.getResources().getDataSources().keySet()) {
+        for (String each : database.getResourceMetaData().getDataSources().keySet()) {
             result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
         }
         return result;
