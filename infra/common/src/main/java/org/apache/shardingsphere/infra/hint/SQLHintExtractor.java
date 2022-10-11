@@ -116,13 +116,13 @@ public final class SQLHintExtractor {
     public Comparable<?> getHintShardingTableValue(final String tableName) {
         String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
         Object result = sqlHintProperties.getProps().containsKey(key)
-                ? (Comparable)sqlHintProperties.getProps().get(key)
+                ? sqlHintProperties.getProps().get(key)
                 : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
         if (result instanceof Comparable) {
             return (Comparable<?>) result;
         }
         return sqlHintProperties.getProps().containsKey(key)
-                ? (Comparable)sqlHintProperties.getProps().get(key)
+                ? sqlHintProperties.getProps().getProperty(key)
                 : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
     }
     
