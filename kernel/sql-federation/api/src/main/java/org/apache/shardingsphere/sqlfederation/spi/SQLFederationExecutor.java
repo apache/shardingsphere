@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
@@ -38,14 +39,14 @@ public interface SQLFederationExecutor extends TypedSPI, RequiredSPI, AutoClosea
     
     /**
      * Init SQL federation executor.
-     * 
-     * @param databaseName database name
+     *  @param databaseName database name
      * @param schemaName schema name
      * @param metaData ShardingSphere meta data
+     * @param shardingSphereData ShardingSphere data
      * @param jdbcExecutor jdbc executor
      * @param eventBusContext event bus context
      */
-    void init(String databaseName, String schemaName, ShardingSphereMetaData metaData, JDBCExecutor jdbcExecutor, EventBusContext eventBusContext);
+    void init(String databaseName, String schemaName, ShardingSphereMetaData metaData, ShardingSphereData shardingSphereData, JDBCExecutor jdbcExecutor, EventBusContext eventBusContext);
     
     /**
      * Execute query.

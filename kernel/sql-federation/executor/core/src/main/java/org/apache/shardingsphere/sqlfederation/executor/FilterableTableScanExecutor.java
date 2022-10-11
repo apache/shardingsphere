@@ -58,6 +58,9 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -74,6 +77,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecu
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
+import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
 
@@ -87,6 +91,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -109,6 +114,8 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final TableScanExecutorContext executorContext;
     
+    private final ShardingSphereData shardingSphereData;
+    
     private final EventBusContext eventBusContext;
     
     @Override
@@ -122,9 +129,12 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
         // TODO need to get session context
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
-        if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
+        if (federationContext.isPreview()) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
+        }
+        if (databaseType.getSystemSchemas().contains(schemaName)) {
+            return executeByShardingSphereData(databaseName, schemaName, table);
         }
         return execute(databaseType, queryContext, database, context);
     }
@@ -158,6 +168,23 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             result.add(queryResult);
         }
         return result;
+    }
+    
+    private Enumerable<Object[]> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(shardingSphereData.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
+                .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
+        return tableData.map(this::createMemoryEnumerator).orElseGet(this::createEmptyEnumerable);
+        
+    }
+    
+    private Enumerable<Object[]> createMemoryEnumerator(final ShardingSphereTableData tableData) {
+        return new AbstractEnumerable<Object[]>() {
+            
+            @Override
+            public Enumerator<Object[]> enumerator() {
+                return new MemoryEnumerator(tableData.getRows());
+            }
+        };
     }
     
     private Collection<Statement> getStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> inputGroups) {

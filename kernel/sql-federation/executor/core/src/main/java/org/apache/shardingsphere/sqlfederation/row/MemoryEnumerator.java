@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.memory;
+package org.apache.shardingsphere.sqlfederation.row;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;

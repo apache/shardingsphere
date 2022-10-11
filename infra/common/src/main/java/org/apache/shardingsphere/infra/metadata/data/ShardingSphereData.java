@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.data;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.query.ShardingSphereDataQueryEngine;
-import org.apache.shardingsphere.infra.metadata.data.query.ShardingSphereDataQueryEngineFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,16 +29,4 @@ import java.util.Map;
 public final class ShardingSphereData {
     
     private final Map<String, ShardingSphereDatabaseData> databaseData = new LinkedHashMap<>();
-    
-    private ShardingSphereDataQueryEngine queryEngine;
-    
-    /**
-     * Register query engine.
-     *
-     * @param metaData meta data
-     */
-    public void registerQueryEngine(final ShardingSphereMetaData metaData) {
-        queryEngine = ShardingSphereDataQueryEngineFactory.getInstance();
-        queryEngine.init(metaData, databaseData);
-    }
 }

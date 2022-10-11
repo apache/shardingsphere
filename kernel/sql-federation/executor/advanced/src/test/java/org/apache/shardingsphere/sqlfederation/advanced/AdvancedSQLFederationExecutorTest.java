@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.advanced;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -61,7 +62,7 @@ public final class AdvancedSQLFederationExecutorTest {
         when(metaData.getDatabase(databaseName)).thenReturn(database);
         when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         sqlFederationExecutor = new AdvancedSQLFederationExecutor();
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, mock(JDBCExecutor.class), mock(EventBusContext.class));
+        sqlFederationExecutor.init(databaseName, schemaName, metaData, new ShardingSphereData(), mock(JDBCExecutor.class), mock(EventBusContext.class));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
