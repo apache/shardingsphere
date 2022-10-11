@@ -77,9 +77,9 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String jobId, final String checkJobId) {
+    public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String parentJobId, final String checkJobId) {
         Map<String, DataConsistencyCheckResult> result = new HashMap<>();
-        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
         if (StringUtils.isBlank(yamlCheckResultMapText)) {
             return Collections.emptyMap();
         }

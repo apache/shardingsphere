@@ -63,6 +63,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
@@ -241,8 +242,9 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     }
     
     @Override
-    protected PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final InventoryIncrementalProcessContext processContext) {
-        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext);
+    protected PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final InventoryIncrementalProcessContext processContext,
+                                                                                 final ConsistencyCheckJobItemContext checkJobItemContext) {
+        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext, checkJobItemContext);
     }
     
     @Override

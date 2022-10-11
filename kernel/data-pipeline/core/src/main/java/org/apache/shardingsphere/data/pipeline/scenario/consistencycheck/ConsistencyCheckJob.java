@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
@@ -55,6 +56,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         }
         ConsistencyCheckTasksRunner tasksRunner = new ConsistencyCheckTasksRunner(jobItemContext);
         tasksRunner.start();
+        PipelineJobProgressPersistService.addJobProgressPersistContext(checkJobId, shardingContext.getShardingItem());
         getTasksRunnerMap().put(shardingItem, tasksRunner);
     }
     
@@ -74,5 +76,6 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         getTasksRunnerMap().clear();
         String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
         pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
 }

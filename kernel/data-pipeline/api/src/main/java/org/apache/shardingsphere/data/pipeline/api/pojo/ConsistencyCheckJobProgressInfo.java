@@ -15,17 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress.listener;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 /**
- * Pipeline job process update parameter.
+ * Consistency check jon progress info.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PipelineJobProgressUpdatedParameter {
+
+@Data
+public final class ConsistencyCheckJobProgressInfo {
     
-    private final int processedRecordsCount;
+    private String tableName;
+    
+    private Boolean result;
+    
+    private int finishedPercentage;
+    
+    private Long remainingSeconds;
+    
+    private String checkBeginTime;
+    
+    private String checkEndTime;
+    
+    private Long durationSeconds;
+    
+    private String errorMessage;
 }
