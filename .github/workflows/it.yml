@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -105,7 +105,7 @@ jobs:
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -145,7 +145,7 @@ jobs:
           - adapter: jdbc
             mode: Cluster
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -185,7 +185,7 @@ jobs:
           - adapter: jdbc
             mode: Cluster
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -213,7 +213,7 @@ jobs:
     name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -229,10 +229,6 @@ jobs:
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
-      - name: Verify
-        run: |
-          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/metrics -DskipITs -DskipTests -Dspotless.apply.skip=true
-          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/opentelemetry -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Integration Test
         run: |
           ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
