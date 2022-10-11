@@ -83,10 +83,10 @@ public final class ShardingSphereMetaDataTest {
         verify(globalResourceHeldRule).closeStaleResource("foo_db");
     }
     
-    private ShardingSphereDatabase mockDatabase(final ShardingSphereResourceMetaData resource, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
+    private ShardingSphereDatabase mockDatabase(final ShardingSphereResourceMetaData resourceMetaData, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
-        when(result.getResourceMetaData()).thenReturn(resource);
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_db", dataSource));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
