@@ -51,6 +51,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RateLimiterContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ReadDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshDatabaseMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ResourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
@@ -96,6 +97,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropPipe
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
@@ -289,6 +291,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     @Override
     public ASTNode visitClearHint(final ClearHintContext ctx) {
         return new ClearHintStatement();
+    }
+    
+    @Override
+    public ASTNode visitRefreshDatabaseMetadata(final RefreshDatabaseMetadataContext ctx) {
+        return new RefreshDatabaseMetadataStatement();
     }
     
     @Override

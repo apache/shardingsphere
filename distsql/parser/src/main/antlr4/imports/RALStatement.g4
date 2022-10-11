@@ -51,6 +51,10 @@ clearHint
     : CLEAR HINT
     ;
 
+refreshDatabaseMetadata
+    : REFRESH DATABASE METADATA
+    ;
+
 refreshTableMetadata
     : REFRESH TABLE METADATA refreshScope?
     ;

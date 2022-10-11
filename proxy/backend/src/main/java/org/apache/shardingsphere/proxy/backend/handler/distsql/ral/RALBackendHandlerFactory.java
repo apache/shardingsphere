@@ -38,6 +38,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DiscardD
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
@@ -65,6 +66,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.Dis
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.ImportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.LabelInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.PrepareDistSQLHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshDatabaseMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetInstanceStatusHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetReadwriteSplittingStatusHandler;
@@ -91,6 +93,7 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(SetInstanceStatusStatement.class, SetInstanceStatusHandler.class);
         HANDLERS.put(SetVariableStatement.class, SetVariableHandler.class);
         HANDLERS.put(SetReadwriteSplittingStatusStatement.class, SetReadwriteSplittingStatusHandler.class);
+        HANDLERS.put(RefreshDatabaseMetadataStatement.class, RefreshDatabaseMetadataHandler.class);
         HANDLERS.put(RefreshTableMetadataStatement.class, RefreshTableMetadataHandler.class);
         HANDLERS.put(PrepareDistSQLStatement.class, PrepareDistSQLHandler.class);
         HANDLERS.put(ApplyDistSQLStatement.class, ApplyDistSQLHandler.class);

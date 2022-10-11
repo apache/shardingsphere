@@ -46,6 +46,7 @@ execute
     | createDefaultSingleTableRule
     | alterDefaultSingleTableRule
     | dropDefaultSingleTableRule
+    | refreshDatabaseMetadata
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration

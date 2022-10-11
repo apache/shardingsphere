@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.updatable;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
-
 /**
- * Refresh table metadata statement test case.
+ * Refresh database metadata statement test case.
  */
 @Getter
 @Setter
-public final class RefreshTableMetadataStatementTestCase extends SQLParserTestCase {
-    
-    @XmlAttribute(name = "table-name")
-    private String tableName;
-    
-    @XmlAttribute(name = "resource-name")
-    private String resourceName;
-    
-    @XmlAttribute(name = "schema-name")
-    private String schemaName;
+public final class RefreshDatabaseMetadataStatementTestCase extends SQLParserTestCase {
 }

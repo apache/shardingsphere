@@ -23,6 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshDatabaseMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.DropTrafficRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.ImportDatabaseConfigurationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.LabelInstanceStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.RefreshDatabaseMetadataStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.RefreshTableMetadataStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.SetVariableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.UnlabelInstanceStatementAssert;
@@ -47,9 +49,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.updatable.RefreshDatabaseMetadataStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.updatable.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.DropTrafficRuleStatement;
@@ -79,6 +82,8 @@ public final class UpdatableRALStatementAssert {
             SetVariableStatementAssert.assertIs(assertContext, (SetVariableStatement) actual, (SetVariableStatementTestCase) expected);
         } else if (actual instanceof RefreshTableMetadataStatement) {
             RefreshTableMetadataStatementAssert.assertIs(assertContext, (RefreshTableMetadataStatement) actual, (RefreshTableMetadataStatementTestCase) expected);
+        } else if (actual instanceof RefreshDatabaseMetadataStatement) {
+            RefreshDatabaseMetadataStatementAssert.assertIs(assertContext, (RefreshDatabaseMetadataStatement) actual, (RefreshDatabaseMetadataStatementTestCase) expected);
         } else if (actual instanceof AlterSQLParserRuleStatement) {
             AlterSQLParserRuleStatementAssert.assertIs(assertContext, (AlterSQLParserRuleStatement) actual, (AlterSQLParserRuleStatementTestCase) expected);
         } else if (actual instanceof DropTrafficRuleStatement) {
