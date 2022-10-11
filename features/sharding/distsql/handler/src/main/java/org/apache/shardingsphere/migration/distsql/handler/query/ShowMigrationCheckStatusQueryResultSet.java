@@ -48,7 +48,7 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
         List<Collection<Object>> result = new LinkedList<>();
         String checkResult = null == progressInfo.getCheckSuccess() ? "" : progressInfo.getCheckSuccess().toString();
         result.add(Arrays.asList(Optional.ofNullable(progressInfo.getTableNames()).orElse(""), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
-                progressInfo.getDurationSeconds(),
+                progressInfo.getRemainingSeconds(),
                 Optional.ofNullable(progressInfo.getCheckBeginTime()).orElse(""),
                 Optional.ofNullable(progressInfo.getCheckEndTime()).orElse(""),
                 progressInfo.getDurationSeconds(), Optional.ofNullable(progressInfo.getErrorMessage()).orElse("")));
