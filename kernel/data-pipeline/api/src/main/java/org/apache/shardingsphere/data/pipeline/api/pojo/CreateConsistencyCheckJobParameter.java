@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
@@ -26,7 +27,7 @@ import java.util.Properties;
  * Create consistency check job parameter.
  */
 @RequiredArgsConstructor
-@Data
+@Getter
 public final class CreateConsistencyCheckJobParameter {
     
     private final String jobId;

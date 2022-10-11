@@ -400,9 +400,9 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
             throw new RuntimeException(ex);
         }
         extendYamlJobConfiguration(result);
-        MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
-        start(jobConfiguration);
-        return jobConfiguration.getJobId();
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+        start(jobConfig);
+        return jobConfig.getJobId();
     }
     
     private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
