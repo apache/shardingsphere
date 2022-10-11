@@ -38,7 +38,8 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
         countCheckResult.setMatched(data.getContentCheckResult().isMatched());
         YamlDataConsistencyCheckResult result = new YamlDataConsistencyCheckResult();
         result.setCountCheckResult(countCheckResult);
-        YamlDataConsistencyContentCheckResult contentCheckResult = new YamlDataConsistencyContentCheckResult(data.getContentCheckResult().isMatched());
+        YamlDataConsistencyContentCheckResult contentCheckResult = new YamlDataConsistencyContentCheckResult();
+        contentCheckResult.setMatched(data.getContentCheckResult().isMatched());
         result.setContentCheckResult(contentCheckResult);
         return result;
     }
