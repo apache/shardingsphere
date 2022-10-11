@@ -60,6 +60,9 @@ jobs:
         java-version: [ 8, 19 ]
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     steps:
+      - name: Support longpaths in Windows
+        if: matrix.os == 'windows-latest'
+        run: git config --global core.longpaths true
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
