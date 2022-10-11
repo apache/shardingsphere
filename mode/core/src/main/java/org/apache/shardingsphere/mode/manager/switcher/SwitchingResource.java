@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class SwitchingResource {
     
-    private final ShardingSphereResource resource;
+    private final ShardingSphereResourceMetaData resourceMetaData;
     
     @Getter
     private final Map<String, DataSource> newDataSources;
@@ -42,6 +42,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleDataSources.values().forEach(resource::close);
+        staleDataSources.values().forEach(resourceMetaData::close);
     }
 }

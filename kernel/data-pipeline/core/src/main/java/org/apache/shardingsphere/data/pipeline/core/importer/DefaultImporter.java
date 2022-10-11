@@ -125,7 +125,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             flushInternal(dataSource, each.getInsertDataRecords());
             flushInternal(dataSource, each.getUpdateDataRecords());
         }
-        return new PipelineJobProgressUpdatedParameter(insertRecordNumber, deleteRecordNumber);
+        return new PipelineJobProgressUpdatedParameter(insertRecordNumber - deleteRecordNumber);
     }
     
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {

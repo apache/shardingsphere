@@ -27,4 +27,14 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 public final class YamlConsistencyCheckJobProgress implements YamlConfiguration {
     
     private String status;
+    
+    private String tableNames;
+    
+    private Long checkedRecordsCount;
+    
+    private Long recordsCount;
+    
+    private Long checkBeginTimeMillis;
+    
+    private Long checkEndTimeMillis;
 }

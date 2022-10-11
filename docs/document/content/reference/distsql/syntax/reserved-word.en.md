@@ -58,7 +58,7 @@ weight = 3
 
 #### SHARDING
 
-`SHARDING`, `ALGORITHMS`
+`UNUSED`, `SHARDING`, `ALGORITHMS`
 
 ## Supplement
 

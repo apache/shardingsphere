@@ -71,7 +71,7 @@ public final class DriverStateContextTest {
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
-        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         result.put(DefaultDatabase.LOGIC_NAME, database);
         return result;
     }

@@ -77,8 +77,8 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     private Map<String, ShardingSphereDatabase> createDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("schema");
-        when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        when(database.getResource().getDataSources()).thenReturn(mockDataSources(2));
+        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getResourceMetaData().getDataSources()).thenReturn(mockDataSources(2));
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("schema", database);
         return result;
