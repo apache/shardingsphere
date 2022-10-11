@@ -68,7 +68,8 @@ public final class ResourceSwitchManager {
         return DataSourcePoolCreator.create(getChangedDataSourceProperties(resourceMetaData, toBeChangedDataSourceProps));
     }
     
-    private Map<String, DataSourceProperties> getChangedDataSourceProperties(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSourceProperties> getChangedDataSourceProperties(final ShardingSphereResourceMetaData resourceMetaData,
+                                                                             final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         return toBeChangedDataSourceProps.entrySet().stream().filter(entry -> isModifiedDataSource(resourceMetaData.getDataSources(), entry.getKey(), entry.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
