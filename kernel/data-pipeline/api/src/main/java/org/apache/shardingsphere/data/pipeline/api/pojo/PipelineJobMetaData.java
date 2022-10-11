@@ -37,5 +37,5 @@ public final class PipelineJobMetaData {
     
     private final String stopTime;
     
-    private final transient String jobParameter;
+    private final String jobParameter;
 }
