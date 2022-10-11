@@ -104,12 +104,12 @@ public final class SingleTableInventoryDataConsistencyChecker {
         String sourceDatabaseType = sourceDataSource.getDatabaseType().getType();
         String targetDatabaseType = targetDataSource.getDatabaseType().getType();
         String sourceTableName = sourceTable.getTableName().getOriginal();
-        String schemeName = sourceTable.getSchemaName().getOriginal();
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemeName, sourceTableName);
+        String schemaName = sourceTable.getSchemaName().getOriginal();
+        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, sourceTableName);
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(sourceTableName));
         Collection<String> columnNames = tableMetaData.getColumnNames();
         DataConsistencyCalculateParameter sourceParameter = buildParameter(
-                sourceDataSource, schemeName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
+                sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey);
         DataConsistencyCalculateParameter targetParameter = buildParameter(
                 targetDataSource, targetTable.getSchemaName().getOriginal(), targetTable.getTableName().getOriginal(), columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
@@ -148,7 +148,6 @@ public final class SingleTableInventoryDataConsistencyChecker {
         }
         return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(contentMatched));
     }
-    
     
     // TODO use digest (crc32, murmurhash)
     private String getJobIdDigest(final String jobId) {
