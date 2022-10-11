@@ -17,7 +17,7 @@
 
 name: Nightly - IT Example Generator
 
-on: push
+on: pull_request
 # TODO revert here to remove test code
 #  schedule:
 #    - cron: '0 19 */1 * *'  # once a day. UTC time
