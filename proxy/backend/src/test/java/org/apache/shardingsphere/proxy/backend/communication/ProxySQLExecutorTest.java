@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -84,7 +83,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), new ShardingSphereData());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         ProxyContext.init(new ContextManager(metaDataContexts, mock(InstanceContext.class)));
     }
     

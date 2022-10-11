@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.PipelineTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
@@ -58,6 +58,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Consistency check job API impl.
@@ -127,10 +128,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     @Override
     public ConsistencyCheckJobProgress getJobItemProgress(final String jobId, final int shardingItem) {
         String progress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
-        if (StringUtils.isBlank(progress)) {
-            return null;
-        }
-        return swapper.swapToObject(YamlEngine.unmarshal(progress, YamlConsistencyCheckJobProgress.class, true));
+        return Strings.isNullOrEmpty(progress) ? null : swapper.swapToObject(YamlEngine.unmarshal(progress, YamlConsistencyCheckJobProgress.class, true));
     }
     
     @Override
@@ -195,9 +193,14 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         } else {
             long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
             result.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
-            Duration duration = Duration.between(checkBeginTime, LocalDateTime.now());
-            result.setDurationSeconds(duration.getSeconds());
-            long remainingMills = (recordsCount - checkedRecordsCount) / recordsCount * duration.toMillis();
+            JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(checkJobId);
+            Long stopTimeMillis = jobConfigPOJO.isDisabled() ? Long.parseLong(jobConfigPOJO.getProps().getProperty("stop_time_millis")) : null;
+            long durationMillis = (null != stopTimeMillis ? stopTimeMillis : System.currentTimeMillis()) - jobItemProgress.getCheckBeginTimeMillis();
+            result.setDurationSeconds(TimeUnit.MILLISECONDS.toSeconds(durationMillis));
+            if (null != stopTimeMillis) {
+                result.setCheckEndTime(DATE_TIME_FORMATTER.format(new Timestamp(stopTimeMillis).toLocalDateTime()));
+            }
+            long remainingMills = (long) ((recordsCount - checkedRecordsCount) * 1.0D / checkedRecordsCount * durationMillis);
             result.setRemainingSeconds(remainingMills / 1000);
         }
         String tableNames = jobItemProgress.getTableNames();

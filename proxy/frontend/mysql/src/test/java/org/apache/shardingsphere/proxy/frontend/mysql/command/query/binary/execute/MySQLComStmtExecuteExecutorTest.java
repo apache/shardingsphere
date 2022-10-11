@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -113,7 +112,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         databases.put("logic_db", mockDatabase());
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, metaData, new ConfigurationProperties(new Properties())), new ShardingSphereData());
+                new ShardingSphereMetaData(databases, metaData, new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);

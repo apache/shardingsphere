@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -179,7 +178,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
         return new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(new LinkedHashMap<>(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())), new ShardingSphereData());
+                new ShardingSphereMetaData(new LinkedHashMap<>(), buildGlobalRuleMetaData(user), new ConfigurationProperties(new Properties())));
     }
     
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
