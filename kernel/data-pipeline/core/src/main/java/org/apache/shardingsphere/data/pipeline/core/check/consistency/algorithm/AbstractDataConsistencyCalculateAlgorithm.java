@@ -57,6 +57,10 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
             log.info("cancel is not supported: {}", ex.getMessage());
         } catch (final SQLException ex) {
             log.info("cancel failed: {}", ex.getMessage());
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.info("cancel failed: {}", ex.getMessage());
         }
         log.info("cancel cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
