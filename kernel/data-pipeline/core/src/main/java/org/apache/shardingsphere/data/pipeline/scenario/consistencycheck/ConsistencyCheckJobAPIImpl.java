@@ -197,7 +197,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
             result.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
             Duration duration = Duration.between(checkBeginTime, LocalDateTime.now());
             result.setDurationSeconds(duration.getSeconds());
-            long remainingMills = (recordsCount - checkedRecordsCount) / recordsCount * duration.toMillis();
+            long remainingMills = (long) ((recordsCount - checkedRecordsCount) * 1.0D / recordsCount * duration.toMillis());
             result.setRemainingSeconds(remainingMills / 1000);
         }
         String tableNames = jobItemProgress.getTableNames();
