@@ -17,9 +17,10 @@
 
 name: Nightly - IT Example Generator
 
-on:
-  schedule:
-    - cron: '0 19 */1 * *'  # once a day. UTC time
+on: push
+# TODO revert here to remove test code
+#  schedule:
+#    - cron: '0 19 */1 * *'  # once a day. UTC time
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
@@ -69,6 +70,7 @@ jobs:
         run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Prepare environments
         run: |
+          cat .github/workflows/nightly/resources/it-example-init.sql
           mysql -uroot -h127.0.0.1 -p123456 -e 'CREATE DATABASE IF NOT EXISTS demo_ds_0;CREATE DATABASE IF NOT EXISTS demo_ds_1;CREATE DATABASE IF NOT EXISTS demo_ds_2;'
           mysql -uroot -h127.0.0.1 -p123456 -e 'use demo_ds_1;CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));'
           mysql -uroot -h127.0.0.1 -p123456 -e 'use demo_ds_2;CREATE TABLE IF NOT EXISTS t_order(order_id BIGINT NOT NULL AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id));'
