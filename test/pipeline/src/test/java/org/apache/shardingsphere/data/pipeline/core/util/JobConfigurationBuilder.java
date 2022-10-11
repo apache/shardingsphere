@@ -54,9 +54,21 @@ public final class JobConfigurationBuilder {
         result.setSource(createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
-        result.setUniqueKeyColumn(new YamlPipelineColumnMetaData(1, "order_id", 4, "", false, true, true));
+        result.setUniqueKeyColumn(createYamlPipelineColumnMetaData());
         PipelineAPIFactory.getPipelineJobAPI(JobType.MIGRATION).extendYamlJobConfiguration(result);
         return new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+    }
+    
+    private static YamlPipelineColumnMetaData createYamlPipelineColumnMetaData() {
+        YamlPipelineColumnMetaData result = new YamlPipelineColumnMetaData();
+        result.setOrdinalPosition(1);
+        result.setName("order_id");
+        result.setDataType(4);
+        result.setDataTypeName("");
+        result.setNullable(false);
+        result.setPrimaryKey(true);
+        result.setNullable(true);
+        return result;
     }
     
     private static String generateJobId(final YamlMigrationJobConfiguration yamlJobConfig) {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
@@ -37,10 +36,10 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
         log.info("start migrate job by {}", sqlStatement);
-        String targetDatabaseName = ObjectUtils.defaultIfNull(sqlStatement.getTargetDatabaseName(), databaseName);
+        String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? databaseName : sqlStatement.getTargetDatabaseName();
         Preconditions.checkNotNull(targetDatabaseName, "Target database name is null. You could define it in DistSQL or select a database.");
-        CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(sqlStatement.getSourceResourceName(), sqlStatement.getSourceSchemaName(),
-                sqlStatement.getSourceTableName(), targetDatabaseName, sqlStatement.getTargetTableName());
+        CreateMigrationJobParameter createMigrationJobParameter = new CreateMigrationJobParameter(
+                sqlStatement.getSourceResourceName(), sqlStatement.getSourceSchemaName(), sqlStatement.getSourceTableName(), targetDatabaseName, sqlStatement.getTargetTableName());
         JOB_API.createJobAndStart(createMigrationJobParameter);
     }
     
