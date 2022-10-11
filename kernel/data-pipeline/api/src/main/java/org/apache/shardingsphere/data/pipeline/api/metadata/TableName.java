@@ -21,6 +21,7 @@ import lombok.NonNull;
 
 /**
  * Table name.
+ * 
  * <p>It might be logic table name or actual table name.</p>
  * <p>It's case-insensitive.</p>
  */

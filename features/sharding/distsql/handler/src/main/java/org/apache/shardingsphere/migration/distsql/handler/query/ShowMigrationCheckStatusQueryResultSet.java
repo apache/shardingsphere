@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobProgressInfo;
@@ -31,6 +30,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Show migration check status query result set.
@@ -47,15 +47,12 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
         ConsistencyCheckJobProgressInfo progressInfo = JOB_API.getJobProgressInfo(checkMigrationStatement.getJobId());
         List<Collection<Object>> result = new LinkedList<>();
         String checkResult = null == progressInfo.getCheckSuccess() ? "" : progressInfo.getCheckSuccess().toString();
-        result.add(Arrays.asList(emptyIfNull(progressInfo.getTableNames()), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
-                emptyIfNull(progressInfo.getRemainingSeconds()),
-                emptyIfNull(progressInfo.getCheckBeginTime()), emptyIfNull(progressInfo.getCheckEndTime()),
-                emptyIfNull(progressInfo.getDurationSeconds()), emptyIfNull(progressInfo.getErrorMessage())));
+        result.add(Arrays.asList(Optional.ofNullable(progressInfo.getTableNames()).orElse(""), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
+                progressInfo.getDurationSeconds(),
+                Optional.ofNullable(progressInfo.getCheckBeginTime()).orElse(""),
+                Optional.ofNullable(progressInfo.getCheckEndTime()).orElse(""),
+                progressInfo.getDurationSeconds(), Optional.ofNullable(progressInfo.getErrorMessage()).orElse("")));
         data = result.iterator();
-    }
-    
-    private Object emptyIfNull(final Object object) {
-        return ObjectUtils.defaultIfNull(object, "");
     }
     
     @Override
