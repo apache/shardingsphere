@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
