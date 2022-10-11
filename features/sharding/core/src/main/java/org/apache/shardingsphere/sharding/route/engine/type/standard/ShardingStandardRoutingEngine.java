@@ -99,14 +99,15 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private boolean isRoutingBySQLHint() {
-        boolean result = false;
         if (sqlStatementContext instanceof CommonSQLStatementContext) {
             Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
             for (String each : tableNames) {
-                result = result || ((CommonSQLStatementContext<?>) sqlStatementContext).containsHintShardingValue(each);
+                if (((CommonSQLStatementContext<?>) sqlStatementContext).containsHintShardingValue(each)) {
+                    return true;
+                }
             }
         }
-        return result;
+        return false;
     }
     
     private Collection<DataNode> routeByHint(final TableRule tableRule, final ShardingStrategy databaseShardingStrategy, final ShardingStrategy tableShardingStrategy) {
