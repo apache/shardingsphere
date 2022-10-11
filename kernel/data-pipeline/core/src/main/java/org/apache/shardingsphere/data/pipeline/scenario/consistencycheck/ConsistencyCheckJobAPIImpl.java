@@ -181,7 +181,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
         if (null == jobItemProgress.getRecordsCount()) {
             result.setFinishedPercentage(0);
-            result.setResult(false);
+            result.setCheckSuccess(false);
             return result;
         }
         long recordsCount = jobItemProgress.getRecordsCount();
@@ -206,7 +206,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
         InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(parentJobId));
-        result.setResult(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
+        result.setCheckSuccess(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         return result;
     }
     
