@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTestCaseRegistry;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
@@ -97,38 +96,6 @@ public final class IntegrationTestEnvironment {
             result.setProperty(each, System.getProperty(each));
         }
         return result;
-    }
-    
-    /**
-     * Get actual data source connection.
-     *
-     * @param databaseType database type.
-     * @return jdbc connection
-     */
-    public JdbcInfoEntity getActualDatabaseJdbcInfo(final DatabaseType databaseType) {
-        String username;
-        String password;
-        int port;
-        switch (databaseType.getType()) {
-            case "MySQL":
-                username = props.getOrDefault("transaction.it.native.mysql.username", "root").toString();
-                password = props.getOrDefault("transaction.it.native.mysql.password", "root").toString();
-                port = Integer.parseInt(props.getOrDefault("transaction.it.native.mysql.port", 3307).toString());
-                break;
-            case "PostgreSQL":
-                username = props.getOrDefault("transaction.it.native.postgresql.username", "postgres").toString();
-                password = props.getOrDefault("transaction.it.native.postgresql.password", "postgres").toString();
-                port = Integer.parseInt(props.getOrDefault("transaction.it.native.postgresql.port", 5432).toString());
-                break;
-            case "openGauss":
-                username = props.getOrDefault("transaction.it.native.opengauss.username", "gaussdb").toString();
-                password = props.getOrDefault("transaction.it.native.opengauss.password", "Root@123").toString();
-                port = Integer.parseInt(props.getOrDefault("transaction.it.native.opengauss.port", 5432).toString());
-                break;
-            default:
-                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
-        }
-        return new JdbcInfoEntity(username, password, port);
     }
     
     /**

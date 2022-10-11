@@ -104,7 +104,7 @@ public abstract class BaseITCase {
     private final String adapter;
     
     @Getter
-    private AutoDataSource dataSource;
+    private final AutoDataSource dataSource;
     
     static {
         long startTime = System.currentTimeMillis();
