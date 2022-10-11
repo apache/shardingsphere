@@ -172,7 +172,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
             if (checkEndTimeList.size() == resultList.size()) {
                 break;
             }
-            ThreadUtil.sleep(5, TimeUnit.SECONDS);
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         log.info("check job results: {}", resultList);
         for (Map<String, Object> entry : resultList) {
