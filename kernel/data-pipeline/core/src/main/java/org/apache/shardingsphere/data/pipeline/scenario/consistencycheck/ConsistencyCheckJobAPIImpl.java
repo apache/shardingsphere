@@ -36,11 +36,13 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobProgr
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHasAlreadyFinishedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfiguration;
@@ -49,13 +51,12 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -63,6 +64,8 @@ import java.util.Optional;
  */
 @Slf4j
 public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl implements ConsistencyCheckJobAPI {
+    
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     
     private final YamlConsistencyCheckJobProgressSwapper swapper = new YamlConsistencyCheckJobProgressSwapper();
     
@@ -175,33 +178,35 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         if (null == jobItemProgress) {
             return result;
         }
-        int finishedPercentage;
         LocalDateTime checkBeginTime = new Timestamp(jobItemProgress.getCheckBeginTimeMillis()).toLocalDateTime();
-        if (null != jobItemProgress.getRecordsCount() && Objects.equals(jobItemProgress.getCheckedRecordsCount(), jobItemProgress.getRecordsCount())) {
-            finishedPercentage = 100;
+        if (null == jobItemProgress.getRecordsCount()) {
+            result.setFinishedPercentage(0);
+            result.setResult(false);
+            return result;
+        }
+        long recordsCount = jobItemProgress.getRecordsCount();
+        if (JobStatus.FINISHED == jobItemProgress.getStatus()) {
+            result.setFinishedPercentage(100);
             LocalDateTime checkEndTime = new Timestamp(jobItemProgress.getCheckEndTimeMillis()).toLocalDateTime();
             Duration duration = Duration.between(checkBeginTime, checkEndTime);
-            result.setDurationSeconds(duration.toMillis() / 1000);
+            result.setDurationSeconds(duration.getSeconds());
             result.setCheckEndTime(DATE_TIME_FORMATTER.format(checkEndTime));
             result.setRemainingSeconds(0L);
         } else {
-            if (null == jobItemProgress.getRecordsCount()) {
-                finishedPercentage = 0;
-            } else {
-                finishedPercentage = Math.min(100, BigDecimal.valueOf(Math.floorDiv(jobItemProgress.getCheckedRecordsCount() * 100, jobItemProgress.getRecordsCount())).intValue());
-                Duration duration = Duration.between(checkBeginTime, LocalDateTime.now());
-                long remainMills = jobItemProgress.getRecordsCount() * 100 / jobItemProgress.getCheckedRecordsCount() * duration.toMillis();
-                result.setRemainingSeconds(remainMills / 1000);
-            }
+            long checkedRecordsCount = Math.min(jobItemProgress.getCheckedRecordsCount(), recordsCount);
+            result.setFinishedPercentage((int) (checkedRecordsCount * 100 / recordsCount));
+            Duration duration = Duration.between(checkBeginTime, LocalDateTime.now());
+            result.setDurationSeconds(duration.getSeconds());
+            long remainingMills = (recordsCount - checkedRecordsCount) / recordsCount * duration.toMillis();
+            result.setRemainingSeconds(remainingMills / 1000);
         }
-        result.setFinishedPercentage(finishedPercentage);
-        String tableName = null == jobItemProgress.getTableNames() ? null : jobItemProgress.getTableNames().split(",")[0];
-        result.setTableName(Optional.ofNullable(tableName).orElse(""));
+        String tableNames = jobItemProgress.getTableNames();
+        result.setTableNames(Optional.ofNullable(tableNames).orElse(""));
         result.setCheckBeginTime(DATE_TIME_FORMATTER.format(checkBeginTime));
         result.setErrorMessage(getJobItemErrorMessage(checkJobId, 0));
         Map<String, DataConsistencyCheckResult> checkJobResult = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(parentJobId, checkJobId);
-        Optional<DataConsistencyCheckResult> dataConsistencyCheckResult = Optional.ofNullable(checkJobResult.get(tableName));
-        dataConsistencyCheckResult.ifPresent(optional -> result.setResult(optional.getContentCheckResult().isMatched()));
+        InventoryIncrementalJobAPI inventoryIncrementalJobAPI = (InventoryIncrementalJobAPI) PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(parentJobId));
+        result.setResult(inventoryIncrementalJobAPI.aggregateDataConsistencyCheckResults(parentJobId, checkJobResult));
         return result;
     }
     

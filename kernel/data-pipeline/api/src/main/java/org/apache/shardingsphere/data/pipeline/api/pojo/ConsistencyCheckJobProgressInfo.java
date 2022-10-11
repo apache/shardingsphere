@@ -26,7 +26,7 @@ import lombok.Data;
 @Data
 public final class ConsistencyCheckJobProgressInfo {
     
-    private String tableName;
+    private String tableNames;
     
     private Boolean result;
     
