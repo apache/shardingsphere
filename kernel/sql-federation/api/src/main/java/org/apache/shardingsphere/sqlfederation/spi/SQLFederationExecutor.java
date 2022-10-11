@@ -39,7 +39,7 @@ public interface SQLFederationExecutor extends TypedSPI, RequiredSPI, AutoClosea
     
     /**
      * Init SQL federation executor.
-     *  @param databaseName database name
+     * @param databaseName database name
      * @param schemaName schema name
      * @param metaData ShardingSphere meta data
      * @param shardingSphereData ShardingSphere data

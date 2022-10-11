@@ -50,15 +50,18 @@ public final class MemoryEnumerator implements Enumerator<Object[]> {
             current = rowDataIterator.next().getRows();
             return true;
         }
+        current = null;
+        rowDataIterator = rows.iterator();
         return false;
     }
     
     @Override
     public void reset() {
-        rowDataIterator = rows.iterator();
     }
     
     @Override
     public void close() {
+        rowDataIterator = rows.iterator();
+        current = null;
     }
 }
