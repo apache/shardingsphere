@@ -49,6 +49,11 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     }
     
     @Override
+    public boolean isCanceling() {
+        return false;
+    }
+    
+    @Override
     public Collection<String> getSupportedDatabaseTypes() {
         return DatabaseTypeFactory.getInstances().stream().map(DatabaseType::getType).collect(Collectors.toList());
     }
