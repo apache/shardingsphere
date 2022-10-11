@@ -100,7 +100,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
     }
     
     private DataConsistencyCheckResult check(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final ThreadPoolExecutor executor,
-                                             final ConsistencyCheckJobItemContext consistencyCheckJobItemContext) {
+                                             final ConsistencyCheckJobItemContext checkJobItemContext) {
         String sourceDatabaseType = sourceDataSource.getDatabaseType().getType();
         String targetDatabaseType = targetDataSource.getDatabaseType().getType();
         String sourceTableName = sourceTable.getTableName().getOriginal();
@@ -114,12 +114,12 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 targetDataSource, targetTable.getSchemaName().getOriginal(), targetTable.getTableName().getOriginal(), columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey);
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParameter).iterator();
-        if (null != consistencyCheckJobItemContext) {
-            consistencyCheckJobItemContext.setTableNames(Collections.singletonList(sourceTableName));
+        if (null != checkJobItemContext) {
+            checkJobItemContext.setTableNames(Collections.singletonList(sourceTableName));
             InventoryIncrementalJobPublicAPI inventoryIncrementalJobPublicAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(PipelineJobIdUtils.parseJobType(jobId).getTypeName());
             Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = inventoryIncrementalJobPublicAPI.getJobProgress(jobId);
             long recordsCount = jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
-            consistencyCheckJobItemContext.setRecordsCount(recordsCount);
+            checkJobItemContext.setRecordsCount(recordsCount);
         }
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
@@ -139,12 +139,12 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", jobId, sourceTable, targetTable, uniqueKey);
                 break;
             }
-            if (null != consistencyCheckJobItemContext) {
-                consistencyCheckJobItemContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
+            if (null != checkJobItemContext) {
+                checkJobItemContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
             }
         }
-        if (null != consistencyCheckJobItemContext) {
-            consistencyCheckJobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
+        if (null != checkJobItemContext) {
+            checkJobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
         }
         return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(contentMatched));
     }

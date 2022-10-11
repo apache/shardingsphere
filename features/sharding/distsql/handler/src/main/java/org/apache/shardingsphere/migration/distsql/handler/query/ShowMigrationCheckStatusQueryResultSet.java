@@ -47,7 +47,7 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
         ConsistencyCheckJobProgressInfo progressInfo = JOB_API.getJobProgressInfo(checkMigrationStatement.getJobId());
         List<Collection<Object>> result = new LinkedList<>();
         String checkResult = null == progressInfo.getResult() ? "" : progressInfo.getResult().toString();
-        result.add(Arrays.asList(progressInfo.getTableName(), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
+        result.add(Arrays.asList(progressInfo.getTableNames(), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
                 ObjectUtils.defaultIfNull(progressInfo.getRemainingSeconds(), ""), progressInfo.getCheckBeginTime(), ObjectUtils.defaultIfNull(progressInfo.getCheckEndTime(), ""),
                 ObjectUtils.defaultIfNull(progressInfo.getDurationSeconds(), ""), progressInfo.getErrorMessage()));
         data = result.iterator();
@@ -55,7 +55,7 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table_name", "result", "finished_percentage", "remaining_seconds", "check_begin_time", "check_end_time", "duration_seconds", "error_message");
+        return Arrays.asList("tables", "result", "finished_percentage", "remaining_seconds", "check_begin_time", "check_end_time", "duration_seconds", "error_message");
     }
     
     @Override
