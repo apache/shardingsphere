@@ -125,7 +125,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/database-disc
 
 ## Related References
 
-- [Feature Description of HA](en/features/ha/)
+- [Feature Description of HA](/en/features/ha/)
 - [JAVA API: HA](/en/user-manual/shardingsphere-jdbc/java-api/rules/ha/)
 - [YAML Configuration: HA](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/ha/)
 - [Spring Boot Starter: HA](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha/)

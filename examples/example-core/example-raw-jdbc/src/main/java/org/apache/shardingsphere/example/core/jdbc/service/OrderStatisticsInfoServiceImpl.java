@@ -77,7 +77,7 @@ public final class OrderStatisticsInfoServiceImpl implements ExampleService {
     
     private OrderStatisticsInfo insertOrderStatisticsInfo(final int i) throws SQLException {
         OrderStatisticsInfo result = new OrderStatisticsInfo();
-        result.setUserId(new Long(i));
+        result.setUserId((long) i);
         if (0 == i % 2) {
             result.setOrderDate(LocalDate.now().plusYears(-1));
         } else {

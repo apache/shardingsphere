@@ -24,9 +24,7 @@
     } 
             
     private RuleConfiguration createSQLParserRuleConfiguration() {
-        SQLParserRuleConfiguration result = new DefaultSQLParserRuleConfigurationBuilder().build(); 
-        result.setSqlCommentParseEnabled(true);
-        return result;
+        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024L), new CacheOption(2000, 65535L));
     }
     
     private Map<String, ShadowTableConfiguration> createShadowTables() {

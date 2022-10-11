@@ -32,7 +32,7 @@
     private static ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order");
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
-        result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("sharding_key_required_auditor"), true));
+        // result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Arrays.asList("sharding_key_required_auditor"), true));
         return result;
     }
     

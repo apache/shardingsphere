@@ -17,31 +17,52 @@
 
 package org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config;
 
+import org.apache.shardingsphere.example.cluster.mode.raw.jdbc.config.type.RepositoryType;
 import org.apache.shardingsphere.example.type.ShardingType;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 
 import java.util.Properties;
 
 public final class ClusterModeConfigurationUtil {
     
+    private static final String NACOS_CONNECTION_STRING = "localhost:8848";
+    
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
-    public static ModeConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
+    private static final String ETCD_CONNECTION_STRING = "http://localhost:2379";
+    
+    public static ModeConfiguration getRepositoryConfiguration(final ShardingType shardingType, final String repositoryType) {
+        Properties props = new Properties();
+        String repositoryConnection;
+        switch (repositoryType) {
+            case RepositoryType.NACOS:
+                repositoryConnection = NACOS_CONNECTION_STRING;
+                break;
+            case RepositoryType.ZOOKEEPER:
+                repositoryConnection = ZOOKEEPER_CONNECTION_STRING;
+                break;
+            case RepositoryType.ETCD:
+                repositoryConnection = ETCD_CONNECTION_STRING;
+                break;
+            default:
+                throw new UnsupportedOperationException(repositoryType);
+        }
         ClusterPersistRepositoryConfiguration clusterRepositoryConfig;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-sharding-data-source", repositoryConnection, props);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             case READWRITE_SPLITTING:
-                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-readwrite-splitting-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-readwrite-splitting-data-source", repositoryConnection, props);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             case ENCRYPT:
-                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-encrypt-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-encrypt-data-source", repositoryConnection, props);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             case SHADOW:
-                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-shadow-data-source", ZOOKEEPER_CONNECTION_STRING, new Properties());
-                return new ModeConfiguration("Cluster", clusterRepositoryConfig, overwrite);
+                clusterRepositoryConfig = new ClusterPersistRepositoryConfiguration(repositoryType, "governance-shadow-data-source", repositoryConnection, props);
+                return new ModeConfiguration("Cluster", clusterRepositoryConfig);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

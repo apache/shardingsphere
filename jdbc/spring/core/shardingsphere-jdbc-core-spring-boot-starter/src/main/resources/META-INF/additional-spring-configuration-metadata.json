@@ -1,0 +1,90 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{
+  "groups": [
+    {
+      "name": "spring.shardingsphere.datasource",
+      "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode",
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration",
+      "sourceType": "org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.repository",
+      "type": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.shardingsphere.props",
+      "type": "java.util.Properties",
+      "sourceType": "org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration",
+      "description": "Customize shardingsphere properties."
+    },
+    {
+      "name": "spring.shardingsphere.mode.type",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.repository.type",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.mode.repository.props",
+      "type": "java.util.Properties",
+      "sourceType": "org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.datasource.names",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.datasource",
+      "type": "java.util.Map<java.lang.String, java.util.Map<java.lang.String, java.lang.Object>>"
+    },
+    {
+      "name": "spring.shardingsphere.database.name",
+      "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.schema.name",
+      "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.shardingsphere.datasource.keys",
+      "values": []
+    },
+    {
+      "name": "spring.shardingsphere.datasource.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    }
+  ]
+}

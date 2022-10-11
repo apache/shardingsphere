@@ -25,13 +25,7 @@ import java.util.List;
 
 @Mapper
 public interface OrderRepository {
-    
-    void createTableIfNotExists();
-    
-    void truncateTable();
-    
-    void dropTable();
-    
+
 <#if feature?contains("shadow")>
     void createTableIfNotExistsShadow();
     
@@ -40,9 +34,15 @@ public interface OrderRepository {
     void dropTableShadow();
     
     List<Order> selectShadowOrder();
-
+    
     void deleteShadow(long orderId);
+    
 </#if>
+    void createTableIfNotExists();
+    
+    void truncateTable();
+    
+    void dropTable();
     
     void insert(Order order);
     

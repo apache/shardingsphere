@@ -15,10 +15,7 @@
 # limitations under the License.
 #
 
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: Continuous Integration
+name: CI
 
 on:
   push:
@@ -29,9 +26,9 @@ on:
       - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
-      - '!shardingsphere-distribution/**'
-      - '!shardingsphere-test/shardingsphere-integration-*/**'
-      - 'shardingsphere-test/shardingsphere-integration-driver-test/**'
+      - '!distribution/**'
+      - '!test/integration-*/**'
+      - 'test/integration-driver-test/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
@@ -41,79 +38,52 @@ on:
       - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
-      - '!shardingsphere-distribution/**'
-      - '!shardingsphere-test/shardingsphere-integration-*/**'
-      - 'shardingsphere-test/shardingsphere-integration-driver-test/**'
+      - '!distribution/**'
+      - '!test/integration-*/**'
+      - 'test/integration-driver-test/**'
       - '!*.md'
   repository_dispatch:
-    types: [rerun-ci]
+    types: [ci-completed]
 
 concurrency:
   group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Drat.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true
 
 jobs:
-  linux:
-    name: JDK ${{ matrix.java_version }} - on ${{ matrix.os }}
+  ci:
+    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
       matrix:
+        java-version: [ 8, 19 ]
         os: [ ubuntu-latest ]
-        java_version: [ 8, 17, 18 ]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{ matrix.java_version }}
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java_version }}
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
+          java-version: ${{ matrix.java-version }}
+      - uses: actions/cache@v2
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Build with Maven
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
+      - name: Maven resolve ranges
+        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+      - name: Build prod with Maven
+        run: ./mvnw -T1C -B -ntp clean install
       - name: Build examples with Maven
-        run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
-  
-  
-  shardingsphere-example-generator:
-    name: ShardingSphere example generator
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Cache Maven Repos
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: 8
-      - name: Build Project
-        run: ./mvnw -B -ntp clean install -Dmaven.javadoc.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
-      - name: Run Example generator
-        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator
+        run: ./mvnw -T1C -B -f examples/pom.xml clean package -DskipTests
 
-  test-coverage-report:
+  test-coverage:
     if: github.repository == 'apache/shardingsphere'
+    name: Test coverage report
     runs-on: ubuntu-latest
-    name: ShardingSphere test coverage report
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -123,12 +93,11 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven- 
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -B -ntp clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+        run: ./mvnw -T1C -B -ntp clean install cobertura:cobertura -Djacoco.skip=false
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)
