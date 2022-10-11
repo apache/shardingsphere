@@ -99,7 +99,7 @@ public final class ShardingSphereDataScheduleCollector {
         
         private void collectForEachDatabase(final ShardingSphereData shardingSphereData, final ShardingSphereTable table, final ShardingSphereDatabase database, final DatabaseType databaseType) {
             String databaseName = database.getName();
-            Map<String, DataSource> dataSources = database.getResource().getDataSources();
+            Map<String, DataSource> dataSources = database.getResourceMetaData().getDataSources();
             ShardingSphereDataCollectorFactory.findInstance(table.getName()).ifPresent(shardingSphereDataCollector -> {
                 try {
                     shardingSphereDataCollector.collect(shardingSphereData, databaseName, database.getRuleMetaData(), dataSources, databaseType);

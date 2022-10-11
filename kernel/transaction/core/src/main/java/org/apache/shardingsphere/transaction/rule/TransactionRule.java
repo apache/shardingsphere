@@ -74,9 +74,9 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         Set<DatabaseType> databaseTypes = new HashSet<>();
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             ShardingSphereDatabase database = entry.getValue();
-            database.getResource().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
-            if (null != entry.getValue().getResource().getDatabaseType()) {
-                databaseTypes.add(entry.getValue().getResource().getDatabaseType());
+            database.getResourceMetaData().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
+            if (null != entry.getValue().getResourceMetaData().getDatabaseType()) {
+                databaseTypes.add(entry.getValue().getResourceMetaData().getDatabaseType());
             }
         }
         Preconditions.checkState(databaseTypes.size() < 2, "Multiple types of databases are not supported");
