@@ -71,12 +71,12 @@ public final class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ShardingSphereResourceMetaData shardingSphereResource = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
+    private final ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
     
     @Before
     public void before() {
         when(database.getName()).thenReturn("schema");
-        when(database.getResourceMetaData()).thenReturn(shardingSphereResource);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.emptyList());
     }

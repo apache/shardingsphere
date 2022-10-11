@@ -107,12 +107,12 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                  final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResourceMetaData resources = createResources(name, databaseConfig.getDataSources());
+        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
-        return new ShardingSphereDatabase(name, protocolType, resources, ruleMetaData, schemas);
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResourceMetaData createResources(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+    private static ShardingSphereResourceMetaData createResourceMetaData(final String databaseName, final Map<String, DataSource> dataSourceMap) {
         return new ShardingSphereResourceMetaData(databaseName, dataSourceMap);
     }
     

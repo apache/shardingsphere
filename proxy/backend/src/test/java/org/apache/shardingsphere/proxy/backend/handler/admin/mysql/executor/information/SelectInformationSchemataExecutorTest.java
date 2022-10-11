@@ -135,8 +135,8 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
-    private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResourceMetaData resource) {
-        return new ShardingSphereDatabase(databaseName, new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+    private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData) {
+        return new ShardingSphereDatabase(databaseName, new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName) {

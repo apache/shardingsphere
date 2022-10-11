@@ -58,11 +58,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resources;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     @Before
     public void before() {
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -75,7 +75,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() {
-        when(resources.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
+        when(resourceMetaData.getNotExistedResources(any())).thenReturn(Collections.singleton("ds_read_0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "", "");
         updater.checkSQLStatement(database, new CreateDatabaseDiscoveryRuleStatement(Collections.singleton(segment)), null);
     }

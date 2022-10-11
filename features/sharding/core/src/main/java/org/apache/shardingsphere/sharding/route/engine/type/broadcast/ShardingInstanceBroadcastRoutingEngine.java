@@ -33,13 +33,13 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class ShardingInstanceBroadcastRoutingEngine implements ShardingRouteEngine {
     
-    private final ShardingSphereResourceMetaData resources;
+    private final ShardingSphereResourceMetaData resourceMetaData;
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
         for (String each : shardingRule.getDataSourceNames()) {
-            if (resources.getAllInstanceDataSourceNames().contains(each)) {
+            if (resourceMetaData.getAllInstanceDataSourceNames().contains(each)) {
                 result.getRouteUnits().add(new RouteUnit(new RouteMapper(each, each), Collections.emptyList()));
             }
         }

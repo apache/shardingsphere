@@ -40,8 +40,8 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -51,11 +51,11 @@ public final class ShardingSphereMetaDataTest {
     
     @Test
     public void assertAddDatabase() {
-        ShardingSphereResourceMetaData resources = mock(ShardingSphereResourceMetaData.class);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
-        ShardingSphereDatabase database = mockDatabase(resources, dataSource, databaseResourceHeldRule);
+        ShardingSphereDatabase database = mockDatabase(resourceMetaData, dataSource, databaseResourceHeldRule);
         try (MockedStatic<ShardingSphereDatabase> mockedStatic = mockStatic(ShardingSphereDatabase.class)) {
             DatabaseType databaseType = mock(DatabaseType.class);
             mockedStatic.when(() -> ShardingSphereDatabase.create("foo_db", databaseType)).thenReturn(database);
@@ -70,15 +70,15 @@ public final class ShardingSphereMetaDataTest {
     
     @Test
     public void assertDropDatabase() {
-        ShardingSphereResourceMetaData resources = mock(ShardingSphereResourceMetaData.class);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resources, dataSource, databaseResourceHeldRule))),
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resourceMetaData, dataSource, databaseResourceHeldRule))),
                 new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
         metaData.dropDatabase("foo_db");
         assertTrue(metaData.getDatabases().isEmpty());
-        verify(resources).close(dataSource);
+        verify(resourceMetaData).close(dataSource);
         verify(databaseResourceHeldRule).closeStaleResource("foo_db");
         verify(globalResourceHeldRule).closeStaleResource("foo_db");
     }

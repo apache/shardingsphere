@@ -72,10 +72,10 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resources) {
-        Collection<String> allResources = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> allResources.addAll(each.getDataSources()));
-        Collection<String> notExistResources = resources.getNotExistedResources(allResources);
+    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
+        Collection<String> resources = new LinkedHashSet<>();
+        sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
+        Collection<String> notExistResources = resourceMetaData.getNotExistedResources(resources);
         ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
     }
     

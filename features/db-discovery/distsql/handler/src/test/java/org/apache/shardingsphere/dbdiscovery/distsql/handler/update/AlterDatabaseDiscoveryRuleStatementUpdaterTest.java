@@ -56,13 +56,13 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resources;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
     @Before
     public void before() {
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
@@ -79,7 +79,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() {
-        when(resources.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
+        when(resourceMetaData.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "readwrite_ds_mgr", "readwrite_ds_heartbeat");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),

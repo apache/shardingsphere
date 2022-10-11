@@ -57,9 +57,9 @@ public final class UnusedDataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", createDataSources());
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSources());
         ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
-        when(database.getResourceMetaData()).thenReturn(resource);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(database.getRuleMetaData()).thenReturn(metaData);
     }
     

@@ -31,8 +31,8 @@ public final class SwitchingResourceTest {
     @Test
     public void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
-        ShardingSphereResourceMetaData resources = mock(ShardingSphereResourceMetaData.class);
-        new SwitchingResource(resources, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();
-        verify(resources).close(staleDataSource);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        new SwitchingResource(resourceMetaData, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();
+        verify(resourceMetaData).close(staleDataSource);
     }
 }

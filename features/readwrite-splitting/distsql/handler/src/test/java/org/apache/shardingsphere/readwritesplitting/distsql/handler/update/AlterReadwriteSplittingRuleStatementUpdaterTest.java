@@ -55,13 +55,13 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resources;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     private final AlterReadwriteSplittingRuleStatementUpdater updater = new AlterReadwriteSplittingRuleStatementUpdater();
     
     @Before
     public void before() {
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
@@ -76,7 +76,7 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() {
-        when(resources.getNotExistedResources(any())).thenReturn(Collections.singleton("read_ds_0"));
+        when(resourceMetaData.getNotExistedResources(any())).thenReturn(Collections.singleton("read_ds_0"));
         updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration());
     }
     
@@ -98,28 +98,28 @@ public final class AlterReadwriteSplittingRuleStatementUpdaterTest {
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         updater.checkSQLStatement(database, createSQLStatementWithDuplicateWriteResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_0", "ds_write_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         updater.checkSQLStatement(database, createSQLStatementWithDuplicateReadResourceNames("readwrite_ds_0", "readwrite_ds_1", "TEST"), createCurrentRuleConfigurationWithMultipleRules());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithDuplicateReadResourceNames() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST"), createCurrentRuleConfigurationWithMultipleRules());
     }
     

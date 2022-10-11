@@ -53,7 +53,7 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     
     private static final String READ_ONLY = "readOnly";
     
-    private ShardingSphereResourceMetaData resource;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     private Map<String, DataSourceProperties> dataSourcePropsMap;
     
@@ -61,7 +61,7 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        resource = database.getResourceMetaData();
+        resourceMetaData = database.getResourceMetaData();
         dataSourcePropsMap = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1);
         for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
@@ -83,10 +83,10 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData metaData = resource.getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
-        result.add(resource.getDatabaseType().getType());
+        result.add(resourceMetaData.getDatabaseType().getType());
         result.add(metaData.getHostname());
         result.add(metaData.getPort());
         result.add(metaData.getCatalog());

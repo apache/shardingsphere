@@ -62,10 +62,10 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement,
-                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResourceMetaData resources) {
+                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResourceMetaData resourceMetaData) {
         Collection<String> currentRuleNames = new LinkedList<>();
-        if (null != resources && null != resources.getDataSources()) {
-            currentRuleNames.addAll(resources.getDataSources().keySet());
+        if (null != resourceMetaData && null != resourceMetaData.getDataSources()) {
+            currentRuleNames.addAll(resourceMetaData.getDataSources().keySet());
         }
         Collection<String> duplicateRuleNames = sqlStatement.getRules().stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
         if (!duplicateRuleNames.isEmpty()) {

@@ -94,8 +94,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
-        ShardingSphereResourceMetaData resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
+        ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
+        Set<String> catalogs = resourceMetaData.getDataSources().keySet().stream().map(each -> resourceMetaData.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();
         queryDatabase = !rowValue.isEmpty();

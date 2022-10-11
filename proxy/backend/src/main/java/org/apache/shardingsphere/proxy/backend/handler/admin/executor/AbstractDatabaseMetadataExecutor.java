@@ -207,8 +207,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
          */
         @Override
         protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
-            ShardingSphereResourceMetaData resources = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-            Optional<Entry<String, DataSource>> dataSourceEntry = resources.getDataSources().entrySet().stream().findFirst();
+            ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
+            Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(ResourceNotExistedException::new).getKey(), sql);
             try (
                     Connection connection = dataSourceEntry.get().getValue().getConnection();

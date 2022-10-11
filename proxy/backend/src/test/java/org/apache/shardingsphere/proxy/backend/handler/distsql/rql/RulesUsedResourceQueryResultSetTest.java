@@ -78,8 +78,8 @@ public final class RulesUsedResourceQueryResultSetTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(
                 Arrays.asList(mockShardingRule(), mockReadwriteSplittingRule(), mockDatabaseDiscoveryRule(), mockEncryptRule(), mockShadowRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
-        when(result.getResourceMetaData()).thenReturn(resource);
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
     
@@ -181,8 +181,8 @@ public final class RulesUsedResourceQueryResultSetTest {
     private ShardingSphereDatabase mockEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
-        when(result.getResourceMetaData()).thenReturn(resource);
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
 }

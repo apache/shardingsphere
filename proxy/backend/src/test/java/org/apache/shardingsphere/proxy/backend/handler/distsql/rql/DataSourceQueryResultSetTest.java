@@ -46,8 +46,8 @@ public final class DataSourceQueryResultSetTest {
     
     @Before
     public void before() {
-        ShardingSphereResourceMetaData resource = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", createDataSource()));
-        when(database.getResourceMetaData()).thenReturn(resource);
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", createDataSource()));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     private MockedDataSource createDataSource() {

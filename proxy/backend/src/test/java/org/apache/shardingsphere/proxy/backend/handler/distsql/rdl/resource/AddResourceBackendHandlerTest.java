@@ -71,7 +71,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resources;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     private AddResourceBackendHandler addResourceBackendHandler;
     
@@ -92,8 +92,8 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resources);
-        when(resources.getDataSources()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
         ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
@@ -104,8 +104,8 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
-        when(database.getResourceMetaData()).thenReturn(resources);
-        when(resources.getDataSources()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
         addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
     }
     

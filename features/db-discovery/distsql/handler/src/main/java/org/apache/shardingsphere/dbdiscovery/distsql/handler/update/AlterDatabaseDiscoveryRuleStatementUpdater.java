@@ -74,8 +74,8 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resources) {
-        Collection<String> notExistedResources = resources.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
+    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResourceMetaData resourceMetaData) {
+        Collection<String> notExistedResources = resourceMetaData.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResources));
     }
     

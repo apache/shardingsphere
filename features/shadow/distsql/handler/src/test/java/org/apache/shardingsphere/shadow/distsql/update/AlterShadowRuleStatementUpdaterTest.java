@@ -55,7 +55,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResourceMetaData resources;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -67,7 +67,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         Map<String, ShadowDataSourceConfiguration> map = new HashMap<>();
         map.put("initRuleName1", new ShadowDataSourceConfiguration("ds1", "ds_shadow1"));
         map.put("initRuleName2", new ShadowDataSourceConfiguration("ds2", "ds_shadow2"));
-        when(database.getResourceMetaData()).thenReturn(resources);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(currentConfig.getDataSources()).thenReturn(map);
     }
     
@@ -92,7 +92,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertExecuteWithNotExistResource() {
         List<String> dataSources = Arrays.asList("ds", "ds0");
-        when(resources.getNotExistedResources(any())).thenReturn(dataSources);
+        when(resourceMetaData.getNotExistedResources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds3", null, null));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }

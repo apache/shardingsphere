@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class SwitchingResource {
     
-    private final ShardingSphereResourceMetaData resources;
+    private final ShardingSphereResourceMetaData resourceMetaData;
     
     @Getter
     private final Map<String, DataSource> newDataSources;
@@ -42,6 +42,6 @@ public final class SwitchingResource {
      * Close stale data sources.
      */
     public void closeStaleDataSources() {
-        staleDataSources.values().forEach(resources::close);
+        staleDataSources.values().forEach(resourceMetaData::close);
     }
 }

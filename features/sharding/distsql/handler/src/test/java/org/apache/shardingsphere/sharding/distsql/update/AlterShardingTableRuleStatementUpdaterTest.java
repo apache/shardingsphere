@@ -60,20 +60,20 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereRuleMetaData shardingSphereRuleMetaData;
+    private ShardingSphereRuleMetaData ruleMetaData;
     
     private final ShardingRuleConfiguration currentRuleConfig = createCurrentShardingRuleConfiguration();
     
-    private final ShardingSphereResourceMetaData shardingSphereResource = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
+    private final ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
     
     private final AlterShardingTableRuleStatementUpdater updater = new AlterShardingTableRuleStatementUpdater();
     
     @Before
     public void before() {
         when(database.getName()).thenReturn("schema");
-        when(database.getResourceMetaData()).thenReturn(shardingSphereResource);
-        when(database.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
-        when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.emptyList());
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
     }
     
     @Test

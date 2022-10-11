@@ -41,15 +41,15 @@ public final class ShardingInstanceBroadcastRoutingEngineTest {
     private ShardingRule shardingRule;
     
     @Mock
-    private ShardingSphereResourceMetaData resources;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     private ShardingInstanceBroadcastRoutingEngine shardingInstanceBroadcastRoutingEngine;
     
     @Before
     public void setUp() {
         when(shardingRule.getDataSourceNames()).thenReturn(Collections.singletonList(DATASOURCE_NAME));
-        when(resources.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton(DATASOURCE_NAME));
-        shardingInstanceBroadcastRoutingEngine = new ShardingInstanceBroadcastRoutingEngine(resources);
+        when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton(DATASOURCE_NAME));
+        shardingInstanceBroadcastRoutingEngine = new ShardingInstanceBroadcastRoutingEngine(resourceMetaData);
     }
     
     @Test

@@ -105,15 +105,15 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
-        ShardingSphereResourceMetaData resources = mock(ShardingSphereResourceMetaData.class);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(getTestParameters().getDatabaseType());
-        when(resources.getDatabaseType()).thenReturn(databaseType);
+        when(resourceMetaData.getDatabaseType()).thenReturn(databaseType);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Map<String, ShardingSphereSchema> schemas = mockSchemas(schemaName);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, mock(InstanceContext.class));
         mockRules(databaseRules, schemaName);
         databaseRules.add(sqlParserRule);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resources, new ShardingSphereRuleMetaData(databaseRules), schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, new ShardingSphereRuleMetaData(databaseRules), schemas);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
         databases.put(schemaName, database);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),
