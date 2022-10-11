@@ -55,7 +55,7 @@ public final class AdvancedSQLFederationExecutorTest {
         String schemaName = "federate_jdbc";
         String databaseName = "database_name";
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(schemaName, new ShardingSphereSchema(tables, Collections.emptyMap()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mockResources(), null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mockResourceMetaData(), null, schemas);
         ShardingSphereRuleMetaData globalRuleMetaData = createGlobalRuleMetaData();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getDatabase(databaseName)).thenReturn(database);
@@ -69,7 +69,7 @@ public final class AdvancedSQLFederationExecutorTest {
         return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption))));
     }
     
-    private ShardingSphereResourceMetaData mockResources() {
+    private ShardingSphereResourceMetaData mockResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDatabaseType()).thenReturn(new H2DatabaseType());
         return result;
