@@ -193,10 +193,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
             DataConsistencyCheckResult checkResult = entry.getValue();
-            boolean isCountMatched = checkResult.getCountCheckResult().isMatched();
-            boolean isContentMatched = checkResult.getContentCheckResult().isMatched();
-            if (!isCountMatched || !isContentMatched) {
-                log.error("job: {}, table: {} data consistency check failed, count matched: {}, content matched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
+            if (!checkResult.isMatched()) {
                 return false;
             }
         }
