@@ -107,6 +107,10 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         if (actualFetchCount <= 0 && !DirectionType.isAllDirectionType(directionType)) {
             return result;
         }
+        if (connectionContext.getCursorConnectionContext().getExecutedAllDirections().containsKey(cursorName)) {
+            result.forEach(each -> each.getOrderByValues().clear());
+            return result;
+        }
         Collection<OrderByItem> items = selectStatementContext.getOrderByContext().getItems();
         int index = 0;
         for (QueryResult each : queryResults) {
