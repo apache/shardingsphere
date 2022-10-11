@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,11 +58,11 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResource resource;
+    private ShardingSphereResources resource;
     
     @Before
     public void before() {
-        when(database.getResource()).thenReturn(resource);
+        when(database.getResources()).thenReturn(resource);
     }
     
     @Test(expected = DuplicateRuleException.class)

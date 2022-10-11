@@ -122,7 +122,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         for (int i = 0; i < 10; i++) {
             String name = String.format(SCHEMA_PATTERN, i);
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(database.getResources().getDatabaseType()).thenReturn(new MySQLDatabaseType());
             result.put(name, database);
         }
         return result;

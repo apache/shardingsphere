@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,13 +56,13 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResource resource;
+    private ShardingSphereResources resources;
     
     private final AlterDatabaseDiscoveryRuleStatementUpdater updater = new AlterDatabaseDiscoveryRuleStatementUpdater();
     
     @Before
     public void before() {
-        when(database.getResource()).thenReturn(resource);
+        when(database.getResources()).thenReturn(resources);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
@@ -79,7 +79,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdaterTest {
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckSQLStatementWithoutExistedResources() {
-        when(resource.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
+        when(resources.getNotExistedResources(any())).thenReturn(Collections.singleton("ds0"));
         DatabaseDiscoveryConstructionSegment segment = new DatabaseDiscoveryConstructionSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), "readwrite_ds_mgr", "readwrite_ds_heartbeat");
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "TEST");
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)),

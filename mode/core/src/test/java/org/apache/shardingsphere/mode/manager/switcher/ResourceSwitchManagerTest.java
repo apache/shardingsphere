@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class ResourceSwitchManagerTest {
     @Test
     public void assertCreate() throws InterruptedException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResource("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
+        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResources("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
         assertNewDataSources(actual);
         actual.closeStaleDataSources();
         assertStaleDataSources(dataSourceMap);

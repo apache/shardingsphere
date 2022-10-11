@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -55,7 +55,7 @@ public final class AdvancedSQLFederationExecutorTest {
         String schemaName = "federate_jdbc";
         String databaseName = "database_name";
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(schemaName, new ShardingSphereSchema(tables, Collections.emptyMap()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mockResource(), null, schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mockResources(), null, schemas);
         ShardingSphereRuleMetaData globalRuleMetaData = createGlobalRuleMetaData();
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.getDatabase(databaseName)).thenReturn(database);
@@ -69,8 +69,8 @@ public final class AdvancedSQLFederationExecutorTest {
         return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption))));
     }
     
-    private ShardingSphereResource mockResource() {
-        ShardingSphereResource result = mock(ShardingSphereResource.class);
+    private ShardingSphereResources mockResources() {
+        ShardingSphereResources result = mock(ShardingSphereResources.class);
         when(result.getDatabaseType()).thenReturn(new H2DatabaseType());
         return result;
     }

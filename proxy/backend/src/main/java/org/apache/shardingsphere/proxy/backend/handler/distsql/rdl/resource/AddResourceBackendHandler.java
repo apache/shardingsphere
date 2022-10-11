@@ -61,7 +61,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
     public ResponseHeader execute(final String databaseName, final AddResourceStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        DatabaseType storeType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDatabaseType();
+        DatabaseType storeType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResources().getDatabaseType();
         validator.validate(dataSourcePropsMap, storeType);
         try {
             ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
@@ -76,7 +76,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {
-            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().containsKey(each.getName())) {
+            if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getDatabase(databaseName).getResources().getDataSources().containsKey(each.getName())) {
                 duplicateDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());

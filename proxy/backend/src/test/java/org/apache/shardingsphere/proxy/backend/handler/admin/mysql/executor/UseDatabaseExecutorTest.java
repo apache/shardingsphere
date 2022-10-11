@@ -69,7 +69,7 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+            when(database.getResources().getDatabaseType()).thenReturn(new H2DatabaseType());
             when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }

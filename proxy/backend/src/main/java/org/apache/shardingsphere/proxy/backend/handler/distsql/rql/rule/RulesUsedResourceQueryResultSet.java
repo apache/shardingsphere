@@ -66,7 +66,7 @@ public final class RulesUsedResourceQueryResultSet implements DatabaseDistSQLRes
         List<Collection<Object>> data = new LinkedList<>();
         ShowRulesUsedResourceStatement statement = (ShowRulesUsedResourceStatement) sqlStatement;
         String resourceName = statement.getResourceName().orElse(null);
-        if (database.getResource().getDataSources().containsKey(resourceName)) {
+        if (database.getResources().getDataSources().containsKey(resourceName)) {
             data.addAll(getShardingData(database));
             data.addAll(getReadwriteSplittingData(database, resourceName));
             data.addAll(getDatabaseDiscoveryData(database, resourceName));

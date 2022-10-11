@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -71,12 +71,12 @@ public final class ShardingRuleStatementCheckerTest {
     
     private final ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
     
-    private final ShardingSphereResource shardingSphereResource = new ShardingSphereResource("sharding_db", createDataSource());
+    private final ShardingSphereResources shardingSphereResource = new ShardingSphereResources("sharding_db", createDataSource());
     
     @Before
     public void before() {
         when(database.getName()).thenReturn("schema");
-        when(database.getResource()).thenReturn(shardingSphereResource);
+        when(database.getResources()).thenReturn(shardingSphereResource);
         when(database.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getRules()).thenReturn(Collections.emptyList());
     }

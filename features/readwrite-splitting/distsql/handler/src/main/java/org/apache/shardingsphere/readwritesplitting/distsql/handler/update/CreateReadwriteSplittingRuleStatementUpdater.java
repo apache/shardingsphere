@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -54,7 +54,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateReadwriteSplittingRuleStatement sqlStatement, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
-        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, database.getResource());
+        checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig, database.getResources());
         checkToBeCreatedResources(databaseName, sqlStatement, database);
         // TODO move all check methods to checker
         ReadwriteSplittingRuleStatementChecker.checkDuplicateResourceNames(databaseName, sqlStatement.getRules(), currentRuleConfig, true);
@@ -62,7 +62,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
     }
     
     private void checkDuplicateRuleNames(final String databaseName, final CreateReadwriteSplittingRuleStatement sqlStatement,
-                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResource resource) {
+                                         final ReadwriteSplittingRuleConfiguration currentRuleConfig, final ShardingSphereResources resource) {
         Collection<String> currentRuleNames = new LinkedList<>();
         if (null != resource && null != resource.getDataSources()) {
             currentRuleNames.addAll(resource.getDataSources().keySet());
@@ -91,7 +91,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdater implements RuleD
                 requireDiscoverableResources.add(each.getAutoAwareResource());
             }
         });
-        Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResources().getNotExistedResources(requireResources);
         ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(database);
         Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());

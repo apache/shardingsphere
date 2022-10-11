@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlg
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
@@ -55,7 +55,7 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
-        checkToBeAlteredResources(databaseName, sqlStatement, database.getResource());
+        checkToBeAlteredResources(databaseName, sqlStatement, database.getResources());
         checkDiscoverTypeAndHeartbeat(sqlStatement, currentRuleConfig);
     }
     
@@ -74,8 +74,8 @@ public final class AlterDatabaseDiscoveryRuleStatementUpdater implements RuleDef
         return sqlStatement.getRules().stream().map(AbstractDatabaseDiscoverySegment::getName).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) {
-        Collection<String> notExistedResources = resource.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
+    private void checkToBeAlteredResources(final String databaseName, final AlterDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResources resources) {
+        Collection<String> notExistedResources = resources.getNotExistedResources(getToBeAlteredResourceNames(sqlStatement));
         ShardingSpherePreconditions.checkState(notExistedResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResources));
     }
     

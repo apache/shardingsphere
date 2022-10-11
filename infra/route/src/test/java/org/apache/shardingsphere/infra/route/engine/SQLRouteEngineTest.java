@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -47,7 +47,7 @@ public final class SQLRouteEngineTest {
         QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
-                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+                mock(DatabaseType.class), mock(ShardingSphereResources.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties()));
         RouteContext actual = sqlRouteEngine.route(new ConnectionContext(), queryContext, database);
         assertThat(actual.getRouteUnits().size(), is(1));
@@ -62,7 +62,7 @@ public final class SQLRouteEngineTest {
         QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
-                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+                mock(DatabaseType.class), mock(ShardingSphereResources.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()), new ConfigurationProperties(new Properties())).route(new ConnectionContext(), queryContext, database);
     }
 }

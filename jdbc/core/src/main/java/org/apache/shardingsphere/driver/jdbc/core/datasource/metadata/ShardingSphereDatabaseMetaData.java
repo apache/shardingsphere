@@ -223,13 +223,13 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private String getActualCatalog(final String catalog) {
         DataSourceMetaData metaData = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDataSourceMetaData(getDataSourceName());
+                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResources().getDataSourceMetaData(getDataSourceName());
         return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
         DataSourceMetaData metaData = connection.getContextManager()
-                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResource().getDataSourceMetaData(getDataSourceName());
+                .getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResources().getDataSourceMetaData(getDataSourceName());
         return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getSchema() : schema;
     }
     

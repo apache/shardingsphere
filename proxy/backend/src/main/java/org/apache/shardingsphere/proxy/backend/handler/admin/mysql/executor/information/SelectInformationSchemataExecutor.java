@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.information;
 
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor;
@@ -94,7 +94,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
-        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource();
+        ShardingSphereResources resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResources();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();

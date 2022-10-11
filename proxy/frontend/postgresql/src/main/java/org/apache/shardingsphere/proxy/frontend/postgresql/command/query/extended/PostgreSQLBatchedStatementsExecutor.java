@@ -176,7 +176,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
-        DatabaseType databaseType = database.getResource().getDatabaseType();
+        DatabaseType databaseType = database.getResources().getDatabaseType();
         DatabaseType protocolType = database.getProtocolType();
         JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);

@@ -382,7 +382,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         result.setSourceTableName(parameter.getSourceTableName());
         Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
-        for (Entry<String, DataSource> entry : targetDatabase.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> entry : targetDatabase.getResources().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProperties.put(entry.getKey(), dataSourceProps);
         }

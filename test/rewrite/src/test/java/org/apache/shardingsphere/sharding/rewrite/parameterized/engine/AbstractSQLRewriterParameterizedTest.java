@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
@@ -105,15 +105,15 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         mockDataSource(databaseConfig.getDataSources());
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        ShardingSphereResources resources = mock(ShardingSphereResources.class);
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(getTestParameters().getDatabaseType());
-        when(resource.getDatabaseType()).thenReturn(databaseType);
+        when(resources.getDatabaseType()).thenReturn(databaseType);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Map<String, ShardingSphereSchema> schemas = mockSchemas(schemaName);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, mock(InstanceContext.class));
         mockRules(databaseRules, schemaName);
         databaseRules.add(sqlParserRule);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(databaseRules), schemas);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resources, new ShardingSphereRuleMetaData(databaseRules), schemas);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
         databases.put(schemaName, database);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),

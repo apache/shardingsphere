@@ -86,7 +86,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResources().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
@@ -106,7 +106,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResources().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResourceNames));
     }

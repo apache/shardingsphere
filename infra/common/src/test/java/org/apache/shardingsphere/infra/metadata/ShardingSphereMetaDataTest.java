@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -51,7 +51,7 @@ public final class ShardingSphereMetaDataTest {
     
     @Test
     public void assertAddDatabase() throws SQLException {
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        ShardingSphereResources resource = mock(ShardingSphereResources.class);
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
@@ -70,7 +70,7 @@ public final class ShardingSphereMetaDataTest {
     
     @Test
     public void assertDropDatabase() {
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        ShardingSphereResources resource = mock(ShardingSphereResources.class);
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
@@ -83,11 +83,11 @@ public final class ShardingSphereMetaDataTest {
         verify(globalResourceHeldRule).closeStaleResource("foo_db");
     }
     
-    private ShardingSphereDatabase mockDatabase(final ShardingSphereResource resource, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
+    private ShardingSphereDatabase mockDatabase(final ShardingSphereResources resource, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
-        when(result.getResource()).thenReturn(resource);
-        when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_db", dataSource));
+        when(result.getResources()).thenReturn(resource);
+        when(result.getResources().getDataSources()).thenReturn(Collections.singletonMap("foo_db", dataSource));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
     }

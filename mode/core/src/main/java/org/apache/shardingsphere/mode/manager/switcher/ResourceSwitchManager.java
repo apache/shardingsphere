@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.switcher;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public final class ResourceSwitchManager {
      * @param toBeChangedDataSourceProps to be changed data source properties map
      * @return created switching resource
      */
-    public SwitchingResource create(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    public SwitchingResource create(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         return new SwitchingResource(resource, createNewDataSources(resource, toBeChangedDataSourceProps), getStaleDataSources(resource, toBeChangedDataSourceProps));
     }
     
@@ -52,11 +52,11 @@ public final class ResourceSwitchManager {
      * @param toBeDeletedDataSourceProps to be deleted data source properties map
      * @return created switching resource
      */
-    public SwitchingResource createByDropResource(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
+    public SwitchingResource createByDropResource(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeDeletedDataSourceProps) {
         return new SwitchingResource(resource, Collections.emptyMap(), getStaleDataSources(resource.getDataSources(), toBeDeletedDataSourceProps));
     }
     
-    private Map<String, DataSource> createNewDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSource> createNewDataSources(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources());
         result.keySet().removeAll(getToBeDeletedDataSources(resource, toBeChangedDataSourceProps).keySet());
         result.putAll(createToBeChangedDataSources(resource, toBeChangedDataSourceProps));
@@ -64,11 +64,11 @@ public final class ResourceSwitchManager {
         return result;
     }
     
-    private Map<String, DataSource> createToBeChangedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSource> createToBeChangedDataSources(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         return DataSourcePoolCreator.create(getChangedDataSourceProperties(resource, toBeChangedDataSourceProps));
     }
     
-    private Map<String, DataSourceProperties> getChangedDataSourceProperties(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSourceProperties> getChangedDataSourceProperties(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         return toBeChangedDataSourceProps.entrySet().stream().filter(entry -> isModifiedDataSource(resource.getDataSources(), entry.getKey(), entry.getValue()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -77,13 +77,13 @@ public final class ResourceSwitchManager {
         return originalDataSources.containsKey(dataSourceName) && !dataSourceProps.equals(DataSourcePropertiesCreator.create(originalDataSources.get(dataSourceName)));
     }
     
-    private Map<String, DataSource> createToBeAddedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSource> createToBeAddedDataSources(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSourceProperties> toBeAddedDataSourceProps = toBeChangedDataSourceProps.entrySet().stream()
                 .filter(entry -> !resource.getDataSources().containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         return DataSourcePoolCreator.create(toBeAddedDataSourceProps);
     }
     
-    private Map<String, DataSource> getStaleDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSource> getStaleDataSources(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources().size(), 1);
         result.putAll(getToBeChangedDataSources(resource, toBeChangedDataSourceProps));
         return result;
@@ -93,11 +93,11 @@ public final class ResourceSwitchManager {
         return dataSources.entrySet().stream().filter(entry -> toBeDeletedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, DataSource> getToBeDeletedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSource> getToBeDeletedDataSources(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         return resource.getDataSources().entrySet().stream().filter(entry -> !toBeChangedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
-    private Map<String, DataSource> getToBeChangedDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+    private Map<String, DataSource> getToBeChangedDataSources(final ShardingSphereResources resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
         Map<String, DataSourceProperties> changedDataSourceProps = getChangedDataSourceProperties(resource, toBeChangedDataSourceProps);
         return resource.getDataSources().entrySet().stream().filter(entry -> changedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }

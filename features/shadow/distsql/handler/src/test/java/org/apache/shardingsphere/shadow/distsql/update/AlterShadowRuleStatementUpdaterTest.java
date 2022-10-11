@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.AlterShadowRuleStatementUpdater;
@@ -55,7 +55,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResource resource;
+    private ShardingSphereResources resource;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -67,7 +67,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
         Map<String, ShadowDataSourceConfiguration> map = new HashMap<>();
         map.put("initRuleName1", new ShadowDataSourceConfiguration("ds1", "ds_shadow1"));
         map.put("initRuleName2", new ShadowDataSourceConfiguration("ds2", "ds_shadow2"));
-        when(database.getResource()).thenReturn(resource);
+        when(database.getResources()).thenReturn(resource);
         when(currentConfig.getDataSources()).thenReturn(map);
     }
     

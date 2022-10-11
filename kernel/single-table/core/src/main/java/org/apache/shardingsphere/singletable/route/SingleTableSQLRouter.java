@@ -56,7 +56,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final SingleTableRule rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        if (1 == database.getResource().getDataSources().size()) {
+        if (1 == database.getResources().getDataSources().size()) {
             return createSingleDataSourceRouteContext(rule, database);
         }
         RouteContext result = new RouteContext();
@@ -85,7 +85,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     private RouteContext createSingleDataSourceRouteContext(final SingleTableRule rule, final ShardingSphereDatabase database) {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
-        String actualDataSource = database.getResource().getDataSources().keySet().iterator().next();
+        String actualDataSource = database.getResources().getDataSources().keySet().iterator().next();
         RouteContext result = new RouteContext();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), Collections.emptyList()));
         return result;

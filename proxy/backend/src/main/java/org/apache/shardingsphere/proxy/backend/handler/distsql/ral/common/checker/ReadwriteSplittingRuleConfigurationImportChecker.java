@@ -66,7 +66,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
                 }
             }
         });
-        Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
+        Collection<String> notExistResources = database.getResources().getNotExistedResources(requireResources);
         ShardingSpherePreconditions.checkState(notExistResources.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistResources));
         Collection<String> logicResources = getLogicResources(database);
         Collection<String> notExistLogicResources = requireDiscoverableResources.stream().filter(each -> !logicResources.contains(each)).collect(Collectors.toSet());

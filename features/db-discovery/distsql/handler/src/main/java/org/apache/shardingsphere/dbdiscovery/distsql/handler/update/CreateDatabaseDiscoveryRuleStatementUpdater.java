@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         checkDuplicateRuleNames(databaseName, sqlStatement, currentRuleConfig);
-        checkResources(databaseName, sqlStatement, database.getResource());
+        checkResources(databaseName, sqlStatement, database.getResources());
         checkDiscoverTypeAndHeartbeat(databaseName, sqlStatement, currentRuleConfig);
     }
     
@@ -72,7 +72,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdater implements RuleDe
                 .entrySet().stream().filter(entry -> entry.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
     }
     
-    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResource resource) {
+    private void checkResources(final String databaseName, final CreateDatabaseDiscoveryRuleStatement sqlStatement, final ShardingSphereResources resource) {
         Collection<String> resources = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> resources.addAll(each.getDataSources()));
         Collection<String> notExistResources = resource.getNotExistedResources(resources);

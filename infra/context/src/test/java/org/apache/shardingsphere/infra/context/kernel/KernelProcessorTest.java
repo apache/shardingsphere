@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -52,7 +52,7 @@ public final class KernelProcessorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
-                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), Collections.emptyMap());
+                mock(ShardingSphereResources.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), Collections.emptyMap());
         ConfigurationProperties props = new ConfigurationProperties(createProperties());
         ExecutionContext actual = new KernelProcessor().generateExecutionContext(queryContext, database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), props,
                 mock(ConnectionContext.class));

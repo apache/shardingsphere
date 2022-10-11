@@ -104,7 +104,7 @@ public final class JDBCPortal implements Portal<Void> {
     
     private static DatabaseType getDatabaseType(final String databaseName) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        return null != database.getResource().getDatabaseType() ? database.getResource().getDatabaseType() : database.getProtocolType();
+        return null != database.getResources().getDatabaseType() ? database.getResources().getDatabaseType() : database.getProtocolType();
     }
     
     @SneakyThrows(SQLException.class)

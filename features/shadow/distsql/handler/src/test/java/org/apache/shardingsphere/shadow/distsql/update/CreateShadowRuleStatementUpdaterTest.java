@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResources;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateShadowRuleStatementUpdater;
@@ -51,7 +51,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResource resource;
+    private ShardingSphereResources resource;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -60,7 +60,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(database.getResource()).thenReturn(resource);
+        when(database.getResources()).thenReturn(resource);
         when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", new ShadowDataSourceConfiguration("initDs0", "initDs0Shadow")));
     }
     
