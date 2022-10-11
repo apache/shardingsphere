@@ -248,6 +248,18 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     }
     
     @Override
+    public void startDisabledJob(final String jobId) {
+        super.startDisabledJob(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional));
+    }
+    
+    @Override
+    public void stop(final String jobId) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> ConsistencyCheckJobAPIFactory.getInstance().stop(optional));
+        super.stop(jobId);
+    }
+    
+    @Override
     public void rollback(final String jobId) throws SQLException {
         log.info("Rollback job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
@@ -421,12 +433,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         result.setType(type);
         result.setParameter(parameter);
         return result;
-    }
-    
-    @Override
-    public void startDisabledJob(final String jobId) {
-        super.startDisabledJob(jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional));
     }
     
     @Override
