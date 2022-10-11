@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.yaml.metadata;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Yaml pipeline column meta data.
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public final class YamlPipelineColumnMetaData implements YamlConfiguration {
     

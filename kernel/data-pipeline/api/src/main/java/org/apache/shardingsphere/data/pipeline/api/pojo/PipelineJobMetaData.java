@@ -21,13 +21,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Table based pipeline job info.
+ * Pipeline job meta data.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
+public final class PipelineJobMetaData {
     
-    private final PipelineJobMetaData jobMetaData;
+    private final String jobId;
     
-    private final String table;
+    private final boolean active;
+    
+    private final int shardingTotalCount;
+    
+    private final String createTime;
+    
+    private final String stopTime;
+    
+    private final String jobParameter;
 }

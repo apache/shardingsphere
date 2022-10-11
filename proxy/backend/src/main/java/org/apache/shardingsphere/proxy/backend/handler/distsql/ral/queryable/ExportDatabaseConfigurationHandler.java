@@ -88,11 +88,11 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResource().getDataSources().isEmpty()) {
+        if (database.getResourceMetaData().getDataSources().isEmpty()) {
             return;
         }
         stringBuilder.append("dataSources:").append(System.lineSeparator());
-        for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }

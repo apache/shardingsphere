@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -238,7 +239,7 @@ public abstract class BaseITCase {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
                 List<Map<String, Object>> result = resultSetToList(resultSet);
                 log.info("proxy query for list, sql: {}, result: {}", sql, result);
-                return result;
+                return ObjectUtils.defaultIfNull(result, Collections.emptyList());
             } catch (final SQLException ex) {
                 log.error("data access error", ex);
             }
@@ -285,7 +286,7 @@ public abstract class BaseITCase {
             }
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
-            if (Collections.min(incrementalIdleSecondsList) < 15) {
+            if (Collections.min(incrementalIdleSecondsList) <= 5) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
             }

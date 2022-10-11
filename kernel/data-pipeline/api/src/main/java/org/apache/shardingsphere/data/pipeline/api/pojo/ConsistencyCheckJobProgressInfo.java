@@ -17,17 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 /**
- * Table based pipeline job info.
+ * Consistency check jon progress info.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
+
+@Data
+public final class ConsistencyCheckJobProgressInfo {
     
-    private final PipelineJobMetaData jobMetaData;
+    private String tableNames;
     
-    private final String table;
+    private Boolean result;
+    
+    private int finishedPercentage;
+    
+    private Long remainingSeconds;
+    
+    private String checkBeginTime;
+    
+    private String checkEndTime;
+    
+    private Long durationSeconds;
+    
+    private String errorMessage;
 }

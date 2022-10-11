@@ -88,7 +88,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     
     private ShardingSphereDatabase createNormalDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDataSources()).thenReturn(createDataSourceMap());
+        when(result.getResourceMetaData().getDataSources()).thenReturn(createDataSourceMap());
         when(result.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
         when(result.getSchema("normal_db")).thenReturn(new ShardingSphereSchema(createTables(), Collections.emptyMap()));
         return result;
@@ -141,7 +141,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
     
     private ShardingSphereDatabase createEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(result.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         return result;
     }

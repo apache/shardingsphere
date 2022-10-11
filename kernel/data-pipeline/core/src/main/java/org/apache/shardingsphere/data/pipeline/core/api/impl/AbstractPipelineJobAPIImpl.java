@@ -85,18 +85,10 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected abstract PipelineJobInfo getJobInfo(String jobId);
     
-    protected void fillJobInfo(final PipelineJobInfo jobInfo, final JobConfigurationPOJO jobConfigPOJO) {
-        jobInfo.setActive(!jobConfigPOJO.isDisabled());
-        jobInfo.setShardingTotalCount(jobConfigPOJO.getShardingTotalCount());
-        jobInfo.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
-        jobInfo.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
-        jobInfo.setJobParameter(jobConfigPOJO.getJobParameter());
-    }
-    
     @Override
     public Optional<String> start(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
-        Preconditions.checkState(0 != jobConfig.getJobShardingCount(), new PipelineJobCreationWithInvalidShardingCountException(jobId));
+        ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
         log.info("Start job by {}", jobConfig);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
@@ -159,7 +151,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     
     protected final JobConfigurationPOJO getElasticJobConfigPOJO(final String jobId) {
         JobConfigurationPOJO result = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
-        Preconditions.checkNotNull(result, new PipelineJobNotFoundException(jobId));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineJobNotFoundException(jobId));
         return result;
     }
     

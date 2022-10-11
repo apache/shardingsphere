@@ -98,7 +98,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.containsDataSource()).thenReturn(true);
-            when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+            when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;

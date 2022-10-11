@@ -79,7 +79,7 @@ public final class MetaDataInfoCollector extends Collector {
     
     private Collection<String> getDatabaseNames(final ShardingSphereDatabase database) {
         Collection<String> result = new HashSet<>();
-        for (DataSource each : database.getResource().getDataSources().values()) {
+        for (DataSource each : database.getResourceMetaData().getDataSources().values()) {
             getDatabaseName(each).ifPresent(result::add);
         }
         return result;

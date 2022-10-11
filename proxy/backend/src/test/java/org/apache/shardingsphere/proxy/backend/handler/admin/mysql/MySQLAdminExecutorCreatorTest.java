@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -259,8 +259,8 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithOtherSelectStatementForDatabaseName() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("ds", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("ds", new MockedDataSource()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
         initProxyContext(result);
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
@@ -276,8 +276,8 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithOtherSelectStatementForNullDatabaseName() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("ds_0", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("ds_0", new MockedDataSource()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
         initProxyContext(result);
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
