@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
@@ -32,7 +31,7 @@ import java.sql.Statement;
 @Slf4j
 public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
-    @Getter(AccessLevel.PROTECTED)
+    @Getter
     private volatile boolean canceling;
     
     private volatile Statement currentStatement;
