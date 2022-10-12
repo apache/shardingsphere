@@ -23,57 +23,67 @@ columns:
     generated: false
     name: table_catalog
     primaryKey: false
+    visible: true
   table_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_schema
     primaryKey: false
+    visible: true
   table_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_name
     primaryKey: false
+    visible: true
   view_definition:
     caseSensitive: true
     dataType: 12
     generated: false
     name: view_definition
     primaryKey: false
+    visible: true
   check_option:
     caseSensitive: true
     dataType: 12
     generated: false
     name: check_option
     primaryKey: false
+    visible: true
   is_updatable:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_updatable
     primaryKey: false
+    visible: true
   is_insertable_into:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_insertable_into
     primaryKey: false
+    visible: true
   is_trigger_updatable:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_trigger_updatable
     primaryKey: false
+    visible: true
   is_trigger_deletable:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_trigger_deletable
     primaryKey: false
+    visible: true
   is_trigger_insertable_into:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_trigger_insertable_into
     primaryKey: false
+    visible: true

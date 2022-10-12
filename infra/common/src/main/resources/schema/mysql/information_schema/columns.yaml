@@ -23,24 +23,28 @@ columns:
     generated: false
     name: TABLE_CATALOG
     primaryKey: false
+    visible: true
   table_schema:
     caseSensitive: false
     dataType: 12
     generated: false
     name: TABLE_SCHEMA
     primaryKey: false
+    visible: true
   table_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: TABLE_NAME
     primaryKey: false
+    visible: true
   column_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: COLUMN_NAME
     primaryKey: false
+    visible: true
   ordinal_position:
     caseSensitive: false
     dataType: -5
@@ -53,93 +57,109 @@ columns:
     generated: false
     name: COLUMN_DEFAULT
     primaryKey: false
+    visible: true
   is_nullable:
     caseSensitive: false
     dataType: 12
     generated: false
     name: IS_NULLABLE
     primaryKey: false
+    visible: true
   data_type:
     caseSensitive: false
     dataType: 12
     generated: false
     name: DATA_TYPE
     primaryKey: false
+    visible: true
   character_maximum_length:
     caseSensitive: false
     dataType: -5
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
     primaryKey: false
+    visible: true
   character_octet_length:
     caseSensitive: false
     dataType: -5
     generated: false
     name: CHARACTER_OCTET_LENGTH
     primaryKey: false
+    visible: true
   numeric_precision:
     caseSensitive: false
     dataType: -5
     generated: false
     name: NUMERIC_PRECISION
     primaryKey: false
+    visible: true
   numeric_scale:
     caseSensitive: false
     dataType: -5
     generated: false
     name: NUMERIC_SCALE
     primaryKey: false
+    visible: true
   datetime_precision:
     caseSensitive: false
     dataType: -5
     generated: false
     name: DATETIME_PRECISION
     primaryKey: false
+    visible: true
   character_set_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: CHARACTER_SET_NAME
     primaryKey: false
+    visible: true
   collation_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: COLLATION_NAME
     primaryKey: false
+    visible: true
   column_type:
     caseSensitive: false
     dataType: -1
     generated: false
     name: COLUMN_TYPE
     primaryKey: false
+    visible: true
   column_key:
     caseSensitive: false
     dataType: 12
     generated: false
     name: COLUMN_KEY
     primaryKey: false
+    visible: true
   extra:
     caseSensitive: false
     dataType: 12
     generated: false
     name: EXTRA
     primaryKey: false
+    visible: true
   privileges:
     caseSensitive: false
     dataType: 12
     generated: false
     name: PRIVILEGES
     primaryKey: false
+    visible: true
   column_comment:
     caseSensitive: false
     dataType: 12
     generated: false
     name: COLUMN_COMMENT
     primaryKey: false
+    visible: true
   generation_expression:
     caseSensitive: false
     dataType: -1
     generated: false
     name: GENERATION_EXPRESSION
     primaryKey: false
+    visible: true
