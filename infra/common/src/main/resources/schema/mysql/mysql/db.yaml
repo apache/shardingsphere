@@ -23,132 +23,154 @@ columns:
     generated: false
     name: Host
     primaryKey: true
+    visible: true
   db:
     caseSensitive: true
     dataType: 1
     generated: false
     name: Db
     primaryKey: true
+    visible: true
   user:
     caseSensitive: true
     dataType: 1
     generated: false
     name: User
     primaryKey: true
+    visible: true
   select_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Select_priv
     primaryKey: false
+    visible: true
   insert_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Insert_priv
     primaryKey: false
+    visible: true
   update_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Update_priv
     primaryKey: false
+    visible: true
   delete_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Delete_priv
     primaryKey: false
+    visible: true
   create_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Create_priv
     primaryKey: false
+    visible: true
   drop_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Drop_priv
     primaryKey: false
+    visible: true
   grant_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Grant_priv
     primaryKey: false
+    visible: true
   references_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: References_priv
     primaryKey: false
+    visible: true
   index_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Index_priv
     primaryKey: false
+    visible: true
   alter_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Alter_priv
     primaryKey: false
+    visible: true
   create_tmp_table_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Create_tmp_table_priv
     primaryKey: false
+    visible: true
   lock_tables_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Lock_tables_priv
     primaryKey: false
+    visible: true
   create_view_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Create_view_priv
     primaryKey: false
+    visible: true
   show_view_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Show_view_priv
     primaryKey: false
+    visible: true
   create_routine_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Create_routine_priv
     primaryKey: false
+    visible: true
   alter_routine_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Alter_routine_priv
     primaryKey: false
+    visible: true
   execute_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Execute_priv
     primaryKey: false
+    visible: true
   event_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Event_priv
     primaryKey: false
+    visible: true
   trigger_priv:
     caseSensitive: false
     dataType: 12
     generated: false
     name: Trigger_priv
     primaryKey: false
+    visible: true
 indexes:
   primary:
     name: PRIMARY

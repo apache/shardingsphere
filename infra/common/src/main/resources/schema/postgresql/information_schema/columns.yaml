@@ -23,261 +23,305 @@ columns:
     generated: false
     name: table_catalog
     primaryKey: false
+    visible: true
   table_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_schema
     primaryKey: false
+    visible: true
   table_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_name
     primaryKey: false
+    visible: true
   column_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: column_name
     primaryKey: false
+    visible: true
   ordinal_position:
     caseSensitive: true
     dataType: 4
     generated: false
     name: ordinal_position
     primaryKey: false
+    visible: true
   column_default:
     caseSensitive: true
     dataType: 12
     generated: false
     name: column_default
     primaryKey: false
+    visible: true
   is_nullable:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_nullable
     primaryKey: false
+    visible: true
   data_type:
     caseSensitive: true
     dataType: 12
     generated: false
     name: data_type
     primaryKey: false
+    visible: true
   character_maximum_length:
     caseSensitive: true
     dataType: 4
     generated: false
     name: character_maximum_length
     primaryKey: false
+    visible: true
   character_octet_length:
     caseSensitive: true
     dataType: 4
     generated: false
     name: character_octet_length
     primaryKey: false
+    visible: true
   numeric_precision:
     caseSensitive: true
     dataType: 4
     generated: false
     name: numeric_precision
     primaryKey: false
+    visible: true
   numeric_precision_radix:
     caseSensitive: true
     dataType: 4
     generated: false
     name: numeric_precision_radix
     primaryKey: false
+    visible: true
   numeric_scale:
     caseSensitive: true
     dataType: 4
     generated: false
     name: numeric_scale
     primaryKey: false
+    visible: true
   datetime_precision:
     caseSensitive: true
     dataType: 4
     generated: false
     name: datetime_precision
     primaryKey: false
+    visible: true
   interval_type:
     caseSensitive: true
     dataType: 12
     generated: false
     name: interval_type
     primaryKey: false
+    visible: true
   interval_precision:
     caseSensitive: true
     dataType: 4
     generated: false
     name: interval_precision
     primaryKey: false
+    visible: true
   character_set_catalog:
     caseSensitive: true
     dataType: 12
     generated: false
     name: character_set_catalog
     primaryKey: false
+    visible: true
   character_set_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: character_set_schema
     primaryKey: false
+    visible: true
   character_set_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: character_set_name
     primaryKey: false
+    visible: true
   collation_catalog:
     caseSensitive: true
     dataType: 12
     generated: false
     name: collation_catalog
     primaryKey: false
+    visible: true
   collation_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: collation_schema
     primaryKey: false
+    visible: true
   collation_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: collation_name
     primaryKey: false
+    visible: true
   domain_catalog:
     caseSensitive: true
     dataType: 12
     generated: false
     name: domain_catalog
     primaryKey: false
+    visible: true
   domain_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: domain_schema
     primaryKey: false
+    visible: true
   domain_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: domain_name
     primaryKey: false
+    visible: true
   udt_catalog:
     caseSensitive: true
     dataType: 12
     generated: false
     name: udt_catalog
     primaryKey: false
+    visible: true
   udt_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: udt_schema
     primaryKey: false
+    visible: true
   udt_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: udt_name
     primaryKey: false
+    visible: true
   scope_catalog:
     caseSensitive: true
     dataType: 12
     generated: false
     name: scope_catalog
     primaryKey: false
+    visible: true
   scope_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: scope_schema
     primaryKey: false
+    visible: true
   scope_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: scope_name
     primaryKey: false
+    visible: true
   maximum_cardinality:
     caseSensitive: true
     dataType: 4
     generated: false
     name: maximum_cardinality
     primaryKey: false
+    visible: true
   dtd_identifier:
     caseSensitive: true
     dataType: 12
     generated: false
     name: dtd_identifier
     primaryKey: false
+    visible: true
   is_self_referencing:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_self_referencing
     primaryKey: false
+    visible: true
   is_identity:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_identity
     primaryKey: false
+    visible: true
   identity_generation:
     caseSensitive: true
     dataType: 12
     generated: false
     name: identity_generation
     primaryKey: false
+    visible: true
   identity_start:
     caseSensitive: true
     dataType: 12
     generated: false
     name: identity_start
     primaryKey: false
+    visible: true
   identity_increment:
     caseSensitive: true
     dataType: 12
     generated: false
     name: identity_increment
     primaryKey: false
+    visible: true
   identity_maximum:
     caseSensitive: true
     dataType: 12
     generated: false
     name: identity_maximum
     primaryKey: false
+    visible: true
   identity_minimum:
     caseSensitive: true
     dataType: 12
     generated: false
     name: identity_minimum
     primaryKey: false
+    visible: true
   identity_cycle:
     caseSensitive: true
     dataType: 12
     generated: false
     name: identity_cycle
     primaryKey: false
+    visible: true
   is_generated:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_generated
     primaryKey: false
+    visible: true
   generation_expression:
     caseSensitive: true
     dataType: 12
     generated: false
     name: generation_expression
     primaryKey: false
+    visible: true
   is_updatable:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_updatable
     primaryKey: false
+    visible: true
