@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
@@ -58,6 +60,9 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final ExecuteCallback checkExecuteCallback;
     
+    @Setter(AccessLevel.PRIVATE)
+    private volatile DataConsistencyCalculateAlgorithm calculateAlgorithm;
+    
     public ConsistencyCheckTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
         this.jobItemContext = jobItemContext;
         checkJobConfig = jobItemContext.getJobConfig();
@@ -87,8 +92,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final class CheckLifecycleExecutor extends AbstractLifecycleExecutor {
         
-        private volatile DataConsistencyCalculateAlgorithm calculateAlgorithm;
-        
         @Override
         protected void runBlocking() {
             log.info("execute consistency check, check job id: {}, parent job id: {}", checkJobId, parentJobId);
@@ -98,7 +101,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
             DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(
                     parentJobConfig, checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
-            this.calculateAlgorithm = calculateAlgorithm;
+            setCalculateAlgorithm(calculateAlgorithm);
             Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = jobAPI.dataConsistencyCheck(parentJobConfig, calculateAlgorithm, jobItemContext);
             PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
             jobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
@@ -130,7 +133,13 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onFailure(final Throwable throwable) {
-            log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId);
+            DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm;
+            if (null != algorithm && algorithm.isCanceling()) {
+                log.info("onFailure, canceling, check job id: {}, parent job id: {}", checkJobId, parentJobId);
+                checkJobAPI.stop(checkJobId);
+                return;
+            }
+            log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId, throwable);
             checkJobAPI.persistJobItemErrorMessage(checkJobId, 0, throwable);
             jobItemContext.setStatus(JobStatus.CONSISTENCY_CHECK_FAILURE);
             checkJobAPI.persistJobItemProgress(jobItemContext);

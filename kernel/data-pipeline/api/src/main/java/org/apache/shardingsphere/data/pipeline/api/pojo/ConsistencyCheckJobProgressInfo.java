@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Consistency check jon progress info.
+ * Consistency check job progress info.
  */
-
-@Data
+@Getter
+@Setter
 public final class ConsistencyCheckJobProgressInfo {
     
-    private String tableName;
+    private String tableNames;
     
-    private Boolean result;
+    private Boolean checkSuccess;
     
     private int finishedPercentage;
     

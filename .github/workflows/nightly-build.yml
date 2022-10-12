@@ -37,7 +37,7 @@ jobs:
           restore-keys: |
             shardingsphere-maven-third-party-cache-
             shardingsphere-maven-third-party-
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'

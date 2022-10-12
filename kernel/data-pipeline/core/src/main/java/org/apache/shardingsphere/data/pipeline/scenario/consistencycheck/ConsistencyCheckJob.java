@@ -36,6 +36,8 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 @Slf4j
 public final class ConsistencyCheckJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
     
+    private final ConsistencyCheckJobAPI jobAPI = ConsistencyCheckJobAPIFactory.getInstance();
+    
     private final PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
     
     @Override
@@ -54,6 +56,8 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
+        log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        jobAPI.cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         ConsistencyCheckTasksRunner tasksRunner = new ConsistencyCheckTasksRunner(jobItemContext);
         tasksRunner.start();
         PipelineJobProgressPersistService.addJobProgressPersistContext(checkJobId, shardingContext.getShardingItem());

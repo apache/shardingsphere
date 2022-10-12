@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Data
+@Getter
 public final class CreateMigrationJobParameter {
     
     private final String sourceResourceName;

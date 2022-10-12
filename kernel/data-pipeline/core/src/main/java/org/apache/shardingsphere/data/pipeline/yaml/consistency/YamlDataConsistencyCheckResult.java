@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.yaml.consistency;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Yaml data consistency check result config.
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+@Getter
+@Setter
 public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
     
     private YamlDataConsistencyCountCheckResult countCheckResult;
@@ -35,12 +33,11 @@ public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
     private YamlDataConsistencyContentCheckResult contentCheckResult;
     
     /**
-     * Yaml data consistency count result.
+     * YAML data consistency count result.
      */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class YamlDataConsistencyCountCheckResult {
+    @Getter
+    @Setter
+    public static class YamlDataConsistencyCountCheckResult implements YamlConfiguration {
         
         private long sourceRecordsCount;
         
@@ -50,12 +47,11 @@ public final class YamlDataConsistencyCheckResult implements YamlConfiguration {
     }
     
     /**
-     * Yaml data consistency content result.
+     * YAML data consistency content result.
      */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class YamlDataConsistencyContentCheckResult {
+    @Getter
+    @Setter
+    public static class YamlDataConsistencyContentCheckResult implements YamlConfiguration {
         
         private boolean matched;
     }

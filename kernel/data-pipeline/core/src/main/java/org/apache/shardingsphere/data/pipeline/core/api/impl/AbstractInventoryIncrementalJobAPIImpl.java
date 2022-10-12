@@ -156,23 +156,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
-        checkModeConfig();
-        log.info("Data consistency check for job {}", jobId);
-        PipelineJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        DataConsistencyCalculateAlgorithm calculateAlgorithm = buildDataConsistencyCalculateAlgorithm(jobConfig, null, null);
-        return dataConsistencyCheck(jobConfig, calculateAlgorithm, null);
-    }
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType, final Properties algorithmProps) {
-        checkModeConfig();
-        log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
-        PipelineJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        return dataConsistencyCheck(jobConfig, buildDataConsistencyCalculateAlgorithm(jobConfig, algorithmType, algorithmProps), null);
-    }
-    
-    @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm,
                                                                         final ConsistencyCheckJobItemContext checkJobItemContext) {
         String jobId = jobConfig.getJobId();
@@ -193,10 +176,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
             DataConsistencyCheckResult checkResult = entry.getValue();
-            boolean isCountMatched = checkResult.getCountCheckResult().isMatched();
-            boolean isContentMatched = checkResult.getContentCheckResult().isMatched();
-            if (!isCountMatched || !isContentMatched) {
-                log.error("job: {}, table: {} data consistency check failed, count matched: {}, content matched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
+            if (!checkResult.isMatched()) {
                 return false;
             }
         }

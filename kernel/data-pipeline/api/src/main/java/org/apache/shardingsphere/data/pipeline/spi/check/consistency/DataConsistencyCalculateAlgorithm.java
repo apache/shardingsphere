@@ -43,4 +43,11 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
      * @throws SQLException SQL exception if cancel underlying SQL execution failure
      */
     void cancel() throws SQLException;
+    
+    /**
+     * Is calculation canceling.
+     *
+     * @return canceling or not
+     */
+    boolean isCanceling();
 }

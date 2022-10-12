@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -237,9 +236,9 @@ public abstract class BaseITCase {
         while (retryNumber <= 3) {
             try (Connection connection = proxyDataSource.getConnection()) {
                 ResultSet resultSet = connection.createStatement().executeQuery(sql);
-                List<Map<String, Object>> result = resultSetToList(resultSet);
+                List<Map<String, Object>> result = transformResultSetToList(resultSet);
                 log.info("proxy query for list, sql: {}, result: {}", sql, result);
-                return ObjectUtils.defaultIfNull(result, Collections.emptyList());
+                return result;
             } catch (final SQLException ex) {
                 log.error("data access error", ex);
             }
@@ -249,18 +248,18 @@ public abstract class BaseITCase {
         throw new RuntimeException("can't get result from proxy");
     }
     
-    protected List<Map<String, Object>> resultSetToList(final ResultSet rs) throws SQLException {
-        ResultSetMetaData md = rs.getMetaData();
-        int columns = md.getColumnCount();
-        List<Map<String, Object>> results = new ArrayList<>();
-        while (rs.next()) {
+    private List<Map<String, Object>> transformResultSetToList(final ResultSet resultSet) throws SQLException {
+        ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+        int columns = resultSetMetaData.getColumnCount();
+        List<Map<String, Object>> result = new ArrayList<>();
+        while (resultSet.next()) {
             Map<String, Object> row = new HashMap<>();
             for (int i = 1; i <= columns; i++) {
-                row.put(md.getColumnLabel(i).toLowerCase(), rs.getObject(i));
+                row.put(resultSetMetaData.getColumnLabel(i).toLowerCase(), resultSet.getObject(i));
             }
-            results.add(row);
+            result.add(row);
         }
-        return results;
+        return result;
     }
     
     protected void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
@@ -279,14 +278,14 @@ public abstract class BaseITCase {
             Set<String> actualStatus = new HashSet<>();
             List<Integer> incrementalIdleSecondsList = new ArrayList<>();
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue(StringUtils.isBlank(each.get("error_message").toString()));
+                assertTrue(Strings.isNullOrEmpty(each.get("error_message").toString()));
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
-                incrementalIdleSecondsList.add(StringUtils.isBlank(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
+                incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
             assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
                     JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
-            if (Collections.min(incrementalIdleSecondsList) < 15) {
+            if (Collections.min(incrementalIdleSecondsList) <= 5) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
             }
@@ -303,7 +302,7 @@ public abstract class BaseITCase {
     
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
-        String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
+        String countSQL = Strings.isNullOrEmpty(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = queryForListWithLog(countSQL).get(0);
         assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
     }

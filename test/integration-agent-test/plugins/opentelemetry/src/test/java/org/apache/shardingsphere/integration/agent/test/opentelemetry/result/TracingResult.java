@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.integration.agent.test.opentelemetry.result;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Map;
 
-@Data
-public class TracingResult {
+@Getter
+@Setter
+public final class TracingResult {
     
     private String traceId;
     

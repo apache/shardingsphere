@@ -44,7 +44,7 @@ import java.util.Optional;
 /**
  * Sharding statistics table data collector.
  */
-public class ShardingStatisticsTableCollector implements ShardingSphereDataCollector {
+public final class ShardingStatisticsTableCollector implements ShardingSphereDataCollector {
     
     private static final String SHARDING_STATISTICS_TABLE = "sharding_statistics_table";
     
@@ -106,7 +106,7 @@ public class ShardingStatisticsTableCollector implements ShardingSphereDataColle
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getSchema(), dataNode.getTableName()))) {
+            try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
                     tableRows = resultSet.getBigDecimal("TABLE_ROWS");
                     dataLength = resultSet.getBigDecimal("DATA_LENGTH");

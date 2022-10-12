@@ -17,19 +17,23 @@
 
 package org.apache.shardingsphere.integration.agent.test.metrics.result;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.Map;
-import lombok.Data;
 
-@Data
-public class MetricResult {
+@Getter
+@Setter
+public final class MetricResult {
     
     private String status;
     
     private Map<String, List<Metric>> data;
     
-    @Data
-    public static class Metric {
+    @Getter
+    @Setter
+    public static final class Metric {
         
         private String type;
         

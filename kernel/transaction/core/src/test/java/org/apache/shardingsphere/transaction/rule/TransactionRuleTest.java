@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.rule;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.junit.Test;
 
@@ -38,13 +38,13 @@ public final class TransactionRuleTest {
         when(transactionRuleConfiguration.getDefaultType()).thenReturn("XA");
         when(transactionRuleConfiguration.getProviderType()).thenReturn("Atomikos");
         ShardingSphereDatabase db1 = mock(ShardingSphereDatabase.class);
-        ShardingSphereResource resource1 = mock(ShardingSphereResource.class);
-        when(resource1.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
-        when(db1.getResource()).thenReturn(resource1);
+        ShardingSphereResourceMetaData resourceMetaData1 = mock(ShardingSphereResourceMetaData.class);
+        when(resourceMetaData1.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+        when(db1.getResourceMetaData()).thenReturn(resourceMetaData1);
         ShardingSphereDatabase db2 = mock(ShardingSphereDatabase.class);
-        ShardingSphereResource resource2 = mock(ShardingSphereResource.class);
-        when(resource2.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
-        when(db2.getResource()).thenReturn(resource2);
+        ShardingSphereResourceMetaData resourceMetaData2 = mock(ShardingSphereResourceMetaData.class);
+        when(resourceMetaData2.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(db2.getResourceMetaData()).thenReturn(resourceMetaData2);
         Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>();
         databaseMap.put("db1", db1);
         databaseMap.put("db2", db2);
