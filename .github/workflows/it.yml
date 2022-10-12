@@ -110,9 +110,6 @@ jobs:
         with:
           path: ~/.m2/repository
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
-          restore-keys: |
-            shardingsphere-maven-third-party-it-cache
-            shardingsphere-maven-third-party-
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -150,9 +147,6 @@ jobs:
         with:
           path: ~/.m2/repository
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
-          restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
-            shardingsphere-maven-third-party-
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -190,9 +184,6 @@ jobs:
         with:
           path: ~/.m2/repository
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
-          restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
-            shardingsphere-maven-third-party-
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -221,9 +212,8 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
             shardingsphere-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
