@@ -57,8 +57,8 @@ jobs:
     timeout-minutes: 60
     strategy:
       matrix:
-        java-version: [ 8, 19 ]
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        java-version: [ 8 ]
+        os: [ windows-latest ]
     steps:
       - name: Support longpaths in Windows
         if: matrix.os == 'windows-latest'
