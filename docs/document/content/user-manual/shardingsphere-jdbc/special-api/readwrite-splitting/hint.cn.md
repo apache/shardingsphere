@@ -54,12 +54,12 @@ try (HintManager hintManager = HintManager.getInstance();
 
 ##### 使用规范
 
-SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。 注释格式暂时只支持 `/* */`，内容需要以 `ShardingSphere hint:` 开始，属性名为 `writeRouteOnly`。
+SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `writeRouteOnly`。
 
 ##### 完整示例
 
 ```java
-/* ShardingSphere hint: writeRouteOnly=true */
+/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */
 SELECT * FROM t_order;
 ```
 
