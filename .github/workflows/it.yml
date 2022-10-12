@@ -43,6 +43,7 @@ on:
       - '**/pom.xml'
       - '**/src/main/**'
       - 'distribution/proxy/**'
+      - '!test/**'
       - 'test/pom.xml'
       - 'test/integration-test/fixture/**'
       - 'test/integration-test/env/**'
@@ -52,7 +53,6 @@ on:
       - '!distribution/**'
       - '!distribution/proxy/src/main/release-docs/**'
       - '!kernel/data-pipeline/**'
-      - '!test/**'
       - '!*.md'
 
 concurrency:
