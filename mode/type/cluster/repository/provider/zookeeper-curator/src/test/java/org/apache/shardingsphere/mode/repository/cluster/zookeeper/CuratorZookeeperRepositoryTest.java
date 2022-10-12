@@ -304,4 +304,20 @@ public final class CuratorZookeeperRepositoryTest {
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
     }
+    
+    @Test
+    public void assertGetNumChildrenGtZero() throws Exception {
+        Stat stat = new Stat(1L, 2L, 3L, 4L, 5, 6, 7, 8L, 9, 10, 11L);
+        when(existsBuilder.forPath("/test/children")).thenReturn(stat);
+        int children = REPOSITORY.getNumChildren("/test/children");
+        assertThat(children, is(10));
+    }
+    
+    @Test
+    public void assertGetNumChildrenEqZero() throws Exception {
+        Stat stat = new Stat();
+        when(existsBuilder.forPath("/test/children")).thenReturn(stat);
+        int children = REPOSITORY.getNumChildren("/test/children");
+        assertThat(children, is(0));
+    }
 }
