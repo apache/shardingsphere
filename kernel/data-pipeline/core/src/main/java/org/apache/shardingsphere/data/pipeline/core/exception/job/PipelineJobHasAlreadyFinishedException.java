@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 /**
  * Pipeline job has already finished exception.
  */
+// TODO keep it for now, it might be used later
 public final class PipelineJobHasAlreadyFinishedException extends PipelineSQLException {
     
     private static final long serialVersionUID = 6881217592831423520L;

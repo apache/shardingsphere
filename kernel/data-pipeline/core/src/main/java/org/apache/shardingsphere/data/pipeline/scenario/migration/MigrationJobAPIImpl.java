@@ -248,6 +248,34 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     }
     
     @Override
+    public void startDisabledJob(final String jobId) {
+        super.startDisabledJob(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> {
+            try {
+                ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.warn("start related check job failed, check job id: {}, error: {}", optional, ex.getMessage());
+            }
+        });
+    }
+    
+    @Override
+    public void stop(final String jobId) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> {
+            try {
+                ConsistencyCheckJobAPIFactory.getInstance().stop(optional);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.warn("stop related check job failed, check job id: {}, error: {}", optional, ex.getMessage());
+            }
+        });
+        super.stop(jobId);
+    }
+    
+    @Override
     public void rollback(final String jobId) throws SQLException {
         log.info("Rollback job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
@@ -266,7 +294,13 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         log.info("dropCheckJobs start...");
         long startTimeMillis = System.currentTimeMillis();
         for (String each : checkJobIds) {
-            dropJob(each);
+            try {
+                dropJob(each);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.info("drop check job failed, check job id: {}, error: {}", each, ex.getMessage());
+            }
         }
         log.info("dropCheckJobs cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
@@ -421,12 +455,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         result.setType(type);
         result.setParameter(parameter);
         return result;
-    }
-    
-    @Override
-    public void startDisabledJob(final String jobId) {
-        super.startDisabledJob(jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional));
     }
     
     @Override
