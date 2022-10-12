@@ -298,7 +298,7 @@ public final class MySQLClient {
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
             reconnect();
         }
-    
+        
         private void reconnect() {
             if (reconnectTimes.get() > 3) {
                 log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
