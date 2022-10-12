@@ -58,7 +58,7 @@ jobs:
     strategy:
       matrix:
         java-version: [ 8 ]
-        os: [ windows-latest ]
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
     steps:
       - name: Support longpaths in Windows
         if: matrix.os == 'windows-latest'
