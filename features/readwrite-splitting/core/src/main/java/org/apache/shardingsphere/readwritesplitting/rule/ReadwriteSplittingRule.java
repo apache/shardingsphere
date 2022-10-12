@@ -139,7 +139,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     /**
      * Get single data source rule.
      *
-     * @return replica query data source rule
+     * @return readwrite-splitting data source rule
      */
     public ReadwriteSplittingDataSourceRule getSingleDataSourceRule() {
         return dataSourceRules.values().iterator().next();
@@ -149,7 +149,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
      * Find data source rule.
      *
      * @param dataSourceName data source name
-     * @return replica query data source rule
+     * @return readwrite-splitting data source rule
      */
     public Optional<ReadwriteSplittingDataSourceRule> findDataSourceRule(final String dataSourceName) {
         return Optional.ofNullable(dataSourceRules.get(dataSourceName));
