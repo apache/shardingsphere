@@ -35,20 +35,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * CRC32 match data consistency calculate algorithm.
  */
 @Slf4j
-public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
+public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractStreamingDataConsistencyCalculateAlgorithm {
     
     private static final Collection<String> SUPPORTED_DATABASE_TYPES = Collections.singletonList(new MySQLDatabaseType().getType());
+    
+    private final PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(new MySQLDatabaseType().getType());
     
     @Getter
     private Properties props;
@@ -59,13 +61,18 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     }
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        List<CalculatedItem> calculatedItems = parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList());
-        return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
+    protected Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter parameter) {
+        CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
+        int columIndex = null == previousCalculatedResult ? 0 : (previousCalculatedResult.getColumnIndex() + 1);
+        if (columIndex >= parameter.getColumnNames().size()) {
+            return Optional.empty();
+        }
+        List<String> columnNames = new ArrayList<>(parameter.getColumnNames());
+        CalculatedItem calculatedItem = calculateCRC32(parameter, columnNames.get(columIndex));
+        return Optional.of(new CalculatedResult(1, calculatedItem.getCrc32(), columIndex));
     }
     
-    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
+    private CalculatedItem calculateCRC32(final DataConsistencyCalculateParameter parameter, final String columnName) {
         String logicTableName = parameter.getLogicTableName();
         String schemaName = parameter.getSchemaName();
         Optional<String> sql = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName);
@@ -117,8 +124,9 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         
         private final int recordsCount;
         
-        @NonNull
-        private final Collection<Long> columnsCrc32;
+        private final Long columnCrc32;
+        
+        private final int columnIndex;
         
         @Override
         public boolean equals(final @NonNull Object o) {
@@ -134,8 +142,8 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
                 log.info("recordsCount not match, recordsCount={}, that.recordsCount={}", recordsCount, that.recordsCount);
                 return false;
             }
-            if (!columnsCrc32.equals(that.columnsCrc32)) {
-                log.info("columnsCrc32 not match, columnsCrc32={}, that.columnsCrc32={}", columnsCrc32, that.columnsCrc32);
+            if (!columnCrc32.equals(that.columnCrc32)) {
+                log.info("columnsCrc32 not match, columnsCrc32={}, that.columnsCrc32={}", columnCrc32, that.columnCrc32);
                 return false;
             } else {
                 return true;
@@ -145,7 +153,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         @Override
         public int hashCode() {
             int result = recordsCount;
-            result = 31 * result + columnsCrc32.hashCode();
+            result = 31 * result + columnCrc32.hashCode();
             return result;
         }
     }
