@@ -41,9 +41,9 @@ For a logical SQL, ShardingSphere starts transactions on each proxied database w
 Since each data node manages its own transactions, there is no coordination and communication between them, and they do not know whether other data node transactions succeed or not.
 There is no loss in performance, but strong consistency and final consistency cannot be guaranteed.
 
-### XA Transanction
+### XA Transaction
 
-XA transaction adopts the concepts including AP(application program), YM(transaction manager) and RM(resource manager) to ensure the strong consistency of distributed transactions. Those concepts are abstracted from [DTP mode](http://pubs.opengroup.org/onlinepubs/009680699/toc.pdf) which is defined by X/OPEN group.
+XA transaction adopts the concepts including AP(application program), TM(transaction manager) and RM(resource manager) to ensure the strong consistency of distributed transactions. Those concepts are abstracted from [DTP mode](http://pubs.opengroup.org/onlinepubs/009680699/toc.pdf) which is defined by X/OPEN group.
 Among them, TM and RM use XA protocol to carry out both-way communication, which is realized through two-phase commit.
 Compared to traditional local transactions, XA transaction adds a preparation stage where the database can also inform the caller whether the transaction can be committed, in addition to passively accepting commit instructions.
 TM can collect the results of all branch transactions and make atomic commit at the end to ensure the strong consistency of transactions.

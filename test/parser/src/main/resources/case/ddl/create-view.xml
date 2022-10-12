@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-view sql-case-id="create_view" view-definition="SELECT * FROM films WHERE kind = 'Comedy'">
+        <view name="comedies" start-index="12" stop-index="19" />
+        <select>
+            <projections start-index="31" stop-index="31">
+                <shorthand-projection start-index="31" stop-index="31" />
+            </projections>
+            <from>
+                <simple-table name="films" start-index="38" stop-index="42" />
+            </from>
+            <where start-index="44" stop-index="64">
+                <expr>
+                    <binary-operation-expression start-index="50" stop-index="64">
+                        <left>
+                            <column name="kind" start-index="50" stop-index="53"/>
+                        </left>
+                        <right>
+                            <literal-expression value="Comedy" start-index="57" stop-index="64"/>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_with_check_option" view-definition="SELECT * FROM comedies WHERE classification = 'U'">
+        <view name="universal_comedies" start-index="12" stop-index="29" />
+        <select>
+            <projections start-index="41" stop-index="41">
+                <shorthand-projection start-index="41" stop-index="41" />
+            </projections>
+            <from>
+                <simple-table name="comedies" start-index="48" stop-index="55" />
+            </from>
+            <where start-index="57" stop-index="82">
+                <expr>
+                    <binary-operation-expression start-index="63" stop-index="82">
+                        <left>
+                            <column name="classification" start-index="63" stop-index="76"/>
+                        </left>
+                        <right>
+                            <literal-expression value="U" start-index="80" stop-index="82"/>
+                        </right>
+                        <operator>=</operator>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_with_recursive" view-definition="VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100">
+        <view name="nums_1_100" start-index="22" stop-index="38">
+            <owner name="public" start-index="22" stop-index="27" />
+        </view>
+        <select>
+            <!-- FIXME support VALUES (1) projection parse -->
+            <projections start-index="-1" stop-index="-1" />
+            <combine combine-type="UNION_ALL" start-index="58" stop-index="107">
+                <select>
+                    <projections start-index="75" stop-index="77">
+                        <expression-projection text="n+1" start-index="75" stop-index="77" />
+                    </projections>
+                    <from>
+                        <simple-table name="nums_1_100" start-index="84" stop-index="93" />
+                    </from>
+                    <where start-index="95" stop-index="107">
+                        <expr>
+                            <binary-operation-expression start-index="101" stop-index="107">
+                                <left>
+                                    <column name="n" start-index="101" stop-index="101"/>
+                                </left>
+                                <right>
+                                    <literal-expression value="100" start-index="105" stop-index="107"/>
+                                </right>
+                                <operator>=</operator>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </select>
+            </combine>
+        </select>
+    </create-view>
+    
+    <create-view sql-case-id="create_view_with_option" view-definition="SELECT * FROM t_order">
+        <view name="order_view" start-index="28" stop-index="37" />
+        <select>
+            <projections start-index="97" stop-index="97">
+                <shorthand-projection start-index="97" stop-index="97" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="104" stop-index="110" />
+            </from>
+        </select>
+    </create-view>
+</sql-parser-test-cases>
