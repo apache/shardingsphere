@@ -117,13 +117,9 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
         List<DataRecord> dataRecords = buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList());
         int insertRecordNumber = 0;
-        int deleteRecordNumber = 0;
         for (DataRecord each : dataRecords) {
             if (IngestDataChangeType.INSERT.equals(each.getType())) {
                 insertRecordNumber++;
-            }
-            if (IngestDataChangeType.DELETE.equals(each.getType())) {
-                deleteRecordNumber++;
             }
         }
         List<GroupedDataRecord> result = MERGER.group(dataRecords);
@@ -132,7 +128,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             flushInternal(dataSource, each.getInsertDataRecords());
             flushInternal(dataSource, each.getUpdateDataRecords());
         }
-        return new PipelineJobProgressUpdatedParameter(insertRecordNumber - deleteRecordNumber);
+        return new PipelineJobProgressUpdatedParameter(insertRecordNumber);
     }
     
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {
