@@ -1,6 +1,6 @@
 +++
 title = "Optional Plugins"
-weight = 5
+weight = 6
 +++
 
 ShardingSphere only includes the implementation of the core SPI by default, and there is a part of the SPI that contains
