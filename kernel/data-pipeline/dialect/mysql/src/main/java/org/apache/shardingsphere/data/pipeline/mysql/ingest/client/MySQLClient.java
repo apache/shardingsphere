@@ -306,8 +306,8 @@ public final class MySQLClient {
                 return;
             }
             int retryTimes = reconnectTimes.incrementAndGet();
-            if (null == lastBinlogEvent.getFileName()) {
-                log.warn("can't get file name from binlog event， last binlog event:{}", lastBinlogEvent);
+            if (null == lastBinlogEvent || null == lastBinlogEvent.getFileName()) {
+                log.warn("last binlog event is null or the file name is null， last binlog event:{}", lastBinlogEvent);
                 return;
             }
             log.info("reconnect MySQL client, retry times={}", retryTimes);
