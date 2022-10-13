@@ -168,7 +168,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @SneakyThrows(SQLException.class)
         @Override
-        public boolean equals(final @NonNull Object o) {
+        public boolean equals(final Object o) {
+            if (null == o) {
+                return false;
+            }
             if (this == o) {
                 return true;
             }
