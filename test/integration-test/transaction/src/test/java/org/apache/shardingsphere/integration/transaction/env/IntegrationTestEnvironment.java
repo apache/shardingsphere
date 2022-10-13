@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.integration.transaction.env;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
@@ -62,7 +62,8 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = TransactionITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("transaction.it.env.type").toUpperCase(), TransactionITEnvTypeEnum.NONE.name()));
+        
+        itEnvType = TransactionITEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionITEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
         postgresVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
@@ -83,7 +84,7 @@ public final class IntegrationTestEnvironment {
     }
     
     private List<String> splitProperty(final String key) {
-        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
+        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).map(String::trim).collect(Collectors.toList());
     }
     
     private Properties loadProperties() {

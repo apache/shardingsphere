@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseITCase;
 import org.apache.shardingsphere.integration.data.pipeline.command.MigrationDistSQLCommand;
@@ -168,7 +168,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
             resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
-            List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            List<String> checkEndTimeList = resultList.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
             if (checkEndTimeList.size() == resultList.size()) {
                 break;
             }
