@@ -55,8 +55,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
-    // private static final int DEFAULT_CHUNK_SIZE = 10_0000;
-    private static final int DEFAULT_CHUNK_SIZE = 1;
+    private static final int DEFAULT_CHUNK_SIZE = 10_0000;
     
     private final Map<String, String> sqlCache = new ConcurrentHashMap<>();
     
