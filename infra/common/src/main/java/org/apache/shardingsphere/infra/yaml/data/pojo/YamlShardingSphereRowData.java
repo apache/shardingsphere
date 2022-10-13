@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.infra.yaml.data.pojo;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import java.util.List;
 
 /**
- * ShardingSphere row data.
+ * Yaml ShardingSphere row data.
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class ShardingSphereRowData {
+@Setter
+public final class YamlShardingSphereRowData implements YamlConfiguration {
     
-    private final List<Object> rows;
+    private List<Object> rows;
 }
