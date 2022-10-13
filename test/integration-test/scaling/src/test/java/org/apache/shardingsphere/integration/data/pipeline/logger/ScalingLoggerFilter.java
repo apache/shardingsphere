@@ -21,7 +21,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +43,7 @@ public class ScalingLoggerFilter extends Filter<ILoggingEvent> {
                 if (Strings.isNullOrEmpty(arg)) {
                     continue;
                 }
-                if ("atomikos".equalsIgnoreCase(arg) || StringUtils.containsAny(arg, IGNORE_ATOMIKOS_ARGS)) {
+                if ("atomikos".equalsIgnoreCase(arg) || Arrays.stream(IGNORE_ATOMIKOS_ARGS).anyMatch(arg::contains)) {
                     return FilterReply.DENY;
                 }
             }
