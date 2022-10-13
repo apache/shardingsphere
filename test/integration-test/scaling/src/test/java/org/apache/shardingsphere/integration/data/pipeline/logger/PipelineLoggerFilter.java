@@ -25,7 +25,7 @@ import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.List;
 
-public class ScalingLoggerFilter extends Filter<ILoggingEvent> {
+public final class PipelineLoggerFilter extends Filter<ILoggingEvent> {
     
     private static final List<String> IGNORE_LOGGER_NAMES = Arrays.asList(":mysql", ":zookeeper", ":postgresql", ":opengauss");
     
