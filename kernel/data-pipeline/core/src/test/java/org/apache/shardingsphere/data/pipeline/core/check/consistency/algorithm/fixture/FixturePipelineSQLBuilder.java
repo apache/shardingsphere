@@ -77,8 +77,8 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildChunkedQueryUniqueKeySQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
-        return String.format("SELECT %s FROM %s ORDER BY %s ASC LIMIT ?", uniqueKey, tableName, uniqueKey);
+    public String buildGetMaxUniqueKeyValueSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+        return "";
     }
     
     @Override

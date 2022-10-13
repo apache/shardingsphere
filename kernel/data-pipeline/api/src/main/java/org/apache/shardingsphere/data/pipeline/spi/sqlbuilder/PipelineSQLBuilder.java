@@ -147,7 +147,7 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @param firstQuery first query
      * @return query unique key SQL
      */
-    String buildChunkedQueryUniqueKeySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
+    String buildGetMaxUniqueKeyValueSQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
      * Build check empty SQL.

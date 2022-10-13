@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,7 +55,8 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
     
     private static final String CHUNK_SIZE_KEY = "chunk-size";
     
-    private static final int DEFAULT_CHUNK_SIZE = 5000;
+    // private static final int DEFAULT_CHUNK_SIZE = 10_0000;
+    private static final int DEFAULT_CHUNK_SIZE = 1;
     
     private final Map<String, String> sqlCache = new ConcurrentHashMap<>();
     
@@ -115,7 +115,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
         String cacheKey = cacheKeyPrefix + parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
-        String sql = sqlCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQueryUniqueKeySQL(schemaName, logicTableName, parameter.getUniqueKey().getName(),
+        String sql = sqlCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildGetMaxUniqueKeyValueSQL(schemaName, logicTableName, parameter.getUniqueKey().getName(),
                 null == parameter.getPreviousCalculatedResult()));
         CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
         try (
@@ -143,23 +143,9 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
     
     private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName, final Object beginId, final Object endId) {
         String logicTableName = parameter.getLogicTableName();
-        String schemaName = parameter.getSchemaName();
-        String cacheKey = "crc32-" + parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
-                ? schemaName + "." + logicTableName
-                : logicTableName);
-        String sql = sqlCache.get(cacheKey);
-        if (null == sql) {
-            Optional<String> optional = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName, parameter.getUniqueKey().getName());
-            ShardingSpherePreconditions.checkState(optional.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(parameter.getDatabaseType()));
-            sql = optional.get();
-            sqlCache.put(cacheKey, sql);
-        }
-        return calculateCRC32(parameter.getDataSource(), logicTableName, sql, beginId, endId);
-    }
-    
-    private CalculatedItem calculateCRC32(final DataSource dataSource, final String logicTableName, final String sql, final Object beginId, final Object endId) {
+        String sql = getQuerySQL(sqlBuilder, parameter, columnName);
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
             preparedStatement.setObject(1, beginId);
             preparedStatement.setObject(2, endId);
@@ -173,6 +159,22 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
             log.error("calculate CRC32 failed", ex);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(logicTableName);
         }
+    }
+    
+    private String getQuerySQL(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
+        String logicTableName = parameter.getLogicTableName();
+        String schemaName = parameter.getSchemaName();
+        String cacheKey = "crc32-" + parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
+                ? schemaName + "." + logicTableName
+                : logicTableName);
+        String sql = sqlCache.get(cacheKey);
+        if (null == sql) {
+            Optional<String> optional = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName, parameter.getUniqueKey().getName());
+            ShardingSpherePreconditions.checkState(optional.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(parameter.getDatabaseType()));
+            sql = optional.get();
+            sqlCache.put(cacheKey, sql);
+        }
+        return sql;
     }
     
     @Override

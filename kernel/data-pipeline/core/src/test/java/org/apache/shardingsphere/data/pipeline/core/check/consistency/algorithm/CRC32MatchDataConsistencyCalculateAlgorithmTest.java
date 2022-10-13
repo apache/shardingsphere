@@ -80,7 +80,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
         when(mockPrepareStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getObject(1)).thenReturn(10);
-        when(connection.prepareStatement("SELECT id FROM foo_tbl ORDER BY id ASC LIMIT ?")).thenReturn(mockPrepareStatement);
+        when(connection.prepareStatement("")).thenReturn(mockPrepareStatement);
     }
     
     private PreparedStatement mockPreparedStatement(final long expectedCRC32Result, final int expectedRecordsCount) throws SQLException {
