@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -56,8 +56,8 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -84,13 +84,14 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
+        when(metaDataContexts.getMetaData().getDatabases().values()).thenReturn(Collections.singleton(database));
         contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         MutableDataNodeRule mutableDataNodeRule = mock(MutableDataNodeRule.class, RETURNS_DEEP_STUBS);
         when(mutableDataNodeRule.findSingleTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(mutableDataNodeRule)));
@@ -100,8 +101,9 @@ public final class ContextManagerTest {
     
     @Test
     public void assertGetDataSourceMap() {
-        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         when(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME)).thenReturn(database);
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
     }
@@ -229,21 +231,21 @@ public final class ContextManagerTest {
     @Test
     public void assertUpdateResources() throws SQLException {
         ShardingSphereDatabase originalDatabase = createOriginalDatabaseMetaData();
-        ShardingSphereResource originalResource = originalDatabase.getResource();
-        DataSource originalDataSource = originalResource.getDataSources().get("bar_ds");
+        ShardingSphereResourceMetaData originalResourceMetaData = originalDatabase.getResourceMetaData();
+        DataSource originalDataSource = originalResourceMetaData.getDataSources().get("bar_ds");
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(originalDatabase);
         contextManager.updateResources("foo_db", Collections.singletonMap("bar_ds", new DataSourceProperties(MockedDataSource.class.getName(),
                 createProperties("test", "test"))));
-        verify(originalResource, times(1)).close(originalDataSource);
-        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().get("bar_ds"));
+        verify(originalResourceMetaData, times(1)).close(originalDataSource);
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources().get("bar_ds"));
     }
     
     private ShardingSphereDatabase createOriginalDatabaseMetaData() {
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("bar_ds", new MockedDataSource()));
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("bar_ds", new MockedDataSource()));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(new LinkedList<>());
-        return new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resource, ruleMetaData, Collections.emptyMap());
+        return new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resourceMetaData, ruleMetaData, Collections.emptyMap());
     }
     
     private void assertAlteredDataSource(final MockedDataSource actual) {
@@ -267,14 +269,14 @@ public final class ContextManagerTest {
         dataSourcePropertiesMap.put("ds_2", mock(DataSourceProperties.class));
         when(metaDataContexts.getPersistService().getDataSourceService().load("foo_db")).thenReturn(dataSourcePropertiesMap);
         contextManager.dropResources("foo_db", Arrays.asList("ds_1", "ds_2"));
-        assertTrue(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDataSources().isEmpty());
+        assertTrue(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResourceMetaData().getDataSources().isEmpty());
     }
     
     @Test
     public void assertAlterRuleConfiguration() {
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>();
-        databases.put("foo_db", new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
+        databases.put("foo_db", new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resourceMetaData, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
@@ -294,12 +296,12 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         contextManager.alterDataSourceConfiguration("foo_db", Collections.singletonMap("foo_ds", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("test", "test"))));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().size(), is(3));
-        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().get("foo_ds"));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources().size(), is(3));
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources().get("foo_ds"));
     }
     
-    private ShardingSphereResource createOriginalResource() {
-        ShardingSphereResource result = mock(ShardingSphereResource.class);
+    private ShardingSphereResourceMetaData createOriginalResource() {
+        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1);
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
@@ -332,7 +334,7 @@ public final class ContextManagerTest {
     public void assertReloadDatabase() {
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(1, 1);
         dataSourceMap.put("foo_ds", new MockedDataSource());
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(dataSourceMap);
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
@@ -345,7 +347,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertReloadSchema() {
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
@@ -357,13 +359,13 @@ public final class ContextManagerTest {
     
     @Test
     public void assertReloadTable() {
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
         contextManager.reloadTable("foo_db", "foo_schema", "foo_table");
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources().containsKey("foo_ds"));
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources().containsKey("foo_ds"));
     }
     
     private Map<String, Object> createProperties(final String username, final String password) {

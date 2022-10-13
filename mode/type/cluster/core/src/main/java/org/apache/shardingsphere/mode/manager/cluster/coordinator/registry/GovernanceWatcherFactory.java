@@ -58,6 +58,6 @@ public final class GovernanceWatcherFactory {
             if (listener.getWatchingTypes().contains(dataChangedEventListener.getType())) {
                 listener.createGovernanceEvent(dataChangedEventListener).ifPresent(eventBusContext::post);
             }
-        });
+        }, null);
     }
 }

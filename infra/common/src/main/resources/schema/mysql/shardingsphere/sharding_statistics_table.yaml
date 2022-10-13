@@ -24,39 +24,46 @@ columns:
     generated: false
     name: id
     primaryKey: true
+    visible: true
   logic_database_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: logic_database_name
     primaryKey: false
+    visible: true
   logic_table_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: logic_table_name
     primaryKey: false
+    visible: true
   actual_database_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: actual_database_name
     primaryKey: false
+    visible: true
   actual_table_name:
     caseSensitive: false
     dataType: 12
     generated: false
     name: actual_table_name
     primaryKey: false
+    visible: true
   row_count:
     caseSensitive: false
-    dataType: -5
+    dataType: 3
     generated: false
     name: row_count
     primaryKey: false
+    visible: true
   size:
     caseSensitive: false
-    dataType: -5
+    dataType: 3
     generated: false
     name: size
     primaryKey: false
+    visible: true

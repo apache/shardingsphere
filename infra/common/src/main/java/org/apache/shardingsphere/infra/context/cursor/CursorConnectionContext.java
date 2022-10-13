@@ -35,11 +35,14 @@ public final class CursorConnectionContext implements AutoCloseable {
     
     private final Map<String, CursorDefinition> cursorDefinitions = new ConcurrentHashMap<>();
     
+    private final Map<String, Boolean> executedAllDirections = new ConcurrentHashMap<>();
+    
     @Override
     public void close() {
         orderByValueGroups.clear();
         minGroupRowCounts.clear();
         cursorDefinitions.clear();
+        executedAllDirections.clear();
     }
     
     /**
@@ -51,5 +54,6 @@ public final class CursorConnectionContext implements AutoCloseable {
         orderByValueGroups.remove(name);
         minGroupRowCounts.remove(name);
         cursorDefinitions.remove(name);
+        executedAllDirections.remove(name);
     }
 }

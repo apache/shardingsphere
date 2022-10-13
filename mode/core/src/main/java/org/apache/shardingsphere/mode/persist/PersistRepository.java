@@ -42,6 +42,14 @@ public interface PersistRepository extends TypedSPI {
     String get(String key);
     
     /**
+     * Get value from registry center directly.
+     *
+     * @param key key
+     * @return value
+     */
+    String getDirectly(String key);
+    
+    /**
      * Get names of sub-node.
      *
      * @param key key of data

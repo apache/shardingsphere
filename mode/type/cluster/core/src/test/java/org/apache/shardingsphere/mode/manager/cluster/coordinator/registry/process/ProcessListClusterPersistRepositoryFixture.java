@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process;
 
-import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public final class ProcessListClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -43,12 +44,10 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void addCacheData(final String cachePath) {
-        
     }
     
     @Override
     public void evictCacheData(final String cachePath) {
-        
     }
     
     @Override
@@ -58,7 +57,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        
     }
     
     @Override
@@ -66,7 +64,16 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
+    public void updateInTransaction(final String key, final String value) {
+    }
+    
+    @Override
     public String get(final String key) {
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         return REGISTRY_DATA.get(key);
     }
     
@@ -87,7 +94,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void update(final String key, final String value) {
-        
     }
     
     @Override
@@ -115,16 +121,16 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
     
     @Override
     public void unlock(final String lockKey) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
     }
     
     @Override

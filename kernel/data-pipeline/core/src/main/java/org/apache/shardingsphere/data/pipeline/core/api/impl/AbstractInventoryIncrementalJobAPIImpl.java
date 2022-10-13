@@ -23,20 +23,21 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmChooser;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.metadata.AlterNotExistProcessConfigurationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.metadata.CreateExistsProcessConfigurationException;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
+import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -141,46 +142,31 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
         checkModeConfig();
-        return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream().map(each -> {
-            DataConsistencyCheckAlgorithmInfo result = new DataConsistencyCheckAlgorithmInfo();
-            result.setType(each.getType());
-            result.setDescription(each.getDescription());
-            result.setSupportedDatabaseTypes(each.getSupportedDatabaseTypes());
-            return result;
-        }).collect(Collectors.toList());
+        return DataConsistencyCalculateAlgorithmFactory.getAllInstances().stream()
+                .map(each -> new DataConsistencyCheckAlgorithmInfo(each.getType(), each.getSupportedDatabaseTypes(), each.getDescription())).collect(Collectors.toList());
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId) {
-        checkModeConfig();
-        log.info("Data consistency check for job {}", jobId);
-        PipelineJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        return dataConsistencyCheck(jobConfig);
+    public DataConsistencyCalculateAlgorithm buildDataConsistencyCalculateAlgorithm(final PipelineJobConfiguration jobConfig, final String algorithmType, final Properties algorithmProps) {
+        ShardingSpherePreconditions.checkState(null != algorithmType || null != jobConfig, () -> new IllegalArgumentException("Algorithm type and job configuration are null."));
+        return null == algorithmType
+                ? DataConsistencyCalculateAlgorithmChooser.choose(
+                        DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)))
+                : DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps);
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig) {
-        DataConsistencyCalculateAlgorithm algorithm = DataConsistencyCalculateAlgorithmChooser.choose(
-                DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType()), DatabaseTypeFactory.getInstance(getTargetDatabaseType(jobConfig)));
-        return dataConsistencyCheck(jobConfig, algorithm);
-    }
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final String jobId, final String algorithmType, final Properties algorithmProps) {
-        checkModeConfig();
-        log.info("Data consistency check for job {}, algorithmType: {}", jobId, algorithmType);
-        PipelineJobConfiguration jobConfig = getJobConfiguration(getElasticJobConfigPOJO(jobId));
-        return dataConsistencyCheck(jobConfig, DataConsistencyCalculateAlgorithmFactory.newInstance(algorithmType, algorithmProps));
-    }
-    
-    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm) {
+    public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final PipelineJobConfiguration jobConfig, final DataConsistencyCalculateAlgorithm calculateAlgorithm,
+                                                                        final ConsistencyCheckJobItemContext checkJobItemContext) {
         String jobId = jobConfig.getJobId();
-        Map<String, DataConsistencyCheckResult> result = buildPipelineDataConsistencyChecker(jobConfig, buildPipelineProcessContext(jobConfig)).check(calculateAlgorithm);
+        PipelineDataConsistencyChecker dataConsistencyChecker = buildPipelineDataConsistencyChecker(jobConfig, buildPipelineProcessContext(jobConfig), checkJobItemContext);
+        Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.check(calculateAlgorithm);
         log.info("job {} with check algorithm '{}' data consistency checker result {}", jobId, calculateAlgorithm.getType(), result);
         return result;
     }
     
-    protected abstract PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext);
+    protected abstract PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(PipelineJobConfiguration pipelineJobConfig, InventoryIncrementalProcessContext processContext,
+                                                                                          ConsistencyCheckJobItemContext checkJobItemContext);
     
     @Override
     public boolean aggregateDataConsistencyCheckResults(final String jobId, final Map<String, DataConsistencyCheckResult> checkResults) {
@@ -190,10 +176,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         }
         for (Entry<String, DataConsistencyCheckResult> entry : checkResults.entrySet()) {
             DataConsistencyCheckResult checkResult = entry.getValue();
-            boolean isCountMatched = checkResult.getCountCheckResult().isMatched();
-            boolean isContentMatched = checkResult.getContentCheckResult().isMatched();
-            if (!isCountMatched || !isContentMatched) {
-                log.error("job: {}, table: {} data consistency check failed, count matched: {}, content matched: {}", jobId, entry.getKey(), isCountMatched, isContentMatched);
+            if (!checkResult.isMatched()) {
                 return false;
             }
         }

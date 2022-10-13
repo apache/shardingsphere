@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 
@@ -43,8 +42,7 @@ public final class DataConsistencyCalculateParameter {
      */
     private final PipelineDataSourceWrapper dataSource;
     
-    // TODO replace to schemaName
-    private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
+    private final String schemaName;
     
     private final String logicTableName;
     

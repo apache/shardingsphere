@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -50,7 +49,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), new ShardingSphereData());
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -60,7 +59,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
-        when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);

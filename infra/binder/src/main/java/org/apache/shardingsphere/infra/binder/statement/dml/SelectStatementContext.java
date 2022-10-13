@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
@@ -39,8 +41,6 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -172,7 +172,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      * @return whether contains combine or not
      */
     public boolean isContainsCombine() {
-        return !getSqlStatement().getCombines().isEmpty();
+        return getSqlStatement().getCombine().isPresent();
     }
     
     /**

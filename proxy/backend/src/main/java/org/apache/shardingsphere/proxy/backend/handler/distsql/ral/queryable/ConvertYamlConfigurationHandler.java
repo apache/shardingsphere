@@ -307,7 +307,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             String keyGenerator = keyGenerateStrategyConfig.getKeyGeneratorName();
             result.append(String.format(DistSQLScriptConstants.KEY_GENERATOR_STRATEGY, column, keyGenerator));
         }
-        return result.substring(0, result.length() - 2);
+        return result.substring(0, result.lastIndexOf(","));
     }
     
     private StringBuilder getStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType, final StringBuilder result) {

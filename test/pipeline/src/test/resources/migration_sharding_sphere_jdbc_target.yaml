@@ -18,12 +18,12 @@
 dataSources:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:h2:mem:test_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+    url: jdbc:h2:mem:test_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
     username: root
     password: root
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:h2:mem:test_ds_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+    url: jdbc:h2:mem:test_ds_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
     username: root
     password: root
 rules:

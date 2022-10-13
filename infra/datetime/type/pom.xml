@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-system-datetime</module>
-        <module>shardingsphere-database-datetime</module>
+        <module>system</module>
+        <module>database</module>
     </modules>
 </project>

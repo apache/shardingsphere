@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.hint;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -79,32 +80,31 @@ public final class SQLHintExtractor {
     /**
      * Get hint sharding database value.
      *
-     * @return sharding database value
-     */
-    public int getHintShardingDatabaseValue() {
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
-    }
-    
-    /**
-     * Get hint sharding database value.
-     *
      * @param tableName table name
      * @return sharding database value
      */
-    public int getHintShardingDatabaseValue(final String tableName) {
+    public Comparable<?> getHintShardingDatabaseValue(final String tableName) {
         String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        Object result = sqlHintProperties.getProps().containsKey(key)
+                ? sqlHintProperties.getProps().get(key)
+                : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        if (result instanceof Comparable) {
+            return (Comparable<?>) result;
+        }
         return sqlHintProperties.getProps().containsKey(key)
-                ? Integer.parseInt(sqlHintProperties.getProps().getProperty(key))
+                ? sqlHintProperties.getProps().getProperty(key)
                 : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
     }
     
     /**
-     * Get hint sharding table value.
+     * Judge contains hint sharding databases value or not.
      *
-     * @return sharding table value
+     * @param tableName table name
+     * @return contains hint sharding databases value or not
      */
-    public int getHintShardingTableValue() {
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+    public boolean containsHintShardingDatabaseValue(final String tableName) {
+        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key) || sqlHintProperties.getProps().containsKey(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
     }
     
     /**
@@ -113,10 +113,27 @@ public final class SQLHintExtractor {
      * @param tableName table name
      * @return sharding table value
      */
-    public int getHintShardingTableValue(final String tableName) {
+    public Comparable<?> getHintShardingTableValue(final String tableName) {
         String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        Object result = sqlHintProperties.getProps().containsKey(key)
+                ? sqlHintProperties.getProps().get(key)
+                : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        if (result instanceof Comparable) {
+            return (Comparable<?>) result;
+        }
         return sqlHintProperties.getProps().containsKey(key)
-                ? Integer.parseInt(sqlHintProperties.getProps().getProperty(key))
+                ? sqlHintProperties.getProps().getProperty(key)
                 : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+    }
+    
+    /**
+     * Judge contains hint sharding table value or not.
+     *
+     * @param tableName table name
+     * @return Contains hint sharding table value or not
+     */
+    public boolean containsHintShardingTableValue(final String tableName) {
+        String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return sqlHintProperties.getProps().containsKey(key) || sqlHintProperties.getProps().containsKey(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
     }
 }

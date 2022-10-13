@@ -87,8 +87,6 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_distinct_with_single_count_group_by");
         SUPPORTED_SQL_CASE_IDS.add("select_bit_xor");
         SUPPORTED_SQL_CASE_IDS.add("select_with_schema");
-        SUPPORTED_SQL_CASE_IDS.add("select_with_union");
-        SUPPORTED_SQL_CASE_IDS.add("select_with_union_all");
         SUPPORTED_SQL_CASE_IDS.add("select_with_same_table_name_and_alias");
         SUPPORTED_SQL_CASE_IDS.add("select_count_like_concat");
         SUPPORTED_SQL_CASE_IDS.add("select_order_by_asc_and_index_desc");
@@ -128,6 +126,19 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_offset_fetch");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_offset_and_row_count");
         SUPPORTED_SQL_CASE_IDS.add("select_pagination_with_limit_row_count");
+        SUPPORTED_SQL_CASE_IDS.add("select_union");
+        SUPPORTED_SQL_CASE_IDS.add("select_union_all");
+        SUPPORTED_SQL_CASE_IDS.add("select_union_all_order_by");
+        SUPPORTED_SQL_CASE_IDS.add("select_union_all_order_by_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_intersect");
+        SUPPORTED_SQL_CASE_IDS.add("select_intersect_order_by");
+        SUPPORTED_SQL_CASE_IDS.add("select_intersect_order_by_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_except");
+        SUPPORTED_SQL_CASE_IDS.add("select_except_order_by");
+        SUPPORTED_SQL_CASE_IDS.add("select_except_order_by_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_minus");
+        SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by");
+        SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by_limit");
     }
     // CHECKSTYLE:ON
     

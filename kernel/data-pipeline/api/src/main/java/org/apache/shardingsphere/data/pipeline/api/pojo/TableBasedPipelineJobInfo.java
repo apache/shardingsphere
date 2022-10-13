@@ -18,21 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Migration job info.
+ * Table based pipeline job info.
  */
-
-@Setter
+@RequiredArgsConstructor
 @Getter
-@ToString(callSuper = true)
-public final class MigrationJobInfo extends PipelineJobInfo {
+public final class TableBasedPipelineJobInfo implements PipelineJobInfo {
     
-    private String table;
+    private final PipelineJobMetaData jobMetaData;
     
-    public MigrationJobInfo(final String jobId) {
-        super(jobId);
-    }
+    private final String table;
 }

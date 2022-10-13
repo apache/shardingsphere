@@ -58,7 +58,7 @@ public final class ViewMetaDataPersistServiceTest {
     public void assertLoad() {
         ViewMetaDataPersistService viewMetaDataPersistService = new ViewMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/views")).thenReturn(Collections.singletonList("foo_view"));
-        when(repository.get("/metadata/foo_db/schemas/foo_schema/views/foo_view")).thenReturn(readYAML());
+        when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/views/foo_view")).thenReturn(readYAML());
         Map<String, ShardingSphereView> views = viewMetaDataPersistService.load("foo_db", "foo_schema");
         assertThat(views.size(), is(1));
         assertThat(views.get("foo_view").getName(), is("foo_view"));

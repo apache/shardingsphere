@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.ContainerUtil;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.util.Cont
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * MySQL container configuration factory.
@@ -52,8 +52,9 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static StorageContainerConfiguration newInstance(final String command, final Map<String, String> containerEnvironments, final Map<String, String> mountedResources) {
-        return new StorageContainerConfiguration(ObjectUtils.defaultIfNull(command, getCommand()), ObjectUtils.defaultIfNull(containerEnvironments, getContainerEnvironments()),
-                ObjectUtils.defaultIfNull(mountedResources, getMountedResources()));
+        return new StorageContainerConfiguration(Optional.ofNullable(command).orElseGet(MySQLContainerConfigurationFactory::getCommand),
+                Optional.ofNullable(containerEnvironments).orElseGet(MySQLContainerConfigurationFactory::getContainerEnvironments),
+                Optional.ofNullable(mountedResources).orElseGet(MySQLContainerConfigurationFactory::getMountedResources));
     }
     
     private static String getCommand() {

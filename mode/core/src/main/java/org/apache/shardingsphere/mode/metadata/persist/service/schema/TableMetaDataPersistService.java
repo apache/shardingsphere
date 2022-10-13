@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.service.schema;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
@@ -26,10 +26,10 @@ import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * Table meta data persist service.
@@ -59,8 +59,8 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     private Map<String, ShardingSphereTable> getTableMetaDataByTableNames(final String databaseName, final String schemaName, final Collection<String> tableNames) {
         Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1);
         tableNames.forEach(each -> {
-            String table = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
-            if (!StringUtils.isEmpty(table)) {
+            String table = repository.getDirectly(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
+            if (!Strings.isNullOrEmpty(table)) {
                 result.put(each.toLowerCase(), new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(table, YamlShardingSphereTable.class)));
             }
         });

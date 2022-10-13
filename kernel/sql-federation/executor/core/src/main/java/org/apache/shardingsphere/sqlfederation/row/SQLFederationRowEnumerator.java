@@ -17,29 +17,32 @@
 
 package org.apache.shardingsphere.sqlfederation.row;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * SQL federation row enumerator.
  */
-@RequiredArgsConstructor
 public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
     
-    private final MergedResult queryResult;
-    
-    private final QueryResultMetaData metaData;
+    private final Collection<Object[]> rows;
     
     private final Collection<Statement> statements;
     
+    private Iterator<Object[]> iterator;
+    
     private Object[] currentRow;
+    
+    public SQLFederationRowEnumerator(final Collection<Object[]> rows, final Collection<Statement> statements) {
+        this.rows = rows;
+        this.statements = statements;
+        iterator = rows.iterator();
+    }
     
     @Override
     public Object[] current() {
@@ -48,26 +51,13 @@ public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
     
     @Override
     public boolean moveNext() {
-        try {
-            return moveNext0();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    private boolean moveNext0() throws SQLException {
-        if (queryResult.next()) {
-            setCurrentRow();
+        if (iterator.hasNext()) {
+            currentRow = iterator.next();
             return true;
         }
+        currentRow = null;
+        iterator = rows.iterator();
         return false;
-    }
-    
-    private void setCurrentRow() throws SQLException {
-        currentRow = new Object[metaData.getColumnCount()];
-        for (int i = 0; i < metaData.getColumnCount(); i++) {
-            currentRow[i] = queryResult.getValue(i + 1, Object.class);
-        }
     }
     
     @Override
@@ -81,6 +71,7 @@ public final class SQLFederationRowEnumerator implements Enumerator<Object[]> {
                 each.close();
             }
             currentRow = null;
+            iterator = rows.iterator();
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

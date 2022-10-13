@@ -51,12 +51,12 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Hint sharding database value.
      */
-    SHARDING_DATABASE_VALUE_KEY("SHARDING_DATABASE_VALUE", "0", int.class),
+    SHARDING_DATABASE_VALUE_KEY("SHARDING_DATABASE_VALUE", "", Comparable.class),
     
     /**
      * Hint sharding table value.
      */
-    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "0", int.class);
+    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "", Comparable.class);
     
     private final String key;
     
