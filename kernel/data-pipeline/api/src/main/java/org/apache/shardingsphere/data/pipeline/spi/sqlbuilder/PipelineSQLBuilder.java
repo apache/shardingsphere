@@ -139,6 +139,17 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
     String buildChunkedQuerySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
     
     /**
+     * Build query unique key SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key, it may be primary key, not null
+     * @param firstQuery first query
+     * @return query unique key SQL
+     */
+    String buildChunkedQueryUniqueKeySQL(String schemaName, String tableName, String uniqueKey, boolean firstQuery);
+    
+    /**
      * Build check empty SQL.
      *
      * @param schemaName schema name
@@ -163,9 +174,10 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @param schemaName schema name
      * @param tableName table Name
      * @param column column
+     * @param uniqueKey unique key
      * @return CRC32 SQL
      */
-    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+    default Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column, final String uniqueKey) {
         return Optional.empty();
     }
 }

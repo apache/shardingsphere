@@ -174,6 +174,15 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public String buildChunkedQueryUniqueKeySQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+        String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
+        String quotedUniqueKey = quote(uniqueKey);
+        return firstQuery
+                ? String.format("SELECT %s FROM %s ORDER BY %s ASC LIMIT ?", quotedUniqueKey, qualifiedTableName, quotedUniqueKey)
+                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC LIMIT ?", quotedUniqueKey, qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+    }
+    
+    @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
         return String.format("SELECT * FROM %s LIMIT 1", getQualifiedTableName(schemaName, tableName));
     }

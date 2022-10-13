@@ -77,6 +77,11 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
+    public String buildChunkedQueryUniqueKeySQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+        return String.format("SELECT %s FROM %s ORDER BY %s ASC LIMIT ?", uniqueKey, tableName, uniqueKey);
+    }
+    
+    @Override
     public String buildCheckEmptySQL(final String schemaName, final String tableName) {
         return null;
     }
@@ -87,7 +92,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column, final String uniqueKey) {
         return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
     }
     
