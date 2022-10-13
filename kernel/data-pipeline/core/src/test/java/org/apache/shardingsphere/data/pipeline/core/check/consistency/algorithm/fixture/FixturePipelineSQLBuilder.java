@@ -77,7 +77,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildGetMaxUniqueKeyValueSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+    public String buildGetMaxUniqueKeyValueSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean lastQuery) {
         return "";
     }
     

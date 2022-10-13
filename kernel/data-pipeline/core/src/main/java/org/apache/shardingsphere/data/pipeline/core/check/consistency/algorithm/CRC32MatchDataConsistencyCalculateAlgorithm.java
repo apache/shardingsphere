@@ -90,7 +90,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
         } else {
             beginId = previousCalculatedResult.getMaxUniqueKeyValue();
         }
-        Object endId = getMaxUniqueKeyValue(sqlBuilder, parameter);
+        Object endId = getMaxUniqueKeyValue(sqlBuilder, parameter, beginId);
         if (null == endId) {
             return Optional.empty();
         }
@@ -107,37 +107,49 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
         }
     }
     
-    private Object getMaxUniqueKeyValue(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter) {
+    private Object getMaxUniqueKeyValue(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final Object beginId) {
         String schemaName = parameter.getSchemaName();
         String logicTableName = parameter.getLogicTableName();
-        String cacheKeyPrefix = "uniqueKey-" + (null == parameter.getPreviousCalculatedResult() ? "first" : "later") + "-";
-        String cacheKey = cacheKeyPrefix + parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
+        String cacheKey = "uniqueKey-" + parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
-        String sql = sqlCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildGetMaxUniqueKeyValueSQL(schemaName, logicTableName, parameter.getUniqueKey().getName(),
-                null == parameter.getPreviousCalculatedResult()));
-        CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
+        String sql = sqlCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildGetMaxUniqueKeyValueSQL(schemaName, logicTableName, parameter.getUniqueKey().getName(), false));
         try (
                 Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
-            preparedStatement.setFetchSize(chunkSize);
-            if (null == previousCalculatedResult) {
-                preparedStatement.setInt(1, chunkSize);
-            } else {
-                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue());
-                preparedStatement.setInt(2, chunkSize);
-            }
+            preparedStatement.setObject(1, beginId);
+            preparedStatement.setInt(2, chunkSize);
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
+                if (resultSet.next()) {
                     maxUniqueKeyValue = resultSet.getObject(1);
                 }
+            }
+            if (maxUniqueKeyValue == null) {
+                maxUniqueKeyValue = getLastMaxUniqueKeyValue(sqlBuilder, parameter, beginId);
             }
             return maxUniqueKeyValue;
         } catch (final SQLException ex) {
             log.error("get max unique key value failed", ex);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(logicTableName);
         }
+    }
+    
+    // TODO sub query is incomplete, improve later
+    private Object getLastMaxUniqueKeyValue(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final Object beginId) throws SQLException {
+        String schemaName = parameter.getSchemaName();
+        String logicTableName = parameter.getLogicTableName();
+        String lastQuerySql = sqlBuilder.buildGetMaxUniqueKeyValueSQL(schemaName, logicTableName, parameter.getUniqueKey().getName(), true);
+        Object result = null;
+        try (Connection connection = parameter.getDataSource().getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(lastQuerySql)) {
+            preparedStatement.setObject(1, beginId);
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                if (rs.next()) {
+                    result = rs.getObject(1);
+                }
+            }
+        }
+        return result;
     }
     
     private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName, final Object beginId, final Object endId) {

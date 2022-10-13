@@ -174,13 +174,12 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public String buildGetMaxUniqueKeyValueSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean firstQuery) {
+    public String buildGetMaxUniqueKeyValueSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean lastQuery) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(uniqueKey);
-        // TODO max() not support with sub query now, improve later
-        return firstQuery
-                ? String.format("SELECT %s FROM %s ORDER BY %s ASC LIMIT ?", quotedUniqueKey, qualifiedTableName, quotedUniqueKey)
-                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC LIMIT ?", quotedUniqueKey, qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
+        return lastQuery
+                ? String.format("SELECT MAX(%s) FROM %s WHERE %s>?", uniqueKey, tableName, uniqueKey)
+                : String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s ASC LIMIT ?,1", quotedUniqueKey, qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
     @Override
