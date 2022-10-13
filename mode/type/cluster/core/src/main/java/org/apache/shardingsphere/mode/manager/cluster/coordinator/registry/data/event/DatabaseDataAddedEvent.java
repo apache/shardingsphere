@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * ShardingSphere row data.
+ * Database data added event.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class ShardingSphereRowData {
+public final class DatabaseDataAddedEvent implements GovernanceEvent {
     
-    private final List<Object> rows;
+    private final String databaseName;
 }

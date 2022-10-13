@@ -38,6 +38,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.TableDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
@@ -293,6 +298,57 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PropertiesChangedEvent event) {
         contextManager.alterProperties(event.getProps());
+    }
+    
+    /**
+     * Renew to persist ShardingSphere database data.
+     *
+     * @param event database data added event
+     */
+    @Subscribe
+    public synchronized void renew(final DatabaseDataAddedEvent event) {
+        contextManager.addShardingSphereDatabaseData(event.getDatabaseName());
+    }
+    
+    /**
+     * Renew to delete ShardingSphere data database.
+     *
+     * @param event database delete event
+     */
+    @Subscribe
+    public synchronized void renew(final DatabaseDataDeletedEvent event) {
+        contextManager.dropShardingSphereDatabaseData(event.getDatabaseName());
+    }
+    
+    /**
+     * Renew to added ShardingSphere data schema.
+     *
+     * @param event schema added event
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaDataAddedEvent event) {
+        contextManager.addShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
+    }
+    
+    /**
+     * Renew to delete ShardingSphere data schema.
+     *
+     * @param event schema delete event
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaDataDeletedEvent event) {
+        contextManager.dropShardingSphereSchemaData(event.getDatabaseName(), event.getSchemaName());
+    }
+    
+    /**
+     * Renew ShardingSphere data of the table.
+     *
+     * @param event table data changed event
+     */
+    @Subscribe
+    public synchronized void renew(final TableDataChangedEvent event) {
+        contextManager.alterSchemaData(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableData());
+        contextManager.alterSchemaData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
     }
     
     /**
