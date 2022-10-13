@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProp
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -87,11 +86,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
         // TODO
     }
     

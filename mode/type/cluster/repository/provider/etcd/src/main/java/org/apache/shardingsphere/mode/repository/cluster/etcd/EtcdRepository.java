@@ -40,7 +40,6 @@ import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperty
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -93,11 +92,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
         // TODO
     }
     
