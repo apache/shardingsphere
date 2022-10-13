@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.data.collector;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * ShardingSphere data collector.
@@ -35,14 +34,11 @@ public interface ShardingSphereDataCollector extends TypedSPI {
     
     /**
      * Collect.
-     * 
-     * @param shardingSphereData ShardingSphere data
-     * @param databaseName database name
-     * @param ruleMetaData rule meta data
-     * @param dataSources data sources
-     * @param databaseType database type
+     *
+     * @param shardingSphereDatabase ShardingSphere database
+     * @param table table
+     * @return ShardingSphere table data
      * @throws SQLException sql exception
      */
-    void collect(ShardingSphereData shardingSphereData, String databaseName, ShardingSphereRuleMetaData ruleMetaData,
-                 Map<String, DataSource> dataSources, DatabaseType databaseType) throws SQLException;
+    Optional<ShardingSphereTableData> collect(ShardingSphereDatabase shardingSphereDatabase, ShardingSphereTable table) throws SQLException;
 }

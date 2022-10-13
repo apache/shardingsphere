@@ -27,7 +27,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class PipelineJobProgressUpdatedParameter {
     
-    private final int insertedRecordsCount;
-    
-    private final int deletedRecordsCount;
+    private final int processedRecordsCount;
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreat
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -73,7 +72,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     @Before
     public void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), new ShardingSphereData());
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
@@ -136,7 +135,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
@@ -147,14 +146,14 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = isGovernance
                 ? mockMetaDataContexts()
-                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), new ShardingSphereData());
+                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        when(result.getMetaData().getDatabase("db").getResource().getDataSources()).thenReturn(Collections.emptyMap());
-        when(result.getMetaData().getDatabase("db").getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(result.getMetaData().getDatabase("db").getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
+        when(result.getMetaData().getDatabase("db").getResourceMetaData().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         return result;
     }
     

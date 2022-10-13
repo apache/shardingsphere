@@ -27,7 +27,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedResourceQueryResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -78,8 +78,8 @@ public final class RulesUsedResourceQueryResultSetTest {
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(
                 Arrays.asList(mockShardingRule(), mockReadwriteSplittingRule(), mockDatabaseDiscoveryRule(), mockEncryptRule(), mockShadowRule()));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
-        when(result.getResource()).thenReturn(resource);
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
     
@@ -181,8 +181,8 @@ public final class RulesUsedResourceQueryResultSetTest {
     private ShardingSphereDatabase mockEmptyDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        ShardingSphereResource resource = new ShardingSphereResource("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
-        when(result.getResource()).thenReturn(resource);
+        ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("empty_ds", new MockedDataSource()));
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         return result;
     }
 }

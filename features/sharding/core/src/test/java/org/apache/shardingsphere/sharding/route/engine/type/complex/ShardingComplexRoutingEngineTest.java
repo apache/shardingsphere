@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -40,7 +41,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     @Test
     public void assertRoutingForBindingTables() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(
-                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_order_item"));
+                createShardingConditions("t_order"), mock(SQLStatementContext.class), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_order_item"));
         RouteContext routeContext = complexRoutingEngine.route(createBindingShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -53,7 +54,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     @Test
     public void assertRoutingForShardingTableJoinBroadcastTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(
-                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_config"));
+                createShardingConditions("t_order"), mock(SQLStatementContext.class), new ConfigurationProperties(new Properties()), Arrays.asList("t_order", "t_config"));
         RouteContext routeContext = complexRoutingEngine.route(createBroadcastShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -66,7 +67,7 @@ public final class ShardingComplexRoutingEngineTest extends AbstractRoutingEngin
     @Test(expected = ShardingRuleNotFoundException.class)
     public void assertRoutingForNonLogicTable() {
         ShardingComplexRoutingEngine complexRoutingEngine = new ShardingComplexRoutingEngine(
-                createShardingConditions("t_order"), new ConfigurationProperties(new Properties()), Collections.emptyList());
+                createShardingConditions("t_order"), mock(SQLStatementContext.class), new ConfigurationProperties(new Properties()), Collections.emptyList());
         complexRoutingEngine.route(mock(ShardingRule.class));
     }
 }

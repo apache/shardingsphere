@@ -23,69 +23,81 @@ columns:
     generated: false
     name: table_catalog
     primaryKey: false
+    visible: true
   table_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_schema
     primaryKey: false
+    visible: true
   table_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_name
     primaryKey: false
+    visible: true
   table_type:
     caseSensitive: true
     dataType: 12
     generated: false
     name: table_type
     primaryKey: false
+    visible: true
   self_referencing_column_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: self_referencing_column_name
     primaryKey: false
+    visible: true
   reference_generation:
     caseSensitive: true
     dataType: 12
     generated: false
     name: reference_generation
     primaryKey: false
+    visible: true
   user_defined_type_catalog:
     caseSensitive: true
     dataType: 12
     generated: false
     name: user_defined_type_catalog
     primaryKey: false
+    visible: true
   user_defined_type_schema:
     caseSensitive: true
     dataType: 12
     generated: false
     name: user_defined_type_schema
     primaryKey: false
+    visible: true
   user_defined_type_name:
     caseSensitive: true
     dataType: 12
     generated: false
     name: user_defined_type_name
     primaryKey: false
+    visible: true
   is_insertable_into:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_insertable_into
     primaryKey: false
+    visible: true
   is_typed:
     caseSensitive: true
     dataType: 12
     generated: false
     name: is_typed
     primaryKey: false
+    visible: true
   commit_action:
     caseSensitive: true
     dataType: 12
     generated: false
     name: commit_action
     primaryKey: false
+    visible: true

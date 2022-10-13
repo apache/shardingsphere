@@ -19,25 +19,23 @@ package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Pipeline job meta data.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class PipelineJobMetaData {
     
     private final String jobId;
     
-    private boolean active;
+    private final boolean active;
     
-    private int shardingTotalCount;
+    private final int shardingTotalCount;
     
-    private String createTime;
+    private final String createTime;
     
-    private String stopTime;
+    private final String stopTime;
     
-    private transient String jobParameter;
+    private final String jobParameter;
 }

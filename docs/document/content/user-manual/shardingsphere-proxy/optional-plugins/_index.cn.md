@@ -1,6 +1,6 @@
 +++
 title = "可选插件"
-weight = 5
+weight = 6
 +++
 
 ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存在一部分包含第三方依赖的 SPI

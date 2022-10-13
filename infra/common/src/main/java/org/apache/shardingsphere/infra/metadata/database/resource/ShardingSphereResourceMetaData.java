@@ -35,10 +35,10 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * ShardingSphere resource.
+ * ShardingSphere resource meta data.
  */
 @Getter
-public final class ShardingSphereResource {
+public final class ShardingSphereResourceMetaData {
     
     private final Map<String, DataSource> dataSources;
     
@@ -47,14 +47,14 @@ public final class ShardingSphereResource {
     @Getter(AccessLevel.NONE)
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
-    public ShardingSphereResource(final String databaseName, final Map<String, DataSource> dataSources) {
+    public ShardingSphereResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
-        databaseType = getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources));
+        databaseType = getDatabaseType(databaseName, dataSources);
         dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
     }
     
-    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSources) {
-        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
+    private DatabaseType getDatabaseType(final String databaseName, final Map<String, DataSource> dataSources) {
+        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources).values());
     }
     
     private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources) {

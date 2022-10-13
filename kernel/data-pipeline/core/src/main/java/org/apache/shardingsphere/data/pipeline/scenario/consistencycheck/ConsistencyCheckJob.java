@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
@@ -34,6 +35,8 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
  */
 @Slf4j
 public final class ConsistencyCheckJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
+    
+    private final ConsistencyCheckJobAPI jobAPI = ConsistencyCheckJobAPIFactory.getInstance();
     
     private final PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
     
@@ -53,8 +56,11 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
+        log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        jobAPI.cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         ConsistencyCheckTasksRunner tasksRunner = new ConsistencyCheckTasksRunner(jobItemContext);
         tasksRunner.start();
+        PipelineJobProgressPersistService.addJobProgressPersistContext(checkJobId, shardingContext.getShardingItem());
         getTasksRunnerMap().put(shardingItem, tasksRunner);
     }
     
@@ -74,5 +80,6 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         getTasksRunnerMap().clear();
         String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
         pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
 }
