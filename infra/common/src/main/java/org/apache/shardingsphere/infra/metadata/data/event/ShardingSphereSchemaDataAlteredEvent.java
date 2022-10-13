@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.infra.metadata.data.event;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * ShardingSphere row data.
+ * Schema altered event.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class ShardingSphereRowData {
+public final class ShardingSphereSchemaDataAlteredEvent {
     
-    private final List<Object> rows;
+    private final String databaseName;
+    
+    private final String schemaName;
+    
+    private final Collection<ShardingSphereTableData> alteredTables = new ArrayList<>();
 }

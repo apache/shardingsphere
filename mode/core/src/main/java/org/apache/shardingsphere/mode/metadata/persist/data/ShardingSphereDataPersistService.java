@@ -19,8 +19,16 @@ package org.apache.shardingsphere.mode.metadata.persist.data;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereTableDataSwapper;
+import org.apache.shardingsphere.mode.metadata.persist.node.ShardingSphereDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -41,7 +49,73 @@ public final class ShardingSphereDataPersistService {
      * @return ShardingSphere data
      */
     public Optional<ShardingSphereData> load() {
-        // TODO add load ShardingSphere data logic
-        return Optional.empty();
+        Collection<String> databaseNames = repository.getChildrenKeys(ShardingSphereDataNode.getShardingSphereDataNodePath());
+        if (databaseNames.isEmpty()) {
+            return Optional.empty();
+        }
+        ShardingSphereData result = new ShardingSphereData();
+        for (String each : databaseNames) {
+            ShardingSphereDatabaseData databaseData = loadDatabaseData(each);
+            result.getDatabaseData().put(each, databaseData);
+        }
+        return Optional.of(result);
+    }
+    
+    private ShardingSphereDatabaseData loadDatabaseData(final String databaseName) {
+        Collection<String> schemaNames = repository.getChildrenKeys(ShardingSphereDataNode.getSchemasPath(databaseName));
+        if (schemaNames.isEmpty()) {
+            return new ShardingSphereDatabaseData();
+        }
+        ShardingSphereDatabaseData result = new ShardingSphereDatabaseData();
+        for (String each : schemaNames) {
+            ShardingSphereSchemaData schemaData = loadSchemaData(databaseName, each);
+            result.getSchemaData().put(each, schemaData);
+        }
+        return result;
+    }
+    
+    private ShardingSphereSchemaData loadSchemaData(final String databaseName, final String schemaName) {
+        Collection<String> tableNames = repository.getChildrenKeys(ShardingSphereDataNode.getTablesPath(databaseName, schemaName));
+        if (tableNames.isEmpty()) {
+            return new ShardingSphereSchemaData();
+        }
+        ShardingSphereSchemaData result = new ShardingSphereSchemaData();
+        for (String each : tableNames) {
+            ShardingSphereTableData tableData = loadTableData(databaseName, schemaName, each);
+            result.getTableData().put(each, tableData);
+        }
+        return result;
+    }
+    
+    private ShardingSphereTableData loadTableData(final String databaseName, final String schemaName, final String tableName) {
+        String tableData = repository.getDirectly(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName));
+        return new YamlShardingSphereTableDataSwapper().swapToObject(YamlEngine.unmarshal(tableData, YamlShardingSphereTableData.class));
+    }
+    
+    /**
+     * Persist.
+     * 
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param schemaData schema data
+     */
+    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData) {
+        if (schemaData.getTableData().isEmpty()) {
+            repository.persist(ShardingSphereDataNode.getSchemaDataPath(databaseName, schemaName), "");
+        } else {
+            persistTables(databaseName, schemaName, schemaData.getTableData().values());
+        }
+    }
+    
+    /**
+     * Persist tables.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tables table data
+     */
+    public void persistTables(final String databaseName, final String schemaName, final Collection<ShardingSphereTableData> tables) {
+        tables.forEach(each -> repository.persist(ShardingSphereDataNode.getTablePath(databaseName, schemaName, each.getName().toLowerCase()),
+                YamlEngine.marshal(new YamlShardingSphereTableDataSwapper().swapToYamlConfiguration(each))));
     }
 }
