@@ -230,7 +230,7 @@ The text of each license is the standard Apache 2.0 license.
     commons-exec 1.3: https://github.com/apache/commons-exec, Apache 2.0
     commons-io 2.11.0: https://github.com/apache/commons-io, Apache 2.0
     commons-lang 2.6: https://github.com/apache/commons-lang, Apache 2.0
-    commons-lang3 3.8: https://github.com/apache/commons-lang, Apache 2.0
+    commons-lang3 3.12.0: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
     curator-client 5.3.0:  https://github.com/apache/curator, Apache 2.0
     curator-framework 5.3.0:  https://github.com/apache/curator, Apache 2.0
@@ -241,14 +241,14 @@ The text of each license is the standard Apache 2.0 license.
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0 
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.5: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.39.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.41.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -268,22 +268,22 @@ The text of each license is the standard Apache 2.0 license.
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
-    netty-buffer 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-codec 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-codec-dns 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-codec-http2 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-codec-socks 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-common 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-handler 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-handler-proxy 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-resolver 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-resolver-dns 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-transport 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-transport-classes-epoll 4.1.80.Final: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.80.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-epoll 4.1.80.Final-linux-x86_64: https://github.com/netty, Apache 2.0
-    netty-transport-native-unix-common 4.1.80.Final: https://github.com/netty, Apache 2.0
+    netty-buffer 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-codec 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-codec-dns 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-codec-http2 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-codec-socks 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-common 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-handler 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-handler-proxy 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-resolver 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-resolver-dns 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-transport 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-transport-classes-epoll 4.1.84.Final: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.84.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-epoll 4.1.84.Final-linux-x86_64: https://github.com/netty, Apache 2.0
+    netty-transport-native-unix-common 4.1.84.Final: https://github.com/netty, Apache 2.0
     perfmark-api 0.23.0: https://github.com/perfmark/perfmark, Apache 2.0
     proto-google-common-protos 2.0.1: https://github.com/googleapis/common-protos-java, Apache 2.0
     proj4j 1.1.5: https://github.com/locationtech/proj4j, Apache 2.0
@@ -344,8 +344,8 @@ EPL licenses
 The following components are provided under the EPL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    logback-classic 1.2.10: https://github.com/qos-ch/logback, EPL 1.0
-    logback-core 1.2.10: https://github.com/qos-ch/logback, EPL 1.0
+    logback-classic 1.2.11: https://github.com/qos-ch/logback, EPL 1.0
+    logback-core 1.2.11: https://github.com/qos-ch/logback, EPL 1.0
     mchange-commons-java 0.2.15: https://github.com/swaldman/mchange-commons-java, EPL 1.0
     h2 2.1.214: https://github.com/h2database/h2database, EPL 1.0
 

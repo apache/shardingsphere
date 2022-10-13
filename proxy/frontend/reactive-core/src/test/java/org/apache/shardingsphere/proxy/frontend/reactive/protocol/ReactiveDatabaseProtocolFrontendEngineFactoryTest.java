@@ -19,16 +19,16 @@ package org.apache.shardingsphere.proxy.frontend.reactive.protocol;
 
 import org.apache.shardingsphere.proxy.frontend.reactive.protocol.fixture.DummyReactiveDatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ReactiveDatabaseProtocolFrontendEngineFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        Assert.assertThat(ReactiveDatabaseProtocolFrontendEngineFactory.newInstance("Dummy"), instanceOf(DummyReactiveDatabaseProtocolFrontendEngine.class));
+        assertThat(ReactiveDatabaseProtocolFrontendEngineFactory.newInstance("Dummy"), instanceOf(DummyReactiveDatabaseProtocolFrontendEngine.class));
     }
     
     @Test(expected = ServiceProviderNotFoundServerException.class)

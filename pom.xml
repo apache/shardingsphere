@@ -60,7 +60,7 @@
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
         
         <guava.version>30.0-jre</guava.version>
-        <commons-lang3.version>3.8</commons-lang3.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
         
@@ -75,13 +75,13 @@
         
         <calcite.version>1.32.0</calcite.version>
         <vertx.version>4.3.3</vertx.version>
-        <netty.version>4.1.80.Final</netty.version>
+        <netty.version>4.1.84.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
         
         <zookeeper.version>3.8.0</zookeeper.version>
         <curator.version>5.3.0</curator.version>
-        <jetcd.version>0.7.3</jetcd.version>
+        <jetcd.version>0.5.11</jetcd.version>
         
         <elasticjob.version>3.0.1</elasticjob.version>
         
@@ -99,7 +99,7 @@
         <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
         
         <slf4j.version>1.7.36</slf4j.version>
-        <logback.version>1.2.10</logback.version>
+        <logback.version>1.2.11</logback.version>
         
         <lombok.version>1.18.20</lombok.version>
         
