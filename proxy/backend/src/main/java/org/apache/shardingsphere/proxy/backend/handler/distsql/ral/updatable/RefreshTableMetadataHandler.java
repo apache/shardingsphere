@@ -22,9 +22,16 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSel
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.distsql.exception.resource.EmptyResourceException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
+
+import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Refresh table metadata handler.
@@ -34,6 +41,7 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     @Override
     protected void update(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
+        checkResources(databaseName, contextManager.getDataSourceMap(databaseName));
         String schemaName = getSchemaName(databaseName);
         if (getSqlStatement().getResourceName().isPresent()) {
             if (getSqlStatement().getTableName().isPresent()) {
@@ -47,6 +55,14 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
             contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getTableName().get());
         } else {
             contextManager.reloadDatabase(databaseName);
+        }
+    }
+    
+    private void checkResources(final String databaseName, final Map<String, DataSource> resources) {
+        ShardingSpherePreconditions.checkState(!resources.isEmpty(), () -> new EmptyResourceException(databaseName));
+        if (getSqlStatement().getResourceName().isPresent()) {
+            String resourceName = getSqlStatement().getResourceName().get();
+            ShardingSpherePreconditions.checkState(resources.containsKey(resourceName), () -> new MissingRequiredResourcesException(databaseName, Collections.singletonList(resourceName)));
         }
     }
     
