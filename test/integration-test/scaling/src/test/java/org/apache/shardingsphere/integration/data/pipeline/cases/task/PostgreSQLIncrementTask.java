@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.task;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -30,8 +30,8 @@ import java.time.Instant;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private static final KeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new SnowflakeKeyGenerateAlgorithm();
@@ -92,6 +92,6 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private String getTableNameWithSchema(final String tableName) {
-        return StringUtils.isNotBlank(schema) ? String.join(".", schema, tableName) : tableName;
+        return Strings.isNullOrEmpty(schema) ? tableName : String.join(".", schema, tableName);
     }
 }
