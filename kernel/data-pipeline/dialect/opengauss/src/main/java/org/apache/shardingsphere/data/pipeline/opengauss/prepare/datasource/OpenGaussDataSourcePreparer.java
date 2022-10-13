@@ -39,7 +39,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").splitToList(createTargetTableSQL).stream().filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList())) {
+                for (String sql : Splitter.on(";").trimResults().splitToList(createTargetTableSQL).stream().filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, sql);
                 }
             }
