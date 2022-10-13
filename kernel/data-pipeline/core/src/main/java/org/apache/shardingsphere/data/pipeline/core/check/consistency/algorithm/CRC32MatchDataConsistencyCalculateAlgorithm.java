@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
@@ -208,11 +207,13 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
         
         private final int recordsCount;
         
-        @NonNull
         private final Collection<Long> columnsCrc32;
         
         @Override
-        public boolean equals(final @NonNull Object o) {
+        public boolean equals(final Object o) {
+            if (null == o) {
+                return false;
+            }
             if (this == o) {
                 return true;
             }
@@ -228,9 +229,8 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractS
             if (!columnsCrc32.equals(that.columnsCrc32)) {
                 log.info("columnsCrc32 not match, columnsCrc32={}, that.columnsCrc32={}", columnsCrc32, that.columnsCrc32);
                 return false;
-            } else {
-                return true;
             }
+            return true;
         }
         
         @Override

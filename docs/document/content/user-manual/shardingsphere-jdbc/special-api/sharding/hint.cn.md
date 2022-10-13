@@ -102,6 +102,22 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
+#### 使用 SQL 注释的方式
+
+##### 使用规范
+
+SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `SHARDING_DATABASE_VALUE`、`SHARDING_TABLE_VALUE`。
+
+- 使用 `SHARDING_DATABASE_VALUE` 来指定数据源分片键值。
+- 使用 `SHARDING_TABLE_VALUE` 来指定表分片键值。
+
+##### 完整示例
+
+```java
+/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=1, SHARDING_TABLE_VALUE=1 */
+SELECT * FROM t_order;
+```
+
 ## 相关参考
 
 - [核心特性：数据分片](/cn/features/sharding/)

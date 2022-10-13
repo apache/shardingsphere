@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import com.google.common.base.Splitter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
@@ -39,6 +40,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -69,6 +71,7 @@ public abstract class BaseDDLIT extends SingleITCase {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
+            waitCompleted();
         }
     }
     
@@ -196,5 +199,10 @@ public abstract class BaseDDLIT extends SingleITCase {
                 assertThat(each.isUnique(), is(expected.isUnique()));
             }
         }
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void waitCompleted() {
+        TimeUnit.MILLISECONDS.sleep(100);
     }
 }

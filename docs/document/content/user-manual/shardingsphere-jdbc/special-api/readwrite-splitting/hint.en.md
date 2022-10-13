@@ -56,11 +56,11 @@ try (HintManager hintManager = HintManager.getInstance();
 ##### Terms of Use
 
 To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`.
-The comment format only supports `/* */` for now. The content needs to start with `ShardingSphere hint:`, and the attribute name needs to be `writeRouteOnly`.
+The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `WRITE_ROUTE_ONLY`.
 
 ##### Codes:
 ```sql
-/* ShardingSphere hint: writeRouteOnly=true */
+/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */
 SELECT * FROM t_order;
 ```
 

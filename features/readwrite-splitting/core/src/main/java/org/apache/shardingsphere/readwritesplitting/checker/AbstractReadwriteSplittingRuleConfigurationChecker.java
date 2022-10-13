@@ -51,7 +51,7 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
     @Override
     public final void check(final String databaseName, final T config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs = getDataSources(config);
-        Preconditions.checkArgument(!configs.isEmpty(), "Replica query data source rules can not be empty.");
+        Preconditions.checkArgument(!configs.isEmpty(), "Readwrite-splitting data source rules can not be empty.");
         checkDataSources(databaseName, configs, dataSourceMap, rules);
         checkLoadBalancerDataSourceName(databaseName, configs, getLoadBalancer(config), rules);
     }
