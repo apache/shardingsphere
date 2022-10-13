@@ -31,6 +31,25 @@
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
+    <test-case sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" db-types="MySQL">
+        <assertion expected-data-file="create_single_table_rules.xml">
+            <assertion-sql sql="SHOW SINGLE TABLES;" />
+            <destroy-sql sql="DROP DEFAULT SINGLE TABLE RULE"/>
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" db-types="MySQL">
+        <assertion expected-data-file="create_single_table_rules.xml">
+            <initial-sql sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_1;" />
+            <assertion-sql sql="SHOW SINGLE TABLES;" />
+            <destroy-sql sql="DROP DEFAULT SINGLE TABLE RULE"/>
+        </assertion>
+    </test-case>
+    <test-case sql="DROP DEFAULT SINGLE TABLE RULE" db-types="MySQL">
+        <assertion expected-data-file="create_single_table_rules.xml">
+            <initial-sql sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" />
+            <assertion-sql sql="SHOW SINGLE TABLES;" />
+        </assertion>
+    </test-case>
     <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL">
         <assertion expected-data-file="create_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />

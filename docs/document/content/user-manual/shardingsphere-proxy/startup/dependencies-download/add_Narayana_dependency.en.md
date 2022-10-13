@@ -1,3 +1,8 @@
++++
+title = "Add Narayana dependencies"
+weight = 2
++++
+
 ## Add Narayana dependencies
 
 Adding Narayana dependencies requires downloading the following jar files and adding them under `ext-lib` path.
