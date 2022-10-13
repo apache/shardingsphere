@@ -47,7 +47,7 @@ import java.util.Optional;
  */
 public final class ShardingStatisticsTableCollector implements ShardingSphereDataCollector {
     
-    private static final String SHARDING_STATISTICS_TABLE = "sharding_statistics_table";
+    private static final String SHARDING_TABLE_STATISTICS = "sharding_table_statistics";
     
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
@@ -62,7 +62,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     private ShardingSphereTableData collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule,
                                                                      final ShardingSphereTable table) throws SQLException {
-        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_STATISTICS_TABLE, new ArrayList<>(table.getColumns().values()));
+        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS, new ArrayList<>(table.getColumns().values()));
         int count = 1;
         for (TableRule each : shardingRule.getTableRules().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
@@ -109,6 +109,6 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     @Override
     public String getType() {
-        return SHARDING_STATISTICS_TABLE;
+        return SHARDING_TABLE_STATISTICS;
     }
 }
