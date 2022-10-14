@@ -36,6 +36,12 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
 1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
+### 5. 关闭 Milestone
+
+打开 [Github Milestone](https://github.com/apache/shardingsphere-on-cloud/milestones)
+
+1. 确认 `${RELEASE.VERSION}` 的 Milestone 完成状态为 100%；
+1. 点击 `Close` 关闭 Milestone。
 
 ## GPG 设置
 
