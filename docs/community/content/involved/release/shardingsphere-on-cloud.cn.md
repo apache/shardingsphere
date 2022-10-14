@@ -160,25 +160,33 @@ git pull
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
+
 ### 2. 更新 charts 版本
-### 2. 打包 charts
+
+在发布分支上更新 `Chart.yaml` 文件中的版本：
+
+```
+~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml
+~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster/Chart.yaml
+~/shardingsphere-on-cloud/charts/shardingsphere-proxy/Chart.yaml
+```
+
+将 `version` 修改为 `${RELEASE.VERSION}`，`appVersion` 修改为对应的应用版本，并提交 PR 到发布分支。
+
+### 3. 打包 charts
+
 ```shell
 cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key ${用户名} --keyring /.gnupg/secring.gpg  `变动的 charts`
 ```
 
-
-
-### 3. 更新下载页面
+### 4. 更新下载页面
 
 更新如下页面：
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
 * <https://shardingsphere.apache.org/document/current/cn/downloads/>
 
 GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
-
-
-
 
 ## 发布 Apache SVN 仓库
 
