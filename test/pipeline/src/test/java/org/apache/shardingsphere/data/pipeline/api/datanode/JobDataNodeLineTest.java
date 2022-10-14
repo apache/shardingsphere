@@ -17,26 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datanode;
 
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class JobDataNodeLineTest {
     
     @Test
     public void assertSerialization() {
-        String text = "t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1";
-        JobDataNodeLine actual = JobDataNodeLine.unmarshal(text);
-        assertNotNull(actual);
-        assertThat(actual.marshal(), is(text));
-        List<JobDataNodeEntry> entries = actual.getEntries();
-        assertNotNull(entries);
-        assertThat(entries.size(), is(2));
-        assertThat(entries.get(0).getLogicTableName(), is("t_order"));
-        assertThat(entries.get(1).getLogicTableName(), is("t_order_item"));
+        String actual = new JobDataNodeLine(Arrays.asList(
+                new JobDataNodeEntry("t_order", Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"))),
+                new JobDataNodeEntry("t_order_item", Arrays.asList(new DataNode("ds_0.t_order_item_0"), new DataNode("ds_0.t_order_item_1"))))).marshal();
+        String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1";
+        assertThat(actual, is(expected));
     }
 }
