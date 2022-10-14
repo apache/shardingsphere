@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
-import lombok.NonNull;
-
 /**
  * Table name.
+ * 
  * <p>It might be logic table name or actual table name.</p>
  * <p>It's case-insensitive.</p>
  */
 public class TableName extends IdentifierName {
     
-    public TableName(@NonNull final String tableName) {
+    public TableName(final String tableName) {
         super(tableName);
     }
 }

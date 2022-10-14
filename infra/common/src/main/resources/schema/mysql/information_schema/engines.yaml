@@ -23,33 +23,39 @@ columns:
     generated: false
     name: ENGINE
     primaryKey: false
+    visible: true
   support:
     caseSensitive: false
     dataType: 12
     generated: false
     name: SUPPORT
     primaryKey: false
+    visible: true
   comment:
     caseSensitive: false
     dataType: 12
     generated: false
     name: COMMENT
     primaryKey: false
+    visible: true
   transactions:
     caseSensitive: false
     dataType: 12
     generated: false
     name: TRANSACTIONS
     primaryKey: false
+    visible: true
   xa:
     caseSensitive: false
     dataType: 12
     generated: false
     name: XA
     primaryKey: false
+    visible: true
   savepoints:
     caseSensitive: false
     dataType: 12
     generated: false
     name: SAVEPOINTS
     primaryKey: false
+    visible: true

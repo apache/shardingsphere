@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -53,9 +52,13 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
         Statement result = cachedStatements.get(new CacheKey(executionUnit, connectionMode));
         if (null == result) {
             String sql = executionUnit.getSqlUnit().getSql();
-            result = option.isReturnGeneratedKeys()
-                    ? (ArrayUtils.isNotEmpty(option.getColumns()) ? connection.prepareStatement(sql, option.getColumns()) : connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
-                    : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+            if (option.isReturnGeneratedKeys()) {
+                result = null == option.getColumns() || 0 == option.getColumns().length
+                        ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                        : connection.prepareStatement(sql, option.getColumns());
+            } else {
+                result = connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
+            }
             cachedStatements.put(new CacheKey(executionUnit, connectionMode), result);
         }
         return result;

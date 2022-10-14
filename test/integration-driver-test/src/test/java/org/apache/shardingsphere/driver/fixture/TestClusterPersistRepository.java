@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.driver.fixture;
 
-import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public final class TestClusterPersistRepository implements ClusterPersistRepository {
     
@@ -65,7 +66,16 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
+    public void updateInTransaction(final String key, final String value) {
+    }
+    
+    @Override
     public String get(final String key) {
+        return null;
+    }
+    
+    @Override
+    public String getDirectly(final String key) {
         return registryData.get(key);
     }
     
@@ -112,16 +122,16 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener) {
-    }
-    
-    @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
     
     @Override
     public void unlock(final String lockKey) {
+    }
+    
+    @Override
+    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
     }
     
     @Override

@@ -102,6 +102,22 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
+#### Use special SQL comments
+
+##### Terms of Use
+
+To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`.
+The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute names needs to be `SHARDING_DATABASE_VALUE` and `SHARDING_TABLE_VALUE`.
+
+- Use `SHARDING_DATABASE_VALUE` to specify sharding key value of data source.
+- Use `SHARDING_TABLE_VALUE` to specify sharding key value of table.
+
+##### Codes:
+```sql
+/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=1, SHARDING_TABLE_VALUE=1 */
+SELECT * FROM t_order;
+```
+
 ## Related References
 
 - [Core Feature: Data Sharding](/en/features/sharding/)

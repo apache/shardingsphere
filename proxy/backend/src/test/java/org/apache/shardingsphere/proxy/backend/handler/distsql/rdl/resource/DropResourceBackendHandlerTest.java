@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.ResourceInUsedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -63,7 +63,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     private ShardingSphereDatabase database;
     
     @Mock
-    private ShardingSphereResource resource;
+    private ShardingSphereResourceMetaData resourceMetaData;
     
     @Mock
     private DataSource dataSource;
@@ -83,10 +83,10 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
-        resource = mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS);
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(database.getResource()).thenReturn(resource);
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
         when(metaDataContexts.getMetaData().containsDatabase("test")).thenReturn(true);
@@ -99,8 +99,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertExecute() throws SQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.emptyList());
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
-        when(database.getResource()).thenReturn(resource);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         DropResourceStatement dropResourceStatement = new DropResourceStatement(Collections.singleton("foo_ds"), false);
         assertThat(dropResourceBackendHandler.execute("test", dropResourceStatement), instanceOf(UpdateResponseHeader.class));
@@ -117,8 +117,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
-        when(database.getResource()).thenReturn(resource);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
     }
@@ -130,8 +130,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
-        when(database.getResource()).thenReturn(resource);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         dropResourceBackendHandler.execute("test", new DropResourceStatement(Collections.singleton("foo_ds"), false));
     }
@@ -143,8 +143,8 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         DataNode dataNode = mock(DataNode.class);
         when(dataNode.getDataSourceName()).thenReturn("foo_ds");
         when(singleTableRule.getAllDataNodes()).thenReturn(Collections.singletonMap("", Collections.singleton(dataNode)));
-        when(resource.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
-        when(database.getResource()).thenReturn(resource);
+        when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         DropResourceStatement dropResourceStatement = new DropResourceStatement(Collections.singleton("foo_ds"), true);
         assertThat(dropResourceBackendHandler.execute("test", dropResourceStatement), instanceOf(UpdateResponseHeader.class));

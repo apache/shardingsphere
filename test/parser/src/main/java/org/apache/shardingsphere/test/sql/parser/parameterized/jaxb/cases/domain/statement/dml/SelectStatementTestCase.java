@@ -34,8 +34,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Select statement test case.
@@ -78,7 +76,7 @@ public final class SelectStatementTestCase extends SQLParserTestCase {
     private ExpectedWithClause withClause;
     
     @XmlElement(name = "combine")
-    private List<ExpectedCombine> combine = new LinkedList<>();
+    private ExpectedCombine combineClause;
     
     @XmlElement(name = "model")
     private ExpectedModelClause modelClause;

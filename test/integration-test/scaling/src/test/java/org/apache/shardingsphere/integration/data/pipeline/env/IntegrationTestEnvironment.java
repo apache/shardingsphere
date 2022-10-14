@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.env;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
@@ -34,7 +33,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Getter
-@Slf4j
 public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
@@ -51,10 +49,10 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ITEnvTypeEnum.NONE.name()));
-        mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("scaling.it.env.type", ITEnvTypeEnum.NONE.name()).toUpperCase());
+        mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
+        postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
+        openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList());
     }
     
     @SneakyThrows(IOException.class)

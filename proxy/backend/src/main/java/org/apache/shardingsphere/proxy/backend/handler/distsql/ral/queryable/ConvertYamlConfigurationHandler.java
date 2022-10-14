@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
@@ -187,10 +187,10 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         String username = (String) connectionProperties.get(DistSQLScriptConstants.KEY_USERNAME);
         String password = (String) connectionProperties.get(DistSQLScriptConstants.KEY_PASSWORD);
         String props = getResourceProperties(dataSourceProperties.getPoolPropertySynonyms(), dataSourceProperties.getCustomDataSourceProperties());
-        if (StringUtils.isNotEmpty(password)) {
-            result.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION, resourceName, url, username, password, props));
-        } else {
+        if (Strings.isNullOrEmpty(password)) {
             result.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION_WITHOUT_PASSWORD, resourceName, url, username, props));
+        } else {
+            result.append(String.format(DistSQLScriptConstants.RESOURCE_DEFINITION, resourceName, url, username, password, props));
         }
     }
     
@@ -307,7 +307,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             String keyGenerator = keyGenerateStrategyConfig.getKeyGeneratorName();
             result.append(String.format(DistSQLScriptConstants.KEY_GENERATOR_STRATEGY, column, keyGenerator));
         }
-        return result.substring(0, result.length() - 2);
+        return result.substring(0, result.lastIndexOf(","));
     }
     
     private StringBuilder getStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType, final StringBuilder result) {

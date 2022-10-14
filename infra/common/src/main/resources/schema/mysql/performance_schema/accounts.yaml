@@ -23,21 +23,25 @@ columns:
     generated: false
     name: USER
     primaryKey: false
+    visible: true
   host:
     caseSensitive: true
     dataType: 1
     generated: false
     name: HOST
     primaryKey: false
+    visible: true
   current_connections:
     caseSensitive: false
     dataType: -5
     generated: false
     name: CURRENT_CONNECTIONS
     primaryKey: false
+    visible: true
   total_connections:
     caseSensitive: false
     dataType: -5
     generated: false
     name: TOTAL_CONNECTIONS
     primaryKey: false
+    visible: true

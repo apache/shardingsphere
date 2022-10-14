@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.sqlfederation.api.config.SQLFederationRuleConfiguration;
@@ -47,13 +48,14 @@ public final class SQLFederationRule implements GlobalRule {
      * @param databaseName database name
      * @param schemaName schema name
      * @param metaData ShardingSphere meta data
+     * @param shardingSphereData ShardingSphere data
      * @param jdbcExecutor jdbc executor
      * @param eventBusContext event bus context
      * @return created instance
      */
-    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
+    public SQLFederationExecutor getSQLFederationExecutor(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
                                                           final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
-        sqlFederationExecutor.init(databaseName, schemaName, metaData, jdbcExecutor, eventBusContext);
+        sqlFederationExecutor.init(databaseName, schemaName, metaData, shardingSphereData, jdbcExecutor, eventBusContext);
         return sqlFederationExecutor;
     }
     

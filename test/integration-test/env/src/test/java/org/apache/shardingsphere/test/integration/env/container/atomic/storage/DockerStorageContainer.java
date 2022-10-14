@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
@@ -84,7 +83,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     protected final void setCommands(final String command) {
-        if (StringUtils.isBlank(command)) {
+        if (Strings.isNullOrEmpty(command)) {
             log.info("command is blank, not set");
             return;
         }

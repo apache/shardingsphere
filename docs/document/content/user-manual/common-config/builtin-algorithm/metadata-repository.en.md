@@ -8,7 +8,8 @@ weight = 1
 Apache ShardingSphere provides different metadata persistence methods for different running modes. Users can choose an appropriate way to store metadata while configuring the running mode.
 
 ## Parameters
-### File Repository
+
+### Database Repository
 
 Type: JDBC
 

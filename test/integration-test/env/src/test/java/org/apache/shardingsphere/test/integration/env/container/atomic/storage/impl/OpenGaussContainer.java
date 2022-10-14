@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
@@ -68,6 +67,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public String getJdbcUrl(final String dataSourceName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(), StringUtils.isNotEmpty(dataSourceName) ? dataSourceName : StorageContainerConstants.USERNAME);
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(), Strings.isNullOrEmpty(dataSourceName) ? StorageContainerConstants.USERNAME : dataSourceName);
     }
 }

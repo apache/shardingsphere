@@ -39,10 +39,12 @@ public final class CombineOperatorConverter {
     private static void registerCombine() {
         REGISTRY.put(CombineType.UNION, SqlStdOperatorTable.UNION);
         REGISTRY.put(CombineType.UNION_ALL, SqlStdOperatorTable.UNION_ALL);
-        REGISTRY.put(CombineType.INTERSECT_ALL, SqlStdOperatorTable.INTERSECT_ALL);
         REGISTRY.put(CombineType.INTERSECT, SqlStdOperatorTable.INTERSECT);
-        REGISTRY.put(CombineType.EXCEPT_ALL, SqlStdOperatorTable.EXCEPT_ALL);
+        REGISTRY.put(CombineType.INTERSECT_ALL, SqlStdOperatorTable.INTERSECT_ALL);
         REGISTRY.put(CombineType.EXCEPT, SqlStdOperatorTable.EXCEPT);
+        REGISTRY.put(CombineType.EXCEPT_ALL, SqlStdOperatorTable.EXCEPT_ALL);
+        REGISTRY.put(CombineType.MINUS, SqlStdOperatorTable.EXCEPT);
+        REGISTRY.put(CombineType.MINUS_ALL, SqlStdOperatorTable.EXCEPT_ALL);
     }
     
     /**

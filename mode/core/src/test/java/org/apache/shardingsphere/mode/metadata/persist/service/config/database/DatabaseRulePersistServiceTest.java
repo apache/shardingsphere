@@ -51,16 +51,16 @@ public final class DatabaseRulePersistServiceTest {
     
     @Test
     public void assertLoadWithExistedNode() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
-        when(repository.get("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
+        when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
+        when(repository.getDirectly("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
         Collection<RuleConfiguration> actual = new DatabaseRulePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertIsExisted() {
-        when(repository.get("/metadata/foo_db/active_version")).thenReturn("0");
-        when(repository.get("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
+        when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
+        when(repository.getDirectly("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
         DatabaseRulePersistService databaseRulePersistService = new DatabaseRulePersistService(repository);
         assertTrue(databaseRulePersistService.isExisted("foo_db"));
         assertFalse(databaseRulePersistService.isExisted("foo_db_1"));

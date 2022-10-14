@@ -32,4 +32,13 @@ public final class DataConsistencyCheckResult {
     private final DataConsistencyCountCheckResult countCheckResult;
     
     private final DataConsistencyContentCheckResult contentCheckResult;
+    
+    /**
+     * Is count and content matched.
+     *
+     * @return matched or not
+     */
+    public boolean isMatched() {
+        return countCheckResult.isMatched() && contentCheckResult.isMatched();
+    }
 }

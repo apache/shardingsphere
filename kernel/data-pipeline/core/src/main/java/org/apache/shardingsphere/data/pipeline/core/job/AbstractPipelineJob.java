@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 
 import java.util.Map;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private volatile boolean stopping;
     
     @Setter
-    private volatile OneOffJobBootstrap oneOffJobBootstrap;
+    private volatile JobBootstrap jobBootstrap;
     
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     

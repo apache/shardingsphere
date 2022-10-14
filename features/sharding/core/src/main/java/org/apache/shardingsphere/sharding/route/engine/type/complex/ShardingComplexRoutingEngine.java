@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
@@ -40,6 +41,8 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final ShardingConditions shardingConditions;
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     private final ConfigurationProperties props;
     
     private final Collection<String> logicTables;
@@ -53,7 +56,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
             Optional<TableRule> tableRule = shardingRule.findTableRule(each);
             if (tableRule.isPresent()) {
                 if (!bindingTableNames.contains(each)) {
-                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, props).route(shardingRule));
+                    routeContexts.add(new ShardingStandardRoutingEngine(tableRule.get().getLogicTable(), shardingConditions, sqlStatementContext, props).route(shardingRule));
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(optional -> bindingTableNames.addAll(optional.getTableRules().keySet()));
             }

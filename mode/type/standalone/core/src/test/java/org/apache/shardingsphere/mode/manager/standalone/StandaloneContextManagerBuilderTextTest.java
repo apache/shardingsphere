@@ -48,9 +48,9 @@ public final class StandaloneContextManagerBuilderTextTest {
         ContextManager actual = new StandaloneContextManagerBuilder().build(createContextManagerBuilderParameter());
         assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
         PersistRepository repository = actual.getMetaDataContexts().getPersistService().getRepository();
-        assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_db", "0")));
-        assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_db", "0")));
+        assertNotNull(repository.getDirectly(GlobalNode.getGlobalRuleNode()));
+        assertNotNull(repository.getDirectly(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_db", "0")));
+        assertNotNull(repository.getDirectly(DatabaseMetaDataNode.getRulePath("foo_db", "0")));
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

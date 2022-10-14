@@ -19,9 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -29,7 +27,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,7 +36,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString(exclude = "dataSourceConfig")
 public final class ImporterConfiguration {
     
@@ -64,8 +60,7 @@ public final class ImporterConfiguration {
      * @return logic table names
      */
     public Collection<String> getLogicTableNames() {
-        List<String> result = shardingColumnsMap.keySet().stream().map(LogicTableName::getLowercase).collect(Collectors.toList());
-        return Collections.unmodifiableList(result);
+        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(LogicTableName::getLowercase).collect(Collectors.toList()));
     }
     
     /**
@@ -75,7 +70,7 @@ public final class ImporterConfiguration {
      * @return sharding columns
      */
     public Set<String> getShardingColumns(final String logicTableName) {
-        return ObjectUtils.defaultIfNull(shardingColumnsMap.get(new LogicTableName(logicTableName)), Collections.emptySet());
+        return shardingColumnsMap.getOrDefault(new LogicTableName(logicTableName), Collections.emptySet());
     }
     
     /**
@@ -85,7 +80,6 @@ public final class ImporterConfiguration {
      * @return schema name. nullable
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        String databaseType = dataSourceConfig.getDatabaseType().getType();
-        return DatabaseTypeFactory.getInstance(databaseType).isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
+        return DatabaseTypeFactory.getInstance(dataSourceConfig.getDatabaseType().getType()).isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
     }
 }

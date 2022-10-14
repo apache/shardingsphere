@@ -97,6 +97,8 @@ plugins:
 
 ## Usage in ShardingSphere-Proxy
 
+### Using via a non-container environment
+
 * Edit the startup script
 
 Configure the absolute path of shardingsphere-agent.jar to the start.sh startup script of shardingsphere proxy. 
@@ -112,6 +114,31 @@ bin/start.sh
 ```
 After startup, you can find the plugin info in the log of ShardingSphere-Proxy, `Metric` and `Tracing` data can be viewed through the configured monitoring address.
 
+### Use via container environment
+
+- Assume that the following corresponding configurations have been completed locally.
+  - Folder `./custom/agent/` that contains all files after unpacking ShardingSphere-Agent binary package
+  - The folder containing the configuration files of ShardingSphere-Proxy such as `server.yaml` is `./custom/conf/`
+
+- At this point, the use of ShardingSphere-Agent can be configured through the environment variable `JVM_OPT`.
+  Taking starting in the Docker Compose environment as an example, a reasonable `docker-compose.yml` example is as
+  follows.
+
+```yaml
+version: "3.8"
+
+services:
+  apache-shardingsphere-proxy:
+    image: apache/shardingsphere-proxy:latest
+    environment:
+      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent.jar"
+      PORT: 3308
+    volumes:
+      - ./custom/agent:/agent/
+      - ./custom/conf:/opt/shardingsphere-proxy/conf/
+    ports:
+      - "13308:3308"
+```
 
 ## Metrics
 | name                             | type       | description                                                                                              |
