@@ -64,7 +64,7 @@ public final class StandalonePersistRepositoryFixture implements StandalonePersi
     
     @Override
     public void update(final String key, final String value) {
-    
+        
     }
     
     @Override
