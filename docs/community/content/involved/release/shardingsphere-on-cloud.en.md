@@ -129,7 +129,7 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 Among them, 700E6065 is public key ID.
 
-### 4. export v1 version secret
+### 4. Export v1 version secret
 
 ``` shell
 gpg --export >~/.gnupg/pubring.gpg
@@ -162,25 +162,32 @@ git pull
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
-### 2. update charts version
-### 2. package charts
+### 2. Update charts version
+
+Update the version in `Chart.yaml` file in release branch as follows:
+
+```
+~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml
+~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster/Chart.yaml
+~/shardingsphere-on-cloud/charts/shardingsphere-proxy/Chart.yaml
+```
+
+Modify `version` to `${RELEASE.VERSION}`, `appVersion` to the corresponding application version, and submit a PR to release branch.
+
+### 3. Package charts
+
 ```shell
 cd ~/shardingsphere-on-cloud/charts
 helm package --sign --key ${GPG username} --keyring /.gnupg/secring.gpg  `changed charts`
 ```
 
-
-
-### 3. Update the download page
+### 4. Update the download page
 
 Update the following pages:
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
 * <https://shardingsphere.apache.org/document/current/cn/downloads/>
 
 GPG signatures and hashes (SHA* etc) should be prefixed with: `https://downloads.apache.org/shardingsphere/`。
-
-
-
 
 ### Apache SVN Repository Release
 
@@ -194,6 +201,7 @@ cd ~/ss_svn/dev/
 ```
 
 After the creation, checkout ShardingSphere release directory from Apache SVN.
+
 ```shell
 svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev/shardingsphere
 cd ~/ss_svn/dev/shardingsphere/charts
