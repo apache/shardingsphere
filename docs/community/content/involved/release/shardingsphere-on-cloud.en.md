@@ -37,6 +37,12 @@ Open [Github Pull requests](https://github.com/apache/shardingsphere-on-cloud/pu
 1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)
 1. Follow the mailing list and confirm that the community developers have no questions about the release note.
 
+### 5. Close milestone
+
+Open [GitHub milestone](https://github.com/apache/shardingsphere-on-cloud/milestones)
+
+1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%;
+1. Click `close` to close milestone.
 
 ## GPG Settings
 
