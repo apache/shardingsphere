@@ -28,6 +28,7 @@ import org.apache.calcite.linq4j.Enumerator;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -46,11 +47,13 @@ import org.apache.shardingsphere.sqlfederation.SQLFederationDataContext;
 import org.apache.shardingsphere.sqlfederation.advanced.resultset.SQLFederationResultSet;
 import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.OptimizedPlanManagement;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.SQLOptimizeEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
@@ -87,6 +90,8 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     private EventBusContext eventBusContext;
     
     private ResultSet resultSet;
+    
+    private OptimizedPlanManagement planManagement;
     
     @Override
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
@@ -131,17 +136,25 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     @SuppressWarnings("unchecked")
     private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
+        if (null == planManagement) {
+            initializePlanManagement(selectStatementContext, sqlFederationSchema);
+        }
+        SqlNode sqlNode = SQLNodeConverterEngine.convert(selectStatementContext.getSqlStatement());
+        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode);
+        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
+        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(planManagement.getValidator(), planManagement.getConverter(), parameters)).enumerator();
+        return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
+    }
+    
+    private void initializePlanManagement(final SelectStatementContext selectStatementContext, final AbstractSchema sqlFederationSchema) {
         OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, JAVA_TYPE_FACTORY, parserContext.getDatabaseType(), connectionConfig);
         SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator,
                 SQLFederationPlannerUtil.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext.getSqlParserRule(), parserContext.getDatabaseType(), true);
-        SQLOptimizeContext optimizeContext =
-                new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
-        Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters)).enumerator();
-        return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
+        SQLOptimizeEngine optimizer = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
+        planManagement = new OptimizedPlanManagement(optimizer, validator, converter);
     }
     
     @Override
