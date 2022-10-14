@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -53,7 +54,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String suffix = String.valueOf(hashShardingValue(shardingValue.getValue()) % shardingCount);
-        return findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
+        return ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
