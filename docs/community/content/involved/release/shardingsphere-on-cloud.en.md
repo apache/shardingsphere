@@ -164,7 +164,7 @@ git push origin ${RELEASE.VERSION}-release
 ```
 ### 2. Update charts version
 
-Update the version in `Chart.yaml` file in release branch as follows:
+Update the version in `Chart.yaml` file in release branch:
 
 ```
 ~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml

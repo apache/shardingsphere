@@ -163,7 +163,7 @@ git push origin ${RELEASE.VERSION}-release
 
 ### 2. 更新 charts 版本
 
-在发布分支上更新如下 `Chart.yaml` 文件中的版本：
+在发布分支上更新 `Chart.yaml` 文件中的版本：
 
 ```
 ~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml
