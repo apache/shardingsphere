@@ -76,10 +76,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-it-cache-${{ github.sha }}
           restore-keys: |
-            shardingsphere-maven-third-party-it-cache-
-            shardingsphere-maven-third-party-
+            ${{ runner.os }}-maven-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
@@ -109,7 +108,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -146,7 +145,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -183,7 +182,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
+          key: shardingsphere-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -212,9 +211,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ runner.os }}-maven-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project

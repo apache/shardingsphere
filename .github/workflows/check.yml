@@ -53,9 +53,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-
+            ${{ runner.os }}-maven-
       - name: Run checkstyle
         run: ./mvnw checkstyle:check -T1C
 

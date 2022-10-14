@@ -47,10 +47,9 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
+          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-cache-
-            shardingsphere-maven-third-party-
+            ${{ runner.os }}-maven-
       - name: Build prod with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Build examples with Maven
