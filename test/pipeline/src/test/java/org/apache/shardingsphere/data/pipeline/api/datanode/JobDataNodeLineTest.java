@@ -28,7 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class JobDataNodeLineTest {
     
     @Test
-    public void assertSerialization() {
+    public void assertMarshal() {
         String actual = new JobDataNodeLine(Arrays.asList(
                 new JobDataNodeEntry("t_order", Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"))),
                 new JobDataNodeEntry("t_order_item", Arrays.asList(new DataNode("ds_0.t_order_item_0"), new DataNode("ds_0.t_order_item_1"))))).marshal();
