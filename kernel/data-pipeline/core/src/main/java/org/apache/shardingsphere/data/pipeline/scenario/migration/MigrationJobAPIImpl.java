@@ -147,7 +147,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
             config.setTargetDatabaseType(targetDataSourceConfig.getDatabaseType().getType());
         }
         // target table name is logic table name, source table name is actual table name.
-        JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getTargetTableName(), Collections.singletonList(new DataNode(config.getSourceResourceName(), config.getSourceTableName())));
+        JobDataNodeEntry nodeEntry = new JobDataNodeEntry(config.getTargetTableName(), Collections.singleton(new DataNode(config.getSourceResourceName(), config.getSourceTableName())));
         String dataNodeLine = new JobDataNodeLine(Collections.singleton(nodeEntry)).marshal();
         config.setTablesFirstDataNodes(dataNodeLine);
         config.setJobShardingDataNodes(Collections.singletonList(dataNodeLine));
