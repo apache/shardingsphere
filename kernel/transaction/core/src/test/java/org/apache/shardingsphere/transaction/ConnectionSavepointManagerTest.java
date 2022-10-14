@@ -15,17 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.swapper;
+package org.apache.shardingsphere.transaction;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
-import org.h2.jdbc.JdbcConnection;
 import org.junit.Test;
 
 public class ConnectionSavepointManagerTest {
@@ -34,16 +31,10 @@ public class ConnectionSavepointManagerTest {
     
     @Test
     public void assertSetSavepoint() throws SQLException {
-        Connection connection = mockConnection();
+        Connection connection = mock(Connection.class);
         String savingPoint = "SavingPoint";
         connectionSavepointManager.setSavepoint(connection, savingPoint);
         verify(connection, times(1)).setSavepoint(savingPoint);
     }
-    
-    private Connection mockConnection() throws SQLException {
-        Connection result = mock(Connection.class);
-        when(result.unwrap(JdbcConnection.class)).thenReturn(mock(JdbcConnection.class));
-        return result;
-    }
-    
+
 }
