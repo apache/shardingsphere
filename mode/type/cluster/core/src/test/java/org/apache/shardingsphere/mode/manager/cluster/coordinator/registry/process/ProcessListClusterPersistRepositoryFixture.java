@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -57,10 +56,6 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
     }
     
     @Override

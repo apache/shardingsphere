@@ -40,7 +40,6 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.listener.NamingEv
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProperties;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.utils.NacosMetaDataUtil;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -99,11 +98,6 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     @Override
     public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
         // TODO
     }
     
