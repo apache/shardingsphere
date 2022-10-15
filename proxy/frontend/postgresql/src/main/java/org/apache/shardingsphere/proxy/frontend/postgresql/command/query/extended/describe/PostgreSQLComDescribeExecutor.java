@@ -45,7 +45,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -95,7 +95,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private List<DatabasePacket<?>> describePreparedStatement() throws SQLException {
         List<DatabasePacket<?>> result = new ArrayList<>(2);
-        PostgreSQLPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getName());
+        PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getName());
         result.add(preparedStatement.describeParameters());
         Optional<PostgreSQLPacket> rowDescription = preparedStatement.describeRows();
         if (rowDescription.isPresent()) {
@@ -107,7 +107,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return result;
     }
     
-    private void tryDescribePreparedStatement(final PostgreSQLPreparedStatement preparedStatement) throws SQLException {
+    private void tryDescribePreparedStatement(final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
         if (preparedStatement.getSqlStatement() instanceof InsertStatement) {
             describeInsertStatementByDatabaseMetaData(preparedStatement);
         } else {
@@ -115,7 +115,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLPreparedStatement preparedStatement) {
+    private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement) {
         if (!preparedStatement.describeRows().isPresent()) {
             // TODO Consider the SQL `insert into table (col) values ($1) returning id`
             preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
@@ -167,7 +167,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private Set<Integer> getUnspecifiedTypeParameterIndexes(final PostgreSQLPreparedStatement preparedStatement) {
+    private Set<Integer> getUnspecifiedTypeParameterIndexes(final PostgreSQLServerPreparedStatement preparedStatement) {
         Set<Integer> unspecifiedTypeParameterIndexes = new HashSet<>();
         ListIterator<PostgreSQLColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
         for (int index = parameterTypesListIterator.nextIndex(); parameterTypesListIterator.hasNext(); index = parameterTypesListIterator.nextIndex()) {
@@ -184,7 +184,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return result;
     }
     
-    private void tryDescribePreparedStatementByJDBC(final PostgreSQLPreparedStatement logicPreparedStatement) throws SQLException {
+    private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
         if (!(connectionSession.getBackendConnection() instanceof JDBCBackendConnection)) {
             return;
         }
@@ -205,7 +205,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private void populateParameterTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
+    private void populateParameterTypes(final PostgreSQLServerPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
         if (0 == logicPreparedStatement.getSqlStatement().getParameterCount()
                 || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
             return;
@@ -218,7 +218,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         }
     }
     
-    private void populateColumnTypes(final PostgreSQLPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
+    private void populateColumnTypes(final PostgreSQLServerPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
         if (logicPreparedStatement.describeRows().isPresent()) {
             return;
         }

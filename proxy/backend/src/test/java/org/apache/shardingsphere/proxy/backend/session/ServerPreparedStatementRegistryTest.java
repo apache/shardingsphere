@@ -28,11 +28,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PreparedStatementRegistryTest {
+public final class ServerPreparedStatementRegistryTest {
     
     @Test
     public void assertAddAndGetAndClosePreparedStatement() {
-        PreparedStatement expected = new DummyPreparedStatement();
+        ServerPreparedStatement expected = new DummyServerPreparedStatement();
         PreparedStatementRegistry registry = new PreparedStatementRegistry();
         registry.addPreparedStatement(1, expected);
         assertThat(registry.getPreparedStatement(1), is(expected));
@@ -40,7 +40,7 @@ public final class PreparedStatementRegistryTest {
         assertNull(registry.getPreparedStatement(1));
     }
     
-    private static class DummyPreparedStatement implements PreparedStatement {
+    private static class DummyServerPreparedStatement implements ServerPreparedStatement {
         
         @Override
         public String getSql() {

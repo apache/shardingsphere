@@ -91,7 +91,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
         connectionSession.getPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
-                new PostgreSQLPreparedStatement(SQL, SQL_PARSER_ENGINE.parse(SQL, false), null, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));
+                new PostgreSQLServerPreparedStatement(SQL, SQL_PARSER_ENGINE.parse(SQL, false), null, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);

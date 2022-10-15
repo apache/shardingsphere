@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -108,7 +108,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
-        MySQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLSelectStatement.class));
         assertTrue(actualPreparedStatement.getSqlStatementContext().isPresent());
@@ -127,7 +127,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
-        MySQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
         assertTrue(actualPreparedStatement.getSqlStatementContext().isPresent());

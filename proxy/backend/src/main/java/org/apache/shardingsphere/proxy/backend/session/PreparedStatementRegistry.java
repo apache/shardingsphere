@@ -21,36 +21,36 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * {@link PreparedStatement} registry for {@link ConnectionSession}.
+ * {@link ServerPreparedStatement} registry for {@link ConnectionSession}.
  */
 public final class PreparedStatementRegistry {
     
-    private final Map<Object, PreparedStatement> preparedStatements = new ConcurrentHashMap<>();
+    private final Map<Object, ServerPreparedStatement> preparedStatements = new ConcurrentHashMap<>();
     
     /**
-     * Add {@link PreparedStatement} into registry.
+     * Add {@link ServerPreparedStatement} into registry.
      *
      * @param statementId statement ID
-     * @param preparedStatement prepared statement
+     * @param serverPreparedStatement prepared statement
      */
-    public void addPreparedStatement(final Object statementId, final PreparedStatement preparedStatement) {
-        preparedStatements.put(statementId, preparedStatement);
+    public void addPreparedStatement(final Object statementId, final ServerPreparedStatement serverPreparedStatement) {
+        preparedStatements.put(statementId, serverPreparedStatement);
     }
     
     /**
      * Get prepared statement by statement ID.
      *
-     * @param <T> implementation of {@link PreparedStatement}
+     * @param <T> implementation of {@link ServerPreparedStatement}
      * @param statementId statement ID
-     * @return {@link PreparedStatement}
+     * @return {@link ServerPreparedStatement}
      */
     @SuppressWarnings("unchecked")
-    public <T extends PreparedStatement> T getPreparedStatement(final Object statementId) {
+    public <T extends ServerPreparedStatement> T getPreparedStatement(final Object statementId) {
         return (T) preparedStatements.get(statementId);
     }
     
     /**
-     * Remove {@link PreparedStatement} from registry.
+     * Remove {@link ServerPreparedStatement} from registry.
      *
      * @param statementId statement ID
      */

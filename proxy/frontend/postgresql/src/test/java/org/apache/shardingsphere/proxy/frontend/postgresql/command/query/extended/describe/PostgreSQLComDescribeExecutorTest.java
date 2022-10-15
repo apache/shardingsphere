@@ -44,7 +44,7 @@ import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -155,7 +155,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
@@ -179,7 +179,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
@@ -203,7 +203,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
@@ -227,7 +227,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         executor.execute();
     }
     
@@ -240,7 +240,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         prepareJDBCBackendConnection(sql);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actual.iterator();

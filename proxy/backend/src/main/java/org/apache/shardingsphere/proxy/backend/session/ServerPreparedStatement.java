@@ -25,7 +25,7 @@ import java.util.Optional;
 /**
  * Logic prepared statement for clients of ShardingSphere-Proxy.
  */
-public interface PreparedStatement {
+public interface ServerPreparedStatement {
     
     /**
      * Get SQL of prepared statement.

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public final class MySQLComStmtResetExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        connectionSession.getPreparedStatementRegistry().<MySQLPreparedStatement>getPreparedStatement(packet.getStatementId()).getLongData().clear();
+        connectionSession.getPreparedStatementRegistry().<MySQLServerPreparedStatement>getPreparedStatement(packet.getStatementId()).getLongData().clear();
         return Collections.singleton(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

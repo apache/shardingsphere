@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +67,7 @@ public final class PostgreSQLComBindExecutorTest {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         String statementId = "S_1";
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement("", new EmptyStatement(), null, Collections.emptyList()));
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement("", new EmptyStatement(), null, Collections.emptyList()));
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");
         when(bindPacket.readParameters(anyList())).thenReturn(Collections.emptyList());

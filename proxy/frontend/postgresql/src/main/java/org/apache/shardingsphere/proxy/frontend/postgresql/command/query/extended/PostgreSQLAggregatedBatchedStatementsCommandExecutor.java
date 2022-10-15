@@ -49,7 +49,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        PostgreSQLPreparedStatement preparedStatement = getPreparedStatement();
+        PostgreSQLServerPreparedStatement preparedStatement = getPreparedStatement();
         PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
         List<DatabasePacket<?>> result = new ArrayList<>(packets.size());
         int totalInserted = executor.executeBatch();
@@ -69,7 +69,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
         return result;
     }
     
-    private PostgreSQLPreparedStatement getPreparedStatement() {
+    private PostgreSQLServerPreparedStatement getPreparedStatement() {
         PostgreSQLComBindPacket bindPacket = (PostgreSQLComBindPacket) packets.get(0);
         return connectionSession.getPreparedStatementRegistry().getPreparedStatement(bindPacket.getStatementId());
     }
