@@ -23,26 +23,26 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Optional;
 
 /**
- * Logic prepared statement for clients of ShardingSphere-Proxy.
+ * Server prepared statement for clients of ShardingSphere-Proxy.
  */
 public interface ServerPreparedStatement {
     
     /**
-     * Get SQL of prepared statement.
+     * Get SQL of server prepared statement.
      *
      * @return SQL
      */
     String getSql();
     
     /**
-     * Get {@link SQLStatement} of prepared statement.
+     * Get {@link SQLStatement} of server prepared statement.
      *
      * @return {@link SQLStatement}
      */
     SQLStatement getSqlStatement();
     
     /**
-     * Get optional {@link SQLStatementContext} of prepared statement.
+     * Get optional {@link SQLStatementContext} of server prepared statement.
      *
      * @return optional {@link SQLStatementContext}
      */
