@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTa
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 /**
  * Data source preparer for PostgresSQL.
@@ -37,7 +39,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").trimResults().splitToList(createTargetTableSQL)) {
+                for (String sql : Splitter.on(";").trimResults().splitToList(createTargetTableSQL).stream().filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, sql);
                 }
             }
