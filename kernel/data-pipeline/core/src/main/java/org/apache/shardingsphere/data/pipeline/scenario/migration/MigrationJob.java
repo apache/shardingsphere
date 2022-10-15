@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
@@ -43,7 +42,7 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MigrationJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
+public final class MigrationJob extends AbstractPipelineJob implements SimpleJob {
     
     private final MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
     
