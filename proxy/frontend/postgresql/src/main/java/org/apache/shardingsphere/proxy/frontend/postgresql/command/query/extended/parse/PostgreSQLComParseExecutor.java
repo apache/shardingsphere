@@ -71,7 +71,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                         sqlStatement, connectionSession.getDefaultDatabaseName())
                 : null;
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatement, sqlStatementContext, paddedColumnTypes);
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
     }
     

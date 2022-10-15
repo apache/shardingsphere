@@ -95,7 +95,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private List<DatabasePacket<?>> describePreparedStatement() throws SQLException {
         List<DatabasePacket<?>> result = new ArrayList<>(2);
-        PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getName());
+        PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getName());
         result.add(preparedStatement.describeParameters());
         Optional<PostgreSQLPacket> rowDescription = preparedStatement.describeRows();
         if (rowDescription.isPresent()) {

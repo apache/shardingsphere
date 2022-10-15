@@ -28,12 +28,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ServerPreparedStatementRegistryTest {
+public final class ServerServerPreparedStatementRegistryTest {
     
     @Test
     public void assertAddAndGetAndClosePreparedStatement() {
         ServerPreparedStatement expected = new DummyServerPreparedStatement();
-        PreparedStatementRegistry registry = new PreparedStatementRegistry();
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         registry.addPreparedStatement(1, expected);
         assertThat(registry.getPreparedStatement(1), is(expected));
         registry.removePreparedStatement(1);

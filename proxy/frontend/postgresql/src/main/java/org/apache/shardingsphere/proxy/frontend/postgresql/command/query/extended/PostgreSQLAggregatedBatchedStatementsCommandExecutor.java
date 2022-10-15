@@ -71,7 +71,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     
     private PostgreSQLServerPreparedStatement getPreparedStatement() {
         PostgreSQLComBindPacket bindPacket = (PostgreSQLComBindPacket) packets.get(0);
-        return connectionSession.getPreparedStatementRegistry().getPreparedStatement(bindPacket.getStatementId());
+        return connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(bindPacket.getStatementId());
     }
     
     private List<List<Object>> readParameterSets(final List<PostgreSQLColumnType> parameterTypes) {

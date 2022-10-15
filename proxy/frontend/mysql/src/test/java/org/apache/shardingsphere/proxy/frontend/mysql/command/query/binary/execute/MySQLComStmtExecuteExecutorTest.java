@@ -119,12 +119,12 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(1))
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
                 .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(2))
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
                 .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(3))
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
                 .thenReturn(new MySQLServerPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
     }
     

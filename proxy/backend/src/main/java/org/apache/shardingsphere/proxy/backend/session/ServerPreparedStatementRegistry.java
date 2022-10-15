@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * {@link ServerPreparedStatement} registry for {@link ConnectionSession}.
  */
-public final class PreparedStatementRegistry {
+public final class ServerPreparedStatementRegistry {
     
     private final Map<Object, ServerPreparedStatement> preparedStatements = new ConcurrentHashMap<>();
     
@@ -31,14 +31,14 @@ public final class PreparedStatementRegistry {
      * Add {@link ServerPreparedStatement} into registry.
      *
      * @param statementId statement ID
-     * @param serverPreparedStatement prepared statement
+     * @param serverPreparedStatement server prepared statement
      */
     public void addPreparedStatement(final Object statementId, final ServerPreparedStatement serverPreparedStatement) {
         preparedStatements.put(statementId, serverPreparedStatement);
     }
     
     /**
-     * Get prepared statement by statement ID.
+     * Get {@link ServerPreparedStatement} by statement ID.
      *
      * @param <T> implementation of {@link ServerPreparedStatement}
      * @param statementId statement ID

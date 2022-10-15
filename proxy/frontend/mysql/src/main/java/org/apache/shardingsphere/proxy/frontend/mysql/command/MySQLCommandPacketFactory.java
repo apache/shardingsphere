@@ -64,9 +64,9 @@ public final class MySQLCommandPacketFactory {
             case COM_STMT_PREPARE:
                 return new MySQLComStmtPreparePacket(payload);
             case COM_STMT_EXECUTE:
-                MySQLServerPreparedStatement preparedStatement =
-                        connectionSession.getPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
-                return new MySQLComStmtExecutePacket(payload, preparedStatement.getSqlStatement().getParameterCount());
+                MySQLServerPreparedStatement serverPreparedStatement =
+                        connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
+                return new MySQLComStmtExecutePacket(payload, serverPreparedStatement.getSqlStatement().getParameterCount());
             case COM_STMT_SEND_LONG_DATA:
                 return new MySQLComStmtSendLongDataPacket(payload);
             case COM_STMT_RESET:

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.M
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -43,9 +43,9 @@ public final class MySQLComStmtSendLongDataExecutorTest {
         byte[] data = "data".getBytes(StandardCharsets.US_ASCII);
         when(packet.getData()).thenReturn(data);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("insert into t (b) values (?)", null, mock(SQLStatementContext.class));
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtSendLongDataExecutor executor = new MySQLComStmtSendLongDataExecutor(packet, connectionSession);
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual, is(Collections.emptyList()));

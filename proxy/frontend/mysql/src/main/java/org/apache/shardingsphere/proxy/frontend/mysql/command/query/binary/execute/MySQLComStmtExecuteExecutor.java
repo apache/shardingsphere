@@ -85,7 +85,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     }
     
     private MySQLServerPreparedStatement updateAndGetPreparedStatement() {
-        MySQLServerPreparedStatement result = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
+        MySQLServerPreparedStatement result = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == packet.getNewParametersBoundFlag()) {
             result.setParameterTypes(packet.getNewParameterTypes());
         }
