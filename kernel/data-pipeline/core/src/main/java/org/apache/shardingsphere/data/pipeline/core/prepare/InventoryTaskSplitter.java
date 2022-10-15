@@ -55,8 +55,8 @@ import java.util.List;
 /**
  * Inventory data task splitter.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class InventoryTaskSplitter {
     
     private final PipelineDataSourceWrapper sourceDataSource;

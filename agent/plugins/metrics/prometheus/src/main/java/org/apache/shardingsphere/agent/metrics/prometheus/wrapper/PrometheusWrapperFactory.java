@@ -22,7 +22,6 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.GaugeMetricFamily;
 import io.prometheus.client.Histogram;
 import io.prometheus.client.Summary;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapper;
 import org.apache.shardingsphere.agent.metrics.api.MetricsWrapperFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -36,7 +35,6 @@ import java.util.Optional;
 /**
  * Prometheus metrics wrapper factory.
  */
-@Slf4j
 public class PrometheusWrapperFactory implements MetricsWrapperFactory {
     
     private static List<Map<String, Object>> metrics;

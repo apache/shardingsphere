@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
@@ -45,7 +44,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Getter
 @Setter
-@Slf4j
 public final class MigrationJobItemContext implements InventoryIncrementalJobItemContext {
     
     private final String jobId;
