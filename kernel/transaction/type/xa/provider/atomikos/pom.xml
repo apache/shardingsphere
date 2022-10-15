@@ -28,7 +28,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <atomikos.version>5.0.8</atomikos.version>
+        <atomikos.version>5.0.9</atomikos.version>
     </properties>
     
     <dependencies>

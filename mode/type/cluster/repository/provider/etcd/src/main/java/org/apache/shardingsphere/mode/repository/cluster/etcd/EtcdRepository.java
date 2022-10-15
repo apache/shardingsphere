@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.etcd;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KeyValue;
-import io.etcd.jetcd.Util;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
+import io.etcd.jetcd.options.OptionsUtil;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.support.Observers;
+import io.etcd.jetcd.support.Util;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -200,8 +202,10 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 }
             }
         });
-        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8),
-                WatchOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build(), listener);
+        ByteSequence prefix = ByteSequence.from(key, StandardCharsets.UTF_8);
+        Preconditions.checkNotNull(prefix, "prefix should not be null");
+        client.getWatchClient().watch(prefix,
+                WatchOption.newBuilder().withRange(OptionsUtil.prefixEndOf(prefix)).build(), listener);
     }
     
     private Type getEventChangedType(final WatchEvent event) {
