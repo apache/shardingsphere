@@ -128,7 +128,14 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
             <version>${r'${project.version}'}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>snakeyaml</artifactId>
+                    <groupId>org.yaml</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
@@ -138,6 +145,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>2.2.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <artifactId>snakeyaml</artifactId>
+            <groupId>org.yaml</groupId>
+            <version>1.33</version>
         </dependency>
     </#if>
     <#if framework=="spring-boot-starter-jdbc">
