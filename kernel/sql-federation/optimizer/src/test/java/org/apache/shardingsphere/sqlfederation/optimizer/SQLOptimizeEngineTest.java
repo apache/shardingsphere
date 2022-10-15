@@ -301,7 +301,8 @@ public final class SQLOptimizeEngineTest {
     public void assertSelectAggregationFunction() {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_AGGREGATION, false);
-        String actual = optimizeEngine.optimize(sqlStatement).getBestPlan().explain();
+        SqlNode sqlNode = SQLNodeConverterEngine.convert(sqlStatement);
+        String actual = optimizeEngine.optimize(sqlNode).getBestPlan().explain();
         String expected =
                 "EnumerableCalc(expr#0..5=[{inputs}], expr#6=[0], expr#7=[=($t4, $t6)], expr#8=[null:DECIMAL(19, 9)], "
                         + "expr#9=[CASE($t7, $t8, $t3)], expr#10=[/($t9, $t4)], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t9], EXPR$3=[$t10], EXPR$4=[$t5])"
