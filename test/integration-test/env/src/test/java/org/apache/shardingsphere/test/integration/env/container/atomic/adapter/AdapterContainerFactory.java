@@ -47,9 +47,7 @@ public final class AdapterContainerFactory {
                                                final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration containerConfig) {
         switch (adapter) {
             case "proxy":
-                return "Cluster".equalsIgnoreCase(mode)
-                        ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig)
-                        : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
+                return "Cluster".equals(mode) ? new ShardingSphereProxyClusterContainer(databaseType, containerConfig) : new ShardingSphereProxyStandaloneContainer(databaseType, containerConfig);
             case "jdbc":
                 return new ShardingSphereJdbcContainer(storageContainer, scenario);
             default:
