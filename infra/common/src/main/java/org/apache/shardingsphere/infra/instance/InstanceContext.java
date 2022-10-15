@@ -168,6 +168,6 @@ public final class InstanceContext {
      * @return true if is cluster, else false
      */
     public boolean isCluster() {
-        return "Cluster".equalsIgnoreCase(modeConfiguration.getType());
+        return "Cluster".equals(modeConfiguration.getType());
     }
 }
