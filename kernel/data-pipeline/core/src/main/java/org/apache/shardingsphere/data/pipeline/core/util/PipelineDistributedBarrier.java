@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
@@ -132,7 +132,7 @@ public final class PipelineDistributedBarrier {
      * @param event event
      */
     public void checkChildrenNodeCount(final DataChangedEvent event) {
-        if (StringUtils.isBlank(event.getKey())) {
+        if (Strings.isNullOrEmpty(event.getKey())) {
             return;
         }
         String parentPath = event.getKey().substring(0, event.getKey().lastIndexOf("/"));

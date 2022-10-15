@@ -19,6 +19,8 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
@@ -44,12 +46,13 @@ public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLRes
         data = JOB_API.list().stream()
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();
-                    result.add(each.getJobId());
-                    result.add(each.getTable());
-                    result.add(each.getShardingTotalCount());
-                    result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                    result.add(each.getCreateTime());
-                    result.add(each.getStopTime());
+                    PipelineJobMetaData jobMetaData = each.getJobMetaData();
+                    result.add(jobMetaData.getJobId());
+                    result.add(((TableBasedPipelineJobInfo) each).getTable());
+                    result.add(jobMetaData.getShardingTotalCount());
+                    result.add(jobMetaData.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                    result.add(jobMetaData.getCreateTime());
+                    result.add(jobMetaData.getStopTime());
                     return result;
                 }).collect(Collectors.toList()).iterator();
     }

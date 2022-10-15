@@ -20,7 +20,7 @@ Answer:
 
 The norm of Spring Namespace does not require deploying xsd files to the official website. But considering some users' needs, we will deploy them to ShardingSphere's official website.
 Actually, META-INF\spring.schemas in the jar package of shardingsphere-jdbc-spring-namespace has been configured with the position of xsd files:
-META-INF\namespace\sharding.xsd and META-INF\namespace\replica-query.xsd, so you only need to make sure that the file is in the jar package.
+META-INF\namespace\sharding.xsd and META-INF\namespace\readwrite-splitting.xsd, so you only need to make sure that the file is in the jar package.
 
 ### [JDBC] Found a JtaTransactionManager in spring boot project when integrating with XAtransaction.
 

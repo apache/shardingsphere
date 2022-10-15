@@ -18,21 +18,44 @@
 package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
+
+import java.util.Optional;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
     private final MetaDataPersistService persistService;
     
     private final ShardingSphereMetaData metaData;
+    
+    private final ShardingSphereData shardingSphereData;
+    
+    public MetaDataContexts(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        this.persistService = persistService;
+        this.metaData = metaData;
+        this.shardingSphereData = initShardingSphereData(persistService, metaData);
+    }
+    
+    private ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+        Optional<ShardingSphereData> result = Optional.ofNullable(persistService.getShardingSphereDataPersistService()).flatMap(ShardingSphereDataPersistService::load);
+        if (result.isPresent()) {
+            return result.get();
+        }
+        if (metaData.getDatabases().isEmpty()) {
+            return new ShardingSphereData();
+        }
+        return Optional.ofNullable(metaData.getDatabases().values().iterator().next().getProtocolType())
+                .flatMap(protocolType -> ShardingSphereDataBuilderFactory.getInstance(protocolType).map(builder -> builder.build(metaData))).orElseGet(ShardingSphereData::new);
+    }
     
     @Override
     public void close() {

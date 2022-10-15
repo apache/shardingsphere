@@ -14,7 +14,7 @@ DROP READWRITE_SPLITTING RULE ruleName [, ruleName] ...
 
 readwriteSplittingRuleDefinition:
     ruleName ([staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition] 
-              [, loadBanlancerDefinition])
+              [, loadBalancerDefinition])
 
 staticReadwriteSplittingRuleDefinition:
     WRITE_RESOURCE=writeResourceName, READ_RESOURCES(readResourceName [, readResourceName] ... )
@@ -22,7 +22,7 @@ staticReadwriteSplittingRuleDefinition:
 dynamicReadwriteSplittingRuleDefinition:
     AUTO_AWARE_RESOURCE=autoAwareResourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
 
-loadBanlancerDefinition:
+loadBalancerDefinition:
     TYPE(NAME=loadBalancerType [, PROPERTIES([algorithmProperties] )] )
 
 algorithmProperties:

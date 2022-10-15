@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.entity;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * JDBC info entity.
  */
 @RequiredArgsConstructor
-@Data
+@Getter
 public final class JdbcInfoEntity {
     
     private final String username;

@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 222 家公司。
+共计 225 家公司。
 
 ### 基础软件
 <ul>
@@ -133,6 +133,7 @@ chapter = true
     <li><a href="https://xiaoman.cn/" rel="nofollow">小满科技</a></li>
     <li><a href="https://www.wegooooo.com/" rel="nofollow">微购科技</a></li>
     <li><a href="https://www.lingxing.com/" rel="nofollow">领星</a></li>
+    <li><a href="http://sz.aisino.com/" rel="nofollow">深圳航天信息</a></li>
 </ul>
 
 ### 出行
@@ -164,6 +165,7 @@ chapter = true
     <li><a href="http://www.c-wms.net/" rel="nofollow">弘人网络科技</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">喜百年供应链科技</a></li>
     <li><a href="https://www.nti56.com/" rel="nofollow">今天国际</a></li>
+    <li><a href="https://www.inja.com" rel="nofollow">云南建投物流有限公司</a></li>
 </ul>
 
 ### 旅游服务
@@ -184,11 +186,17 @@ chapter = true
     <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
     <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
     <li><a href="http://www.dayang.com.cn" rel="nofollow">中科大洋</a></li>
+</ul>
+
+### 社交
+
+<ul>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="http://www.tuodan666.com" rel="nofollow">深圳加速脱单科技有限公司</a></li>
 </ul>
 
 ### 互联网教育

@@ -68,7 +68,7 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     public Collection<RuleConfiguration> load(final String databaseName) {
         return isExisted(databaseName)
                 // TODO process algorithm provided configuration
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(DatabaseMetaDataNode.getRulePath(databaseName,
+                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName,
                         getDatabaseActiveVersion(databaseName))), Collection.class, true))
                 : new LinkedList<>();
     }
@@ -76,19 +76,19 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     @SuppressWarnings("unchecked")
     @Override
     public Collection<RuleConfiguration> load(final String databaseName, final String version) {
-        String yamlContent = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, version));
+        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, version));
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>()
-                : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.get(DatabaseMetaDataNode
+                : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode
                         .getRulePath(databaseName, getDatabaseActiveVersion(databaseName))), Collection.class, true));
     }
     
     @Override
     public boolean isExisted(final String databaseName) {
         return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
-                && !Strings.isNullOrEmpty(repository.get(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
+                && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
     }
     
     private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
+        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }

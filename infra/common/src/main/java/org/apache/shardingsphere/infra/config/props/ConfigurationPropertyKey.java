@@ -122,7 +122,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy instance type.
      */
-    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true);
+    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true),
+    
+    /**
+     * Proxy metadata collector enabled.
+     */
+    PROXY_METADATA_COLLECTOR_ENABLED("proxy-metadata-collector-enabled", String.valueOf(Boolean.FALSE), boolean.class, true);
     
     private final String key;
     

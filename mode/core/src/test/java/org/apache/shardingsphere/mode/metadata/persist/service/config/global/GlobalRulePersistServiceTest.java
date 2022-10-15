@@ -45,14 +45,14 @@ public class GlobalRulePersistServiceTest {
     
     @Test
     public void assertLoad() {
-        when(repository.get("/rules")).thenReturn(readYAML());
+        when(repository.getDirectly("/rules")).thenReturn(readYAML());
         Collection<RuleConfiguration> actual = new GlobalRulePersistService(repository).load();
         assertThat(actual.size(), is(1));
     }
     
     @Test
     public void assertLoadUsers() {
-        when(repository.get("/rules")).thenReturn(readYAML());
+        when(repository.getDirectly("/rules")).thenReturn(readYAML());
         Collection<ShardingSphereUser> actual = new GlobalRulePersistService(repository).loadUsers();
         assertThat(actual.size(), is(2));
     }

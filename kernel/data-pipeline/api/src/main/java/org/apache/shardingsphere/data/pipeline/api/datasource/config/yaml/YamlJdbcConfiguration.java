@@ -28,19 +28,9 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlJdbcConfiguration implements YamlConfiguration {
     
-    private String jdbcUrl;
+    private String url;
     
     private String username;
     
     private String password;
-    
-    /**
-     * Set URL. Compatible with <code>jdbcUrl</code> alias.
-     *
-     * @param url JDBC URL
-     */
-    // TODO check why need alias here. Use DataSourcePoolCreator if alias necessary, or remove alias otherwise
-    public void setUrl(final String url) {
-        this.jdbcUrl = url;
-    }
 }

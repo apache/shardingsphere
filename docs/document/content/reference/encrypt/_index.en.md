@@ -24,7 +24,7 @@ Before explaining the whole process, we need to understand the encryption rules 
 
 Data source configuration: the configuration of the data source.
 
-Encryptor configuration: refers to the encryption algorithm used for encryption and decryption. Currently, ShardingSphere has three built-in encryption and decryption algorithms: AES, MD5, and RC4. Users can also implement a set of encryption and decryption algorithms by implementing the interfaces provided by ShardingSphere.
+Encryptor configuration: refers to the encryption algorithm used for encryption and decryption. Currently, ShardingSphere has five built-in encryption and decryption algorithms: AES, MD5, RC4, SM3, and SM4. Users can also implement a set of encryption and decryption algorithms by implementing the interfaces provided by ShardingSphere.
 
 Encryption table configuration: it is used to tell ShardingSphere which column in the data table is used to store ciphertext data (`cipherColumn`), which column is used to store plaintext data (`plainColumn`), and which column the user would like to use for SQL writing (`logicColumn`).
 

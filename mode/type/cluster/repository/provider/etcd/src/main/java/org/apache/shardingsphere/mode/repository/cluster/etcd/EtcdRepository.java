@@ -31,9 +31,9 @@ import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
@@ -45,6 +45,7 @@ import org.apache.shardingsphere.mode.repository.cluster.transaction.Transaction
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -100,9 +101,20 @@ public final class EtcdRepository implements ClusterPersistRepository {
         // TODO
     }
     
-    @SneakyThrows({InterruptedException.class, ExecutionException.class})
+    @Override
+    public void updateInTransaction(final String key, final String value) {
+        // TODO
+    }
+    
     @Override
     public String get(final String key) {
+        // TODO
+        return null;
+    }
+    
+    @SneakyThrows({InterruptedException.class, ExecutionException.class})
+    @Override
+    public String getDirectly(final String key) {
         List<KeyValue> keyValues = client.getKVClient().get(ByteSequence.from(key, StandardCharsets.UTF_8)).get().getKvs();
         return keyValues.isEmpty() ? null : keyValues.iterator().next().getValue().toString(StandardCharsets.UTF_8);
     }
@@ -184,7 +196,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener, final Executor executor) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
                 Type type = getEventChangedType(each);

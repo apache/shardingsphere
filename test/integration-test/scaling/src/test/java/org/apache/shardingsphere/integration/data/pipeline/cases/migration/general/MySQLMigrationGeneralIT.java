@@ -99,8 +99,9 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), keyGenerateAlgorithm, 30));
         String orderJobId = getJobIdByTableName(getSourceTableOrderName());
         String orderItemJobId = getJobIdByTableName("t_order_item");
-        assertMigrationSuccessById(orderJobId);
-        assertMigrationSuccessById(orderItemJobId);
+        assertMigrationSuccessById(orderJobId, "DATA_MATCH");
+        assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
+        assertMigrationSuccessById(orderItemJobId, "CRC32_MATCH");
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             for (String each : listJobId()) {
                 commitMigrationByJobId(each);
@@ -111,12 +112,12 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
     }
     
-    private void assertMigrationSuccessById(final String jobId) throws SQLException, InterruptedException {
+    private void assertMigrationSuccessById(final String jobId, final String algorithmType) throws SQLException, InterruptedException {
         List<Map<String, Object>> jobStatus = waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
         }
-        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
+        assertCheckMigrationSuccess(jobId, algorithmType);
         stopMigrationByJobId(jobId);
     }
 }

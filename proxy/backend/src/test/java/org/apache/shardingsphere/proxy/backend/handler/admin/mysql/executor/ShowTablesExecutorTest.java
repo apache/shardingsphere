@@ -51,8 +51,8 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -81,7 +81,7 @@ public final class ShowTablesExecutorTest extends ProxyContextRestorer {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(database.isComplete()).thenReturn(true);
-        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         Map<String, ShardingSphereDatabase> result = new HashMap<>(2, 1);
         result.put(String.format(DATABASE_PATTERN, 0), database);
         ShardingSphereDatabase uncompletedDatabase = mock(ShardingSphereDatabase.class);

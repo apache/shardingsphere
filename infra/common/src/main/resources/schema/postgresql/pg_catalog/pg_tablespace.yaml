@@ -23,30 +23,35 @@ columns:
     generated: false
     name: oid
     primaryKey: false
+    visible: true
   spcname:
     caseSensitive: true
     dataType: 12
     generated: false
     name: spcname
     primaryKey: false
+    visible: true
   spcowner:
     caseSensitive: true
     dataType: -5
     generated: false
     name: spcowner
     primaryKey: false
+    visible: true
   spcacl:
     caseSensitive: true
     dataType: 2003
     generated: false
     name: spcacl
     primaryKey: false
+    visible: true
   spcoptions:
     caseSensitive: true
     dataType: 2003
     generated: false
     name: spcoptions
     primaryKey: false
+    visible: true
 indexes:
   pg_tablespace_oid_index:
     name: pg_tablespace_oid_index

@@ -108,8 +108,8 @@ public final class YamlEngine {
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
         if (value instanceof Collection) {
-            return new Yaml(new ShardingSphereYamlRepresenter(dumperOptions)).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+            return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
         }
-        return new Yaml(new ShardingSphereYamlRepresenter(dumperOptions)).dumpAsMap(value);
+        return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAsMap(value);
     }
 }

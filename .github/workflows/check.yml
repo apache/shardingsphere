@@ -32,8 +32,10 @@ on:
     paths:
       - '**/src/main/**'
       - '**/src/test/**'
+      - 'src/resources/**'
       - '.github/workflows/checkstyle-and-license-check.yml'
       - 'examples/shardingsphere-example-generator/**'
+      - 'test/integration-agent-test/plugins/**'
       - '!examples/**'
       - '!*.md'
 
@@ -48,12 +50,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            shardingsphere-maven-third-party-
       - name: Run checkstyle
         run: ./mvnw checkstyle:check -T1C
 

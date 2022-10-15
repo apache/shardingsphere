@@ -24,8 +24,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
@@ -53,17 +54,17 @@ public final class ShardingSphereDatabase {
     
     private final DatabaseType protocolType;
     
-    private final ShardingSphereResource resource;
+    private final ShardingSphereResourceMetaData resourceMetaData;
     
     private final ShardingSphereRuleMetaData ruleMetaData;
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ShardingSphereResource resource,
+    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ShardingSphereResourceMetaData resourceMetaData,
                                   final ShardingSphereRuleMetaData ruleMetaData, final Map<String, ShardingSphereSchema> schemas) {
         this.name = name;
         this.protocolType = protocolType;
-        this.resource = resource;
+        this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
         this.schemas = new ConcurrentHashMap<>(schemas.size(), 1);
         schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
@@ -85,7 +86,8 @@ public final class ShardingSphereDatabase {
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
-        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType, databaseConfig.getDataSources(), databaseRules, props,
+        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType,
+                DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules, props,
                 DatabaseTypeEngine.getDefaultSchemaName(storageType, name))));
         schemas.putAll(SystemSchemaBuilder.build(name, protocolType));
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
@@ -105,13 +107,13 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                  final Collection<ShardingSphereRule> rules, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereResource resource = createResource(name, databaseConfig.getDataSources());
+        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData(name, databaseConfig.getDataSources());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
-        return new ShardingSphereDatabase(name, protocolType, resource, ruleMetaData, schemas);
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas);
     }
     
-    private static ShardingSphereResource createResource(final String databaseName, final Map<String, DataSource> dataSourceMap) {
-        return new ShardingSphereResource(databaseName, dataSourceMap);
+    private static ShardingSphereResourceMetaData createResourceMetaData(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+        return new ShardingSphereResourceMetaData(databaseName, dataSourceMap);
     }
     
     /**
@@ -159,7 +161,7 @@ public final class ShardingSphereDatabase {
      * @return is completed or not
      */
     public boolean isComplete() {
-        return !ruleMetaData.getRules().isEmpty() && !resource.getDataSources().isEmpty();
+        return !ruleMetaData.getRules().isEmpty() && !resourceMetaData.getDataSources().isEmpty();
     }
     
     /**
@@ -168,7 +170,7 @@ public final class ShardingSphereDatabase {
      * @return contains data source or not
      */
     public boolean containsDataSource() {
-        return !resource.getDataSources().isEmpty();
+        return !resourceMetaData.getDataSources().isEmpty();
     }
     
     /**
@@ -181,7 +183,7 @@ public final class ShardingSphereDatabase {
         RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             ruleMetaData.getRules().removeAll(toBeReloadedRules);
-            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resource.getDataSources(), ruleMetaData.getRules()));
+            ruleMetaData.getRules().add(((MutableDataNodeRule) optional).reloadRule(config, name, resourceMetaData.getDataSources(), ruleMetaData.getRules()));
         });
     }
 }

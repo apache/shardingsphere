@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.prepare.datasource;
 
 import com.google.common.base.Splitter;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.curator.shaded.com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration.CreateTableEntry;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
@@ -39,7 +39,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
             String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
-                for (String sql : Splitter.on(";").splitToList(createTargetTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
+                for (String sql : Splitter.on(";").trimResults().splitToList(createTargetTableSQL).stream().filter(cs -> !Strings.isNullOrEmpty(cs)).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, sql);
                 }
             }

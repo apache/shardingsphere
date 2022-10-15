@@ -18,26 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
-import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Consistency check job.
@@ -52,44 +43,43 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
     @Override
     public void execute(final ShardingContext shardingContext) {
         String checkJobId = shardingContext.getJobName();
-        setJobId(checkJobId);
-        ConsistencyCheckJobConfiguration consistencyCheckJobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        JobStatus status = JobStatus.RUNNING;
-        ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(consistencyCheckJobConfig, 0, status);
-        jobAPI.persistJobItemProgress(jobItemContext);
-        String parentJobId = consistencyCheckJobConfig.getParentJobId();
-        log.info("execute consistency check, job id:{}, referred job id:{}", checkJobId, parentJobId);
-        JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
-        InventoryIncrementalJobPublicAPI jobPublicAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(jobType.getTypeName());
-        Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = Collections.emptyMap();
-        try {
-            dataConsistencyCheckResult = StringUtils.isBlank(consistencyCheckJobConfig.getAlgorithmTypeName())
-                    ? jobPublicAPI.dataConsistencyCheck(parentJobId)
-                    : jobPublicAPI.dataConsistencyCheck(parentJobId, consistencyCheckJobConfig.getAlgorithmTypeName(), consistencyCheckJobConfig.getAlgorithmProps());
-            status = JobStatus.FINISHED;
-        } catch (final SQLWrapperException ex) {
-            log.error("data consistency check failed", ex);
-            status = JobStatus.CONSISTENCY_CHECK_FAILURE;
-            jobAPI.persistJobItemErrorMessage(checkJobId, 0, ex);
+        int shardingItem = shardingContext.getShardingItem();
+        log.info("Execute job {}-{}", checkJobId, shardingItem);
+        if (isStopping()) {
+            log.info("stopping true, ignore");
+            return;
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
-        jobItemContext.setStatus(status);
-        jobAPI.persistJobItemProgress(jobItemContext);
-        jobAPI.stop(checkJobId);
-        log.info("execute consistency check job finished, job id:{}, parent job id:{}", checkJobId, parentJobId);
+        setJobId(checkJobId);
+        ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(jobConfig, shardingItem, JobStatus.RUNNING);
+        if (getTasksRunnerMap().containsKey(shardingItem)) {
+            log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
+            return;
+        }
+        log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        jobAPI.cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
+        ConsistencyCheckTasksRunner tasksRunner = new ConsistencyCheckTasksRunner(jobItemContext);
+        tasksRunner.start();
+        PipelineJobProgressPersistService.addJobProgressPersistContext(checkJobId, shardingContext.getShardingItem());
+        getTasksRunnerMap().put(shardingItem, tasksRunner);
     }
     
     @Override
     public void stop() {
         setStopping(true);
-        if (null != getOneOffJobBootstrap()) {
-            getOneOffJobBootstrap().shutdown();
+        if (null != getJobBootstrap()) {
+            getJobBootstrap().shutdown();
         }
         if (null == getJobId()) {
             log.info("stop consistency check job, jobId is null, ignore");
             return;
         }
+        for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
+            each.stop();
+        }
+        getTasksRunnerMap().clear();
         String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
         pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
 }

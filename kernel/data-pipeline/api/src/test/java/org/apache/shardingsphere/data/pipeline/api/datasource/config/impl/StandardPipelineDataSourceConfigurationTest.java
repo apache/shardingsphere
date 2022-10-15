@@ -54,6 +54,10 @@ public final class StandardPipelineDataSourceConfigurationTest {
         yamlDataSourceConfig.put("minPoolSize", "20");
         StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
         assertGetConfig(actual);
+        yamlDataSourceConfig.remove("url");
+        yamlDataSourceConfig.put("jdbcUrl", JDBC_URL);
+        actual = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
+        assertGetConfig(actual);
     }
     
     private void assertGetConfig(final StandardPipelineDataSourceConfiguration actual) {
@@ -66,7 +70,7 @@ public final class StandardPipelineDataSourceConfigurationTest {
     }
     
     private void assertGetJdbcConfig(final YamlJdbcConfiguration actual) {
-        assertThat(actual.getJdbcUrl(), is(JDBC_URL));
+        assertThat(actual.getUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));
     }

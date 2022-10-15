@@ -62,15 +62,16 @@ public final class DriverStateContextTest {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class));
-        when(contextManager.getMetaDataContexts()).thenReturn(new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class))));
+        MetaDataPersistService mockedPersistService = mock(MetaDataPersistService.class);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mockedPersistService, new ShardingSphereMetaData(databases, globalRuleMetaData, mock(ConfigurationProperties.class)));
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(contextManager.getInstanceContext().getInstance().getState()).thenReturn(new StateContext());
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS);
-        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         result.put(DefaultDatabase.LOGIC_NAME, database);
         return result;
     }

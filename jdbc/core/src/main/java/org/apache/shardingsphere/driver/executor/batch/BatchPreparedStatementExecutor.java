@@ -138,7 +138,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown, eventBusContext) {
+                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown, eventBusContext) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

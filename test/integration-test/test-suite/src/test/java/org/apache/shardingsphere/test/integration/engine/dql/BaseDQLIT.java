@@ -38,8 +38,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Getter(AccessLevel.PROTECTED)
@@ -108,7 +108,7 @@ public abstract class BaseDQLIT extends SingleITCase {
                 if (actualValue instanceof Double || actualValue instanceof Float || actualValue instanceof BigDecimal) {
                     assertThat(Math.floor(Double.parseDouble(actualValue.toString())), is(Math.floor(Double.parseDouble(expectedValue.toString()))));
                 } else {
-                    assertThat(actualValue.toString(), is(expectedValue.toString()));
+                    assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }
             }
         }

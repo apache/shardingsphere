@@ -48,7 +48,8 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
+import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
@@ -62,6 +63,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
@@ -122,19 +124,12 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
-    @SuppressWarnings("unchecked")
     @Override
-    public List<MigrationJobInfo> list() {
-        return (List<MigrationJobInfo>) super.list();
-    }
-    
-    @Override
-    protected MigrationJobInfo getJobInfo(final String jobId) {
-        MigrationJobInfo result = new MigrationJobInfo(jobId);
+    protected TableBasedPipelineJobInfo getJobInfo(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        fillJobInfo(result, jobConfigPOJO);
-        result.setTable(getJobConfiguration(jobConfigPOJO).getSourceTableName());
-        return result;
+        PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobId, !jobConfigPOJO.isDisabled(),
+                jobConfigPOJO.getShardingTotalCount(), jobConfigPOJO.getProps().getProperty("create_time"), jobConfigPOJO.getProps().getProperty("stop_time"), jobConfigPOJO.getJobParameter());
+        return new TableBasedPipelineJobInfo(jobMetaData, getJobConfiguration(jobConfigPOJO).getSourceTableName());
     }
     
     @Override
@@ -247,8 +242,37 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     }
     
     @Override
-    protected PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final InventoryIncrementalProcessContext processContext) {
-        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext);
+    protected PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final InventoryIncrementalProcessContext processContext,
+                                                                                 final ConsistencyCheckJobItemContext checkJobItemContext) {
+        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext, checkJobItemContext);
+    }
+    
+    @Override
+    public void startDisabledJob(final String jobId) {
+        super.startDisabledJob(jobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> {
+            try {
+                ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.warn("start related check job failed, check job id: {}, error: {}", optional, ex.getMessage());
+            }
+        });
+    }
+    
+    @Override
+    public void stop(final String jobId) {
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> {
+            try {
+                ConsistencyCheckJobAPIFactory.getInstance().stop(optional);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.warn("stop related check job failed, check job id: {}, error: {}", optional, ex.getMessage());
+            }
+        });
+        super.stop(jobId);
     }
     
     @Override
@@ -270,7 +294,13 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         log.info("dropCheckJobs start...");
         long startTimeMillis = System.currentTimeMillis();
         for (String each : checkJobIds) {
-            dropJob(each);
+            try {
+                dropJob(each);
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                log.info("drop check job failed, check job id: {}, error: {}", each, ex.getMessage());
+            }
         }
         log.info("dropCheckJobs cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
@@ -386,7 +416,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         result.setSourceTableName(parameter.getSourceTableName());
         Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
-        for (Entry<String, DataSource> entry : targetDatabase.getResource().getDataSources().entrySet()) {
+        for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProperties.put(entry.getKey(), dataSourceProps);
         }
@@ -406,9 +436,9 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
             throw new RuntimeException(ex);
         }
         extendYamlJobConfiguration(result);
-        MigrationJobConfiguration jobConfiguration = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
-        start(jobConfiguration);
-        return jobConfiguration.getJobId();
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(result);
+        start(jobConfig);
+        return jobConfig.getJobId();
     }
     
     private YamlRootConfiguration getYamlRootConfiguration(final String databaseName, final Map<String, Map<String, Object>> yamlDataSources, final Collection<RuleConfiguration> rules) {
@@ -425,12 +455,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         result.setType(type);
         result.setParameter(parameter);
         return result;
-    }
-    
-    @Override
-    public void startDisabledJob(final String jobId) {
-        super.startDisabledJob(jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional));
     }
     
     @Override

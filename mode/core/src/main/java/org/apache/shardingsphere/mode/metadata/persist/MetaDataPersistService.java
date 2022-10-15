@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourcePersistService;
@@ -59,6 +60,8 @@ public final class MetaDataPersistService {
     
     private final MetaDataVersionPersistService metaDataVersionPersistService;
     
+    private final ShardingSphereDataPersistService shardingSphereDataPersistService;
+    
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
@@ -67,6 +70,7 @@ public final class MetaDataPersistService {
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
         metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
+        shardingSphereDataPersistService = new ShardingSphereDataPersistService(repository);
     }
     
     /**
