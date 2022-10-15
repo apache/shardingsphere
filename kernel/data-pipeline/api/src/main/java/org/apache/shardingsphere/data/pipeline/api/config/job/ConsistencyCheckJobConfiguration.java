@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api.config.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Properties;
 
@@ -29,7 +28,6 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
 @ToString
 public final class ConsistencyCheckJobConfiguration implements PipelineJobConfiguration {
     

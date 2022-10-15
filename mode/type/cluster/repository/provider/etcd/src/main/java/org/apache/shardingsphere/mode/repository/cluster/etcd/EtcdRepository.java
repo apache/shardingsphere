@@ -30,7 +30,6 @@ import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockProvider;
@@ -49,7 +48,6 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
-@Slf4j
 public final class EtcdRepository implements ClusterPersistRepository {
     
     private Client client;

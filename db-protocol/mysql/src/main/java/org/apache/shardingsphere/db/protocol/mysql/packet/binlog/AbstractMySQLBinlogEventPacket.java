@@ -20,7 +20,6 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Slf4j
 public abstract class AbstractMySQLBinlogEventPacket implements MySQLPacket, MySQLBinlogEventPacket {
     
     private final MySQLBinlogEventHeader binlogEventHeader;

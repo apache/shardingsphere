@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Abstract pipeline job.
  */
-@Slf4j
 @Getter
 public abstract class AbstractPipelineJob implements PipelineJob {
     
