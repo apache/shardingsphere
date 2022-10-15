@@ -32,7 +32,7 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
@@ -70,7 +70,8 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                 ? SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                         sqlStatement, connectionSession.getDefaultDatabaseName())
                 : null;
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), new PostgreSQLPreparedStatement(sql, sqlStatement, sqlStatementContext, paddedColumnTypes));
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatement, sqlStatementContext, paddedColumnTypes);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
     }
     

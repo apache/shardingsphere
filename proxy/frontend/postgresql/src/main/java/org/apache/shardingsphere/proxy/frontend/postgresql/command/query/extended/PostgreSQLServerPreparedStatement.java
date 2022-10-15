@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatement;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class PostgreSQLPreparedStatement implements PreparedStatement {
+public final class PostgreSQLServerPreparedStatement implements ServerPreparedStatement {
     
     private final String sql;
     

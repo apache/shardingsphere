@@ -80,7 +80,7 @@ public final class JDBCPortal implements Portal<Void> {
     
     private ResponseHeader responseHeader;
     
-    public JDBCPortal(final String name, final PostgreSQLPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+    public JDBCPortal(final String name, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
                       final JDBCBackendConnection backendConnection) throws SQLException {
         this.name = name;
         this.sqlStatement = preparedStatement.getSqlStatement();
