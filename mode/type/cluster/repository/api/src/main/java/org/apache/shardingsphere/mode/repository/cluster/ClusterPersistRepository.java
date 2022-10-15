@@ -80,14 +80,6 @@ public interface ClusterPersistRepository extends PersistRepository {
     Object getRawCache(String cachePath);
     
     /**
-     * Execute in leader.
-     *
-     * @param key key
-     * @param callback callback of leader
-     */
-    void executeInLeader(String key, LeaderExecutionCallback callback);
-    
-    /**
      * Update data in transaction.
      *
      * @param key key
