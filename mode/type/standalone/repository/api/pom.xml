@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-standalone-mode-repository</artifactId>
-        <version>5.2.1</version>
+        <version>5.2.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-standalone-mode-repository-api</artifactId>
     <name>${project.artifactId}</name>
