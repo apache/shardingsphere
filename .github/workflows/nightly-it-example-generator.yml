@@ -17,9 +17,9 @@
 
 name: Nightly - IT Example Generator
 
-on:
-  schedule:
-    - cron: '0 19 */1 * *'  # once a day. UTC time
+#on:
+#  schedule:
+#    - cron: '0 19 */1 * *'  # once a day. UTC time
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
