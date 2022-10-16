@@ -152,7 +152,8 @@
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <caffeine.version>2.9.2</caffeine.version>
-        <github-api.version>1.313</github-api.version>
+        <jackson.version>2.14.0-rc2</jackson.version>
+        <commons-io.version>2.11.0</commons-io.version>
     </properties>
     
     <dependencyManagement>
@@ -655,6 +656,11 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
@@ -692,11 +698,17 @@
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
             </dependency>
-
+            
             <dependency>
-                <groupId>org.kohsuke</groupId>
-                <artifactId>github-api</artifactId>
-                <version>${github-api.version}</version>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
