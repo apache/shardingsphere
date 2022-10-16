@@ -230,14 +230,6 @@ jobs:
   dynamic-loading-test-case:
     name: Dynamic Loading SQL Parser
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        database: [ MySQL, PostgreSQL ]
-        include:
-          - database: MySQL
-            url: https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t
-          - database: PostgreSQL
-            url: https://github.com/postgres/postgres/tree/master/src/test/regress/sql
     steps:
       - uses: actions/checkout@v2
       - name: Maven Resolve Ranges
@@ -256,4 +248,4 @@ jobs:
         run: ./mvnw -B clean install -DskipITs -DskipTests
       - name: Run Parameterized Test
         run: |
-          ./mvnw -B clean install -f test/parser/pom.xml -Pit.dynamic.loading -Dspotless.apply.skip=true -Ddatabase=${{ matrix.database }} -Durl=${{ matrix.url }}
+          ./mvnw -B clean install -f test/parser/pom.xml -Pit.dynamic.loading -Dspotless.apply.skip=true
