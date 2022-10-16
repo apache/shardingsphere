@@ -89,9 +89,7 @@ public final class TableExtractor {
             extractTablesFromOrderByItems(selectStatement.getOrderBy().get().getOrderByItems());
         }
         Optional<LockSegment> lockSegment = SelectStatementHandler.getLockSegment(selectStatement);
-        if (lockSegment.isPresent()) {
-            extractTablesFromLock(lockSegment.get());
-        }
+        lockSegment.ifPresent(this::extractTablesFromLock);
         if (selectStatement.getCombine().isPresent()) {
             extractTablesFromSelect(selectStatement.getCombine().get().getSelectStatement());
         }
