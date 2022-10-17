@@ -69,6 +69,7 @@ jobs:
 #     continue-on-error: ${{ matrix.experimental}}
     continue-on-error: true
     strategy:
+      max-parallel: 5
 #       fail-fast: true
       matrix:
         java: ['8','11','17','19']
@@ -114,7 +115,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-it-image
+    continue-on-error: true
     strategy:
+      max-parallel: 5
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
@@ -148,6 +151,7 @@ jobs:
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     strategy:
       max-parallel: 10
       matrix:
@@ -187,6 +191,7 @@ jobs:
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     strategy:
       max-parallel: 8
       matrix:
@@ -224,7 +229,9 @@ jobs:
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
+      max-parallel: 5
       matrix:
         java: ['8','11','17','19']
         keyword: ['temurin','zulu','adopt','adopt-openj9','liberica','microsoft','corretto']
