@@ -72,8 +72,10 @@ jobs:
 #      max-parallel: 5
 #       fail-fast: true
       matrix:
-        java: ['8','11','17','19']
-        keyword: ['temurin','zulu','adopt','adopt-openj9','liberica','microsoft','corretto']
+#         java: ['8','11','17','19']
+        java: ['11','17']
+#         keyword: ['temurin','zulu','adopt','adopt-openj9','liberica','microsoft','corretto']
+        keyword: ['adopt-openj9','microsoft']
 #         experimental: [false]
 #         include:
 #           - java: 19
