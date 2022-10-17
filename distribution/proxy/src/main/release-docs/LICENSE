@@ -240,7 +240,7 @@ The text of each license is the standard Apache 2.0 license.
     failsafe 2.4.1: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0 
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
-    groovy 4.0.5: https://groovy.apache.org/, Apache 2.0
+    groovy 4.0.6: https://groovy.apache.org/, Apache 2.0
     grpc-api 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-context 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
     grpc-core 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
