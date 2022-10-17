@@ -51,8 +51,8 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         if (context.isInTransaction()) {
             return writeDataSourceName;
         }
-        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
-        weightMap.putIfAbsent(name, weight);
+        double[] weight = weightMap.containsKey(name) && weightMap.get(name).length == readDataSourceNames.size() ? weightMap.get(name) : initWeight(readDataSourceNames);
+        weightMap.put(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
     
