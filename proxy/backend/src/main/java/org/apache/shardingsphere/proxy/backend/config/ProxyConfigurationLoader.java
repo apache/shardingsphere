@@ -77,15 +77,14 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        // TODO use SPI with pluggable
-        boolean containsGovernance = null != result.getMode() && "Cluster".equals(result.getMode().getType());
+        if (null == result) {
+            return new YamlProxyServerConfiguration();
+        }
+        // TODO make authority configuration more clear
         if (null != result.getAuthority()) {
             result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
             result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
-        YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(each -> each instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
-        Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
         return result;
     }
     
