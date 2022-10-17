@@ -110,7 +110,6 @@ public class DynamicLoadingSQLParserParameterizedTest {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         for (Object[] each : testParameters) {
             String sql = each[1].toString();
-            System.out.println(sql);
             ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sql, false);
             SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
             if (!parseContext.toString().equals(sqlStatement.toString())) {
