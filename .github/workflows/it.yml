@@ -20,40 +20,40 @@ name: IT
 on:
   push:
     branches: [ master, dev ]
-    paths:
-      - '.github/workflows/it.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - 'distribution/proxy/**'
-      - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/test-suite/**'
-      - 'test/integration-agent-test/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
-      - '!*.md'
+#     paths:
+#       - '.github/workflows/it.yml'
+#       - '**/pom.xml'
+#       - '**/src/main/**'
+#       - 'distribution/proxy/**'
+#       - 'test/pom.xml'
+#       - 'test/integration-test/fixture/**'
+#       - 'test/integration-test/env/**'
+#       - 'test/integration-test/test-suite/**'
+#       - 'test/integration-agent-test/**'
+#       - '!examples/**'
+#       - '!distribution/**'
+#       - '!distribution/proxy/src/main/release-docs/**'
+#       - '!kernel/data-pipeline/**'
+#       - '!test/**'
+#       - '!*.md'
   pull_request:
     branches: [ master ]
-    paths:
-      - '.github/workflows/it.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - 'distribution/proxy/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/test-suite/**'
-      - 'test/integration-agent-test/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!*.md'
+#     paths:
+#       - '.github/workflows/it.yml'
+#       - '**/pom.xml'
+#       - '**/src/main/**'
+#       - 'distribution/proxy/**'
+#       - '!test/**'
+#       - 'test/pom.xml'
+#       - 'test/integration-test/fixture/**'
+#       - 'test/integration-test/env/**'
+#       - 'test/integration-test/test-suite/**'
+#       - 'test/integration-agent-test/**'
+#       - '!examples/**'
+#       - '!distribution/**'
+#       - '!distribution/proxy/src/main/release-docs/**'
+#       - '!kernel/data-pipeline/**'
+#       - '!*.md'
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
@@ -66,13 +66,26 @@ jobs:
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
+#     continue-on-error: true
+    strategy:
+      matrix:
+        java: [8, 11, 17, 19 ]
+        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+        exclude:
+          - java: 8
+            keyword: microsoft
+          - java: 19
+            keyword: microsoft
+          - java: 19
+            keyword: adopt-openj9
+            
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          java-version: ${{ matrix.java }}
+          distribution: ${{ matrix.keyword }}
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -99,11 +112,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-it-image
+#     continue-on-error: true
     strategy:
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
+        java: [8, 11, 17, 19 ]
+        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+        exclude:
+          - java: 8
+            keyword: microsoft
+          - java: 19
+            keyword: microsoft
+          - java: 19
+            keyword: adopt-openj9
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -112,8 +135,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: 8
+          java-version: ${{ matrix.java }}
+          distribution: ${{ matrix.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -131,6 +154,7 @@ jobs:
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
+#     continue-on-error: true
     strategy:
       max-parallel: 10
       matrix:
@@ -138,7 +162,15 @@ jobs:
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
+        java: [8, 11, 17, 19 ]
+        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
         exclude:
+          - java: 8
+            keyword: microsoft
+          - java: 19
+            keyword: microsoft
+          - java: 19
+            keyword: adopt-openj9
           - adapter: jdbc
             mode: Cluster
     steps:
@@ -149,8 +181,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: 8
+          java-version: ${{ matrix.java }}
+          distribution: ${{ matrix.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -168,6 +200,7 @@ jobs:
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
+#     continue-on-error: true
     strategy:
       max-parallel: 8
       matrix:
@@ -175,7 +208,15 @@ jobs:
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
+        java: [8, 11, 17, 19 ]
+        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
         exclude:
+          - java: 8
+            keyword: microsoft
+          - java: 19
+            keyword: microsoft
+          - java: 19
+            keyword: adopt-openj9
           - adapter: jdbc
             mode: Cluster
     steps:
@@ -186,8 +227,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: 8
+          java-version: ${{ matrix.java }}
+          distribution: ${{ matrix.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -203,12 +244,25 @@ jobs:
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
+#     continue-on-error: true
+    strategy:
+      matrix:
+        adapter: [ proxy, jdbc ]
+        java: [8, 11, 17, 19 ]
+        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+        exclude:
+          - java: 8
+            keyword: microsoft
+          - java: 19
+            keyword: microsoft
+          - java: 19
+            keyword: adopt-openj9
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          java-version: ${{ matrix.java }}
+          distribution: ${{ matrix.keyword }}
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
