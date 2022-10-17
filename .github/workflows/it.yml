@@ -66,10 +66,21 @@ jobs:
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
+    #continue-on-error: ${{ matrix.experimental}}
+    continue-on-error: true
     strategy:
+      #fail-fast: true
       matrix:
         java: ['8','11','17','19']
         keyword: ['temurin','zulu','adopt','adopt-openj9','liberica','microsoft','corretto']
+        #experimental: [false]
+        include:
+          - java: 19
+            keyword: adopt-openj9 
+            experimental: true
+          - java: 19
+            keyword: microsoft
+            experimental: true
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
