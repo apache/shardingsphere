@@ -73,7 +73,7 @@ jobs:
 #       fail-fast: true
       matrix:
 #         java: ['8','11','17','19']
-        java: ['11','17']
+        java: ['11']
 #         keyword: ['temurin','zulu','adopt','adopt-openj9','liberica','microsoft','corretto']
         keyword: ['adopt-openj9','microsoft']
 #         experimental: [false]
@@ -236,7 +236,7 @@ jobs:
 #      max-parallel: 5
       matrix:
 #         java: ['8','11','17','19']
-        java: ['11','17']
+        java: ['11']
 #         keyword: ['temurin','zulu','adopt','adopt-openj9','liberica','microsoft','corretto']
         keyword: ['adopt-openj9','microsoft']
     steps:
