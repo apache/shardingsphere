@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.context;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
  * Abstract inventory incremental process context.
  */
 @Getter
-@Slf4j
 public abstract class AbstractInventoryIncrementalProcessContext implements InventoryIncrementalProcessContext {
     
     private final PipelineProcessConfiguration pipelineProcessConfig;

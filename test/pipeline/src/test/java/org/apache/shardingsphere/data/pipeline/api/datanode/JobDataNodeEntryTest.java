@@ -20,25 +20,17 @@ package org.apache.shardingsphere.data.pipeline.api.datanode;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class JobDataNodeEntryTest {
     
     @Test
-    public void assertSerialization() {
-        String text = "t_order:ds_0.t_order_0,ds_0.t_order_1";
-        JobDataNodeEntry actual = JobDataNodeEntry.unmarshal(text);
-        assertNotNull(actual);
-        assertThat(actual.marshal(), is(text));
-        assertThat(actual.getLogicTableName(), is("t_order"));
-        List<DataNode> dataNodes = actual.getDataNodes();
-        assertNotNull(dataNodes);
-        assertThat(dataNodes.size(), is(2));
-        assertThat(dataNodes.get(0).format(), is("ds_0.t_order_0"));
-        assertThat(dataNodes.get(1).format(), is("ds_0.t_order_1"));
+    public void assertMarshal() {
+        String actual = new JobDataNodeEntry("t_order", Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"))).marshal();
+        String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1";
+        assertThat(actual, is(expected));
     }
 }

@@ -28,19 +28,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PreparedStatementRegistryTest {
+public final class ServerServerPreparedStatementRegistryTest {
     
     @Test
     public void assertAddAndGetAndClosePreparedStatement() {
-        PreparedStatement expected = new DummyPreparedStatement();
-        PreparedStatementRegistry registry = new PreparedStatementRegistry();
+        ServerPreparedStatement expected = new DummyServerPreparedStatement();
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         registry.addPreparedStatement(1, expected);
         assertThat(registry.getPreparedStatement(1), is(expected));
         registry.removePreparedStatement(1);
         assertNull(registry.getPreparedStatement(1));
     }
     
-    private static class DummyPreparedStatement implements PreparedStatement {
+    private static class DummyServerPreparedStatement implements ServerPreparedStatement {
         
         @Override
         public String getSql() {

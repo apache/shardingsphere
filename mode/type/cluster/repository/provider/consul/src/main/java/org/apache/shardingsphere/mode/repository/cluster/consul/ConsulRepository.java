@@ -26,7 +26,6 @@ import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulInternalLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
@@ -82,11 +81,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     public Object getRawCache(final String cachePath) {
         // TODO
         return null;
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
     }
     
     @Override

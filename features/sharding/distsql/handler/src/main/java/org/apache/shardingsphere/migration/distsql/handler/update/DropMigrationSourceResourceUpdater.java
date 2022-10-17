@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.migration.distsql.statement.DropMigrationSource
 /**
  * Drop migration source resource updater.
  */
-@Slf4j
 public final class DropMigrationSourceResourceUpdater implements RALUpdater<DropMigrationSourceResourceStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();

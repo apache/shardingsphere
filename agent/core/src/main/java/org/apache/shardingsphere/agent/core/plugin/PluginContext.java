@@ -30,6 +30,6 @@ public final class PluginContext {
      * @return the plugin enable value
      */
     public static boolean isPluginEnabled() {
-        return !Boolean.FALSE.toString().equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY)) && !"0".equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY));
+        return !Boolean.FALSE.toString().equalsIgnoreCase(System.getProperty(PLUGIN_ENABLED_KEY)) && !"0".equals(System.getProperty(PLUGIN_ENABLED_KEY));
     }
 }

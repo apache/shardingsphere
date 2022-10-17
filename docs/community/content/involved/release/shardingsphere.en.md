@@ -311,10 +311,10 @@ cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/src/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/agent/distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### 4. Commit to Apache SVN
