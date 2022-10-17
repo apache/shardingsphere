@@ -62,14 +62,14 @@
         <column name="description" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="write_ds_${0..9}.t_product_category{0..9},read_ds_${0..9}.t_product_category{0..9}">
+    <metadata data-nodes="write_ds_${0..9}.t_product_category,read_ds_${0..9}.t_product_category">
         <column name="category_id" type="numeric" />
         <column name="category_name" type="varchar" />
         <column name="parent_id" type="numeric" />
         <column name="level" type="numeric" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="write_ds_${0..9}.t_country{0..9},read_ds_${0..9}.t_country{0..9}">
+    <metadata data-nodes="write_ds_${0..9}.t_country,read_ds_${0..9}.t_country">
         <column name="country_id" type="numeric" />
         <column name="country_name" type="varchar" />
         <column name="continent_name" type="varchar" />
