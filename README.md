@@ -95,9 +95,9 @@ We deeply appreciate [community contributors](https://shardingsphere.apache.org/
 
 🔗 For the release notes, follow this link to the relevant [GitHub page](https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md).
 
-:soon: Version 5.2.1
+:soon: Version 5.2.2
 
-We are currently working towards our 5.2.1 milestone. 
+We are currently working towards our 5.2.2 milestone. 
 Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/milestones) of this repo to stay up to date.
 
 [comment]: <> (##)
