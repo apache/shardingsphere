@@ -24,6 +24,7 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulInternalLockProvider;
@@ -55,7 +56,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     private Map<String, Collection<String>> watchKeyMap;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
         consulProps = new ConsulProperties(config.getProps());
         consulInternalLockProvider = new ConsulInternalLockProvider(consulClient, consulProps);

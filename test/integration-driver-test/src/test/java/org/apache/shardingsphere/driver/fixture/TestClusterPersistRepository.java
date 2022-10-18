@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.fixture;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -33,7 +34,7 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     private final Map<String, String> registryData = new LinkedHashMap<>();
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData) {
         registryData.put("/metadata", DefaultDatabase.LOGIC_NAME);
     }
     
