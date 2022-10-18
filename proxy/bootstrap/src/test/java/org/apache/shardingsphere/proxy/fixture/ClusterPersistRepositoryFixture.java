@@ -33,7 +33,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
     }
     
     @Override

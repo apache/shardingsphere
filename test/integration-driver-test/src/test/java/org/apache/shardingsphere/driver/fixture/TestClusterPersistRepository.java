@@ -34,7 +34,7 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     private final Map<String, String> registryData = new LinkedHashMap<>();
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         registryData.put("/metadata", DefaultDatabase.LOGIC_NAME);
     }
     
