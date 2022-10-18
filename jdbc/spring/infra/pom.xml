@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-jdbc-spring-boot-starter-infra</module>
-        <module>shardingsphere-jdbc-spring-namespace-infra</module>
+        <module>spring-boot-starter</module>
+        <module>spring-namespace</module>
     </modules>
 </project>

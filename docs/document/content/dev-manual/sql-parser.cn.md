@@ -26,6 +26,16 @@ chapter = true
 | SQL92                  | 基于 SQL92 的 SQL 解析器入口      | [`org.apache.shardingsphere.sql.parser.sql92.parser.SQL92ParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/sql92/src/main/java/org/apache/shardingsphere/sql/parser/sql92/parser/SQL92ParserFacade.java) |
 | openGauss              | 基于 openGauss 的 SQL 解析器入口  | [`org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/opengauss/src/main/java/org/apache/shardingsphere/sql/parser/opengauss/parser/OpenGaussParserFacade.java) |
 
+| *配置标识*   | *详细说明*                      | *全限定类名* |
+| ---------- | ------------------------------ | ---------- |
+| MySQL      | 基于 MySQL 的 SQL 解析器入口      | [`org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/mysql/src/main/java/org/apache/shardingsphere/sql/parser/mysql/parser/MySQLParserFacade.java) |
+| PostgreSQL | 基于 PostgreSQL 的 SQL 解析器入口 | [`org.apache.shardingsphere.sql.parser.postgresql.parser.PostgreSQLParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/postgresql/src/main/java/org/apache/shardingsphere/sql/parser/postgresql/parser/PostgreSQLParserFacade.java) |
+| SQLServer  | 基于 SQLServer 的 SQL 解析器入口  | [`org.apache.shardingsphere.sql.parser.sqlserver.parser.SQLServerParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/sqlserver/src/main/java/org/apache/shardingsphere/sql/parser/sqlserver/parser/SQLServerParserFacade.java) |
+| Oracle     | 基于 Oracle 的 SQL 解析器入口     | [`org.apache.shardingsphere.sql.parser.oracle.parser.OracleParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/oracle/src/main/java/org/apache/shardingsphere/sql/parser/oracle/parser/OracleParserFacade.java) |
+| SQL92      | 基于 SQL92 的 SQL 解析器入口      | [`org.apache.shardingsphere.sql.parser.sql92.parser.SQL92ParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/sql92/src/main/java/org/apache/shardingsphere/sql/parser/sql92/parser/SQL92ParserFacade.java) |
+| openGauss  | 基于 openGauss 的 SQL 解析器入口  | [`org.apache.shardingsphere.sql.parser.opengauss.parser.OpenGaussParserFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/opengauss/src/main/java/org/apache/shardingsphere/sql/parser/opengauss/parser/OpenGaussParserFacade.java) |
+
+
 ## SQLVisitorFacade
 
 ### 全限定类名
@@ -46,3 +56,13 @@ SQL 语法树访问器入口
 | Oracle                 | 基于 Oracle 的 SQL 语法树访问器入口     | [`org.apache.shardingsphere.sql.parser.oracle.visitor.statement.facade.OracleStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/oracle/src/main/java/org/apache/shardingsphere/sql/parser/oracle/visitor/statement/facade/OracleStatementSQLVisitorFacade.java) |
 | SQL92                  | 基于 SQL92 的 SQL 语法树访问器入口      | [`org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade.SQL92StatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/sql92/src/main/java/org/apache/shardingsphere/sql/parser/sql92/visitor/statement/facade/SQL92StatementSQLVisitorFacade.java) |
 | openGauss              | 基于 openGauss 的 SQL 语法树访问器入口  | [`org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.facade.OpenGaussStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/opengauss/src/main/java/org/apache/shardingsphere/sql/parser/opengauss/visitor/statement/facade/OpenGaussStatementSQLVisitorFacade.java) |
+
+| *配置标识*   | *详细说明*                           | *全限定类名* |
+| ---------- | ----------------------------------- | ---------- |
+| MySQL      | 基于 MySQL 的 SQL 语法树访问器入口      | [`org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade.MySQLStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/mysql/src/main/java/org/apache/shardingsphere/sql/parser/mysql/visitor/statement/facade/MySQLStatementSQLVisitorFacade.java) |
+| PostgreSQL | 基于 PostgreSQL 的 SQL 语法树访问器入口 | [`org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade.PostgreSQLStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/postgresql/src/main/java/org/apache/shardingsphere/sql/parser/postgresql/visitor/statement/facade/PostgreSQLStatementSQLVisitorFacade.java) |
+| SQLServer  | 基于 SQLServer 的 SQL 语法树访问器入口  | [`org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade.SQLServerStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/sqlserver/src/main/java/org/apache/shardingsphere/sql/parser/sqlserver/visitor/statement/facade/SQLServerStatementSQLVisitorFacade.java) |
+| Oracle     | 基于 Oracle 的 SQL 语法树访问器入口     | [`org.apache.shardingsphere.sql.parser.oracle.visitor.statement.facade.OracleStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/oracle/src/main/java/org/apache/shardingsphere/sql/parser/oracle/visitor/statement/facade/OracleStatementSQLVisitorFacade.java) |
+| SQL92      | 基于 SQL92 的 SQL 语法树访问器入口      | [`org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade.SQL92StatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/sql92/src/main/java/org/apache/shardingsphere/sql/parser/sql92/visitor/statement/facade/SQL92StatementSQLVisitorFacade.java) |
+| openGauss  | 基于 openGauss 的 SQL 语法树访问器入口  | [`org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.facade.OpenGaussStatementSQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/dialect/opengauss/src/main/java/org/apache/shardingsphere/sql/parser/opengauss/visitor/statement/facade/OpenGaussStatementSQLVisitorFacade.java) |
+

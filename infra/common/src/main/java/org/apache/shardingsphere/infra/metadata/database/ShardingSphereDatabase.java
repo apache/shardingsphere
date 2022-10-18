@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -75,20 +75,20 @@ public final class ShardingSphereDatabase {
      * 
      * @param name database name
      * @param protocolType database protocol type
-     * @param storageType storage type
+     * @param storageTypes storage types
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param instanceContext instance context
      * @return database meta data
      * @throws SQLException SQL exception
      */
-    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseType storageType,
+    public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
-        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType,
+        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterial(protocolType, storageTypes,
                 DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules, props,
-                DatabaseTypeEngine.getDefaultSchemaName(storageType, name))));
+                DatabaseTypeEngine.getDefaultSchemaName(protocolType, name))));
         schemas.putAll(SystemSchemaBuilder.build(name, protocolType));
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
     }

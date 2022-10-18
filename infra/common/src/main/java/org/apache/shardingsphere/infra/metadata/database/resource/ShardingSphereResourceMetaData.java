@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -42,6 +43,9 @@ public final class ShardingSphereResourceMetaData {
     
     private final Map<String, DataSource> dataSources;
     
+    private final Map<String, DatabaseType> databaseTypes;
+    
+    // TODO remove databaseType when all scenarios have been replaced
     private final DatabaseType databaseType;
     
     @Getter(AccessLevel.NONE)
@@ -49,12 +53,22 @@ public final class ShardingSphereResourceMetaData {
     
     public ShardingSphereResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
-        databaseType = getDatabaseType(databaseName, dataSources);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        databaseType = getDatabaseType(enabledDataSources);
+        databaseTypes = createDatabaseTypes(enabledDataSources);
         dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
     }
     
-    private DatabaseType getDatabaseType(final String databaseName, final Map<String, DataSource> dataSources) {
-        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources).values());
+    private Map<String, DatabaseType> createDatabaseTypes(final Map<String, DataSource> dataSources) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), getDatabaseType(Collections.singletonMap(entry.getKey(), entry.getValue())));
+        }
+        return result;
+    }
+    
+    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSources) {
+        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
     }
     
     private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources) {

@@ -28,15 +28,15 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ShardingSphere schema builder materials.
+ * ShardingSphere schema builder material.
  */
 @RequiredArgsConstructor
 @Getter
-public final class GenericSchemaBuilderMaterials {
+public final class GenericSchemaBuilderMaterial {
     
     private final DatabaseType protocolType;
     
-    private final DatabaseType storageType;
+    private final Map<String, DatabaseType> storageTypes;
     
     private final Map<String, DataSource> dataSourceMap;
     

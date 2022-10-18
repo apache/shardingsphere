@@ -127,9 +127,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater<?, ?> updater) {
-        if (updater instanceof RuleDefinitionDropUpdater) {
-            return ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
-        }
-        return true;
+        return !(updater instanceof RuleDefinitionDropUpdater) || ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
     }
 }
