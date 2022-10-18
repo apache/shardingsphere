@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
@@ -41,7 +40,6 @@ import java.util.concurrent.ExecutorService;
  * Normal replication database discovery provider algorithm for MySQL.
  */
 @Getter
-@Slf4j
 public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";

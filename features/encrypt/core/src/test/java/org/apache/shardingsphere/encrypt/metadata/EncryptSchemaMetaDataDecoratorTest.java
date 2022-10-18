@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -50,7 +50,7 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(createTableMetaData());
         TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataList)), rule, mock(GenericSchemaBuilderMaterials.class)).get("logic_db").getTables().iterator().next();
+                new SchemaMetaData("logic_db", tableMetaDataList)), rule, mock(GenericSchemaBuilderMaterial.class)).get("logic_db").getTables().iterator().next();
         assertThat(actual.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
         assertThat(columnsIterator.next().getName(), is("id"));

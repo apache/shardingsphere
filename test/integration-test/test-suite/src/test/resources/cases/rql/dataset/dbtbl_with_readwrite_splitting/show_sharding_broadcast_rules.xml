@@ -21,4 +21,6 @@
     </metadata>
     <row values="t_broadcast_table" />
     <row values="t_broadcast_table_for_ddl" />
+    <row values="t_country" />
+    <row values="t_product_category" />
 </dataset>

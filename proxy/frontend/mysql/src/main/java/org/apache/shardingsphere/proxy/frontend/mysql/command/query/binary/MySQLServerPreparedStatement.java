@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatement;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collections;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class MySQLPreparedStatement implements PreparedStatement {
+public final class MySQLServerPreparedStatement implements ServerPreparedStatement {
     
     private final String sql;
     

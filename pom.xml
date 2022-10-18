@@ -226,7 +226,6 @@
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${annotation-api.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>javax.activation</groupId>

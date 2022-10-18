@@ -149,7 +149,7 @@ gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 
 ### 1. 创建发布分支
 
-假设从 Github 下载的 ShardingSphere-On-Cloud 源代码在 `~/shardingsphere-on-cloud/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
+假设从 Github 下载的 `ShardingSphere on Cloud` 源代码在 `~/shardingsphere-on-cloud/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
 创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
 
 ```shell
@@ -173,14 +173,39 @@ git push origin ${RELEASE.VERSION}-release
 
 将 `version` 修改为 `${RELEASE.VERSION}`，`appVersion` 修改为对应的应用版本，并提交 PR 到发布分支。
 
-### 3. 打包 charts
+### 3. 创建发布 tag
+
+在发布分支上创建发布 tag，并提交 PR 到发布分支。
 
 ```shell
-cd ~/shardingsphere-on-cloud/charts
-helm package --sign --key ${用户名} --keyring /.gnupg/secring.gpg  `变动的 charts`
+git tag ${RELEASE.VERSION}
+git push origin --tags
 ```
 
-### 4. 更新下载页面
+### 4. 打包 charts
+
+打包 charts 之前需要通过 `helm dependency build` 命令下载依赖的包，然后再对 charts 进行打包，具体操作步骤如下：
+
+```shell
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy/charts/governance
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shardingsphere-operator
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shardingsphere-operator-cluster
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shardingsphere-proxy
+```
+
+### 5. 更新下载页面
 
 更新如下页面：
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
@@ -203,7 +228,7 @@ cd ~/ss_svn/dev/
 
 ```shell
 svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/dev/shardingsphere
-cd ~/ss_svn/dev/shardingsphere/charts
+cd ~/ss_svn/dev/shardingsphere
 ```
 
 ### 2. 添加 gpg 公钥
@@ -219,15 +244,21 @@ gpg -a --export ${GPG用户名} >> KEYS
 创建版本号目录。
 
 ```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/charts/${RELEASE.VERSION}
-cd ~/ss_svn/dev/shardingsphere/charts/${RELEASE.VERSION}
+mkdir -p ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
+cd ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
 ```
 
 将 charts 包添加至 SVN 工作目录。
 
 ```shell
-cp -f ~/shardingsphere-on-cloud/charts/*.tgz
-~/ss_svn/dev/shardingsphere/charts/${RELEASE.VERSION}
+cp -f ~/shardingsphere-on-cloud/charts/*.tgz* ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
+```
+
+生成 `index.yaml`。 
+
+```shell
+cd ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
+helm repo index --url https://archive.apache.org/dist/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION} .
 ```
 
 ### 4. 提交 Apache SVN
@@ -239,13 +270,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 
 ## 检查发布结果
 
-### 1. 检查 sha512 哈希
-
-```shell
-shasum -c *.sha512
-```
-
-### 2. 检查 gpg 签名
+### 1. 检查 gpg 签名
 
 首先导入发布人公钥。从 svn 仓库导入 KEYS 到本地环境。（发布版本的人不需要再导入，帮助做验证的人需要导入，用户名填发版人的即可）
 
@@ -272,41 +297,26 @@ Your decision? 5
 
 然后进行 gpg 签名检查。
 
-```shell
-helm verify `变动的charts打包文件`
-```
-
-### 3. 检查发布文件内容
-
-**3.1 对比源码包与 Github 上 tag 的内容差异**
+Bash 可以使用以下命令检查签名：
 
 ```shell
-curl -Lo tag-apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz https://github.com/apache/shardingsphere-on-cloud/archive/apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
-diff -r tag-apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz  apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
-
-curl -Lo tag-shardingsphere-cluster-${RELEASE.VERSION}.tgz https://github.com/apache/shardingsphere-on-cloud/archive/shardingsphere-cluster-${RELEASE.VERSION}.tgz
-diff -r tag-shardingsphere-cluster-${RELEASE.VERSION}.tgz  shardingsphere-cluster-${RELEASE.VERSION}.tgz
-
-curl -Lo tag-shardingsphere-operator-${RELEASE.VERSION}.tgz https://github.com/apache/shardingsphere-on-cloud/archive/shardingsphere-operator-${RELEASE.VERSION}.tgz
-diff -r tag-shardingsphere-operator-${RELEASE.VERSION}.tgz  shardingsphere-operator-${RELEASE.VERSION}.tgz
+for each in $(ls *.tgz); do helm verify $each; done
 ```
 
-**3.2 检查源码包的文件内容**
+或逐个文件检查：
 
-- 检查源码包是否包含由于包含不必要文件，致使 tarball 过于庞大；
-- 存在 `LICENSE` 和 `NOTICE` 文件；
-- `NOTICE` 文件中的年份正确；
-- 只存在文本文件，不存在二进制文件；
-- 所有文件的开头都有 ASF 许可证；
-- 能够正确安装 helm install
-- 检查是否有多余文件或文件夹，例如空文件夹等。
+```shell
+helm verify apache-shardingsphere-operator-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-operator-cluster-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
+```
 
-**3.3 检查 Charts 包的文件内容**
+### 2. 检查发布文件内容
 
 解压缩
-- `apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz`
-- `shardingsphere-cluster-${RELEASE.VERSION}.tgz`
-- `shardingsphere-operator-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-cluster-charts-${RELEASE.VERSION}.tgz`
+- `shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
 
 进行如下检查:
 
@@ -335,7 +345,7 @@ diff -r tag-shardingsphere-operator-${RELEASE.VERSION}.tgz  shardingsphere-opera
 标题：
 
 ```
-[VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere on Cloud ${RELEASE.VERSION}
 ```
 
 正文：
@@ -343,7 +353,7 @@ diff -r tag-shardingsphere-operator-${RELEASE.VERSION}.tgz  shardingsphere-opera
 ```
 Hello ShardingSphere Community,
 
-This is a call for vote to release Apache ShardingSphere On Cloud version ${RELEASE.VERSION}
+This is a call for vote to release Apache ShardingSphere on Cloud version ${RELEASE.VERSION}
 
 Release notes:
 https://github.com/apache/shardingsphere-on-cloud/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md

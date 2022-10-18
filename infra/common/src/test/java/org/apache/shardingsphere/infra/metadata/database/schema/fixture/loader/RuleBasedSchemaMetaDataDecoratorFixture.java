@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -27,7 +27,7 @@ import java.util.Map;
 public final class RuleBasedSchemaMetaDataDecoratorFixture implements RuleBasedSchemaMetaDataDecorator<TableContainedFixtureRule> {
     
     @Override
-    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final TableContainedFixtureRule rule, final GenericSchemaBuilderMaterials materials) {
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final TableContainedFixtureRule rule, final GenericSchemaBuilderMaterial material) {
         return schemaMetaDataMap;
     }
     

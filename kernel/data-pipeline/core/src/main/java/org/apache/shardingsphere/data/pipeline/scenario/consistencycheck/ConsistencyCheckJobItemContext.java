@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
@@ -36,7 +35,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Getter
 @Setter
-@Slf4j
 public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext, PipelineJobProgressListener {
     
     private final String jobId;

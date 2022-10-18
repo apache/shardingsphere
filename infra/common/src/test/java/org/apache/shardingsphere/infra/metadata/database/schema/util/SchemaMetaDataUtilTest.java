@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -47,15 +47,15 @@ public final class SchemaMetaDataUtilTest {
     public void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
-        Collection<SchemaMetaDataLoaderMaterials> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), materials, true);
+        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, true);
         assertThat(actual.size(), is(2));
-        Iterator<SchemaMetaDataLoaderMaterials> iterator = actual.iterator();
-        SchemaMetaDataLoaderMaterials firstMaterial = iterator.next();
+        Iterator<SchemaMetaDataLoaderMaterial> iterator = actual.iterator();
+        SchemaMetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("sharding_db"));
         assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order_0")));
-        SchemaMetaDataLoaderMaterials secondMaterial = iterator.next();
+        SchemaMetaDataLoaderMaterial secondMaterial = iterator.next();
         assertThat(secondMaterial.getDefaultSchemaName(), is("sharding_db"));
         assertThat(secondMaterial.getActualTableNames(), is(Collections.singletonList("t_order_1")));
     }
@@ -64,12 +64,12 @@ public final class SchemaMetaDataUtilTest {
     public void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "sharding_db");
-        Collection<SchemaMetaDataLoaderMaterials> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), materials, false);
+        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_order"), material, false);
         assertThat(actual.size(), is(1));
-        Iterator<SchemaMetaDataLoaderMaterials> iterator = actual.iterator();
-        SchemaMetaDataLoaderMaterials firstMaterial = iterator.next();
+        Iterator<SchemaMetaDataLoaderMaterial> iterator = actual.iterator();
+        SchemaMetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("sharding_db"));
         assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_order_0")));
     }
@@ -78,12 +78,12 @@ public final class SchemaMetaDataUtilTest {
     public void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(mock(DatabaseType.class), mock(DatabaseType.class), mockDataSourceMap(),
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
                 Arrays.asList(dataNodeContainedRule, mock(DataSourceContainedRule.class)), mock(ConfigurationProperties.class), "public");
-        Collection<SchemaMetaDataLoaderMaterials> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_single"), materials, false);
+        Collection<SchemaMetaDataLoaderMaterial> actual = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(Collections.singleton("t_single"), material, false);
         assertThat(actual.size(), is(1));
-        Iterator<SchemaMetaDataLoaderMaterials> iterator = actual.iterator();
-        SchemaMetaDataLoaderMaterials firstMaterial = iterator.next();
+        Iterator<SchemaMetaDataLoaderMaterial> iterator = actual.iterator();
+        SchemaMetaDataLoaderMaterial firstMaterial = iterator.next();
         assertThat(firstMaterial.getDefaultSchemaName(), is("public"));
         assertThat(firstMaterial.getActualTableNames(), is(Collections.singletonList("t_single")));
     }

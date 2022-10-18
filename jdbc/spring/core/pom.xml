@@ -28,8 +28,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-jdbc-core-spring-boot-starter</module>
-        <module>shardingsphere-jdbc-core-spring-namespace</module>
+        <module>spring-boot-starter</module>
+        <module>spring-namespace</module>
     </modules>
     
     <dependencies>

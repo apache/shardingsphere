@@ -15,15 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster;
+package org.apache.shardingsphere.proxy.backend.session;
+
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.Optional;
 
 /**
- * Leader server execution callback.
+ * Server prepared statement for clients of ShardingSphere-Proxy.
  */
-public interface LeaderExecutionCallback {
+public interface ServerPreparedStatement {
     
     /**
-     * Execute after leader elected.
+     * Get SQL of server prepared statement.
+     *
+     * @return SQL
      */
-    void execute();
+    String getSql();
+    
+    /**
+     * Get {@link SQLStatement} of server prepared statement.
+     *
+     * @return {@link SQLStatement}
+     */
+    SQLStatement getSqlStatement();
+    
+    /**
+     * Get optional {@link SQLStatementContext} of server prepared statement.
+     *
+     * @return optional {@link SQLStatementContext}
+     */
+    Optional<SQLStatementContext<?>> getSqlStatementContext();
 }
