@@ -19,20 +19,23 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
- * Schema meta data loader materials.
+ * Schema meta data loader material.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaMetaDataLoaderMaterials {
+public final class SchemaMetaDataLoaderMaterial {
     
     private final Collection<String> actualTableNames;
     
     private final DataSource dataSource;
+    
+    private final DatabaseType storageType;
     
     private final String defaultSchemaName;
 }
