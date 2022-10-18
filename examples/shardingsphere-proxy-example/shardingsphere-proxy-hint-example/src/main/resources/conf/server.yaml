@@ -34,12 +34,12 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@:root
-    provider:
-      type: ALL_PERMITTED
+authority:
+  users:
+    - user: root
+      password: root
+  privilege:
+    type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1

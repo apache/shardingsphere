@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
@@ -80,9 +80,9 @@ public final class ProxyConfigurationLoader {
         if (null == result) {
             return new YamlProxyServerConfiguration();
         }
-        // TODO make authority configuration more clear
+        // TODO authority will no longer be a global rule
+        result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
         if (null != result.getAuthority()) {
-            result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
             result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
         return result;
