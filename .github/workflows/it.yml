@@ -68,6 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
+      max-parallel: 2
       fail-fast: false
       matrix:
         java: [8, 11, 17, 19 ]
@@ -113,8 +114,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-it-image
-#     continue-on-error: true
+    continue-on-error: true
     strategy:
+      max-parallel: 2
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
@@ -155,9 +158,10 @@ jobs:
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
-#     continue-on-error: true
+    continue-on-error: true
     strategy:
-      max-parallel: 10
+      max-parallel: 2
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
@@ -201,9 +205,10 @@ jobs:
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
-#     continue-on-error: true
+    continue-on-error: true
     strategy:
-      max-parallel: 8
+      max-parallel: 2
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
