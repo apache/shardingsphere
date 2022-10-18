@@ -41,7 +41,7 @@ public final class ClusterPersistRepositoryFactory {
      * @param instanceMetaData instance meta data
      * @return got instance
      */
-    public static ClusterPersistRepository getInstance(final ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData) {
+    public static ClusterPersistRepository getInstance(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         Preconditions.checkNotNull(config, "Cluster persist repository configuration cannot be null.");
         ClusterPersistRepository result = TypedSPIRegistry.getRegisteredService(ClusterPersistRepository.class, config.getType(), config.getProps());
         result.init(config, instanceMetaData);
