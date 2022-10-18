@@ -49,11 +49,6 @@ public final class ShardingSphereLockContextTest {
     }
     
     @Test
-    public void assertTryLock() {
-        assertTrue(lockContext.tryLock(lockDefinition));
-    }
-    
-    @Test
     public void assertTryLockTimeout() {
         assertTrue(lockContext.tryLock(lockDefinition, 3000));
     }
