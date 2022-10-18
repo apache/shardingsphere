@@ -9,7 +9,7 @@ The configuration method of data sharding Spring Namespace is applicable to trad
 
 ## Parameters
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.2.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.2.1.xsd)
 
 \<sharding:rule />
 
