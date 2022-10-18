@@ -80,8 +80,8 @@ jobs:
 #            keyword: microsoft
 #          - java: 19
 #            keyword: adopt-openj9
-      java: [ 8, 17 ]
-      keyword: [ temurin, zulu, liberica, microsoft]
+        java: [ 8, 17 ]
+        keyword: [ temurin, zulu, liberica, microsoft]
 
             
     timeout-minutes: 20
