@@ -71,15 +71,18 @@ jobs:
       max-parallel: 2
       fail-fast: false
       matrix:
-        java: [8, 11, 17, 19 ]
-        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-        exclude:
-          - java: 8
-            keyword: microsoft
-          - java: 19
-            keyword: microsoft
-          - java: 19
-            keyword: adopt-openj9
+#        java: [8, 11, 17, 19 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
+#            keyword: microsoft
+#          - java: 19
+#            keyword: microsoft
+#          - java: 19
+#            keyword: adopt-openj9
+      java: [ 8, 17 ]
+      keyword: [ temurin, zulu, liberica, microsoft]
+
             
     timeout-minutes: 20
     steps:
