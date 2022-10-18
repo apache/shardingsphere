@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.metadata;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
@@ -48,7 +48,7 @@ public final class SingleTableSchemaMetaDataDecoratorTest {
         Collection<ShardingSphereRule> rules = Collections.singletonList(singleTableRule);
         SingleTableSchemaMetaDataDecorator builder = (SingleTableSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(singleTableRule);
         Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
-        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterials.class)).get("sharding_db").getTables().iterator().next();
+        TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, true)));
