@@ -26,8 +26,6 @@ public final class ExclusiveLockDefinitionTest {
     
     @Test
     public void assertNewLockDefinition() {
-        ExclusiveLockDefinition lockDefinition = new ExclusiveLockDefinition("exclusive_lock");
-        assertThat(lockDefinition.getLockName(), is("exclusive_lock"));
-        assertThat(lockDefinition.getLockKey(), is("/lock/exclusive/locks/exclusive_lock"));
+        assertThat(new ExclusiveLockDefinition("exclusive_lock").getLockKey(), is("/lock/exclusive/locks/exclusive_lock"));
     }
 }

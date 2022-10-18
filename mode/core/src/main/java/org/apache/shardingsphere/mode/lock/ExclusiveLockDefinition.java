@@ -30,10 +30,7 @@ public final class ExclusiveLockDefinition implements LockDefinition {
     
     private final String lockKey;
     
-    private final String lockName;
-    
     public ExclusiveLockDefinition(final String lockName) {
-        this.lockName = lockName;
         lockKey = LOCK_KEY_PREFIX + lockName;
     }
 }
