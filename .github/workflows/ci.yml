@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: CI
+name: CI without CC --
 
 on:
   push:
@@ -96,6 +96,4 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -T1C -B -ntp clean install cobertura:cobertura -Djacoco.skip=false
-      - name: Upload to Codecov
-        run: bash <(curl -s https://codecov.io/bash)
+        run: ./mvnw -T1C -B -ntp clean install -Djacoco.skip=true
