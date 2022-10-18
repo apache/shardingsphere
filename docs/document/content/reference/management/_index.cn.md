@@ -55,15 +55,14 @@ namespace
 
 ### /rules
 
-全局规则配置，可包括访问 ShardingSphere-Proxy 用户名和密码的权限配置。
+全局规则配置，可包含事务配置、SQL 解析配置等。
 
 ```yaml
-- !AUTHORITY
-users:
-  - root@%:root
-  - sharding@127.0.0.1:sharding
-provider:
-  type: ALL_PERMITTED
+- !TRANSACTION
+  defaultType: XA
+  providerType: Atomikos
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 ### /props
