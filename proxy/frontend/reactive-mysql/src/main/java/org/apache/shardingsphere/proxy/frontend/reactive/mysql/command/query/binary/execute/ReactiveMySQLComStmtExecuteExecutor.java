@@ -127,7 +127,8 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     private MySQLServerPreparedStatement updateAndGetPreparedStatement() {
         MySQLServerPreparedStatement result = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         if (MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST == packet.getNewParametersBoundFlag()) {
-            result.setParameterTypes(packet.getNewParameterTypes());
+            result.getParameterTypes().clear();
+            result.getParameterTypes().addAll(packet.getNewParameterTypes());
         }
         return result;
     }
