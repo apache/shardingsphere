@@ -68,10 +68,11 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
-      max-parallel: 2
+#      max-parallel: 2
       fail-fast: false
       matrix:
-        java: [8, 11, 17, 19 ]
+#        java: [8, 11, 17, 19 ]
+        java: [ 8 ]
         keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
         exclude:
           - java: 8
