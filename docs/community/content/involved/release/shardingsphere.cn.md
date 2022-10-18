@@ -544,7 +544,7 @@ docker login
 
 ```shell
 git checkout ${RELEASE.VERSION}
-./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
+./mvnw -pl distribution/proxy -B -Prelease,docker.buildx.push clean package
 ```
 
 3.4 确认发布成功
