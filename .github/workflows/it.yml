@@ -61,17 +61,9 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
-
+  java: 8
+  keyword: temurin
 jobs:
-  job1:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ 8 ]
-        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto ]
-    steps:
-#      - uses: actions/checkout@v3
-      - run: echo hello
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
@@ -95,8 +87,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ jobs.job1.strategy.matrix.java }}
-          distribution: ${{ jobs.job1.strategy.matrix.keyword }}
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
