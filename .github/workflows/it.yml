@@ -132,7 +132,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
-      max-parallel: 10
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
@@ -169,7 +168,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
-      max-parallel: 8
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
