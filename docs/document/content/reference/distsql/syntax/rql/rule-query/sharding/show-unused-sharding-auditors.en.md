@@ -24,11 +24,11 @@ databaseName ::=
 
 ### Return value description
 
-| column                 | Description                    |
-| -----------------------| -------------------------------|
-| name                   | Sharding auditor name          |
-| type                   | Sharding auditor type          |
-| props                  | Sharding auditor properties    |
+| column                 | Description                           |
+| -----------------------|---------------------------------------|
+| name                   | Sharding auditor name                 |
+| type                   | Sharding auditor algorithm type       |
+| props                  | Sharding auditor algorithm properties |
 
 ### Example
 

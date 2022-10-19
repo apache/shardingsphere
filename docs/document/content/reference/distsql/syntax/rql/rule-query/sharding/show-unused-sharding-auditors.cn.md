@@ -5,7 +5,7 @@ weight = 9
 
 ### 描述
 
-`SHOW UNUSED SHARDING AUDITORS` 语法用于查询指定逻辑库中未被使用的分片审计生成器。
+`SHOW UNUSED SHARDING AUDITORS` 语法用于查询指定逻辑库中未被使用的分片审计器。
 
 ### 语法
 
@@ -23,15 +23,15 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                      | 说明                 |
-| -----------------------| ---------------------|
-| name                   | 分片审计算法名称       |
-| type                   | 分片审计算法类型       |
-| props                  | 分片审计算法参数       |
+| 列                      | 说明          |
+| -----------------------|---------------|
+| name                   | 分片审计器名称  |
+| type                   | 分片审计算法类型 |
+| props                  | 分片审计算法参数 |
 
 ### 示例
 
-- 查询指定逻辑库中未被使用的分片审计生成器
+- 查询指定逻辑库中未被使用的分片审计器
 
 ```sql
 SHOW UNUSED SHARDING AUDITORS FROM test1;
@@ -47,7 +47,7 @@ mysql> SHOW UNUSED SHARDING AUDITORS FROM test1;
 1 row in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中未被使用的的分片审计生成器
+- 查询当前逻辑库中未被使用的的分片审计器
 
 ```sql
 SHOW UNUSED SHARDING AUDITORS;

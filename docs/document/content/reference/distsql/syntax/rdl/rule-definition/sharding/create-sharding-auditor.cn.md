@@ -5,12 +5,12 @@ weight = 8
 
 ## 描述
 
-`CREATE SHARDING AUDITOR` 语法用于为当前所选的逻辑库添加分片审计生成器
+`CREATE SHARDING AUDITOR` 语法用于为当前所选的逻辑库添加分片审计器
 
 ### 语法定义
 
 ```sql
-CreateShardingAlgorithm ::=
+CreateShardingAuditor ::=
   'CREATE' 'SHARDING' 'AUDITOR' auditorName '(' algorithmDefinition ')'
 
 algorithmDefinition ::=
