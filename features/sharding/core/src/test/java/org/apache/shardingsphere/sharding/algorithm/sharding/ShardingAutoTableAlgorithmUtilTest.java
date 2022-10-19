@@ -40,24 +40,20 @@ public final class ShardingAutoTableAlgorithmUtilTest {
         collection.add("PREFIX----SUFFIX");
         collection.add("PREFIXSUFFIXSTRING");
         collection.add("PREFIX----------");
-        
-        final String prefix = "PREFIX";
-        final int suffixMinLength = 10;
-        final char paddingChar = '-';
+        String prefix = "PREFIX";
+        int suffixMinLength = 10;
+        char paddingChar = '-';
         dataNodeInfo = new DataNodeInfo(prefix, suffixMinLength, paddingChar);
     }
     
     @Test
     public void assertFindMatchedTargetNameForValidInputs() {
-        
         Optional<String> output = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "SUFFIX", dataNodeInfo);
         assertTrue(output.isPresent());
         assertEquals("PREFIX----SUFFIX", output.get());
-        
         Optional<String> output1 = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "SUFFIXSTRING", dataNodeInfo);
         assertTrue(output1.isPresent());
         assertEquals("PREFIXSUFFIXSTRING", output1.get());
-        
         Optional<String> output2 = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "", dataNodeInfo);
         assertTrue(output2.isPresent());
         assertEquals("PREFIX----------", output2.get());
