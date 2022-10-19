@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ShardingAutoTableAlgorithmUtilTest {
+public final class ShardingAutoTableAlgorithmUtilTest {
     
     private Collection<String> collection;
     
