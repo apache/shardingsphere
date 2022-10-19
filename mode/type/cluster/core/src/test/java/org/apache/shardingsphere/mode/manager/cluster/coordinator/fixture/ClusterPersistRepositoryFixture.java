@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,14 +47,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     @Override
     public Object getRawCache(final String cachePath) {
         return null;
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
     }
     
     @Override

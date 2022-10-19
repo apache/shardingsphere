@@ -53,7 +53,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -119,13 +119,13 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
+                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
+                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
+                .thenReturn(new MySQLServerPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
     }
     
     private ShardingSphereDatabase mockDatabase() {

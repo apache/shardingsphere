@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -46,7 +45,6 @@ import java.sql.SQLException;
 /**
  * WAL dumper of openGauss.
  */
-@Slf4j
 public final class OpenGaussWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;

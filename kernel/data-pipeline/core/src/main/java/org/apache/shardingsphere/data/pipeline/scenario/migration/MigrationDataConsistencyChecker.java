@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
@@ -48,7 +47,6 @@ import java.util.Map;
 /**
  * Data consistency checker for migration job.
  */
-@Slf4j
 public final class MigrationDataConsistencyChecker implements PipelineDataConsistencyChecker {
     
     private final MigrationJobConfiguration jobConfig;

@@ -23,7 +23,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.transaction.CuratorOp;
 import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
@@ -35,12 +34,10 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
@@ -54,7 +51,6 @@ import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.List;
@@ -171,46 +167,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public Object getRawCache(final String cachePath) {
         return caches.get(cachePath + "/");
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
-        client.transaction().forOperations(toCuratorOps(transactionOperations));
-    }
-    
-    private List<CuratorOp> toCuratorOps(final List<TransactionOperation> transactionOperations) {
-        List<CuratorOp> result = new ArrayList<>(transactionOperations.size());
-        TransactionOp transactionOp = client.transactionOp();
-        for (TransactionOperation each : transactionOperations) {
-            result.add(toCuratorOp(each, transactionOp));
-        }
-        return result;
-    }
-    
-    private CuratorOp toCuratorOp(final TransactionOperation each, final TransactionOp transactionOp) {
-        try {
-            switch (each.getType()) {
-                case CHECK_EXISTS:
-                    return transactionOp.check().forPath(each.getKey());
-                case ADD:
-                    return transactionOp.create().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
-                case UPDATE:
-                    return transactionOp.setData().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
-                case DELETE:
-                    return transactionOp.delete().forPath(each.getKey());
-                default:
-                    throw new UnsupportedOperationException(each.toString());
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(ex);
-        }
     }
     
     @Override

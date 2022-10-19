@@ -57,7 +57,7 @@ resource:
     resourceName | inlineExpression
 
 dataNode:
-    resourceName | inlineExpression
+    dataNodeName | inlineExpression
 
 shardingColumn:
     SHARDING_COLUMN=columnName

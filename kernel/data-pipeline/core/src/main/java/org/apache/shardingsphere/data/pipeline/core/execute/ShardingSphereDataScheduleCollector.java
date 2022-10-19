@@ -44,8 +44,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * ShardingSphere data schedule collector.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class ShardingSphereDataScheduleCollector {
     
     private static final String SHARDING_SPHERE = "shardingsphere";

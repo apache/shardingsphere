@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -46,16 +47,26 @@ public final class InlineShardingAlgorithmTest {
     
     private InlineShardingAlgorithm inlineShardingAlgorithmWithSimplified;
     
+    private InlineShardingAlgorithm negativeNumberInlineShardingAlgorithm;
+    
     @Before
     public void setUp() {
         inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
         inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
                 new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
+        negativeNumberInlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createNegativeAllowRangeQueryProperties()));
     }
     
     private Properties createAllowRangeQueryProperties() {
         Properties result = new Properties();
         result.setProperty("algorithm-expression", "t_order_$->{order_id % 4}");
+        result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
+        return result;
+    }
+    
+    private Properties createNegativeAllowRangeQueryProperties() {
+        Properties result = new Properties();
+        result.setProperty("algorithm-expression", "t_order_$->{(order_id % 4).abs()}");
         result.setProperty("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
         return result;
     }
@@ -91,9 +102,20 @@ public final class InlineShardingAlgorithmTest {
     @Test
     public void assertDoShardingWithNegative() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
-        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
-        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
+        assertThat(negativeNumberInlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(negativeNumberInlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
+    }
+    
+    @Test
+    public void assertDoShardingWithLargeValues() {
+        List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 787694822390497280L)), is("t_order_0"));
+        assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, new BigInteger("787694822390497280787694822390497280"))), is("t_order_0"));
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames,
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 787694822390497280L)), is("t_order_0"));
+        assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames,
+                new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, new BigInteger("787694822390497280787694822390497280"))), is("t_order_0"));
     }
 }

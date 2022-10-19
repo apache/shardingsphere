@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
@@ -33,7 +32,6 @@ import java.util.regex.Pattern;
 /**
  * Pipeline meta data node watcher.
  */
-@Slf4j
 public final class PipelineMetaDataNodeWatcher {
     
     private static final PipelineMetaDataNodeWatcher INSTANCE = new PipelineMetaDataNodeWatcher();

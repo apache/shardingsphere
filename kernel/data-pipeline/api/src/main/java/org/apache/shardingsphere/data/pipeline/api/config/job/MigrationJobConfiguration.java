@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api.config.job;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 
@@ -31,7 +30,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@Slf4j
 @ToString(exclude = {"source", "target"})
 public final class MigrationJobConfiguration implements PipelineJobConfiguration {
     

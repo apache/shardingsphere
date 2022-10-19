@@ -101,10 +101,15 @@ public final class TestCaseClassScanner {
             if (jarEntryName.contains(CLASS_SUFFIX) && jarEntryName.replace(File.separator, ".").startsWith(TEST_CASE_PACKAGE_NAME)) {
                 String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace(File.separator, ".");
                 Class<?> clazz = Class.forName(className);
-                if (clazz.isAssignableFrom(BaseTransactionTestCase.class)) {
-                    caseClasses.add((Class<? extends BaseTransactionTestCase>) clazz);
-                }
+                addClass(caseClasses, clazz);
             }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void addClass(final List<Class<? extends BaseTransactionTestCase>> caseClasses, final Class<?> clazz) {
+        if (clazz.isAssignableFrom(BaseTransactionTestCase.class)) {
+            caseClasses.add((Class<? extends BaseTransactionTestCase>) clazz);
         }
     }
     
@@ -127,9 +132,7 @@ public final class TestCaseClassScanner {
                 String noSuffixFileName = fileName.substring(8 + fileName.lastIndexOf("classes"), fileName.indexOf(CLASS_SUFFIX));
                 String filePackage = noSuffixFileName.replace(File.separator, ".");
                 Class<?> clazz = Class.forName(filePackage);
-                if (BaseTransactionTestCase.class.isAssignableFrom(clazz)) {
-                    caseClasses.add((Class<? extends BaseTransactionTestCase>) clazz);
-                }
+                addClass(caseClasses, clazz);
             }
         }
     }

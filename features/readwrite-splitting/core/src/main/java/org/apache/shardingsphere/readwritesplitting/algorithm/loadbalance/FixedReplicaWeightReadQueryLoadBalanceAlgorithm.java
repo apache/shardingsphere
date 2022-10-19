@@ -48,8 +48,8 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithm implements Re
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames, final TransactionConnectionContext context) {
-        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
-        WEIGHT_MAP.putIfAbsent(name, weight);
+        double[] weight = WEIGHT_MAP.containsKey(name) && WEIGHT_MAP.get(name).length == readDataSourceNames.size() ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
+        WEIGHT_MAP.put(name, weight);
         if (context.isInTransaction()) {
             if (null == context.getReadWriteSplitReplicaRoute()) {
                 context.setReadWriteSplitReplicaRoute(getDataSourceName(readDataSourceNames, weight));
