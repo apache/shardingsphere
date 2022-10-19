@@ -100,6 +100,7 @@ jobs:
     timeout-minutes: 10
     needs: build-it-image
     strategy:
+      fail-fast: true
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
@@ -132,6 +133,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
+      fail-fast: true
       max-parallel: 10
       matrix:
         adapter: [ proxy, jdbc ]
@@ -169,6 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
+      fail-fast: true
       max-parallel: 8
       matrix:
         adapter: [ proxy, jdbc ]
