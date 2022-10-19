@@ -60,9 +60,9 @@ on:
 #    inputs:
 #      image_name:
 #        type: string
-#    secrets:
-#      it-test-password:
-#        required: true
+    secrets:
+      it-test-password:
+        required: true
 #      registery_username:
 #        required: true
 #      registery_password:

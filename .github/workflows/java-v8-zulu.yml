@@ -56,14 +56,11 @@ name: IT
 ##       - '!*.md'
 on:
   workflow_call:
-    inputs:
-      image_name:
-#        required: true
-        type: string
+#    inputs:
+#      image_name:
+#        type: string
     secrets:
-      registery_username:
-        required: true
-      registery_password:
+      it-test-password:
         required: true
 
 concurrency:
