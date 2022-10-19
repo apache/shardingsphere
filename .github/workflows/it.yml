@@ -68,6 +68,8 @@ jobs:
       matrix:
         java: [ 8 ]
         keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto ]
+      steps:
+        echo hello
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
