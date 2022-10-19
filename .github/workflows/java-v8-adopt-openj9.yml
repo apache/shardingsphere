@@ -17,43 +17,54 @@
 
 name: IT
 
+#on:
+#  push:
+#    branches: [ master, dev ]
+##     paths:
+##       - '.github/workflows/it.yml'
+##       - '**/pom.xml'
+##       - '**/src/main/**'
+##       - 'distribution/proxy/**'
+##       - 'test/pom.xml'
+##       - 'test/integration-test/fixture/**'
+##       - 'test/integration-test/env/**'
+##       - 'test/integration-test/test-suite/**'
+##       - 'test/integration-agent-test/**'
+##       - '!examples/**'
+##       - '!distribution/**'
+##       - '!distribution/proxy/src/main/release-docs/**'
+##       - '!kernel/data-pipeline/**'
+##       - '!test/**'
+##       - '!*.md'
+#  pull_request:
+#    branches: [ master ]
+##     paths:
+##       - '.github/workflows/it.yml'
+##       - '**/pom.xml'
+##       - '**/src/main/**'
+##       - 'distribution/proxy/**'
+##       - '!test/**'
+##       - 'test/pom.xml'
+##       - 'test/integration-test/fixture/**'
+##       - 'test/integration-test/env/**'
+##       - 'test/integration-test/test-suite/**'
+##       - 'test/integration-agent-test/**'
+##       - '!examples/**'
+##       - '!distribution/**'
+##       - '!distribution/proxy/src/main/release-docs/**'
+##       - '!kernel/data-pipeline/**'
+##       - '!*.md'
 on:
-  push:
-    branches: [ master, dev ]
-    paths:
-      - '.github/workflows/it.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - 'distribution/proxy/**'
-      - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/test-suite/**'
-      - 'test/integration-agent-test/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
-      - '!*.md'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '.github/workflows/it.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - 'distribution/proxy/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/test-suite/**'
-      - 'test/integration-agent-test/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!*.md'
+  workflow_call:
+    inputs:
+      image_name:
+#        required: true
+        type: string
+    secrets:
+      registery_username:
+        required: true
+      registery_password:
+        required: true
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
@@ -61,18 +72,34 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
-
+  java: 8
+  keyword: adopt-openj9
 jobs:
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
+    continue-on-error: true
+#    strategy:
+#      max-parallel: 1
+#      fail-fast: false
+#      matrix:
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
+#            keyword: microsoft
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
@@ -99,11 +126,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-it-image
+    continue-on-error: true
     strategy:
+      max-parallel: 1
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
+#            keyword: microsoft
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -112,8 +152,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: 8
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -131,14 +171,25 @@ jobs:
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     strategy:
-      max-parallel: 10
+      max-parallel: 1
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
         exclude:
+#          - java: 8
+#            keyword: microsoft
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
           - adapter: jdbc
             mode: Cluster
     steps:
@@ -149,8 +200,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: 8
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -168,14 +219,25 @@ jobs:
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    continue-on-error: true
     strategy:
-      max-parallel: 8
+      max-parallel: 1
+      fail-fast: false
       matrix:
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
         exclude:
+#          - java: 8
+#            keyword: microsoft
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
           - adapter: jdbc
             mode: Cluster
     steps:
@@ -186,8 +248,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: 8
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -200,26 +262,39 @@ jobs:
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
-  mysql-proxy-agent:
-    name: Agent Metrics & OpenTelemetry
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '8'
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            shardingsphere-maven-third-party-
-      - name: Maven resolve ranges
-        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Build Project
-        run: ./mvnw -B clean install -DskipITs -DskipTests
-      - name: Run Integration Test
-        run: |
-          ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
-          ./mvnw -B clean install -f test/integration-agent-test/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
+#  mysql-proxy-agent:
+#    name: Agent Metrics & OpenTelemetry
+#    runs-on: ubuntu-latest
+##     continue-on-error: true
+#    strategy:
+#      matrix:
+#        adapter: [ proxy, jdbc ]
+#        java: [8, 11, 17, 19 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
+#            keyword: microsoft
+#          - java: 19
+#            keyword: microsoft
+#          - java: 19
+#            keyword: adopt-openj9
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-java@v3
+#        with:
+#          java-version: ${{ matrix.java }}
+#          distribution: ${{ matrix.keyword }}
+#      - uses: actions/cache@v3
+#        with:
+#          path: ~/.m2/repository
+#          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            shardingsphere-maven-third-party-
+#      - name: Maven resolve ranges
+#        run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
+#      - name: Build Project
+#        run: ./mvnw -B clean install -DskipITs -DskipTests
+#      - name: Run Integration Test
+#        run: |
+#          ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
+#          ./mvnw -B clean install -f test/integration-agent-test/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
