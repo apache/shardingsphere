@@ -61,7 +61,7 @@ jobs:
     continue-on-error: true
     uses: Patrick1S/shardingsphere/.github/workflows/java-v8-temurin.yml@dev
     secrets:
-      it_test_password: ${{secrets.it_test_password}}
+      it_test_password: 123456
 
 
   java-v8-zulu:
