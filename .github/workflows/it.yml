@@ -63,7 +63,7 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
   max-parallel: 1
   fail-fast: false
-  java: [ 8 ]
+  java: 8
 #    keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
   keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, corretto]
 #    exclude:
