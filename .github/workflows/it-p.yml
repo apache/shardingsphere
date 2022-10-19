@@ -58,7 +58,7 @@ on:
 
 jobs:
   job1:
-    uses: Patrick1S/shardingsphere/.github/workflows/it-v/it-v8-temurin.yml@dev
+    uses: Patrick1S/shardingsphere/.github/workflows/it-v8-temurin.yml@dev
 #    with:
 #            image_name: my-awesome-app
 #      tag: $GITHUB_RUN_NUMBER
@@ -74,7 +74,7 @@ jobs:
 
   docker:
 #    needs: job1
-    uses: Patrick1S/shardingsphere/.github/workflows/it-v/it-v8-zulu.yml@dev
+    uses: Patrick1S/shardingsphere/.github/workflows/it-v8-zulu.yml@dev
 #    with:
 #      image_name: my-awesome-app
 #      tag: $GITHUB_RUN_NUMBER
