@@ -69,7 +69,8 @@ jobs:
         java: [ 8 ]
         keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto ]
       steps:
-        echo hello
+#        - uses: actions/checkout@v3
+        run: echo hello
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
