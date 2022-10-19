@@ -17,18 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="Tables_in_rdl_empty_rules" />
-        <column name="Table_type" />
+        <column name="sharding_broadcast_tables" />
     </metadata>
-    <row values="t_product_item_1| BASE TABLE" />
-    <row values="t_user_item_4| BASE TABLE" />
-    <row values="t_user_item_3| BASE TABLE" />
-    <row values="t_product_0| BASE TABLE" />
-    <row values="t_user| BASE TABLE" />
-    <row values="t_product_1| BASE TABLE" />
-    <row values="t_user_4| BASE TABLE" />
-    <row values="t_user_item_2| BASE TABLE" />
-    <row values="t_user_item_1| BASE TABLE" />
-    <row values="t_product_item_0| BASE TABLE" />
-    <row values="t_user_item_0| BASE TABLE" />
+    <row values="t_broad" />
+    <row values="t_user" />
 </dataset>

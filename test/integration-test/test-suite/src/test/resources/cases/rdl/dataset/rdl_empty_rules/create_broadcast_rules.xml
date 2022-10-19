@@ -19,5 +19,5 @@
     <metadata>
         <column name="sharding_broadcast_tables" />
     </metadata>
-    <row values="t_broadcast_table" />
+    <row values="t_user" />
 </dataset>

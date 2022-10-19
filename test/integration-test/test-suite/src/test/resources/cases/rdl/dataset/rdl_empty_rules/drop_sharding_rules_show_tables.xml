@@ -20,9 +20,18 @@
         <column name="Tables_in_rdl_empty_rules" />
         <column name="Table_type" />
     </metadata>
+    <row values="t_product_item_1| BASE TABLE" />
+    <row values="t_user_0| BASE TABLE" />
+    <row values="t_product_0| BASE TABLE" />
+    <row values="t_product_1| BASE TABLE" />
     <row values="t_user_4| BASE TABLE" />
     <row values="t_user_3| BASE TABLE" />
     <row values="t_user_2| BASE TABLE" />
     <row values="t_user_1| BASE TABLE" />
-    <row values="t_user_0| BASE TABLE" />
+    <row values="t_user_item_2| BASE TABLE" />
+    <row values="t_user_item_1| BASE TABLE" />
+    <row values="t_user_item_0| BASE TABLE" />
+    <row values="t_user_item_4| BASE TABLE" />
+    <row values="t_user_item_3| BASE TABLE" />
+    <row values="t_product_item_0| BASE TABLE" />
 </dataset>

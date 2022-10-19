@@ -31,6 +31,73 @@
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
+    <test-case sql="CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item);" db-types="MySQL">
+        <assertion expected-data-file="create_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_user_item (DATANODES('ds_0.t_user_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=item_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_item_${item_id % 2}')))));"></initial-sql>
+            <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user;DROP SHARDING TABLE RULE t_user_item;"/>
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER SHARDING BINDING TABLE RULES (t_user,t_user_item),(t_product,t_product_item);" db-types="MySQL">
+        <assertion expected-data-file="alter_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_user_item (DATANODES('ds_0.t_user_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=item_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_item_${item_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_product (DATANODES('ds_2.t_product_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=product_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_product_${product_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_product_item (DATANODES('ds_2.t_product_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=item_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_product_item_${item_id % 2}')))));
+            CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item);"></initial-sql>
+            <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_user;DROP SHARDING TABLE RULE t_user_item;
+            DROP SHARDING TABLE RULE t_product;DROP SHARDING TABLE RULE t_product_item;"/>
+        </assertion>
+    </test-case>
+    <test-case sql="DROP SHARDING BINDING TABLE RULES;" db-types="MySQL">
+        <assertion expected-data-file="drop_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_user_item (DATANODES('ds_0.t_user_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=item_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_item_${item_id % 2}')))));
+            CREATE SHARDING BINDING TABLE RULES (t_user,t_user_item);"></initial-sql>
+            <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_user;DROP SHARDING TABLE RULE t_user_item;"/>
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE SHARDING BROADCAST TABLE RULES (t_user);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_broadcast_rules.xml">
+            <assertion-sql sql="SHOW SHARDING BROADCAST TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BROADCAST TABLE RULES (t_user); "/>
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER SHARDING BROADCAST TABLE RULES (t_user,t_broad);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_broadcast_rules.xml">
+            <initial-sql sql="CREATE SHARDING BROADCAST TABLE RULES (t_user);" />
+            <assertion-sql sql="SHOW SHARDING BROADCAST TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BROADCAST TABLE RULES (t_user,t_broad); "/>
+        </assertion>
+    </test-case>
+    <test-case sql="DROP SHARDING BROADCAST TABLE RULES (t_user);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_broadcast_rules.xml">
+            <initial-sql sql="CREATE SHARDING BROADCAST TABLE RULES (t_user);" />
+            <assertion-sql sql="SHOW SHARDING BROADCAST TABLE RULES;" />
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=true);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_encrypt_rule.xml">
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
+            <destroy-sql sql="DROP ENCRYPT RULE t_user "/>
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abcd')))),QUERY_WITH_CIPHER_COLUMN=true);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_encrypt_rule.xml">
+            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=true);" />
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
+            <destroy-sql sql="DROP ENCRYPT RULE t_user "/>
+        </assertion>
+    </test-case>
+    <test-case sql="DROP ENCRYPT RULE t_user;" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_encrypt_rule.xml">
+            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=true);" />
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
+        </assertion>
+    </test-case>
     <test-case sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" db-types="MySQL">
         <assertion expected-data-file="create_single_table_rules.xml">
             <assertion-sql sql="SHOW SINGLE TABLES;" />
