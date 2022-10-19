@@ -59,12 +59,12 @@ on:
 jobs:
   job1:
     uses: Patrick1S/shardingsphere/.github/workflows/it-v8-temurin.yml@dev
-#    with:
-#            image_name: my-awesome-app
+    with:
+#      image_name: my-awesome-app
 #      tag: $GITHUB_RUN_NUMBER
-#      secrets:
-#        registery_username: ${{secrets.registery_username}}
-#        registery_password: ${{secrets.registery_password}}
+      secrets:
+        registery_username: ${{secrets.registery_username}}
+        registery_password: ${{secrets.registery_password}}
 #    runs-on: ubuntu-latest
 #
 #    steps:
@@ -75,12 +75,12 @@ jobs:
   docker:
 #    needs: job1
     uses: Patrick1S/shardingsphere/.github/workflows/it-v8-zulu.yml@dev
-#    with:
+    with:
 #      image_name: my-awesome-app
 #      tag: $GITHUB_RUN_NUMBER
-#    secrets:
-#      registery_username: ${{secrets.registery_username}}
-#      registery_password: ${{secrets.registery_password}}
+    secrets:
+      registery_username: ${{secrets.registery_username}}
+      registery_password: ${{secrets.registery_password}}
 
 #  job2:
 #    needs: job1

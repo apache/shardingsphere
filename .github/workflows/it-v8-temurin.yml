@@ -56,7 +56,18 @@ name: IT
 ##       - '!*.md'
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      image_name:
+#        required: true
+        type: string
+#      tag:
+#        type: string
+    secrets:
+      registery_username:
+        required: true
+      registery_password:
+        required: true
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
