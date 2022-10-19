@@ -62,9 +62,9 @@ jobs:
     with:
 #      image_name: my-awesome-app
 #      tag: $GITHUB_RUN_NUMBER
-      secrets:
-        registery_username: ${{secrets.registery_username}}
-        registery_password: ${{secrets.registery_password}}
+    secrets:
+      registery_username: ${{secrets.registery_username}}
+      registery_password: ${{secrets.registery_password}}
 #    runs-on: ubuntu-latest
 #
 #    steps:
@@ -72,7 +72,7 @@ jobs:
 #      - name: Run a one-line script
 #        run: echo job1
 
-  docker:
+  job2:
 #    needs: job1
     uses: Patrick1S/shardingsphere/.github/workflows/it-v8-zulu.yml@dev
     with:
