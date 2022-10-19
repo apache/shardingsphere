@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Nightly - build
+name: Nightly - Build
 
 on:
   schedule:

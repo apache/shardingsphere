@@ -97,7 +97,7 @@ public final class TableExtractorTest {
         assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");
         assertTableSegment(tableSegmentIterator.next(), 130, 132, "t_order");
     }
-
+    
     @Test
     public void assertNotExistTableFromRoutineBody() {
         RoutineBodySegment routineBodySegment = new RoutineBodySegment(0, 3);
