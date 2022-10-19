@@ -41,6 +41,7 @@ import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConf
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -57,6 +58,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 public final class PipelineContextUtil {
     
@@ -74,7 +76,7 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG);
+                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG, new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307));
             }
         };
     }

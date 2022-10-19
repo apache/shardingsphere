@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
@@ -31,8 +32,9 @@ public interface ClusterPersistRepository extends PersistRepository {
      * Initialize registry center.
      *
      * @param config cluster persist repository configuration
+     * @param instanceMetaData instance meta data
      */
-    void init(ClusterPersistRepositoryConfiguration config);
+    void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
     
     /**
      * Get current time from registry center.
