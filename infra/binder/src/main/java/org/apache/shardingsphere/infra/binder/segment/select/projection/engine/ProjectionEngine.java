@@ -29,7 +29,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Sho
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
@@ -153,18 +155,16 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getShorthandColumnsFromSimpleTableSegment(final TableSegment table, final String owner) {
         if (!(table instanceof SimpleTableSegment)) {
             return Collections.emptyList();
-        }
-        String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
+        } String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
         String tableAlias = table.getAlias().orElse(tableName);
-        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue())
-                .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
-        Collection<ColumnProjection> result = new LinkedList<>();
-        if (null == owner) {
-            schemas.get(schemaName).getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
+        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
+        ShardingSphereSchema schema = schemas.get(schemaName);
+        ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
+        Collection<ColumnProjection> result = new LinkedList<>(); if (null == owner) {
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
-            schemas.get(schemaName).getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
-        }
-        return result;
+            schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
+        } return result;
     }
     
     private Collection<ColumnProjection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table) {

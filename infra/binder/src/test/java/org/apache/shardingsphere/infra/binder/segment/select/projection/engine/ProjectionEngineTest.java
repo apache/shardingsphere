@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Par
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -56,9 +57,10 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -179,14 +181,22 @@ public final class ProjectionEngineTest {
         table.setRight(customersTableSegment);
         table.setCondition(new CommonExpressionSegment(0, 0, "t_order.customer_id=t_customer.customer_id"));
         ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 10);
-        Optional<Projection> actual = new ProjectionEngine(
-                DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, shorthandProjectionSegment);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShorthandProjection.class));
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, shorthandProjectionSegment);
+        assertTrue(actual.isPresent()); assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         Map<String, ColumnProjection> actualColumns = ((ShorthandProjection) actual.get()).getActualColumns();
         assertThat(actualColumns.size(), is(3));
         assertThat(actualColumns.get("t_order.order_id"), is(new ColumnProjection("t_order", "order_id", null)));
         assertThat(actualColumns.get("t_order.customer_id"), is(new ColumnProjection("t_order", "customer_id", null)));
         assertThat(actualColumns.get("t_customer.customer_id"), is(new ColumnProjection("t_customer", "customer_id", null)));
+    }
+    
+    @Test(expected = SchemaNotFoundException.class)
+    public void assertCreateProjectionWithNotExistedSchema() {
+        SimpleTableSegment tableSegment = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
+        OwnerSegment ownerSegment = mock(OwnerSegment.class, RETURNS_DEEP_STUBS);
+        when(tableSegment.getOwner()).thenReturn(Optional.of(ownerSegment));
+        when(ownerSegment.getIdentifier().getValue()).thenReturn("public");
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
+        new ProjectionEngine(DefaultDatabase.LOGIC_NAME, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(tableSegment, shorthandProjectionSegment);
     }
 }
