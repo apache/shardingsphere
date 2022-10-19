@@ -61,16 +61,14 @@ jobs:
     continue-on-error: true
     uses: Patrick1S/shardingsphere/.github/workflows/java-v8-temurin.yml@dev
     secrets:
-#      registery_username: ${{secrets.registery_username}}
-#      registery_password: ${{secrets.registery_password}}
-      it-test-password: ${{secrets.it-test-password}}
+      it_test_password: ${{secrets.it_test_password}}
 
 
   java-v8-zulu:
     continue-on-error: true
     uses: Patrick1S/shardingsphere/.github/workflows/java-v8-zulu.yml@dev
     secrets:
-      it-test-password: ${{secrets.it-test-password}}
+      it_test_password: ${{secrets.it_test_password}}
 
 #  java-v8-adopt:
 #    continue-on-error: true

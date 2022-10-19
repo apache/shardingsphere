@@ -57,16 +57,9 @@ name: IT
 
 on:
   workflow_call:
-#    inputs:
-#      image_name:
-#        type: string
     secrets:
-      it-test-password:
+      it_test_password:
         required: true
-#      registery_username:
-#        required: true
-#      registery_password:
-#        required: true
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
