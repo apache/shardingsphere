@@ -75,39 +75,39 @@ jobs:
       registery_username: ${{secrets.registery_username}}
       registery_password: ${{secrets.registery_password}}
 
-  java-v8-adopt:
-    continue-on-error: true
-    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-adopt.yml@dev
-    secrets:
-      registery_username: ${{secrets.registery_username}}
-      registery_password: ${{secrets.registery_password}}
-
-  java-v8-adopt-openj9:
-    continue-on-error: true
-    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-adopt-openj9.yml@dev
-    secrets:
-      registery_username: ${{secrets.registery_username}}
-      registery_password: ${{secrets.registery_password}}
-
-  java-v8-liberica:
-    continue-on-error: true
-    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-liberica.yml@dev
-    secrets:
-      registery_username: ${{secrets.registery_username}}
-      registery_password: ${{secrets.registery_password}}
-
-  java-v8-microsoft:
-    continue-on-error: true
-    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-microsoft.yml@dev
-    secrets:
-      registery_username: ${{secrets.registery_username}}
-      registery_password: ${{secrets.registery_password}}
-
-  java-v8-corretto:
-    continue-on-error: true
-    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-corretto.yml@dev
-    secrets:
-      registery_username: ${{secrets.registery_username}}
-      registery_password: ${{secrets.registery_password}}
-
-
+#  java-v8-adopt:
+#    continue-on-error: true
+#    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-adopt.yml@dev
+#    secrets:
+#      registery_username: ${{secrets.registery_username}}
+#      registery_password: ${{secrets.registery_password}}
+#
+#  java-v8-adopt-openj9:
+#    continue-on-error: true
+#    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-adopt-openj9.yml@dev
+#    secrets:
+#      registery_username: ${{secrets.registery_username}}
+#      registery_password: ${{secrets.registery_password}}
+#
+#  java-v8-liberica:
+#    continue-on-error: true
+#    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-liberica.yml@dev
+#    secrets:
+#      registery_username: ${{secrets.registery_username}}
+#      registery_password: ${{secrets.registery_password}}
+#
+#  java-v8-microsoft:
+#    continue-on-error: true
+#    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-microsoft.yml@dev
+#    secrets:
+#      registery_username: ${{secrets.registery_username}}
+#      registery_password: ${{secrets.registery_password}}
+#
+#  java-v8-corretto:
+#    continue-on-error: true
+#    uses: Patrick1S/shardingsphere/.github/workflows/java-v8-corretto.yml@dev
+#    secrets:
+#      registery_username: ${{secrets.registery_username}}
+#      registery_password: ${{secrets.registery_password}}
+#
+#
