@@ -60,9 +60,6 @@ jobs:
   java-v8-temurin:
     continue-on-error: true
     uses: Patrick1S/shardingsphere/.github/workflows/java-v8-temurin.yml@dev
-#    with:
-#      image_name: my-awesome-app
-#      tag: $GITHUB_RUN_NUMBER
     secrets:
       registery_username: ${{secrets.registery_username}}
       registery_password: ${{secrets.registery_password}}
