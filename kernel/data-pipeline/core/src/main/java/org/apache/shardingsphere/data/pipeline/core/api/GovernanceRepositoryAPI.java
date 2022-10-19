@@ -76,11 +76,11 @@ public interface GovernanceRepositoryAPI {
     /**
      * Get check job result.
      *
-     * @param jobId job id
+     * @param parentJobId job id
      * @param checkJobId check job id
      * @return check job result
      */
-    Map<String, DataConsistencyCheckResult> getCheckJobResult(String jobId, String checkJobId);
+    Map<String, DataConsistencyCheckResult> getCheckJobResult(String parentJobId, String checkJobId);
     
     /**
      * Persist check job result.

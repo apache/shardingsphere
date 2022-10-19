@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineMetaDataPersistService;
@@ -41,7 +41,7 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceProperties> load(final JobType jobType) {
         String dataSourcesProperties = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
-        if (StringUtils.isBlank(dataSourcesProperties)) {
+        if (Strings.isNullOrEmpty(dataSourcesProperties)) {
             return Collections.emptyMap();
         }
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProperties, Map.class);

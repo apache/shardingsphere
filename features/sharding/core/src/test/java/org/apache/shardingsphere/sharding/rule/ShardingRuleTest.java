@@ -67,9 +67,9 @@ import java.util.TreeSet;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -113,6 +113,11 @@ public final class ShardingRuleTest {
     @Test
     public void assertNotFindTableRule() {
         assertFalse(createMaximumShardingRule().findTableRule("other_Table").isPresent());
+    }
+    
+    @Test
+    public void assertNotFindTableRuleWhenTableNameIsNull() {
+        assertFalse(createMaximumShardingRule().findTableRule(null).isPresent());
     }
     
     @Test

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataB
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +47,7 @@ public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataB
         }
         ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
         for (Map.Entry<String, ShardingSphereTable> entry : shardingSphereSchema.get().getTables().entrySet()) {
-            schemaData.getTableData().put(entry.getKey(), new ShardingSphereTableData(entry.getValue().getName()));
+            schemaData.getTableData().put(entry.getKey(), new ShardingSphereTableData(entry.getValue().getName(), new ArrayList<>(entry.getValue().getColumns().values())));
         }
         ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
         databaseData.getSchemaData().put(SHARDING_SPHERE, schemaData);

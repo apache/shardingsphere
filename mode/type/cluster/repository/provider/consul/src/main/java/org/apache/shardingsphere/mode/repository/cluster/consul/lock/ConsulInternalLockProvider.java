@@ -28,10 +28,10 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
-import com.google.gson.reflect.TypeToken;
+import com.google.common.base.Strings;
+import com.google.common.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereConsulClient;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereQueryParams;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
@@ -135,7 +135,7 @@ public class ConsulInternalLockProvider implements InternalLockProvider {
         
         @Override
         public boolean tryLock(final long timeoutMillis) {
-            if (StringUtils.isNotEmpty(lockSessionMap.get())) {
+            if (!Strings.isNullOrEmpty(lockSessionMap.get())) {
                 return true;
             }
             try {

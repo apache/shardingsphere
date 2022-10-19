@@ -15,12 +15,12 @@
 # limitations under the License.
 #
 
-rules:
-  - !AUTHORITY
-    users:
-      - proxy@:Proxy@123
-    provider:
-      type: ALL_PERMITTED
+authority:
+  users:
+    - user: proxy
+      password: Proxy@123
+  privilege:
+    type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1

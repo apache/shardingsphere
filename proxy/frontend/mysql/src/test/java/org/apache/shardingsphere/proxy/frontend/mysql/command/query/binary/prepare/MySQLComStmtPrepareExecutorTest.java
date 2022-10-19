@@ -35,9 +35,9 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -73,7 +73,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     public void setup() {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         prepareSQLParser();
-        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_UNICODE_CI);
     }
     
@@ -108,7 +108,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
-        MySQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLSelectStatement.class));
         assertTrue(actualPreparedStatement.getSqlStatementContext().isPresent());
@@ -127,7 +127,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
-        MySQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
         assertTrue(actualPreparedStatement.getSqlStatementContext().isPresent());

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.dbdiscovery.mysql.type;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRModeException;
 import org.apache.shardingsphere.dbdiscovery.mysql.exception.mgr.InvalidMGRPluginException;
@@ -47,7 +46,6 @@ import java.util.concurrent.ExecutorService;
  * MGR database discovery provider algorithm for MySQL.
  */
 @Getter
-@Slf4j
 public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements DatabaseDiscoveryProviderAlgorithm {
     
     private static final String QUERY_PLUGIN_STATUS = "SELECT PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";

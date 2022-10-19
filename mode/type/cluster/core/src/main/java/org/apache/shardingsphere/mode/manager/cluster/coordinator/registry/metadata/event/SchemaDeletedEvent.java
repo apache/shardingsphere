@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
  */
 @RequiredArgsConstructor
 @Getter
-public class SchemaDeletedEvent implements GovernanceEvent {
+public final class SchemaDeletedEvent implements GovernanceEvent {
     
     private final String databaseName;
     

@@ -19,24 +19,27 @@ name: Nightly - build
 
 on:
   schedule:
-    - cron: '0 21 */1 * *'  # once a day. UTC time
+    - cron: '0 16 */1 * *'  # once a day. UTC time
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
+  HUB: ghcr.io/apache/shardingsphere
+  PROXY: ghcr.io/apache/shardingsphere-proxy
 
 jobs:
-  upload_to_nightlies:
+  upload-to-nightlies:
     if: (github.repository == 'apache/shardingsphere')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-maven-
-      - uses: actions/checkout@v2
+            shardingsphere-maven-third-party-cache-
+            shardingsphere-maven-third-party-
+      - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -53,3 +56,35 @@ jobs:
           remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
           remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+  
+  build-nightly-image:
+    if: github.repository == 'apache/shardingsphere'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 8
+      - name: Cache Maven Repos
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
+          restore-keys: |
+            shardingsphere-maven-third-party-cache-
+            shardingsphere-maven-third-party-
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1.10.0
+        with:
+          registry: ${{ env.HUB }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - name: Push docker image
+        run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install

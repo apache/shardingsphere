@@ -40,11 +40,11 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -111,7 +111,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         ProxyContext.init(contextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
-        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
@@ -127,7 +127,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
                 new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true));
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
     }
     
@@ -155,7 +155,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
@@ -179,7 +179,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
@@ -203,7 +203,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actualPackets.iterator();
@@ -227,7 +227,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
             parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
         }
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         executor.execute();
     }
     
@@ -240,7 +240,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         prepareJDBCBackendConnection(sql);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLPreparedStatement(sql, sqlStatement, null, parameterTypes));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, parameterTypes));
         Collection<DatabasePacket<?>> actual = executor.execute();
         assertThat(actual.size(), is(2));
         Iterator<DatabasePacket<?>> actualPacketsIterator = actual.iterator();

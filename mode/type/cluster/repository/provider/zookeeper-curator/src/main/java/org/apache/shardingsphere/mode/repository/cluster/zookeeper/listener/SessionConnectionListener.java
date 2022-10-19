@@ -24,6 +24,7 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
@@ -40,6 +41,8 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     private static final int RECONNECT_INTERVAL_SECONDS = 5;
     
+    private final InstanceMetaData instanceMetaData;
+    
     private final InstanceContext instanceContext;
     
     private final ClusterPersistRepository repository;
@@ -51,7 +54,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             do {
                 reRegistered = reRegister(client);
             } while (!reRegistered);
-            log.debug("instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
+            log.debug("instance re-register success instance id: {}", instanceMetaData.getId());
         }
     }
     
@@ -61,8 +64,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
                 if (isNeedGenerateWorkerId()) {
                     instanceContext.generateWorkerId(new Properties());
                 }
-                repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceContext.getInstance().getCurrentInstanceId(),
-                        instanceContext.getInstance().getMetaData().getType()), instanceContext.getInstance().getMetaData().getAttributes());
+                repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()), instanceMetaData.getAttributes());
                 return true;
             }
             sleepInterval();

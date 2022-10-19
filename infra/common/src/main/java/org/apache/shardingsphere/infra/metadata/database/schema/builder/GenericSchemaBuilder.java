@@ -18,23 +18,22 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ViewMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -58,67 +57,79 @@ public final class GenericSchemaBuilder {
     /**
      * Build generic schema.
      *
-     * @param materials generic schema builder materials
+     * @param material generic schema builder material
      * @return generic schema map
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereSchema> build(final GenericSchemaBuilderMaterials materials) throws SQLException {
-        return build(getAllTableNames(materials.getRules()), materials);
+    public static Map<String, ShardingSphereSchema> build(final GenericSchemaBuilderMaterial material) throws SQLException {
+        return build(getAllTableNames(material.getRules()), material);
     }
     
     /**
      * Build generic schema.
      *
      * @param tableNames table names
-     * @param materials generic schema builder materials
+     * @param material generic schema builder material
      * @return generic schema map
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final GenericSchemaBuilderMaterials materials) throws SQLException {
-        Map<String, SchemaMetaData> result = loadSchemas(tableNames, materials);
-        if (!materials.getProtocolType().equals(materials.getStorageType())) {
-            result = translate(result, materials);
+    public static Map<String, ShardingSphereSchema> build(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
+        Map<String, SchemaMetaData> result = loadSchemas(tableNames, material);
+        if (!isProtocolTypeSameWithStorageType(material)) {
+            result = translate(result, material);
         }
-        return decorate(result, materials);
+        return decorate(result, material);
+    }
+    
+    private static boolean isProtocolTypeSameWithStorageType(final GenericSchemaBuilderMaterial material) {
+        for (DatabaseType each : material.getStorageTypes().values()) {
+            if (!material.getProtocolType().equals(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
         return rules.stream().filter(each -> each instanceof TableContainedRule).flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
     }
     
-    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterials materials) throws SQLException {
-        boolean isCheckingMetaData = materials.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
-        Collection<SchemaMetaDataLoaderMaterials> schemaMetaDataLoaderMaterials = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(tableNames, materials, isCheckingMetaData);
+    private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
+        boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED);
+        Collection<SchemaMetaDataLoaderMaterial> schemaMetaDataLoaderMaterials = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
         if (schemaMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }
-        return SchemaMetaDataLoaderEngine.load(schemaMetaDataLoaderMaterials, materials.getStorageType());
+        return SchemaMetaDataLoaderEngine.load(schemaMetaDataLoaderMaterials);
     }
     
-    private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterials materials) {
+    private static Map<String, SchemaMetaData> translate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
+        for (DatabaseType each : material.getStorageTypes().values()) {
+            String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(each, material.getDefaultSchemaName());
+            tableMetaDataList.addAll(Optional.ofNullable(schemaMetaDataMap.get(defaultSchemaName)).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList));
+        }
+        String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(material.getProtocolType(), material.getDefaultSchemaName());
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
-        Collection<TableMetaData> tableMetaDataList = Optional.ofNullable(schemaMetaDataMap.get(
-                DatabaseTypeEngine.getDefaultSchemaName(materials.getStorageType(), materials.getDefaultSchemaName()))).map(SchemaMetaData::getTables).orElseGet(Collections::emptyList);
-        String frontendSchemaName = DatabaseTypeEngine.getDefaultSchemaName(materials.getProtocolType(), materials.getDefaultSchemaName());
         result.put(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
         return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static Map<String, ShardingSphereSchema> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterials materials) {
+    private static Map<String, ShardingSphereSchema> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
-        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataDecorator> entry : RuleBasedSchemaMetaDataDecoratorFactory.getInstances(materials.getRules()).entrySet()) {
+        for (Entry<ShardingSphereRule, RuleBasedSchemaMetaDataDecorator> entry : RuleBasedSchemaMetaDataDecoratorFactory.getInstances(material.getRules()).entrySet()) {
             if (!(entry.getKey() instanceof TableContainedRule)) {
                 continue;
             }
-            result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), materials));
+            result.putAll(entry.getValue().decorate(result, (TableContainedRule) entry.getKey(), material));
         }
-        return convertToSchemaMap(result, materials);
+        return convertToSchemaMap(result, material);
     }
     
-    private static Map<String, ShardingSphereSchema> convertToSchemaMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterials materials) {
+    private static Map<String, ShardingSphereSchema> convertToSchemaMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         if (schemaMetaDataMap.isEmpty()) {
-            return Collections.singletonMap(materials.getDefaultSchemaName(), new ShardingSphereSchema());
+            return Collections.singletonMap(material.getDefaultSchemaName(), new ShardingSphereSchema());
         }
         Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
@@ -159,14 +170,6 @@ public final class GenericSchemaBuilder {
         Collection<ShardingSphereConstraint> result = new LinkedList<>();
         for (ConstraintMetaData each : constraintMetaDataList) {
             result.add(new ShardingSphereConstraint(each.getName(), each.getReferencedTableName()));
-        }
-        return result;
-    }
-    
-    private static Map<String, ShardingSphereView> convertToViewMap(final Collection<ViewMetaData> viewMetaDataList) {
-        Map<String, ShardingSphereView> result = new LinkedHashMap<>(viewMetaDataList.size(), 1);
-        for (ViewMetaData each : viewMetaDataList) {
-            result.put(each.getName(), new ShardingSphereView(each.getName(), each.getViewDefinition()));
         }
         return result;
     }

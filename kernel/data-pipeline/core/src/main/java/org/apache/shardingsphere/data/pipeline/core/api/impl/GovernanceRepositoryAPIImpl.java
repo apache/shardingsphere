@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.yaml.consistency.YamlDataConsistencyCheckResultSwapper;
@@ -77,10 +77,10 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String jobId, final String checkJobId) {
+    public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String parentJobId, final String checkJobId) {
         Map<String, DataConsistencyCheckResult> result = new HashMap<>();
-        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
-        if (StringUtils.isBlank(yamlCheckResultMapText)) {
+        String yamlCheckResultMapText = repository.getDirectly(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
+        if (Strings.isNullOrEmpty(yamlCheckResultMapText)) {
             return Collections.emptyMap();
         }
         YamlDataConsistencyCheckResultSwapper swapper = new YamlDataConsistencyCheckResultSwapper();

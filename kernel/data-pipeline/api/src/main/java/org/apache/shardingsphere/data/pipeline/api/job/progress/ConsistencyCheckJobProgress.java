@@ -31,4 +31,14 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 public final class ConsistencyCheckJobProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;
+    
+    private String tableNames;
+    
+    private Long checkedRecordsCount;
+    
+    private Long recordsCount;
+    
+    private Long checkBeginTimeMillis;
+    
+    private Long checkEndTimeMillis;
 }

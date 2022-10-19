@@ -43,7 +43,7 @@ public final class CoordinatorRegistryCenterInitializer {
     public CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig, final String namespaceRelativePath) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
         String clusterType = modeConfig.getRepository().getType();
-        Preconditions.checkArgument("ZooKeeper".equalsIgnoreCase(clusterType), "Unsupported cluster type `%s`", clusterType);
+        Preconditions.checkArgument("ZooKeeper".equals(clusterType), "Unsupported cluster type `%s`", clusterType);
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(repositoryConfig, namespaceRelativePath));
         result.init();
         return result;

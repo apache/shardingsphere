@@ -30,9 +30,9 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.junit.Before;
@@ -75,7 +75,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
     @Before
     public void setup() {
         ProxyContext.init(mockedContextManager);
-        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
     }
     
     @Test
@@ -87,7 +87,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
-        PostgreSQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(statementId);
+        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(EmptyStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
@@ -101,7 +101,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getSql()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
@@ -112,7 +112,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
-        PostgreSQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(statementId);
+        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
@@ -132,7 +132,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(parsePacket.getSql()).thenReturn(sql);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(connectionSession.getDatabaseName()).thenReturn("db");
-        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         when(mockedContextManager.getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(mockedContextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
@@ -140,7 +140,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
-        PostgreSQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(statementId);
+        PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(ShowVariableStatement.class));
         assertThat(actualPreparedStatement.getSqlStatementContext(), is(Optional.empty()));

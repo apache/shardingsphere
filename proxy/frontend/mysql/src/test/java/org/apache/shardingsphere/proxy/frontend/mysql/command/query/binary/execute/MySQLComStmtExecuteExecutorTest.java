@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementConte
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -54,7 +53,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -113,26 +112,26 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         databases.put("logic_db", mockDatabase());
         ShardingSphereRuleMetaData metaData = mock(ShardingSphereRuleMetaData.class);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(databases, metaData, new ConfigurationProperties(new Properties())), new ShardingSphereData());
+                new ShardingSphereMetaData(databases, metaData, new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
+                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
-        when(connectionSession.getPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
+                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
+                .thenReturn(new MySQLServerPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
         return result;
     }

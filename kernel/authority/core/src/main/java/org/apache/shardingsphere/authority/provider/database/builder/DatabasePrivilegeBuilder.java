@@ -106,7 +106,7 @@ public final class DatabasePrivilegeBuilder {
     }
     
     private static boolean checkAnyOtherHost(final Grantee grantee, final ShardingSphereUser shardingSphereUser) {
-        return ("%".equalsIgnoreCase(grantee.getHostname())
+        return ("%".equals(grantee.getHostname())
                 || grantee.getHostname().equals(shardingSphereUser.getGrantee().getHostname())) && grantee.getUsername().equals(shardingSphereUser.getGrantee().getUsername());
     }
 }

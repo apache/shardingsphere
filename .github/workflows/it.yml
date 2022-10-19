@@ -43,6 +43,7 @@ on:
       - '**/pom.xml'
       - '**/src/main/**'
       - 'distribution/proxy/**'
+      - '!test/**'
       - 'test/pom.xml'
       - 'test/integration-test/fixture/**'
       - 'test/integration-test/env/**'
@@ -52,7 +53,6 @@ on:
       - '!distribution/**'
       - '!distribution/proxy/src/main/release-docs/**'
       - '!kernel/data-pipeline/**'
-      - '!test/**'
       - '!*.md'
 
 concurrency:
@@ -68,17 +68,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '8'
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            shardingsphere-maven-third-party-it-cache-
+            shardingsphere-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build IT image
@@ -104,11 +105,11 @@ jobs:
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -141,11 +142,11 @@ jobs:
           - adapter: jdbc
             mode: Cluster
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -178,11 +179,11 @@ jobs:
           - adapter: jdbc
             mode: Cluster
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v2
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -203,25 +204,21 @@ jobs:
     name: Agent Metrics & OpenTelemetry
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '8'
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            shardingsphere-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Build Project
         run: ./mvnw -B clean install -DskipITs -DskipTests
-      - name: Verify
-        run: |
-          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/metrics -DskipITs -DskipTests -Dspotless.apply.skip=true
-          ./mvnw -B clean verify -pl test/integration-agent-test/plugins/opentelemetry -DskipITs -DskipTests -Dspotless.apply.skip=true
       - name: Run Integration Test
         run: |
           ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics

@@ -37,6 +37,12 @@ Open [Github Pull requests](https://github.com/apache/shardingsphere-on-cloud/pu
 1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)
 1. Follow the mailing list and confirm that the community developers have no questions about the release note.
 
+### 5. Close milestone
+
+Open [GitHub milestone](https://github.com/apache/shardingsphere-on-cloud/milestones)
+
+1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%;
+1. Click `close` to close milestone.
 
 ## GPG Settings
 
@@ -123,7 +129,7 @@ sub   4096R/0B7EF5B2 2019-03-20
 
 Among them, 700E6065 is public key ID.
 
-### 4. export v1 version secret
+### 4. Export v1 version secret
 
 ``` shell
 gpg --export >~/.gnupg/pubring.gpg
@@ -145,7 +151,7 @@ Each server will automatically synchronize with one another, so it would be okay
 
 ### 1. Create Release Branch
 
-Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere-on-cloud/` and the version to be released is `${RELEASE.VERSION}`。
+Suppose `ShardingSphere on Cloud` source codes downloaded from github is under `~/shardingsphere-on-cloud/` and the version to be released is `${RELEASE.VERSION}`。
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
@@ -156,25 +162,57 @@ git pull
 git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
-### 2. update charts version
-### 2. package charts
-```shell
-cd ~/shardingsphere-on-cloud/charts
-helm package --sign --key ${GPG username} --keyring /.gnupg/secring.gpg  `changed charts`
+### 2. Update charts version
+
+Update the version in `Chart.yaml` file in release branch:
+
+```
+~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml
+~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster/Chart.yaml
+~/shardingsphere-on-cloud/charts/shardingsphere-proxy/Chart.yaml
 ```
 
+Modify `version` to `${RELEASE.VERSION}`, `appVersion` to the corresponding application version, and submit a PR to release branch.
 
+### 3. Create Release Tag
 
-### 3. Update the download page
+Create a release tag in release branch and submit a PR to release branch.
+
+```shell
+git tag ${RELEASE.VERSION}
+git push origin --tags
+```
+
+### 4. Package charts
+
+Before packaging charts, you need to download dependent packages through `helm dependency build` command, and then package charts. The specific operation steps are as follows:
+
+```shell
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy/charts/governance
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy
+helm dependency build
+
+cd ~/shardingsphere-on-cloud/charts
+helm package --sign --key '${GPG username}' --keyring ~/.gnupg/secring.gpg shardingsphere-operator
+helm package --sign --key '${GPG username}' --keyring ~/.gnupg/secring.gpg shardingsphere-operator-cluster
+helm package --sign --key '${GPG username}' --keyring ~/.gnupg/secring.gpg shardingsphere-proxy
+```
+
+### 5. Update the download page
 
 Update the following pages:
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
 * <https://shardingsphere.apache.org/document/current/cn/downloads/>
 
 GPG signatures and hashes (SHA* etc) should be prefixed with: `https://downloads.apache.org/shardingsphere/`。
-
-
-
 
 ### Apache SVN Repository Release
 
@@ -188,9 +226,10 @@ cd ~/ss_svn/dev/
 ```
 
 After the creation, checkout ShardingSphere release directory from Apache SVN.
+
 ```shell
 svn --username=${APACHE LDAP username} co https://dist.apache.org/repos/dist/dev/shardingsphere
-cd ~/ss_svn/dev/shardingsphere/charts
+cd ~/ss_svn/dev/shardingsphere
 ```
 
 **2. Add gpg Public Key**
@@ -207,15 +246,21 @@ gpg -a --export ${GPG username} >> KEYS
 Create folder by version number.
 
 ```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/charts/${RELEASE.VERSION}
-cd ~/ss_svn/dev/shardingsphere/charts/${RELEASE.VERSION}
+mkdir -p ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
+cd ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
 ```
 
 Add charts packages of ShardingSphere-On-Cloud to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere-on-cloud/charts/*.tgz
-~/ss_svn/dev/shardingsphere/charts/${RELEASE.VERSION}
+cp -f ~/shardingsphere-on-cloud/charts/*.tgz* ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
+```
+
+Generate `index.yaml`.
+
+```shell
+cd ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
+helm repo index --url https://archive.apache.org/dist/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION} .
 ```
 
 **4. Commit to Apache SVN**
@@ -227,13 +272,7 @@ svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 
 ### Check Release
 
-**Check sha512 hash**
-
-```shell
-shasum -c *.sha512
-```
-
-**Check gpg Signature**
+**1. Check gpg Signature**
 
 First, import releaser's public key. Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
 
@@ -260,49 +299,34 @@ Your decision? 5
 
 Then, check the gpg signature.
 
+Checking can be performed by the following command under Bash:
 
-```shell
-helm verify `changed charts file`
+```bash
+for each in $(ls *.tgz); do helm verify $each; done
 ```
 
-**Check Released Files**
-
-**Compare release source with github tag**
+Or checking each file manually:
 
 ```shell
-curl -Lo tag-apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz https://github.com/apache/shardingsphere-on-cloud/archive/apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
-diff -r tag-apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz  apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
-
-curl -Lo tag-shardingsphere-cluster-${RELEASE.VERSION}.tgz https://github.com/apache/shardingsphere-on-cloud/archive/shardingsphere-cluster-${RELEASE.VERSION}.tgz
-diff -r tag-shardingsphere-cluster-${RELEASE.VERSION}.tgz  shardingsphere-cluster-${RELEASE.VERSION}.tgz
-
-curl -Lo tag-shardingsphere-operator-${RELEASE.VERSION}.tgz https://github.com/apache/shardingsphere-on-cloud/archive/shardingsphere-operator-${RELEASE.VERSION}.tgz
-diff -r tag-shardingsphere-operator-${RELEASE.VERSION}.tgz  shardingsphere-operator-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-operator-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-operator-cluster-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
 ```
 
-**Check source package**
+**2. Check Released Files**
 
-*   Check whether source tarball is oversized for including nonessential files
-*   `LICENSE` and `NOTICE` files exist
-*   Correct year in `NOTICE` file
-*   There is only text files but no binary files
-*   All source files have ASF headers
-*   Codes can be installed with `helm install`
-*   Check if there is any extra files or folders, empty folders for example
+Decompress:
 
-**3.3 Check Charts packages**
+- `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-cluster-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
 
-Decompress
-- `apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz`
-- `shardingsphere-cluster-${RELEASE.VERSION}.tgz`
-- `shardingsphere-operator-${RELEASE.VERSION}.tgz`
+To check the following items:
 
-to check the following items:
-
-*   `LICENSE` and `NOTICE` files exist
-*   Correct year in `NOTICE` file
-*   All text files have ASF headers
-*   Check the third party dependency license:
+* `LICENSE` and `NOTICE` files exist
+* Correct year in `NOTICE` file
+* All text files have ASF headers
+* Check the third party dependency license:
   *   The software has a compatible license
   *   All software licenses mentioned in `LICENSE`
   *   All the third party dependency licenses are under `licenses` folder
@@ -325,7 +349,7 @@ to check the following items:
 Title:
 
 ```
-[VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
+[VOTE] Release Apache ShardingSphere on Cloud ${RELEASE.VERSION}
 ```
 
 Body:
@@ -333,7 +357,7 @@ Body:
 ```
 Hello ShardingSphere Community,
 
-This is a call for vote to release Apache ShardingSphere On Cloud version ${RELEASE.VERSION}
+This is a call for vote to release Apache ShardingSphere on Cloud version ${RELEASE.VERSION}
 
 Release notes:
 https://github.com/apache/shardingsphere-on-cloud/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md

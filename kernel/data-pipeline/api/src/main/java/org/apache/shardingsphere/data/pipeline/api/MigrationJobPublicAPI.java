@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
-import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,14 +30,6 @@ import java.util.Map;
  */
 @SingletonSPI
 public interface MigrationJobPublicAPI extends InventoryIncrementalJobPublicAPI, RequiredSPI {
-    
-    /**
-     * List all jobs.
-     *
-     * @return job infos
-     */
-    @Override
-    List<MigrationJobInfo> list();
     
     /**
      * Add migration source resources.

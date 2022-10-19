@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -31,8 +31,8 @@ public final class SwitchingResourceTest {
     @Test
     public void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
-        ShardingSphereResource resource = mock(ShardingSphereResource.class);
-        new SwitchingResource(resource, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();
-        verify(resource).close(staleDataSource);
+        ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
+        new SwitchingResource(resourceMetaData, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();
+        verify(resourceMetaData).close(staleDataSource);
     }
 }

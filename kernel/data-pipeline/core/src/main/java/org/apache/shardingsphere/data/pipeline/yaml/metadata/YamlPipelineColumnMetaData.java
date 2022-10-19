@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.yaml.metadata;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Yaml pipeline column meta data.
  */
-@Data
+@Getter
+@Setter
 public final class YamlPipelineColumnMetaData implements YamlConfiguration {
     
     private int ordinalPosition;

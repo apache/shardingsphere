@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
@@ -44,7 +43,6 @@ import java.util.Optional;
  *
  * @param <T> type of SQL statement
  */
-@Slf4j
 public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatement> extends DatabaseRequiredBackendHandler<T> {
     
     public RuleDefinitionBackendHandler(final T sqlStatement, final ConnectionSession connectionSession) {
@@ -129,9 +127,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater<?, ?> updater) {
-        if (updater instanceof RuleDefinitionDropUpdater) {
-            return ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
-        }
-        return true;
+        return !(updater instanceof RuleDefinitionDropUpdater) || ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
     }
 }

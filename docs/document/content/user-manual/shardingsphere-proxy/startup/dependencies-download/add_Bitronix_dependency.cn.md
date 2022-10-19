@@ -1,3 +1,8 @@
++++
+title = "添加 Bitronix 依赖"
+weight = 1
++++
+
 ## 添加 Bitronix 依赖包
 
 添加 Bitronix 依赖需要下载以下 jar 文件并将其添加 `ext-lib` 目录下。
