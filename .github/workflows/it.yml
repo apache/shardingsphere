@@ -62,32 +62,43 @@ concurrency:
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
 
+strategy:
+  max-parallel: 1
+  fail-fast: false
+  matrix:
+    java: [ 8 ]
+    keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+    exclude:
+      - java: 8
+        keyword: microsoft
+
+
 jobs:
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
     continue-on-error: true
-    strategy:
-      max-parallel: 1
-      fail-fast: false
-      matrix:
-#        java: [8, 11, 17, 19 ]
-        java: [ 8 ]
-        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-        exclude:
-          - java: 8
-            keyword: microsoft
-#          - java: 19
+#    strategy:
+#      max-parallel: 1
+#      fail-fast: false
+#      matrix:
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
 #            keyword: microsoft
-#          - java: 19
-#            keyword: adopt-openj9
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
-          distribution: ${{ matrix.keyword }}
+          java-version: ${{ strategy.matrix.java }}
+          distribution: ${{ strategy.matrix.keyword }}
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
