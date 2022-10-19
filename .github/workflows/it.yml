@@ -62,7 +62,7 @@ concurrency:
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
   java: 8
-  keyword: temurin
+  keyword: { temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto }
 jobs:
   build-it-image:
     name: Build IT image
@@ -123,16 +123,16 @@ jobs:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ empty_rules, rdl_empty_rules ]
-#        java: [8, 11, 17, 19 ]
-        java: [ 8 ]
-        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-        exclude:
-          - java: 8
-            keyword: microsoft
-#          - java: 19
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
 #            keyword: microsoft
-#          - java: 19
-#            keyword: adopt-openj9
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -141,8 +141,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
-          distribution: ${{ matrix.keyword }}
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -169,16 +169,16 @@ jobs:
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
-#        java: [8, 11, 17, 19 ]
-        java: [ 8 ]
-        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-        exclude:
-          - java: 8
-            keyword: microsoft
-#          - java: 19
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
 #            keyword: microsoft
-#          - java: 19
-#            keyword: adopt-openj9
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
           - adapter: jdbc
             mode: Cluster
     steps:
@@ -189,8 +189,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
-          distribution: ${{ matrix.keyword }}
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
@@ -217,16 +217,16 @@ jobs:
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL, openGauss ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow ]
-#        java: [8, 11, 17, 19 ]
-        java: [ 8 ]
-        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-        exclude:
-          - java: 8
-            keyword: microsoft
-#          - java: 19
+##        java: [8, 11, 17, 19 ]
+#        java: [ 8 ]
+#        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+#        exclude:
+#          - java: 8
 #            keyword: microsoft
-#          - java: 19
-#            keyword: adopt-openj9
+##          - java: 19
+##            keyword: microsoft
+##          - java: 19
+##            keyword: adopt-openj9
           - adapter: jdbc
             mode: Cluster
     steps:
@@ -237,8 +237,8 @@ jobs:
           key: shardingsphere-maven-third-party-it-cache-${{ github.sha }}
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ matrix.java }}
-          distribution: ${{ matrix.keyword }}
+          java-version: ${{ env.java }}
+          distribution: ${{ env.keyword }}
       - name: Download IT image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v3
