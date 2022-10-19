@@ -57,12 +57,12 @@ name: IT
 
 on:
   workflow_call:
-    inputs:
-      image_name:
-        type: string
-    secrets:
-      it-test-password:
-        required: true
+#    inputs:
+#      image_name:
+#        type: string
+#    secrets:
+#      it-test-password:
+#        required: true
 #      registery_username:
 #        required: true
 #      registery_password:
