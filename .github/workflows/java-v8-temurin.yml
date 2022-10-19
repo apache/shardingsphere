@@ -61,10 +61,12 @@ on:
       image_name:
         type: string
     secrets:
-      registery_username:
+      it-test-password:
         required: true
-      registery_password:
-        required: true
+#      registery_username:
+#        required: true
+#      registery_password:
+#        required: true
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
