@@ -112,7 +112,7 @@
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-
+        
         <junit5.version>5.9.1</junit5.version>
         <junit4.version>4.13.2</junit4.version>
         <hamcrest.version>1.3</hamcrest.version>
