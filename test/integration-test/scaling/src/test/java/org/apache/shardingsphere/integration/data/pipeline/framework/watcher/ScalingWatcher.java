@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.watcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeContainerComposer;
@@ -33,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -56,7 +58,7 @@ public class ScalingWatcher extends TestWatcher {
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
                 dockerContainerComposer.getGovernanceContainer().getServerLists(), new Properties());
         ClusterPersistRepository zookeeperRepository = new CuratorZookeeperRepository();
-        zookeeperRepository.init(config);
+        zookeeperRepository.init(config, new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307));
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");
         for (String each : childrenKeys) {
             if (!"scaling".equals(each)) {
