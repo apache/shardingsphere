@@ -155,16 +155,20 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getShorthandColumnsFromSimpleTableSegment(final TableSegment table, final String owner) {
         if (!(table instanceof SimpleTableSegment)) {
             return Collections.emptyList();
-        } String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
+        }
+        String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
         String tableAlias = table.getAlias().orElse(tableName);
-        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
+        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue())
+                .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
         ShardingSphereSchema schema = schemas.get(schemaName);
         ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(schemaName));
-        Collection<ColumnProjection> result = new LinkedList<>(); if (null == owner) {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        if (null == owner) {
             schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
             schema.getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
-        } return result;
+        }
+        return result;
     }
     
     private Collection<ColumnProjection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table) {
