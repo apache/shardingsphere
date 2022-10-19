@@ -1,0 +1,89 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+name: IT
+
+on:
+  push:
+    branches: [ master, dev ]
+#     paths:
+#       - '.github/workflows/it.yml'
+#       - '**/pom.xml'
+#       - '**/src/main/**'
+#       - 'distribution/proxy/**'
+#       - 'test/pom.xml'
+#       - 'test/integration-test/fixture/**'
+#       - 'test/integration-test/env/**'
+#       - 'test/integration-test/test-suite/**'
+#       - 'test/integration-agent-test/**'
+#       - '!examples/**'
+#       - '!distribution/**'
+#       - '!distribution/proxy/src/main/release-docs/**'
+#       - '!kernel/data-pipeline/**'
+#       - '!test/**'
+#       - '!*.md'
+  pull_request:
+    branches: [ master ]
+#     paths:
+#       - '.github/workflows/it.yml'
+#       - '**/pom.xml'
+#       - '**/src/main/**'
+#       - 'distribution/proxy/**'
+#       - '!test/**'
+#       - 'test/pom.xml'
+#       - 'test/integration-test/fixture/**'
+#       - 'test/integration-test/env/**'
+#       - 'test/integration-test/test-suite/**'
+#       - 'test/integration-agent-test/**'
+#       - '!examples/**'
+#       - '!distribution/**'
+#       - '!distribution/proxy/src/main/release-docs/**'
+#       - '!kernel/data-pipeline/**'
+#       - '!*.md'
+
+
+jobs:
+  job1:
+    uses: Patrick1S/shardingsphere/.github/workflows/it-v/it-v8/it-v8-temurin.yml
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Run a one-line script
+#        run: echo job1
+
+  docker:
+#    needs: job1
+    uses: Patrick1S/shardingsphere/.github/workflows/it-v/it-v8/it-v8-zulu.yml@dev
+#    with:
+#      image_name: my-awesome-app
+#      tag: $GITHUB_RUN_NUMBER
+#    secrets:
+#      registery_username: ${{secrets.registery_username}}
+#      registery_password: ${{secrets.registery_password}}
+
+#  job2:
+#    needs: job1
+#    runs-on: ubuntu-latest
+#    steps:
+#      - run: echo job2
+#
+#  job3:
+#    needs: docker
+#    runs-on: ubuntu-latest
+#    steps:
+#      - run: echo job3
