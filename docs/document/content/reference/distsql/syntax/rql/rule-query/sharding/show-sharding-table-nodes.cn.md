@@ -5,7 +5,7 @@ weight = 10
 
 ### 描述
 
-`SHOW SHARDING TABLE NODES` 语法用于查询指定逻辑库中的分片节点。
+`SHOW SHARDING TABLE NODES` 语法用于查询指定逻辑库中的分片表的节点分布。
 
 ### 语法
 
@@ -30,7 +30,7 @@ databaseName ::=
 
 ### 示例
 
-- 查询指定逻辑库中的分片节点
+- 查询指定逻辑库中的分片表的节点分布
 
 ```sql
 SHOW SHARDING TABLE NODES FROM test1;
@@ -46,7 +46,7 @@ mysql> SHOW SHARDING TABLE NODES FROM test1;
 1 row in set (0.00 sec)
 ```
 
-- 查询当前逻辑库中的分片节点
+- 查询当前逻辑库中的分片表的节点分布
 
 ```sql
 SHOW SHARDING TABLE NODES;
