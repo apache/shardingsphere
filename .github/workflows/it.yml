@@ -61,16 +61,15 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
-
-strategy:
   max-parallel: 1
   fail-fast: false
   matrix:
     java: [ 8 ]
-    keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-    exclude:
-      - java: 8
-        keyword: microsoft
+#    keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
+    keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, corretto]
+#    exclude:
+#      - java: 8
+#        keyword: microsoft
 
 
 jobs:
@@ -97,8 +96,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          java-version: ${{ strategy.matrix.java }}
-          distribution: ${{ strategy.matrix.keyword }}
+          java-version: ${{ env.matrix.java }}
+          distribution: ${{ env.matrix.keyword }}
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
