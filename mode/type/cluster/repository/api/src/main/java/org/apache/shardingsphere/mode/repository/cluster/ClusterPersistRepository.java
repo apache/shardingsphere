@@ -32,7 +32,7 @@ public interface ClusterPersistRepository extends PersistRepository {
      * Initialize registry center.
      *
      * @param config cluster persist repository configuration
-     * @param instanceMetaData instance meta data.
+     * @param instanceMetaData instance meta data
      */
     void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
     
