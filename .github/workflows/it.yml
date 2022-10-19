@@ -64,6 +64,7 @@ env:
 
 jobs:
   job1:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [ 8 ]
