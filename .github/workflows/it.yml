@@ -172,7 +172,7 @@ jobs:
 ##        java: [8, 11, 17, 19 ]
 #        java: [ 8 ]
 #        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-#        exclude:
+        exclude:
 #          - java: 8
 #            keyword: microsoft
 ##          - java: 19
@@ -220,7 +220,7 @@ jobs:
 ##        java: [8, 11, 17, 19 ]
 #        java: [ 8 ]
 #        keyword: [ temurin, zulu, adopt, adopt-openj9, liberica, microsoft, corretto]
-#        exclude:
+        exclude:
 #          - java: 8
 #            keyword: microsoft
 ##          - java: 19
