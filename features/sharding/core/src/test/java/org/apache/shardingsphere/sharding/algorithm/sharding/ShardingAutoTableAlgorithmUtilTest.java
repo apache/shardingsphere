@@ -34,7 +34,7 @@ public final class ShardingAutoTableAlgorithmUtilTest {
     
     private final Collection<String> availableTargetNames = new LinkedList<>();
     
-    private final DataNodeInfo dataNodeInfo = new DataNodeInfo("t_order_", 10, '0');
+    private final DataNodeInfo dataNodeInfo = new DataNodeInfo("t_order_", 2, '0');
     
     @Before
     public void setup() {
