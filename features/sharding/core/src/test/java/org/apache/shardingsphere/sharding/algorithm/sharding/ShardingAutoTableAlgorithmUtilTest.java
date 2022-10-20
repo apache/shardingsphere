@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -50,13 +51,13 @@ public final class ShardingAutoTableAlgorithmUtilTest {
     public void assertFindMatchedTargetNameForValidInputs() {
         Optional<String> output = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "SUFFIX", dataNodeInfo);
         assertTrue(output.isPresent());
-        assertEquals("PREFIX----SUFFIX", output.get());
+        assertThat("PREFIX----SUFFIX", is(output.get()));
         Optional<String> output1 = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "SUFFIXSTRING", dataNodeInfo);
         assertTrue(output1.isPresent());
-        assertEquals("PREFIXSUFFIXSTRING", output1.get());
+        assertThat("PREFIXSUFFIXSTRING", is(output1.get()));
         Optional<String> output2 = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "", dataNodeInfo);
         assertTrue(output2.isPresent());
-        assertEquals("PREFIX----------", output2.get());
+        assertThat("PREFIX----------", is(output2.get()));
     }
     
     @Test
