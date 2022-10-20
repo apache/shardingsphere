@@ -33,16 +33,20 @@ public final class EncryptColumnRuleConfiguration {
     
     private final String assistedQueryColumn;
     
+    private final String fuzzyQueryColumn;
+    
     private final String plainColumn;
     
     private final String encryptorName;
     
     private final String assistedQueryEncryptorName;
     
+    private final String fuzzyQueryEncryptorName;
+    
     private final Boolean queryWithCipherColumn;
     
     public EncryptColumnRuleConfiguration(final String logicColumn, final String cipherColumn, final String assistedQueryColumn, final String plainColumn,
                                           final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(logicColumn, cipherColumn, assistedQueryColumn, plainColumn, encryptorName, null, queryWithCipherColumn);
+        this(logicColumn, cipherColumn, assistedQueryColumn, null, plainColumn, encryptorName, null, null, queryWithCipherColumn);
     }
 }
