@@ -19,23 +19,23 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariablesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowDistVariablesStatementTestCase;
 
 import static org.junit.Assert.assertNull;
 
 /**
- * Show all variables statement assert.
+ * Show dist variables statement assert.
  */
-public final class ShowAllVariablesStatementAssert {
+public final class ShowDistVariablesStatementAssert {
     
     /**
-     * Assert show all variables statement is correct with expected parser result.
+     * Assert show dist variables statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show all variables statement
-     * @param expected expected show all variables statement test case
+     * @param actual actual show dist variables statement
+     * @param expected expected show dist variables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDistVariablesStatement actual, final ShowAllVariablesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDistVariablesStatement actual, final ShowDistVariablesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         }

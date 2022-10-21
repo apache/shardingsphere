@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Show variable statement.
+ * Show dist variable statement.
  */
 @RequiredArgsConstructor
 @Getter

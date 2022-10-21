@@ -19,20 +19,20 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetDistVariableStatementTestCase;
 
 /**
- * Set variable statement assert.
+ * Set dist variable statement assert.
  */
-public final class SetVariableStatementAssert {
+public final class SetDistVariableStatementAssert {
     
     /**
-     * Assert set variable statement is correct with expected parser result.
+     * Assert set dist variable statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual set variable statement
-     * @param expected expected set variable statement test case
+     * @param actual actual set dist variable statement
+     * @param expected expected set dist variable statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetDistVariableStatement actual, final SetVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetDistVariableStatement actual, final SetDistVariableStatementTestCase expected) {
     }
 }
