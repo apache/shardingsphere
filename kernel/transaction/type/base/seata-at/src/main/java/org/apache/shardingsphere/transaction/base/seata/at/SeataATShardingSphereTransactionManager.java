@@ -37,7 +37,6 @@ import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManage
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,10 +64,10 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
     }
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, ResourceDataSource> resourceDataSources, final String providerType) {
         if (enableSeataAT) {
             initSeataRPCClient();
-            resourceDataSources.forEach(each -> dataSourceMap.put(each.getOriginalName(), new DataSourceProxy(each.getDataSource())));
+            resourceDataSources.forEach((key, value) -> dataSourceMap.put(value.getOriginalName(), new DataSourceProxy(value.getDataSource())));
         }
     }
     
