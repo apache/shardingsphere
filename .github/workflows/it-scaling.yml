@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Integration Test - Scaling
+name: IT - Scaling
 
 on:
   push:
