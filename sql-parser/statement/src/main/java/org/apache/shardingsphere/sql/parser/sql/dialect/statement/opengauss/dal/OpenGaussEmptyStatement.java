@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
+ *  
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
-import org.junit.Test;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class EmptyStatementTest {
-    
-    @Test
-    public void assertGetParameterCount() {
-        assertThat(new EmptyStatement().getParameterCount(), is(0));
-    }
+/**
+ * OpenGauss empty statement.
+ */
+@ToString(callSuper = true)
+public final class OpenGaussEmptyStatement extends EmptyStatement implements OpenGaussStatement {
 }
