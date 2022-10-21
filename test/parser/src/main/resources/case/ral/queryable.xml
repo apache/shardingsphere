@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <show-variable sql-case-id="show-variable" name="CACHED_CONNECTIONS" />
+    <show-dist-variable sql-case-id="show-dist-variable" name="CACHED_CONNECTIONS" />
     <show-dist-variables sql-case-id="show-dist-variables" />
     
     <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />

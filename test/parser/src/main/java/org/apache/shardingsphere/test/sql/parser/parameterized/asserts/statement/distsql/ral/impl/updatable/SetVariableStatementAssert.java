@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 
@@ -33,6 +33,6 @@ public final class SetVariableStatementAssert {
      * @param actual actual set variable statement
      * @param expected expected set variable statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetVariableStatement actual, final SetVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetDistVariableStatement actual, final SetVariableStatementTestCase expected) {
     }
 }

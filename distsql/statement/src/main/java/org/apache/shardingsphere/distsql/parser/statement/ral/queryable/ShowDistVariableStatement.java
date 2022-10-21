@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Set variable statement.
+ * Show variable statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SetVariableStatement extends UpdatableRALStatement {
+public final class ShowDistVariableStatement extends QueryableRALStatement {
     
     private final String name;
-    
-    private final String value;
 }

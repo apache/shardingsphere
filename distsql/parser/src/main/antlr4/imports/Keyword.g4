@@ -314,3 +314,7 @@ STREAM_CHANNEL
 DIST
     : D I S T
     ;
+
+WHERE
+    : W H E R E
+    ;

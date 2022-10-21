@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
 
@@ -38,7 +38,7 @@ public final class ShowVariableStatementAssert {
      * @param actual actual show variable statement
      * @param expected expected show variable statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariableStatement actual, final ShowVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDistVariableStatement actual, final ShowVariableStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

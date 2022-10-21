@@ -28,7 +28,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInst
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
@@ -79,8 +79,8 @@ public final class QueryableRALStatementAssert {
      * @param expected expected queryable RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableRALStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof ShowVariableStatement) {
-            ShowVariableStatementAssert.assertIs(assertContext, (ShowVariableStatement) actual, (ShowVariableStatementTestCase) expected);
+        if (actual instanceof ShowDistVariableStatement) {
+            ShowVariableStatementAssert.assertIs(assertContext, (ShowDistVariableStatement) actual, (ShowVariableStatementTestCase) expected);
         } else if (actual instanceof ShowDistVariablesStatement) {
             ShowAllVariablesStatementAssert.assertIs(assertContext, (ShowDistVariablesStatement) actual, (ShowAllVariablesStatementTestCase) expected);
         } else if (actual instanceof ShowInstanceListStatement) {

@@ -1049,14 +1049,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "format-sql")
     private final List<FormatSQLStatementTestCase> formatSQLStatementAsserts = new LinkedList<>();
     
-    @XmlElement(name = "show-variable")
+    @XmlElement(name = "show-dist-variable")
     private final List<ShowVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-dist-variables")
     private final List<ShowAllVariablesStatementTestCase> showDistVariableTestCases = new LinkedList<>();
     
-    @XmlElement(name = "set-variable")
-    private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
+    @XmlElement(name = "set-dist-variable")
+    private final List<SetVariableStatementTestCase> setDistVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-readwrite-splitting-hint-source")
     private final List<SetReadwriteSplittingHintStatementTestCase> setReadwriteSplittingHintTestCases = new LinkedList<>();

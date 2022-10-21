@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterIns
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
@@ -75,8 +75,8 @@ public final class UpdatableRALStatementAssert {
             UnlabelInstanceStatementAssert.assertIs(assertContext, (UnlabelInstanceStatement) actual, (UnlabelInstanceStatementTestCase) expected);
         } else if (actual instanceof AlterInstanceStatement) {
             AlterInstanceStatementAssert.assertIs(assertContext, (AlterInstanceStatement) actual, (AlterInstanceStatementTestCase) expected);
-        } else if (actual instanceof SetVariableStatement) {
-            SetVariableStatementAssert.assertIs(assertContext, (SetVariableStatement) actual, (SetVariableStatementTestCase) expected);
+        } else if (actual instanceof SetDistVariableStatement) {
+            SetVariableStatementAssert.assertIs(assertContext, (SetDistVariableStatement) actual, (SetVariableStatementTestCase) expected);
         } else if (actual instanceof RefreshTableMetadataStatement) {
             RefreshTableMetadataStatementAssert.assertIs(assertContext, (RefreshTableMetadataStatement) actual, (RefreshTableMetadataStatementTestCase) expected);
         } else if (actual instanceof AlterSQLParserRuleStatement) {
