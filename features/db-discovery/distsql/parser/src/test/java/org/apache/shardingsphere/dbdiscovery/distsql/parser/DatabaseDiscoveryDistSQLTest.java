@@ -21,9 +21,7 @@ import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.facade.DatabaseDiscoveryDistSQLStatementParserFacade;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.core.featured.FeaturedDistSQLStatementParserFacadeFactory;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
@@ -33,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -63,14 +60,6 @@ public class DatabaseDiscoveryDistSQLTest {
         assertDiscoverySegment((DatabaseDiscoveryDefinitionSegment) distSQLStatement.getRules().iterator().next());
     }
     
-    @Test
-    public void assertAlterDatabaseDiscoveryType() {
-        String sql = "ALTER DB_DISCOVERY TYPE primary_replica_ds_mgr(TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b'))),primary_replica_ds_mgr_2(TYPE(NAME='mgr'))";
-        AlterDatabaseDiscoveryTypeStatement distSQLStatement = (AlterDatabaseDiscoveryTypeStatement) getDistSQLStatement(sql);
-        assertThat(distSQLStatement.getProviders().size(), is(2));
-        assertAlgorithmSegment(distSQLStatement.getProviders().iterator());
-    }
-    
     private void assertDiscoverySegment(final DatabaseDiscoveryDefinitionSegment discoverySegment) {
         assertThat(discoverySegment.getName(), is("db_discovery_group_0"));
         assertThat(discoverySegment.getDataSources(), is(Arrays.asList("ds_0", "ds_1")));
@@ -81,19 +70,6 @@ public class DatabaseDiscoveryDistSQLTest {
         Properties heartbeatProps = new Properties();
         heartbeatProps.setProperty("keep-alive-cron", "0/5 * * * * ?");
         assertThat(discoverySegment.getDiscoveryHeartbeat(), is(heartbeatProps));
-    }
-    
-    private void assertAlgorithmSegment(final Iterator<DatabaseDiscoveryProviderAlgorithmSegment> iterator) {
-        DatabaseDiscoveryProviderAlgorithmSegment providerAlgorithmSegment = iterator.next();
-        Properties properties = new Properties();
-        properties.setProperty("group-name", "92504d5b");
-        assertThat(providerAlgorithmSegment.getDiscoveryProviderName(), is("primary_replica_ds_mgr"));
-        assertThat(providerAlgorithmSegment.getAlgorithm().getName(), is("mgr"));
-        assertThat(providerAlgorithmSegment.getAlgorithm().getProps(), is(properties));
-        DatabaseDiscoveryProviderAlgorithmSegment providerAlgorithmSegment2 = iterator.next();
-        assertThat(providerAlgorithmSegment2.getDiscoveryProviderName(), is("primary_replica_ds_mgr_2"));
-        assertThat(providerAlgorithmSegment2.getAlgorithm().getName(), is("mgr"));
-        assertThat(providerAlgorithmSegment2.getAlgorithm().getProps(), is(new Properties()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

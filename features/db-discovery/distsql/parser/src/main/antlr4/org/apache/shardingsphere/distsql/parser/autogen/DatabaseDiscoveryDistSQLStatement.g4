@@ -26,10 +26,8 @@ execute
     | showDatabaseDiscoveryTypes
     | showDatabaseDiscoveryHeartbeats
     | showDatabaseDiscoveryRules
-    | alterDatabaseDiscoveryHeartbeat
     | dropDatabaseDiscoveryType
     | dropDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryType
     | countDatabaseDiscoveryRule
     ) SEMI?
     ;
