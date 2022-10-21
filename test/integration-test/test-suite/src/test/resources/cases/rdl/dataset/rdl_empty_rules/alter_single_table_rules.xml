@@ -17,8 +17,12 @@
 
 <dataset>
     <metadata>
-        <column name="sharding_broadcast_tables" />
+        <column name="table_name" />
+        <column name="resource_name" />
     </metadata>
-    <row values="t_country" />
-    <row values="t_product_category" />
+    <row values="t_country| ds_2" />
+    <row values="t_user| ds_0" />
+    <row values="temp_alter| ds_0" />
+    <row values="t_product_category| ds_2" />
 </dataset>
+

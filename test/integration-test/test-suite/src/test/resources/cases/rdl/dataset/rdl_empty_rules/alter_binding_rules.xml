@@ -19,6 +19,5 @@
     <metadata>
         <column name="sharding_binding_tables" />
     </metadata>
-    <row values="t_user,t_user_item" />
-    <row values="t_product,t_product_item" />
+    <row values="t_order,t_order_item" />
 </dataset>

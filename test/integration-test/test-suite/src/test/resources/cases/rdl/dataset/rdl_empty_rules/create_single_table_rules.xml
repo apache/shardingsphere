@@ -20,19 +20,9 @@
         <column name="table_name" />
         <column name="resource_name" />
     </metadata>
-    <row values="t_product_item_1| ds_2" />
-    <row values="t_user_0| ds_0" />
-    <row values="t_product_0| ds_2" />
-    <row values="t_product_1| ds_2" />
-    <row values="t_user_4| ds_0" />
-    <row values="t_user_3| ds_0" />
-    <row values="t_user_2| ds_0" />
-    <row values="t_user_1| ds_0" />
-    <row values="t_user_item_2| ds_0" />
-    <row values="t_user_item_1| ds_0" />
-    <row values="t_user_item_0| ds_0" />
-    <row values="t_user_item_4| ds_0" />
-    <row values="t_user_item_3| ds_0" />
-    <row values="t_product_item_0| ds_2" />
+    <row values="temp| ds_1" />
+    <row values="t_country| ds_2" />
+    <row values="t_user| ds_0" />
+    <row values="t_product_category| ds_2" />
 </dataset>
 
