@@ -23,12 +23,13 @@ import static org.mockito.Mockito.verify;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import org.junit.Test;
 
-public class ConnectionSavepointManagerTest {
-    
+public final class ConnectionSavepointManagerTest {
+
     private final ConnectionSavepointManager connectionSavepointManager = ConnectionSavepointManager.getInstance();
-    
+
     @Test
     public void assertSetSavepoint() throws SQLException {
         Connection connection = mock(Connection.class);
@@ -36,5 +37,4 @@ public class ConnectionSavepointManagerTest {
         connectionSavepointManager.setSavepoint(connection, savingPoint);
         verify(connection, times(1)).setSavepoint(savingPoint);
     }
-
 }
