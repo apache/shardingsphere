@@ -70,7 +70,7 @@ mysql> SHOW DB_DISCOVERY RULES;
 
 ### Reserved word
 
-`SHOW`、`DB_DISCOVERY`、`RULES`、`FROM`
+`SHOW`, `DB_DISCOVERY`, `RULES`, `FROM`
 
 ### Related links
 

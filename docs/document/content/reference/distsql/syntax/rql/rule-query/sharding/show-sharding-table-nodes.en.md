@@ -65,7 +65,7 @@ mysql> SHOW SHARDING TABLE NODES;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`TABLE`、`NODE`、`FROM`
+`SHOW`, `SHARDING`, `TABLE`, `NODE`, `FROM`
 
 ### Related links
 

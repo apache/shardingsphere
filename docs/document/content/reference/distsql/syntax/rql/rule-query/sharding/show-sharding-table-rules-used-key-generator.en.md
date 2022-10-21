@@ -68,7 +68,7 @@ mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake_key_generator;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`TABLE`、`USED`、`KEY`、`GENERATOR`、`FROM`
+`SHOW`, `SHARDING`, `TABLE`, `USED`, `KEY`, `GENERATOR`, `FROM`
 
 ### Related links
 

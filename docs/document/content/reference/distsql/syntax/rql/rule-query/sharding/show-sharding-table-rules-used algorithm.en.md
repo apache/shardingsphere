@@ -68,7 +68,7 @@ mysql> SHOW SHARDING TABLE RULES USED ALGORITHM table_inline;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`TABLE`、`RULES`、`USED`、`ALGORITHM`、`FROM`
+`SHOW`, `SHARDING`, `TABLE`, `RULES`, `USED`, `ALGORITHM`, `FROM`
 
 ### Related links
 
