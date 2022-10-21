@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.spi.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Encrypt context.
