@@ -21,11 +21,11 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.opengauss.util.ServerErrorMessage;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Error response packet for openGauss.
@@ -58,14 +58,11 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     
     public static final char FIELD_TYPE_ERRORCODE = 'c';
     
-    public static final char FIELD_TYPE_SOCKET_ADDRESS = 'a';
-    
     private final Map<Character, String> fields;
     
-    public OpenGaussErrorResponsePacket(final Map<Character, String> serverErrorMessageMap) {
-        fields = new LinkedHashMap<>(serverErrorMessageMap.size(), 1);
-        fields.putAll(serverErrorMessageMap);
-        fillRequiredFieldsIfNecessary();
+    public OpenGaussErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
+        fields = new LinkedHashMap<>(13, 1);
+        fillFieldsByServerErrorMessage(serverErrorMessage);
     }
     
     public OpenGaussErrorResponsePacket(final String severityLevel, final String sqlState, final String message) {
@@ -76,17 +73,24 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
         fillRequiredFieldsIfNecessary();
     }
     
-    private void fillRequiredFieldsIfNecessary() {
-        fields.putIfAbsent(FIELD_TYPE_ERRORCODE, "0");
+    private void fillFieldsByServerErrorMessage(final ServerErrorMessage serverErrorMessage) {
+        fields.put(FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
+        fields.put(FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
+        fields.put(FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
+        fields.put(FIELD_TYPE_ERRORCODE, serverErrorMessage.getERRORCODE());
+        fields.put(FIELD_TYPE_DETAIL, serverErrorMessage.getDetail());
+        fields.put(FIELD_TYPE_HINT, serverErrorMessage.getHint());
+        fields.put(FIELD_TYPE_POSITION, serverErrorMessage.getPosition() + "");
+        fields.put(FIELD_TYPE_INTERNAL_POSITION, serverErrorMessage.getInternalPosition() + "");
+        fields.put(FIELD_TYPE_INTERNAL_QUERY, serverErrorMessage.getInternalQuery());
+        fields.put(FIELD_TYPE_WHERE, serverErrorMessage.getWhere());
+        fields.put(FIELD_TYPE_FILE, serverErrorMessage.getFile());
+        fields.put(FIELD_TYPE_LINE, serverErrorMessage.getLine() + "");
+        fields.put(FIELD_TYPE_ROUTINE, serverErrorMessage.getRoutine());
     }
     
-    /**
-     * To server error message.
-     *
-     * @return server error message
-     */
-    public String toServerErrorMessage() {
-        return fields.entrySet().stream().map(entry -> entry.getKey() + entry.getValue()).collect(Collectors.joining("\0"));
+    private void fillRequiredFieldsIfNecessary() {
+        fields.putIfAbsent(FIELD_TYPE_ERRORCODE, "0");
     }
     
     @Override
