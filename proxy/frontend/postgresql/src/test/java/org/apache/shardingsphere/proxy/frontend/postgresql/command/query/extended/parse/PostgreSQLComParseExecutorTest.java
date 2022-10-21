@@ -127,7 +127,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithDistSQL() {
-        String sql = "SHOW VARIABLE sql_show";
+        String sql = "SHOW DIST VARIABLE WHERE NAME = sql_show";
         String statementId = "";
         when(parsePacket.getSql()).thenReturn(sql);
         when(parsePacket.getStatementId()).thenReturn(statementId);

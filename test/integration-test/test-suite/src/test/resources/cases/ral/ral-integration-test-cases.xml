@@ -61,7 +61,7 @@
         </assertion>
     </test-case>
 
-    <test-case sql="show variable cached_connections">
+    <test-case sql="show dist variable where name = cached_connections">
         <assertion expected-data-file="cached_connections.xml"/>
     </test-case>
 
