@@ -99,7 +99,7 @@
         <assertion expected-data-file="create_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
-            CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_1;"></initial-sql>
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;"></initial-sql>
             <assertion-sql sql="SHOW SINGLE TABLES ;" />
             <destroy-sql sql="DROP TABLE temp;DROP DEFAULT SINGLE TABLE RULE;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
@@ -108,7 +108,7 @@
         <assertion expected-data-file="alter_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
-            CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_1;ALTER DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" />
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;" />
             <assertion-sql sql="SHOW SINGLE TABLES;" />
             <destroy-sql sql="DROP TABLE temp_alter;DROP DEFAULT SINGLE TABLE RULE;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
@@ -117,7 +117,7 @@
         <assertion expected-data-file="drop_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
-            CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" />
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;" />
             <assertion-sql sql="SHOW SINGLE TABLES;" />
             <destroy-sql sql="DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>

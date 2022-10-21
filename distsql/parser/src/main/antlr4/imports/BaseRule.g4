@@ -54,3 +54,7 @@ tableName
 resourceName
     : IDENTIFIER
     ;
+
+storageUnitName
+    : IDENTIFIER
+    ;

@@ -31,24 +31,12 @@ dropResource
     : DROP RESOURCE ifExists? resourceName (COMMA resourceName)* ignoreSingleTables?
     ;
 
-createDefaultSingleTableRule
-    : CREATE DEFAULT SINGLE TABLE RULE RESOURCE EQ resourceName
-    ;
-
-alterDefaultSingleTableRule
-    : ALTER DEFAULT SINGLE TABLE RULE RESOURCE EQ resourceName
-    ;
-
-dropDefaultSingleTableRule
-    : DROP  DEFAULT SINGLE TABLE RULE ifExists?
+setDefaultSingleTableStorageUnit
+    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ (storageUnitName | RANDOM)
     ;
 
 resourceDefinition
     : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
-    ;
-
-resourceName
-    : IDENTIFIER
     ;
 
 simpleSource

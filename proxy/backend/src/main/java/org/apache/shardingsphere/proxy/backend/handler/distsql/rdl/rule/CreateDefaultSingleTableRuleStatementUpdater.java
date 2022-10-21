@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -36,18 +36,13 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
         checkResourceExist(database, sqlStatement);
-        checkDefaultResourceDuplicate(database.getName(), currentRuleConfig);
     }
     
     private void checkResourceExist(final ShardingSphereDatabase database, final CreateDefaultSingleTableRuleStatement sqlStatement) {
-        Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
-        ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
-                () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
-    }
-    
-    private void checkDefaultResourceDuplicate(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) {
-        if (null != currentRuleConfig) {
-            ShardingSpherePreconditions.checkState(!currentRuleConfig.getDefaultDataSource().isPresent(), () -> new DuplicateRuleException("default single table rule", databaseName));
+        if (StringUtils.isNotBlank(sqlStatement.getDefaultResource())) {
+            Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
+            ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
+                    () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
         }
     }
     

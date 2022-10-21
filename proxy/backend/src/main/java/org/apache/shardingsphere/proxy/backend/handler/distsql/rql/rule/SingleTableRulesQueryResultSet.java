@@ -38,12 +38,12 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         SingleTableRule rule = database.getRuleMetaData().getSingleRule(SingleTableRule.class);
-        rule.getConfiguration().getDefaultDataSource().ifPresent(optional -> data = Collections.singleton(optional).iterator());
+        data = Collections.singleton(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "resource_name");
+        return Arrays.asList("storage_unit_name");
     }
     
     @Override
@@ -53,7 +53,7 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     
     @Override
     public Collection<Object> getRowData() {
-        return Arrays.asList("default", data.next());
+        return Arrays.asList(data.next());
     }
     
     @Override

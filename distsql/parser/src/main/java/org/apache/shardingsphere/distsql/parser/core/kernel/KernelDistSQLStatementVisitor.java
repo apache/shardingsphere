@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationProcessConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterResourceContext;
@@ -31,12 +30,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ClearHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ConvertYamlConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CountSingleTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateMigrationProcessConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DiscardDistSQLContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.EnableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportDatabaseConfigurationContext;
@@ -53,9 +50,11 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ReadDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ResourceDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetDefaultSingleTableStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShardingSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDefaultSingleTableStorageUnitContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationProcessConfigurationContext;
@@ -63,7 +62,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSingleTableContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSingleTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowUnusedResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowVariableContext;
@@ -100,11 +98,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshT
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -214,18 +210,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitCreateDefaultSingleTableRule(final CreateDefaultSingleTableRuleContext ctx) {
-        return new CreateDefaultSingleTableRuleStatement(getIdentifierValue(ctx.resourceName()));
-    }
-    
-    @Override
-    public ASTNode visitAlterDefaultSingleTableRule(final AlterDefaultSingleTableRuleContext ctx) {
-        return new AlterDefaultSingleTableRuleStatement(getIdentifierValue(ctx.resourceName()));
-    }
-    
-    @Override
-    public ASTNode visitDropDefaultSingleTableRule(final DropDefaultSingleTableRuleContext ctx) {
-        return new DropDefaultSingleTableRuleStatement(null != ctx.ifExists());
+    public ASTNode visitSetDefaultSingleTableStorageUnit(final SetDefaultSingleTableStorageUnitContext ctx) {
+        return new CreateDefaultSingleTableRuleStatement(getIdentifierValue(ctx.storageUnitName()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -265,9 +251,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         return new SetVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
     }
-    
+
     @Override
-    public ASTNode visitShowSingleTableRules(final ShowSingleTableRulesContext ctx) {
+    public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
         return new ShowSingleTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     

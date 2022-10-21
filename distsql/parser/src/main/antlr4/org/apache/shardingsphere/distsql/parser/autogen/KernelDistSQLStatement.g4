@@ -42,10 +42,8 @@ execute
     | applyDistSQL
     | discardDistSQL
     | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
+    | showDefaultSingleTableStorageUnit
+    | setDefaultSingleTableStorageUnit
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration

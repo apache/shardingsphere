@@ -259,7 +259,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test
     public void assertUnsupportedRQLStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW SINGLE TABLE RULES";
+        String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
     }

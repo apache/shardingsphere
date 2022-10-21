@@ -27,8 +27,8 @@ showUnusedResources
     : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
     ;
 
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
+showDefaultSingleTableStorageUnit
+    : SHOW DEFAULT SINGLE TABLE STORAGE UNIT (FROM databaseName)?
     ;
 
 showSingleTable

@@ -310,3 +310,15 @@ RATE_LIMITER
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
     ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+UNIT
+    : U N I T
+    ;
+
+RANDOM
+    : R A N D O M
+    ;
