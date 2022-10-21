@@ -17,18 +17,11 @@
 
 <dataset>
     <metadata>
-        <column name="table" />
-        <column name="logic_column" />
-        <column name="logic_data_type" />
-        <column name="cipher_column" />
-        <column name="cipher_data_type" />
-        <column name="plain_column" />
-        <column name="plain_data_type" />
-        <column name="assisted_query_column" />
-        <column name="assisted_query_data_type" />
-        <column name="encryptor_type" />
-        <column name="encryptor_props" />
-        <column name="query_with_cipher_column" />
+        <column name="table_name" />
+        <column name="resource_name" />
     </metadata>
-    <row values="t_user| pwd| | pwd_cipher| | pwd_plain| | | | AES| aes-key-value=123456abcd| true" />
+    <row values="t_country| ds_2" />
+    <row values="t_user| ds_0" />
+    <row values="t_product_category| ds_2" />
 </dataset>
+
