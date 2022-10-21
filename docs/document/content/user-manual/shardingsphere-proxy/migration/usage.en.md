@@ -26,8 +26,8 @@ max_connections=600
 
 Run the following command and check whether `binlog` is enabled.
 ```
-show dist variables like '%log_bin%';
-show dist variables like '%binlog%';
+show variables like '%log_bin%';
+show variables like '%binlog%';
 ```
 
 If the following information is displayed, binlog is enabled.

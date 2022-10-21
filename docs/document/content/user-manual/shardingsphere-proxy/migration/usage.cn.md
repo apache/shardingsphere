@@ -27,8 +27,8 @@ max_connections=600
 执行以下命令，确认是否有开启 binlog：
 
 ```
-show dist variables like '%log_bin%';
-show dist variables like '%binlog%';
+show variables like '%log_bin%';
+show variables like '%binlog%';
 ```
 
 如以下显示，则说明 binlog 已开启
