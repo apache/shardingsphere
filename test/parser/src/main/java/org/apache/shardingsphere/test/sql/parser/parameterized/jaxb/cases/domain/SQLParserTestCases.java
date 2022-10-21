@@ -1139,7 +1139,7 @@ public final class SQLParserTestCases {
     @XmlElement(name = "install-plugin")
     private final List<InstallPluginStatementTestCase> installPluginTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-instance-list")
+    @XmlElement(name = "show-compute-nodes")
     private final List<ShowInstanceListStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "clone")
@@ -1313,13 +1313,13 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-traffic-rule")
     private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "label-instance")
+    @XmlElement(name = "label-compute-node")
     private final List<LabelInstanceStatementTestCase> labelTestCases = new LinkedList<>();
     
-    @XmlElement(name = "unlabel-instance")
+    @XmlElement(name = "unlabel-compute-node")
     private final List<UnlabelInstanceStatementTestCase> unlabelTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-instance")
+    @XmlElement(name = "alter-compute-node")
     private final List<AlterInstanceStatementTestCase> alterInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "prepare-distsql")
@@ -1652,10 +1652,10 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-foreign-table")
     private final List<CreateForeignTableStatementTestCase> createForeignTableStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-instance-info")
+    @XmlElement(name = "show-compute-node-info")
     private final List<ShowInstanceInfoStatementTestCase> showInstanceInfoStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-mode-info")
+    @XmlElement(name = "show-compute-node-mode")
     private final List<ShowModeInfoStatementTestCase> showModeInfoStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-group")

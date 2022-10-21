@@ -310,3 +310,15 @@ RATE_LIMITER
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
     ;
+
+COMPUTE
+    : C O M P U T E
+    ;
+
+NODE
+    : N O D E
+    ;
+
+NODES
+    : N O D E S
+    ;

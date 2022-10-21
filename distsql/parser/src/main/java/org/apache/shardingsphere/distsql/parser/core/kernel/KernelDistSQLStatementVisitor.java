@@ -22,8 +22,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterMigrationProcessConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ApplyDistSQLContext;
@@ -34,17 +34,17 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateMigrationProcessConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DiscardDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DropResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.EnableInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.EnableComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ExportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.FromSegmentContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ImportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.InventoryIncrementalProcessConfigurationContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.LabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PrepareDistSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertiesDefinitionContext;
@@ -56,10 +56,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShardingSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceInfoContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodeInfoContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodeModeContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationProcessConfigurationContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowModeInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSingleTableContext;
@@ -68,7 +68,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowUnusedResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StreamChannelContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelInstanceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WorkerThreadContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WriteDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -163,38 +163,38 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowInstanceList(final ShowInstanceListContext ctx) {
+    public ASTNode visitShowComputeNodes(final ShowComputeNodesContext ctx) {
         return new ShowInstanceListStatement();
     }
     
     @Override
-    public ASTNode visitShowInstanceInfo(final ShowInstanceInfoContext ctx) {
+    public ASTNode visitShowComputeNodeInfo(final ShowComputeNodeInfoContext ctx) {
         return new ShowInstanceInfoStatement();
     }
     
     @Override
-    public ASTNode visitShowModeInfo(final ShowModeInfoContext ctx) {
+    public ASTNode visitShowComputeNodeMode(final ShowComputeNodeModeContext ctx) {
         return new ShowModeInfoStatement();
     }
     
     @Override
-    public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
+    public ASTNode visitEnableComputeNode(final EnableComputeNodeContext ctx) {
         return buildSetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceId());
     }
     
     @Override
-    public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
+    public ASTNode visitDisableComputeNode(final DisableComputeNodeContext ctx) {
         return buildSetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceId());
     }
     
     @Override
-    public ASTNode visitLabelInstance(final LabelInstanceContext ctx) {
+    public ASTNode visitLabelComputeNode(final LabelComputeNodeContext ctx) {
         Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
         return new LabelInstanceStatement(ctx.RELABEL() != null, getIdentifierValue(ctx.instanceId()), labels);
     }
     
     @Override
-    public ASTNode visitUnlabelInstance(final UnlabelInstanceContext ctx) {
+    public ASTNode visitUnlabelComputeNode(final UnlabelComputeNodeContext ctx) {
         Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
         return new UnlabelInstanceStatement(getIdentifierValue(ctx.instanceId()), labels);
     }
@@ -209,7 +209,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
+    public ASTNode visitAlterComputeNode(final AlterComputeNodeContext ctx) {
         return new AlterInstanceStatement(getIdentifierValue(ctx.instanceId()), getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValues()));
     }
     

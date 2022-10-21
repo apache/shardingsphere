@@ -30,9 +30,9 @@
     <distsql-case id="show-traffic-rules" value="SHOW TRAFFIC RULE rule_name" />
     <distsql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" />
     
-    <distsql-case id="show-instance-list" value="SHOW INSTANCE LIST" />
-    <distsql-case id="show-instance-info" value="SHOW INSTANCE INFO" />
-    <distsql-case id="show-mode-info" value="SHOW MODE INFO" />
+    <distsql-case id="show-compute-nodes" value="SHOW COMPUTE NODES" />
+    <distsql-case id="show-compute-node-info" value="SHOW COMPUTE NODE INFO" />
+    <distsql-case id="show-compute-node-mode" value="SHOW COMPUTE NODE MODE" />
     
     <distsql-case id="export-database-config" value="EXPORT DATABASE CONFIG FROM database_name" />
     <distsql-case id="convert-yaml-config" value="CONVERT YAML CONFIG FILE='/yaml/config-resource.yaml'" />
