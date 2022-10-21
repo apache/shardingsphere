@@ -63,6 +63,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     public OpenGaussErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
         fields = new LinkedHashMap<>(13, 1);
         fillFieldsByServerErrorMessage(serverErrorMessage);
+        fillRequiredFieldsIfNecessary();
     }
     
     public OpenGaussErrorResponsePacket(final String severityLevel, final String sqlState, final String message) {
@@ -74,19 +75,45 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     }
     
     private void fillFieldsByServerErrorMessage(final ServerErrorMessage serverErrorMessage) {
-        fields.put(FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
-        fields.put(FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
-        fields.put(FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
-        fields.put(FIELD_TYPE_ERRORCODE, serverErrorMessage.getERRORCODE());
-        fields.put(FIELD_TYPE_DETAIL, serverErrorMessage.getDetail());
-        fields.put(FIELD_TYPE_HINT, serverErrorMessage.getHint());
-        fields.put(FIELD_TYPE_POSITION, serverErrorMessage.getPosition() + "");
-        fields.put(FIELD_TYPE_INTERNAL_POSITION, serverErrorMessage.getInternalPosition() + "");
-        fields.put(FIELD_TYPE_INTERNAL_QUERY, serverErrorMessage.getInternalQuery());
-        fields.put(FIELD_TYPE_WHERE, serverErrorMessage.getWhere());
-        fields.put(FIELD_TYPE_FILE, serverErrorMessage.getFile());
-        fields.put(FIELD_TYPE_LINE, serverErrorMessage.getLine() + "");
-        fields.put(FIELD_TYPE_ROUTINE, serverErrorMessage.getRoutine());
+        if (null != serverErrorMessage.getSeverity()) {
+            fields.put(FIELD_TYPE_SEVERITY, serverErrorMessage.getSeverity());
+        }
+        if (null != serverErrorMessage.getSQLState()) {
+            fields.put(FIELD_TYPE_CODE, serverErrorMessage.getSQLState());
+        }
+        if (null != serverErrorMessage.getMessage()) {
+            fields.put(FIELD_TYPE_MESSAGE, serverErrorMessage.getMessage());
+        }
+        if (null != serverErrorMessage.getERRORCODE()) {
+            fields.put(FIELD_TYPE_ERRORCODE, serverErrorMessage.getERRORCODE());
+        }
+        if (null != serverErrorMessage.getDetail()) {
+            fields.put(FIELD_TYPE_DETAIL, serverErrorMessage.getDetail());
+        }
+        if (null != serverErrorMessage.getHint()) {
+            fields.put(FIELD_TYPE_HINT, serverErrorMessage.getHint());
+        }
+        if (serverErrorMessage.getPosition() > 0) {
+            fields.put(FIELD_TYPE_POSITION, serverErrorMessage.getPosition() + "");
+        }
+        if (serverErrorMessage.getInternalPosition() > 0) {
+            fields.put(FIELD_TYPE_INTERNAL_POSITION, serverErrorMessage.getInternalPosition() + "");
+        }
+        if (null != serverErrorMessage.getInternalQuery()) {
+            fields.put(FIELD_TYPE_INTERNAL_QUERY, serverErrorMessage.getInternalQuery());
+        }
+        if (null != serverErrorMessage.getWhere()) {
+            fields.put(FIELD_TYPE_WHERE, serverErrorMessage.getWhere());
+        }
+        if (null != serverErrorMessage.getFile()) {
+            fields.put(FIELD_TYPE_FILE, serverErrorMessage.getFile());
+        }
+        if (serverErrorMessage.getLine() > 0) {
+            fields.put(FIELD_TYPE_LINE, serverErrorMessage.getLine() + "");
+        }
+        if (null != serverErrorMessage.getRoutine()) {
+            fields.put(FIELD_TYPE_ROUTINE, serverErrorMessage.getRoutine());
+        }
     }
     
     private void fillRequiredFieldsIfNecessary() {
