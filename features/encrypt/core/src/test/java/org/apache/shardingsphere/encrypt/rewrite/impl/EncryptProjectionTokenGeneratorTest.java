@@ -71,7 +71,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         when(result.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn("mobile", null, "mobile", null, null);
+        EncryptColumn column = new EncryptColumn("mobile", null, null, "mobile", null, null);
         when(result.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return result;
     }
