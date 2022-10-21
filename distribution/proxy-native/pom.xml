@@ -31,7 +31,7 @@
         <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-        <native.maven.plugin.version>0.9.14</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.16</native.maven.plugin.version>
     </properties>
     
     <dependencies>
@@ -67,6 +67,35 @@
     </dependencies>
     
     <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <finalName>apache-shardingsphere-${project.version}</finalName>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/shardingsphere-proxy-native-binary-distribution.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-proxy-native-bin</id>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.nicoulaj.maven.plugins</groupId>
+                        <artifactId>checksum-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>native</id>
             <build>
