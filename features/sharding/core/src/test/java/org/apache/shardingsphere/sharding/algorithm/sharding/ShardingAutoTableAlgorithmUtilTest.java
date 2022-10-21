@@ -17,52 +17,42 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public final class ShardingAutoTableAlgorithmUtilTest {
     
-    private Collection<String> collection;
+    private final Collection<String> availableTargetNames = new LinkedList<>();
     
-    private DataNodeInfo dataNodeInfo;
+    private final DataNodeInfo dataNodeInfo = new DataNodeInfo("t_order_", 2, '0');
     
     @Before
     public void setup() {
-        collection = new ArrayList<>();
-        collection.add("PREFIX----SUFFIX");
-        collection.add("PREFIXSUFFIXSTRING");
-        collection.add("PREFIX----------");
-        String prefix = "PREFIX";
-        int suffixMinLength = 10;
-        char paddingChar = '-';
-        dataNodeInfo = new DataNodeInfo(prefix, suffixMinLength, paddingChar);
+        availableTargetNames.add("t_order_00");
+        availableTargetNames.add("t_order_01");
+        availableTargetNames.add("t_order_02");
     }
     
     @Test
-    public void assertFindMatchedTargetNameForValidInputs() {
-        Optional<String> output = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "SUFFIX", dataNodeInfo);
-        assertTrue(output.isPresent());
-        assertThat("PREFIX----SUFFIX", is(output.get()));
-        Optional<String> output1 = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "SUFFIXSTRING", dataNodeInfo);
-        assertTrue(output1.isPresent());
-        assertThat("PREFIXSUFFIXSTRING", is(output1.get()));
-        Optional<String> output2 = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "", dataNodeInfo);
-        assertTrue(output2.isPresent());
-        assertThat("PREFIX----------", is(output2.get()));
+    public void assertFindMatchedTargetNameWhenTableExist() {
+        Optional<String> actual = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, "2", dataNodeInfo);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("t_order_02"));
     }
     
     @Test
-    public void assertFindMatchedTargetNameNonExistingInput() {
-        Optional<String> output = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(collection, "NONEXISTINGSUFFIX", dataNodeInfo);
+    public void assertFindMatchedTargetNameWhenTableNotExist() {
+        Optional<String> output = ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, "3", dataNodeInfo);
         assertFalse(output.isPresent());
     }
 }

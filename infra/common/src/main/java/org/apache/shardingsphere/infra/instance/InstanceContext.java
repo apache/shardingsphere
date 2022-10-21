@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -36,6 +37,7 @@ import java.util.Properties;
 /**
  * Instance context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class InstanceContext {
     
@@ -51,15 +53,6 @@ public final class InstanceContext {
     private final EventBusContext eventBusContext;
     
     private final Collection<ComputeNodeInstance> allClusterInstances = new LinkedList<>();
-    
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
-                           final ModeConfiguration modeConfiguration, final LockContext lockContext, final EventBusContext eventBusContext) {
-        this.instance = instance;
-        this.workerIdGenerator = workerIdGenerator;
-        this.modeConfiguration = modeConfiguration;
-        this.lockContext = lockContext;
-        this.eventBusContext = eventBusContext;
-    }
     
     /**
      * Update instance status.
@@ -113,7 +106,7 @@ public final class InstanceContext {
     public long generateWorkerId(final Properties props) {
         long result = workerIdGenerator.generate(props);
         instance.setWorkerId(result);
-        return getWorkerId();
+        return result;
     }
     
     /**

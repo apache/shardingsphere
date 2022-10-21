@@ -61,7 +61,7 @@ public final class EncryptRuleStatementConverter {
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null);
+                null, columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null, null);
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
