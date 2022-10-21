@@ -26,11 +26,10 @@ import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManage
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManagerFactory;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere transaction manager engine.
@@ -58,16 +57,20 @@ public final class ShardingSphereTransactionManagerEngine {
     /**
      * Initialize transaction managers.
      *
-     * @param databaseType database type
+     * @param databaseTypes database types
      * @param dataSourceMap data source map
      * @param providerType transaction manager provider type
      */
-    public void init(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String providerType) {
-        transactionManagers.forEach((key, value) -> value.init(databaseType, getResourceDataSources(dataSourceMap), providerType));
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final String providerType) {
+        transactionManagers.forEach((key, value) -> value.init(databaseTypes, getResourceDataSources(dataSourceMap), providerType));
     }
     
-    private Collection<ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().map(entry -> new ResourceDataSource(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    private Map<String, ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
+        Map<String, ResourceDataSource> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), new ResourceDataSource(entry.getKey(), entry.getValue()));
+        }
+        return result;
     }
     
     /**

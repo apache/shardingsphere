@@ -24,7 +24,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.sql.Connection;
-import java.util.Collection;
+import java.util.Map;
 
 public final class ShardingSphereTransactionManagerFixture implements ShardingSphereTransactionManager {
     
@@ -32,7 +32,7 @@ public final class ShardingSphereTransactionManagerFixture implements ShardingSp
     private Runnable caller;
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, ResourceDataSource> resourceDataSources, final String providerType) {
         if (null != caller) {
             caller.run();
         }
