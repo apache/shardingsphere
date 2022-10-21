@@ -101,7 +101,7 @@
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
             SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;"></initial-sql>
             <assertion-sql sql="SHOW SINGLE TABLES ;" />
-            <destroy-sql sql="DROP TABLE temp;DROP DEFAULT SINGLE TABLE RULE;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
+            <destroy-sql sql="DROP TABLE temp;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>
     <test-case sql="CREATE TABLE temp_alter (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);" db-types="MySQL, PostgreSQL">
@@ -110,10 +110,10 @@
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
             SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;" />
             <assertion-sql sql="SHOW SINGLE TABLES;" />
-            <destroy-sql sql="DROP TABLE temp_alter;DROP DEFAULT SINGLE TABLE RULE;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
+            <destroy-sql sql="DROP TABLE temp_alter;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>
-    <test-case sql="DROP DEFAULT SINGLE TABLE RULE" db-types="MySQL, PostgreSQL">
+    <test-case sql="SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="drop_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));

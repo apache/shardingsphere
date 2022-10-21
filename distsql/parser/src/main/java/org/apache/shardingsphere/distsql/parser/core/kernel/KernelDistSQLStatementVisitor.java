@@ -211,7 +211,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitSetDefaultSingleTableStorageUnit(final SetDefaultSingleTableStorageUnitContext ctx) {
-        return new CreateDefaultSingleTableRuleStatement(getIdentifierValue(ctx.storageUnitName()));
+        return new CreateDefaultSingleTableRuleStatement(null == ctx.storageUnitName() ? null : getIdentifierValue(ctx.storageUnitName()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -251,7 +251,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         return new SetVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
     }
-
+    
     @Override
     public ASTNode visitShowDefaultSingleTableStorageUnit(final ShowDefaultSingleTableStorageUnitContext ctx) {
         return new ShowSingleTableRulesStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
