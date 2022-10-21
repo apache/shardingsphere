@@ -25,7 +25,6 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.core.featured.FeaturedDistSQLStatementParserFacadeFactory;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -62,14 +61,6 @@ public class DatabaseDiscoveryDistSQLTest {
         AlterDatabaseDiscoveryRuleStatement distSQLStatement = (AlterDatabaseDiscoveryRuleStatement) getDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertDiscoverySegment((DatabaseDiscoveryDefinitionSegment) distSQLStatement.getRules().iterator().next());
-    }
-    
-    @Test
-    public void assertCreateDatabaseDiscoveryType() {
-        String sql = "CREATE DB_DISCOVERY TYPE primary_replica_ds_mgr(TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b'))),primary_replica_ds_mgr_2(TYPE(NAME='mgr'))";
-        CreateDatabaseDiscoveryTypeStatement distSQLStatement = (CreateDatabaseDiscoveryTypeStatement) getDistSQLStatement(sql);
-        assertThat(distSQLStatement.getProviders().size(), is(2));
-        assertAlgorithmSegment(distSQLStatement.getProviders().iterator());
     }
     
     @Test

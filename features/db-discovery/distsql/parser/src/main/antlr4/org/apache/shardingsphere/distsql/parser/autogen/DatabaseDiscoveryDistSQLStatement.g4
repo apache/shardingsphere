@@ -26,8 +26,6 @@ execute
     | showDatabaseDiscoveryTypes
     | showDatabaseDiscoveryHeartbeats
     | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    | createDatabaseDiscoveryHeartbeat
     | alterDatabaseDiscoveryHeartbeat
     | dropDatabaseDiscoveryType
     | dropDatabaseDiscoveryHeartbeat

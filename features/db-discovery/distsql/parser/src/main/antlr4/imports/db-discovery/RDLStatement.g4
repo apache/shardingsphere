@@ -31,20 +31,12 @@ dropDatabaseDiscoveryRule
     : DROP DB_DISCOVERY RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
-createDatabaseDiscoveryType
-    : CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
-    ;
-
 alterDatabaseDiscoveryType
     : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
     ;
 
 dropDatabaseDiscoveryType
     : DROP DB_DISCOVERY TYPE ifExists? discoveryTypeName (COMMA discoveryTypeName)*
-    ;
-
-createDatabaseDiscoveryHeartbeat
-    : CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
     ;
 
 alterDatabaseDiscoveryHeartbeat
