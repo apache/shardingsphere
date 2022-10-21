@@ -41,7 +41,7 @@ If the backend is connected to a MySQL database, please download [mysql-connecto
 
 ShardingSphere-Proxy integrates the ZooKeeper Curator client by default. ZooKeeper is used in cluster mode without introducing other dependencies.
 
-If the cluster mode uses Etcd, the client drivers of Etcd [jetcd-core 0.5.0](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.5.0/jetcd-core-0.5.0.jar) need to be copied into the `ext-lib` directory.
+If the cluster mode uses Etcd, the client drivers of Etcd [jetcd-core 0.7.3](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.7.3/jetcd-core-0.7.3.jar) need to be copied into the `ext-lib` directory.
 
 6. Introduce dependencies required by distributed transactions (Optional)
 

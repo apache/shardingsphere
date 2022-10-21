@@ -9,7 +9,6 @@ weight = 1
 mode (?): # 不配置则默认单机模式
   type: # 运行模式类型。可选配置：Standalone、Cluster
   repository (?): # 久化仓库配置
-  overwrite: # 是否使用本地配置覆盖持久化配置
 ```
 
 ### 单机模式
@@ -22,7 +21,6 @@ mode:
     props: # 持久化仓库所需属性
       foo_key: foo_value
       bar_key: bar_value
-  overwrite: # 是否使用本地配置覆盖持久化配置
 ```
 
 ### 集群模式 (推荐)
@@ -37,13 +35,13 @@ mode:
       server-lists: # 注册中心连接地址
       foo_key: foo_value
       bar_key: bar_value
-  overwrite: # 是否使用本地配置覆盖持久化配置
 ```
 
 ## 注意事项
 
 1. 生产环境建议使用集群模式部署。
 1. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+1. `ZooKeeper` 存在配置信息时，则以 `ZooKeeper` 中的配置为准。
 
 ## 配置示例
 
@@ -53,8 +51,7 @@ mode:
 mode:
   type: Standalone
   repository:
-    type: File
-  overwrite: false
+    type: JDBC
 ```
 
 ### 集群模式 (推荐)
@@ -69,7 +66,6 @@ mode:
       server-lists: localhost:2181
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
-  overwrite: false
 ```
 
 ## 相关参考

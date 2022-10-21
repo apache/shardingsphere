@@ -63,7 +63,7 @@ HintManager hintManager = HintManager.getInstance();
 - 使用 `hintManager.addDatabaseShardingValue` 来添加数据源分片键值。
 - 使用 `hintManager.addTableShardingValue` 来添加表分片键值。
 
-> 分库不分表情况下，强制路由至某一个分库时，可使用 `hintManager.setDatabaseShardingValue` 方式添加分片。
+> 分库不分表情况下，强制路由至某一个分库时，可使用 `hintManager.setDatabaseShardingValue` 方式设置分片值。
 
 #### 清除分片键值
 
@@ -100,6 +100,24 @@ try (HintManager hintManager = HintManager.getInstance();
         }
     }
 }
+```
+
+#### 使用 SQL 注释的方式
+
+##### 使用规范
+
+SQL Hint 功能需要用户提前开启解析注释的配置，设置 `sqlCommentParseEnabled` 为 `true`。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，可选的属性包括：
+
+- `{table}.SHARDING_DATABASE_VALUE`：用于添加 `{table}` 表对应的数据源分片键值，多个属性使用逗号分隔；
+- `{table}.SHARDING_TABLE_VALUE`：用于添加 `{table}` 表对应的表分片键值，多个属性使用逗号分隔。
+
+> 分库不分表情况下，强制路由至某一个分库时，可使用 `SHARDING_DATABASE_VALUE` 方式设置分片，无需指定 `{table}`。
+
+##### 完整示例
+
+```sql
+/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=1, t_order.SHARDING_TABLE_VALUE=1 */
+SELECT * FROM t_order;
 ```
 
 ## 相关参考

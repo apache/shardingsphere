@@ -21,6 +21,7 @@ import org.apache.shardingsphere.example.generator.scenario.transaction.Transact
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class XANarayanaExampleScenario implements TransactionExampleScenario {
@@ -32,7 +33,9 @@ public class XANarayanaExampleScenario implements TransactionExampleScenario {
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        return Collections.emptyMap();
+        Map<String, String> result = new HashMap<>(4, 1);
+        result.put("resources/jbossts-properties.ftl", "jbossts-properties.xml");
+        return result;
     }
     
     @Override

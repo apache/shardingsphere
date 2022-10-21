@@ -30,4 +30,4 @@ Apache ShardingSphere 在开源领域及云原生领域会持续拓展，不断�
 
 ![](https://shardingsphere.apache.org/blog/img/CNCF3.jpg)
 
-Apache ShardingSphere（Incubating）自 2016 开源以来，不断精进、不断发展，被越来越多的企业和个人认可：Github 上收获8000+的 stars，近百家公司企业的成功案例。此外，越来越多的企业和个人也加入到Apache ShardingSphere（Incubating）的开源项目中，为它的成长和发展贡献了巨大力量。
+Apache ShardingSphere 自 2016 开源以来，不断精进、不断发展，被越来越多的企业和个人认可：Github 上收获8000+的 stars，近百家公司企业的成功案例。此外，越来越多的企业和个人也加入到Apache ShardingSphere（Incubating）的开源项目中，为它的成长和发展贡献了巨大力量。

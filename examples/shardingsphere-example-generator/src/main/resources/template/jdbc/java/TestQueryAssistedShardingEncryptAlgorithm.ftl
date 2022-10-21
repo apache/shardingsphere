@@ -26,7 +26,8 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import java.util.Properties;
 
 public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
-
+    
+    @Getter
     private Properties props;
     
     @Override

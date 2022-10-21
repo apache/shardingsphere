@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 221 companies.
+Total: 225 companies.
 
 ### Infra Software
 <ul>
@@ -101,6 +101,7 @@ Total: 221 companies.
     <li><a href="https://jossney.com/" rel="nofollow">Jossney</a></li>
     <li><a href="https://www.belleintl.com/" rel="nofollow">Belle</a></li>
     <li><a href="https://store.kinnls.com/" rel="nofollow">KINNLS</a></li>
+    <li><a href="https://www.zhidemai.com" rel="nofollow">ZHI-TECH</a></li>
 </ul>
 
 ### Digitalization & Cloud Services
@@ -132,6 +133,7 @@ Total: 221 companies.
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
     <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
     <li><a href="https://www.lingxing.com/" rel="nofollow">LINGXING</a></li>
+    <li><a href="http://sz.aisino.com/" rel="nofollow">Aisino</a></li>
 </ul>
 
 ### Transportation
@@ -163,6 +165,7 @@ Total: 221 companies.
     <li><a href="http://www.xbnwl.com/" rel="nofollow">Xbnwl</a></li>
     <li><a href="https://www.huimin.cn" rel="nofollow">HuiMin</a></li>
     <li><a href="https://www.nti56.com/" rel="nofollow">LOGIS-TECH</a></li>
+    <li><a href="https://www.inja.com" rel="nofollow">INJA</a></li>
 </ul>
 
 ### Travel
@@ -183,11 +186,17 @@ Total: 221 companies.
     <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
     <li><a href="http://www.dayang.com.cn" rel="nofollow">DAYANG</a></li>
+</ul>
+
+### Social
+
+<ul>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="http://www.tuodan666.com" rel="nofollow">tuodan666</a></li>
 </ul>
 
 ### E-Learning

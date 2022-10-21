@@ -20,7 +20,7 @@ chapter = true
 
 Spring 命名空间使用规范并未强制要求将 xsd 文件部署至公网地址，但考虑到部分用户的需求，我们也将相关 xsd 文件部署至 ShardingSphere 官网。
 实际上 shardingsphere-jdbc-spring-namespace 的 jar 包中 META-INF\spring.schemas 配置了 xsd 文件的位置：
-META-INF\namespace\sharding.xsd 和 META-INF\namespace\replica-query.xsd，只需确保 jar 包中该文件存在即可。
+META-INF\namespace\sharding.xsd 和 META-INF\namespace\readwrite-splitting.xsd，只需确保 jar 包中该文件存在即可。
 
 ### [JDBC] 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？
 

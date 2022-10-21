@@ -37,7 +37,8 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/mode-reposit
 ## Tips:
 
 1. For production environments, it is recommended to use cluster mode deployment.
-1. For cluster mode deployment, it is recommended to use `ZooKeeper` registry. 
+1. The `ZooKeeper` registry center is recommended for cluster mode deployment.
+1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
 
 ## Operating Procedures
 
@@ -69,14 +70,11 @@ Introduce MAVEN dependency
                   http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">.shardingsphere</prop>
-        </props>
+    <standalone:repository id="standaloneRepository" type="JDBC">
     </standalone:repository>
 
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
     </shardingsphere:data-source>
 </beans>
 ``` 
@@ -103,7 +101,7 @@ Introduce MAVEN dependency
     </cluster:repository>
     
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="false" />
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
 </beans>
 ``` 

@@ -74,15 +74,6 @@ It supports computing, storage, and smooth online expansion, which can meet dive
 
 It can provide users with flexibility thanks to custom systems based on multi-level (kernel, feature, and ecosystem) plugin capabilities.
 
-### Roadmap
-
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_en.png)
-
-### How to Contribute
-
-ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
-You are welcome to check out the mailing list and discuss via [mail](mailto:dev@shardingsphere.apache.org).
-
 ## Design Philosophy
 
 ShardingSphere adopts the database plus design philosophy, which is committed to building the standards and ecology of the upper layer of the database and supplementing the missing capabilities of the database in the ecology.
@@ -124,11 +115,9 @@ The ecosystem layer includes database protocol, SQL parser and storage adapter, 
 
 ## Deployment
 
-### Deployment
-
 Apache ShardingSphere includes two independent clients: ShardingSphere-JDBC & ShardingSphere-Proxy. They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of scenarios such as Java isomorphism, heterogeneous languages, and a cloud-native environment.
 
-#### Independent ShardingSphere-JDBC
+### Using ShardingSphere-JDBC
 
 ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
 With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence.
@@ -149,7 +138,7 @@ It can be considered as an enhanced version of the JDBC driver, which is fully c
 | Decentralization       | `Yes`               | No                   |
 | Static entry           | `No`                | Yes                  |
 
-#### Independent ShardingSphere-Proxy
+### Using ShardingSphere-Proxy
 
 ShardingSphere-Proxy is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
 Currently, MySQL and PostgreSQL protocols are provided.
@@ -170,7 +159,7 @@ It can use any kind of terminal that is compatible with MySQL or PostgreSQL prot
 | Decentralization       | Yes                 | `No`                   |
 | Static entry           | No                  | `Yes`                  |
 
-#### Hybrid Architecture
+### Hybrid Architecture
 
 ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP applications developed with Java.
 ShardingSphere-Proxy provides static entry and supports all languages, applicable to OLAP applications and the sharding databases management and operation situation.
@@ -180,11 +169,11 @@ By combining ShardingSphere-JDBC and ShardingSphere-Proxy, and using the same re
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
 
-### Running Modes
+## Running Modes
 
 Apache ShardingSphere provides two running modes: standalone mode and cluster mode.
 
-#### Standalone mode
+### Standalone Mode
 
 It can achieve data persistence in terms of metadata information such as data sources and rules,
 but it is not able to synchronize metadata to multiple Apache ShardingSphere instances or be aware of each other in a cluster environment.
@@ -192,7 +181,7 @@ Updating metadata through one instance causes inconsistencies in other instances
 
 It is ideal for engineers to build a ShardingSphere environment locally.
 
-#### Cluster mode
+### Cluster Mode
 
 It provides metadata sharing between multiple Apache ShardingSphere instances and the capability to coordinate states in distributed scenarios.
 
@@ -200,3 +189,12 @@ It provides the capabilities necessary for distributed systems, such as horizont
 Clustered environments need to store metadata and coordinate nodes' status through a separately deployed registry center.
 
 We suggest using cluster mode in production environment.
+
+## Roadmap
+
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_en.png)
+
+## Get Involved
+
+ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
+You are welcome to check out the mailing list and discuss via [mail](mailto:dev@shardingsphere.apache.org).
