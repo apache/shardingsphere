@@ -919,19 +919,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-database-discovery-construction-rule")
     private final List<CreateDatabaseDiscoveryConstructionRuleStatementTestCase> createDataBaseDiscoveryConstructionRuleTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-database-discovery-type")
-    private final List<CreateDatabaseDiscoveryTypeStatementTestCase> createDatabaseDiscoveryTypeTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-database-discovery-heartbeat")
-    private final List<CreateDatabaseDiscoveryHeartbeatStatementTestCase> createDatabaseDiscoveryHeartbeatTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-database-discovery-heartbeat")
-    private final List<AlterDatabaseDiscoveryHeartbeatStatementTestCase> alterDatabaseDiscoveryHeartbeatTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-database-discovery-type")
-    private final List<AlterDatabaseDiscoveryTypeStatementTestCase> alterDatabaseDiscoveryTypeTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCases = new LinkedList<>();
     
