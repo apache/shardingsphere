@@ -14,16 +14,21 @@ CreateShardingTableRule ::=
   'CREATE' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
 
 tableDefinition ::= 
-   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')'  ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )?  ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ')'
+   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')'  ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )?')'
+    tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
   'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' ( 'KEY_GENERATOR' '=' algorihtmName | algorithmDefinition ) ')' 
+
+auditStrategyDefinition ::= 
+  'AUDIT_STRATEGY' '(' 'AUDITORS' '=' '[' auditorName ',' auditorName ']' ',' 'ALLOW_HINT_DISABLE' '=' 'TRUE | FALSE' ')'
+  |
+  'AUDIT_STRATEGY' '(' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ',' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ')'
 
 algorithmDefinition ::=
   ('SHARDING_ALGORITHM' '=' algorithmName | 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  )
@@ -38,6 +43,9 @@ resourceName ::=
   identifier
 
 columnName ::=
+  identifier
+    
+auditorName ::=
   identifier
 
 algorithmName ::=
@@ -64,6 +72,8 @@ algorithmType ::=
 - 自动生成的主键策略命名规则为 `tableName` _ `strategyType；
 - `KEY_GENERATE_STRATEGY`
   用于指定主键生成策略，为可选项，关于主键生成策略可参考[分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)。
+- `AUDIT_STRATEGY`
+  用于指定分配审计生成策略，为可选项，关于分片审计生成策略可参考[分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)。
 
 ### 示例
 
@@ -158,7 +168,7 @@ CREATE SHARDING TABLE RULE t_order (
 
 ### 保留字
 
-`CREATE`、`SHARDING`、`TABLE`、`RULE`、`DATANODES`、`DATABASE_STRATEGY`、`TABLE_STRATEGY`、`KEY_GENERATE_STRATEGY`、`RESOURCES`、`SHARDING_COLUMN`、`TYPE`、`SHARDING_COLUMN`、`KEY_GENERATOR`、`SHARDING_ALGORITHM`、`COLUMN`、`NAME`、`PROPERTIES`
+`CREATE`、`SHARDING`、`TABLE`、`RULE`、`DATANODES`、`DATABASE_STRATEGY`、`TABLE_STRATEGY`、`KEY_GENERATE_STRATEGY`、`RESOURCES`、`SHARDING_COLUMN`、`TYPE`、`SHARDING_COLUMN`、`KEY_GENERATOR`、`SHARDING_ALGORITHM`、`COLUMN`、`NAME`、`PROPERTIES`、`AUDIT_STRATEGY`、`AUDITORS`、`ALLOW_HINT_DISABLE`
 
 ### 相关链接
 

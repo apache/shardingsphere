@@ -22,9 +22,12 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+<#if mode=="standalone">
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
+</#if>
 <#if feature?contains("sharding")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -35,6 +38,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 <#if feature?contains("readwrite-splitting")>
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 </#if>
 <#if feature?contains("encrypt")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -49,7 +53,7 @@ import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 </#if>
 <#if feature?contains("db-discovery")>
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
@@ -87,21 +91,25 @@ public final class Configuration {
     
     private static ModeConfiguration createModeConfiguration() {
     <#if mode=="cluster-zookeeper">
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", "localhost:2181", new Properties()), true);
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", "localhost:2181", new Properties()));
     </#if>
     <#if mode=="cluster-etcd">
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "governance-sharding-data-source", "localhost:2379", new Properties()), true);
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "governance-sharding-data-source", "localhost:2379", new Properties()));
     </#if>
     <#if mode=="standalone">
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()));
     </#if> 
     }
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();
         result.put("ds_0", createDataSource("demo_ds_0"));
+    <#if feature!="encrypt">
         result.put("ds_1", createDataSource("demo_ds_1"));
+        <#if feature!="shadow">
         result.put("ds_2", createDataSource("demo_ds_2"));
+        </#if>
+    </#if>
         return result;
     }
     

@@ -1,0 +1,131 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: PARAMETERS
+columns:
+  specific_catalog:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SPECIFIC_CATALOG
+    primaryKey: false
+    visible: true
+  specific_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SPECIFIC_SCHEMA
+    primaryKey: false
+    visible: true
+  specific_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SPECIFIC_NAME
+    primaryKey: false
+    visible: true
+  ordinal_position:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ORDINAL_POSITION
+    primaryKey: false
+    visible: true
+  parameter_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARAMETER_MODE
+    primaryKey: false
+    visible: true
+  parameter_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PARAMETER_NAME
+    primaryKey: false
+    visible: true
+  data_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATA_TYPE
+    primaryKey: false
+    visible: true
+  character_maximum_length:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CHARACTER_MAXIMUM_LENGTH
+    primaryKey: false
+    visible: true
+  character_octet_length:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CHARACTER_OCTET_LENGTH
+    primaryKey: false
+    visible: true
+  numeric_precision:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: NUMERIC_PRECISION
+    primaryKey: false
+    visible: true
+  numeric_scale:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMERIC_SCALE
+    primaryKey: false
+    visible: true
+  datetime_precision:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: DATETIME_PRECISION
+    primaryKey: false
+    visible: true
+  character_set_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_NAME
+    primaryKey: false
+    visible: true
+  collation_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_NAME
+    primaryKey: false
+    visible: true
+  dtd_identifier:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: DTD_IDENTIFIER
+    primaryKey: false
+    visible: true
+  routine_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ROUTINE_TYPE
+    primaryKey: false
+    visible: true
