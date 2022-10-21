@@ -23,12 +23,12 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.sql.Connection;
-import java.util.Collection;
+import java.util.Map;
 
 public final class OtherShardingSphereTransactionManagerFixture implements ShardingSphereTransactionManager {
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, ResourceDataSource> resourceDataSources, final String providerType) {
     }
     
     @Override
