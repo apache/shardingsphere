@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 public final class TransactionRuleBuilderTest {
-
+    
     @Test
     public void assertBuild() {
         TransactionRuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", "provider", new Properties());
@@ -60,12 +60,12 @@ public final class TransactionRuleBuilderTest {
         assertNotNull(rule.getConfiguration());
         assertThat(rule.getDatabases().get("logic_db").getResourceMetaData().getDataSources().size(), is(2));
     }
-
+    
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2, 1);
         result.put("not_change", new MockedDataSource());
         result.put("replace", new MockedDataSource());
         return result;
     }
-
+    
 }
