@@ -310,3 +310,7 @@ RATE_LIMITER
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
     ;
+
+DIST
+    : D I S T
+    ;

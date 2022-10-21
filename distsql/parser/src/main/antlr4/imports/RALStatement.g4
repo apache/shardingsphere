@@ -27,8 +27,8 @@ showVariable
     : SHOW VARIABLE variableName
     ;
 
-showAllVariables
-    : SHOW ALL VARIABLES
+showDistVariables
+    : SHOW DIST VARIABLES
     ;
 
 alterInstance

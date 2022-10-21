@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Show all variables statement.
+ * Show dist variables statement.
  */
-public final class ShowAllVariablesStatement extends QueryableRALStatement {
+public final class ShowDistVariablesStatement extends QueryableRALStatement {
 }

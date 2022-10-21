@@ -27,7 +27,7 @@ execute
     | showUnusedResources
     | setVariable
     | showVariable
-    | showAllVariables
+    | showDistVariables
     | clearHint
     | enableInstance
     | disableInstance

@@ -55,7 +55,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ResourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShardingSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowMigrationProcessConfigurationContext;
@@ -80,7 +80,7 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationProcessConfigurationStatement;
@@ -280,11 +280,11 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     public ASTNode visitShowVariable(final ShowVariableContext ctx) {
         return new ShowVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
     }
-    
-    @Override
-    public ASTNode visitShowAllVariables(final ShowAllVariablesContext ctx) {
-        return new ShowAllVariablesStatement();
-    }
+
+     @Override
+     public ASTNode visitShowDistVariables(final ShowDistVariablesContext ctx) {
+        return new ShowDistVariablesStatement();
+     }
     
     @Override
     public ASTNode visitClearHint(final ClearHintContext ctx) {

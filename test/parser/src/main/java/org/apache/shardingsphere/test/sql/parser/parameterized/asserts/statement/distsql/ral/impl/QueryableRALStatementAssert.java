@@ -23,7 +23,7 @@ import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorit
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
@@ -81,8 +81,8 @@ public final class QueryableRALStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableRALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof ShowVariableStatement) {
             ShowVariableStatementAssert.assertIs(assertContext, (ShowVariableStatement) actual, (ShowVariableStatementTestCase) expected);
-        } else if (actual instanceof ShowAllVariablesStatement) {
-            ShowAllVariablesStatementAssert.assertIs(assertContext, (ShowAllVariablesStatement) actual, (ShowAllVariablesStatementTestCase) expected);
+        } else if (actual instanceof ShowDistVariablesStatement) {
+            ShowAllVariablesStatementAssert.assertIs(assertContext, (ShowDistVariablesStatement) actual, (ShowAllVariablesStatementTestCase) expected);
         } else if (actual instanceof ShowInstanceListStatement) {
             ShowInstanceListStatementAssert.assertIs(assertContext, (ShowInstanceListStatement) actual, (ShowInstanceListStatementTestCase) expected);
         } else if (actual instanceof ShowReadwriteSplittingReadResourcesStatement) {

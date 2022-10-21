@@ -1052,8 +1052,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-variable")
     private final List<ShowVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-all-variables")
-    private final List<ShowAllVariablesStatementTestCase> showAllVariableTestCases = new LinkedList<>();
+    @XmlElement(name = "show-dist-variables")
+    private final List<ShowAllVariablesStatementTestCase> showDistVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-variable")
     private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
