@@ -68,7 +68,7 @@ mysql> SHOW SHARDING TABLE RULES USED AUDITOR sharding_key_required_auditor;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`TABLE`、`RULES`、`USED`、`AUDITOR`、`FROM`
+`SHOW`, `SHARDING`, `TABLE`, `RULES`, `USED`, `AUDITOR`, `FROM`
 
 ### Related links
 

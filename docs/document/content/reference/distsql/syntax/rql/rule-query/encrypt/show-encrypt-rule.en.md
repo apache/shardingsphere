@@ -83,7 +83,7 @@ mysql> SHOW ENCRYPT RULES;
 
 ### Reserved word
 
-`SHOW`、`ENCRYPT`、`RULES`、`FROM`
+`SHOW`, `ENCRYPT`, `RULES`, `FROM`
 
 ### Related links
 

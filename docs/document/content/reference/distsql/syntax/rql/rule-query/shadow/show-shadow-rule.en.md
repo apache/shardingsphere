@@ -103,7 +103,7 @@ mysql> SHOW SHADOW RULES;
 ```
 ### Reserved word
 
-`SHOW`、`SHADOW`、`RULE`、`RULES`、`FROM`
+`SHOW`, `SHADOW`, `RULE`, `RULES`, `FROM`
 
 ### Related links
 

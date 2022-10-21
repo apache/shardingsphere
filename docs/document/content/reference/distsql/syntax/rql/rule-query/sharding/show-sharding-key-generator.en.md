@@ -65,7 +65,7 @@ mysql> SHOW SHARDING KEY GENERATORS;
 
 ### Reserved word
 
-`SHOW`、`SHARDING`、`KEY`、`GENERATORS`、`FROM`
+`SHOW`, `SHARDING`, `KEY`, `GENERATORS`, `FROM`
 
 ### Related links
 

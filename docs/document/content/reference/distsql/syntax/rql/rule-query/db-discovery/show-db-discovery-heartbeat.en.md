@@ -67,7 +67,7 @@ mysql> SHOW DB_DISCOVERY HEARTBEATS;
 
 ### Reserved word
 
-`SHOW`、`DB_DISCOVERY`、`HEARTBEATS`、`FROM`
+`SHOW`, `DB_DISCOVERY`, `HEARTBEATS`, `FROM`
 
 ### Related links
 

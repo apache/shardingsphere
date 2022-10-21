@@ -68,7 +68,7 @@ mysql> SHOW DB_DISCOVERY TYPES;
 
 ### Reserved word
 
-`SHOW`、`DB_DISCOVERY`、`TYPES`、`FROM`
+`SHOW`, `DB_DISCOVERY`, `TYPES`, `FROM`
 
 ### Related links
 

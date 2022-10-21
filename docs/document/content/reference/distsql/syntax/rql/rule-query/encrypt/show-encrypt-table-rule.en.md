@@ -82,7 +82,7 @@ mysql> SHOW ENCRYPT TABLE RULE t_encrypt;
 
 ### Reserved word
 
-`SHOW`、`ENCRYPT`、`TABLE`、`RULE`、`FROM`
+`SHOW`, `ENCRYPT`, `TABLE`, `RULE`, `FROM`
 
 ### Related links
 

@@ -65,7 +65,7 @@ mysql> SHOW SHADOW TABLE RULES;
 ```
 ### Reserved word
 
-`SHOW`、`SHADOW`、`TABLE`、`RULES`、`FROM`
+`SHOW`, `SHADOW`, `TABLE`, `RULES`, `FROM`
 
 ### Related links
 
