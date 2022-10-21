@@ -67,5 +67,4 @@ public final class TransactionRuleBuilderTest {
         result.put("replace", new MockedDataSource());
         return result;
     }
-    
 }
