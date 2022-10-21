@@ -84,7 +84,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     Object literalValue = insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
-                            .orElseThrow(() -> new UnsupportedEncryptInsertValueException(columnIndex));
+                            .orElse(null);
                     encryptInsertValue(encryptAlgorithm, assistEncryptAlgorithm, parameterIndex, literalValue, standardParameterBuilder, encryptContext);
                 }
             }
