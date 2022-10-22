@@ -34,13 +34,16 @@ mode:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
 
+authority:
+  users:
+    - user: root
+      password: root
+    - user: sharding
+      password: sharding
+  privilege:
+    type: ALL_PERMITTED
+
 rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-      - sharding@:sharding
-    provider:
-      type: ALL_PERMITTED
   - !TRANSACTION
     defaultType: XA
     providerType: Atomikos

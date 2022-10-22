@@ -39,7 +39,7 @@ public final class ScheduleContextFactory {
      * @return Schedule context instance
      */
     public static ScheduleContext newInstance(final ModeConfiguration modeConfig) {
-        return "Cluster".equalsIgnoreCase(modeConfig.getType()) && "ZooKeeper".equalsIgnoreCase(modeConfig.getRepository().getType())
+        return "Cluster".equals(modeConfig.getType()) && "ZooKeeper".equals(modeConfig.getRepository().getType())
                 ? new ClusterScheduleContext(modeConfig.getRepository().getProps().getProperty("server-lists"), modeConfig.getRepository().getProps().getProperty("namespace"))
                 : new StandaloneScheduleContext();
     }

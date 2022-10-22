@@ -75,7 +75,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final PostgreSQLPreparedStatement preparedStatement;
+    private final PostgreSQLServerPreparedStatement preparedStatement;
     
     private final Map<ExecutionUnit, List<List<Object>>> executionUnitParameters = new HashMap<>();
     
@@ -83,7 +83,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
-    public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+    public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
@@ -176,7 +176,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
-        DatabaseType databaseType = database.getResource().getDatabaseType();
+        DatabaseType databaseType = database.getResourceMetaData().getDatabaseType();
         DatabaseType protocolType = database.getProtocolType();
         JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);

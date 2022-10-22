@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
@@ -38,8 +38,8 @@ public interface RuleBasedSchemaMetaDataDecorator<T extends TableContainedRule> 
      *
      * @param schemaMetaDataMap schema meta data map
      * @param rule ShardingSphere rule
-     * @param materials SchemaBuilderMaterials materials
+     * @param material generic schema builder material
      * @return schema meta data map
      */
-    Map<String, SchemaMetaData> decorate(Map<String, SchemaMetaData> schemaMetaDataMap, T rule, GenericSchemaBuilderMaterials materials);
+    Map<String, SchemaMetaData> decorate(Map<String, SchemaMetaData> schemaMetaDataMap, T rule, GenericSchemaBuilderMaterial material);
 }

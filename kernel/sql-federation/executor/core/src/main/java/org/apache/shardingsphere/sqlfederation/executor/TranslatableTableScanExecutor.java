@@ -233,14 +233,28 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         return result;
     }
     
-    private AbstractEnumerable<Object[]> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) {
+    private AbstractEnumerable<Object[]> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) throws SQLException {
+        // TODO remove getRows when mergedResult support JDBC first method
+        Collection<Object[]> rows = getRows(mergedResult, metaData);
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new SQLFederationRowEnumerator(mergedResult, metaData, statements);
+                return new SQLFederationRowEnumerator(rows, statements);
             }
         };
+    }
+    
+    private Collection<Object[]> getRows(final MergedResult mergedResult, final QueryResultMetaData metaData) throws SQLException {
+        Collection<Object[]> result = new LinkedList<>();
+        while (mergedResult.next()) {
+            Object[] currentRow = new Object[metaData.getColumnCount()];
+            for (int i = 0; i < metaData.getColumnCount(); i++) {
+                currentRow[i] = mergedResult.getValue(i + 1, Object.class);
+            }
+            result.add(currentRow);
+        }
+        return result;
     }
     
     private QueryContext createQueryContext(final Map<String, ShardingSphereDatabase> databases, final SqlString sqlString, final DatabaseType databaseType) {

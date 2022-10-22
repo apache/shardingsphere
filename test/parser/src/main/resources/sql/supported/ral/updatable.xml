@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <distsql-case id="set-variable" value="SET VARIABLE TRANSACTION_TYPE='LOCAL'" />
+    <distsql-case id="set-dist-variable" value="SET DIST VARIABLE TRANSACTION_TYPE='LOCAL'" />
     
     <distsql-case id="refresh-table-metadata" value="REFRESH TABLE METADATA" />
     <distsql-case id="refresh-table-metadata-with-table-name" value="REFRESH TABLE METADATA t_order" />

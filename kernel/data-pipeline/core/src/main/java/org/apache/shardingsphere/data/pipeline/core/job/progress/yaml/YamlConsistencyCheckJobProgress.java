@@ -17,14 +17,26 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Yaml data consistency check job progress.
  */
-@Data
+@Getter
+@Setter
 public final class YamlConsistencyCheckJobProgress implements YamlConfiguration {
     
     private String status;
+    
+    private String tableNames;
+    
+    private Long checkedRecordsCount;
+    
+    private Long recordsCount;
+    
+    private Long checkBeginTimeMillis;
+    
+    private Long checkEndTimeMillis;
 }

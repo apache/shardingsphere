@@ -47,7 +47,7 @@ public final class AlterDefaultSingleTableRuleStatementUpdater implements RuleDe
     }
     
     private void checkResourceExist(final ShardingSphereDatabase database, final AlterDefaultSingleTableRuleStatement sqlStatement) {
-        Set<String> resourceNames = database.getResource().getDataSources().keySet();
+        Set<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
         ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
                 () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
     }

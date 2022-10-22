@@ -39,6 +39,6 @@ public final class MySQLComStmtCloseExecutorTest {
         MySQLComStmtClosePacket packet = new MySQLComStmtClosePacket(new MySQLPacketPayload(Unpooled.wrappedBuffer(new byte[]{0x01, 0x00, 0x00, 0x00}), StandardCharsets.UTF_8));
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         assertThat(new MySQLComStmtCloseExecutor(packet, connectionSession).execute(), is(Collections.emptyList()));
-        verify(connectionSession.getPreparedStatementRegistry()).removePreparedStatement(1);
+        verify(connectionSession.getServerPreparedStatementRegistry()).removePreparedStatement(1);
     }
 }

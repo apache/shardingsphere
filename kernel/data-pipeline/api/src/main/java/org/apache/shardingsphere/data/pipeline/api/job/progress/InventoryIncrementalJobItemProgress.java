@@ -42,5 +42,7 @@ public final class InventoryIncrementalJobItemProgress implements PipelineJobIte
     
     private long processedRecordsCount;
     
-    private transient String errorMessage;
+    private long inventoryRecordsCount;
+    
+    private String errorMessage;
 }

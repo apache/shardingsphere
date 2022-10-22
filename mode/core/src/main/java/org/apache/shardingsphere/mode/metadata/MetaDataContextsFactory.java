@@ -30,8 +30,6 @@ import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
-import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -93,9 +91,7 @@ public final class MetaDataContextsFactory {
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
         databases.putAll(reloadDatabases(databases, persistService));
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext, props));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
-        ShardingSphereData shardingSphereData = initShardingSphereData(persistService, metaData, instanceContext);
-        return new MetaDataContexts(persistService, metaData, shardingSphereData);
+        return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
     }
     
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
@@ -114,7 +110,7 @@ public final class MetaDataContextsFactory {
     private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, StorageNodeDataSource> storageNodes, final boolean force) {
         Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
         databaseConfigs.forEach((key, value) -> {
-            if (null != value.getDataSources()) {
+            if (null != value.getDataSources() && !value.getDataSources().isEmpty()) {
                 DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), storageDataSourceStates, force);
             }
         });
@@ -137,15 +133,8 @@ public final class MetaDataContextsFactory {
         databases.forEach((key, value) -> {
             Map<String, ShardingSphereSchema> schemas = persistService.getDatabaseMetaDataService().loadSchemas(key);
             result.put(key.toLowerCase(), new ShardingSphereDatabase(value.getName(),
-                    value.getProtocolType(), value.getResource(), value.getRuleMetaData(), schemas.isEmpty() ? value.getSchemas() : schemas));
+                    value.getProtocolType(), value.getResourceMetaData(), value.getRuleMetaData(), schemas.isEmpty() ? value.getSchemas() : schemas));
         });
-        return result;
-    }
-    
-    private static ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData, final InstanceContext instanceContext) {
-        ShardingSphereData result = persistService.getShardingSphereDataPersistService().load().orElse(ShardingSphereDataBuilderFactory
-                .getInstance(metaData.getDatabases().values().iterator().next().getProtocolType()).map(builder -> builder.build(metaData)).orElseGet(ShardingSphereData::new));
-        // TODO register to calcite
         return result;
     }
 }

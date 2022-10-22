@@ -34,7 +34,7 @@ table:
 
 ### Single Table Rule Count
 
-| 列        | 说明                                                  |
+| Column    | Description                                         |
 |-----------|-----------------------------------------------------|
 | rule_name | Single table rule name                              |
 | database  | The database name where the single table is located |

@@ -1,3 +1,8 @@
++++
+title = "添加 Narayana 依赖"
+weight = 2
++++
+
 ## 添加 Narayana 依赖包
 
 添加 Narayana 依赖需要下载以下 jar 文件并将其添加至 `ext-lib` 下。

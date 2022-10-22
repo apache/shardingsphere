@@ -29,14 +29,14 @@ jobs:
     if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
         java-version: [ 8, 17, 19 ]
     steps:
-      - name: Support longpaths in Windows
+      - name: Support long paths in Windows
         if: matrix.os == 'windows-latest'
         run: git config --global core.longpaths true
       - uses: actions/checkout@v3
@@ -44,12 +44,13 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            shardingsphere-maven-third-party-cache-
+            shardingsphere-maven-third-party-
       - name: Build prod with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Build examples with Maven

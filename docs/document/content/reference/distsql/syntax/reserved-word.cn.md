@@ -56,7 +56,7 @@ weight = 3
 
 #### 分片
 
-`SHARDING`、`ALGORITHMS`
+`UNUSED`、`SHARDING`、`ALGORITHMS`
 
 ## 补充说明
 

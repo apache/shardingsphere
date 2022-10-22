@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +28,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class ShardingSphereRowData {
     
     private final List<Object> rows;

@@ -20,8 +20,6 @@ package org.apache.shardingsphere.test.integration.showprocesslist.env;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.integration.showprocesslist.env.enums.ITEnvTypeEnum;
 
@@ -31,7 +29,6 @@ import java.util.Collection;
 import java.util.Properties;
 
 @Getter
-@Slf4j
 public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
@@ -44,7 +41,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itEnvType = ITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("it.env.type").toUpperCase(), ITEnvTypeEnum.NONE.name()));
+        itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.NONE.name()).toUpperCase());
         scenarios = getScenarios(props);
     }
     

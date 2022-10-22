@@ -124,6 +124,7 @@ public interface PipelineSQLBuilder extends TypedSPI, RequiredSPI {
      * @param tableName table name
      * @return count SQL
      */
+    // TODO keep it for now, it might be used later
     String buildCountSQL(String schemaName, String tableName);
     
     /**

@@ -27,12 +27,12 @@ mode:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@:123
-    provider:
-      type: test
+authority:
+  users:
+    - user: root
+      password: 123
+  privilege:
+    type: test
 
 props:
   bar: bar_value

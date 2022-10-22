@@ -21,15 +21,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.CoreMatchers.is;
 
 public final class SQLHintExtractorTest {
     
@@ -59,28 +60,42 @@ public final class SQLHintExtractorTest {
     @Test
     public void assertSQLHintShardingDatabaseValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=100 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue(), is(100));
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=10 */", 0, 0)));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(new BigInteger("10")));
     }
     
     @Test
     public void assertSQLHintShardingDatabaseValueWithTableName() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=10 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(10));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is(new BigInteger("10")));
+    }
+    
+    @Test
+    public void assertSQLHintShardingDatabaseValueWithStringHintValue() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=a */", 0, 0)));
+        assertThat(new SQLHintExtractor(statement).getHintShardingDatabaseValue("t_order"), is("a"));
     }
     
     @Test
     public void assertSQLHintShardingTableValue() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
-        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=100 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue(), is(100));
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHARDING_TABLE_VALUE=10 */", 0, 0)));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(new BigInteger("10")));
     }
     
     @Test
     public void assertSQLHintShardingTableValueWithTableName() {
         AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=10 */", 0, 0)));
-        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(10));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is(new BigInteger("10")));
+    }
+    
+    @Test
+    public void assertSQLHintShardingTableValueWithStringHintValue() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=a */", 0, 0)));
+        assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is("a"));
     }
 }

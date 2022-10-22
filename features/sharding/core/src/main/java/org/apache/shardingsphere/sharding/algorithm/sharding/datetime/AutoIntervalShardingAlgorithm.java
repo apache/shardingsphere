@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Range;
 import lombok.Getter;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -85,7 +86,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
-        return findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
+        return ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -95,7 +96,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int i = firstPartition; i <= lastPartition; i++) {
             String suffix = String.valueOf(i);
-            findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
+            ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }

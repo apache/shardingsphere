@@ -27,13 +27,12 @@ mode:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
 
-rules:
-  - !AUTHORITY
-    users:
-      - proxy@%:Proxy@123
-      - sharding@:sharding
-    provider:
-      type: ALL_PERMITTED
+authority:
+  users:
+    - user: proxy
+      password: Proxy@123
+  privilege:
+    type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1

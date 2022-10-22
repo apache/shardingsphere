@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfiguration;
-import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.junit.Test;
 
@@ -69,7 +68,7 @@ public final class GlobalRulesBuilderTest {
     private InstanceContext buildInstanceContext() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData(UUID.randomUUID().toString()));
         ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null);
-        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfig, mock(LockContext.class), new EventBusContext(), mock(ScheduleContext.class));
+        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfig, mock(LockContext.class), new EventBusContext());
     }
     
     private WorkerIdGenerator createWorkerIdGenerator() {

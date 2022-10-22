@@ -51,7 +51,7 @@ public interface PipelineJobPublicAPI {
     /**
      * Get pipeline job info.
      *
-     * @return jobInfos
+     * @return job info list
      */
     List<? extends PipelineJobInfo> list();
 }

@@ -23,24 +23,28 @@ columns:
     generated: false
     name: variable
     primaryKey: true
+    visible: true
   value:
     caseSensitive: false
     dataType: 12
     generated: false
     name: value
     primaryKey: false
+    visible: true
   set_time:
     caseSensitive: false
     dataType: 93
     generated: false
     name: set_time
     primaryKey: false
+    visible: true
   set_by:
     caseSensitive: false
     dataType: 12
     generated: false
     name: set_by
     primaryKey: false
+    visible: true
 indexes:
   primary:
     name: PRIMARY

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
 import org.junit.Test;
@@ -30,6 +31,7 @@ public final class ClusterPersistRepositoryFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(ClusterPersistRepositoryFactory.getInstance(new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties())).getType(), is("FIXTURE"));
+        assertThat(ClusterPersistRepositoryFactory.getInstance(new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()),
+                new ProxyInstanceMetaData("foo_id", 3307)).getType(), is("FIXTURE"));
     }
 }

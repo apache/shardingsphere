@@ -78,7 +78,7 @@ public final class MergeEngine {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(
-                        database.getName(), database.getResource().getDatabaseType(), entry.getKey(), props, sqlStatementContext);
+                        database.getName(), database.getResourceMetaData().getDatabaseType(), entry.getKey(), props, sqlStatementContext);
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database, connectionContext));
             }
         }

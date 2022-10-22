@@ -35,6 +35,7 @@ import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -121,7 +122,7 @@ public final class CuratorZookeeperRepositoryTest {
         mockClient();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
         mockInternalLockHolder();
     }
     
@@ -263,7 +264,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
     }
     
     @Test
@@ -271,7 +272,7 @@ public final class CuratorZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
     }
     
     @Test
@@ -279,7 +280,7 @@ public final class CuratorZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
     }
     
     @Test
@@ -287,7 +288,7 @@ public final class CuratorZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     
@@ -303,5 +304,21 @@ public final class CuratorZookeeperRepositoryTest {
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");
         verify(backgroundVersionable).forPath("/test/children/1");
+    }
+    
+    @Test
+    public void assertGetNumChildrenGtZero() throws Exception {
+        Stat stat = new Stat(1L, 2L, 3L, 4L, 5, 6, 7, 8L, 9, 10, 11L);
+        when(existsBuilder.forPath("/test/children")).thenReturn(stat);
+        int children = REPOSITORY.getNumChildren("/test/children");
+        assertThat(children, is(10));
+    }
+    
+    @Test
+    public void assertGetNumChildrenEqZero() throws Exception {
+        Stat stat = new Stat();
+        when(existsBuilder.forPath("/test/children")).thenReturn(stat);
+        int children = REPOSITORY.getNumChildren("/test/children");
+        assertThat(children, is(0));
     }
 }

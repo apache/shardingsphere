@@ -17,37 +17,62 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.Test;
 
-import java.util.HashMap;
+import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TransactionRuleTest {
     
-    @Test(expected = IllegalStateException.class)
-    public void assertMultiDatabaseTypeFail() {
-        TransactionRuleConfiguration transactionRuleConfiguration = mock(TransactionRuleConfiguration.class);
-        when(transactionRuleConfiguration.getDefaultType()).thenReturn("XA");
-        when(transactionRuleConfiguration.getProviderType()).thenReturn("Atomikos");
-        ShardingSphereDatabase db1 = mock(ShardingSphereDatabase.class);
-        ShardingSphereResource resource1 = mock(ShardingSphereResource.class);
-        when(resource1.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
-        when(db1.getResource()).thenReturn(resource1);
-        ShardingSphereDatabase db2 = mock(ShardingSphereDatabase.class);
-        ShardingSphereResource resource2 = mock(ShardingSphereResource.class);
-        when(resource2.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
-        when(db2.getResource()).thenReturn(resource2);
-        Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>();
-        databaseMap.put("db1", db1);
-        databaseMap.put("db2", db2);
-        TransactionRule transactionRule = new TransactionRule(transactionRuleConfiguration, databaseMap, null);
+    @Test
+    public void assertInitTransactionRuleWithMultiDatabaseType() {
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap("sharding_db", createDatabase()));
+        assertNotNull(actual.getResource());
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+    }
+    
+    private static ShardingSphereDatabase createDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        ShardingSphereResourceMetaData resourceMetaData = createResourceMetaData();
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(result.getName()).thenReturn("sharding_db");
+        return result;
+    }
+    
+    private static ShardingSphereResourceMetaData createResourceMetaData() {
+        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
+        dataSourceMap.put("ds_0", new MockedDataSource());
+        dataSourceMap.put("ds_1", new MockedDataSource());
+        when(result.getDataSources()).thenReturn(dataSourceMap);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
+        databaseTypes.put("ds_1", new OpenGaussDatabaseType());
+        when(result.getDatabaseTypes()).thenReturn(databaseTypes);
+        return result;
+    }
+    
+    private static TransactionRuleConfiguration createTransactionRuleConfiguration() {
+        TransactionRuleConfiguration result = mock(TransactionRuleConfiguration.class);
+        when(result.getDefaultType()).thenReturn("XA");
+        when(result.getProviderType()).thenReturn("Atomikos");
+        return result;
     }
 }

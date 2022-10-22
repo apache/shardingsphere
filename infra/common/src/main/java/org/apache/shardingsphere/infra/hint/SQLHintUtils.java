@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -63,10 +64,18 @@ public final class SQLHintUtils {
         for (String each : sqlHints) {
             List<String> hintValues = Splitter.on(SQL_HINT_VALUE_SPLIT).trimResults().splitToList(each);
             if (SQL_HINT_VALUE_SIZE == hintValues.size()) {
-                result.put(hintValues.get(0).toUpperCase(), hintValues.get(1));
+                result.put(hintValues.get(0).toUpperCase(), convert(hintValues.get(1)));
             }
         }
         return result;
+    }
+    
+    private static Object convert(final String value) {
+        try {
+            return new BigInteger(value);
+        } catch (final NumberFormatException e) {
+            return value;
+        }
     }
     
     /**

@@ -23,14 +23,6 @@ package org.apache.shardingsphere.infra.lock;
 public interface LockContext {
     
     /**
-     * Try lock.
-     *
-     * @param lockDefinition lock definition
-     * @return is locked or not
-     */
-    boolean tryLock(LockDefinition lockDefinition);
-    
-    /**
      * Try Lock.
      *
      * @param lockDefinition lock definition

@@ -28,14 +28,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 @RequiredArgsConstructor
 public final class ShardingSphereLockContext implements LockContext {
     
-    public static final long MAX_TIMEOUT_MILLIS_OF_TRY_LOCK = 3 * 60 * 1000L;
-    
     private final LockPersistService lockPersistService;
-    
-    @Override
-    public boolean tryLock(final LockDefinition lockDefinition) {
-        return tryLock(lockDefinition, MAX_TIMEOUT_MILLIS_OF_TRY_LOCK);
-    }
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
