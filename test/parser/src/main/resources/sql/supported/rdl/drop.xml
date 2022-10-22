@@ -17,9 +17,9 @@
   -->
 
 <sql-cases>
-    <distsql-case id="drop-resource" value="DROP RESOURCE ds_0,ds_1" />
-    <distsql-case id="drop-resource-if-exists" value="DROP RESOURCE IF EXISTS ds_0,ds_1" />
-    <distsql-case id="drop-resource-ignore-single-tables" value="DROP RESOURCE ds_0,ds_1 ignore single tables;" />
+    <distsql-case id="drop-resource" value="UNREGISTER STORAGE UNIT ds_0,ds_1" />
+    <distsql-case id="drop-resource-if-exists" value="UNREGISTER STORAGE UNIT IF EXISTS ds_0,ds_1" />
+    <distsql-case id="drop-resource-ignore-single-tables" value="UNREGISTER STORAGE UNIT ds_0,ds_1 ignore single tables;" />
     <distsql-case id="drop-sharding-table-rule" value="DROP SHARDING TABLE RULE t_order,t_order_item" />
     <distsql-case id="drop-sharding-table-rule-if-exists" value="DROP SHARDING TABLE RULE IF EXISTS t_order,t_order_item" />
     <distsql-case id="drop-sharding-binding-table-rules" value="DROP SHARDING BINDING TABLE RULES" />

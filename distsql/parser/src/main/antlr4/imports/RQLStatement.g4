@@ -19,12 +19,8 @@ grammar RQLStatement;
 
 import BaseRule;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
-    ;
-
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
+showStorageUnits
+    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ usageCount)?
     ;
 
 showDefaultSingleTableStorageUnit
@@ -41,4 +37,8 @@ showRulesUsedResource
 
 countSingleTableRule
     : COUNT SINGLE_TABLE RULE (FROM databaseName)?
+    ;
+
+usageCount
+    : INT
     ;

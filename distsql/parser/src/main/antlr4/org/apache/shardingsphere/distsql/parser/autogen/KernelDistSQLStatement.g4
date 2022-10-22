@@ -20,11 +20,10 @@ grammar KernelDistSQLStatement;
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | showUnusedResources
+    : (registerStorageUnit
+    | alterStorageUnit
+    | unregisterStorageUnit
+    | showStorageUnits
     | setDistVariable
     | showDistVariable
     | showDistVariables

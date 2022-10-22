@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -52,20 +52,20 @@ import java.util.stream.Collectors;
  * Alter resource backend handler.
  */
 @Slf4j
-public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHandler<AlterResourceStatement> {
+public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHandler<AlterStorageUnitStatement> {
     
     private final DatabaseType databaseType;
     
     private final DataSourcePropertiesValidator validator;
     
-    public AlterResourceBackendHandler(final AlterResourceStatement sqlStatement, final ConnectionSession connectionSession) {
+    public AlterResourceBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getDatabaseType();
         validator = new DataSourcePropertiesValidator();
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final AlterResourceStatement sqlStatement) {
+    public ResponseHeader execute(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         validator.validate(dataSourcePropsMap, databaseType);
@@ -78,21 +78,21 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String databaseName, final AlterResourceStatement sqlStatement) {
+    private void checkSQLStatement(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         Collection<String> toBeAlteredResourceNames = getToBeAlteredResourceNames(sqlStatement);
         checkToBeAlteredDuplicateResourceNames(toBeAlteredResourceNames);
         checkResourceNameExisted(databaseName, toBeAlteredResourceNames);
         checkDatabase(databaseName, sqlStatement);
     }
     
-    private void checkDatabase(final String databaseName, final AlterResourceStatement sqlStatement) {
+    private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
         Collection<String> invalid = sqlStatement.getDataSources().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
                 .filter(each -> !isIdenticalDatabase(each.getValue(), resources.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalid))));
     }
     
-    private Collection<String> getToBeAlteredResourceNames(final AlterResourceStatement sqlStatement) {
+    private Collection<String> getToBeAlteredResourceNames(final AlterStorageUnitStatement sqlStatement) {
         return sqlStatement.getDataSources().stream().map(DataSourceSegment::getName).collect(Collectors.toList());
     }
     

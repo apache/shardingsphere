@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class CreateDefaultSingleTableRuleUpdaterTest {
     
-    private final CreateDefaultSingleTableRuleStatementUpdater updater = new CreateDefaultSingleTableRuleStatementUpdater();
+    private final SetDefaultSingleTableStorageUnitStatementUpdater updater = new SetDefaultSingleTableStorageUnitStatementUpdater();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -56,19 +56,19 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertCheckWithInvalidResource() {
-        updater.checkSQLStatement(database, new CreateDefaultSingleTableRuleStatement("ds_1"), currentConfig);
+        updater.checkSQLStatement(database, new SetDefaultSingleTableStorageUnitStatement("ds_1"), currentConfig);
     }
     
     @Test
     public void assertBuild() {
-        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(new CreateDefaultSingleTableRuleStatement("ds_0"));
+        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("ds_0"));
         assertTrue(toBeCreatedRuleConfig.getDefaultDataSource().isPresent());
         assertThat(toBeCreatedRuleConfig.getDefaultDataSource().get(), is("ds_0"));
     }
     
     @Test
     public void assertUpdate() {
-        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(new CreateDefaultSingleTableRuleStatement("ds_0"));
+        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement("ds_0"));
         SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertTrue(currentConfig.getDefaultDataSource().isPresent());
@@ -77,7 +77,7 @@ public final class CreateDefaultSingleTableRuleUpdaterTest {
     
     @Test
     public void assertRandom() {
-        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(new CreateDefaultSingleTableRuleStatement(null));
+        SingleTableRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(new SetDefaultSingleTableStorageUnitStatement(null));
         SingleTableRuleConfiguration currentConfig = new SingleTableRuleConfiguration();
         updater.updateCurrentRuleConfiguration(currentConfig, toBeCreatedRuleConfig);
         assertFalse(currentConfig.getDefaultDataSource().isPresent());

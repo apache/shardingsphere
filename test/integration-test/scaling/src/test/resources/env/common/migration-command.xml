@@ -42,7 +42,7 @@
     </add-migration-source-resource-template>
     
     <add-migration-target-resource-template>
-        ADD RESOURCE ds_2 (
+        REGISTER STORAGE UNIT ds_2 (
         URL="${ds2}",
         USER="${user}",
         PASSWORD="${password}"

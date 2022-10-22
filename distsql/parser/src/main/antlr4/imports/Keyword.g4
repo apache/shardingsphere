@@ -319,6 +319,10 @@ UNIT
     : U N I T
     ;
 
+UNITS
+    : U N I T S
+    ;
+
 RANDOM
     : R A N D O M
     ;
@@ -330,3 +334,16 @@ DIST
 WHERE
     : W H E R E
     ;
+
+USAGE_COUNT
+    : U S A G E UL_ C O U N T
+    ;
+
+REGISTER
+    : R E G I S T E R
+    ;
+
+UNREGISTER
+    : U N R E G I S T E R
+    ;
+

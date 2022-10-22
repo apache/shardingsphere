@@ -338,7 +338,7 @@ public abstract class BaseITCase {
                 addResources(connection);
             }
         }
-        int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
+        int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db");
         assertThat(resourceCount, is(2));
     }
     
@@ -373,7 +373,7 @@ public abstract class BaseITCase {
                 .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName));
         executeWithLog(connection, addSourceResource);
-        int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
+        int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db");
         Thread.sleep(5000L);
         assertThat(resourceCount, is(3));
     }

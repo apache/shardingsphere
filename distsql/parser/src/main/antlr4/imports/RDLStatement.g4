@@ -19,24 +19,24 @@ grammar RDLStatement;
 
 import BaseRule;
 
-addResource
-    : ADD RESOURCE resourceDefinition (COMMA resourceDefinition)*
+registerStorageUnit
+    : REGISTER STORAGE UNIT storageUnitDefinition (COMMA storageUnitDefinition)*
     ;
 
-alterResource
-    : ALTER RESOURCE resourceDefinition (COMMA resourceDefinition)*
+alterStorageUnit
+    : ALTER STORAGE UNIT storageUnitDefinition (COMMA storageUnitDefinition)*
     ;
 
-dropResource
-    : DROP RESOURCE ifExists? resourceName (COMMA resourceName)* ignoreSingleTables?
+unregisterStorageUnit
+    : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA storageUnitName)* ignoreSingleTables?
     ;
 
 setDefaultSingleTableStorageUnit
     : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ (storageUnitName | RANDOM)
     ;
 
-resourceDefinition
-    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+storageUnitDefinition
+    : storageUnitName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
     ;
 
 simpleSource

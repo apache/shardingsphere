@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -58,6 +58,6 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     
     @Override
     public String getType() {
-        return ShowSingleTableRulesStatement.class.getName();
+        return ShowDefaultSingleTableStorageUnitStatement.class.getName();
     }
 }

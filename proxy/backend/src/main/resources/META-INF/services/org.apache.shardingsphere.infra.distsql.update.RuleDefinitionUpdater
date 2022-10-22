@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.CreateDefaultSingleTableRuleStatementUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.SetDefaultSingleTableStorageUnitStatementUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.AlterDefaultSingleTableRuleStatementUpdater
 org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.DropDefaultSingleTableRuleStatementUpdater
 

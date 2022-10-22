@@ -15,18 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
+
+import java.util.Collection;
 
 /**
- * Show single table rules statement.
+ * Drop resource statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ShowSingleTableRulesStatement extends ShowRulesStatement {
+public final class UnregisterStorageUnitStatement extends ResourceDefinitionStatement {
     
-    public ShowSingleTableRulesStatement(final DatabaseSegment database) {
-        super(database);
+    private final boolean ifExists;
+    
+    private final Collection<String> names;
+    
+    private final boolean ignoreSingleTables;
+    
+    public UnregisterStorageUnitStatement(final Collection<String> names, final boolean ignoreSingleTables) {
+        this.ifExists = false;
+        this.names = names;
+        this.ignoreSingleTables = ignoreSingleTables;
     }
 }

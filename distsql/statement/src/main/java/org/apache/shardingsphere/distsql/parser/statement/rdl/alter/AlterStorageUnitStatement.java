@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
 
 import java.util.Collection;
 
 /**
- * Drop resource statement.
+ * Alter resource statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropResourceStatement extends ResourceDefinitionStatement {
+public final class AlterStorageUnitStatement extends ResourceDefinitionStatement {
     
-    private final boolean ifExists;
-    
-    private final Collection<String> names;
-    
-    private final boolean ignoreSingleTables;
-    
-    public DropResourceStatement(final Collection<String> names, final boolean ignoreSingleTables) {
-        this.ifExists = false;
-        this.names = names;
-        this.ignoreSingleTables = ignoreSingleTables;
-    }
+    private final Collection<DataSourceSegment> dataSources;
 }
