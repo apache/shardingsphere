@@ -17,23 +17,16 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
-
-import java.util.Optional;
 
 /**
- * Show resources statement.
+ * Show single table rules statement.
  */
-@RequiredArgsConstructor
-public final class ShowResourcesStatement extends RQLStatement implements FromDatabaseAvailable {
+@Getter
+public final class ShowDefaultSingleTableStorageUnitStatement extends ShowRulesStatement {
     
-    private final DatabaseSegment database;
-    
-    @Override
-    public Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(database);
+    public ShowDefaultSingleTableStorageUnitStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

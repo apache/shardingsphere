@@ -20,11 +20,10 @@ grammar KernelDistSQLStatement;
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | showUnusedResources
+    : (registerStorageUnit
+    | alterStorageUnit
+    | unregisterStorageUnit
+    | showStorageUnits
     | setDistVariable
     | showDistVariable
     | showDistVariables
@@ -42,10 +41,8 @@ execute
     | applyDistSQL
     | discardDistSQL
     | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
+    | showDefaultSingleTableStorageUnit
+    | setDefaultSingleTableStorageUnit
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration

@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
@@ -82,14 +82,14 @@ public final class RDLStatementAssert {
             AlterShardingTableRuleStatementAssert.assertIs(assertContext, (AlterShardingTableRuleStatement) actual, expected);
         } else if (actual instanceof CreateRuleStatement) {
             CreateRuleStatementAssert.assertIs(assertContext, (CreateRuleStatement) actual, expected);
-        } else if (actual instanceof AddResourceStatement) {
-            AddResourceStatementAssert.assertIs(assertContext, (AddResourceStatement) actual, (AddResourceStatementTestCase) expected);
-        } else if (actual instanceof AlterResourceStatement) {
-            AlterResourceStatementAssert.assertIs(assertContext, (AlterResourceStatement) actual, (AlterResourceStatementTestCase) expected);
+        } else if (actual instanceof RegisterStorageUnitStatement) {
+            AddResourceStatementAssert.assertIs(assertContext, (RegisterStorageUnitStatement) actual, (AddResourceStatementTestCase) expected);
+        } else if (actual instanceof AlterStorageUnitStatement) {
+            AlterResourceStatementAssert.assertIs(assertContext, (AlterStorageUnitStatement) actual, (AlterResourceStatementTestCase) expected);
         } else if (actual instanceof AlterRuleStatement) {
             AlterRuleStatementAssert.assertIs(assertContext, (AlterRuleStatement) actual, expected);
-        } else if (actual instanceof DropResourceStatement) {
-            DropResourceStatementAssert.assertIs(assertContext, (DropResourceStatement) actual, (DropResourceStatementTestCase) expected);
+        } else if (actual instanceof UnregisterStorageUnitStatement) {
+            DropResourceStatementAssert.assertIs(assertContext, (UnregisterStorageUnitStatement) actual, (DropResourceStatementTestCase) expected);
         } else if (actual instanceof DropRuleStatement) {
             DropRuleStatementAssert.assertIs(assertContext, (DropRuleStatement) actual, expected);
         }

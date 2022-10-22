@@ -88,7 +88,7 @@
     </show-single-table>
     
     <show-single-table-rules sql-case-id="show-single-table-rules">
-        <database name="single_table_db" start-index="29" stop-index="43" />
+        <database name="single_table_db" start-index="44" stop-index="58" />
     </show-single-table-rules>
     
     <show-sharding-table-nodes sql-case-id="show-sharding-table-nodes" table="t_order">

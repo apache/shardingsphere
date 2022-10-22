@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
-import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Add resource statement.
+ * Show resources statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AddResourceStatement extends ResourceDefinitionStatement {
+@RequiredArgsConstructor
+public final class ShowStorageUnitsStatement extends RQLStatement implements FromDatabaseAvailable {
     
-    private final Collection<DataSourceSegment> dataSources;
+    private final DatabaseSegment database;
+    
+    private final Integer usageCount;
+    
+    @Override
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
+    }
 }

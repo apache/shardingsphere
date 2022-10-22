@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDefaultSingleTableRuleStatement extends CreateRuleStatement {
+public final class SetDefaultSingleTableStorageUnitStatement extends CreateRuleStatement {
     
     private final String defaultResource;
 }

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -31,28 +31,23 @@ import java.util.Collections;
 /**
  * Create default single table rule statement updater.
  */
-public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleDefinitionCreateUpdater<CreateDefaultSingleTableRuleStatement, SingleTableRuleConfiguration> {
+public final class SetDefaultSingleTableStorageUnitStatementUpdater implements RuleDefinitionCreateUpdater<SetDefaultSingleTableStorageUnitStatement, SingleTableRuleConfiguration> {
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final CreateDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
         checkResourceExist(database, sqlStatement);
-        checkDefaultResourceDuplicate(database.getName(), currentRuleConfig);
     }
     
-    private void checkResourceExist(final ShardingSphereDatabase database, final CreateDefaultSingleTableRuleStatement sqlStatement) {
-        Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
-        ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
-                () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
-    }
-    
-    private void checkDefaultResourceDuplicate(final String databaseName, final SingleTableRuleConfiguration currentRuleConfig) {
-        if (null != currentRuleConfig) {
-            ShardingSpherePreconditions.checkState(!currentRuleConfig.getDefaultDataSource().isPresent(), () -> new DuplicateRuleException("default single table rule", databaseName));
+    private void checkResourceExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
+        if (StringUtils.isNotBlank(sqlStatement.getDefaultResource())) {
+            Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
+            ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
+                    () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
         }
     }
     
     @Override
-    public SingleTableRuleConfiguration buildToBeCreatedRuleConfiguration(final CreateDefaultSingleTableRuleStatement sqlStatement) {
+    public SingleTableRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         SingleTableRuleConfiguration result = new SingleTableRuleConfiguration();
         result.setDefaultDataSource(sqlStatement.getDefaultResource());
         return result;
@@ -70,6 +65,6 @@ public final class CreateDefaultSingleTableRuleStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return CreateDefaultSingleTableRuleStatement.class.getName();
+        return SetDefaultSingleTableStorageUnitStatement.class.getName();
     }
 }

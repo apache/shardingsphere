@@ -106,7 +106,7 @@
     </alter-xa-transaction-rule>
 
     <source-add-resource-template>
-        ADD RESOURCE ds_0 (
+        REGISTER STORAGE UNIT ds_0 (
         URL="${ds0}",
         USER="${user}",
         PASSWORD="${password}"
@@ -118,7 +118,7 @@
     </source-add-resource-template>
 
     <source-add-new-resource-template>
-        ADD RESOURCE ds_2 (
+        REGISTER STORAGE UNIT ds_2 (
             URL="${ds2}",
             USER="${user}",
             PASSWORD="${password}"
