@@ -322,3 +322,11 @@ UNIT
 RANDOM
     : R A N D O M
     ;
+
+DIST
+    : D I S T
+    ;
+
+WHERE
+    : W H E R E
+    ;

@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Set variable statement test case.
+ * Show dist variable statement.
  */
-public final class SetVariableStatementTestCase extends SQLParserTestCase {
+@RequiredArgsConstructor
+@Getter
+public final class ShowDistVariableStatement extends QueryableRALStatement {
+    
+    private final String name;
 }

@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-variable" value="SHOW VARIABLE CACHED_CONNECTIONS" />
-    <distsql-case id="show-all-variables" value="SHOW ALL VARIABLES" />
+    <distsql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = CACHED_CONNECTIONS" />
+    <distsql-case id="show-dist-variables" value="SHOW DIST VARIABLES" />
     
     <distsql-case id="show-readwrite-splitting-read-resources" value="SHOW READWRITE_SPLITTING READ RESOURCES" />
     

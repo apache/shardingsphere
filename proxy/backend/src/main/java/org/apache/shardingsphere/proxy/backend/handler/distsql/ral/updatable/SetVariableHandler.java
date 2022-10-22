@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * Set variable statement handler.
  */
-public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement> {
+public final class SetVariableHandler extends UpdatableRALBackendHandler<SetDistVariableStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {

@@ -25,9 +25,9 @@ execute
     | dropResource
     | showResources
     | showUnusedResources
-    | setVariable
-    | showVariable
-    | showAllVariables
+    | setDistVariable
+    | showDistVariable
+    | showDistVariables
     | clearHint
     | enableInstance
     | disableInstance
