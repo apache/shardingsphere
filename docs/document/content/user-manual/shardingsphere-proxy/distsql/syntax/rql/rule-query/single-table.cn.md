@@ -6,9 +6,9 @@ weight = 2
 ## 语法说明
 
 ```sql
-SHOW SINGLE TABLE (table | RULES) [FROM databaseName]
-
-SHOW SINGLE TABLES
+SHOW DEFAULT SINGLE TABLE STORAGE UNIT [FROM databaseName]
+    
+SHOW SINGLE (TABLES | table) [FROM databaseName]
 
 COUNT SINGLE_TABLE RULE [FROM databaseName]
 
@@ -20,10 +20,9 @@ table:
 
 ### Single Table Rule
 
-| 列            | 说明          |
-| ------------- | ------------ |
-| name          | 规则名称      |
-| resource_name | 数据源名称    |
+| 列                  | 说明      |
+|--------------------|---------|
+| storage_unit_name  | 存储单元名称  |
 
 ### Single Table
 
@@ -45,12 +44,12 @@ table:
 *SHOW SINGLE TABLES RULES*
 
 ```sql
-sql> SHOW SINGLE TABLES RULES;
-+---------+---------------+
-| name    | resource_name |
-+---------+---------------+
-| default | ds_1          |
-+---------+---------------+
+sql> SHOW DEFAULT SINGLE TABLE STORAGE UNIT;
++-------------------+
+| storage_unit_name |
++-------------------+
+|  ds_0             |
++-------------------+
 1 row in set (0.01 sec)
 ```
 
