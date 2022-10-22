@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Set variable statement.
+ * Set dist variable statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SetVariableStatement extends UpdatableRALStatement {
-    
-    private final String name;
-    
-    private final String value;
+public final class SetDistVariableStatementTestCase extends SQLParserTestCase {
 }

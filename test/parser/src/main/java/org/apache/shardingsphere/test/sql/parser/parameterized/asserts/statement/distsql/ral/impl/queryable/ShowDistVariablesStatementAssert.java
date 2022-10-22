@@ -17,33 +17,27 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowDistVariablesStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Show variable statement assert.
+ * Show dist variables statement assert.
  */
-public final class ShowVariableStatementAssert {
+public final class ShowDistVariablesStatementAssert {
     
     /**
-     * Assert show variable statement is correct with expected parser result.
+     * Assert show dist variables statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show variable statement
-     * @param expected expected show variable statement test case
+     * @param actual actual show dist variables statement
+     * @param expected expected show dist variables statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowVariableStatement actual, final ShowVariableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowDistVariablesStatement actual, final ShowDistVariablesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
-        } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(actual.getName(), is(expected.getName()));
         }
     }
 }

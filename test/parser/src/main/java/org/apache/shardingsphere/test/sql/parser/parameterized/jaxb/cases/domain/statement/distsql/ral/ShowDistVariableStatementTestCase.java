@@ -24,11 +24,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show variable statement test case.
+ * Show dist variable statement test case.
  */
 @Setter
 @Getter
-public final class ShowVariableStatementTestCase extends SQLParserTestCase {
+public final class ShowDistVariableStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute
     private String name;
