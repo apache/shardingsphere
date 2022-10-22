@@ -185,7 +185,7 @@ public final class InventoryTaskSplitter {
                     beginId = endId + 1;
                 }
             }
-            jobItemContext.initInventoryRecordsCount(recordsCount);
+            jobItemContext.updateInventoryRecordsCount(recordsCount);
             // fix empty table missing inventory task
             if (result.isEmpty()) {
                 result.add(new IntegerPrimaryKeyPosition(0, 0));
@@ -207,7 +207,7 @@ public final class InventoryTaskSplitter {
                 PreparedStatement ps = connection.prepareStatement(sql)) {
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
-                jobItemContext.initInventoryRecordsCount(rs.getLong(1));
+                jobItemContext.updateInventoryRecordsCount(rs.getLong(1));
             }
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), ex);
