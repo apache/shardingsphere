@@ -18,7 +18,7 @@ table:
 
 ## Return Value Description
 
-### Single Table Rule
+### Single Table Storage Unit
 
 | Column             | Description       |
 |--------------------|-------------------|
@@ -42,7 +42,7 @@ table:
 
 ## Example
 
-*SHOW SINGLE TABLES RULES*
+*SHOW DEFAULT SINGLE TABLE STORAGE UNIT*
 
 ```sql
 sql> SHOW DEFAULT SINGLE TABLE STORAGE UNIT;
