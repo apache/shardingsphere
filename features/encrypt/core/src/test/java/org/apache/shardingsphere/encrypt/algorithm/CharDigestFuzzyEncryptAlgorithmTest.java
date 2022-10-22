@@ -35,15 +35,15 @@ public final class CharDigestFuzzyEncryptAlgorithmTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> ChineseEncryptAlgorithm;
+    private EncryptAlgorithm<Object, String> chineseEncryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> KoreanEncryptAlgorithm;
+    private EncryptAlgorithm<Object, String> koreanEncryptAlgorithm;
     
     @Before
     public void setUp() {
         encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
-        ChineseEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
-        KoreanEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", createProperties()));
+        chineseEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
+        koreanEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", createProperties()));
     }
     
     private Properties createProperties() {
@@ -60,12 +60,12 @@ public final class CharDigestFuzzyEncryptAlgorithmTest {
     
     @Test
     public void assertChineseEncode() {
-        assertThat(ChineseEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
+        assertThat(chineseEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
     }
     
     @Test
     public void assertKoreanEncode() {
-        assertThat(KoreanEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
+        assertThat(koreanEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
     }
     
     @Test
