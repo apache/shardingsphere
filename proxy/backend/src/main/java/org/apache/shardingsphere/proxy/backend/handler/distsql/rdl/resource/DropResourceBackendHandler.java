@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
@@ -49,14 +49,14 @@ import java.util.stream.Collectors;
  * Drop resource backend handler.
  */
 @Slf4j
-public final class DropResourceBackendHandler extends DatabaseRequiredBackendHandler<DropResourceStatement> {
+public final class DropResourceBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
     
-    public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final ConnectionSession connectionSession) {
+    public DropResourceBackendHandler(final UnregisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) {
+    public ResponseHeader execute(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
         check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExists());
         try {

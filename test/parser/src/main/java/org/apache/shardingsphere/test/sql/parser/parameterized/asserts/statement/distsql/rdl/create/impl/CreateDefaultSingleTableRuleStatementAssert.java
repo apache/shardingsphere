@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateDefaultSingleTableRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultSingleTableRuleStatementTestCase;
 
@@ -41,7 +41,7 @@ public final class CreateDefaultSingleTableRuleStatementAssert {
      * @param actual actual create default single table rule statement
      * @param expected expected create default single table rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDefaultSingleTableRuleStatement actual,
+    public static void assertIs(final SQLCaseAssertContext assertContext, final SetDefaultSingleTableStorageUnitStatement actual,
                                 final CreateDefaultSingleTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
