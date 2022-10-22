@@ -27,10 +27,10 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Fuzzy Chinese encrypt algorithm.
+ * Char Digest Fuzzy encrypt algorithm.
  */
 @Getter
-public final class FuzzyChineseEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class CharDigestFuzzyEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private static final String DELTA = "delta";
     
@@ -115,12 +115,12 @@ public final class FuzzyChineseEncryptAlgorithm implements EncryptAlgorithm<Obje
                     + "靳脯昌官沾丙搂杜盛席消凛梯范颁籽病喊而辊抉坑燎粹账慎追均辜皆贝恿阻旨训柔赁堕陇匆浮量喧钳苹蕉进窘舜恳种伍险革胎瞎肚昨"
                     + "棋晾扎煞铰诧汁破";
     
-    private Map<Character, Integer> charIndexMap = new LinkedHashMap<>(4000);
+    private final Map<Character, Integer> charIndexMap = new LinkedHashMap<>(4000);
     
     @Override
     public void init(final Properties props) {
         this.props = props;
-        if (props == null) {
+        if (null == props) {
             return;
         }
         setDelta(props);
@@ -139,7 +139,7 @@ public final class FuzzyChineseEncryptAlgorithm implements EncryptAlgorithm<Obje
             try {
                 this.delta = Integer.parseInt(delta);
             } catch (NumberFormatException e) {
-                throw new EncryptAlgorithmInitializationException("FUZZY_CN", "delta can only be a number");
+                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_FUZZY", "delta can only be a decimal number");
             }
         }
     }
@@ -150,7 +150,7 @@ public final class FuzzyChineseEncryptAlgorithm implements EncryptAlgorithm<Obje
             try {
                 this.mask = Integer.parseInt(mask);
             } catch (NumberFormatException e) {
-                throw new EncryptAlgorithmInitializationException("FUZZY_CN", "mask can only be a number");
+                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_FUZZY", "mask can only be a decimal number");
             }
         }
     }
@@ -161,7 +161,7 @@ public final class FuzzyChineseEncryptAlgorithm implements EncryptAlgorithm<Obje
             try {
                 this.start = Integer.parseInt(start);
             } catch (NumberFormatException e) {
-                throw new EncryptAlgorithmInitializationException("FUZZY_CN", "start can only be a number");
+                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_FUZZY", "start can only be a decimal number");
             }
         }
     }
@@ -211,6 +211,6 @@ public final class FuzzyChineseEncryptAlgorithm implements EncryptAlgorithm<Obje
     
     @Override
     public String getType() {
-        return "FUZZY_CN";
+        return "CHAR_DIGEST_FUZZY";
     }
 }
