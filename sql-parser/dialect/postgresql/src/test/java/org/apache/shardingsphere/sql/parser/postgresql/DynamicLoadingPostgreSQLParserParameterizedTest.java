@@ -22,23 +22,19 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoa
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingPostgreParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
+public final class DynamicLoadingPostgreSQLParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
     
-    private static final String sqlCaseURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
-    
-    public DynamicLoadingPostgreParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue, final String databaseType) {
-        super(sqlCaseId, sqlCaseValue, databaseType);
+    public DynamicLoadingPostgreSQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
+        super(sqlCaseId, sqlCaseValue, "PostgreSQL");
     }
     
     @Parameters(name = "{1} ({2}) -> {0}")
-    public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException, ParserConfigurationException, TransformerException {
-        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("PostgreSQL", sqlCaseURL);
+    public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException {
+        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
 }

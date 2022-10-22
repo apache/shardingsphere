@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,7 +41,9 @@ import java.util.ArrayList;
 public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String sqlCaseId;
+    
     private final String sqlCaseValue;
+    
     private final String databaseType;
     
     private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) {
@@ -56,17 +56,16 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
                 sqlCasesOwner, sqlCasesRepo, sqlCasesDirectory);
     }
     
-    protected static Collection<Object[]> getTestParameters(final String databaseType,
-                                                            final String sqlCaseURL) throws ParserConfigurationException, IOException, URISyntaxException, TransformerException {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException, URISyntaxException {
         Collection<Object[]> result = new ArrayList<>();
         LinkedList<Map<String, String>> response = getResponse(sqlCaseURL);
         for (Map<String, String> each : response) {
-            result.addAll(getSqlCases(each, databaseType));
+            result.addAll(getSqlCases(each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getSqlCases(final Map<String, String> elements, final String databaseType) throws IOException, URISyntaxException {
+    private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException, URISyntaxException {
         Collection<Object[]> result = new ArrayList<>();
         String sqlCaseFileName = elements.get("name");
         String sqlCaseFileContent = IOUtils.toString(new URI(elements.get("download_url")), StandardCharsets.UTF_8);
@@ -79,7 +78,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
             if (Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
                 result.add(new Object[]{
-                        sqlCaseId, each, databaseType,
+                        sqlCaseId, each,
                 });
                 sqlCaseEnum++;
             }

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoa
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -31,14 +29,12 @@ import java.util.Collection;
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingMySQLParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
     
-    private static final String sqlCaseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
-    
-    public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue, final String databaseType) {
-        super(sqlCaseId, sqlCaseValue, databaseType);
+    public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
+        super(sqlCaseId, sqlCaseValue, "MySQL");
     }
     
-    @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException, ParserConfigurationException, TransformerException {
-        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("MySQL", sqlCaseURL);
+    @Parameters(name = "{0} (MySQL) -> {1}")
+    public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException {
+        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
     }
 }
