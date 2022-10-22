@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,7 +31,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ArrayList;
@@ -46,19 +44,19 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) {
+    private static ArrayList<Map<String, String>> getResponse(final String sqlCaseURL) {
         String[] patches = sqlCaseURL.split("/", 8);
         String sqlCasesOwner = patches[3];
         String sqlCasesRepo = patches[4];
         String sqlCasesDirectory = patches[7];
         return new RestTemplate().getForObject(
-                "https://api.github.com/repos/{owner}/{repo}/contents/{directory}", LinkedList.class,
+                "https://api.github.com/repos/{owner}/{repo}/contents/{directory}", ArrayList.class,
                 sqlCasesOwner, sqlCasesRepo, sqlCasesDirectory);
     }
     
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException, URISyntaxException {
         Collection<Object[]> result = new ArrayList<>();
-        LinkedList<Map<String, String>> response = getResponse(sqlCaseURL);
+        ArrayList<Map<String, String>> response = getResponse(sqlCaseURL);
         for (Map<String, String> each : response) {
             result.addAll(getSqlCases(each));
         }
@@ -90,7 +88,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     public final void assertDynamicLoadingSQL() {
         CacheOption cacheOption = new CacheOption(128, 1024L);
         ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sqlCaseValue, false);
-        SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
+        new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
         System.out.println("ParserError: " + sqlCaseId + " value: " + sqlCaseValue + " db-type: " + databaseType);
     }
 }
