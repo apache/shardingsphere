@@ -297,8 +297,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariablesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetDistVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowDistVariablesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceListStatementTestCase;
@@ -312,7 +312,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowDistVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.AddMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CheckMigrationStatementTestCase;
@@ -1049,14 +1049,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "format-sql")
     private final List<FormatSQLStatementTestCase> formatSQLStatementAsserts = new LinkedList<>();
     
-    @XmlElement(name = "show-variable")
-    private final List<ShowVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
+    @XmlElement(name = "show-dist-variable")
+    private final List<ShowDistVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-all-variables")
-    private final List<ShowAllVariablesStatementTestCase> showAllVariableTestCases = new LinkedList<>();
+    @XmlElement(name = "show-dist-variables")
+    private final List<ShowDistVariablesStatementTestCase> showDistVariableTestCases = new LinkedList<>();
     
-    @XmlElement(name = "set-variable")
-    private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
+    @XmlElement(name = "set-dist-variable")
+    private final List<SetDistVariableStatementTestCase> setDistVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-readwrite-splitting-hint-source")
     private final List<SetReadwriteSplittingHintStatementTestCase> setReadwriteSplittingHintTestCases = new LinkedList<>();

@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class ExclusiveLockDefinitionTest {
-    
-    @Test
-    public void assertNewLockDefinition() {
-        assertThat(new ExclusiveLockDefinition("exclusive_lock").getLockKey(), is("/lock/exclusive/locks/exclusive_lock"));
-    }
+/**
+ * Show dist variables statement test case.
+ */
+public final class ShowDistVariablesStatementTestCase extends SQLParserTestCase {
 }

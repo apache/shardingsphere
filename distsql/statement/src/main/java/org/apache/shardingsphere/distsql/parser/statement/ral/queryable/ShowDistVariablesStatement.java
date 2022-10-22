@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Exclusive lock definition.
+ * Show dist variables statement.
  */
-@Getter
-public final class ExclusiveLockDefinition implements LockDefinition {
-    
-    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
-    
-    private final String lockKey;
-    
-    public ExclusiveLockDefinition(final String lockName) {
-        lockKey = String.format(KEY_PATTERN, lockName);
-    }
+public final class ShowDistVariablesStatement extends QueryableRALStatement {
 }

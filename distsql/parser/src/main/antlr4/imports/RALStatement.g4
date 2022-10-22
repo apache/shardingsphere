@@ -19,16 +19,16 @@ grammar RALStatement;
 
 import BaseRule;
 
-setVariable
-    : SET VARIABLE variableName EQ variableValue
+setDistVariable
+    : SET DIST VARIABLE variableName EQ variableValue
     ;
 
-showVariable
-    : SHOW VARIABLE variableName
+showDistVariable
+    : SHOW DIST VARIABLE WHERE NAME EQ variableName
     ;
 
-showAllVariables
-    : SHOW ALL VARIABLES
+showDistVariables
+    : SHOW DIST VARIABLES
     ;
 
 alterComputeNode

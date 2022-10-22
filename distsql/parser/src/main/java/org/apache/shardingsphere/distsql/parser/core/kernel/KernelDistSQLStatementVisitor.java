@@ -53,9 +53,12 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ReadDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ResourceDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetDistVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShardingSizeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariableContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowDistVariablesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceInfoContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodeInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodeModeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowComputeNodesContext;
@@ -66,7 +69,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSingleTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowTableMetadataContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowUnusedResourcesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.StreamChannelContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.UnlabelComputeNodeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.WorkerThreadContext;
@@ -80,13 +82,13 @@ import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegmen
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariablesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalProcessConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ApplyDistSQLStatement;
@@ -97,8 +99,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDa
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.PrepareDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshTableMetadataStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInstanceStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterDefaultSingleTableRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
@@ -262,8 +264,8 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitSetVariable(final SetVariableContext ctx) {
-        return new SetVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
+    public ASTNode visitSetDistVariable(final SetDistVariableContext ctx) {
+        return new SetDistVariableStatement(getIdentifierValue(ctx.variableName()), getIdentifierValue(ctx.variableValue()));
     }
     
     @Override
@@ -277,13 +279,13 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowVariable(final ShowVariableContext ctx) {
-        return new ShowVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
+    public ASTNode visitShowDistVariable(final ShowDistVariableContext ctx) {
+        return new ShowDistVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
     }
     
     @Override
-    public ASTNode visitShowAllVariables(final ShowAllVariablesContext ctx) {
-        return new ShowAllVariablesStatement();
+    public ASTNode visitShowDistVariables(final ShowDistVariablesContext ctx) {
+        return new ShowDistVariablesStatement();
     }
     
     @Override
