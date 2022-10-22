@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 
@@ -77,15 +77,14 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        // TODO use SPI with pluggable
-        boolean containsGovernance = null != result.getMode() && "Cluster".equals(result.getMode().getType());
+        if (null == result) {
+            return new YamlProxyServerConfiguration();
+        }
+        // TODO authority will no longer be a global rule
+        result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
         if (null != result.getAuthority()) {
-            result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
             result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
-        YamlRuleConfiguration authorityRuleConfig = result.getRules().stream().filter(each -> each instanceof YamlAuthorityRuleConfiguration).findAny().orElse(null);
-        Preconditions.checkState(containsGovernance || null != authorityRuleConfig, "Authority configuration is invalid.");
         return result;
     }
     

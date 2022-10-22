@@ -30,5 +30,5 @@
         <column name="encryptor_props" />
         <column name="query_with_cipher_column" />
     </metadata>
-    <row values="t_user| pwd| | pwd_cipher| | pwd_plain| | | | AES| aes-key-value=123abc| true" />
+    <row values="t_user| pwd| | pwd_cipher| | pwd_plain| | | | AES| aes-key-value=123456abcd| true" />
 </dataset>

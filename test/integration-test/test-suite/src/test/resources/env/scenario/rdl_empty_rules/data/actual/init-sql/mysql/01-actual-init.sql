@@ -26,14 +26,32 @@ CREATE DATABASE rdl_ds_0;
 CREATE DATABASE rdl_ds_1;
 CREATE DATABASE rdl_ds_2;
 
-DROP TABLE IF EXISTS rdl_ds_0.t_user_0;
-DROP TABLE IF EXISTS rdl_ds_0.t_user_1;
-DROP TABLE IF EXISTS rdl_ds_0.t_user_2;
-DROP TABLE IF EXISTS rdl_ds_0.t_user_3;
-DROP TABLE IF EXISTS rdl_ds_0.t_user_4;
+DROP TABLE IF EXISTS rdl_ds_0.t_user;
 
-CREATE TABLE rdl_ds_0.t_user_0 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
-CREATE TABLE rdl_ds_0.t_user_1 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
-CREATE TABLE rdl_ds_0.t_user_2 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
-CREATE TABLE rdl_ds_0.t_user_3 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
-CREATE TABLE rdl_ds_0.t_user_4 (user_id INT NOT NULL, username VARCHAR(20) NOT NULL, phone VARCHAR(20) NULL, PRIMARY KEY (user_id));
+DROP TABLE IF EXISTS rdl_ds_2.t_product_category;
+DROP TABLE IF EXISTS rdl_ds_2.t_country;
+
+DROP TABLE IF EXISTS rdl_ds_2.t_order_0;
+DROP TABLE IF EXISTS rdl_ds_2.t_order_1;
+DROP TABLE IF EXISTS rdl_ds_2.t_order_2;
+DROP TABLE IF EXISTS rdl_ds_2.t_order_3;
+
+DROP TABLE IF EXISTS rdl_ds_2.t_order_item_0;
+DROP TABLE IF EXISTS rdl_ds_2.t_order_item_1;
+DROP TABLE IF EXISTS rdl_ds_2.t_order_item_2;
+DROP TABLE IF EXISTS rdl_ds_2.t_order_item_3;
+
+CREATE TABLE rdl_ds_0.t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NULL, password VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, telephone VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
+
+CREATE TABLE rdl_ds_2.t_product_category ( category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level INT NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_country (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
+
+CREATE TABLE rdl_ds_2.t_order_0 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_order_1 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_order_2 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_order_3 (order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
+
+CREATE TABLE rdl_ds_2.t_order_item_0 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_order_item_1 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_order_item_2 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE rdl_ds_2.t_order_item_3 (item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);

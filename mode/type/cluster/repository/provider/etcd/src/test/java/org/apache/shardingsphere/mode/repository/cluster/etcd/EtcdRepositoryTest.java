@@ -172,7 +172,8 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.PUT));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", event -> { }, null);
+        repository.watch("key1", event -> {
+        }, null);
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -183,7 +184,8 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.DELETE));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", event -> { }, null);
+        repository.watch("key1", event -> {
+        }, null);
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -194,7 +196,8 @@ public final class EtcdRepositoryTest {
             listener.onNext(buildWatchResponse(WatchEvent.EventType.UNRECOGNIZED));
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
-        repository.watch("key1", event -> { }, null);
+        repository.watch("key1", event -> {
+        }, null);
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     

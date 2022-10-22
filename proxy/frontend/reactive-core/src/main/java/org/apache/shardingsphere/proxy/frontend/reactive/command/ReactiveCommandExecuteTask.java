@@ -44,8 +44,8 @@ import java.util.Optional;
  * Reactive command executor task.
  */
 @SuppressWarnings("unchecked")
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class ReactiveCommandExecuteTask implements Runnable {
     
     private final ReactiveDatabaseProtocolFrontendEngine reactiveDatabaseProtocolFrontendEngine;

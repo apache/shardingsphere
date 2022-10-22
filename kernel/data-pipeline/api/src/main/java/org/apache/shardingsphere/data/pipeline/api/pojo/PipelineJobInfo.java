@@ -17,27 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 /**
- * Pipeline Job Info.
+ * Pipeline job meta data.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public abstract class PipelineJobInfo {
+public interface PipelineJobInfo {
     
-    private final String jobId;
-    
-    private boolean active;
-    
-    private int shardingTotalCount;
-    
-    private String createTime;
-    
-    private String stopTime;
-    
-    private transient String jobParameter;
+    /**
+     * Get job meta data.
+     * 
+     * @return job meta data
+     */
+    PipelineJobMetaData getJobMetaData();
 }

@@ -95,7 +95,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     public void assertExecuteBatch() throws SQLException {
         PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
         when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
-        PostgreSQLPreparedStatement postgreSQLPreparedStatement = new PostgreSQLPreparedStatement("insert into t (id, col) values (?, ?)", insertStatement, null,
+        PostgreSQLServerPreparedStatement postgreSQLPreparedStatement = new PostgreSQLServerPreparedStatement("insert into t (id, col) values (?, ?)", insertStatement, null,
                 Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));

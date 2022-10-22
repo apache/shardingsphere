@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
@@ -56,6 +56,7 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context.getIncrementalTasks()));
         jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
         jobItemProgress.setProcessedRecordsCount(context.getProcessedRecordsCount());
+        jobItemProgress.setInventoryRecordsCount(context.getInventoryRecordsCount());
         String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobItemProgress));
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
     }
@@ -76,10 +77,7 @@ public final class InventoryIncrementalJobItemAPIImpl implements PipelineJobItem
     @Override
     public InventoryIncrementalJobItemProgress getJobItemProgress(final String jobId, final int shardingItem) {
         String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
-        if (StringUtils.isBlank(data)) {
-            return null;
-        }
-        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlInventoryIncrementalJobItemProgress.class));
+        return Strings.isNullOrEmpty(data) ? null : SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlInventoryIncrementalJobItemProgress.class));
     }
     
     @Override

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
@@ -29,7 +30,7 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     
     private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "create";
     
-    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsFactoryAdvice";
+    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = MetaDataContextsFactoryAdvice.class.getName();
     
     @Override
     public void defineInterceptors() {

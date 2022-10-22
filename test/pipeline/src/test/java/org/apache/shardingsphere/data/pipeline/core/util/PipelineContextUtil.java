@@ -41,7 +41,7 @@ import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConf
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -58,6 +58,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 public final class PipelineContextUtil {
     
@@ -75,7 +76,7 @@ public final class PipelineContextUtil {
             
             @Override
             protected ClusterPersistRepository initialize() {
-                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG);
+                return ClusterPersistRepositoryFactory.getInstance(PERSIST_REPOSITORY_CONFIG, new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307));
             }
         };
     }
@@ -129,7 +130,7 @@ public final class PipelineContextUtil {
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true),
                 new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false, true)), Collections.emptyList(), Collections.emptyList()));
         old.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
-        return new MetaDataContexts(persistService, old.getMetaData(), new ShardingSphereData());
+        return new MetaDataContexts(persistService, old.getMetaData());
     }
     
     /**

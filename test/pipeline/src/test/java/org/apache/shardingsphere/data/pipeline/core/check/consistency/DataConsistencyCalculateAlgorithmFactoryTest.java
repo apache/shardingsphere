@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
+import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
 import org.junit.Test;
 
 import java.util.Properties;

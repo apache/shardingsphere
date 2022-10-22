@@ -103,4 +103,14 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     private FixedReplicaWeightReadQueryLoadBalanceAlgorithm createReadQueryLoadBalanceAlgorithm(final Properties props) {
         return (FixedReplicaWeightReadQueryLoadBalanceAlgorithm) ReadQueryLoadBalanceAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props));
     }
+    
+    @Test
+    public void assertGetDataSourceWhenReadDataSourceChanged() {
+        Properties props = new Properties();
+        props.setProperty("test_read_ds_1", "1");
+        props.setProperty("test_read_ds_2", "2");
+        FixedReplicaWeightReadQueryLoadBalanceAlgorithm algorithm = createReadQueryLoadBalanceAlgorithm(props);
+        algorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
+        assertThat(algorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
+    }
 }

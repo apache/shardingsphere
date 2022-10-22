@@ -46,6 +46,7 @@ public final class YamlEncryptColumnRuleConfigurationSwapperTest {
         yamlEncryptColumnRuleConfig.setLogicColumn("logicColumn");
         yamlEncryptColumnRuleConfig.setCipherColumn("cipherColumn");
         yamlEncryptColumnRuleConfig.setAssistedQueryColumn("assistedQueryColumn");
+        yamlEncryptColumnRuleConfig.setFuzzyQueryColumn("fuzzyQueryColumn");
         yamlEncryptColumnRuleConfig.setPlainColumn("plainColumn");
         yamlEncryptColumnRuleConfig.setEncryptorName("encryptorName");
         yamlEncryptColumnRuleConfig.setQueryWithCipherColumn(true);
@@ -53,6 +54,7 @@ public final class YamlEncryptColumnRuleConfigurationSwapperTest {
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
+        assertThat(actual.getFuzzyQueryColumn(), is("fuzzyQueryColumn"));
         assertThat(actual.getPlainColumn(), is("plainColumn"));
         assertThat(actual.getEncryptorName(), is("encryptorName"));
         assertThat(actual.getQueryWithCipherColumn(), is(true));

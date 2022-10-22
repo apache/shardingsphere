@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithCheckPrivilegeFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithoutEnoughPrivilegeException;
@@ -59,7 +58,7 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
                 String isSuperRole = resultSet.getString("rolsuper");
                 String isReplicationRole = resultSet.getString("rolreplication");
                 log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
-                ShardingSpherePreconditions.checkState(StringUtils.equalsIgnoreCase(isSuperRole, "t") || StringUtils.equalsIgnoreCase(isReplicationRole, "t"),
+                ShardingSpherePreconditions.checkState("t".equalsIgnoreCase(isSuperRole) || "t".equalsIgnoreCase(isReplicationRole),
                         () -> new PrepareJobWithoutEnoughPrivilegeException(Collections.singleton("REPLICATION")));
             }
         } catch (final SQLException ex) {

@@ -38,7 +38,7 @@ public final class MySQLComStmtCloseExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        connectionSession.getPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
+        connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
         return Collections.emptyList();
     }
 }

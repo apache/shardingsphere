@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.etcd;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KeyValue;
-import io.etcd.jetcd.Util;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
+import io.etcd.jetcd.options.OptionsUtil;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.support.Observers;
+import io.etcd.jetcd.support.Util;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockProvider;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperty
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -51,7 +51,6 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
-@Slf4j
 public final class EtcdRepository implements ClusterPersistRepository {
     
     private Client client;
@@ -61,7 +60,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     private EtcdInternalLockProvider etcdInternalLockHolder;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         etcdProps = new EtcdProperties(config.getProps());
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists())))
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
@@ -89,16 +88,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     public Object getRawCache(final String cachePath) {
         // TODO
         return null;
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
-        // TODO
     }
     
     @Override
@@ -206,8 +195,10 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 }
             }
         });
-        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8),
-                WatchOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build(), listener);
+        ByteSequence prefix = ByteSequence.from(key, StandardCharsets.UTF_8);
+        Preconditions.checkNotNull(prefix, "prefix should not be null");
+        client.getWatchClient().watch(prefix,
+                WatchOption.newBuilder().withRange(OptionsUtil.prefixEndOf(prefix)).build(), listener);
     }
     
     private Type getEventChangedType(final WatchEvent event) {

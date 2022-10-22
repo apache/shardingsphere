@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,9 +30,12 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class ShardingSphereTableData {
     
     private final String name;
+    
+    private final List<ShardingSphereColumn> columns;
     
     private final List<ShardingSphereRowData> rows = new LinkedList<>();
 }

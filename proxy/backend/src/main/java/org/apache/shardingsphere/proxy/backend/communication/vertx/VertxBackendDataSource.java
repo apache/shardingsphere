@@ -128,7 +128,7 @@ public final class VertxBackendDataSource implements BackendDataSource {
     }
     
     private Pool createPoolFromSchemaDataSource(final String databaseName, final String dataSourceName) {
-        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDataSources().get(dataSourceName);
+        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources().get(dataSourceName);
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         HikariDataSource value = (HikariDataSource) dataSource;
         URI uri = URI.create(value.getJdbcUrl().replace("jdbc:", ""));

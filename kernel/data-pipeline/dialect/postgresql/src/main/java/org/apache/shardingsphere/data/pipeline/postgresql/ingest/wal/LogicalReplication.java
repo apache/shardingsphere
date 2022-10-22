@@ -51,7 +51,7 @@ public final class LogicalReplication {
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.6");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(jdbcConfig.getJdbcUrl(), props);
+        return DriverManager.getConnection(jdbcConfig.getUrl(), props);
     }
     
     /**

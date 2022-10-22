@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.data.builder.dialect;
 
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
@@ -26,7 +27,8 @@ import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataB
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -40,12 +42,16 @@ public final class PostgreSQLShardingSphereDataBuilder implements ShardingSphere
     @Override
     public ShardingSphereData build(final ShardingSphereMetaData metaData) {
         ShardingSphereData result = new ShardingSphereData();
-        for (Map.Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
+        for (Entry<String, ShardingSphereDatabase> entry : metaData.getDatabases().entrySet()) {
+            if (new PostgreSQLDatabaseType().getSystemDatabaseSchemaMap().containsKey(entry.getKey())) {
+                continue;
+            }
             ShardingSphereDatabaseData databaseData = new ShardingSphereDatabaseData();
             Optional<ShardingSphereSchema> shardingSphereSchema = Optional.ofNullable(entry.getValue()).map(database -> database.getSchema(SHARDING_SPHERE));
             if (shardingSphereSchema.isPresent()) {
                 ShardingSphereSchemaData schemaData = new ShardingSphereSchemaData();
-                shardingSphereSchema.get().getTables().forEach((key, value) -> schemaData.getTableData().put(key, new ShardingSphereTableData(entry.getValue().getName())));
+                shardingSphereSchema.get().getTables().forEach((key, value) -> schemaData.getTableData().put(key, new ShardingSphereTableData(value.getName(),
+                        new ArrayList<>(value.getColumns().values()))));
                 databaseData.getSchemaData().put(SHARDING_SPHERE, schemaData);
             }
             result.getDatabaseData().put(entry.getKey(), databaseData);

@@ -23,18 +23,21 @@ columns:
     generated: false
     name: inhrelid
     primaryKey: false
+    visible: true
   inhparent:
     caseSensitive: true
     dataType: -5
     generated: false
     name: inhparent
     primaryKey: false
+    visible: true
   inhseqno:
     caseSensitive: true
     dataType: 4
     generated: false
     name: inhseqno
     primaryKey: false
+    visible: true
 indexes:
   pg_inherits_parent_index:
     name: pg_inherits_parent_index

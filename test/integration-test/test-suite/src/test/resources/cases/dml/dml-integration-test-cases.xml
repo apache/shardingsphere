@@ -71,7 +71,11 @@
     <test-case sql="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, product_id = 1, quantity = 1, creation_date='2017-08-08'" db-types="MySQL,SQLServer,Oracle" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
-    
+
+    <test-case sql="INSERT ALL INTO t_order (order_id, user_id, status, merchant_id, remark, creation_date) VALUES (?, ?, ?, 1, 'test', '2017-08-08') SELECT 1 FROM DUAL" db-types="Oracle" scenario-types="tbl">
+        <assertion parameters="999:int, 10:int, insertALL:String" expected-data-file="batch_insert_all_into_order_table.xml" />
+    </test-case>
+
     <test-case sql="INSERT INTO t_order_item values(?, ?, 1, 1, '2017-08-08')" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">
         <assertion sharding-rule-type="dbtbl_with_readwrite_splitting" parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
         <!-- TODO add gen column on create table -->

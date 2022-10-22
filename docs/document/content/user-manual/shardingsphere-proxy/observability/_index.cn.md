@@ -97,6 +97,8 @@ plugins:
 
 ## ShardingSphere-Proxy 中使用
 
+### 通过非容器环境使用
+
 * 编辑启动脚本
 
 配置 shardingsphere-agent.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
@@ -112,6 +114,30 @@ bin/start.sh
 ```
 正常启动后，可以在 ShardingSphere-Proxy 日志中找到 plugin 的加载信息，访问 Proxy 后，可以通过配置的监控地址查看到 `Metric` 和 `Tracing` 的数据。
 
+### 通过容器环境使用
+
+- 假设本地已完成如下的对应配置。
+  - 包含 ShardingSphere-Agent 二进制包解压后的所有文件的文件夹 `./custom/agent/`
+  - 包含 `server.yaml` 等 ShardingSphere-Proxy 的配置文件的文件夹为 `./custom/conf/`
+
+- 此时可通过环境变量 `JVM_OPT` 来配置 ShardingSphere-Agent 的使用。
+  以在 Docker Compose 环境下启动为例，合理的 `docker-compose.yml` 示例如下。
+
+```yaml
+version: "3.8"
+
+services:
+  apache-shardingsphere-proxy:
+    image: apache/shardingsphere-proxy:latest
+    environment:
+      JVM_OPTS: "-javaagent:/agent/shardingsphere-agent.jar"
+      PORT: 3308
+    volumes:
+      - ./custom/agent/:/agent/
+      - ./custom/conf/:/opt/shardingsphere-proxy/conf/
+    ports:
+      - "13308:3308"
+```
 
 ## Metrics
 | 指标名称                              | 类型         | 描述                                                     |

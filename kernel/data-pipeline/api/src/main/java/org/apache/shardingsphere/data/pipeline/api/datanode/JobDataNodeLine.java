@@ -17,48 +17,25 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datanode;
 
-import com.google.common.base.Splitter;
-import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Job data node line.
  */
-@Getter
 @RequiredArgsConstructor
-@ToString
 public final class JobDataNodeLine {
     
-    @NonNull
-    private final List<JobDataNodeEntry> entries;
-    
-    /**
-     * Unmarshal from text.
-     *
-     * @param text marshalled line
-     * @return line
-     */
-    public static JobDataNodeLine unmarshal(final String text) {
-        List<String> segments = Splitter.on('|').omitEmptyStrings().splitToList(text);
-        List<JobDataNodeEntry> entries = new ArrayList<>(segments.size());
-        for (String each : segments) {
-            entries.add(JobDataNodeEntry.unmarshal(each));
-        }
-        return new JobDataNodeLine(entries);
-    }
+    private final Collection<JobDataNodeEntry> entries;
     
     /**
      * Marshal to text.
      *
-     * @return text, format: entry1|entry2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1
+     * @return marshaled text, format: entry1|entry2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1
      */
     public String marshal() {
-        StringBuilder result = new StringBuilder(getMarshalledTextEstimatedLength());
+        StringBuilder result = new StringBuilder(entries.stream().mapToInt(JobDataNodeEntry::getMarshalledTextEstimatedLength).sum() + entries.size());
         for (JobDataNodeEntry each : entries) {
             result.append(each.marshal()).append('|');
         }
@@ -66,9 +43,5 @@ public final class JobDataNodeLine {
             result.setLength(result.length() - 1);
         }
         return result.toString();
-    }
-    
-    private int getMarshalledTextEstimatedLength() {
-        return entries.stream().mapToInt(JobDataNodeEntry::getMarshalledTextEstimatedLength).sum() + entries.size();
     }
 }

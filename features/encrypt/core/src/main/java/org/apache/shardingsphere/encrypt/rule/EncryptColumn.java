@@ -36,23 +36,37 @@ public final class EncryptColumn {
     
     private final String plainColumn;
     
+    private final String fuzzyQueryColumn;
+    
     private final String encryptorName;
     
     private final String assistedQueryEncryptorName;
     
+    private final String fuzzyQueryEncryptorName;
+    
     private final Boolean queryWithCipherColumn;
     
-    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String plainColumn, final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(cipherColumn, assistedQueryColumn, plainColumn, encryptorName, null, queryWithCipherColumn);
+    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String fuzzyQueryColumn, final String plainColumn,
+                         final String encryptorName, final Boolean queryWithCipherColumn) {
+        this(cipherColumn, assistedQueryColumn, plainColumn, fuzzyQueryColumn, encryptorName, null, null, queryWithCipherColumn);
     }
     
     /**
      * Get assisted query column.
-     * 
+     *
      * @return assisted query column
      */
     public Optional<String> getAssistedQueryColumn() {
         return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.empty() : Optional.of(assistedQueryColumn);
+    }
+    
+    /**
+     * Get fuzzy query column.
+     *
+     * @return fuzzy query column
+     */
+    public Optional<String> getFuzzyQueryColumn() {
+        return Strings.isNullOrEmpty(fuzzyQueryColumn) ? Optional.empty() : Optional.of(fuzzyQueryColumn);
     }
     
     /**

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
@@ -45,7 +44,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Getter
 @Setter
-@Slf4j
 public final class MigrationJobItemContext implements InventoryIncrementalJobItemContext {
     
     private final String jobId;
@@ -67,6 +65,8 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
     
     private final AtomicLong processedRecordsCount = new AtomicLong(0);
+    
+    private final AtomicLong inventoryRecordsCount = new AtomicLong(0);
     
     private final MigrationJobConfiguration jobConfig;
     
@@ -99,6 +99,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         this.initProgress = initProgress;
         if (null != initProgress) {
             processedRecordsCount.set(initProgress.getProcessedRecordsCount());
+            inventoryRecordsCount.set(initProgress.getInventoryRecordsCount());
         }
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;
@@ -132,13 +133,22 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     @Override
     public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
-        int needAddNumber = parameter.getInsertedRecordsCount() - parameter.getDeletedRecordsCount();
-        processedRecordsCount.addAndGet(needAddNumber);
+        processedRecordsCount.addAndGet(parameter.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
     
     @Override
     public long getProcessedRecordsCount() {
         return processedRecordsCount.get();
+    }
+    
+    @Override
+    public void updateInventoryRecordsCount(final long recordsCount) {
+        inventoryRecordsCount.addAndGet(recordsCount);
+    }
+    
+    @Override
+    public long getInventoryRecordsCount() {
+        return inventoryRecordsCount.get();
     }
 }

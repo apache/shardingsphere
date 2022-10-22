@@ -1,3 +1,8 @@
++++
+title = "Add Bitronix dependencies"
+weight = 1
++++
+
 ## Add Bitronix dependencies
 
 Adding Bitronix dependencies requires downloading the following jar files and adding them under `ext-lib` path.

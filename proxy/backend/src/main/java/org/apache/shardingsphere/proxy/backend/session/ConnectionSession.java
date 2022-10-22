@@ -70,7 +70,7 @@ public final class ConnectionSession {
     
     private final ExecutorStatementManager statementManager;
     
-    private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
+    private final ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
     
     private final ConnectionContext connectionContext;
     

@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -104,7 +103,7 @@ public abstract class BaseITCase {
     private final String adapter;
     
     @Getter
-    private AutoDataSource dataSource;
+    private final AutoDataSource dataSource;
     
     static {
         long startTime = System.currentTimeMillis();
@@ -200,7 +199,7 @@ public abstract class BaseITCase {
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
             addParameters(currentTestCaseInfo, result);
         }
-        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
+        if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE && "MySQL".equalsIgnoreCase(ENV.getNativeDatabaseType())) {
             addParametersByVersions(ENV.getMysqlVersions(), result, currentTestCaseInfo);
         }
         return result;

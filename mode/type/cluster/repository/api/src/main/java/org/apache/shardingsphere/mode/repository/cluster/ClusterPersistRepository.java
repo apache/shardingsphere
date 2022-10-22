@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
-import org.apache.shardingsphere.elasticjob.lite.internal.storage.LeaderExecutionCallback;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
@@ -34,8 +32,9 @@ public interface ClusterPersistRepository extends PersistRepository {
      * Initialize registry center.
      *
      * @param config cluster persist repository configuration
+     * @param instanceMetaData instance meta data
      */
-    void init(ClusterPersistRepositoryConfiguration config);
+    void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
     
     /**
      * Get current time from registry center.
@@ -81,22 +80,6 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @return raw cache object of registry center
      */
     Object getRawCache(String cachePath);
-    
-    /**
-     * Execute in leader.
-     *
-     * @param key key
-     * @param callback callback of leader
-     */
-    void executeInLeader(String key, LeaderExecutionCallback callback);
-    
-    /**
-     * Execute oprations in transaction.
-     *
-     * @param transactionOperations operations
-     * @throws Exception exception
-     */
-    void executeInTransaction(List<TransactionOperation> transactionOperations) throws Exception;
     
     /**
      * Update data in transaction.

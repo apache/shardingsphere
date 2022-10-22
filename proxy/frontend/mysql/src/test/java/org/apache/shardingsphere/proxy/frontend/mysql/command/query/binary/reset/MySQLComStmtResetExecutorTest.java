@@ -22,9 +22,9 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
@@ -42,11 +42,11 @@ public final class MySQLComStmtResetExecutorTest {
     @Test
     public void assertExecute() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
-        MySQLPreparedStatement preparedStatement = new MySQLPreparedStatement("", null, mock(SQLStatementContext.class));
+        MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("", null, mock(SQLStatementContext.class));
         preparedStatement.getLongData().put(0, new byte[0]);
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         MySQLComStmtResetExecutor mysqlComStmtResetExecutor = new MySQLComStmtResetExecutor(packet, connectionSession);

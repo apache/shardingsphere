@@ -106,7 +106,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     private void checkDatabase(final String databaseName, final File file) {
         Preconditions.checkNotNull(databaseName, "Property `databaseName` in file `%s` is required", file.getName());
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists and is not empty", databaseName);
+            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(), "Database `%s` exists and is not empty", databaseName);
         }
     }
     

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -51,7 +50,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithTransactionType() throws SQLException {
-        SetVariableStatement statement = new SetVariableStatement("transaction_type", "local");
+        SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         SetVariableHandler handler = new SetVariableHandler();
         handler.init(statement, connectionSession);
@@ -61,7 +60,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithAgent() throws SQLException {
-        SetVariableStatement statement = new SetVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
+        SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
         SetVariableHandler handler = new SetVariableHandler();
         handler.init(statement, connectionSession);
         handler.execute();
@@ -71,9 +70,9 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithConfigurationKey() throws SQLException {
-        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), new ShardingSphereData()), null);
+        ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), null);
         ProxyContext.init(contextManager);
-        SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
+        SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetVariableHandler handler = new SetVariableHandler();
         handler.init(statement, connectionSession);
         handler.execute();

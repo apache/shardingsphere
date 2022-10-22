@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -62,7 +62,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowTransactionType() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new ShowVariableStatement("transaction_type"), connectionSession);
+        backendHandler.init(new ShowDistVariableStatement("transaction_type"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -76,7 +76,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowCachedConnections() throws SQLException {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new ShowVariableStatement("cached_connections"), connectionSession);
+        backendHandler.init(new ShowDistVariableStatement("cached_connections"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -90,7 +90,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowCachedConnectionFailed() {
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new ShowVariableStatement("cached_connectionss"), connectionSession);
+        backendHandler.init(new ShowDistVariableStatement("cached_connectionss"), connectionSession);
         backendHandler.execute();
     }
     
@@ -99,7 +99,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentDatabase("db");
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new ShowVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
+        backendHandler.init(new ShowDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
@@ -120,7 +120,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         props.put("sql-show", Boolean.TRUE.toString());
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new ShowVariableStatement("SQL_SHOW"), connectionSession);
+        backendHandler.init(new ShowDistVariableStatement("SQL_SHOW"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));

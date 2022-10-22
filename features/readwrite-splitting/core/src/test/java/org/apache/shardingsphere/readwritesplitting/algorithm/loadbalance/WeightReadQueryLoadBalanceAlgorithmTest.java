@@ -79,4 +79,14 @@ public final class WeightReadQueryLoadBalanceAlgorithmTest {
         context.setInTransaction(true);
         assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames, context), is(writeDataSourceName));
     }
+    
+    @Test
+    public void assertGetDataSourceWhenReadDataSourceChanged() {
+        Properties props = new Properties();
+        props.setProperty("test_read_ds_1", "1");
+        props.setProperty("test_read_ds_2", "2");
+        WeightReadQueryLoadBalanceAlgorithm algorithm = createReadQueryLoadBalanceAlgorithm(props);
+        algorithm.getDataSource("ds", "test_write_ds", Arrays.asList("test_read_ds_1", "test_read_ds_1"), new TransactionConnectionContext());
+        assertThat(algorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"), new TransactionConnectionContext()), is("test_read_ds_1"));
+    }
 }

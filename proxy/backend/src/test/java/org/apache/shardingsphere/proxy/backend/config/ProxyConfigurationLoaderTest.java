@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.config;
 
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -33,13 +34,25 @@ import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ProxyConfigurationLoaderTest {
+    
+    @Test
+    public void assertLoadEmptyConfiguration() throws IOException {
+        YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/empty/");
+        YamlProxyServerConfiguration serverConfiguration = actual.getServerConfiguration();
+        assertNull(serverConfiguration.getMode());
+        assertNull(serverConfiguration.getAuthority());
+        assertNull(serverConfiguration.getLabels());
+        assertTrue(serverConfiguration.getProps().isEmpty());
+        assertTrue(serverConfiguration.getRules().isEmpty());
+        assertTrue(actual.getDatabaseConfigurations().isEmpty());
+    }
     
     @Test
     public void assertLoad() throws IOException {
