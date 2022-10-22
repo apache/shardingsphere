@@ -17,106 +17,81 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.springframework.web.client.RestTemplate;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Arrays;
 import java.util.Properties;
+import java.util.ArrayList;
 
-@RunWith(Parameterized.class)
-public class DynamicLoadingSQLParserParameterizedTest {
+@RequiredArgsConstructor
+public abstract class DynamicLoadingSQLParserParameterizedTest {
     
-    private static String sqlCasesOwner;
-    
-    private static String sqlCasesRepo;
-    
-    private static String sqlCasesDirectory;
-    
+    private final String sqlCaseId;
+    private final String sqlCaseValue;
     private final String databaseType;
     
-    public DynamicLoadingSQLParserParameterizedTest(final String database, final String url) {
-        databaseType = database;
-        String[] patches = url.split("/", 8);
-        sqlCasesOwner = patches[3];
-        sqlCasesRepo = patches[4];
-        sqlCasesDirectory = patches[7];
-    }
-    
-    @Parameterized.Parameters(name = "dynamic test with {0}")
-    public static Collection<Object[]> getTestCases() {
-        return Arrays.asList(new Object[][]{
-                {"MySQL", "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"},
-                {"PostgreSQL", "https://github.com/postgres/postgres/tree/master/src/test/regress/sql"},
-        });
-    }
-    
-    private static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException {
-        Collection<Object[]> result = new ArrayList<>();
-        LinkedList<Map<String, String>> response = new RestTemplate().getForObject(
+    private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) {
+        String[] patches = sqlCaseURL.split("/", 8);
+        String sqlCasesOwner = patches[3];
+        String sqlCasesRepo = patches[4];
+        String sqlCasesDirectory = patches[7];
+        return new RestTemplate().getForObject(
                 "https://api.github.com/repos/{owner}/{repo}/contents/{directory}", LinkedList.class,
                 sqlCasesOwner, sqlCasesRepo, sqlCasesDirectory);
+    }
+    
+    protected static Collection<Object[]> getTestParameters(final String databaseType,
+                                                            final String sqlCaseURL) throws ParserConfigurationException, IOException, URISyntaxException, TransformerException {
+        Collection<Object[]> result = new ArrayList<>();
+        LinkedList<Map<String, String>> response = getResponse(sqlCaseURL);
         for (Map<String, String> each : response) {
-            result.addAll(getSqlCases(each));
+            result.addAll(getSqlCases(each, databaseType));
         }
         return result;
     }
     
-    private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException, URISyntaxException {
+    private static Collection<Object[]> getSqlCases(final Map<String, String> elements, final String databaseType) throws IOException, URISyntaxException {
         Collection<Object[]> result = new ArrayList<>();
         String sqlCaseFileName = elements.get("name");
-        String sqlCaseFileURL = elements.get("download_url");
-        String sqlCaseFileContent = IOUtils.toString(new URI(sqlCaseFileURL), Charset.defaultCharset());
+        String sqlCaseFileContent = IOUtils.toString(new URI(elements.get("download_url")), StandardCharsets.UTF_8);
         String[] lines = sqlCaseFileContent.split("\n");
-        int sqlCaseId = 1;
-        StringBuilder sqlCase = new StringBuilder();
+        int sqlCaseEnum = 1;
         for (String each : lines) {
-            if (each.contains("--") || each.contains("#")) {
+            if (each.isEmpty()) {
                 continue;
             }
-            sqlCase.append(each);
-            if (each.contains(";") || each.contains("}")) {
+            if (Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
+                String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
                 result.add(new Object[]{
-                        sqlCaseFileName + sqlCaseId, sqlCase.toString(),
+                        sqlCaseId, each, databaseType,
                 });
-                sqlCaseId++;
-                sqlCase = new StringBuilder();
+                sqlCaseEnum++;
             }
         }
         return result;
     }
     
-    @Test
-    public void assertDynamicLoadingSQL() throws IOException, URISyntaxException {
-        Collection<Object[]> testParameters = getTestParameters();
-        Collection<String> result = new LinkedList<>();
+    @Test(expected = Exception.class)
+    public final void assertDynamicLoadingSQL() {
         CacheOption cacheOption = new CacheOption(128, 1024L);
-        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        for (Object[] each : testParameters) {
-            String sql = each[1].toString();
-            ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sql, false);
-            SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
-            if (!parseContext.toString().equals(sqlStatement.toString())) {
-                result.add("<sql-case id=" + each[0] + " value=" + sql + " db-types=" + databaseType + " />");
-            }
-        }
-        result.forEach(System.out::println);
-        Assert.assertFalse(result.isEmpty());
+        ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sqlCaseValue, false);
+        SQLStatement sqlStatement = new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
+        System.out.println("ParserError: " + sqlCaseId + " value: " + sqlCaseValue + " db-type: " + databaseType);
     }
 }
