@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.mode.lock;
 
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class ExclusiveLockDefinitionTest {
+/**
+ * Global lock definition.
+ */
+@Getter
+public final class GlobalLockDefinition implements LockDefinition {
     
-    @Test
-    public void assertNewLockDefinition() {
-        assertThat(new ExclusiveLockDefinition("exclusive_lock").getLockKey(), is("/lock/exclusive/locks/exclusive_lock"));
+    private static final String KEY_PATTERN = "/lock/exclusive/locks/%s";
+    
+    private final String lockKey;
+    
+    public GlobalLockDefinition(final String lockName) {
+        lockKey = String.format(KEY_PATTERN, lockName);
     }
 }
