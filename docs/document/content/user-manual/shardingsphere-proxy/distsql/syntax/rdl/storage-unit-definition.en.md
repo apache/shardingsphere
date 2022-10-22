@@ -45,50 +45,50 @@ property:
 - `PROPERTIES` is used to customize connection pool parameters, `key` and `value` are both STRING types;
 - `ALTER RESOURCE` is not allowed to change the real data source associated with this storage unit;
 - `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
-- `DROP RESOURCE` will only delete logical storage unit, not real storage unit;
+- `DROP RESOURCE` will only delete logical storage unit, not real data sources;
 - Storage unit referenced by rules cannot be deleted;
 - If the storage unit is only referenced by `single table rule`, and the user confirms that the restriction can be ignored, the optional parameter `ignore single tables` can be added to perform forced deletion.
 
 ## Example
 
 ```sql
-REGISTER STORAGE UNIT storage_0 (
+REGISTER STORAGE UNIT su_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),storage_1 (
+),su_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db1",
     USER="root"
-),storage_2 (
+),su_2 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db2",
     USER="root",
     PROPERTIES("maximumPoolSize"="10")
-),storage_3 (
+),su_3 (
     URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-ALTER STORAGE UNIT storage_0 (
+ALTER STORAGE UNIT su_0 (
     HOST="127.0.0.1",
     PORT=3309,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),storage_1 (
+),su_1 (
     URL="jdbc:mysql://127.0.0.1:3309/db1?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-UNREGISTER STORAGE UNIT storage_0, storage_1;
-UNREGISTER STORAGE UNIT storage_2, storage_3 ignore single tables;
+UNREGISTER STORAGE UNIT su_0, su_1;
+UNREGISTER STORAGE UNIT su_2, su_3 ignore single tables;
 ```

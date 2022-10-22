@@ -95,18 +95,18 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
         Multimap<String, String> result = LinkedListMultimap.create();
         for (ShardingSphereRule each : ruleMetaData.getRules()) {
             if (each instanceof DataSourceContainedRule) {
-                Set<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
+                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
             if (each instanceof DataNodeContainedRule) {
-                Set<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
+                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
             }
         }
         return result;
     }
     
-    private Set<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
+    private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
             result.addAll(each);
@@ -114,10 +114,10 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
         return result;
     }
     
-    private Set<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
+    private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
-            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
+            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()));
         }
         return result;
     }

@@ -45,50 +45,50 @@ property:
 - `PROPERTIES` 用于自定义连接池参数，`key` 和 `value` 均为 STRING 类型；
 - `ALTER STORAGE UNIT` 修改存储单元时不允许改变该存储单元关联的真实数据源；
 - `ALTER STORAGE UNIT` 修改存储单元时会发生连接池的切换，此操作可能对进行中的业务造成影响，请谨慎使用；
-- `UNREGISTER STORAGE UNIT` 只会删除逻辑存储单元，不会删除真实的存储单元；
+- `UNREGISTER STORAGE UNIT` 只会删除逻辑存储单元，不会删除真实的数据源；
 - 被规则引用的存储单元将无法被删除；
 - 若存储单元只被 `single table rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 `ignore single tables` 进行强制删除。
 
 ## 示例
 
 ```sql
-REGISTER STORAGE UNIT storage_0 (
+REGISTER STORAGE UNIT su_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),storage_1 (
+),su_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db1",
     USER="root"
-),storage_2 (
+),su_2 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db2",
     USER="root",
     PROPERTIES("maximumPoolSize"="10")
-),storage_3 (
+),su_3 (
     URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-ALTER STORAGE UNIT storage_0 (
+ALTER STORAGE UNIT su_0 (
     HOST="127.0.0.1",
     PORT=3309,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),storage_1 (
+),su_1 (
     URL="jdbc:mysql://127.0.0.1:3309/db1?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-UNREGISTER STORAGE UNIT storage_0, storage_1;
-UNREGISTER STORAGE UNIT storage_2, storage_3 ignore single tables;
+UNREGISTER STORAGE UNIT su_0, su_1;
+UNREGISTER STORAGE UNIT su_2, su_3 ignore single tables;
 ```
