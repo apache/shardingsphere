@@ -335,6 +335,18 @@ WHERE
     : W H E R E
     ;
 
+COMPUTE
+    : C O M P U T E
+    ;
+
+NODE
+    : N O D E
+    ;
+
+NODES
+    : N O D E S
+    ;
+
 USAGE_COUNT
     : U S A G E UL_ C O U N T
     ;
