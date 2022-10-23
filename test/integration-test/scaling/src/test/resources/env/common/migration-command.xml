@@ -17,7 +17,7 @@
 
 <command>
     <add-migration-process-config>
-        CREATE MIGRATION PROCESS CONFIGURATION (
+        ALTER MIGRATION RULE (
         READ(
         WORKER_THREAD=40,
         BATCH_SIZE=1000,

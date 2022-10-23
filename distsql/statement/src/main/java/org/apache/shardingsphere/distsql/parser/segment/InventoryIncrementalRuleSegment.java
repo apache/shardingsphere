@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Show migration process configuration statement.
+ * Inventory incremental rule segment.
  */
-public final class ShowMigrationProcessConfigurationStatement extends QueryableScalingRALStatement {
+@Getter
+@Setter
+public final class InventoryIncrementalRuleSegment implements ASTNode {
+    
+    private ReadOrWriteSegment readSegment;
+    
+    private ReadOrWriteSegment writeSegment;
+    
+    private AlgorithmSegment streamChannel;
 }

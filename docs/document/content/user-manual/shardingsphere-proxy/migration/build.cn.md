@@ -80,7 +80,7 @@ sh bin/start.sh
 7.1. 查询配置。
 
 ```sql
-SHOW MIGRATION PROCESS CONFIGURATION;
+SHOW MIGRATION RULE;
 ```
 
 默认配置如下：
@@ -93,14 +93,14 @@ SHOW MIGRATION PROCESS CONFIGURATION;
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
 ```
 
-7.2. 新建配置（可选）。
+7.2. 修改配置（可选）。
 
-不配置的话有默认值。
+因 Migration Rule 具有默认值，无需创建，仅提供 ALTER 语句。
 
 完整配置 DistSQL 示例：
 
 ```sql
-CREATE MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ(
   WORKER_THREAD=40,
   BATCH_SIZE=1000,
@@ -119,7 +119,7 @@ STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
 配置项说明：
 
 ```sql
-CREATE MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ( -- 数据读取配置。如果不配置则部分参数默认生效。
   WORKER_THREAD=40, -- 从源端摄取全量数据的线程池大小。如果不配置则使用默认值。
   BATCH_SIZE=1000, -- 一次查询操作返回的最大记录数。如果不配置则使用默认值。
@@ -153,7 +153,7 @@ PROPERTIES( -- 算法属性
 DistSQL 示例：配置 `READ` 限流。
 
 ```sql
-CREATE MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ(
   RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
 )
@@ -162,38 +162,23 @@ READ(
 
 配置读取数据限流，其它配置使用默认值。
 
-7.3. 修改配置。
+7.3. 恢复配置。
 
-`ALTER MIGRATION PROCESS CONFIGURATION`，内部结构和 `CREATE MIGRATION PROCESS CONFIGURATION` 一致。
-
-DistSQL 示例：调整限流参数
+如需恢复默认配置，也通过 ALTER 语句进行操作。
 
 ```sql
-ALTER MIGRATION PROCESS CONFIGURATION (
+ALTER MIGRATION RULE (
 READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
-)
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  SHARDING_SIZE=10000000,
+  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
+),
+WRITE(
+  WORKER_THREAD=40,
+  BATCH_SIZE=1000,
+  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
+),
+STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='10000')))
 );
----
-ALTER MIGRATION PROCESS CONFIGURATION (
-READ(
-  RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='1000')))
-), WRITE(
-  RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='1000')))
-)
-);
-```
-
-7.4. 清除配置。
-
-DistSQL 示例：清空 `READ` 配置、恢复为默认值。
-
-```sql
-DROP MIGRATION PROCESS CONFIGURATION '/READ';
-```
-
-DistSQL 示例：清空 `READ/RATE_LIMITER` 配置。
-
-```sql
-DROP MIGRATION PROCESS CONFIGURATION '/READ/RATE_LIMITER';
 ```
