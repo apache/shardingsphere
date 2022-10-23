@@ -33,7 +33,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedTest extends Dynam
         super(sqlCaseId, sqlCaseValue, "PostgreSQL");
     }
     
-    @Parameters(name = "{1} ({PostgreSQL}) -> {0}")
+    @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException {
         return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
