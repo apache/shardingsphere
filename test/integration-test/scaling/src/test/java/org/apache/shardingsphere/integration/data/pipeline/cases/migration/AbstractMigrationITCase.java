@@ -138,7 +138,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
                 log.warn("Drop migration process configuration failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
         }
-        proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
+        proxyExecuteWithLog(migrationDistSQLCommand.getAlterMigrationRule(), 0);
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {
