@@ -19,16 +19,17 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Drop pipeline process configuration statement.
+ * Alter inventory incremental rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropPipelineProcessConfigurationStatement extends UpdatableScalingRALStatement {
+public final class AlterInventoryIncrementalRuleStatement extends UpdatableScalingRALStatement {
     
     private final String jobTypeName;
     
-    private final String confPath;
+    private final InventoryIncrementalRuleSegment processConfigSegment;
 }
