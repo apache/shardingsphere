@@ -33,13 +33,13 @@
     <distsql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" />
     <distsql-case id="drop-traffic-rule" value="DROP TRAFFIC RULE rule_name" />
     
-    <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" />
-    <distsql-case id="alter-instance-xa-recovery-nodes-with-multiple-values" value="ALTER INSTANCE instance_xa_recovery_multiple SET XA_RECOVERY_NODES='instance_1,instance_2'" />
+    <distsql-case id="alter-compute-node-xa-recovery-nodes" value="ALTER COMPUTE NODE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" />
+    <distsql-case id="alter-compute-node-xa-recovery-nodes-with-multiple-values" value="ALTER COMPUTE NODE instance_xa_recovery_multiple SET XA_RECOVERY_NODES='instance_1,instance_2'" />
     
-    <distsql-case id="label-instance" value="LABEL INSTANCE instance_label WITH OLAP_1,OLAP_2" />
-    <distsql-case id="relabel-instance" value="RELABEL INSTANCE instance_relabel WITH OLAP_1,OLAP_2" />
-    <distsql-case id="unlabel-instance" value="UNLABEL INSTANCE instance_unlabel WITH OLAP_1" />
-    <distsql-case id="unlabel-instance-without-label" value="UNLABEL INSTANCE instance_unlabel_2" />
+    <distsql-case id="label-compute-node" value="LABEL COMPUTE NODE instance_label WITH OLAP_1,OLAP_2" />
+    <distsql-case id="relabel-compute-node" value="RELABEL COMPUTE NODE instance_relabel WITH OLAP_1,OLAP_2" />
+    <distsql-case id="unlabel-compute-node" value="UNLABEL COMPUTE NODE instance_unlabel WITH OLAP_1" />
+    <distsql-case id="unlabel-compute-node-without-label" value="UNLABEL COMPUTE NODE instance_unlabel_2" />
     
     <distsql-case id="prepare-distsql" value="PREPARE DISTSQL" />
     <distsql-case id="apply-distsql" value="APPLY DISTSQL" />
