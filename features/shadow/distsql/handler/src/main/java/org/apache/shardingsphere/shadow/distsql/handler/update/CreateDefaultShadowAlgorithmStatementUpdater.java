@@ -26,14 +26,12 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
-import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Create default shadow algorithm statement updater.
@@ -51,8 +49,9 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     private Map<String, AlgorithmConfiguration> buildAlgorithmMap(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
-        return Collections.singleton(sqlStatement.getShadowAlgorithmSegment()).stream().collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, each -> new AlgorithmConfiguration(
-                each.getAlgorithmSegment().getName(), each.getAlgorithmSegment().getProps())));
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration(sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName(),
+                sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getProps());
+        return Collections.singletonMap(sqlStatement.getShadowAlgorithmSegment().getAlgorithmName(), algorithmConfig);
     }
     
     @Override
@@ -72,7 +71,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
         if (null == currentRuleConfig) {
             return;
         }
-        Collection<String> requireAlgorithmNames = Collections.singleton(sqlStatement.getShadowAlgorithmSegment()).stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
+        Collection<String> requireAlgorithmNames = Collections.singleton(sqlStatement.getShadowAlgorithmSegment().getAlgorithmName());
         ShadowRuleStatementChecker.checkAnyDuplicate(requireAlgorithmNames,
                 currentRuleConfig.getShadowAlgorithms().keySet(), different -> new DuplicateRuleException(SHADOW, databaseName, different));
     }
