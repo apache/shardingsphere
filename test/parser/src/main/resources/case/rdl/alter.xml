@@ -253,7 +253,7 @@
         </rule>
     </alter-shadow-rule>
     
-    <alter-shadow-algorithm sql-case-id="alter-shadow-algorithm">
+    <alter-default-shadow-algorithm sql-case-id="alter-default-shadow-algorithm">
         <shadow-algorithm algorithm-id="simple_hint_algorithm">
             <algorithm algorithm-name="SIMPLE_HINT">
                 <properties>
@@ -262,7 +262,7 @@
                 </properties>
             </algorithm>
         </shadow-algorithm>
-    </alter-shadow-algorithm>
+    </alter-default-shadow-algorithm>
     
     <alter-sharding-algorithm sql-case-id="alter-sharding-algorithm">
         <shardingAlgorithm sharding-algorithm-name="algorithm_name">

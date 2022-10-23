@@ -26,9 +26,11 @@ execute
     | showShadowRules
     | showShadowTableRules
     | showShadowAlgorithms
+    | showDefaultShadowAlgorithm
     | dropShadowAlgorithm
     | dropDefaultShadowAlgorithm
     | createDefaultShadowAlgorithm
+    | alterDefaultShadowAlgorithm
     | alterShadowAlgorithm
     | createShadowAlgorithm
     | countShadowRule

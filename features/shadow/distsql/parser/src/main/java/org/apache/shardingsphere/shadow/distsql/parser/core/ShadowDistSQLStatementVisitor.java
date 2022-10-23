@@ -20,11 +20,10 @@ package org.apache.shardingsphere.shadow.distsql.parser.core;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.AlgorithmPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.AlterShadowAlgorithmContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.AlterDefaultShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.AlterShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CountShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateDefaultShadowAlgorithmContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.CreateShadowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.DropDefaultShadowAlgorithmContext;
@@ -33,17 +32,16 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowAlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShadowTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowDefaultShadowAlgorithmContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShadowDistSQLStatementParser.ShowShadowTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowAlgorithmStatement;
@@ -77,7 +75,12 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitCreateDefaultShadowAlgorithm(final CreateDefaultShadowAlgorithmContext ctx) {
-        return new CreateDefaultShadowAlgorithmStatement(getIdentifierValue(ctx.algorithmName()));
+        return new CreateDefaultShadowAlgorithmStatement((ShadowAlgorithmSegment) visit(ctx.shadowAlgorithmDefinition()));
+    }
+    
+    @Override
+    public ASTNode visitAlterDefaultShadowAlgorithm(final AlterDefaultShadowAlgorithmContext ctx) {
+        return new CreateDefaultShadowAlgorithmStatement((ShadowAlgorithmSegment) visit(ctx.shadowAlgorithmDefinition()));
     }
     
     @Override
@@ -89,6 +92,11 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitShowShadowAlgorithms(final ShowShadowAlgorithmsContext ctx) {
+        return new ShowShadowAlgorithmsStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+    }
+    
+    @Override
+    public ASTNode visitShowDefaultShadowAlgorithm(final ShowDefaultShadowAlgorithmContext ctx) {
         return new ShowShadowAlgorithmsStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
@@ -114,18 +122,8 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitCreateShadowAlgorithm(final CreateShadowAlgorithmContext ctx) {
-        return new CreateShadowAlgorithmStatement(visitShadowAlgorithms(ctx.shadowAlgorithmDefinition()));
-    }
-    
-    @Override
     public ASTNode visitDropShadowRule(final DropShadowRuleContext ctx) {
         return new DropShadowRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
-    }
-    
-    @Override
-    public ASTNode visitAlterShadowAlgorithm(final AlterShadowAlgorithmContext ctx) {
-        return new AlterShadowAlgorithmStatement(visitShadowAlgorithms(ctx.shadowAlgorithmDefinition()));
     }
     
     @Override
@@ -173,4 +171,5 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     public ASTNode visitCountShadowRule(final CountShadowRuleContext ctx) {
         return new CountShadowRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
     }
+    
 }

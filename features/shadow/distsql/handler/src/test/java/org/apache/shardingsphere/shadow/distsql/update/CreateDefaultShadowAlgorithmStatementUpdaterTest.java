@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.CreateDefaultShadowAlgorithmStatementUpdater;
+import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +29,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
-
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,9 +43,10 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
     private final CreateDefaultShadowAlgorithmStatementUpdater updater = new CreateDefaultShadowAlgorithmStatementUpdater();
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
-    public void assertExecuteWithNotExistAlgorithm() {
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_name", null));
-        updater.checkSQLStatement(database, new CreateDefaultShadowAlgorithmStatement("input_default_name"), currentConfig);
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertExecuteWithInvalidAlgorithm() {
+        CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
+        when(statement.getShadowAlgorithmSegment()).thenReturn(mock(ShadowAlgorithmSegment.class));
+        updater.checkSQLStatement(database, statement, currentConfig);
     }
 }

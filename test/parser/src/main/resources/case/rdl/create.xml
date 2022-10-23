@@ -407,8 +407,6 @@
         </shardingAlgorithm>
     </create-sharding-algorithm>
     
-    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
-    
     <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
         </strategy>
@@ -424,7 +422,7 @@
         </strategy>
     </create-default-sharding-strategy>
     
-    <create-shadow-algorithm sql-case-id="create-shadow-algorithm">
+    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm">
         <shadow-algorithm algorithm-id="simple_hint_algorithm">
             <algorithm algorithm-name="HINT">
                 <properties>
@@ -433,7 +431,7 @@
                 </properties>
             </algorithm>
         </shadow-algorithm>
-    </create-shadow-algorithm>
+    </create-default-shadow-algorithm>
     
     <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
     

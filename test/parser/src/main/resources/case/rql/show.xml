@@ -81,6 +81,10 @@
     <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
         <database name="shadow_db" start-index="28" stop-index="36" />
     </show-shadow-algorithms>
+
+    <show-default-shadow-algorithm sql-case-id="show-default-shadow-algorithm">
+        <database name="shadow_db" start-index="35" stop-index="43" />
+    </show-default-shadow-algorithm>
     
     <show-single-table sql-case-id="show-single-table">
         <name name="t_order" start-index="19" stop-index="25" />

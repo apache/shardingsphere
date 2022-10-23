@@ -33,6 +33,7 @@
     <distsql-case id="show-shadow-rules" value="SHOW SHADOW RULE shadow_rule FROM shadow_db" />
     <distsql-case id="show-shadow-table-rules" value="SHOW SHADOW TABLE RULES FROM shadow_db" />
     <distsql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" />
+    <distsql-case id="show-default-shadow-algorithm" value="SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db" />
     <distsql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" />
     <distsql-case id="show-single-table-rules" value="SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM single_table_db" />
     <distsql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" />

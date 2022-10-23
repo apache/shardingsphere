@@ -44,11 +44,15 @@ dropShadowAlgorithm
     ;
 
 createDefaultShadowAlgorithm
-    : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
+    : CREATE DEFAULT SHADOW ALGORITHM shadowAlgorithmDefinition
     ;
 
 dropDefaultShadowAlgorithm
     : DROP DEFAULT SHADOW ALGORITHM ifExists?
+    ;
+
+alterDefaultShadowAlgorithm
+    : ALTER DEFAULT SHADOW ALGORITHM shadowAlgorithmDefinition
     ;
 
 shadowRuleDefinition

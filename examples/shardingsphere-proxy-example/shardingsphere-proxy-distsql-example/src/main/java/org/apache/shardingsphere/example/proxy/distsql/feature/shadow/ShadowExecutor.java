@@ -43,10 +43,6 @@ public final class ShadowExecutor extends AbstractFeatureExecutor {
             "t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", foo=\"bar\"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES(\"operation\"=\"insert\",\"column\"=\"user_id\", \"regex\"='[1]')))), \n" +
             "t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\")))))";
     
-    private static final String ALTER_ALGORITHM = "ALTER SHADOW ALGORITHM \n" +
-            "(simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES(\"shadow\"=\"true\", \"foo\"=\"bar\"))), \n" +
-            "(shadow_rule_t_order_regex_match, TYPE(NAME=REGEX_MATCH,PROPERTIES(\"operation\"=\"insert\", \"column\"=\"user_id\", \"regex\"='[1]')))";
-    
     private static final String DROP_RULE = "DROP SHADOW RULE shadow_rule";
     
     private static final String DROP_ALGORITHM = "DROP SHADOW ALGORITHM simple_hint_algorithm,shadow_rule_t_order_regex_match,shadow_rule_t_order_item_simple_hint";
@@ -71,7 +67,6 @@ public final class ShadowExecutor extends AbstractFeatureExecutor {
         executeShowTableRule();
         executeShowAlgorithm();
         executeAlterRule();
-        executeAlterAlgorithm();
         executeShowRule();
         executeShowTableRule();
         executeShowAlgorithm();
@@ -108,11 +103,6 @@ public final class ShadowExecutor extends AbstractFeatureExecutor {
     private void executeAlterRule() throws SQLException {
         log.info("alter rule...");
         statement.execute(ALTER_RULE);
-    }
-    
-    private void executeAlterAlgorithm() throws SQLException {
-        log.info("alter algorithm...");
-        statement.execute(ALTER_ALGORITHM);
     }
     
     private void executeDropRule() throws SQLException {
