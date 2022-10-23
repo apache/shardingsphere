@@ -28,15 +28,15 @@ execute
     | showDistVariable
     | showDistVariables
     | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstanceList
-    | showInstanceInfo
-    | showModeInfo
-    | labelInstance
-    | unlabelInstance
+    | enableComputeNode
+    | disableComputeNode
+    | showComputeNodes
+    | showComputeNodeInfo
+    | showComputeNodeMode
+    | labelComputeNode
+    | unlabelComputeNode
     | countSingleTableRule
-    | alterInstance
+    | alterComputeNode
     | prepareDistSQL
     | applyDistSQL
     | discardDistSQL
