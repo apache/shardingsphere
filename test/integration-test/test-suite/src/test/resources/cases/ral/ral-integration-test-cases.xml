@@ -50,18 +50,18 @@
         </assertion>
     </test-case>
 
-    <test-case sql="show variable transaction_type">
+    <test-case sql="show dist variable where name = transaction_type">
         <assertion expected-data-file="default_transaction_type.xml"/>
     </test-case>
 
-    <test-case sql="show variable transaction_type">
+    <test-case sql="show dist variable where name = transaction_type">
         <assertion expected-data-file="transaction_type.xml">
-            <initial-sql sql="set variable transaction_type = 'XA'"/>
-            <destroy-sql sql="set variable transaction_type = 'LOCAL'"/>
+            <initial-sql sql="set dist variable transaction_type = 'XA'"/>
+            <destroy-sql sql="set dist variable transaction_type = 'LOCAL'"/>
         </assertion>
     </test-case>
 
-    <test-case sql="show variable cached_connections">
+    <test-case sql="show dist variable where name = cached_connections">
         <assertion expected-data-file="cached_connections.xml"/>
     </test-case>
 
@@ -74,8 +74,8 @@
         <assertion expected-data-file="preview_federation_select.xml"/>
     </test-case>
     
-    <test-case sql="SHOW INSTANCE LIST">
-        <assertion expected-data-file="show_instance_list.xml"/>
+    <test-case sql="SHOW COMPUTE NODES">
+        <assertion expected-data-file="show_compute_nodes.xml"/>
     </test-case>
 </integration-test-cases>
 

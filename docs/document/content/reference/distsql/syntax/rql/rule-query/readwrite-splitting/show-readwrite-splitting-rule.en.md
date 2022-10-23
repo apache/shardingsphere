@@ -70,7 +70,7 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 
 ### Reserved word
 
-`SHOW`、`READWRITE_SPLITTING`、`RULES`、`FROM`
+`SHOW`, `READWRITE_SPLITTING`, `RULES`, `FROM`
 
 ### Related links
 

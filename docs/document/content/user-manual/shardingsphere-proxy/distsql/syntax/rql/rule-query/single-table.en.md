@@ -6,9 +6,9 @@ weight = 2
 ## Syntax
 
 ```sql
-SHOW SINGLE TABLE (table | RULES) [FROM databaseName]
-
-SHOW SINGLE TABLES
+SHOW DEFAULT SINGLE TABLE STORAGE UNIT [FROM databaseName]
+    
+SHOW SINGLE (TABLES | table) [FROM databaseName]
 
 COUNT SINGLE_TABLE RULE [FROM databaseName]
 
@@ -18,12 +18,12 @@ table:
 
 ## Return Value Description
 
-### Single Table Rule
+### Single Table Storage Unit
 
-| Column        | Description      |
-| ------------- | ---------------- |
-| name          | Rule name        |
-| resource_name | Data source name |
+| Column             | Description       |
+|--------------------|-------------------|
+| storage_unit_name  | Storage unit name |
+
 
 ### Single Table
 
@@ -42,15 +42,15 @@ table:
 
 ## Example
 
-*SHOW SINGLE TABLES RULES*
+*SHOW DEFAULT SINGLE TABLE STORAGE UNIT*
 
 ```sql
-sql>  SHOW SINGLE TABLES RULES;
-+---------+---------------+
-| name    | resource_name |
-+---------+---------------+
-| default | ds_1          |
-+---------+---------------+
+sql> SHOW DEFAULT SINGLE TABLE STORAGE UNIT;
++-------------------+
+| storage_unit_name |
++-------------------+
+|  ds_0             |
++-------------------+
 1 row in set (0.01 sec)
 ```
 

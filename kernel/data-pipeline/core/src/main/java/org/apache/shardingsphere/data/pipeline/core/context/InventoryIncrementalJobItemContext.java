@@ -78,11 +78,11 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
     long getProcessedRecordsCount();
     
     /**
-     * Init inventory records count.
+     * Update inventory records count.
      *
      * @param recordsCount records count
      */
-    void initInventoryRecordsCount(long recordsCount);
+    void updateInventoryRecordsCount(long recordsCount);
     
     /**
      * Get inventory records count.

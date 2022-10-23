@@ -114,13 +114,13 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     
     @Test
     public void assertNewInstanceWithDistSQL() throws SQLException {
-        String sql = "set variable transaction_type='LOCAL'";
+        String sql = "set dist variable transaction_type='LOCAL'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SetVariableHandler.class));
-        sql = "show variable transaction_type";
+        sql = "show dist variable where name = transaction_type";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
-        sql = "show all variables";
+        sql = "show dist variables";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "set sharding hint database_value=1";
@@ -259,7 +259,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test
     public void assertUnsupportedRQLStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW SINGLE TABLE RULES";
+        String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
     }

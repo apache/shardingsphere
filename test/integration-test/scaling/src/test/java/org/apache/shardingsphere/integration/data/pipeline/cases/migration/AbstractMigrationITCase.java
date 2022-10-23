@@ -87,7 +87,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
                 .replace("${ds3}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_3, true)))
                 .replace("${ds4}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_4, true)));
         addResource(addTargetResource);
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
         assertThat(resources.size(), is(3));
     }
     
@@ -138,7 +138,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
                 log.warn("Drop migration process configuration failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
         }
-        proxyExecuteWithLog(migrationDistSQLCommand.getAddMigrationProcessConfig(), 0);
+        proxyExecuteWithLog(migrationDistSQLCommand.getAlterMigrationRule(), 0);
     }
     
     protected void stopMigrationByJobId(final String jobId) throws SQLException {
