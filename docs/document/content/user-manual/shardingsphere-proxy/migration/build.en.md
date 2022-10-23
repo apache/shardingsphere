@@ -95,7 +95,7 @@ The default configuration is as follows.
 
 7.2. Alter configuration (Optional).
 
-Since the Migration Rule has default values, there is no need to create it, only the `ALTER` statement is provided.
+Since the migration rule has default values, there is no need to create it, only the `ALTER` statement is provided.
 
 A completely configured DistSQL is as follows.
 

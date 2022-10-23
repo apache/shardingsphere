@@ -95,7 +95,7 @@ SHOW MIGRATION RULE;
 
 7.2. 修改配置（可选）。
 
-因 Migration Rule 具有默认值，无需创建，仅提供 ALTER 语句。
+因 migration rule 具有默认值，无需创建，仅提供 ALTER 语句。
 
 完整配置 DistSQL 示例：
 
