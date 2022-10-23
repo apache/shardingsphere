@@ -99,6 +99,9 @@ public final class ResourceSwitchManager {
     }
     
     private Map<String, DataSource> getToBeChangedDataSources(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
+        if (toBeChangedDataSourceProps.isEmpty()) {
+            return resourceMetaData.getDataSources();
+        }
         Map<String, DataSourceProperties> changedDataSourceProps = getChangedDataSourceProperties(resourceMetaData, toBeChangedDataSourceProps);
         return resourceMetaData.getDataSources().entrySet().stream().filter(entry -> changedDataSourceProps.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
