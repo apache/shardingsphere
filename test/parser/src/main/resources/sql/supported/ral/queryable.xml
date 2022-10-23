@@ -20,7 +20,7 @@
     <distsql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = CACHED_CONNECTIONS" />
     <distsql-case id="show-dist-variables" value="SHOW DIST VARIABLES" />
     
-    <distsql-case id="show-readwrite-splitting-read-resources" value="SHOW READWRITE_SPLITTING READ RESOURCES" />
+    <distsql-case id="show-status-from-readwrite-splitting-rules" value="SHOW STATUS FROM READWRITE_SPLITTING RULES" />
     
     <distsql-case id="show-table-metadata" value="SHOW TABLE METADATA t_order FROM database_name" />
     

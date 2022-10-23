@@ -1143,7 +1143,7 @@ public final class SQLParserTestCases {
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-readwrite-splitting-read-resources")
+    @XmlElement(name = "show-status-from-readwrite-splitting-rules")
     private final List<ShowReadwriteSplittingReadResourcesStatementTestCase> showReadwriteSplittingReadResourcesTestCases = new LinkedList<>();
     
     @XmlElement(name = "uninstall-component")

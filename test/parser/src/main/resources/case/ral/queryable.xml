@@ -20,7 +20,7 @@
     <show-dist-variable sql-case-id="show-dist-variable" name="CACHED_CONNECTIONS" />
     <show-dist-variables sql-case-id="show-dist-variables" />
     
-    <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
+    <show-status-from-readwrite-splitting-rules sql-case-id="show-status-from-readwrite-splitting-rules" />
     
     <show-table-metadata sql-case-id="show-table-metadata">
         <table-name>t_order</table-name>

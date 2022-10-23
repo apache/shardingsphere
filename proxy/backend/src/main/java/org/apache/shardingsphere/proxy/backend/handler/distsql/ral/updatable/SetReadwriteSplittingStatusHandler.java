@@ -74,6 +74,10 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
             checkEnable(contextManager, databaseName, disabledResources, toBeUpdatedResource);
         }
         Collection<String> groupNames = getGroupNames(toBeUpdatedResource, replicaResources, disabledResources, autoAwareResources);
+        String groupName = getSqlStatement().getGroupName();
+        if (!Strings.isNullOrEmpty(groupName)) {
+            groupNames = groupNames.stream().filter(each -> groupName.equalsIgnoreCase(each)).collect(Collectors.toList());
+        }
         updateStatus(databaseName, groupNames, toBeUpdatedResource, isDisable);
     }
     

@@ -35,12 +35,12 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 ## 熔断
 
-| 语句                                                                             | 说明                 | 示例                                        |
-| :------------------------------------------------------------------------------ | :------------------- | :----------------------------------------- |
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | 启用 / 禁用读库        | ENABLE READWRITE_SPLITTING READ resource_0 |
-| [ENABLE / DISABLE] INSTANCE instanceId                                          | 启用 / 禁用 proxy 实例 | DISABLE INSTANCE instance_1                |
-| SHOW INSTANCE LIST                                                              | 查询 proxy 实例信息    | SHOW INSTANCE LIST                         |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | 查询所有读库的状态      | SHOW READWRITE_SPLITTING READ RESOURCES    |
+| 语句                                                                                               | 说明                                  | 示例                                                            |
+|:-------------------------------------------------------------------------------------------------|:------------------------------------|:--------------------------------------------------------------|
+| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) resourceName [FROM databaseName] | 启用 / 禁用全部规则或指定规则内读库        | ALTER READWRITE_SPLITTING RULE group_1 ENABLE resource_0      |
+| [ENABLE / DISABLE] INSTANCE instanceId                                                           | 启用 / 禁用 proxy 实例                    | DISABLE INSTANCE instance_1                                   |
+| SHOW INSTANCE LIST                                                                               | 查询 proxy 实例信息                       | SHOW INSTANCE LIST                                            |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                | 查询全部规则或指定规则内读库的状态          | SHOW STATUS FROM READWRITE_SPLITTING RULES                    |
 
 ## 全局规则
 

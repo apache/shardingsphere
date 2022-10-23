@@ -6,7 +6,7 @@ weight = 2
 ## Resource Operation
 
 ```sql
-ADD RESOURCE write_ds (
+REGISTER STORAGE UNIT write_ds (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -52,7 +52,7 @@ DROP READWRITE_SPLITTING RULE group_0;
 - Drop resource
 
 ```sql
-DROP RESOURCE write_ds,read_ds;
+UNREGISTER STORAGE UNIT write_ds,read_ds;
 ```
 
 - Drop distributed database
