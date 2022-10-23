@@ -96,11 +96,12 @@ public final class EncryptCreateTableTokenGeneratorTest {
         when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());
         when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(column.getPlainColumn());
         when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQueryColumn());
+        when(result.findFuzzyQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getFuzzyQueryColumn());
         when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "certificate_number_plain", "test", null);
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "fuzzy_certificate_number", "certificate_number_plain", "test", null);
     }
 }

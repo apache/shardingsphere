@@ -19,32 +19,32 @@ grammar RALStatement;
 
 import BaseRule;
 
-setVariable
-    : SET VARIABLE variableName EQ variableValue
+setDistVariable
+    : SET DIST VARIABLE variableName EQ variableValue
     ;
 
-showVariable
-    : SHOW VARIABLE variableName
+showDistVariable
+    : SHOW DIST VARIABLE WHERE NAME EQ variableName
     ;
 
-showAllVariables
-    : SHOW ALL VARIABLES
+showDistVariables
+    : SHOW DIST VARIABLES
     ;
 
-alterInstance
-    : ALTER INSTANCE instanceId SET variableName EQ variableValues
+alterComputeNode
+    : ALTER COMPUTE NODE instanceId SET variableName EQ variableValues
     ;
 
-enableInstance
-    : ENABLE INSTANCE instanceId
+enableComputeNode
+    : ENABLE COMPUTE NODE instanceId
     ;
 
-disableInstance
-    : DISABLE INSTANCE instanceId
+disableComputeNode
+    : DISABLE COMPUTE NODE instanceId
     ;
 
-showInstanceList
-    : SHOW INSTANCE LIST
+showComputeNodes
+    : SHOW COMPUTE NODES
     ;
 
 clearHint
@@ -59,20 +59,20 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showInstanceInfo
-    : SHOW INSTANCE INFO
+showComputeNodeInfo
+    : SHOW COMPUTE NODE INFO
     ;
 
-showModeInfo
-    : SHOW MODE INFO
+showComputeNodeMode
+    : SHOW COMPUTE NODE MODE
     ;
 
-labelInstance
-    : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
+labelComputeNode
+    : (LABEL | RELABEL) COMPUTE NODE instanceId WITH label (COMMA label)*
     ;
 
-unlabelInstance
-    : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
+unlabelComputeNode
+    : UNLABEL COMPUTE NODE instanceId (WITH label (COMMA label)*)?
     ;
 
 exportDatabaseConfiguration

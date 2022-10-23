@@ -16,65 +16,141 @@
   -->
 <integration-test-cases>
     <!-- TODO FIX HOST CANNOT CONNECT -->
-<!--    <test-case sql="ADD RESOURCE ds_0 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_0?serverTimezone=UTC&amp;useSSL=false', USER='test_user',PASSWORD='Test@123');" db-types="MySQL">-->
+<!--    <test-case sql="REGISTER STORAGE UNIT ds_0 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_0?serverTimezone=UTC&amp;useSSL=false', USER='test_user',PASSWORD='Test@123');" db-types="MySQL">-->
 <!--        <assertion expected-data-file="add_resource.xml">-->
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-<!--    <test-case sql="ALTER RESOURCE ds_2 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_2?serverTimezone=UTC&amp;useSSL=false', USER='test_user',PASSWORD='Test@123',PROPERTIES('idleTimeout'='30000'));" db-types="MySQL">-->
+<!--    <test-case sql="ALTER STORAGE UNIT ds_2 (URL='jdbc:mysql://mysql.rdl.empty_rules.host:3306/rdl_ds_2?serverTimezone=UTC&amp;useSSL=false', USER='test_user',PASSWORD='Test@123',PROPERTIES('idleTimeout'='30000'));" db-types="MySQL">-->
 <!--        <assertion expected-data-file="alter_resource.xml">-->
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-<!--    <test-case sql="DROP RESOURCE ds_2;" db-types="MySQL, PostgreSQL">-->
+<!--    <test-case sql="UNREGISTER STORAGE UNIT ds_2;" db-types="MySQL, PostgreSQL">-->
 <!--        <assertion expected-data-file="drop_resource.xml">-->
 <!--            <assertion-sql sql="SHOW DATABASE RESOURCES" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
-    <test-case sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" db-types="MySQL">
-        <assertion expected-data-file="create_single_table_rules.xml">
-            <assertion-sql sql="SHOW SINGLE TABLES;" />
-            <destroy-sql sql="DROP DEFAULT SINGLE TABLE RULE"/>
+    <test-case sql="CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));"></initial-sql>
+            <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>
-    <test-case sql="ALTER DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" db-types="MySQL">
-        <assertion expected-data-file="create_single_table_rules.xml">
-            <initial-sql sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_1;" />
-            <assertion-sql sql="SHOW SINGLE TABLES;" />
-            <destroy-sql sql="DROP DEFAULT SINGLE TABLE RULE"/>
+    <test-case sql="ALTER SHARDING BINDING TABLE RULES (t_order,t_order_item)" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));
+            CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);"></initial-sql>
+            <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>
-    <test-case sql="DROP DEFAULT SINGLE TABLE RULE" db-types="MySQL">
-        <assertion expected-data-file="create_single_table_rules.xml">
-            <initial-sql sql="CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;" />
-            <assertion-sql sql="SHOW SINGLE TABLES;" />
+    <test-case sql="DROP SHARDING BINDING TABLE RULES;" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_binding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));
+            CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);"></initial-sql>
+            <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>
-    <test-case sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" db-types="MySQL">
+    <test-case sql="CREATE SHARDING BROADCAST TABLE RULES (t_product_category);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_broadcast_rules.xml">
+            <assertion-sql sql="SHOW SHARDING BROADCAST TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BROADCAST TABLE RULES (t_product_category); "/>
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER SHARDING BROADCAST TABLE RULES (t_product_category,t_country);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_broadcast_rules.xml">
+            <initial-sql sql="CREATE SHARDING BROADCAST TABLE RULES (t_product_category);" />
+            <assertion-sql sql="SHOW SHARDING BROADCAST TABLE RULES;" />
+            <destroy-sql sql="DROP SHARDING BROADCAST TABLE RULES (t_product_category,t_country); "/>
+        </assertion>
+    </test-case>
+    <test-case sql="DROP SHARDING BROADCAST TABLE RULES (t_country);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_broadcast_rules.xml">
+            <initial-sql sql="CREATE SHARDING BROADCAST TABLE RULES (t_country);" />
+            <assertion-sql sql="SHOW SHARDING BROADCAST TABLE RULES;" />
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=true);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_encrypt_rule.xml">
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
+            <destroy-sql sql="DROP ENCRYPT RULE t_user "/>
+        </assertion>
+    </test-case>
+    <test-case sql="ALTER ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abcd')))),QUERY_WITH_CIPHER_COLUMN=true);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_encrypt_rule.xml">
+            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=true);" />
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
+            <destroy-sql sql="DROP ENCRYPT RULE t_user "/>
+        </assertion>
+    </test-case>
+    <test-case sql="DROP ENCRYPT RULE t_user;" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_encrypt_rule.xml">
+            <initial-sql sql="CREATE ENCRYPT RULE t_user (COLUMNS((NAME=pwd,PLAIN=pwd_plain,CIPHER=pwd_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),QUERY_WITH_CIPHER_COLUMN=true);" />
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user;" />
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE TABLE temp (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_single_table_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;"></initial-sql>
+            <assertion-sql sql="SHOW SINGLE TABLES ;" />
+            <destroy-sql sql="DROP TABLE temp;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE TABLE temp_alter (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="alter_single_table_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;" />
+            <assertion-sql sql="SHOW SINGLE TABLES;" />
+            <destroy-sql sql="DROP TABLE temp_alter;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
+        </assertion>
+    </test-case>
+    <test-case sql="SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="drop_single_table_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0;" />
+            <assertion-sql sql="SHOW SINGLE TABLES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
+        </assertion>
+    </test-case>
+    <test-case sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" db-types="MySQL">
         <assertion expected-data-file="create_sharding_rules.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
-            <destroy-sql sql="DROP SHARDING TABLE RULE t_user"/>
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order"/>
         </assertion>
         <assertion expected-data-file="create_sharding_rules_show_tables.xml">
             <assertion-sql sql="SHOW TABLES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order"/>
         </assertion>
     </test-case>
-    <test-case sql="ALTER SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 4}')))))" db-types="MySQL">
+    <test-case sql="ALTER SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));" db-types="MySQL">
         <assertion expected-data-file="alter_sharding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
-            <destroy-sql sql="DROP SHARDING TABLE RULE t_user"/>
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order"/>
         </assertion>
         <assertion expected-data-file="alter_sharding_rules_show_tables.xml">
-            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" />
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
             <assertion-sql sql="SHOW TABLES;" />
+            <destroy-sql sql="DROP SHARDING TABLE RULE t_order"/>
         </assertion>
     </test-case>
-    <test-case sql="DROP SHARDING TABLE RULE t_user" db-types="MySQL">
+    <test-case sql="DROP SHARDING TABLE RULE t_order" db-types="MySQL">
         <assertion expected-data-file="drop_sharding_rules.xml">
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
             <assertion-sql sql="SHOW SHARDING TABLE RULES;" />
         </assertion>
         <assertion expected-data-file="drop_sharding_rules_show_tables.xml">
-            <initial-sql sql="CREATE SHARDING TABLE RULE t_user (DATANODES('ds_0.t_user_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_user_${user_id % 2}')))))" />
+            <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));" />
             <assertion-sql sql="SHOW TABLES;" />
         </assertion>
     </test-case>
@@ -89,3 +165,4 @@
         </assertion>
     </test-case>
 </integration-test-cases>
+

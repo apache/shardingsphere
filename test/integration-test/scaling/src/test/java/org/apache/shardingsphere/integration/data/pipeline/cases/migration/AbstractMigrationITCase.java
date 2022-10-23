@@ -87,7 +87,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
                 .replace("${ds3}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_3, true)))
                 .replace("${ds4}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_4, true)));
         addResource(addTargetResource);
-        List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
+        List<Map<String, Object>> resources = queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
         assertThat(resources.size(), is(3));
     }
     

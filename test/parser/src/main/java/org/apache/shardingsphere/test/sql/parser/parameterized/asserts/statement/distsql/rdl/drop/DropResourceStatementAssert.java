@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
 
@@ -40,7 +40,7 @@ public final class DropResourceStatementAssert {
      * @param actual actual drop resource statement
      * @param expected expected drop resource statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropResourceStatement actual, final DropResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterStorageUnitStatement actual, final DropResourceStatementTestCase expected) {
         if (null == expected.getDataSources()) {
             assertNull(assertContext.getText("Actual resource should not exist."), actual);
         } else {

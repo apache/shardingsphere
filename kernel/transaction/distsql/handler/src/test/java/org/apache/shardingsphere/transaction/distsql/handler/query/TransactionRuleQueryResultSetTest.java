@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
@@ -65,7 +64,7 @@ public final class TransactionRuleQueryResultSetTest {
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        TransactionRule rule = new TransactionRule(createAuthorityRuleConfiguration(defaultType, providerType, props), Collections.emptyMap(), mock(InstanceContext.class));
+        TransactionRule rule = new TransactionRule(createAuthorityRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(rule));
         return result;

@@ -66,6 +66,8 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private final AtomicLong processedRecordsCount = new AtomicLong(0);
     
+    private final AtomicLong inventoryRecordsCount = new AtomicLong(0);
+    
     private final MigrationJobConfiguration jobConfig;
     
     private final MigrationProcessContext jobProcessContext;
@@ -97,6 +99,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         this.initProgress = initProgress;
         if (null != initProgress) {
             processedRecordsCount.set(initProgress.getProcessedRecordsCount());
+            inventoryRecordsCount.set(initProgress.getInventoryRecordsCount());
         }
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;
@@ -137,5 +140,15 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     @Override
     public long getProcessedRecordsCount() {
         return processedRecordsCount.get();
+    }
+    
+    @Override
+    public void updateInventoryRecordsCount(final long recordsCount) {
+        inventoryRecordsCount.addAndGet(recordsCount);
+    }
+    
+    @Override
+    public long getInventoryRecordsCount() {
+        return inventoryRecordsCount.get();
     }
 }

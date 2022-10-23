@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -28,10 +27,9 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public final class ConnectionTransactionTest {
     
@@ -71,10 +69,10 @@ public final class ConnectionTransactionTest {
     }
     
     private TransactionRule getLocalTransactionRule() {
-        return new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap(), mock(InstanceContext.class));
+        return new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap());
     }
     
     private TransactionRule getXATransactionRule() {
-        return new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyMap(), mock(InstanceContext.class));
+        return new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyMap());
     }
 }
