@@ -44,12 +44,13 @@ public final class ResourceSwitchManagerTest {
     }
     
     @Test
-    public void assertCreateWithEmptyDataSourceProp() throws InterruptedException {
+    public void assertCreateByAlterDataSourceProps() throws InterruptedException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
-        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
+        SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
         assertThat(actual.getNewDataSources().size(), is(0));
+        assertThat(actual.getStaleDataSources().size(), is(2));
         actual.closeStaleDataSources();
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_0"));
         assertStaleDataSource((MockedDataSource) dataSourceMap.get("ds_1"));
