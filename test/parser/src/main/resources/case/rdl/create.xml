@@ -235,13 +235,6 @@
         </rule>
     </create-database-discovery-definition-rule>
 
-    <create-database-discovery-construction-rule sql-case-id="create-database-discovery-construction-rule">
-        <rule rule-name="ha_group_0" type="ha_group_0_mgr" heartbeat="ha_group_0_heartbeat">
-            <data-source>resource0</data-source>
-            <data-source>resource1</data-source>
-        </rule>
-    </create-database-discovery-construction-rule>
-
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
         <rule rule-name="ha_group_0" type="mgr">
             <data-source>resource0</data-source>

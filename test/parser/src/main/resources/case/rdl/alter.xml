@@ -154,13 +154,6 @@
             </heartbeat>
         </rule>
     </alter-database-discovery-definition-rule>
-
-    <alter-database-discovery-construction-rule sql-case-id="alter-database-discovery-construction-rule">
-        <rule rule-name="ha_group_0" type="ha_group_0_mgr" heartbeat="ha_group_0_heartbeat">
-            <data-source>resource0</data-source>
-            <data-source>resource1</data-source>
-        </rule>
-    </alter-database-discovery-construction-rule>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">

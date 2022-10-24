@@ -44,7 +44,6 @@ public class DatabaseDiscoveryDistSQLTest {
         String sql = "CREATE DB_DISCOVERY RULE db_discovery_group_0 ("
                 + "RESOURCES(ds_0, ds_1), TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b')),"
                 + "HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?')))";
-        
         CreateDatabaseDiscoveryRuleStatement distSQLStatement = (CreateDatabaseDiscoveryRuleStatement) getDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertDiscoverySegment((DatabaseDiscoveryDefinitionSegment) distSQLStatement.getRules().iterator().next());

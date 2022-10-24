@@ -40,15 +40,7 @@ dropDatabaseDiscoveryHeartbeat
     ;
 
 databaseDiscoveryRule
-    : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
-    ;
-
-databaseDiscoveryRuleDefinition
     : ruleName LP resources COMMA typeDefinition COMMA discoveryHeartbeat RP
-    ;
-
-databaseDiscoveryRuleConstruction
-    : ruleName LP resources COMMA TYPE EQ discoveryTypeName COMMA HEARTBEAT EQ discoveryHeartbeatName RP
     ;
 
 databaseDiscoveryTypeDefinition
