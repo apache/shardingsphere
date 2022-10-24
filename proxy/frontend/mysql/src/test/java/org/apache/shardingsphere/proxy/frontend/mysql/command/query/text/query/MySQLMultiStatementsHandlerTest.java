@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -82,7 +83,7 @@ public final class MySQLMultiStatementsHandlerTest {
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/db");
         when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         Statement statement = mock(Statement.class);
-        when(backendStatement.createStorageResource(eq(connection), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(statement);
+        when(backendStatement.createStorageResource(eq(connection), any(ConnectionMode.class), any(StatementOption.class), any(DatabaseType.class))).thenReturn(statement);
         when(statement.getConnection()).thenReturn(connection);
         when(statement.executeBatch()).thenReturn(new int[]{1, 1, 1});
         MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);

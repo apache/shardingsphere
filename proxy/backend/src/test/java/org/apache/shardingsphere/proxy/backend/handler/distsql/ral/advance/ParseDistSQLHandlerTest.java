@@ -68,7 +68,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertGetRowDataForMySQL() throws SQLException {
         String sql = "select * from t_order";
-        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
         parseDistSQLHandler.init(parseStatement, connectionSession);
@@ -82,7 +82,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "select * from t_order";
-        when(connectionSession.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
         parseDistSQLHandler.init(parseStatement, connectionSession);
@@ -96,7 +96,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     @Test(expected = SQLParsingException.class)
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
-        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
         parseDistSQLHandler.init(parseStatement, connectionSession);
