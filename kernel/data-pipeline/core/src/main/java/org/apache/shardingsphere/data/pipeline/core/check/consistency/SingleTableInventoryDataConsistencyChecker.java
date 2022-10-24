@@ -46,7 +46,6 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -107,11 +106,11 @@ public final class SingleTableInventoryDataConsistencyChecker {
         String schemaName = sourceTable.getSchemaName().getOriginal();
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, sourceTableName);
         if (null != checkJobItemContext) {
-            checkJobItemContext.setTableNames(Collections.singletonList(sourceTableName));
+            checkJobItemContext.getTableNames().add(sourceTableName);
             InventoryIncrementalJobPublicAPI inventoryIncrementalJobPublicAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(PipelineJobIdUtils.parseJobType(jobId).getTypeName());
             Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = inventoryIncrementalJobPublicAPI.getJobProgress(jobId);
             long recordsCount = jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
-            checkJobItemContext.setRecordsCount(recordsCount);
+            checkJobItemContext.getRecordsCount().addAndGet(recordsCount);
             log.info("check, get records count: {}", recordsCount);
         }
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(sourceTableName));
