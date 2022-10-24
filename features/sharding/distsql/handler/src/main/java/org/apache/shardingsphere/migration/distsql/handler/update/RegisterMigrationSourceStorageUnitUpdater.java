@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesVali
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
+import org.apache.shardingsphere.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
 import java.util.ArrayList;
@@ -37,14 +37,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Add migration source resource updater.
+ * Register migration source storage unit updater.
  */
-public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMigrationSourceResourceStatement> {
+public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdater<RegisterMigrationSourceStorageUnitStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final AddMigrationSourceResourceStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final RegisterMigrationSourceStorageUnitStatement sqlStatement) {
         List<DataSourceSegment> dataSources = new ArrayList<>(sqlStatement.getDataSources());
         ShardingSpherePreconditions.checkState(dataSources.stream().noneMatch(each -> each instanceof HostnameAndPortBasedDataSourceSegment),
                 () -> new UnsupportedSQLOperationException("Not currently support add hostname and port, please use url"));
@@ -58,6 +58,6 @@ public final class AddMigrationSourceResourceUpdater implements RALUpdater<AddMi
     
     @Override
     public String getType() {
-        return AddMigrationSourceResourceStatement.class.getName();
+        return RegisterMigrationSourceStorageUnitStatement.class.getName();
     }
 }

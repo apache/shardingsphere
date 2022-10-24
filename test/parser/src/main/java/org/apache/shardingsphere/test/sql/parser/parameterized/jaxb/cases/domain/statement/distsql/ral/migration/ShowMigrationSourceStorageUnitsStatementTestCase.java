@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.connection;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
 
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Add migration source resource exception.
+ * Show migration source storage units statement test case.
  */
-public final class AddMigrationSourceResourceException extends PipelineSQLException {
+@Getter
+@Setter
+public final class ShowMigrationSourceStorageUnitsStatementTestCase extends SQLParserTestCase {
     
-    private static final long serialVersionUID = -3952313247315105684L;
-    
-    public AddMigrationSourceResourceException(final Collection<String> duplicateDataSourceNames) {
-        super(XOpenSQLState.DUPLICATE, 30, "Duplicate resource names `%s`.", duplicateDataSourceNames);
-    }
 }

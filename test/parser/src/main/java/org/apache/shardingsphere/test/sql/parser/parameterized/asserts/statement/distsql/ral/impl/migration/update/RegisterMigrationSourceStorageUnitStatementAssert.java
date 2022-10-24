@@ -20,34 +20,35 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.migration.distsql.statement.AddMigrationSourceResourceStatement;
+import org.apache.shardingsphere.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.DataSourceAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.AddMigrationSourceResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RegisterMigrationSourceStorageUnitStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Add migration source resource statement assert.
+ * Register migration source storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AddMigrationSourceResourceStatementAssert {
+public final class RegisterMigrationSourceStorageUnitStatementAssert {
     
     /**
-     * Assert add migration source resource statement is correct with expected parser result.
+     * Assert register migration source storage unit statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual add migration source resource statement
-     * @param expected expected add migration source resource statement test case
+     * @param actual actual register migration source storage unit statement
+     * @param expected expected register migration source storage unit statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AddMigrationSourceResourceStatement actual, final AddMigrationSourceResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RegisterMigrationSourceStorageUnitStatement actual,
+                                final RegisterMigrationSourceStorageUnitStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

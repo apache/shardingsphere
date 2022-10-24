@@ -20,22 +20,22 @@ package org.apache.shardingsphere.migration.distsql.handler.update;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationSourceResourceStatement;
+import org.apache.shardingsphere.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
 
 /**
- * Drop migration source resource updater.
+ * Unregister migration source storage unit updater.
  */
-public final class DropMigrationSourceResourceUpdater implements RALUpdater<DropMigrationSourceResourceStatement> {
+public final class UnregisterMigrationSourceStorageUnitUpdater implements RALUpdater<UnregisterMigrationSourceStorageUnitStatement> {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
     @Override
-    public void executeUpdate(final String databaseName, final DropMigrationSourceResourceStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final UnregisterMigrationSourceStorageUnitStatement sqlStatement) {
         JOB_API.dropMigrationSourceResources(sqlStatement.getNames());
     }
     
     @Override
     public String getType() {
-        return DropMigrationSourceResourceStatement.class.getName();
+        return UnregisterMigrationSourceStorageUnitStatement.class.getName();
     }
 }

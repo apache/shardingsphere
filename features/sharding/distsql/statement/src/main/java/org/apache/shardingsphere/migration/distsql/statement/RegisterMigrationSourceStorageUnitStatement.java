@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+package org.apache.shardingsphere.migration.distsql.statement;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show migration source resources statement test case.
+ * Register migration source storage unit statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShowMigrationSourceResourcesStatementTestCase extends SQLParserTestCase {
+public final class RegisterMigrationSourceStorageUnitStatement extends UpdatableScalingRALStatement {
     
+    private final Collection<DataSourceSegment> dataSources;
 }

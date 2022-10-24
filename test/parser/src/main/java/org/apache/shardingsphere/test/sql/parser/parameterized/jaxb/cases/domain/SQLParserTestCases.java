@@ -314,18 +314,18 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelInstanceStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.AddMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CheckMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.CommitMigrationStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationSourceResourceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.MigrateTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RegisterMigrationSourceStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.RollbackMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationCheckStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationSourceResourcesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.StartMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.StopMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.UnregisterMigrationSourceStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryConstructionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
@@ -882,8 +882,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "add-resource")
     private final List<AddResourceStatementTestCase> addResourceTestCases = new LinkedList<>();
     
-    @XmlElement(name = "add-migration-source-resource")
-    private final List<AddMigrationSourceResourceStatementTestCase> addMigrationSourceResourceTestCases = new LinkedList<>();
+    @XmlElement(name = "register-migration-source-storage-unit")
+    private final List<RegisterMigrationSourceStorageUnitStatementTestCase> registerMigrationSourceStorageUnitStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-resource")
     private final List<AlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
@@ -1002,8 +1002,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-sharding-table-rule")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-migration-source-resources")
-    private final List<ShowMigrationSourceResourcesStatementTestCase> showMigrationResourcesStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "show-migration-source-storage-units")
+    private final List<ShowMigrationSourceStorageUnitsStatementTestCase> showMigrationSourceStorageUnitsStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-migration-list")
     private final List<ShowMigrationListStatementTestCase> showMigrationListTestCases = new LinkedList<>();
@@ -1665,8 +1665,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-operator")
     private final List<CreateOperatorStatementTestCase> createOperatorStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-migration-source-resource")
-    private final List<DropMigrationSourceResourceStatementTestCase> dropMigrationSourceResourceTestCases = new LinkedList<>();
+    @XmlElement(name = "unregister-migration-source-storage-unit")
+    private final List<UnregisterMigrationSourceStorageUnitStatementTestCase> unregisterMigrationSourceStorageUnitStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-policy")
     private final List<CreatePolicyStatementTestCase> createPolicyStatementTestCases = new LinkedList<>();

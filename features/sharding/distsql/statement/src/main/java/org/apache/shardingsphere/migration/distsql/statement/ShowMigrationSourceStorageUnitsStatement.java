@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.migration.distsql.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-
-import java.util.Collection;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Add resource statement.
+ * Show migration source storage units statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AddMigrationSourceResourceStatement extends UpdatableScalingRALStatement {
-    
-    private final Collection<DataSourceSegment> dataSources;
+public final class ShowMigrationSourceStorageUnitsStatement extends QueryableScalingRALStatement {
 }
