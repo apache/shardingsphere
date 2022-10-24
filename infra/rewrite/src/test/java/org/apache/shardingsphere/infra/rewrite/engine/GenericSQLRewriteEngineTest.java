@@ -40,7 +40,7 @@ public final class GenericSQLRewriteEngineTest {
     public void assertRewrite() {
         DatabaseType databaseType = mock(DatabaseType.class);
         SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
-        GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, databaseType, databaseType).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
+        GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, databaseType, Collections.singletonMap("ds_0", databaseType)).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(SQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
         assertThat(actual.getSqlRewriteUnit().getSql(), is("SELECT 1"));
         assertThat(actual.getSqlRewriteUnit().getParameters(), is(Collections.emptyList()));
