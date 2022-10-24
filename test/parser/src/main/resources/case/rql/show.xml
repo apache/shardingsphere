@@ -21,9 +21,9 @@
         <database name="sharding_db" start-index="39" stop-index="49" />
     </show-sharding-binding-table-rules>
     
-    <show-table-rules sql-case-id="show-broadcast-table-rules">
-        <database name="sharding_db" start-index="41" stop-index="51" />
-    </show-table-rules>
+    <show-broadcast-table-rules sql-case-id="show-broadcast-table-rules">
+        <database name="sharding_db" start-index="32" stop-index="42" />
+    </show-broadcast-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rules">
         <database name="databaseName" start-index="31" stop-index="42" />

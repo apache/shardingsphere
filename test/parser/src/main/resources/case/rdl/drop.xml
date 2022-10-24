@@ -55,18 +55,18 @@
         <rule>t_1,t_2</rule>
     </drop-sharding-binding-table-rules>
     
-    <drop-broadcast-table-rules sql-case-id="drop-broadcast-table-rule" >
+    <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >
         <table>t_1</table>
-    </drop-broadcast-table-rules>
+    </drop-broadcast-table-rule>
 
-    <drop-broadcast-table-rules sql-case-id="drop-multiple-broadcast-table-rules" >
+    <drop-broadcast-table-rule sql-case-id="drop-multiple-broadcast-table-rules" >
         <table>t_1</table>
         <table>t_2</table>
-    </drop-broadcast-table-rules>
+    </drop-broadcast-table-rule>
 
-    <drop-broadcast-table-rules sql-case-id="drop-broadcast-table-rule-if-exists" if-exists="true">
+    <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule-if-exists" if-exists="true">
         <table>t_1</table>
-    </drop-broadcast-table-rules>
+    </drop-broadcast-table-rule>
 
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
         <rule>ms_group_0</rule>
