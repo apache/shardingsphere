@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.EmptyStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class EmptyStatementTest {
+/**
+ * Empty statement assert.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class EmptyStatementAssert {
     
-    @Test
-    public void assertGetParameterCount() {
-        assertThat(new EmptyStatement().getParameterCount(), is(0));
+    /**
+     * Assert empty statement is correct with expected parser result.
+     *
+     * @param assertContext assert context
+     * @param actual actual empty statement
+     * @param expected expected empty statement test case
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final EmptyStatement actual, final EmptyStatementTestCase expected) {
     }
 }

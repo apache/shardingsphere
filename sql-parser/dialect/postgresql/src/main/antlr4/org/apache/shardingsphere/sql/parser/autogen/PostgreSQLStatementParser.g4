@@ -180,5 +180,6 @@ execute
     | alterType
     | alterTrigger
     | createPublication
+    | emptyStatement
     ) SEMI_? EOF
     ;

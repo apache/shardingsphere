@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
  * Empty statement.
  */
 @ToString(callSuper = true)
-public final class EmptyStatement extends AbstractSQLStatement {
+public class EmptyStatement extends AbstractSQLStatement {
     
     @Override
     public int getParameterCount() {
