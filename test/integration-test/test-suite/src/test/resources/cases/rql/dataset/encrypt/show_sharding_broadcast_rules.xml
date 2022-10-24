@@ -17,6 +17,6 @@
 
 <dataset>
     <metadata>
-        <column name="sharding_broadcast_tables" />
+        <column name="broadcast_tables" />
     </metadata>
 </dataset>

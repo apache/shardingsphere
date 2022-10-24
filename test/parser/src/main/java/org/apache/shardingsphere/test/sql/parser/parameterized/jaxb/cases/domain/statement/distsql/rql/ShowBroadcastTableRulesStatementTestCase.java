@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
- * Alter sharding broadcast table rules statement test case.
+ * Show broadcast table rules statement test case.
  */
-@Getter
-public final class AlterShardingBroadcastTableRulesStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "table")
-    private final List<String> tables = new LinkedList<>();
+public final class ShowBroadcastTableRulesStatementTestCase extends DatabaseContainedTestCase {
 }

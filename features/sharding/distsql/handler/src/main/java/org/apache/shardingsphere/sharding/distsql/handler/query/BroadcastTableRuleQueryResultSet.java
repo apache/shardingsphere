@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -29,9 +29,9 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Query result set for show sharding broadcast table rules.
+ * Query result set for show broadcast table rules.
  */
-public final class ShardingBroadcastTableRuleQueryResultSet implements DatabaseDistSQLResultSet {
+public final class BroadcastTableRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<String> data;
     
@@ -43,7 +43,7 @@ public final class ShardingBroadcastTableRuleQueryResultSet implements DatabaseD
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singleton("sharding_broadcast_tables");
+        return Collections.singleton("broadcast_tables");
     }
     
     @Override
@@ -58,6 +58,6 @@ public final class ShardingBroadcastTableRuleQueryResultSet implements DatabaseD
     
     @Override
     public String getType() {
-        return ShowShardingBroadcastTableRulesStatement.class.getName();
+        return ShowBroadcastTableRulesStatement.class.getName();
     }
 }

@@ -45,10 +45,10 @@ tableRule:
 SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
+SHOW BROADCAST TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Table Rule
@@ -144,11 +144,11 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 | ----------------------- | --------------------------- |
 | sharding_binding_tables | sharding Binding Table list |
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
-| Column                    | Description                   |
-| ------------------------- | ----------------------------- |
-| sharding_broadcast_tables | sharding Broadcast Table list |
+| Column             | Description                   |
+|--------------------| ----------------------------- |
+| broadcast_tables   | sharding Broadcast Table list |
 
 ### Sharding Table Rule
 

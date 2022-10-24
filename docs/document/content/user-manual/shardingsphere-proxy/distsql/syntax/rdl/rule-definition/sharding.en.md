@@ -153,17 +153,13 @@ bindTableRulesDefinition:
 ```
 - `ALTER` will overwrite the binding table configuration in the database with the new configuration
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-CREATE SHARDING BROADCAST TABLE RULES (tableName [, tableName] ... )
+CREATE BROADCAST TABLE RULE tableName [, tableName] ...
 
-ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ... )
-
-DROP SHARDING BROADCAST TABLE RULES
+DROP BROADCAST TABLE RULE tableName [, tableName] ...
 ```
-- `ALTER` will overwrite the broadcast table configuration in the database with the new configuration
-
 
 ## Example
 
@@ -274,12 +270,12 @@ DROP SHARDING BINDING TABLE RULES;
 DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-CREATE SHARDING BROADCAST TABLE RULES (t_b,t_a);
+CREATE BROADCAST TABLE RULES t_a,t_b,t_c;
 
-ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
+DROP BROADCAST TABLE RULE t_a;
 
-DROP SHARDING BROADCAST TABLE RULES;
+DROP BROADCAST TABLE RULE t_b,t_c;
 ```

@@ -301,7 +301,7 @@ public abstract class BaseITCase {
     }
     
     protected void assertProxyOrderRecordExist(final Object id) throws SQLException {
-        // must refresh firstly, otherwise proxy can't get schema and table info 
+        // must refresh firstly, otherwise proxy can't get schema and table info
         boolean recordExist = false;
         proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
         for (int i = 0; i < 5; i++) {

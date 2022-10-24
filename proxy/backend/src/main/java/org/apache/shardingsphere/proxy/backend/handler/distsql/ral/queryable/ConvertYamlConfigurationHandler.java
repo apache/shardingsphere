@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
@@ -352,21 +353,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private void appendShardingBroadcastTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
-        String broadcast = getBroadcast(shardingRuleConfig.getBroadcastTables().iterator());
-        result.append(String.format(DistSQLScriptConstants.SHARDING_BROADCAST_TABLE_RULES, broadcast));
-    }
-    
-    private String getBroadcast(final Iterator<String> iterator) {
-        StringBuilder result = new StringBuilder();
-        while (iterator.hasNext()) {
-            String broadcast = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.BRACKET, broadcast));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
-            }
-        }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
-        return result.toString();
+        String broadcast = Joiner.on(",").join(shardingRuleConfig.getBroadcastTables());
+        result.append(String.format(DistSQLScriptConstants.BROADCAST_TABLE_RULE, broadcast));
     }
     
     private void appendReadWriteSplittingRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {

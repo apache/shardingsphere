@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.drop.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBroadcastTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropBroadcastTableRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,24 +29,25 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Create sharding broadcast table rule statement assert.
+ * Drop broadcast table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateShardingBroadcastTableRulesStatementAssert {
+public final class DropBroadcastTableRuleStatementAssert {
     
     /**
-     * Assert create sharding binding table rule statement is correct with expected parser result.
+     * Assert drop broadcast table rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create sharding broadcast table rule statement
-     * @param expected expected create sharding broadcast table rule statement test case
+     * @param actual actual drop broadcast table rule statement
+     * @param expected expected drop broadcast table rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShardingBroadcastTableRulesStatement actual, final CreateShardingBroadcastTableRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropBroadcastTableRuleStatement actual, final DropBroadcastTableRuleStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("create sharding broadcast table rule assertion error: "), actual.getTables(), is(expected.getTables()));
+            assertThat(assertContext.getText("broadcast table rule assertion error: "), actual.getRules(), is(expected.getTableName()));
+            assertThat(assertContext.getText("broadcast table rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

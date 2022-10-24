@@ -23,20 +23,19 @@ execute
     : (createShardingTableRule
     | createDefaultShardingStrategy
     | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
+    | createBroadcastTableRule
     | alterShardingTableRule
     | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
     | dropShardingTableRule
     | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
+    | dropBroadcastTableRule
     | dropShardingAlgorithm
     | showShardingTableRulesUsedAlgorithm
     | showShardingTableRulesUsedKeyGenerator
     | showShardingTableRulesUsedAuditor
     | showShardingTableRules
     | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
+    | showBroadcastTableRules
     | showShardingAlgorithms
     | setShardingHintDatabaseValue
     | addShardingHintDatabaseValue

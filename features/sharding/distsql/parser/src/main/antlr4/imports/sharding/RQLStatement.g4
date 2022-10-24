@@ -27,8 +27,8 @@ showShardingBindingTableRules
     : SHOW SHARDING BINDING TABLE RULES (FROM databaseName)?
     ;
 
-showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM databaseName)?
+showBroadcastTableRules
+    : SHOW BROADCAST TABLE RULES (FROM databaseName)?
     ;
 
 showShardingAlgorithms
