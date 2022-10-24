@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
 /**
- * Drop pipeline process configuration statement.
+ * Show migration rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DropPipelineProcessConfigurationStatement extends UpdatableScalingRALStatement {
-    
-    private final String jobTypeName;
-    
-    private final String confPath;
+public final class ShowMigrationRuleStatement extends QueryableScalingRALStatement {
 }

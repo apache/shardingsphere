@@ -128,3 +128,7 @@ valuesClause
 vacuum
     : VACUUM ((FULL? FREEZE? VERBOSE? ANALYZE?) | (LP_ vacAnalyzeOptionList RP_)) vacuumRelationList?
     ;
+    
+emptyStatement
+    :
+    ;

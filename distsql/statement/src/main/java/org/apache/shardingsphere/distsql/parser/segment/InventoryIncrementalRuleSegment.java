@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProcessConfigurationSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Create inventory incremental process configuration statement.
+ * Inventory incremental rule segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateInventoryIncrementalProcessConfigurationStatement extends UpdatableScalingRALStatement {
+@Setter
+public final class InventoryIncrementalRuleSegment implements ASTNode {
     
-    private final String jobTypeName;
+    private ReadOrWriteSegment readSegment;
     
-    private final InventoryIncrementalProcessConfigurationSegment processConfigSegment;
+    private ReadOrWriteSegment writeSegment;
+    
+    private AlgorithmSegment streamChannel;
 }

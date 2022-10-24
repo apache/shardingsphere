@@ -279,10 +279,6 @@ MIGRATION
     : M I G R A T I O N
     ;
 
-PROCESS
-    : P R O C E S S
-    ;
-
 READ
     : R E A D
     ;

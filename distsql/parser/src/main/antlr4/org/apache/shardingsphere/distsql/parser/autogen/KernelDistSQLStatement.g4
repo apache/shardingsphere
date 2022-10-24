@@ -49,9 +49,7 @@ execute
     | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
-    | showMigrationProcessConfiguration
-    | createMigrationProcessConfiguration
-    | alterMigrationProcessConfiguration
-    | dropMigrationProcessConfiguration
+    | showMigrationRule
+    | alterMigrationRule
     ) SEMI?
     ;
