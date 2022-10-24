@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Show migration process configuration statement.
+ * PostgreSQL empty statement.
  */
-public final class ShowMigrationProcessConfigurationStatement extends QueryableScalingRALStatement {
+@ToString(callSuper = true)
+public final class PostgreSQLEmptyStatement extends EmptyStatement implements PostgreSQLStatement {
 }

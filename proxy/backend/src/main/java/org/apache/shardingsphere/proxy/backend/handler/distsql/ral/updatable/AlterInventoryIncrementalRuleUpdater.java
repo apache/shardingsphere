@@ -20,24 +20,24 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import org.apache.shardingsphere.data.pipeline.api.InventoryIncrementalJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateInventoryIncrementalProcessConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
 import org.apache.shardingsphere.infra.distsql.update.RALUpdater;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.converter.InventoryIncrementalProcessConfigurationSegmentConverter;
 
 /**
- * Create inventory incremental process configuration updater.
+ * Alter inventory incremental rule updater.
  */
-public final class CreateInventoryIncrementalProcessConfigurationUpdater implements RALUpdater<CreateInventoryIncrementalProcessConfigurationStatement> {
+public final class AlterInventoryIncrementalRuleUpdater implements RALUpdater<AlterInventoryIncrementalRuleStatement> {
     
     @Override
-    public void executeUpdate(final String databaseName, final CreateInventoryIncrementalProcessConfigurationStatement sqlStatement) {
+    public void executeUpdate(final String databaseName, final AlterInventoryIncrementalRuleStatement sqlStatement) {
         InventoryIncrementalJobPublicAPI jobAPI = PipelineJobPublicAPIFactory.getInventoryIncrementalJobPublicAPI(sqlStatement.getJobTypeName());
         PipelineProcessConfiguration processConfig = InventoryIncrementalProcessConfigurationSegmentConverter.convert(sqlStatement.getProcessConfigSegment());
-        jobAPI.createProcessConfiguration(processConfig);
+        jobAPI.alterProcessConfiguration(processConfig);
     }
     
     @Override
     public String getType() {
-        return CreateInventoryIncrementalProcessConfigurationStatement.class.getName();
+        return AlterInventoryIncrementalRuleStatement.class.getName();
     }
 }

@@ -87,23 +87,15 @@ convertYamlConfiguration
     : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
-showMigrationProcessConfiguration
-    : SHOW MIGRATION PROCESS CONFIGURATION
+showMigrationRule
+    : SHOW MIGRATION RULE
     ;
 
-createMigrationProcessConfiguration
-    : CREATE MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
+alterMigrationRule
+    : ALTER MIGRATION RULE inventoryIncrementalRule?
     ;
 
-alterMigrationProcessConfiguration
-    : ALTER MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
-    ;
-
-dropMigrationProcessConfiguration
-    : DROP MIGRATION PROCESS CONFIGURATION confPath
-    ;
-
-inventoryIncrementalProcessConfiguration
+inventoryIncrementalRule
     : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
     ;
 

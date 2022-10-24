@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ConfigurationParameterClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.EmptyStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ExplainableStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LoadContext;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussEmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussLoadStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussResetParameterStatement;
@@ -183,5 +185,10 @@ public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQL
         }
         // TODO visit refresh materialized view statement
         return visit(ctx.refreshMatViewStmt());
+    }
+    
+    @Override
+    public ASTNode visitEmptyStatement(final EmptyStatementContext ctx) {
+        return new OpenGaussEmptyStatement();
     }
 }

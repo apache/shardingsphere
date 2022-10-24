@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm;
+package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -31,27 +31,45 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class MD5EncryptAlgorithmTest {
+public final class AESEncryptAlgorithmTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("MD5", new Properties()));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("AES", createProperties()));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("aes-key-value", "test");
+        return result;
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void assertCreateNewInstanceWithoutAESKey() {
+        EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("AES", new Properties()));
     }
     
     @Test
-    public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
+    public void assertEncrypt() {
+        Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
+        assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
-    public void assertEncryptWithNullPlaintext() {
+    public void assertEncryptNullValue() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
-    public void assertDecode() {
-        assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
+    public void assertDecrypt() {
+        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
+        assertThat(actual.toString(), is("test"));
+    }
+    
+    @Test
+    public void assertDecryptNullValue() {
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

@@ -15,22 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment;
+package org.apache.shardingsphere.encrypt.fixture;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
-/**
- * Inventory incremental process configuration segment.
- */
+import java.util.Properties;
+
 @Getter
-@Setter
-public final class InventoryIncrementalProcessConfigurationSegment implements ASTNode {
+public final class CoreQueryFuzzyEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
-    private ReadOrWriteSegment readSegment;
+    private Properties props;
     
-    private ReadOrWriteSegment writeSegment;
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+    }
     
-    private AlgorithmSegment streamChannel;
+    @Override
+    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        return "fuzzyEncryptValue";
+    }
+    
+    @Override
+    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        return "decryptValue";
+    }
+    
+    @Override
+    public String getType() {
+        return "CORE.QUERY_FUZZY.FIXTURE";
+    }
 }

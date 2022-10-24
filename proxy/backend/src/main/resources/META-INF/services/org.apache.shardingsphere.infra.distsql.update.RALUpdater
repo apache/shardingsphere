@@ -15,6 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.CreateInventoryIncrementalProcessConfigurationUpdater
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterInventoryIncrementalProcessConfigurationUpdater
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.DropPipelineProcessConfigurationUpdater
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterInventoryIncrementalRuleUpdater
