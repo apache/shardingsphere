@@ -311,7 +311,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.substring(0, result.lastIndexOf(","));
     }
     
-    private StringBuilder getStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType, final StringBuilder result) {
+    private void getStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType, final StringBuilder result) {
         String type = shardingStrategyConfiguration.getType().toLowerCase();
         String shardingAlgorithmName = shardingStrategyConfiguration.getShardingAlgorithmName();
         switch (type) {
@@ -331,7 +331,6 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             default:
                 break;
         }
-        return result;
     }
     
     private void appendShardingBindingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
@@ -353,8 +352,12 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private void appendShardingBroadcastTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder result) {
-        String broadcast = Joiner.on(",").join(shardingRuleConfig.getBroadcastTables());
+        String broadcast = getBroadcast(shardingRuleConfig.getBroadcastTables());
         result.append(String.format(DistSQLScriptConstants.BROADCAST_TABLE_RULE, broadcast));
+    }
+    
+    private String getBroadcast(final Collection<String> broadcastTables) {
+        return Joiner.on(",").join(broadcastTables) + DistSQLScriptConstants.SEMI + System.lineSeparator();
     }
     
     private void appendReadWriteSplittingRules(final Collection<YamlRuleConfiguration> ruleConfigs, final StringBuilder result) {
