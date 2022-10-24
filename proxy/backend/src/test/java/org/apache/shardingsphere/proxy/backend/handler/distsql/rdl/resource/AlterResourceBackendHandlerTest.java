@@ -86,7 +86,7 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
     public void setUp() throws Exception {
         when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
-        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         alterResourceBackendHandler = new AlterResourceBackendHandler(alterStorageUnitStatement, connectionSession);
         Field field = alterResourceBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);

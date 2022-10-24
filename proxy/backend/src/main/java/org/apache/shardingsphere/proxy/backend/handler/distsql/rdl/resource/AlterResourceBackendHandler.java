@@ -60,7 +60,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     
     public AlterResourceBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
-        databaseType = connectionSession.getDatabaseType();
+        databaseType = connectionSession.getProtocolType();
         validator = new DataSourcePropertiesValidator();
     }
     
