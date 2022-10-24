@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.migration.gene
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.migration.AbstractMigrationITCase;
@@ -39,9 +40,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * PostgreSQL and openGauss general scaling test case.
@@ -115,15 +118,21 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, getSourceTableOrderName(), 20));
         String jobId = getJobIdByTableName(getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        /*
-         * TODO Compatible with restart job, before stopping job, incremental_idle_seconds=16, before checking migration, incremental_idle_seconds=23, it just pass 7 seconds, and it's not enough for
-         * PostgreSQL incremental task to sync data
-         */
-        // stopMigrationByJobId(jobId);
-        // sourceExecuteWithLog(String.format("INSERT INTO %s.%s (order_id,user_id,status) VALUES (%s, %s, '%s')", SCHEMA_NAME, getSourceTableOrderName(), KEY_GENERATE_ALGORITHM.generateKey(),
-        // 1, "afterStop"));
-        // startMigrationByJobId(jobId);
-        // waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        stopMigrationByJobId(jobId);
+        Comparable<?> recordId = KEY_GENERATE_ALGORITHM.generateKey();
+        sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
+        startMigrationByJobId(jobId);
+        boolean recordExist = false;
+        // must refresh firstly, otherwise proxy can't get schema and table info 
+        proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
+        for (int i = 0; i < 5; i++) {
+            recordExist = checkProxyOrderRecordExist(recordId, String.join(".", SCHEMA_NAME, getTargetTableOrderName()));
+            if (recordExist) {
+                break;
+            }
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+        }
+        assertTrue("The insert record must exist after the stop", recordExist);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         stopMigrationByJobId(jobId);
     }
