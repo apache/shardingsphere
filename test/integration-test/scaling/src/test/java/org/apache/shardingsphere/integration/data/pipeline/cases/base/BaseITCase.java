@@ -300,6 +300,22 @@ public abstract class BaseITCase {
         return Collections.emptyList();
     }
     
+    protected void assertProxyOrderRecordExist(final Object id) throws SQLException {
+        // must refresh firstly, otherwise proxy can't get schema and table info 
+        boolean recordExist = false;
+        proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
+        for (int i = 0; i < 5; i++) {
+            String sql = String.format("select * from %s where order_id = %s", String.join(".", SCHEMA_NAME, getTargetTableOrderName()), id);
+            List<Map<String, Object>> result = queryForListWithLog(sql);
+            recordExist = !result.isEmpty();
+            if (recordExist) {
+                break;
+            }
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
+        }
+        assertTrue("The insert record must exist after the stop", recordExist);
+    }
+    
     protected void assertGreaterThanOrderTableInitRows(final int tableInitRows, final String schema) throws SQLException {
         proxyExecuteWithLog("REFRESH TABLE METADATA", 2);
         String countSQL = Strings.isNullOrEmpty(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
