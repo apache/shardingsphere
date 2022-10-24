@@ -19,9 +19,10 @@ package org.apache.shardingsphere.transaction;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ConnectionSavepointManagerTest {
     
     private static final String SAVE_POINT = "SavePoint";
@@ -46,7 +48,6 @@ public final class ConnectionSavepointManagerTest {
     
     @Before
     public void setup() throws SQLException {
-        MockitoAnnotations.initMocks(this);
         when(connection.setSavepoint(SAVE_POINT)).thenReturn(savepoint);
     }
     
