@@ -87,11 +87,11 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
             throw new NoDatabaseSelectedException();
         }
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(
-            AuthorityRule.class);
+                AuthorityRule.class);
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getGrantee());
         Optional<String> result = privileges.isPresent() ? databaseNames.stream().filter(each -> privileges.get().hasPrivileges(each)
-            && ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst()
-            : databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
+                && ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst()
+                : databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }
