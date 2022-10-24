@@ -32,11 +32,13 @@ import java.util.Optional;
 @Getter
 public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable {
     
-    private final String status;
+    private final DatabaseSegment database;
+    
+    private final String groupName;
     
     private final String resourceName;
     
-    private final DatabaseSegment database;
+    private final String status;
     
     @Override
     public Optional<DatabaseSegment> getDatabase() {

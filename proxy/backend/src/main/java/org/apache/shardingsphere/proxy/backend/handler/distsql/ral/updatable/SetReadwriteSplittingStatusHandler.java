@@ -74,7 +74,13 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
             checkEnable(contextManager, databaseName, disabledResources, toBeUpdatedResource);
         }
         Collection<String> groupNames = getGroupNames(toBeUpdatedResource, replicaResources, disabledResources, autoAwareResources);
-        updateStatus(databaseName, groupNames, toBeUpdatedResource, isDisable);
+        String groupName = getSqlStatement().getGroupName();
+        if (Strings.isNullOrEmpty(groupName)) {
+            updateStatus(databaseName, groupNames, toBeUpdatedResource, isDisable);
+        } else {
+            checkGroupName(groupNames, groupName);
+            updateStatus(databaseName, Collections.singleton(groupName), toBeUpdatedResource, isDisable);
+        }
     }
     
     private void checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
@@ -93,6 +99,10 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         if (!ProxyContext.getInstance().databaseExists(databaseName)) {
             throw new UnknownDatabaseException(databaseName);
         }
+    }
+    
+    private void checkGroupName(final Collection<String> groupNames, final String groupName) {
+        ShardingSpherePreconditions.checkState(groupNames.contains(groupName), () -> new UnsupportedSQLOperationException(String.format("The current schema does not contain %s", groupName)));
     }
     
     private Map<String, String> getReplicaResources(final ContextManager contextManager, final String databaseName) {
