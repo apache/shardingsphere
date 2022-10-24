@@ -397,16 +397,6 @@
         </rule>
     </create-shadow-rule>
     
-    <create-sharding-algorithm sql-case-id="create-sharding-algorithm">
-        <shardingAlgorithm sharding-algorithm-name="algorithm_name">
-            <algorithm algorithm-name="hash_mod">
-                <properties>
-                    <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
-                </properties>
-            </algorithm>
-        </shardingAlgorithm>
-    </create-sharding-algorithm>
-    
     <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
@@ -436,12 +426,6 @@
     </create-shadow-algorithm>
     
     <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
-    
-    <create-sharding-key-generator sql-case-id="create-sharding-key-generator">
-        <sharding-key-generator key-generator-name="uuid_key_generator">
-            <algorithm algorithm-name="uuid" />
-        </sharding-key-generator>
-    </create-sharding-key-generator>
     
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">

@@ -1167,12 +1167,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "repair-table")
     private final List<RepairTableStatementTestCase> repairTableTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-sharding-algorithm")
-    private final List<CreateShardingAlgorithmStatementTestCase> createShardingAlgorithmTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-sharding-key-generator")
-    private final List<CreateShardingKeyGeneratorStatementTestCase> createShardingKeyGeneratorTestCases = new LinkedList<>();
-    
     @XmlElement(name = "create-sharding-auditor")
     private final List<CreateShardingAuditorStatementTestCase> createShardingAuditorTestCases = new LinkedList<>();
     
@@ -1193,12 +1187,6 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-slave-status")
     private final List<ShowSlaveStatusStatementTestCase> showSlaveStatusTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-sharding-algorithm")
-    private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "alter-sharding-key-generator")
-    private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-auditor")
     private final List<AlterShardingAuditorStatementTestCase> alterShardingAuditorTestCases = new LinkedList<>();

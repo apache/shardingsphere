@@ -264,16 +264,6 @@
         </shadow-algorithm>
     </alter-shadow-algorithm>
     
-    <alter-sharding-algorithm sql-case-id="alter-sharding-algorithm">
-        <shardingAlgorithm sharding-algorithm-name="algorithm_name">
-            <algorithm algorithm-name="inline">
-                <properties>
-                    <property key="algorithm-expression" value="t_order_${order_id % 2}" />
-                </properties>
-            </algorithm>
-        </shardingAlgorithm>
-    </alter-sharding-algorithm>
-    
     <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator">
         <sharding-key-generator key-generator-name="uuid_key_generator">
             <algorithm algorithm-name="uuid" />

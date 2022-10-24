@@ -55,14 +55,6 @@ dropShardingBroadcastTableRules
     : DROP SHARDING BROADCAST TABLE RULES ifExists? (tableName (COMMA tableName)*)?
     ;
 
-createShardingAlgorithm
-    : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA shardingAlgorithmDefinition)*
-    ;
-
-alterShardingAlgorithm
-    : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA shardingAlgorithmDefinition)*
-    ;
-
 dropShardingAlgorithm
     : DROP SHARDING ALGORITHM ifExists? shardingAlgorithmName (COMMA shardingAlgorithmName)*
     ;
@@ -77,14 +69,6 @@ alterDefaultShardingStrategy
 
 dropDefaultShardingStrategy
     : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifExists?
-    ;
-
-createShardingKeyGenerator
-    : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
-    ;
-
-alterShardingKeyGenerator
-    : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
 dropShardingKeyGenerator
