@@ -119,7 +119,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         jobProgress.setRecordsCount(checkJobItemContext.getRecordsCount());
         jobProgress.setCheckBeginTimeMillis(checkJobItemContext.getCheckBeginTimeMillis());
         jobProgress.setCheckEndTimeMillis(checkJobItemContext.getCheckEndTimeMillis());
-        jobProgress.setTableNames(null == checkJobItemContext.getTableNames() ? null : String.join(",", checkJobItemContext.getTableNames()));
+        jobProgress.setTableNames(String.join(",", checkJobItemContext.getTableNames()));
         YamlConsistencyCheckJobProgress yamlJobProgress = swapper.swapToYamlConfiguration(jobProgress);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), YamlEngine.marshal(yamlJobProgress));
     }

@@ -6,7 +6,7 @@ weight = 3
 ## 资源操作
 
 ```sql
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -56,7 +56,7 @@ DROP ENCRYPT RULE t_encrypt;
 - 删除数据源
 
 ```sql
-DROP RESOURCE ds_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - 删除分布式数据库

@@ -80,6 +80,6 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     private String getSchemaName(final String databaseName) {
         return getSqlStatement().getSchemaName().isPresent()
                 ? getSqlStatement().getSchemaName().get()
-                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), databaseName);
+                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getProtocolType(), databaseName);
     }
 }
