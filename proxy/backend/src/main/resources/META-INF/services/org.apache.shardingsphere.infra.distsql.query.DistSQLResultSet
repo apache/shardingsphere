@@ -21,4 +21,4 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableQuer
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRulesQueryResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedResourceQueryResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableRuleQueryResultSet
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationProcessConfigurationQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationRuleQueryResultSet

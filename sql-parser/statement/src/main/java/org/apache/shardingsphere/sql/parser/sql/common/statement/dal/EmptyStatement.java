@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalProcessConfigurationSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Alter inventory incremental process configuration statement.
+ * Empty statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AlterInventoryIncrementalProcessConfigurationStatement extends UpdatableScalingRALStatement {
+@ToString(callSuper = true)
+public class EmptyStatement extends AbstractSQLStatement {
     
-    private final String jobTypeName;
-    
-    private final InventoryIncrementalProcessConfigurationSegment processConfigSegment;
+    @Override
+    public int getParameterCount() {
+        return 0;
+    }
 }

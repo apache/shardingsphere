@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
- * Drop pipeline process configuration test case.
+ * Alter inventory incremental rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class DropPipelineProcessConfigurationStatementTestCase extends SQLParserTestCase {
+public final class AlterInventoryIncrementalRuleStatement extends UpdatableScalingRALStatement {
     
-    @XmlElement(name = "conf-path")
-    private String confPath;
+    private final String jobTypeName;
+    
+    private final InventoryIncrementalRuleSegment processConfigSegment;
 }

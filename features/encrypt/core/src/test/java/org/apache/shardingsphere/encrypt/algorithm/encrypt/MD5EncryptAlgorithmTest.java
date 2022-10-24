@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm;
+package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -32,53 +31,27 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class RC4EncryptAlgorithmTest {
+public final class MD5EncryptAlgorithmTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("Rc4", createProperties()));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("rc4-key-value", "test-sharding");
-        return result;
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("MD5", new Properties()));
     }
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("4Tn7lQ=="));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
-    public void assertEncryptNullValue() {
+    public void assertEncryptWithNullPlaintext() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
-    }
-    
-    @Test(expected = EncryptAlgorithmInitializationException.class)
-    public void assertKeyIsToLong() {
-        encryptAlgorithm.init(createInvalidProperties());
-    }
-    
-    private Properties createInvalidProperties() {
-        Properties result = new Properties();
-        StringBuilder keyBuffer = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            keyBuffer.append("test");
-        }
-        result.setProperty("rc4-key-value", keyBuffer.toString());
-        return result;
     }
     
     @Test
     public void assertDecode() {
-        assertThat(encryptAlgorithm.decrypt("4Tn7lQ==", mock(EncryptContext.class)).toString(), is("test"));
-    }
-    
-    @Test
-    public void assertDecryptNullValue() {
-        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
+        assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
     }
 }
