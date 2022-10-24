@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.migration.query;
 
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceResourcesStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationSourceResourcesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Show migration source resources statement assert.
+ * Show migration source storage units statement assert.
  */
-public final class ShowMigrationSourceResourceStatementAssert {
+public final class ShowMigrationSourceStorageUnitsStatementAssert {
     
     /**
      * Assert show migration status is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual check migration statement
-     * @param expected expected check migration statement test case
+     * @param actual actual show migration storage units statement
+     * @param expected expected show migration storage units statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationSourceResourcesStatement actual, final ShowMigrationSourceResourcesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationSourceStorageUnitsStatement actual, final ShowMigrationSourceStorageUnitsStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

@@ -19,28 +19,29 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.migration.distsql.statement.DropMigrationSourceResourceStatement;
+import org.apache.shardingsphere.migration.distsql.statement.UnregisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.DropMigrationSourceResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.UnregisterMigrationSourceStorageUnitStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 /**
- * Drop migration source resource statement assert.
+ * Unregister migration source storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropMigrationSourceResourceStatementAssert {
+public final class UnregisterMigrationSourceStorageUnitStatementAssert {
     
     /**
-     * Assert drop migration source resource statement is correct with expected parser result.
+     * Assert unregister migration source storage unit statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop migration source resource statement
-     * @param expected expected drop migration source resource statement test case
+     * @param actual actual unregister migration source storage unit statement
+     * @param expected expected unregister migration source storage unit statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropMigrationSourceResourceStatement actual, final DropMigrationSourceResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterMigrationSourceStorageUnitStatement actual,
+                                final UnregisterMigrationSourceStorageUnitStatementTestCase expected) {
         if (null == expected.getDataSources()) {
             assertNull(assertContext.getText("Actual resource should not exist."), actual);
         } else {

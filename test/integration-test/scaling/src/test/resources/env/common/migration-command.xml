@@ -33,15 +33,15 @@
         );
     </alter-migration-rule>
     
-    <add-migration-source-resource-template>
-        ADD MIGRATION SOURCE RESOURCE ds_0 (
+    <register-migration-source-storage-unit-template>
+        REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
         URL="${ds0}",
         USER="${user}",
         PASSWORD="${password}"
         );
-    </add-migration-source-resource-template>
+    </register-migration-source-storage-unit-template>
     
-    <add-migration-target-resource-template>
+    <register-migration-target-storage-unit-template>
         REGISTER STORAGE UNIT ds_2 (
         URL="${ds2}",
         USER="${user}",
@@ -55,7 +55,7 @@
         USER="${user}",
         PASSWORD="${password}"
         )
-    </add-migration-target-resource-template>
+    </register-migration-target-storage-unit-template>
     
     <create-target-order-table-encrypt-rule>
         CREATE ENCRYPT RULE t_order (

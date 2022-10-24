@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
+package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+
+import java.util.Collection;
 
 /**
- * Show migration source resources statement.
+ * Register migration source storage unit exception.
  */
-public final class ShowMigrationSourceResourcesStatement extends QueryableScalingRALStatement {
+public final class RegisterMigrationSourceStorageUnitException extends PipelineSQLException {
+    
+    private static final long serialVersionUID = -3952313247315105684L;
+    
+    public RegisterMigrationSourceStorageUnitException(final Collection<String> duplicateDataSourceNames) {
+        super(XOpenSQLState.DUPLICATE, 30, "Duplicate storage unit names `%s`.", duplicateDataSourceNames);
+    }
 }

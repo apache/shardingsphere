@@ -62,5 +62,5 @@
     <distsql-case id="create-shadow-rule-with-quota" value="CREATE SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((TYPE(NAME='REGEX_MATCH',PROPERTIES('operation'='insert','column'='user_id','regex'='[1]'))),(simple_hint_algorithm,TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar')))))" />
     <distsql-case id="create-sharding-key-generator" value="CREATE SHARDING KEY GENERATOR uuid_key_generator(TYPE(NAME='uuid'))" />
     <distsql-case id="create-sharding-auditor" value="CREATE SHARDING AUDITOR sharding_key_required_auditor(TYPE(NAME='DML_SHARDING_CONDITIONS'))" />
-    <distsql-case id="single-add-migration-source-resource" value="ADD MIGRATION SOURCE RESOURCE ds_0 (URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456');" />
+    <distsql-case id="single-register-migration-source-storage-unit" value="REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456');" />
 </sql-cases>

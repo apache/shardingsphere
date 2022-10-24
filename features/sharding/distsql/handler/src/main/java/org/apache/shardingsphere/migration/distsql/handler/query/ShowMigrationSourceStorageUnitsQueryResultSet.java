@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceResourcesStatement;
+import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -29,9 +29,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Show migration source resources query result set.
+ * Show migration source storage units query result set.
  */
-public final class ShowMigrationSourceResourceQueryResultSet implements DatabaseDistSQLResultSet {
+public final class ShowMigrationSourceStorageUnitsQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final MigrationJobPublicAPI JOB_API = PipelineJobPublicAPIFactory.getMigrationJobPublicAPI();
     
@@ -60,6 +60,6 @@ public final class ShowMigrationSourceResourceQueryResultSet implements Database
     
     @Override
     public String getType() {
-        return ShowMigrationSourceResourcesStatement.class.getName();
+        return ShowMigrationSourceStorageUnitsStatement.class.getName();
     }
 }

@@ -131,7 +131,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_0 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -326,7 +326,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_0 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:postgresql://127.0.0.1:5432/migration_ds_0",
     USER="postgres",
     PASSWORD="root",
@@ -509,7 +509,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_2 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",

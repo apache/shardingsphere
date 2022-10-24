@@ -23,13 +23,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 import java.util.Collection;
 
 /**
- * Drop migration source resource exception.
+ * Unregister migration source storage unit exception.
  */
-public final class DropMigrationSourceResourceException extends PipelineSQLException {
+public final class UnregisterMigrationSourceStorageUnitException extends PipelineSQLException {
     
     private static final long serialVersionUID = -7133815271017274299L;
     
-    public DropMigrationSourceResourceException(final Collection<String> resourceNames) {
-        super(XOpenSQLState.NOT_FOUND, 31, "Resource names `%s` do not exist.", resourceNames);
+    public UnregisterMigrationSourceStorageUnitException(final Collection<String> resourceNames) {
+        super(XOpenSQLState.NOT_FOUND, 31, "Storage units `%s` do not exist.", resourceNames);
     }
 }
