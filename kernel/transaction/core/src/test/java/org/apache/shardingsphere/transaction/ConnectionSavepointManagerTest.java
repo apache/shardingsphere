@@ -17,24 +17,56 @@
 
 package org.apache.shardingsphere.transaction;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 
-import org.junit.Test;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public final class ConnectionSavepointManagerTest {
-
-    private final ConnectionSavepointManager connectionSavepointManager = ConnectionSavepointManager.getInstance();
-
+    
+    private static final String SAVE_POINT = "SavePoint";
+    
+    @Mock
+    private Connection connection;
+    
+    @Mock
+    private Savepoint savepoint;
+    
+    @InjectMocks
+    private ConnectionSavepointManager connectionSavepointManager;
+    
+    @Before
+    public void setup() throws SQLException {
+        MockitoAnnotations.initMocks(this);
+        when(connection.setSavepoint(SAVE_POINT)).thenReturn(savepoint);
+    }
+    
     @Test
-    public void assertSetSavepoint() throws SQLException {
-        Connection connection = mock(Connection.class);
-        String savingPoint = "SavingPoint";
-        connectionSavepointManager.setSavepoint(connection, savingPoint);
-        verify(connection, times(1)).setSavepoint(savingPoint);
+    public void testSetSavepoint() throws SQLException {
+        connectionSavepointManager.setSavepoint(connection, SAVE_POINT);
+        verify(connection, times(1)).setSavepoint(SAVE_POINT);
+    }
+    
+    @Test
+    public void testRollbackToSavepoint() throws SQLException {
+        connectionSavepointManager.setSavepoint(connection, SAVE_POINT);
+        connectionSavepointManager.rollbackToSavepoint(connection, SAVE_POINT);
+        verify(connection, times(1)).rollback(savepoint);
+    }
+    
+    @Test
+    public void testSaveReleaseSavingPoint() throws SQLException {
+        connectionSavepointManager.setSavepoint(connection, SAVE_POINT);
+        connectionSavepointManager.releaseSavepoint(connection, SAVE_POINT);
+        verify(connection, times(1)).releaseSavepoint(savepoint);
     }
 }
