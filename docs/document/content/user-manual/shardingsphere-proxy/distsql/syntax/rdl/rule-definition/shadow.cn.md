@@ -10,15 +10,17 @@ CREATE SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ...
 
 ALTER SHADOW RULE shadowRuleDefinition [, shadowRuleDefinition] ... 
 
-CREATE SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
-
-ALTER SHADOW ALGORITHM shadowAlgorithm [, shadowAlgorithm] ...
-
 DROP SHADOW RULE ruleName [, ruleName] ...
 
 DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
-CREATE DEFAULT SHADOW ALGORITHM NAME = algorithmName
+CREATE DEFAULT SHADOW ALGORITHM shadowAlgorithm
+
+ALTER DEFAULT SHADOW ALGORITHM shadowAlgorithm
+
+SHOW DEFAULT SHADOW ALGORITHM
+
+SHOW SHADOW ALGORITHMS
 
 shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
 
@@ -68,18 +70,11 @@ SHADOW=demo_ds_shadow,
 t_order((simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
 t_order_item((TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1')))));
 
-CREATE SHADOW ALGORITHM 
-(simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
-(user_id_match_algorithm, TYPE(NAME="REGEX_MATCH",PROPERTIES("operation"="insert", "column"="user_id", "regex"='[1]')));
+CREATE DEFAULT SHADOW ALGORITHM (simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar")));
 
-
-ALTER SHADOW ALGORITHM 
-(simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar"))), 
-(user_id_match_algorithm, TYPE(NAME="VALUE_MATCH",PROPERTIES("operation"="insert", "column"="user_id", "value"='1')));
+ALTER DEFAULT SHADOW ALGORITHM (simple_hint_algorithm, TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar")));
 
 DROP SHADOW RULE shadow_rule;
 
 DROP SHADOW ALGORITHM simple_hint_algorithm;
-
-CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
 ```
