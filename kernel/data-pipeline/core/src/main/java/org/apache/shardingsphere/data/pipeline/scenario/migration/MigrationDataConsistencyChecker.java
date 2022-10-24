@@ -45,7 +45,6 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -89,7 +88,7 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = inventoryIncrementalJobPublicAPI.getJobProgress(jobId);
             long recordsCount = jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
             checkJobItemContext.setRecordsCount(recordsCount);
-            checkJobItemContext.setTableNames(Collections.singleton(jobConfig.getSourceTableName()));
+            checkJobItemContext.getTableNames().add(jobConfig.getSourceTableName());
             log.info("consistency check, get records count: {}", recordsCount);
             PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
             SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(jobId, sourceDataSource, targetDataSource,
