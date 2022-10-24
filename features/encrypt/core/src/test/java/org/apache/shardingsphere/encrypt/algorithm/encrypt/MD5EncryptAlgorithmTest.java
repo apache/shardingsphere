@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm;
+package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -27,45 +27,22 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class CharDigestFuzzyEncryptAlgorithmTest {
+public final class MD5EncryptAlgorithmTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> chineseEncryptAlgorithm;
-    
-    private EncryptAlgorithm<Object, String> koreanEncryptAlgorithm;
-    
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
-        chineseEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
-        koreanEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", createProperties()));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("dict", "한국어시험");
-        result.setProperty("start", "44032");
-        return result;
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("MD5", new Properties()));
     }
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("5$45"));
-    }
-    
-    @Test
-    public void assertChineseEncode() {
-        assertThat(chineseEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
-    }
-    
-    @Test
-    public void assertKoreanEncode() {
-        assertThat(koreanEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test

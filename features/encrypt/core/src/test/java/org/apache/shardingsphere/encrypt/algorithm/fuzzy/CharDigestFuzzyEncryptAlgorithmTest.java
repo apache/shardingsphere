@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm;
+package org.apache.shardingsphere.encrypt.algorithm.fuzzy;
 
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
@@ -28,57 +27,54 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class RC4EncryptAlgorithmTest {
+public final class CharDigestFuzzyEncryptAlgorithmTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
+    private EncryptAlgorithm<Object, String> chineseFuzzyEncryptAlgorithm;
+    
+    private EncryptAlgorithm<Object, String> koreanFuzzyEncryptAlgorithm;
+    
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("Rc4", createProperties()));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
+        chineseFuzzyEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
+        koreanFuzzyEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", createProperties()));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty("rc4-key-value", "test-sharding");
+        result.setProperty("dict", "한국어시험");
+        result.setProperty("start", "44032");
         return result;
     }
     
     @Test
-    public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("4Tn7lQ=="));
+    public void assertEncrypt() {
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("5$45"));
     }
     
     @Test
-    public void assertEncryptNullValue() {
+    public void assertEncryptWithChineseChar() {
+        assertThat(chineseFuzzyEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
+    }
+    
+    @Test
+    public void assertEncryptWithKoreanChar() {
+        assertThat(koreanFuzzyEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
+    }
+    
+    @Test
+    public void assertEncryptWithNullPlaintext() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
-    @Test(expected = EncryptAlgorithmInitializationException.class)
-    public void assertKeyIsToLong() {
-        encryptAlgorithm.init(createInvalidProperties());
-    }
-    
-    private Properties createInvalidProperties() {
-        Properties result = new Properties();
-        StringBuilder keyBuffer = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            keyBuffer.append("test");
-        }
-        result.setProperty("rc4-key-value", keyBuffer.toString());
-        return result;
-    }
-    
     @Test
-    public void assertDecode() {
-        assertThat(encryptAlgorithm.decrypt("4Tn7lQ==", mock(EncryptContext.class)).toString(), is("test"));
-    }
-    
-    @Test
-    public void assertDecryptNullValue() {
-        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
+    public void assertDecrypt() {
+        assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
     }
 }
