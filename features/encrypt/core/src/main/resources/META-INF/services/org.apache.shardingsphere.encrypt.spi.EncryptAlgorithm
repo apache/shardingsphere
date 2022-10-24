@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.RC4EncryptAlgorithm
-org.apache.shardingsphere.encrypt.algorithm.CharDigestFuzzyEncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.encrypt.MD5EncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.encrypt.AESEncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.encrypt.RC4EncryptAlgorithm
+org.apache.shardingsphere.encrypt.algorithm.fuzzy.CharDigestFuzzyEncryptAlgorithm
