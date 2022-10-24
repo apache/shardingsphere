@@ -6,7 +6,7 @@ weight = 5
 ## Resource Operation
 
 ```sql
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -57,7 +57,7 @@ DROP SHADOW RULE group_0;
 - Drop resource
 
 ```sql
-DROP RESOURCE ds_0,ds_1,ds_2;
+UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;
 ```
 
 - Drop distributed database

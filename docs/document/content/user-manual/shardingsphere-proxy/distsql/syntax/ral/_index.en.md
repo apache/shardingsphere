@@ -35,12 +35,12 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Circuit Breaker
 
-| Statement                                                                       | Function                           | Example                                    |
-| :------------------------------------------------------------------------------ | :--------------------------------- | :----------------------------------------- |
-| [ENABLE / DISABLE] READWRITE_SPLITTING (READ)? resourceName [FROM databaseName] | Enable or disable read data source | ENABLE READWRITE_SPLITTING READ resource_0 |
-| [ENABLE / DISABLE] INSTANCE instanceId                                          | Enable or disable proxy instance   | DISABLE INSTANCE instance_1                |
-| SHOW INSTANCE LIST                                                              | Query proxy instance information   | SHOW INSTANCE LIST                         |
-| SHOW READWRITE_SPLITTING (READ)? resourceName [FROM databaseName]               | Query all read resources status    | SHOW READWRITE_SPLITTING READ RESOURCES    |
+| Statement                                                                                            | Function                           | Example                                                    |
+|:-----------------------------------------------------------------------------------------------------|:-----------------------------------|:-----------------------------------------------------------|
+| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) resourceName [FROM databaseName]     | Enable or disable read data source | ALTER READWRITE_SPLITTING RULE group_1 ENABLE resource_0   |
+| [ENABLE / DISABLE] INSTANCE instanceId                                                               | Enable or disable proxy instance   | DISABLE INSTANCE instance_1                                |
+| SHOW INSTANCE LIST                                                                                   | Query proxy instance information   | SHOW INSTANCE LIST                                         |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                    | Query all read resources status    | SHOW STATUS FROM READWRITE_SPLITTING RULES                 |
 
 ## Global Rule
 
