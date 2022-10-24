@@ -116,7 +116,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         ConsistencyCheckJobProgress jobProgress = new ConsistencyCheckJobProgress();
         jobProgress.setStatus(jobItemContext.getStatus());
         jobProgress.setCheckedRecordsCount(checkJobItemContext.getCheckedRecordsCount().get());
-        jobProgress.setRecordsCount(checkJobItemContext.getRecordsCount().get());
+        jobProgress.setRecordsCount(checkJobItemContext.getRecordsCount());
         jobProgress.setCheckBeginTimeMillis(checkJobItemContext.getCheckBeginTimeMillis());
         jobProgress.setCheckEndTimeMillis(checkJobItemContext.getCheckEndTimeMillis());
         jobProgress.setTableNames(String.join(",", checkJobItemContext.getTableNames()));
