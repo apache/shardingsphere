@@ -270,7 +270,7 @@ DROP SHARDING BINDING TABLE RULES;
 DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
 CREATE BROADCAST TABLE RULES t_a,t_b;

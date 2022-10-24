@@ -144,7 +144,7 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 | ----------------------- | -------- |
 | sharding_binding_tables | 绑定表名称 |
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 | 列                | 说明      |
 | ---------------- | -------- |

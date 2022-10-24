@@ -146,9 +146,9 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 
 ### Broadcast Table Rule
 
-| Column             | Description                   |
-|--------------------| ----------------------------- |
-| broadcast_tables   | sharding Broadcast Table list |
+| Column             | Description               |
+|--------------------|---------------------------|
+| broadcast_tables   | Broadcast Table list      |
 
 ### Sharding Table Rule
 
@@ -316,12 +316,12 @@ mysql> SHOW SHARDING BINDING TABLE RULES;
 2 rows in set (0.00 sec)
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-mysql> SHOW SHARDING BROADCAST TABLE RULES;
+mysql> SHOW BROADCAST TABLE RULES;
 +------------------------+
-| sharding_broadcast_tables |
+| broadcast_tables       |
 +------------------------+
 | t_1                    |
 | t_2                    |
