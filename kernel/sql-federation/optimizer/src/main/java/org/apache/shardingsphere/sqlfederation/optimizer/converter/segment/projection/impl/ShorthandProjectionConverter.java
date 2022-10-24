@@ -40,6 +40,6 @@ public final class ShorthandProjectionConverter implements SQLSegmentConverter<S
         if (!segment.getOwner().isPresent()) {
             return Optional.of(SqlIdentifier.star(SqlParserPos.ZERO));
         }
-        return Optional.of(SqlIdentifier.star(Arrays.asList(segment.getOwner().get().getIdentifier().getValue(), ""), SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO)));
+        return Optional.of(SqlIdentifier.star(Arrays.asList(segment.getOwner().get().getIdentifier().getValue(), ""), SqlParserPos.ZERO, ImmutableList.of(SqlParserPos.ZERO, SqlParserPos.ZERO)));
     }
 }

@@ -141,9 +141,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     @SuppressWarnings("unchecked")
     private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
-        if (null == planManagement) {
-            initializePlanManagement(selectStatementContext, sqlFederationSchema);
-        }
+        initializePlanManagement(selectStatementContext, sqlFederationSchema);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(selectStatementContext.getSqlStatement());
         SQLOptimizeContext optimizeContext = planManagement.get(sqlNode);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);

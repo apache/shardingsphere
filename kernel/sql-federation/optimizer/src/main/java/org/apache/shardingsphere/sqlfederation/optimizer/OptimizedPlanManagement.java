@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.Getter;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.validate.SqlValidator;
@@ -31,7 +31,7 @@ public class OptimizedPlanManagement {
     
     public static final long CAPACITY = 2000;
     
-    private static final int EXPIRETIME = 60;
+    private static final int EXPIRETIME = 1;
     
     private final Cache<String, SQLOptimizeContext> cache;
     
@@ -49,10 +49,9 @@ public class OptimizedPlanManagement {
     }
     
     private Cache<String, SQLOptimizeContext> buildCache() {
-        return CacheBuilder.newBuilder()
+        return Caffeine.newBuilder()
+                .expireAfterWrite(EXPIRETIME, TimeUnit.MILLISECONDS)
                 .maximumSize(CAPACITY)
-                .expireAfterWrite(EXPIRETIME, TimeUnit.MINUTES)
-                .softValues()
                 .build();
     }
     
@@ -63,13 +62,8 @@ public class OptimizedPlanManagement {
      * @return rel node
      */
     public SQLOptimizeContext get(final SqlNode sqlNode) {
-        validator.validate(sqlNode);
-        SQLOptimizeContext result = cache.getIfPresent(sqlNode.toString());
-        if (null == result) {
-            SQLOptimizeContext sqlOptimizeContext = optimizer.optimize(sqlNode);
-            cache.put(sqlNode.toString(), sqlOptimizeContext);
-            return sqlOptimizeContext;
-        }
+        SQLOptimizeContext result = optimizer.optimize(sqlNode);
+        cache.put(sqlNode.toString(), result);
         return result;
     }
 }
