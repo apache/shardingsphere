@@ -118,6 +118,5 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
         }
         assertCheckMigrationSuccess(jobId, algorithmType);
-        stopMigrationByJobId(jobId);
     }
 }

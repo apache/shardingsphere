@@ -19,7 +19,6 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.migration.gene
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.migration.AbstractMigrationITCase;
@@ -40,11 +39,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * PostgreSQL and openGauss general scaling test case.
@@ -122,19 +119,8 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         Comparable<?> recordId = KEY_GENERATE_ALGORITHM.generateKey();
         sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
         startMigrationByJobId(jobId);
-        boolean recordExist = false;
-        // must refresh firstly, otherwise proxy can't get schema and table info 
-        proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
-        for (int i = 0; i < 5; i++) {
-            recordExist = checkProxyOrderRecordExist(recordId, String.join(".", SCHEMA_NAME, getTargetTableOrderName()));
-            if (recordExist) {
-                break;
-            }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-        }
-        assertTrue("The insert record must exist after the stop", recordExist);
+        assertProxyOrderRecordExist(recordId);
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-        stopMigrationByJobId(jobId);
     }
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
@@ -142,6 +128,5 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         String jobId = getJobIdByTableName("t_order_item");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
-        stopMigrationByJobId(jobId);
     }
 }
