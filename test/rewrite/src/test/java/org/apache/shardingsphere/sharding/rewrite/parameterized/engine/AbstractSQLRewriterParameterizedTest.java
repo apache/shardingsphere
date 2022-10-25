@@ -142,7 +142,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     }
     
     private static Map<String, DatabaseType> createDatabaseTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1); 
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
             result.put(entry.getKey(), databaseType);
         }

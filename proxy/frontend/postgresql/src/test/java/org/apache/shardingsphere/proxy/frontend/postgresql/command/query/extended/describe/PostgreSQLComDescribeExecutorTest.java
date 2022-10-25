@@ -128,7 +128,8 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getDatabaseTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getDatabaseTypes())
+                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
     }
     
