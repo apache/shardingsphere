@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Drop sharding broadcast table rules statement.
+ * Create broadcast table rule statement test case.
  */
 @Getter
-public final class DropShardingBroadcastTableRulesStatement extends DropRuleStatement {
+@Setter
+public final class CreateBroadcastTableRuleStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<String> rules;
-    
-    public DropShardingBroadcastTableRulesStatement(final boolean ifExists, final Collection<String> rules) {
-        super(ifExists);
-        this.rules = rules;
-    }
+    @XmlElement(name = "table")
+    private final List<String> tables = new LinkedList<>();
 }

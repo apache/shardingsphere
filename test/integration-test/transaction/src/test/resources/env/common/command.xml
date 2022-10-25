@@ -90,7 +90,7 @@
     </create-three-data-source-account-table-rule>
 
     <create-address-broadcast-table-rule>
-        CREATE SHARDING BROADCAST TABLE RULES (t_address);
+        CREATE BROADCAST TABLE RULE t_address;
     </create-address-broadcast-table-rule>
     
     <alter-local-transaction-rule>

@@ -43,16 +43,12 @@ dropShardingBindingTableRules
     : DROP SHARDING BINDING TABLE RULES ifExists? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
-createShardingBroadcastTableRules
-    : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
+createBroadcastTableRule
+    : CREATE BROADCAST TABLE RULE tableName (COMMA tableName)*
     ;
 
-alterShardingBroadcastTableRules
-    : ALTER SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
-    ;
-
-dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES ifExists? (tableName (COMMA tableName)*)?
+dropBroadcastTableRule
+    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA tableName)*
     ;
 
 createShardingAlgorithm

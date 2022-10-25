@@ -176,15 +176,15 @@
         <rule table-groups="t_1,t_2"/>
     </create-sharding-binding-table-rule>
     
-    <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule">
+    <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule">
         <table>t_1</table>
         <table>t_2</table>
-    </create-sharding-broadcast-table-rule>
+    </create-broadcast-table-rule>
 
-    <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule-with-quota">
+    <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule-with-quota">
         <table>t_1</table>
         <table>t_2</table>
-    </create-sharding-broadcast-table-rule>
+    </create-broadcast-table-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
         <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">

@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show sharding broadcast table rules statement test case.
+ * Show broadcast table rules statement.
  */
-public final class ShowShardingBroadcastTableRulesStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowBroadcastTableRulesStatement extends ShowRulesStatement {
+    
+    public ShowBroadcastTableRulesStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }

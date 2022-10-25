@@ -22,19 +22,19 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBroadcastTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropBroadcastTableRuleStatement;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Drop sharding broadcast table rule statement updater.
+ * Drop broadcast table rule statement updater.
  */
-public final class DropShardingBroadcastTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingBroadcastTableRulesStatement, ShardingRuleConfiguration> {
+public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropBroadcastTableRuleStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+                                  final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
@@ -43,20 +43,20 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         checkBroadcastTableRuleExist(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkBroadcastTableRuleExist(final String databaseName,
-                                              final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    private void checkBroadcastTableRuleExist(final String databaseName, final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }
-        if (!sqlStatement.getRules().isEmpty()) {
-            Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
-            Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
-            ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", databaseName, notExistRules));
+        if (sqlStatement.getRules().isEmpty()) {
+            return;
         }
+        Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
+        Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", databaseName, notExistRules));
     }
     
-    private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
-        return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
+    private boolean containsIgnoreCase(final Collection<String> currentRules, final String ruleName) {
+        return currentRules.stream().anyMatch(each -> each.equalsIgnoreCase(ruleName));
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
@@ -64,7 +64,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.getRules().isEmpty()) {
             return true;
         }
@@ -72,12 +72,8 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.getRules().isEmpty()) {
-            currentRuleConfig.getBroadcastTables().clear();
-        } else {
-            currentRuleConfig.getBroadcastTables().removeIf(each -> containsIgnoreCase(sqlStatement.getRules(), each));
-        }
+    public boolean updateCurrentRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getBroadcastTables().removeIf(each -> containsIgnoreCase(sqlStatement.getRules(), each));
         return false;
     }
     
@@ -88,6 +84,6 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     @Override
     public String getType() {
-        return DropShardingBroadcastTableRulesStatement.class.getName();
+        return DropBroadcastTableRuleStatement.class.getName();
     }
 }
