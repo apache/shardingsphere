@@ -307,7 +307,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         Map<String, DataSource> newDataSource =
                 database.getResourceMetaData().getDataSources().entrySet().stream().filter(entry -> !resource.getStaleDataSources().containsKey(entry.getKey()))
-                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (dataSourceName, dataSource) -> dataSourceName, LinkedHashMap::new));
         result.put(database.getName().toLowerCase(),
                 new ShardingSphereDatabase(database.getName(), database.getProtocolType(), new ShardingSphereResourceMetaData(database.getName(), newDataSource),
                         database.getRuleMetaData(), database.getSchemas()));
