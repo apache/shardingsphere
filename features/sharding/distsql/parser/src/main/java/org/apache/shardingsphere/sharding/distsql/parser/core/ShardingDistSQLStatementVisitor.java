@@ -258,7 +258,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropBroadcastTableRule(final DropBroadcastTableRuleContext ctx) {
-        Collection<String> tableNames = null == ctx.tableName() ? Collections.emptyList() : ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList());
+        Collection<String> tableNames = ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList());
         return new DropBroadcastTableRuleStatement(null != ctx.ifExists(), tableNames);
     }
     
