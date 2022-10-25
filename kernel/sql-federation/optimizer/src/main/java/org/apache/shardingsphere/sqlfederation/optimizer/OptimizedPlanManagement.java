@@ -64,6 +64,7 @@ public class OptimizedPlanManagement {
      * Get rel node from cache by sql node.
      *
      * @param sqlNode ast node
+     * @param parameters sql parameters
      * @return rel node
      */
     public SQLOptimizeContext get(final SqlNode sqlNode, final Map<String, Object> parameters) {
@@ -82,7 +83,7 @@ public class OptimizedPlanManagement {
         private SqlNode sqlNode;
         
         private Map<String, Object> parameters;
-    
+        
         @Override
         public String toString() {
             return "SQLInfo{" + "sqlNode=" + sqlNode.toString() + ", parameters=" + parameters.toString() + '}';
