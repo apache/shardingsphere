@@ -63,7 +63,7 @@
             <destroy-sql sql="DROP BROADCAST TABLE RULE t_product_category; "/>
         </assertion>
     </test-case>
-    <test-case sql="DROP BROADCAST TABLE RULES t_country;" db-types="MySQL, PostgreSQL">
+    <test-case sql="DROP BROADCAST TABLE RULE t_country;" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="drop_broadcast_rules.xml">
             <initial-sql sql="CREATE BROADCAST TABLE RULE t_country;" />
             <assertion-sql sql="SHOW BROADCAST TABLE RULES;" />
