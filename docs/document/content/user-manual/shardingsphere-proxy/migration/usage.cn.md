@@ -74,7 +74,7 @@ SHOW GRANTS FOR 'user';
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
 
-USE migration_ds_0
+USE migration_ds_0;
 
 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 
@@ -212,6 +212,20 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | t_order | true   | 100                 | 0                 | 2022-10-13 11:18:15.171 | 2022-10-13 11:18:15.878 | 0                |               |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
+```
+
+数据一致性校验是在后台异步执行的，可以通过如下命令启动或者停止
+
+停止示例：
+
+```sql
+STOP MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+启动示例：
+
+```sql
+START MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
 7. 完成作业。
@@ -399,6 +413,20 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 ```
 
+数据一致性校验是在后台异步执行的，可以通过如下命令启动或者停止
+
+停止示例：
+
+```sql
+STOP MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+启动示例：
+
+```sql
+START MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
 7. 完成作业。
 
 ```sql
@@ -512,7 +540,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 2. 在 proxy 配置源端资源。
 
 ```sql
-REGISTER MIGRATION SOURCE STORAGE UNIT ds_2 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
@@ -580,6 +608,20 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | t_order | true   | 100                 | 0                 | 2022-10-13 11:18:15.171 | 2022-10-13 11:18:15.878 | 0                |               |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
+```
+
+数据一致性校验是在后台异步执行的，可以通过如下命令启动或者停止
+
+停止示例：
+
+```sql
+STOP MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+启动示例：
+
+```sql
+START MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
 7. 完成作业。
