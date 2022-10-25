@@ -56,13 +56,13 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
         updater.checkSQLStatement(database, statement, currentConfig);
     }
     
-    // @Test
-    // public void assertExecuteSucess() {
-    // Properties prop = new Properties();
-    // prop.setProperty("type", "value");
-    // CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
-    // ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", prop));
-    // when(statement.getShadowAlgorithmSegment()).thenReturn(shadowAlgorithmSegment);
-    // updater.checkSQLStatement(database, statement, currentConfig);
-    // }
+     @Test
+     public void assertExecuteSuccess() {
+         Properties prop = new Properties();
+         prop.setProperty("type", "value");
+         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
+         ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", prop));
+         when(statement.getShadowAlgorithmSegment()).thenReturn(shadowAlgorithmSegment);
+         updater.checkSQLStatement(database, statement, currentConfig);
+     }
 }
