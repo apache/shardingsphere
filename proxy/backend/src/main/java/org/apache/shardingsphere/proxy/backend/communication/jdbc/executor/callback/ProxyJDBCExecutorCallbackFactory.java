@@ -27,6 +27,8 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callb
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Map;
+
 /**
  * Proxy JDBC executor callback factory.
  */
@@ -38,7 +40,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      *
      * @param type driver type
      * @param protocolType protocol type
-     * @param databaseType database type
+     * @param storageTypes storage types
      * @param sqlStatement SQL statement
      * @param databaseCommunicationEngine database communication engine
      * @param isReturnGeneratedKeys is return generated keys or not
@@ -46,14 +48,14 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @param isFetchMetaData is fetch meta data or not
      * @return created instance
      */
-    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement,
+    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement,
                                                         final JDBCDatabaseCommunicationEngine databaseCommunicationEngine, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,
                                                         final boolean isFetchMetaData) {
         if (JDBCDriverType.STATEMENT.equals(type)) {
-            return new ProxyStatementExecutorCallback(protocolType, databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+            return new ProxyStatementExecutorCallback(protocolType, storageTypes, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
-            return new ProxyPreparedStatementExecutorCallback(protocolType, databaseType, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
+            return new ProxyPreparedStatementExecutorCallback(protocolType, storageTypes, sqlStatement, databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, isFetchMetaData);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported driver type: `%s`", type));
     }

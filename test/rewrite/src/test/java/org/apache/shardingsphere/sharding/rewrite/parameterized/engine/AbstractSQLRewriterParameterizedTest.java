@@ -109,8 +109,8 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         mockDataSource(databaseConfig.getDataSources());
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(getTestParameters().getDatabaseType());
-        Map<String, DatabaseType> databaseTypes = createDatabaseTypes(databaseConfig, databaseType);
-        when(resourceMetaData.getDatabaseTypes()).thenReturn(databaseTypes);
+        Map<String, DatabaseType> storageTypes = createStorageTypes(databaseConfig, databaseType);
+        when(resourceMetaData.getStorageTypes()).thenReturn(storageTypes);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Map<String, ShardingSphereSchema> schemas = mockSchemas(schemaName);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, mock(InstanceContext.class));
@@ -141,7 +141,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
-    private static Map<String, DatabaseType> createDatabaseTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
+    private static Map<String, DatabaseType> createStorageTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
             result.put(entry.getKey(), databaseType);
