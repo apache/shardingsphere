@@ -33,5 +33,7 @@
     <distsql-case id="commit-migration" value="COMMIT MIGRATION 123;" />
     <distsql-case id="stop-migration" value="STOP MIGRATION 123;" />
     <distsql-case id="start-migration" value="START MIGRATION 123;" />
+    <distsql-case id="stop-migration-check" value="STOP MIGRATION CHECK 123;" />
+    <distsql-case id="start-migration-check" value="START MIGRATION CHECK 123;" />
     <distsql-case id="unregister-migration-source-storage-unit" value="UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0,ds_1" />
 </sql-cases>
