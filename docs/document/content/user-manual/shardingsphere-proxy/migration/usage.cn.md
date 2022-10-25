@@ -512,7 +512,7 @@ KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 2. 在 proxy 配置源端资源。
 
 ```sql
-REGISTER MIGRATION SOURCE STORAGE UNIT ds_2 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
