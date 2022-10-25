@@ -221,12 +221,11 @@ public final class JDBCRepositoryTest {
     
     @Test
     public void assertPersistFailureDuringInsert() throws Exception {
-        String key = "key";
         when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenReturn(mockPreparedStatement);
-        repository.persist(key, "value");
+        repository.persist("key", "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
     
