@@ -65,20 +65,20 @@ public final class MigrationJobPreparer {
         PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
             log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
-            PipelineJobCenter.stop(jobItemContext.getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId(), true);
             return;
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
             log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
-            PipelineJobCenter.stop(jobItemContext.getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId(), true);
             return;
         }
         if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
                 log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
-                PipelineJobCenter.stop(jobItemContext.getJobId());
+                PipelineJobCenter.stop(jobItemContext.getJobId(), true);
                 return;
             }
         }

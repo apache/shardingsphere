@@ -40,7 +40,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
             log.info("{} is disabled", jobId);
-            PipelineJobCenter.stop(jobId);
+            PipelineJobCenter.stop(jobId, false);
             return;
         }
         switch (eventType) {
@@ -59,7 +59,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 break;
             case DELETED:
                 log.info("deleted consistency check job id: {}", jobId);
-                PipelineJobCenter.stop(jobId);
+                PipelineJobCenter.stop(jobId, true);
                 break;
             default:
                 break;

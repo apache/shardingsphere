@@ -41,7 +41,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
             log.info("{} is disabled", jobId);
-            PipelineJobCenter.stop(jobId);
+            PipelineJobCenter.stop(jobId, false);
             return;
         }
         switch (eventType) {
@@ -61,7 +61,7 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
             case DELETED:
                 log.info("deleted jobId={}", jobId);
                 new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter()));
-                PipelineJobCenter.stop(jobId);
+                PipelineJobCenter.stop(jobId, true);
                 break;
             default:
                 break;

@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +35,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class PipelineJobCenter {
     
     private static final Map<String, PipelineJob> JOB_MAP = new ConcurrentHashMap<>();
+    
+    private static final PipelineDistributedBarrier DISTRIBUTED_BARRIER = PipelineDistributedBarrier.getInstance();
+    
     
     /**
      * Add job.
@@ -59,14 +64,20 @@ public final class PipelineJobCenter {
      * Stop job.
      *
      * @param jobId job id
+     * @param isAsync is async to stop
      */
-    public static void stop(final String jobId) {
+    public static void stop(final String jobId, final boolean isAsync) {
         PipelineJob job = JOB_MAP.get(jobId);
         if (null == job) {
             log.info("job is null, ignore, jobId={}", jobId);
             return;
         }
         job.stop();
+        if (!isAsync) {
+            String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
+            // all item already stopped, only need persist 0, because
+            DISTRIBUTED_BARRIER.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
+        }
         log.info("remove job, jobId={}", jobId);
         JOB_MAP.remove(jobId);
     }

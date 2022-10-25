@@ -92,7 +92,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
-            PipelineJobCenter.stop(jobItemContext.getJobId());
+            PipelineJobCenter.stop(jobItemContext.getJobId(), true);
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
             jobAPI.persistJobItemProgress(jobItemContext);
             jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
@@ -118,10 +118,8 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             return;
         }
         log.info("stop tasks runner, jobId={}", jobId);
-        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
             each.stop();
-            pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
         getTasksRunnerMap().clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
