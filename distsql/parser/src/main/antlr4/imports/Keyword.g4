@@ -59,14 +59,6 @@ SHOW
     : S H O W
     ;
 
-RESOURCE
-    : R E S O U R C E
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
 FROM
     : F R O M
     ;
@@ -279,10 +271,6 @@ MIGRATION
     : M I G R A T I O N
     ;
 
-PROCESS
-    : P R O C E S S
-    ;
-
 READ
     : R E A D
     ;
@@ -309,4 +297,52 @@ RATE_LIMITER
 
 STREAM_CHANNEL
     : S T R E A M UL_ C H A N N E L
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+UNIT
+    : U N I T
+    ;
+
+UNITS
+    : U N I T S
+    ;
+
+RANDOM
+    : R A N D O M
+    ;
+
+DIST
+    : D I S T
+    ;
+
+WHERE
+    : W H E R E
+    ;
+
+COMPUTE
+    : C O M P U T E
+    ;
+
+NODE
+    : N O D E
+    ;
+
+NODES
+    : N O D E S
+    ;
+
+USAGE_COUNT
+    : U S A G E UL_ C O U N T
+    ;
+
+REGISTER
+    : R E G I S T E R
+    ;
+
+UNREGISTER
+    : U N R E G I S T E R
     ;

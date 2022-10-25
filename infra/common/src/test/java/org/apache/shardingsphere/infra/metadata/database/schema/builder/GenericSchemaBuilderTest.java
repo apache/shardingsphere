@@ -41,8 +41,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -50,14 +50,14 @@ import static org.mockito.Mockito.mockStatic;
 
 public final class GenericSchemaBuilderTest {
     
-    private GenericSchemaBuilderMaterials materials;
+    private GenericSchemaBuilderMaterial material;
     
     private MockedStatic<SchemaMetaDataLoaderEngine> engine;
     
     @Before
     public void setUp() {
         DatabaseType databaseType = mock(DatabaseType.class);
-        materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
+        material = new GenericSchemaBuilderMaterial(databaseType, Collections.emptyMap(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
                 Collections.singleton(new TableContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
         engine = mockStatic(SchemaMetaDataLoaderEngine.class);
     }
@@ -70,31 +70,31 @@ public final class GenericSchemaBuilderTest {
     @Test
     public void assertLoadWithExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("data_node_routed_table1");
-        engine.when(() -> SchemaMetaDataLoaderEngine.load(any(), any())).thenReturn(createSchemaMetaDataMap(tableNames, materials));
-        assertFalse(GenericSchemaBuilder.build(tableNames, materials).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
+        engine.when(() -> SchemaMetaDataLoaderEngine.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
+        assertFalse(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
     }
     
     @Test
     public void assertLoadWithNotExistedTableName() throws SQLException {
         Collection<String> tableNames = Collections.singletonList("invalid_table");
-        engine.when(() -> SchemaMetaDataLoaderEngine.load(any(), any())).thenReturn(createSchemaMetaDataMap(tableNames, materials));
-        assertTrue(GenericSchemaBuilder.build(tableNames, materials).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
+        engine.when(() -> SchemaMetaDataLoaderEngine.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
+        assertTrue(GenericSchemaBuilder.build(tableNames, material).get(DefaultDatabase.LOGIC_NAME).getTables().isEmpty());
     }
     
     @Test
     public void assertLoadAllTables() throws SQLException {
         Collection<String> tableNames = Arrays.asList("data_node_routed_table1", "data_node_routed_table2");
-        engine.when(() -> SchemaMetaDataLoaderEngine.load(any(), any())).thenReturn(createSchemaMetaDataMap(tableNames, materials));
-        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, materials);
+        engine.when(() -> SchemaMetaDataLoaderEngine.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, material);
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables(), Collections.emptyMap()).getTables());
     }
     
-    private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterials materials) {
+    private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Collection<TableMetaData> tableMetaDataList = tableNames.stream()
                     .map(each -> new TableMetaData(each, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())).collect(Collectors.toList());
-            return Collections.singletonMap(materials.getDefaultSchemaName(), new SchemaMetaData(materials.getDefaultSchemaName(), tableMetaDataList));
+            return Collections.singletonMap(material.getDefaultSchemaName(), new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
         }
         return Collections.emptyMap();
     }

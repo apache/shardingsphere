@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class MigrationDistSQLCommand {
     
-    @XmlElement(name = "add-migration-process-config")
+    @XmlElement(name = "alter-migration-rule")
     @Getter
-    private String addMigrationProcessConfig;
+    private String alterMigrationRule;
     
     @XmlElement(name = "create-target-order-table-encrypt-rule")
     @Getter
@@ -46,13 +46,13 @@ public final class MigrationDistSQLCommand {
     @Getter
     private String createTargetOrderItemTableRule;
     
-    @XmlElement(name = "add-migration-source-resource-template")
+    @XmlElement(name = "register-migration-source-storage-unit-template")
     @Getter
-    private String addMigrationSourceResourceTemplate;
+    private String registerMigrationSourceStorageUnitTemplate;
     
-    @XmlElement(name = "add-migration-target-resource-template")
+    @XmlElement(name = "register-migration-target-storage-unit-template")
     @Getter
-    private String addMigrationTargetResourceTemplate;
+    private String registerMigrationTargetStorageUnitTemplate;
     
     @XmlElement(name = "migration-single-table")
     private String migrationSingleTable;

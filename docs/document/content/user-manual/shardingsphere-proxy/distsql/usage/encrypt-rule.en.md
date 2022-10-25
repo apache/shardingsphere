@@ -6,7 +6,7 @@ weight = 3
 ## Resource Operation
 
 ```sql
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -56,7 +56,7 @@ DROP ENCRYPT RULE t_encrypt;
 - Drop resource
 
 ```sql
-DROP RESOURCE ds_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - Drop distributed database

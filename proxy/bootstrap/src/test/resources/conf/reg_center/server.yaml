@@ -26,11 +26,12 @@ mode:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  
-rules:
-  - !AUTHORITY
-    users:
-      - root@:root
-      - sharding@:sharding
-    provider:
-      type: ALL_PERMITTED
+
+authority:
+  users:
+    - user: root
+      password: root
+    - user: sharding
+      password: sharding
+  privilege:
+    type: ALL_PERMITTED

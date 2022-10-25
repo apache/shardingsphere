@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="resource_name" />
+        <column name="storage_unit_name" />
     </metadata>
+    <row values="RANDOM" />
 </dataset>

@@ -6,26 +6,17 @@ weight = 2
 ## 定义
 
 ```sql
-CREATE DEFAULT SINGLE TABLE RULE singleTableRuleDefinition
+SET DEFAULT SINGLE TABLE storageUnitDefinition
 
-ALTER DEFAULT SINGLE TABLE RULE singleTableRuleDefinition
-
-DROP DEFAULT SINGLE TABLE RULE
-
-singleTableRuleDefinition:
-    RESOURCE = resourceName
+storageUnitDefinition:
+    STORAGE UNIT = storageUnitName | RANDOM
 ```
-- `RESOURCE` 需使用 RDL 管理的数据源资源。
+- `STORAGE UNIT` 需使用 RDL 管理的存储单元。RANDOM 关键字代表随机存储。
 
 
 ## 示例
-
-### Single Table Rule
-
 ```sql
-CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0
+SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0
 
-ALTER DEFAULT SINGLE TABLE RULE RESOURCE = ds_1
-
-DROP DEFAULT SINGLE TABLE RULE
+SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM
 ```

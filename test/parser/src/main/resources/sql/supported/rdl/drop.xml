@@ -17,17 +17,17 @@
   -->
 
 <sql-cases>
-    <distsql-case id="drop-resource" value="DROP RESOURCE ds_0,ds_1" />
-    <distsql-case id="drop-resource-if-exists" value="DROP RESOURCE IF EXISTS ds_0,ds_1" />
-    <distsql-case id="drop-resource-ignore-single-tables" value="DROP RESOURCE ds_0,ds_1 ignore single tables;" />
+    <distsql-case id="drop-resource" value="UNREGISTER STORAGE UNIT ds_0,ds_1" />
+    <distsql-case id="drop-resource-if-exists" value="UNREGISTER STORAGE UNIT IF EXISTS ds_0,ds_1" />
+    <distsql-case id="drop-resource-ignore-single-tables" value="UNREGISTER STORAGE UNIT ds_0,ds_1 ignore single tables;" />
     <distsql-case id="drop-sharding-table-rule" value="DROP SHARDING TABLE RULE t_order,t_order_item" />
     <distsql-case id="drop-sharding-table-rule-if-exists" value="DROP SHARDING TABLE RULE IF EXISTS t_order,t_order_item" />
     <distsql-case id="drop-sharding-binding-table-rules" value="DROP SHARDING BINDING TABLE RULES" />
     <distsql-case id="drop-sharding-binding-table-specified-rules" value="DROP SHARDING BINDING TABLE RULES (t_1,t_2)" />
     <distsql-case id="drop-sharding-binding-table-specified-rules-if-exists" value="DROP SHARDING BINDING TABLE RULES IF EXISTS (t_1,t_2)" />
-    <distsql-case id="drop-sharding-broadcast-table-rules" value="DROP SHARDING BROADCAST TABLE RULES" />
-    <distsql-case id="drop-sharding-broadcast-table-specified-table" value="DROP SHARDING BROADCAST TABLE RULES t_order" />
-    <distsql-case id="drop-sharding-broadcast-table-specified-table-if-exists" value="DROP SHARDING BROADCAST TABLE RULES IF EXISTS t_order" />
+    <distsql-case id="drop-broadcast-table-rule" value="DROP BROADCAST TABLE RULE t_1" />
+    <distsql-case id="drop-multiple-broadcast-table-rules" value="DROP BROADCAST TABLE RULE t_1,t_2" />
+    <distsql-case id="drop-broadcast-table-rule-if-exists" value="DROP BROADCAST TABLE RULE IF EXISTS t_1" />
     <distsql-case id="drop-readwrite-splitting-rule" value="DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1" />
     <distsql-case id="drop-readwrite-splitting-rule-if-exists" value="DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_0,ms_group_1" />
     <distsql-case id="drop-database-discovery-rule" value="DROP DB_DISCOVERY RULE ha_group_0,ha_group_1" />
@@ -43,8 +43,7 @@
     <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
     <distsql-case id="drop-default-shadow-algorithm-if-exists" value="DROP DEFAULT SHADOW ALGORITHM IF EXISTS" />
     <distsql-case id="drop-shadow-algorithm-if-exists" value="DROP SHADOW ALGORITHM IF EXISTS shadow_algorithm_1,shadow_algorithm_2" />
-    <distsql-case id="drop-default-single-table" value="DROP DEFAULT SINGLE TABLE RULE" />
-    <distsql-case id="drop-default-single-table-if-exists" value="DROP DEFAULT SINGLE TABLE RULE IF EXISTS" />
+    <distsql-case id="drop-default-single-table" value="SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" />
     <distsql-case id="drop-sharding-key-generator" value="DROP SHARDING KEY GENERATOR uuid_key_generator" />
     <distsql-case id="drop-sharding-key-generator-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS uuid_key_generator" />
     <distsql-case id="drop-sharding-auditor" value="DROP SHARDING AUDITOR sharding_key_required_auditor" />

@@ -32,6 +32,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
@@ -73,8 +74,11 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private ZookeeperInternalLockProvider internalLockProvider;
     
+    private InstanceMetaData instanceMetaData;
+    
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+        this.instanceMetaData = instanceMetaData;
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
         internalLockProvider = new ZookeeperInternalLockProvider(client);
@@ -402,7 +406,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
+        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceMetaData, instanceContext, this));
     }
     
     @Override

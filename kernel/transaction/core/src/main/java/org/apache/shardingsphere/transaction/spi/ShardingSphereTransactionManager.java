@@ -23,7 +23,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * ShardingSphere transaction manager.
@@ -33,11 +33,11 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     /**
      * Initialize transaction manager.
      *
-     * @param databaseType database type
+     * @param databaseTypes database types
      * @param resourceDataSources resource data sources
      * @param providerType transaction manager provider type 
      */
-    void init(DatabaseType databaseType, Collection<ResourceDataSource> resourceDataSources, String providerType);
+    void init(Map<String, DatabaseType> databaseTypes, Map<String, ResourceDataSource> resourceDataSources, String providerType);
     
     /**
      * Get transaction type.

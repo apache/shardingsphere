@@ -38,10 +38,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 public final class ShardingResultMergerEngine implements ResultMergerEngine<ShardingRule> {
     
     @Override
-    public ResultMerger newInstance(final String databaseName, final DatabaseType databaseType, final ShardingRule shardingRule, final ConfigurationProperties props,
+    public ResultMerger newInstance(final String databaseName, final DatabaseType protocolType, final ShardingRule shardingRule, final ConfigurationProperties props,
                                     final SQLStatementContext<?> sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            return new ShardingDQLResultMerger(databaseType);
+            return new ShardingDQLResultMerger(protocolType);
         }
         if (sqlStatementContext.getSqlStatement() instanceof DDLStatement) {
             return new ShardingDDLResultMerger();

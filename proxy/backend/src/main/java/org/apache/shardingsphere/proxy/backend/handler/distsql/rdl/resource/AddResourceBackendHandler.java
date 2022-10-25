@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
@@ -45,20 +45,20 @@ import java.util.Map;
  * Add resource backend handler.
  */
 @Slf4j
-public final class AddResourceBackendHandler extends DatabaseRequiredBackendHandler<AddResourceStatement> {
+public final class AddResourceBackendHandler extends DatabaseRequiredBackendHandler<RegisterStorageUnitStatement> {
     
     private final DatabaseType databaseType;
     
     private final DataSourcePropertiesValidator validator;
     
-    public AddResourceBackendHandler(final AddResourceStatement sqlStatement, final ConnectionSession connectionSession) {
+    public AddResourceBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
-        databaseType = connectionSession.getDatabaseType();
+        databaseType = connectionSession.getProtocolType();
         validator = new DataSourcePropertiesValidator();
     }
     
     @Override
-    public ResponseHeader execute(final String databaseName, final AddResourceStatement sqlStatement) {
+    public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         DatabaseType storeType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDatabaseType();
@@ -72,7 +72,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String databaseName, final AddResourceStatement sqlStatement) {
+    private void checkSQLStatement(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
         Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
         for (DataSourceSegment each : sqlStatement.getDataSources()) {

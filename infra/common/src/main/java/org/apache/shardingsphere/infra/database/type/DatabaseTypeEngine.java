@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.database.type;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -31,11 +30,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Database type engine.
@@ -66,25 +64,29 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
         Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        return configuredDatabaseType.orElseGet(() -> getDatabaseType(getEnabledDataSources(databaseConfigs)));
+        return configuredDatabaseType.orElseGet(() -> getDatabaseType(getEnabledDataSources(databaseConfigs).values()));
+    }
+    
+    private static Map<String, DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        Map<String, DataSource> result = new LinkedHashMap<>();
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
+            result.putAll(DataSourceStateManager.getInstance().getEnabledDataSourceMap(entry.getKey(), entry.getValue().getDataSources()));
+        }
+        return result;
     }
     
     /**
-     * Get storage type.
+     * Get storage types.
      *
      * @param databaseConfigs database configs
-     * @return storage type
+     * @return storage types
      */
-    public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        return getDatabaseType(getEnabledDataSources(databaseConfigs));
-    }
-    
-    private static Collection<DataSource> getEnabledDataSources(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
-        Map<String, ? extends DatabaseConfiguration> databaseConfigMap = databaseConfigs.entrySet().stream()
-                .filter(each -> !each.getValue().getDataSources().isEmpty()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        String databaseName = databaseConfigMap.isEmpty() ? "" : databaseConfigMap.entrySet().iterator().next().getKey();
-        return Strings.isNullOrEmpty(databaseName) ? Collections.emptyList()
-                : DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfigMap.get(databaseName).getDataSources()).values();
+    public static Map<String, DatabaseType> getStorageTypes(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfigs.size(), 1);
+        for (Entry<String, DataSource> entry : getEnabledDataSources(databaseConfigs).entrySet()) {
+            result.put(entry.getKey(), getDatabaseType(entry.getValue()));
+        }
+        return result;
     }
     
     /**
@@ -154,12 +156,12 @@ public final class DatabaseTypeEngine {
     /**
      * Get default schema name.
      * 
-     * @param databaseType database type
+     * @param protocolType protocol type
      * @param databaseName database name
      * @return default schema name
      */
-    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
+    public static String getDefaultSchemaName(final DatabaseType protocolType, final String databaseName) {
+        return protocolType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) protocolType).getDefaultSchema() : databaseName.toLowerCase();
     }
     
     /**

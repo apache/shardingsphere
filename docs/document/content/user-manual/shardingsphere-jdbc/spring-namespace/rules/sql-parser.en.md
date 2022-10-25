@@ -8,7 +8,7 @@ Spring namespace's SQL parser configuration applies to traditional Spring projec
 
 ## Parameters
 
-Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.0.xsd)
+Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.1.xsd)
 
 \<sql-parser:rule />
 

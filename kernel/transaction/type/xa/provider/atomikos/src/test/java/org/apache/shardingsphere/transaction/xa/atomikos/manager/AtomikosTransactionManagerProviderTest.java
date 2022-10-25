@@ -19,7 +19,7 @@ package org.apache.shardingsphere.transaction.xa.atomikos.manager;
 
 import com.atomikos.icatch.config.UserTransactionService;
 import com.atomikos.icatch.jta.UserTransactionManager;
-import org.apache.shardingsphere.transaction.xa.atomikos.manager.fixture.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,8 +55,8 @@ public final class AtomikosTransactionManagerProviderTest {
     
     @Before
     public void setUp() {
-        ReflectiveUtil.setProperty(transactionManagerProvider, "transactionManager", userTransactionManager);
-        ReflectiveUtil.setProperty(transactionManagerProvider, "userTransactionService", userTransactionService);
+        ReflectiveUtil.setField(transactionManagerProvider, "transactionManager", userTransactionManager);
+        ReflectiveUtil.setField(transactionManagerProvider, "userTransactionService", userTransactionService);
     }
     
     @Test

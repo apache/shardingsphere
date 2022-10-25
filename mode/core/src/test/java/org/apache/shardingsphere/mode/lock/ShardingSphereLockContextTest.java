@@ -21,41 +21,33 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class ShardingSphereLockContextTest {
     
-    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
+    private final LockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+    
+    @Mock
+    private LockPersistService lockPersistService;
     
     private ShardingSphereLockContext lockContext;
     
-    private LockPersistService lockPersistService;
-    
-    private LockDefinition lockDefinition;
-    
     @Before
     public void init() {
-        lockDefinition = new ExclusiveLockDefinition("exclusive_lock");
-        lockPersistService = mock(LockPersistService.class);
-        when(lockPersistService.tryLock(lockDefinition, MAX_TRY_LOCK)).thenReturn(true);
-        when(lockPersistService.tryLock(lockDefinition, 3000)).thenReturn(true);
-        doAnswer(invocationOnMock -> null).when(lockPersistService).unlock(lockDefinition);
         lockContext = new ShardingSphereLockContext(lockPersistService);
     }
     
     @Test
     public void assertTryLock() {
-        assertTrue(lockContext.tryLock(lockDefinition));
-    }
-    
-    @Test
-    public void assertTryLockTimeout() {
-        assertTrue(lockContext.tryLock(lockDefinition, 3000));
+        when(lockPersistService.tryLock(lockDefinition, 3000L)).thenReturn(true);
+        assertTrue(lockContext.tryLock(lockDefinition, 3000L));
     }
     
     @Test
@@ -66,6 +58,6 @@ public final class ShardingSphereLockContextTest {
     
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertIsLocked() {
-        assertTrue(lockContext.isLocked(lockDefinition));
+        lockContext.isLocked(lockDefinition);
     }
 }

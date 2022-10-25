@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -53,10 +53,10 @@ public final class ShardingSchemaMetaDataDecoratorTest {
         ShardingSchemaMetaDataDecorator builder = (ShardingSchemaMetaDataDecorator) RuleBasedSchemaMetaDataDecoratorFactory.getInstances(rules).get(shardingRule);
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(createTableMetaData());
-        GenericSchemaBuilderMaterials materials = mock(GenericSchemaBuilderMaterials.class);
-        when(materials.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
+        when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, SchemaMetaData> actual = builder.decorate(Collections.singletonMap("sharding_db",
-                new SchemaMetaData("sharding_db", tableMetaDataList)), shardingRule, materials);
+                new SchemaMetaData("sharding_db", tableMetaDataList)), shardingRule, material);
         Collection<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns();
         Iterator<ColumnMetaData> iterator = columns.iterator();
         assertTrue(iterator.next().isGenerated());

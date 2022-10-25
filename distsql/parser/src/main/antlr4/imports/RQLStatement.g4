@@ -19,26 +19,26 @@ grammar RQLStatement;
 
 import BaseRule;
 
-showResources
-    : SHOW DATABASE RESOURCES (FROM databaseName)?
+showStorageUnits
+    : SHOW STORAGE UNITS (FROM databaseName)? (WHERE USAGE_COUNT EQ usageCount)?
     ;
 
-showUnusedResources
-    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
-    ;
-
-showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM databaseName)?
+showDefaultSingleTableStorageUnit
+    : SHOW DEFAULT SINGLE TABLE STORAGE UNIT (FROM databaseName)?
     ;
 
 showSingleTable
     : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
     ;
 
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
+showRulesUsedStorageUnit
+    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
     ;
 
 countSingleTableRule
     : COUNT SINGLE_TABLE RULE (FROM databaseName)?
+    ;
+
+usageCount
+    : INT
     ;

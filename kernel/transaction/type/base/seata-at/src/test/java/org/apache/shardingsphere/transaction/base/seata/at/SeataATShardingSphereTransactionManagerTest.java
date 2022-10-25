@@ -86,7 +86,8 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataTransactionManager.init(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonList(new ResourceDataSource(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource())), "Seata");
+        seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", DatabaseTypeFactory.getInstance("MySQL")),
+                Collections.singletonMap("sharding_db.ds_0", new ResourceDataSource(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource())), "Seata");
     }
     
     @After

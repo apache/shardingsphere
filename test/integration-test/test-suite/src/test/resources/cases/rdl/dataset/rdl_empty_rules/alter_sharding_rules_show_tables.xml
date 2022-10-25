@@ -20,6 +20,12 @@
         <column name="Tables_in_rdl_empty_rules" />
         <column name="Table_type" />
     </metadata>
-    <row values="t_user_4| BASE TABLE" />
+    <row values="t_order_item_2| BASE TABLE" />
+    <row values="t_order_item_3| BASE TABLE" />
+    <row values="t_order_item_0| BASE TABLE" />
+    <row values="t_country| BASE TABLE" />
+    <row values="t_order_item_1| BASE TABLE" />
+    <row values="t_order| BASE TABLE" />
     <row values="t_user| BASE TABLE" />
+    <row values="t_product_category| BASE TABLE" />
 </dataset>
