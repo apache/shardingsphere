@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 public final class ResultMergerEngineFixture implements ResultMergerEngine<MergerRuleFixture> {
     
     @Override
-    public ResultMerger newInstance(final String databaseName, final DatabaseType databaseType, final MergerRuleFixture rule, final ConfigurationProperties props,
+    public ResultMerger newInstance(final String databaseName, final DatabaseType protocolType, final MergerRuleFixture rule, final ConfigurationProperties props,
                                     final SQLStatementContext<?> sqlStatementContext) {
         return new ResultMergerFixture();
     }
