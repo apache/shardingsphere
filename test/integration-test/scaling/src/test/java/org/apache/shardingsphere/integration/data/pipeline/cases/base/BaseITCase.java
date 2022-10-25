@@ -157,7 +157,7 @@ public abstract class BaseITCase {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        sourceDataSource = StorageContainerUtil.generateDataSource(appendBatchInsertParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
+        sourceDataSource = StorageContainerUtil.generateDataSource(appendExtraParam(getActualJdbcUrlTemplate(DS_0, false)), username, password);
         proxyDataSource = StorageContainerUtil.generateDataSource(containerComposer.getProxyJdbcUrl(PROXY_DATABASE), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
@@ -165,7 +165,7 @@ public abstract class BaseITCase {
         proxyExecuteWithLog(distSQL, 2);
     }
     
-    protected String appendBatchInsertParam(final String jdbcUrl) {
+    protected String appendExtraParam(final String jdbcUrl) {
         if (DatabaseTypeUtil.isMySQL(getDatabaseType())) {
             Properties addProps = new Properties();
             addProps.setProperty("rewriteBatchedStatements", "true");
@@ -300,12 +300,10 @@ public abstract class BaseITCase {
         return Collections.emptyList();
     }
     
-    protected void assertProxyOrderRecordExist(final Object id) throws SQLException {
-        // must refresh firstly, otherwise proxy can't get schema and table info
+    protected void assertProxyOrderRecordExist(final Object id, final String tableName) {
         boolean recordExist = false;
-        proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
         for (int i = 0; i < 5; i++) {
-            String sql = String.format("select * from %s where order_id = %s", String.join(".", SCHEMA_NAME, getTargetTableOrderName()), id);
+            String sql = String.format("select * from %s where order_id = %s", tableName, id);
             List<Map<String, Object>> result = queryForListWithLog(sql);
             recordExist = !result.isEmpty();
             if (recordExist) {
