@@ -28,6 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -93,14 +94,15 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getDatabaseTypes()).thenReturn(Collections.singletonMap("ds_0", mock(DatabaseType.class)));
+        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
+        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
                 new PostgreSQLServerPreparedStatement(SQL, SQL_PARSER_ENGINE.parse(SQL, false), null, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn("");
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
         when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);

@@ -110,7 +110,7 @@ public final class MySQLComQueryPacketExecutorTest {
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             ProxyContext mockedProxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mockedProxyContext);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db_name").getResourceMetaData().getDatabaseTypes())
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db_name").getResourceMetaData().getStorageTypes())
                     .thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db_name").getProtocolType()).thenReturn(new MySQLDatabaseType());
             ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);

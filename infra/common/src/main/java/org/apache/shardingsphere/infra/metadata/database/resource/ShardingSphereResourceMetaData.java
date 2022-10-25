@@ -43,7 +43,7 @@ public final class ShardingSphereResourceMetaData {
     
     private final Map<String, DataSource> dataSources;
     
-    private final Map<String, DatabaseType> databaseTypes;
+    private final Map<String, DatabaseType> storageTypes;
     
     // TODO remove databaseType when all scenarios have been replaced
     private final DatabaseType databaseType;
@@ -55,11 +55,11 @@ public final class ShardingSphereResourceMetaData {
         this.dataSources = dataSources;
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
         databaseType = getDatabaseType(enabledDataSources);
-        databaseTypes = createDatabaseTypes(enabledDataSources);
+        storageTypes = createStorageTypes(enabledDataSources);
         dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
     }
     
-    private Map<String, DatabaseType> createDatabaseTypes(final Map<String, DataSource> dataSources) {
+    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             result.put(entry.getKey(), getDatabaseType(Collections.singletonMap(entry.getKey(), entry.getValue())));

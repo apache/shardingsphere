@@ -75,8 +75,8 @@ public final class MySQLMultiStatementsHandlerTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        final String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
-        when(connectionSession.getDatabaseName()).thenReturn("");
+        String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
+        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -89,9 +89,11 @@ public final class MySQLMultiStatementsHandlerTest {
         MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("").getResourceMetaData().getDatabaseTypes())
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getAllInstanceDataSourceNames())
+                    .thenReturn(Collections.singletonList("ds_0"));
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getStorageTypes())
                     .thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("").getProtocolType()).thenReturn(new MySQLDatabaseType());
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db").getProtocolType()).thenReturn(new MySQLDatabaseType());
             ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
             when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));

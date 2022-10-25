@@ -52,7 +52,7 @@ import java.util.TreeMap;
 @RequiredArgsConstructor
 public final class ShardingDQLResultMerger implements ResultMerger {
     
-    private final DatabaseType databaseType;
+    private final DatabaseType protocolType;
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
@@ -129,7 +129,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
         if (!paginationContext.isHasPagination() || 1 == queryResults.size()) {
             return mergedResult;
         }
-        String trunkDatabaseName = DatabaseTypeEngine.getTrunkDatabaseType(databaseType.getType()).getType();
+        String trunkDatabaseName = DatabaseTypeEngine.getTrunkDatabaseType(protocolType.getType()).getType();
         if ("MySQL".equals(trunkDatabaseName) || "PostgreSQL".equals(trunkDatabaseName) || "openGauss".equals(trunkDatabaseName)) {
             return new LimitDecoratorMergedResult(mergedResult, paginationContext);
         }
