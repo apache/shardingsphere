@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -28,7 +27,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,31 +43,36 @@ public final class ConnectionSavepointManagerTest {
     @Mock
     private Savepoint savepoint;
     
-    @InjectMocks
-    private ConnectionSavepointManager connectionSavepointManager;
-    
     @Before
     public void setup() throws SQLException {
         when(connection.setSavepoint(SAVE_POINT)).thenReturn(savepoint);
     }
     
     @Test
-    public void testSetSavepoint() throws SQLException {
-        connectionSavepointManager.setSavepoint(connection, SAVE_POINT);
-        verify(connection, times(1)).setSavepoint(SAVE_POINT);
+    public void assertSetSavepoint() throws SQLException {
+        ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
+        verify(connection).setSavepoint(SAVE_POINT);
     }
     
     @Test
-    public void testRollbackToSavepoint() throws SQLException {
-        connectionSavepointManager.setSavepoint(connection, SAVE_POINT);
-        connectionSavepointManager.rollbackToSavepoint(connection, SAVE_POINT);
-        verify(connection, times(1)).rollback(savepoint);
+    public void assertRollbackToSavepoint() throws SQLException {
+        ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
+        ConnectionSavepointManager.getInstance().rollbackToSavepoint(connection, SAVE_POINT);
+        verify(connection).rollback(savepoint);
     }
     
     @Test
-    public void testSaveReleaseSavingPoint() throws SQLException {
-        connectionSavepointManager.setSavepoint(connection, SAVE_POINT);
-        connectionSavepointManager.releaseSavepoint(connection, SAVE_POINT);
-        verify(connection, times(1)).releaseSavepoint(savepoint);
+    public void assertSaveReleaseSavingPoint() throws SQLException {
+        ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
+        ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
+        verify(connection).releaseSavepoint(savepoint);
+    }
+    
+    @Test
+    public void assertTransactionFinished() throws SQLException {
+        ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
+        ConnectionSavepointManager.getInstance().transactionFinished(connection);
+        ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
+        verify(connection, never()).releaseSavepoint(any(Savepoint.class));
     }
 }
