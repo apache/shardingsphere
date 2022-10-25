@@ -46,6 +46,7 @@ public final class MySQLDataTypeLoader extends AbstractDataTypeLoader {
         result.putIfAbsent("POLYGON", Types.BINARY);
         result.putIfAbsent("MULTIPOLYGON", Types.BINARY);
         result.putIfAbsent("MULTILINESTRING", Types.BINARY);
+        result.putIfAbsent("LINESTRING", Types.BINARY);
         return result;
     }
     
