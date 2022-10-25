@@ -20,8 +20,8 @@ org.apache.shardingsphere.migration.distsql.handler.update.StartMigrationUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.StopMigrationUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.CommitMigrationUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.RollbackMigrationUpdater
-org.apache.shardingsphere.migration.distsql.handler.update.AddMigrationSourceResourceUpdater
-org.apache.shardingsphere.migration.distsql.handler.update.DropMigrationSourceResourceUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.RegisterMigrationSourceStorageUnitUpdater
+org.apache.shardingsphere.migration.distsql.handler.update.UnregisterMigrationSourceStorageUnitUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.CheckMigrationJobUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.StartMigrationCheckUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.StopMigrationCheckUpdater

@@ -95,11 +95,11 @@ identifier
     : IDENTIFIER
     ;
 
-resourceDefinition
-    : resourceName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
+storageUnitDefinition
+    : storageUnitName LP (simpleSource | urlSource) COMMA USER EQ user (COMMA PASSWORD EQ password)? (COMMA propertiesDefinition)? RP
     ;
 
-resourceName
+storageUnitName
     : IDENTIFIER
     ;
 
@@ -135,10 +135,10 @@ password
     : STRING
     ;
 
-addMigrationSourceResource
-    : ADD MIGRATION SOURCE RESOURCE resourceDefinition (COMMA resourceDefinition)*
+registerMigrationSourceStorageUnit
+    : REGISTER MIGRATION SOURCE STORAGE UNIT storageUnitDefinition (COMMA storageUnitDefinition)*
     ;
     
-dropMigrationSourceResource
-    : DROP MIGRATION SOURCE RESOURCE resourceName (COMMA resourceName)*
+unregisterMigrationSourceStorageUnit
+    : UNREGISTER MIGRATION SOURCE STORAGE UNIT storageUnitName (COMMA storageUnitName)*
     ;

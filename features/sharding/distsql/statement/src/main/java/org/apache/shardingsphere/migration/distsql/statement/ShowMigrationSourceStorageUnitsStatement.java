@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | registerMigrationSourceStorageUnit
-    | unregisterMigrationSourceStorageUnit
-    | showMigrationSourceStorageUnits
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    ) SEMI?
-    ;
+/**
+ * Show migration source storage units statement.
+ */
+public final class ShowMigrationSourceStorageUnitsStatement extends QueryableScalingRALStatement {
+}

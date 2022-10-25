@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | registerMigrationSourceStorageUnit
-    | unregisterMigrationSourceStorageUnit
-    | showMigrationSourceStorageUnits
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Register migration source storage unit exception.
+ */
+public final class RegisterMigrationSourceStorageUnitException extends PipelineSQLException {
+    
+    private static final long serialVersionUID = -3952313247315105684L;
+    
+    public RegisterMigrationSourceStorageUnitException(final Collection<String> duplicateDataSourceNames) {
+        super(XOpenSQLState.DUPLICATE, 30, "Duplicate storage unit names `%s`.", duplicateDataSourceNames);
+    }
+}

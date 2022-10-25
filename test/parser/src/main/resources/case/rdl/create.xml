@@ -30,9 +30,9 @@
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
     </add-resource>
     
-    <add-migration-source-resource sql-case-id="single-add-migration-source-resource">
+    <register-migration-source-storage-unit sql-case-id="single-register-migration-source-storage-unit">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" url="jdbc:mysql://127.0.0.1:3306/test0"/>
-    </add-migration-source-resource>
+    </register-migration-source-storage-unit>
 
     <add-resource sql-case-id="add-resource-with-quota">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />

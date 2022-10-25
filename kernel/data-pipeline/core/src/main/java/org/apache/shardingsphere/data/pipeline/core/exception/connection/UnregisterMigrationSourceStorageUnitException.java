@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.data.pipeline.core.exception.connection;
 
-import Symbol, RALStatement, RQLStatement;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | registerMigrationSourceStorageUnit
-    | unregisterMigrationSourceStorageUnit
-    | showMigrationSourceStorageUnits
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Unregister migration source storage unit exception.
+ */
+public final class UnregisterMigrationSourceStorageUnitException extends PipelineSQLException {
+    
+    private static final long serialVersionUID = -7133815271017274299L;
+    
+    public UnregisterMigrationSourceStorageUnitException(final Collection<String> resourceNames) {
+        super(XOpenSQLState.NOT_FOUND, 31, "Storage units `%s` do not exist.", resourceNames);
+    }
+}

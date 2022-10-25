@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import Symbol, RALStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | registerMigrationSourceStorageUnit
-    | unregisterMigrationSourceStorageUnit
-    | showMigrationSourceStorageUnits
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Unregister migration source storage unit statement.
+ */
+@Getter
+public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatableScalingRALStatement {
+    
+    private final Collection<String> names;
+    
+    public UnregisterMigrationSourceStorageUnitStatement(final Collection<String> names) {
+        this.names = names;
+    }
+}
