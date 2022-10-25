@@ -26,10 +26,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.d
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShadowAlgorithmStatementTestCase;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -51,9 +47,7 @@ public final class CreateDefaultShadowAlgorithmStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            Map<String, ShadowAlgorithmSegment> actualMap = Collections.singleton(actual.getShadowAlgorithmSegment()).stream()
-                    .collect(Collectors.toMap(ShadowAlgorithmSegment::getAlgorithmName, each -> each));
-            expected.getRules().forEach(each -> assertIsAlgorithmsSegment(assertContext, actualMap.get(each.getAlgorithmName()), each));
+            expected.getRules().forEach(each -> assertIsAlgorithmsSegment(assertContext, actual.getShadowAlgorithmSegment(), each));
         }
     }
     

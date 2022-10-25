@@ -30,5 +30,4 @@ public final class ShowDefaultShadowAlgorithmStatement extends ShowRulesStatemen
     public ShowDefaultShadowAlgorithmStatement(final DatabaseSegment database) {
         super(database);
     }
-    
 }

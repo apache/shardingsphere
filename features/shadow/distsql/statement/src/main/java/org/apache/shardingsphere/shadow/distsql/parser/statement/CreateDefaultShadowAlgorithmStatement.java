@@ -30,4 +30,6 @@ import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSe
 public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement {
     
     private final ShadowAlgorithmSegment shadowAlgorithmSegment;
+    
+    private final boolean isCreate;
 }

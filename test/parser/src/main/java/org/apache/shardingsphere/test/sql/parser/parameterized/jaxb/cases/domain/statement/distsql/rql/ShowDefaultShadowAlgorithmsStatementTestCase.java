@@ -23,5 +23,4 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
  * Show default shadow algorithm statement test case.
  */
 public class ShowDefaultShadowAlgorithmsStatementTestCase extends DatabaseContainedTestCase {
-    
 }

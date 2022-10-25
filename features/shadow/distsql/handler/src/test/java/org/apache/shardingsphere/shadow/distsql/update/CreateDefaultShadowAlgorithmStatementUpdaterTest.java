@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.update;
 
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -28,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,8 +48,21 @@ public final class CreateDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() {
+        Properties prop = new Properties();
+        prop.setProperty("type", "value");
         CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
-        when(statement.getShadowAlgorithmSegment()).thenReturn(mock(ShadowAlgorithmSegment.class));
+        ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
+        when(statement.getShadowAlgorithmSegment()).thenReturn(shadowAlgorithmSegment);
         updater.checkSQLStatement(database, statement, currentConfig);
     }
+    
+    // @Test
+    // public void assertExecuteSucess() {
+    // Properties prop = new Properties();
+    // prop.setProperty("type", "value");
+    // CreateDefaultShadowAlgorithmStatement statement = mock(CreateDefaultShadowAlgorithmStatement.class);
+    // ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SIMPLE_HINT", prop));
+    // when(statement.getShadowAlgorithmSegment()).thenReturn(shadowAlgorithmSegment);
+    // updater.checkSQLStatement(database, statement, currentConfig);
+    // }
 }
