@@ -79,7 +79,7 @@ public final class JDBCExecutorCallbackTest {
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
-        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(databaseType, Collections.singletonMap("ds_0", databaseType), mock(SelectStatement.class), true,
+        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(databaseType, Collections.singletonMap("ds", databaseType), mock(SelectStatement.class), true,
                 new EventBusContext()) {
             
             @Override
@@ -105,7 +105,7 @@ public final class JDBCExecutorCallbackTest {
     public void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
         JDBCExecutorCallback<Object> callback =
-                new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonMap("ds_0", DatabaseTypeFactory.getInstance("PostgreSQL")),
+                new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonMap("ds", DatabaseTypeFactory.getInstance("PostgreSQL")),
                         mock(SelectStatement.class), true, new EventBusContext()) {
                     
                     @Override
@@ -125,7 +125,7 @@ public final class JDBCExecutorCallbackTest {
     @Test(expected = SQLException.class)
     public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
         JDBCExecutorCallback<Object> callback =
-                new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonMap("ds_0", DatabaseTypeFactory.getInstance("PostgreSQL")),
+                new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonMap("ds", DatabaseTypeFactory.getInstance("PostgreSQL")),
                         mock(SelectStatement.class), true, new EventBusContext()) {
                     
                     @Override
