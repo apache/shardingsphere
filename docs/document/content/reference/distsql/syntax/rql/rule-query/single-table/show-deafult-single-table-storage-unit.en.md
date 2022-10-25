@@ -10,7 +10,7 @@ The `SHOW DEFAULT SINGLE TABLE STORAGE UNIT` syntax is used to query storage uni
 ### Syntax
 
 ```
-ShowEncryptRule::=
+ShowDefaultSingleTableStorageUnit::=
   'SHOW' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' ('FROM' databaseName)?
   
 databaseName ::=
