@@ -45,10 +45,10 @@ tableRule:
 SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
+SHOW BROADCAST TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Table Rule
@@ -144,11 +144,11 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 | ----------------------- | -------- |
 | sharding_binding_tables | 绑定表名称 |
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
-| 列                        | 说明      |
-| ------------------------- | -------- |
-| sharding_broadcast_tables | 广播表名称 |
+| 列                | 说明      |
+| ---------------- | -------- |
+| broadcast_tables | 广播表名称 |
 
 ### Sharding Table Rule
 
@@ -316,12 +316,12 @@ mysql> SHOW SHARDING BINDING TABLE RULES;
 2 rows in set (0.00 sec)
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-mysql> SHOW SHARDING BROADCAST TABLE RULES;
+mysql> SHOW BROADCAST TABLE RULES;
 +------------------------+
-| sharding_broadcast_tables |
+| broadcast_tables |
 +------------------------+
 | t_1                    |
 | t_2                    |

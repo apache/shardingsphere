@@ -110,12 +110,7 @@
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2" />
     </alter-sharding-binding-table-rules>
-
-    <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">
-        <table>t_1</table>
-        <table>t_2</table>
-    </alter-sharding-broadcast-table-rules>
-
+    
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
             <properties>
@@ -154,34 +149,6 @@
             </heartbeat>
         </rule>
     </alter-database-discovery-definition-rule>
-
-    <alter-database-discovery-construction-rule sql-case-id="alter-database-discovery-construction-rule">
-        <rule rule-name="ha_group_0" type="ha_group_0_mgr" heartbeat="ha_group_0_heartbeat">
-            <data-source>resource0</data-source>
-            <data-source>resource1</data-source>
-        </rule>
-    </alter-database-discovery-construction-rule>
-
-    <alter-database-discovery-heartbeat sql-case-id="alter-database-discovery-heartbeat">
-        <rule heartbeat-name="mgr_heartbeat">
-            <properties>
-                <property key="keepAliveCron" value="0/5 * * * * ?" />
-            </properties>
-        </rule>
-    </alter-database-discovery-heartbeat>
-    
-    <alter-database-discovery-type sql-case-id="alter-database-discovery-type">
-        <type discovery-type-name="primary_replica_ds_mgr">
-            <algorithm algorithm-name="mgr">
-                <properties>
-                    <property key="groupName" value="92504d5b-6dec" />
-                </properties>
-            </algorithm>
-        </type>
-        <type discovery-type-name="primary_replica_ds_mgr_2">
-            <algorithm algorithm-name="mgr" />
-        </type>
-    </alter-database-discovery-type>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">

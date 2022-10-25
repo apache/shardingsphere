@@ -6,7 +6,7 @@ weight = 1
 ## 资源操作
 
 ```sql
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_1",
@@ -60,7 +60,7 @@ DROP SHARDING TABLE RULE t_order;
 - 删除数据源
 
 ```sql
-DROP RESOURCE ds_0, ds_1;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
 - 删除分布式数据库
