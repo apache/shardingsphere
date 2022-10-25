@@ -21,7 +21,10 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -37,6 +40,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -78,7 +83,10 @@ public final class SQLRewriteEntryTest {
     
     private ShardingSphereResourceMetaData mockResource() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        when(result.getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        databaseTypes.put("ds_0", new H2DatabaseType());
+        databaseTypes.put("ds_1", new MySQLDatabaseType());
+        when(result.getDatabaseTypes()).thenReturn(databaseTypes);
         return result;
     }
 }
