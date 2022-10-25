@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Create default shadow algorithm rule statement.
+ * Alter default shadow algorithm statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class CreateDefaultShadowAlgorithmStatement extends CreateRuleStatement {
+public class AlterDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
     
-    private final ShadowAlgorithmSegment shadowAlgorithmSegment;
+    @XmlElement(name = "shadow-algorithm")
+    private final Collection<ExpectedShadowAlgorithm> rules = new LinkedList<>();
 }
