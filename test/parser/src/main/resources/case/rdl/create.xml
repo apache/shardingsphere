@@ -323,7 +323,7 @@
     <create-shadow-rule sql-case-id="create-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>
@@ -332,7 +332,7 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true"/>
@@ -347,7 +347,7 @@
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>
@@ -356,7 +356,7 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true"/>
@@ -378,8 +378,6 @@
         </shardingAlgorithm>
     </create-sharding-algorithm>
     
-    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
-    
     <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
         <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
         </strategy>
@@ -395,8 +393,8 @@
         </strategy>
     </create-default-sharding-strategy>
     
-    <create-shadow-algorithm sql-case-id="create-shadow-algorithm">
-        <shadow-algorithm algorithm-id="simple_hint_algorithm">
+    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm">
+        <shadow-algorithm algorithm-id="default">
             <algorithm algorithm-name="HINT">
                 <properties>
                     <property key="shadow" value="true"/>
@@ -404,7 +402,7 @@
                 </properties>
             </algorithm>
         </shadow-algorithm>
-    </create-shadow-algorithm>
+    </create-default-shadow-algorithm>
     
     <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
     

@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import BaseRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM databaseName)?
-    ;
-
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM databaseName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM databaseName)?
-    ;
-
-showDefaultShadowAlgorithm
-    : SHOW DEFAULT SHADOW ALGORITHM (FROM databaseName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-countShadowRule
-    : COUNT SHADOW RULE (FROM databaseName)?
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
+/**
+ * Show default shadow algorithm statement test case.
+ */
+public class ShowDefaultShadowAlgorithmsStatementTestCase extends DatabaseContainedTestCase {
+}

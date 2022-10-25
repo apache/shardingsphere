@@ -52,7 +52,7 @@ public final class DistSQLScriptConstants {
     
     public static final String USE_DATABASE = "USE %s;";
     
-    public static final String ADD_RESOURCE = "ADD RESOURCE";
+    public static final String ADD_RESOURCE = "REGISTER STORAGE UNIT";
     
     public static final String KEY_URL = "url";
     
@@ -196,5 +196,5 @@ public final class DistSQLScriptConstants {
     
     public static final String SHADOW_TABLE = "%s(%s)";
     
-    public static final String SHADOW_TABLE_TYPE = "(TYPE(NAME=\"%s\", PROPERTIES(%s)))";
+    public static final String SHADOW_TABLE_TYPE = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
 }

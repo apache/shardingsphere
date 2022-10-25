@@ -15,34 +15,19 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM databaseName)?
-    ;
-
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM databaseName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM databaseName)?
-    ;
-
-showDefaultShadowAlgorithm
-    : SHOW DEFAULT SHADOW ALGORITHM (FROM databaseName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-countShadowRule
-    : COUNT SHADOW RULE (FROM databaseName)?
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
+/**
+ * Alter default shadow algorithm rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public class AlterDefaultShadowAlgorithmStatement extends AlterRuleStatement {
+    
+    private final ShadowAlgorithmSegment shadowAlgorithmSegment;
+}

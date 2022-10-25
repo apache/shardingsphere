@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
-import BaseRule;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM databaseName)?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
-showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM databaseName)?
-    ;
-
-showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM databaseName)?
-    ;
-
-showDefaultShadowAlgorithm
-    : SHOW DEFAULT SHADOW ALGORITHM (FROM databaseName)?
-    ;
-
-shadowRule
-    : RULE ruleName
-    ;
-
-countShadowRule
-    : COUNT SHADOW RULE (FROM databaseName)?
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
+/**
+ * Alter default shadow algorithm statement test case.
+ */
+@Getter
+public class AlterDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "shadow-algorithm")
+    private final Collection<ExpectedShadowAlgorithm> rules = new LinkedList<>();
+}

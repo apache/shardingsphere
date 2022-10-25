@@ -17,7 +17,7 @@
 
 CREATE DATABASE encrypt_db;
 USE encrypt_db;
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
 URL="jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?serverTimezone=UTC&useSSL=false",
 USER="root",
 PASSWORD="12345678",

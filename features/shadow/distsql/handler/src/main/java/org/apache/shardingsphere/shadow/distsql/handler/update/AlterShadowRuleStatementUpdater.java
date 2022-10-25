@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleExcep
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -33,9 +35,12 @@ import org.apache.shardingsphere.shadow.distsql.handler.supporter.ShadowRuleStat
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRuleStatement;
+import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Alter shadow rule statement updater.
@@ -72,7 +77,9 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         checkConfigurationExist(databaseName, currentRuleConfig);
         checkRuleNames(databaseName, rules, currentRuleConfig);
         checkResources(database, rules);
-        checkAlgorithms(databaseName, rules);
+        checkAlgorithmCompleteness(sqlStatement);
+        checkAlgorithms(databaseName, sqlStatement.getRules());
+        checkAlgorithmType(sqlStatement);
     }
     
     private void checkConfigurationExist(final String databaseName, final DatabaseRuleConfiguration currentRuleConfig) {
@@ -89,6 +96,19 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     private void checkResources(final ShardingSphereDatabase database, final Collection<ShadowRuleSegment> rules) {
         Collection<String> requireResource = ShadowRuleStatementSupporter.getResourceNames(rules);
         ShadowRuleStatementChecker.checkResourceExist(requireResource, database);
+    }
+    
+    private static void checkAlgorithmCompleteness(final AlterShadowRuleStatement sqlStatement) {
+        Collection<AlgorithmSegment> algorithmSegments = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
+                .map(ShadowAlgorithmSegment::getAlgorithmSegment).collect(Collectors.toList());
+        Set<AlgorithmSegment> incompleteAlgorithms = algorithmSegments.stream().filter(each -> each.getName().isEmpty() || each.getProps().isEmpty()).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(incompleteAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW));
+    }
+    
+    private void checkAlgorithmType(final AlterShadowRuleStatement sqlStatement) {
+        Collection<String> nonexistentAlgorithmTypes = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
+                .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet()).stream().filter(each -> !ShadowAlgorithmFactory.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(nonexistentAlgorithmTypes.isEmpty(), () -> new InvalidAlgorithmConfigurationException(SHADOW, nonexistentAlgorithmTypes));
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> rules) {
