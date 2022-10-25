@@ -32,7 +32,7 @@ public final class RefreshTableMetadataStatement extends UpdatableRALStatement {
     
     private final String tableName;
     
-    private final String resourceName;
+    private final String storageUnitName;
     
     private final String schemaName;
     
@@ -50,12 +50,12 @@ public final class RefreshTableMetadataStatement extends UpdatableRALStatement {
     }
     
     /**
-     * Get resource name.
+     * Get storage unit name.
      *
-     * @return resource name
+     * @return storage unit name
      */
-    public Optional<String> getResourceName() {
-        return Optional.ofNullable(resourceName);
+    public Optional<String> getStorageUnitName() {
+        return Optional.ofNullable(storageUnitName);
     }
     
     /**

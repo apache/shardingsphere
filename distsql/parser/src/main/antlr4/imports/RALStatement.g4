@@ -156,7 +156,7 @@ refreshScope
     ;
 
 fromSegment
-    : FROM RESOURCE resourceName (SCHEMA schemaName)?
+    : FROM STORAGE UNIT storageUnitName (SCHEMA schemaName)?
     ;
 
 label
