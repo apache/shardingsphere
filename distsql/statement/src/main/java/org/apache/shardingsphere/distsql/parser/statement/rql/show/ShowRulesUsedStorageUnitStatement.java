@@ -22,15 +22,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import java.util.Optional;
 
 /**
- * Show rules used resource statement.
+ * Show rules used storage unit statement.
  */
-public final class ShowRulesUsedResourceStatement extends ShowRulesStatement {
+public final class ShowRulesUsedStorageUnitStatement extends ShowRulesStatement {
     
-    private final String resourceName;
+    private final String storageUnitName;
     
-    public ShowRulesUsedResourceStatement(final String resourceName, final DatabaseSegment database) {
+    public ShowRulesUsedStorageUnitStatement(final String storageUnitName, final DatabaseSegment database) {
         super(database);
-        this.resourceName = resourceName;
+        this.storageUnitName = storageUnitName;
     }
     
     /**
@@ -38,7 +38,7 @@ public final class ShowRulesUsedResourceStatement extends ShowRulesStatement {
      *
      * @return resource name
      */
-    public Optional<String> getResourceName() {
-        return Optional.ofNullable(resourceName);
+    public Optional<String> getStorageUnitName() {
+        return Optional.ofNullable(storageUnitName);
     }
 }

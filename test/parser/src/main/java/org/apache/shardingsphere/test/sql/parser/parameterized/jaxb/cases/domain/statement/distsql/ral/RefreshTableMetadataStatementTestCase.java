@@ -33,8 +33,8 @@ public final class RefreshTableMetadataStatementTestCase extends SQLParserTestCa
     @XmlAttribute(name = "table-name")
     private String tableName;
     
-    @XmlAttribute(name = "resource-name")
-    private String resourceName;
+    @XmlAttribute(name = "storage-unit-name")
+    private String storageUnitName;
     
     @XmlAttribute(name = "schema-name")
     private String schemaName;
