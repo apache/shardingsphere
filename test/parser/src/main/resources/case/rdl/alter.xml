@@ -207,7 +207,7 @@
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert" />
@@ -216,7 +216,7 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true" />
@@ -228,8 +228,8 @@
         </rule>
     </alter-shadow-rule>
     
-    <alter-shadow-algorithm sql-case-id="alter-shadow-algorithm">
-        <shadow-algorithm algorithm-id="simple_hint_algorithm">
+    <alter-default-shadow-algorithm sql-case-id="alter-default-shadow-algorithm">
+        <shadow-algorithm algorithm-id="default">
             <algorithm algorithm-name="SIMPLE_HINT">
                 <properties>
                     <property key="shadow" value="true" />
@@ -237,7 +237,7 @@
                 </properties>
             </algorithm>
         </shadow-algorithm>
-    </alter-shadow-algorithm>
+    </alter-default-shadow-algorithm>
     
     <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator">
         <sharding-key-generator key-generator-name="uuid_key_generator">

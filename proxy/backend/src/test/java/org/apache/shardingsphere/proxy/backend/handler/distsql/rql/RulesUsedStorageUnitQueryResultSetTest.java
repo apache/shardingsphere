@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedResourceQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedStorageUnitQueryResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
@@ -57,13 +57,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RulesUsedResourceQueryResultSetTest {
+public final class RulesUsedStorageUnitQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DatabaseDistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
-        ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
-        when(sqlStatement.getResourceName()).thenReturn(Optional.of("foo_ds"));
+        DatabaseDistSQLResultSet resultSet = new RulesUsedStorageUnitQueryResultSet();
+        ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
+        when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("foo_ds"));
         resultSet.init(mockDatabase(), sqlStatement);
         assertShardingTableData(resultSet);
         assertReadwriteSplittingData(resultSet);
@@ -171,9 +171,9 @@ public final class RulesUsedResourceQueryResultSetTest {
     @Test
     public void assertGetEmptyRowData() {
         ShardingSphereDatabase database = mockEmptyDatabase();
-        DatabaseDistSQLResultSet resultSet = new RulesUsedResourceQueryResultSet();
-        ShowRulesUsedResourceStatement sqlStatement = mock(ShowRulesUsedResourceStatement.class);
-        when(sqlStatement.getResourceName()).thenReturn(Optional.of("empty_ds"));
+        DatabaseDistSQLResultSet resultSet = new RulesUsedStorageUnitQueryResultSet();
+        ShowRulesUsedStorageUnitStatement sqlStatement = mock(ShowRulesUsedStorageUnitStatement.class);
+        when(sqlStatement.getStorageUnitName()).thenReturn(Optional.of("empty_ds"));
         resultSet.init(database, sqlStatement);
         assertFalse(resultSet.next());
     }

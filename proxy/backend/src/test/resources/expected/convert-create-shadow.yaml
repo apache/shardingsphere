@@ -17,7 +17,7 @@
 
 CREATE DATABASE shadow_db;
 USE shadow_db;
-ADD RESOURCE ds (
+REGISTER STORAGE UNIT ds (
 URL="jdbc:mysql://127.0.0.1:3306/demo_shadow_ds_0?serverTimezone=UTC&useSSL=false",
 USER="root",
 PASSWORD="12345678",
@@ -31,7 +31,7 @@ PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="30000","maxLifetim
 CREATE SHADOW RULE shadowDataSource(
 SOURCE=ds,
 SHADOW=shadow_ds,
-t_order((TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="insert","regex"="[1]"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="select","regex"="[1]")))),
-t_order_item((TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="insert","regex"="[1]"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="update","regex"="[1]"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="select","regex"="[1]")))),
-t_address((TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="insert","regex"="[1]"))),(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="select","regex"="[1]"))),(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))))
+t_order(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="insert","regex"="[1]")),TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="select","regex"="[1]"))),
+t_order_item(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="insert","regex"="[1]")),TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="update","regex"="[1]")),TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="select","regex"="[1]"))),
+t_address(TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="insert","regex"="[1]")),TYPE(NAME="REGEX_MATCH", PROPERTIES("column"="user_id","operation"="select","regex"="[1]")),TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar")))
 );

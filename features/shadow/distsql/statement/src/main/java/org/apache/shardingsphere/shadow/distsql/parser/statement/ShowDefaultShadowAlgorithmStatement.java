@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import io.prometheus.client.Counter;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class CounterWrapperTest {
+/**
+ * Show default shadow algorithm statement.
+ */
+@Getter
+public final class ShowDefaultShadowAlgorithmStatement extends ShowRulesStatement {
     
-    @Test
-    public void assertCreate() {
-        Counter counter = Counter.build().name("a").help("help").create();
-        CounterWrapper counterWrapper = new CounterWrapper(counter);
-        counterWrapper.inc();
-        counterWrapper.inc(1);
-        counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
-        assertThat(counter.get(), is(2.0));
+    public ShowDefaultShadowAlgorithmStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

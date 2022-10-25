@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import io.prometheus.client.Counter;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.xml.bind.annotation.XmlAttribute;
 
-public final class CounterWrapperTest {
+/**
+ * Show rules used storage unit statement test case.
+ */
+@Getter
+@Setter
+public final class ShowRulesUsedStorageUnitStatementTestCase extends DatabaseContainedTestCase {
     
-    @Test
-    public void assertCreate() {
-        Counter counter = Counter.build().name("a").help("help").create();
-        CounterWrapper counterWrapper = new CounterWrapper(counter);
-        counterWrapper.inc();
-        counterWrapper.inc(1);
-        counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
-        assertThat(counter.get(), is(2.0));
-    }
+    @XmlAttribute(name = "storage-unit-name")
+    private String storageUnitName;
 }

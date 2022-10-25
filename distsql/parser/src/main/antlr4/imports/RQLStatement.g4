@@ -31,8 +31,8 @@ showSingleTable
     : SHOW SINGLE (TABLES | TABLE tableName) (FROM databaseName)?
     ;
 
-showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
+showRulesUsedStorageUnit
+    : SHOW RULES USED STORAGE UNIT storageUnitName (FROM databaseName)?
     ;
 
 countSingleTableRule

@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
-import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateDefaultShadowAlgorithmStatement;
+import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.AlgorithmAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShadowAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AlterDefaultShadowAlgorithmStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Create default shadow algorithm statement assert.
+ * Alter default shadow algorithm statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateDefaultShadowAlgorithmStatementAssert {
+public class AlterDefaultShadowAlgorithmStatementAssert {
     
     /**
      * Assert create default shadow algorithm statement is correct with expected parser result.
@@ -42,7 +42,7 @@ public final class CreateDefaultShadowAlgorithmStatementAssert {
      * @param actual actual create default shadow algorithm statement
      * @param expected expected create default shadow algorithm statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDefaultShadowAlgorithmStatement actual, final CreateDefaultShadowAlgorithmStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDefaultShadowAlgorithmStatement actual, final AlterDefaultShadowAlgorithmStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

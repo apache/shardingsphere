@@ -24,6 +24,7 @@ execute
     | alterStorageUnit
     | unregisterStorageUnit
     | showStorageUnits
+    | showRulesUsedStorageUnit
     | setDistVariable
     | showDistVariable
     | showDistVariables
@@ -46,7 +47,6 @@ execute
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration
-    | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
     | showMigrationRule

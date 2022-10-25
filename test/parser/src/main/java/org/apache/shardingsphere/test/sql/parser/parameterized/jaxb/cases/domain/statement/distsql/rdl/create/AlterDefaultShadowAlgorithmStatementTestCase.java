@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
-import io.prometheus.client.Counter;
-import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
-import org.junit.Test;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
-public final class CounterWrapperTest {
+/**
+ * Alter default shadow algorithm statement test case.
+ */
+@Getter
+public class AlterDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
     
-    @Test
-    public void assertCreate() {
-        Counter counter = Counter.build().name("a").help("help").create();
-        CounterWrapper counterWrapper = new CounterWrapper(counter);
-        counterWrapper.inc();
-        counterWrapper.inc(1);
-        counter = (Counter) ReflectiveUtil.getFieldValue(counterWrapper, "counter");
-        assertThat(counter.get(), is(2.0));
-    }
+    @XmlElement(name = "shadow-algorithm")
+    private final Collection<ExpectedShadowAlgorithm> rules = new LinkedList<>();
 }

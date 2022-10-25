@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-
-import java.util.Optional;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
- * Show rules used resource statement.
+ * Show default shadow algorithm statement test case.
  */
-public final class ShowRulesUsedResourceStatement extends ShowRulesStatement {
-    
-    private final String resourceName;
-    
-    public ShowRulesUsedResourceStatement(final String resourceName, final DatabaseSegment database) {
-        super(database);
-        this.resourceName = resourceName;
-    }
-    
-    /**
-     * Get resource name.
-     *
-     * @return resource name
-     */
-    public Optional<String> getResourceName() {
-        return Optional.ofNullable(resourceName);
-    }
+public class ShowDefaultShadowAlgorithmsStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -10,7 +10,7 @@ weight = 2
 ### 语法
 
 ```
-ShowEncryptRule::=
+ShowDefaultSingleTableStorageUnit::=
   'SHOW' 'DEFAULT' 'SINGLE' 'TABLE' 'STORAGE' 'UNIT' ('FROM' databaseName)?
   
 databaseName ::=

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
@@ -45,9 +45,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Query result set for show rules used resource.
+ * Query result set for show rules used storage unit.
  */
-public final class RulesUsedResourceQueryResultSet implements DatabaseDistSQLResultSet {
+public final class RulesUsedStorageUnitQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String SHARDING = "sharding";
     
@@ -64,8 +64,8 @@ public final class RulesUsedResourceQueryResultSet implements DatabaseDistSQLRes
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         List<Collection<Object>> data = new LinkedList<>();
-        ShowRulesUsedResourceStatement statement = (ShowRulesUsedResourceStatement) sqlStatement;
-        String resourceName = statement.getResourceName().orElse(null);
+        ShowRulesUsedStorageUnitStatement statement = (ShowRulesUsedStorageUnitStatement) sqlStatement;
+        String resourceName = statement.getStorageUnitName().orElse(null);
         if (database.getResourceMetaData().getDataSources().containsKey(resourceName)) {
             data.addAll(getShardingData(database));
             data.addAll(getReadwriteSplittingData(database, resourceName));
@@ -162,6 +162,6 @@ public final class RulesUsedResourceQueryResultSet implements DatabaseDistSQLRes
     
     @Override
     public String getType() {
-        return ShowRulesUsedResourceStatement.class.getName();
+        return ShowRulesUsedStorageUnitStatement.class.getName();
     }
 }
