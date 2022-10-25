@@ -25,9 +25,9 @@
     <distsql-case id="drop-sharding-binding-table-rules" value="DROP SHARDING BINDING TABLE RULES" />
     <distsql-case id="drop-sharding-binding-table-specified-rules" value="DROP SHARDING BINDING TABLE RULES (t_1,t_2)" />
     <distsql-case id="drop-sharding-binding-table-specified-rules-if-exists" value="DROP SHARDING BINDING TABLE RULES IF EXISTS (t_1,t_2)" />
-    <distsql-case id="drop-sharding-broadcast-table-rules" value="DROP SHARDING BROADCAST TABLE RULES" />
-    <distsql-case id="drop-sharding-broadcast-table-specified-table" value="DROP SHARDING BROADCAST TABLE RULES t_order" />
-    <distsql-case id="drop-sharding-broadcast-table-specified-table-if-exists" value="DROP SHARDING BROADCAST TABLE RULES IF EXISTS t_order" />
+    <distsql-case id="drop-broadcast-table-rule" value="DROP BROADCAST TABLE RULE t_1" />
+    <distsql-case id="drop-multiple-broadcast-table-rules" value="DROP BROADCAST TABLE RULE t_1,t_2" />
+    <distsql-case id="drop-broadcast-table-rule-if-exists" value="DROP BROADCAST TABLE RULE IF EXISTS t_1" />
     <distsql-case id="drop-readwrite-splitting-rule" value="DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1" />
     <distsql-case id="drop-readwrite-splitting-rule-if-exists" value="DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_0,ms_group_1" />
     <distsql-case id="drop-database-discovery-rule" value="DROP DB_DISCOVERY RULE ha_group_0,ha_group_1" />

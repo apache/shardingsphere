@@ -129,7 +129,7 @@ public final class DistSQLScriptConstants {
     
     public static final String BRACKET = "(%s)";
     
-    public static final String SHARDING_BROADCAST_TABLE_RULES = "CREATE SHARDING BROADCAST TABLE RULES %s";
+    public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
     
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
