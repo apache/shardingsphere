@@ -60,7 +60,7 @@ weight = 3
 
 #### 单表
 
-`SINGLE`、`STORAGE`、`UNIT`
+`SINGLE`、`STORAGE`、`UNIT`、`COUNT`、`SINGLE_TABLE`
 
 ## 补充说明
 
