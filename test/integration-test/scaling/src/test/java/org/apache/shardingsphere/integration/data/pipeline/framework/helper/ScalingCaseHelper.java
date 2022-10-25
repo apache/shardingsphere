@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateA
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.Year;
@@ -77,7 +78,7 @@ public final class ScalingCaseHelper {
             } else {
                 orderData.add(new Object[]{orderId, userId, generateString(6), randomInt,
                         BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
-                        generateDouble(0, 1000), LocalDateTime.now(), OffsetDateTime.now()});
+                        generateDouble(0, 1000), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{SNOWFLAKE_KEY_GENERATE_ALGORITHM.generateKey(), orderId, userId, "SUCCESS"});
         }

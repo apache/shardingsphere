@@ -76,16 +76,16 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         }
         String addSourceResource = migrationDistSQLCommand.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${ds0}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_0, true)));
+                .replace("${ds0}", appendExtraParam(getActualJdbcUrlTemplate(DS_0, true)));
         addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource() throws SQLException {
         String addTargetResource = migrationDistSQLCommand.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${ds2}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_2, true)))
-                .replace("${ds3}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_3, true)))
-                .replace("${ds4}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_4, true)));
+                .replace("${ds2}", appendExtraParam(getActualJdbcUrlTemplate(DS_2, true)))
+                .replace("${ds3}", appendExtraParam(getActualJdbcUrlTemplate(DS_3, true)))
+                .replace("${ds4}", appendExtraParam(getActualJdbcUrlTemplate(DS_4, true)));
         addResource(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW STORAGE UNITS from sharding_db");
         assertThat(resources.size(), is(3));

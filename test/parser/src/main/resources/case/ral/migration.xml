@@ -86,6 +86,14 @@
         <job-id>123</job-id>
     </start-migration>
     
+    <start-migration-check sql-case-id="start-migration-check">
+        <job-id>123</job-id>
+    </start-migration-check>
+    
+    <stop-migration-check sql-case-id="stop-migration-check">
+        <job-id>123</job-id>
+    </stop-migration-check>
+    
     <unregister-migration-source-storage-unit sql-case-id="unregister-migration-source-storage-unit">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
