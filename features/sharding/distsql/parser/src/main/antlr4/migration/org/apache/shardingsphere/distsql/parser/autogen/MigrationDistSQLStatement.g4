@@ -29,9 +29,9 @@ execute
     | commitMigration
     | checkMigration
     | showMigrationCheckAlgorithms
-    | addMigrationSourceResource
-    | dropMigrationSourceResource
-    | showMigrationSourceResources
+    | registerMigrationSourceStorageUnit
+    | unregisterMigrationSourceStorageUnit
+    | showMigrationSourceStorageUnits
     | showMigrationCheckStatus
     | startMigrationCheck
     | stopMigrationCheck

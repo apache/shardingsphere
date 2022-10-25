@@ -127,7 +127,9 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
                 new ShardingSphereColumn("pad", Types.CHAR, true, false, false, true));
         ShardingSphereTable table = new ShardingSphereTable(TABLE_NAME, columnMetaData, Collections.emptyList(), Collections.emptyList());
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").getTable(TABLE_NAME)).thenReturn(table);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getDatabaseTypes())
+                .thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
         when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
     }
     
@@ -236,7 +238,7 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         when(packet.getType()).thenReturn('S');
         String statementId = "S_3";
         when(packet.getName()).thenReturn(statementId);
-        final String sql = "select id, k, c, pad from t_order where id = ?";
+        String sql = "select id, k, c, pad from t_order where id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         prepareJDBCBackendConnection(sql);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));

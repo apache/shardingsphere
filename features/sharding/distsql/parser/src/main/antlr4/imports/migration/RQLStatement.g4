@@ -19,6 +19,6 @@ grammar RQLStatement;
 
 import BaseRule;
 
-showMigrationSourceResources
-    : SHOW MIGRATION SOURCE RESOURCES
+showMigrationSourceStorageUnits
+    : SHOW MIGRATION SOURCE STORAGE UNITS
     ;

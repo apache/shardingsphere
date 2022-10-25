@@ -74,14 +74,14 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
                 log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
             }
         }
-        String addSourceResource = migrationDistSQLCommand.getAddMigrationSourceResourceTemplate().replace("${user}", getUsername())
+        String addSourceResource = migrationDistSQLCommand.getRegisterMigrationSourceStorageUnitTemplate().replace("${user}", getUsername())
                 .replace("${password}", getPassword())
                 .replace("${ds0}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_0, true)));
         addResource(addSourceResource);
     }
     
     protected void addMigrationTargetResource() throws SQLException {
-        String addTargetResource = migrationDistSQLCommand.getAddMigrationTargetResourceTemplate().replace("${user}", getUsername())
+        String addTargetResource = migrationDistSQLCommand.getRegisterMigrationTargetStorageUnitTemplate().replace("${user}", getUsername())
                 .replace("${password}", getPassword())
                 .replace("${ds2}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_2, true)))
                 .replace("${ds3}", appendBatchInsertParam(getActualJdbcUrlTemplate(DS_3, true)))

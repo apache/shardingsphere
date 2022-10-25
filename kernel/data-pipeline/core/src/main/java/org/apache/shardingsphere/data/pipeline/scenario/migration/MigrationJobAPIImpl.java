@@ -56,8 +56,8 @@ import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourceP
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.connection.AddMigrationSourceResourceException;
-import org.apache.shardingsphere.data.pipeline.core.exception.connection.DropMigrationSourceResourceException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
+import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
@@ -342,7 +342,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
                 duplicateDataSourceNames.add(entry.getKey());
             }
         }
-        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new AddMigrationSourceResourceException(duplicateDataSourceNames));
+        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new RegisterMigrationSourceStorageUnitException(duplicateDataSourceNames));
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
         dataSourcePersistService.persist(getJobType(), result);
@@ -352,7 +352,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     public void dropMigrationSourceResources(final Collection<String> resourceNames) {
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new DropMigrationSourceResourceException(resourceNames));
+        ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new UnregisterMigrationSourceStorageUnitException(resourceNames));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
