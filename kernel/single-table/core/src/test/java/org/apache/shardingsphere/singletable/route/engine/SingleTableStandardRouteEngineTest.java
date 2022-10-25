@@ -24,7 +24,12 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
+import org.apache.shardingsphere.singletable.exception.DuplicatedSingleTableException;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
@@ -40,6 +45,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -117,6 +123,25 @@ public final class SingleTableStandardRouteEngineTest {
         when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
         result.put("ds_0", new MockedDataSource(connection));
         result.put("ds_1", new MockedDataSource(connection));
+        return result;
+    }
+    
+    @Test(expected = DuplicatedSingleTableException.class)
+    public void assertRouteDuplicateSingleTable() {
+        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement());
+        engine.route(new RouteContext(), mockSingleTableRule());
+    }
+    
+    private SQLStatement mockStatement() {
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement(false);
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        return result;
+    }
+    
+    private SingleTableRule mockSingleTableRule() {
+        SingleTableRule result = mock(SingleTableRule.class);
+        DataNode dataNode = mock(DataNode.class);
+        when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(dataNode));
         return result;
     }
 }
