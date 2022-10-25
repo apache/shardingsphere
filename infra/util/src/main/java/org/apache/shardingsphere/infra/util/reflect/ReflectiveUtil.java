@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 /**
@@ -31,31 +32,21 @@ import java.util.Objects;
 public final class ReflectiveUtil {
     
     /**
-     * Get field value object.
+     * Get field value.
      *
-     * @param object object
+     * @param target target
      * @param fieldName field name
-     * @return object
+     * @return field value
      */
-    public static Object getFieldValue(final Object object, final String fieldName) {
-        return getFieldValue(object, getField(object, fieldName));
+    @SneakyThrows(IllegalAccessException.class)
+    public static Object getFieldValue(final Object target, final String fieldName) {
+        Field field = getField(target.getClass(), fieldName);
+        Objects.requireNonNull(field).setAccessible(true);
+        return field.get(target);
     }
     
-    private static Object getFieldValue(final Object object, final Field field) {
-        if (null == object || null == field) {
-            return null;
-        }
-        field.setAccessible(true);
-        Object result = null;
-        try {
-            result = field.get(object);
-        } catch (IllegalAccessException ignored) {
-        }
-        return result;
-    }
-    
-    private static Field getField(final Object target, final String fieldName) {
-        Class<?> clazz = target.getClass();
+    private static Field getField(final Class<?> target, final String fieldName) {
+        Class<?> clazz = target;
         while (null != clazz) {
             try {
                 return clazz.getDeclaredField(fieldName);
@@ -73,11 +64,26 @@ public final class ReflectiveUtil {
      * @param fieldName field name
      * @param value value
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void setProperty(final Object target, final String fieldName, final Object value) {
-        Field field = getField(target, fieldName);
-        Objects.requireNonNull(field);
-        field.setAccessible(true);
+    @SneakyThrows(IllegalAccessException.class)
+    public static void setField(final Object target, final String fieldName, final Object value) {
+        Field field = getField(target.getClass(), fieldName);
+        Objects.requireNonNull(field).setAccessible(true);
         field.set(target, value);
+    }
+    
+    /**
+     * Set value to specified static field.
+     *
+     * @param target target
+     * @param fieldName field name
+     * @param value value
+     */
+    @SneakyThrows(IllegalAccessException.class)
+    public static void setStaticField(final Class<?> target, final String fieldName, final Object value) {
+        Field field = getField(target, fieldName);
+        if (Modifier.isStatic(Objects.requireNonNull(field).getModifiers())) {
+            field.setAccessible(true);
+            field.set(null, value);
+        }
     }
 }
