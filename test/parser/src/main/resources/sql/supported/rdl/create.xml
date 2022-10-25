@@ -29,7 +29,7 @@
     <distsql-case id="create-sharding-auto-table-rule" value="CREATE SHARDING TABLE RULE t_order (RESOURCES(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')), KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
     <distsql-case id="create-sharding-auto-table-rule-with-inline-expression" value="CREATE SHARDING TABLE RULE t_order (RESOURCES('ms_group_${0..1}'), SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')), KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
     <distsql-case id="create-sharding-binding-table-rule" value="CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item), (t_1,t_2)" />
-    <distsql-case id="create-sharding-broadcast-table-rule" value="CREATE SHARDING BROADCAST TABLE RULES(t_1,t_2)" />
+    <distsql-case id="create-broadcast-table-rule" value="CREATE BROADCAST TABLE RULE t_1,t_2" />
     <distsql-case id="create-static-readwrite-splitting-rule" value="CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random')))" />
     <distsql-case id="create-dynamic-readwrite-splitting-rule" value="CREATE READWRITE_SPLITTING RULE ms_group_1(AUTO_AWARE_RESOURCE=group_0, TYPE(NAME='random',PROPERTIES('read_weight'='2:1')))" />
     <distsql-case id="create-database-discovery-definition-rule" value="CREATE DB_DISCOVERY RULE ha_group_0 (RESOURCES(resource0,resource1), TYPE(NAME='mgr',PROPERTIES('groupName'='92504d5b-6dec')),HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))), ha_group_1 (RESOURCES(resource2,resource3), TYPE(NAME='mgr2',PROPERTIES('groupName'='92504d5b-6dec-2')),HEARTBEAT(PROPERTIES('keepAliveCron'='0/6 * * * * ?')))" />
@@ -51,7 +51,7 @@
     <distsql-case id="add-resource-with-quota" value="REGISTER STORAGE UNIT `ds_0`(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT');" />
     <distsql-case id="create-sharding-auto-table-rule-with-quota" value="CREATE SHARDING TABLE RULE `t_order` (RESOURCES(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')), KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
     <distsql-case id="create-sharding-binding-table-rule-with-quota" value="CREATE SHARDING BINDING TABLE RULES (`t_order`,`t_order_item`), (t_1,t_2)" />
-    <distsql-case id="create-sharding-broadcast-table-rule-with-quota" value="CREATE SHARDING BROADCAST TABLE RULES(`t_1`,`t_2`)" />
+    <distsql-case id="create-broadcast-table-rule-with-quota" value="CREATE BROADCAST TABLE RULE `t_1`,`t_2` " />
     <distsql-case id="create-readwrite-splitting-rule-with-quota" value="CREATE READWRITE_SPLITTING RULE `ms_group_0` (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random')))" />
     <distsql-case id="create-database-discovery-rule-with-quota" value="CREATE DB_DISCOVERY RULE ha_group_0 (RESOURCES(resource0,resource1), TYPE(NAME='mgr',PROPERTIES('groupName'='92504d5b-6dec')),HEARTBEAT(PROPERTIES('keepAliveCron'='0/5 * * * * ?'))), ha_group_1 (RESOURCES(resource2,resource3), TYPE(NAME='mgr2',PROPERTIES('groupName'='92504d5b-6dec-2')),HEARTBEAT(PROPERTIES('keepAliveCron'='0/6 * * * * ?')))" />
     <distsql-case id="create-encrypt-rule-with-quota" value="CREATE ENCRYPT RULE `encrypt` (RESOURCE=ds_1, COLUMNS((NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))), (NAME=order_id, CIPHER =order_cipher,TYPE(NAME='MD5'))))" />
@@ -59,5 +59,5 @@
     <distsql-case id="create-shadow-rule-with-quota" value="CREATE SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((TYPE(NAME='REGEX_MATCH',PROPERTIES('operation'='insert','column'='user_id','regex'='[1]'))),(simple_hint_algorithm,TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar')))))" />
     <distsql-case id="create-sharding-key-generator" value="CREATE SHARDING KEY GENERATOR uuid_key_generator(TYPE(NAME='uuid'))" />
     <distsql-case id="create-sharding-auditor" value="CREATE SHARDING AUDITOR sharding_key_required_auditor(TYPE(NAME='DML_SHARDING_CONDITIONS'))" />
-    <distsql-case id="single-add-migration-source-resource" value="ADD MIGRATION SOURCE RESOURCE ds_0 (URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456');" />
+    <distsql-case id="single-register-migration-source-storage-unit" value="REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456');" />
 </sql-cases>

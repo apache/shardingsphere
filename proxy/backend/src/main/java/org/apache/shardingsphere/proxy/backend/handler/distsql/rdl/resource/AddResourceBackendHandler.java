@@ -53,7 +53,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
     
     public AddResourceBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
-        databaseType = connectionSession.getDatabaseType();
+        databaseType = connectionSession.getProtocolType();
         validator = new DataSourcePropertiesValidator();
     }
     

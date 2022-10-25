@@ -110,12 +110,7 @@
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2" />
     </alter-sharding-binding-table-rules>
-
-    <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">
-        <table>t_1</table>
-        <table>t_2</table>
-    </alter-sharding-broadcast-table-rules>
-
+    
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
             <properties>

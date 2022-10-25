@@ -169,7 +169,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) getConnectionSession().getBackendConnection(),
                 (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
                 metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResourceMetaData().getDatabaseType());
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResourceMetaData().getDatabaseTypes());
     }
     
     private String getDatabaseName() {

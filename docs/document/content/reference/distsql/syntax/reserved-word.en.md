@@ -48,7 +48,7 @@ weight = 3
 
 ### Basic Reserved Words
 
-`SHOW`, `RULE`, `RULES`, `TABLE`, `DATABASE`, `FROM`
+`SHOW`, `DEFAULT`, `RULE`, `RULES`, `TABLE`, `DATABASE`, `FROM`
 
 ### Resource Definition
 
@@ -59,6 +59,10 @@ weight = 3
 #### SHARDING
 
 `UNUSED`, `SHARDING`, `ALGORITHMS`
+
+#### Single Table
+
+`SINGLE`, `STORAGE`, `UNIT`
 
 ## Supplement
 

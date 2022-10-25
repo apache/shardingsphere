@@ -17,7 +17,7 @@
 
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBindingTableRuleQueryResultSet
-org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBroadcastTableRuleQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.BroadcastTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAuditorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet
@@ -27,7 +27,7 @@ org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckStat
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationListQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationJobStatusQueryResultSet
 org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckAlgorithmsQueryResultSet
-org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationSourceResourceQueryResultSet
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationSourceStorageUnitsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithmsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAuditorsQueryResultSet
