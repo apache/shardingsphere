@@ -91,8 +91,12 @@
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-table-rule>
@@ -100,8 +104,12 @@
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="complex" sharding-column="order_id,user_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
     </alter-sharding-table-rule>
@@ -246,12 +254,14 @@
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
-        <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
+            <algorithm-segment algorithm-name="algorithms_name" />
         </strategy>
     </alter-default-sharding-strategy>
     
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy-complex">
-        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id">
+            <algorithm-segment algorithm-name="algorithms_name" />
         </strategy>
     </alter-default-sharding-strategy>
 </sql-parser-test-cases>

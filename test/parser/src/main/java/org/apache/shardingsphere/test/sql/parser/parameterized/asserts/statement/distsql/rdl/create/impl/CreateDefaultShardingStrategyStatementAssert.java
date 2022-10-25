@@ -53,7 +53,7 @@ public final class CreateDefaultShardingStrategyStatementAssert {
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getStrategyType(), is(expected.getStrategy().getStrategyType()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getShardingAlgorithmName(), is(expected.getStrategy().getShardingAlgorithmName()));
+                    actual.getAlgorithmSegment().getName(), is(expected.getStrategy().getAlgorithmSegment().getName()));
         }
     }
 }

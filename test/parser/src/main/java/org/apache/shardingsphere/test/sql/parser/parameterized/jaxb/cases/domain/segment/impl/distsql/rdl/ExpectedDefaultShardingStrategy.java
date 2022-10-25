@@ -20,8 +20,10 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected default sharding strategy.
@@ -39,6 +41,6 @@ public final class ExpectedDefaultShardingStrategy extends AbstractExpectedIdent
     @XmlAttribute(name = "sharding-column")
     private String shardingColumn;
     
-    @XmlAttribute(name = "sharding-algorithm-name")
-    private String shardingAlgorithmName;
+    @XmlElement(name = "algorithm-segment")
+    private ExpectedAlgorithm algorithmSegment;
 }
