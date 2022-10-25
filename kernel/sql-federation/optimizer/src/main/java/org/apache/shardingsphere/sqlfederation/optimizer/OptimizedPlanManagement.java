@@ -19,13 +19,18 @@ package org.apache.shardingsphere.sqlfederation.optimizer;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Provide cache for storing optimized plan.
+ */
 @Getter
 public class OptimizedPlanManagement {
     
@@ -61,9 +66,26 @@ public class OptimizedPlanManagement {
      * @param sqlNode ast node
      * @return rel node
      */
-    public SQLOptimizeContext get(final SqlNode sqlNode) {
-        SQLOptimizeContext result = optimizer.optimize(sqlNode);
-        cache.put(sqlNode.toString(), result);
+    public SQLOptimizeContext get(final SqlNode sqlNode, final Map<String, Object> parameters) {
+        SQLOptimizeContext result = cache.getIfPresent(new SQLInfo(sqlNode, parameters).toString());
+        if (null == result) {
+            result = optimizer.optimize(sqlNode);
+            cache.put(new SQLInfo(sqlNode, parameters).toString(), result);
+            return result;
+        }
         return result;
+    }
+    
+    @AllArgsConstructor
+    private class SQLInfo {
+        
+        private SqlNode sqlNode;
+        
+        private Map<String, Object> parameters;
+    
+        @Override
+        public String toString() {
+            return "SQLInfo{" + "sqlNode=" + sqlNode.toString() + ", parameters=" + parameters.toString() + '}';
+        }
     }
 }

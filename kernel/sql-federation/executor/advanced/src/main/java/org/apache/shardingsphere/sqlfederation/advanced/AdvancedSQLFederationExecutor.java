@@ -141,15 +141,15 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     @SuppressWarnings("unchecked")
     private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
-        initializePlanManagement(selectStatementContext, sqlFederationSchema);
+        initializePlanManagement(sqlFederationSchema);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(selectStatementContext.getSqlStatement());
-        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode);
+        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode, parameters);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
         Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(planManagement.getValidator(), planManagement.getConverter(), parameters)).enumerator();
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
     }
     
-    private void initializePlanManagement(final SelectStatementContext selectStatementContext, final AbstractSchema sqlFederationSchema) {
+    private void initializePlanManagement(final AbstractSchema sqlFederationSchema) {
         OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
