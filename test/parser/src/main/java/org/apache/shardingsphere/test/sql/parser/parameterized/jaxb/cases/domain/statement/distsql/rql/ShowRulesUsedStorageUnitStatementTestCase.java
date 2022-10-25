@@ -24,12 +24,12 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show rules used resource statement test case.
+ * Show rules used storage unit statement test case.
  */
 @Getter
 @Setter
-public final class ShowRulesUsedResourceStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowRulesUsedStorageUnitStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "resource-name")
-    private String resourceName;
+    @XmlAttribute(name = "storage-unit-name")
+    private String storageUnitName;
 }
