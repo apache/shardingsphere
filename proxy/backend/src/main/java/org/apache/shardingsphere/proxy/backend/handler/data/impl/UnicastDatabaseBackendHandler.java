@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.data.impl;
 
 import io.vertx.core.Future;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -89,9 +90,9 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(
                 AuthorityRule.class);
         Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(connectionSession.getGrantee());
-        Optional<String> result = privileges.isPresent() ? databaseNames.stream().filter(each -> privileges.get().hasPrivileges(each)
-                && ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst()
-                : databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
+        Stream<String> databaseStream = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource());
+        Optional<String> result = privileges.isPresent() ? databaseStream.filter(each -> privileges.get().hasPrivileges(each)).findFirst()
+                : databaseStream.findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }
