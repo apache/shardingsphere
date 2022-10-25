@@ -509,7 +509,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-REGISTER MIGRATION SOURCE STORAGE UNIT ds_2 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
