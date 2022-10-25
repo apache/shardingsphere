@@ -21,8 +21,6 @@ import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckS
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.migration.StopMigrationCheckStatementTestCase;
 
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
@@ -45,16 +43,16 @@ public final class StopMigrationCheckStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertJobIds(assertContext, actual.getJobId(), expected.getJobIds());
+            assertJobIds(assertContext, actual.getJobId(), expected.getJobId());
         }
     }
     
-    private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final List<String> expected) {
+    private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
         if (expected.isEmpty()) {
             assertNull(assertContext.getText("Actual job id should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual job id should exist."), actual);
-            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected.iterator().next()));
+            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected));
         }
     }
 }
