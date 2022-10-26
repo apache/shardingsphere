@@ -96,6 +96,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
             public void onFailure(final Throwable throwable) {
                 log.error("dumper onFailure, taskId={}", taskId);
                 stop();
+                close();
             }
         });
         CompletableFuture<?> importerFuture = inventoryImporterExecuteEngine.submit(importer, new ExecuteCallback() {
@@ -109,6 +110,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
             public void onFailure(final Throwable throwable) {
                 log.error("importer onFailure, taskId={}", taskId, throwable);
                 stop();
+                close();
             }
         });
         return CompletableFuture.allOf(dumperFuture, importerFuture);

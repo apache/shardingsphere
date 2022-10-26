@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosit
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.InventoryIncrementalJobItemAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -94,6 +95,16 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             }
             futures.add(each.start());
         }
+        CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
+            if (null != throwable) {
+                log.error("onFailure, inventory task execute failed.", throwable);
+                updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
+                String jobId = jobItemContext.getJobId();
+                PipelineJobAPI jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
+                jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+                jobAPI.stop(jobId);
+            }
+        });
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
             if (null == throwable) {
                 if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
@@ -102,12 +113,6 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
                 } else {
                     log.info("onSuccess, inventory tasks not finished");
                 }
-            } else {
-                log.error("Inventory task execute failed.", throwable);
-                updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
-                PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
-                        .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
-                stop();
             }
         });
         return false;
@@ -136,15 +141,18 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             }
             futures.add(each.start());
         }
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
-            if (null == throwable) {
-                log.info("onSuccess, all incremental tasks finished");
-            } else {
-                log.error("Incremental task execute failed.", throwable);
+        CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
+            if (null != throwable) {
+                log.error("onFailure, incremental task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
                 PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
                         .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
                 stop();
+            }
+        });
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
+            if (null == throwable) {
+                log.info("onSuccess, all incremental tasks finished.");
             }
         });
     }

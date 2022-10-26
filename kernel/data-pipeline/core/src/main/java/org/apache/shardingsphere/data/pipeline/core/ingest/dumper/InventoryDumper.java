@@ -53,6 +53,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
 
 /**
@@ -73,6 +74,8 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     private final ColumnValueReader columnValueReader;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
+    
+    private volatile Statement dumpStatement;
     
     public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -134,6 +137,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         }
         int batchSize = dumperConfig.getBatchSize();
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            dumpStatement = preparedStatement;
             setParameters(preparedStatement, batchSize, beginUniqueKeyValue);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -151,6 +155,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 if (0 == round % 50) {
                     log.info("Dumping, round={}, rowCount={}, maxUniqueKeyValue={}.", round, rowCount, maxUniqueKeyValue);
                 }
+                dumpStatement = null;
                 return Optional.ofNullable(maxUniqueKeyValue);
             }
         }
@@ -190,6 +195,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    protected void doStop() {
+    protected void doStop() throws SQLException {
+        cancelStatement(dumpStatement);
     }
 }
