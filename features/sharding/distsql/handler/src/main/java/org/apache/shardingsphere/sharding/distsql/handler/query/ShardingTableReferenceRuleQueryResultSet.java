@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,9 +30,9 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Query result set for show sharding binding table rules.
+ * Query result set for show sharding table reference rules.
  */
-public final class ShardingBindingTableRuleQueryResultSet implements DatabaseDistSQLResultSet {
+public final class ShardingTableReferenceRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<String> data;
     
@@ -44,7 +44,7 @@ public final class ShardingBindingTableRuleQueryResultSet implements DatabaseDis
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singleton("sharding_binding_tables");
+        return Collections.singleton("sharding_table_reference");
     }
     
     @Override
@@ -59,6 +59,6 @@ public final class ShardingBindingTableRuleQueryResultSet implements DatabaseDis
     
     @Override
     public String getType() {
-        return ShowShardingBindingTableRulesStatement.class.getName();
+        return ShowShardingTableReferenceRulesStatement.class.getName();
     }
 }

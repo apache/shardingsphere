@@ -31,16 +31,16 @@ dropShardingTableRule
     : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
     ;
 
-createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
+createShardingTableReferenceRule
+    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*
     ;
 
-alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
+alterShardingTableReferenceRule
+    : ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*
     ;
 
-dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES ifExists? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+dropShardingTableReferenceRule
+    : DROP SHARDING TABLE REFERENCE RULE ifExists? (tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*)?
     ;
 
 createBroadcastTableRule
@@ -199,8 +199,8 @@ columnName
     : IDENTIFIER
     ;
 
-bindTableRulesDefinition
-    : LP tableName (COMMA tableName)* RP
+tableReferenceRuleDefinition
+    : ruleName? LP tableName (COMMA tableName)* RP
     ;
 
 shardingAlgorithmDefinition

@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show sharding binding table rules statement.
+ * Expected sharding table reference rule.
  */
-public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement {
+@Getter
+@Setter
+public final class ExpectedShardingTableReferenceRule extends AbstractExpectedIdentifierSQLSegment {
     
-    public ShowShardingBindingTableRulesStatement(final DatabaseSegment database) {
-        super(database);
-    }
+    @XmlAttribute(name = "table-groups")
+    private String tableGroups;
 }

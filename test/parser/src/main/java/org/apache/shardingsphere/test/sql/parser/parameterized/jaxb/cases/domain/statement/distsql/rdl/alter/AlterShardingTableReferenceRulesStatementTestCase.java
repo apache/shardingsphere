@@ -15,35 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingTableReferenceRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Alter sharding binding table rules statement.
+ * Alter sharding table reference rule statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AlterShardingBindingTableRulesStatement extends AlterRuleStatement {
+public final class AlterShardingTableReferenceRulesStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<BindingTableRuleSegment> rules;
-    
-    /**
-     * Get binding tables.
-     * 
-     * @return binding tables
-     */
-    public Collection<String> getBindingTables() {
-        Collection<String> result = new LinkedList<>();
-        for (BindingTableRuleSegment each : rules) {
-            result.addAll(each.getBindingTables());
-        }
-        return result;
-    }
+    @XmlElement(name = "rule")
+    private final List<ExpectedShardingTableReferenceRule> rules = new LinkedList<>();
 }

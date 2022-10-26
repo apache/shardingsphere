@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingBindingTableRuleStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableReferenceRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -42,9 +42,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropShardingBindingTableRuleStatementUpdaterTest {
+public final class DropShardingTableReferenceRuleStatementUpdaterTest {
     
-    private final DropShardingBindingTableRuleStatementUpdater updater = new DropShardingBindingTableRuleStatementUpdater();
+    private final DropShardingTableReferenceRuleStatementUpdater updater = new DropShardingTableReferenceRuleStatementUpdater();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -77,14 +77,14 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     @Test
     public void assertHasAnyOneToBeDropped() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement(true, "t_1,t_2", "t_order,t_order_item");
+        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "t_1,t_2", "t_order,t_order_item");
         assertTrue(updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig));
     }
     
     @Test
     public void assertHasNotAnyOneToBeDropped() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement(true, "t_1,t_2");
+        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement(true, "t_1,t_2");
         assertFalse(updater.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig));
     }
     
@@ -92,7 +92,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     public void assertDropSpecifiedCurrentRuleConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2");
-        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_1,t_2");
+        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement("t_1,t_2");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
@@ -103,7 +103,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     public void assertDropRulesCurrentRuleConfigurationWithNoOrder() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
-        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
+        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
@@ -115,7 +115,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     public void assertDropRulesCurrentRuleConfigurationWithDifferentCase() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
-        DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");
+        DropShardingTableReferenceRuleStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
@@ -123,14 +123,14 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         assertFalse(currentRuleConfig.getBindingTableGroups().contains("t_1,t_2,t_3"));
     }
     
-    private DropShardingBindingTableRulesStatement createSQLStatement(final String... group) {
-        Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(false, segments);
+    private DropShardingTableReferenceRuleStatement createSQLStatement(final String... group) {
+        Collection<TableReferenceRuleSegment> segments = Arrays.stream(group).map(TableReferenceRuleSegment::new).collect(Collectors.toList());
+        return new DropShardingTableReferenceRuleStatement(false, segments);
     }
     
-    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean ifExists, final String... group) {
-        Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(ifExists, segments);
+    private DropShardingTableReferenceRuleStatement createSQLStatement(final boolean ifExists, final String... group) {
+        Collection<TableReferenceRuleSegment> segments = Arrays.stream(group).map(TableReferenceRuleSegment::new).collect(Collectors.toList());
+        return new DropShardingTableReferenceRuleStatement(ifExists, segments);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

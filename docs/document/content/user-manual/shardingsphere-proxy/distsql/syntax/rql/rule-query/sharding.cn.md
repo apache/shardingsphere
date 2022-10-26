@@ -39,10 +39,10 @@ tableRule:
 -  支持查询所有分片算法；
 -  支持查询所有分片审计算法。
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
+SHOW SHARDING TABLE REFERENCE RULES [FROM databaseName]
 ```
 
 ### Broadcast Table Rule
@@ -138,17 +138,17 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 | name  | 分片规则名称    |
 | nodes | 分片节点       |
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
-| 列                      | 说明      |
-| ----------------------- | -------- |
-| sharding_binding_tables | 绑定表名称 |
+| 列                       | 说明      |
+|--------------------------|---------- |
+| sharding_table_reference | 表关联关系 |
 
 ### Broadcast Table Rule
 
-| 列                | 说明      |
-| ---------------- | -------- |
-| broadcast_tables | 广播表名称 |
+| 列              | 说明      |
+| --------------- | -------- |
+| broadcast_table | 广播表名称 |
 
 ### Sharding Table Rule
 
@@ -303,16 +303,16 @@ mysql> SHOW SHARDING TABLE NODES;
 1 row in set (0.02 sec)
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-mysql> SHOW SHARDING BINDING TABLE RULES;
-+----------------------+
-| sharding_binding_tables |
-+----------------------+
-| t_order,t_order_item |
-| t1,t2                |
-+----------------------+
+mysql> SHOW SHARDING TABLE REFERENCE RULES;
++--------------------------+
+| sharding_table_reference |
++--------------------------+
+| t_order,t_order_item     |
+| t1,t2                    |
++--------------------------+
 2 rows in set (0.00 sec)
 ```
 
@@ -321,7 +321,7 @@ mysql> SHOW SHARDING BINDING TABLE RULES;
 ```sql
 mysql> SHOW BROADCAST TABLE RULES;
 +------------------------+
-| broadcast_tables |
+| broadcast_table        |
 +------------------------+
 | t_1                    |
 | t_2                    |

@@ -139,19 +139,19 @@ auditorAlgorithmDefinition:
 - `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) ；
 - 使用 `autoCreativeAlgorithm` 方式指定 `shardingStrategy` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_strategyType_shardingAlgorithmType`，如 `t_order_database_inline`。
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-DROP SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+DROP SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-bindTableRulesDefinition:
+tableReferenceRuleDefinition:
     (tableName [, tableName] ... )
 ```
-- `ALTER` 会使用新的配置直接覆盖数据库内的绑定表配置
+- `ALTER` 会使用新的配置覆盖数据库内的绑定表配置
 
 ### Broadcast Table Rule
 
@@ -258,16 +258,16 @@ TYPE="standard",SHARDING_COLUMN=another_id,SHARDING_ALGORITHM=database_inline
 DROP DEFAULT SHARDING DATABASE STRATEGY;
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_1,t_2);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_1,t_2);
 
-ALTER SHARDING BINDING TABLE RULES (t_order,t_order_item);
+ALTER SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 
-DROP SHARDING BINDING TABLE RULES;
+DROP SHARDING TABLE REFERENCE RULE;
 
-DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
+DROP SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 ```
 
 ### Broadcast Table Rule

@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl;
+package org.apache.shardingsphere.sharding.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Expected sharding binding table rule.
+ * Table reference rule segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedShardingBindingTableRule extends AbstractExpectedIdentifierSQLSegment {
+public final class TableReferenceRuleSegment implements ASTNode {
     
-    @XmlAttribute(name = "table-groups")
-    private String tableGroups;
+    private final String tableGroup;
+    
+    /**
+     * Get table reference.
+     * 
+     * @return table reference
+     */
+    public Collection<String> getTableReference() {
+        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    }
 }

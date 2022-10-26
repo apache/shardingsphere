@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
- * Show sharding binding table rules statement test case.
+ * Show sharding table reference rules statement test case.
  */
-public final class ShowShardingBindingTableRulesStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowShardingTableReferenceRulesStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -18,34 +18,31 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Drop sharding binding table rules statement.
+ * Alter sharding table reference rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
+public final class AlterShardingTableReferenceRuleStatement extends AlterRuleStatement {
     
-    private final Collection<BindingTableRuleSegment> rules;
-    
-    public DropShardingBindingTableRulesStatement(final boolean ifExists, final Collection<BindingTableRuleSegment> rules) {
-        super(ifExists);
-        this.rules = rules;
-    }
+    private final Collection<TableReferenceRuleSegment> rules;
     
     /**
-     * Get binding groups.
-     *
-     * @return binding groups
+     * Get table references.
+     * 
+     * @return table references
      */
-    public Collection<String> getBindingGroups() {
+    public Collection<String> getTableReferences() {
         Collection<String> result = new LinkedList<>();
-        for (BindingTableRuleSegment each : rules) {
-            result.add(each.getTableGroups());
+        for (TableReferenceRuleSegment each : rules) {
+            result.addAll(each.getTableReference());
         }
         return result;
     }

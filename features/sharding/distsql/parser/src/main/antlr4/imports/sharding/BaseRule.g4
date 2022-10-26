@@ -35,6 +35,6 @@ auditorName
     : IDENTIFIER
     ;
 
-ifExists
-    : IF EXISTS
+ruleName
+    : IDENTIFIER
     ;

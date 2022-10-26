@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingBindingTableRule;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Create sharding binding table rule statement test case.
+ * Show sharding table reference rules statement.
  */
-@Getter
-@Setter
-public final class CreateShardingBindingTableRulesStatementTestCase extends SQLParserTestCase {
+public final class ShowShardingTableReferenceRulesStatement extends ShowRulesStatement {
     
-    @XmlElement(name = "rule")
-    private final List<ExpectedShardingBindingTableRule> rules = new LinkedList<>();
+    public ShowShardingTableReferenceRulesStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }
