@@ -115,11 +115,11 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        Collection<ColumnProjection> columnProjections = new LinkedHashSet<>();
-        columnProjections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
-        columnProjections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
-        columnProjections.addAll(getShorthandColumnsFromJoinTableSegment(table, projectionSegment));
-        return new ShorthandProjection(owner, columnProjections);
+        Collection<Projection> projections = new LinkedHashSet<>();
+        projections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
+        projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
+        projections.addAll(getShorthandColumnsFromJoinTableSegment(table, projectionSegment));
+        return new ShorthandProjection(owner, projections);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
@@ -171,34 +171,35 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<ColumnProjection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table) {
+    private Collection<Projection> getShorthandColumnsFromSubqueryTableSegment(final TableSegment table) {
         if (!(table instanceof SubqueryTableSegment)) {
             return Collections.emptyList();
         }
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getColumnProjections(projections);
+        return getResultSetProjections(projections);
     }
     
-    private Collection<ColumnProjection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
+    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
         if (!(table instanceof JoinTableSegment)) {
             return Collections.emptyList();
         }
         Collection<Projection> projections = new LinkedList<>();
         createProjection(((JoinTableSegment) table).getLeft(), projectionSegment).ifPresent(projections::add);
         createProjection(((JoinTableSegment) table).getRight(), projectionSegment).ifPresent(projections::add);
-        return getColumnProjections(projections);
+        return getResultSetProjections(projections);
     }
     
-    private Collection<ColumnProjection> getColumnProjections(final Collection<Projection> projections) {
-        Collection<ColumnProjection> result = new LinkedList<>();
+    private Collection<Projection> getResultSetProjections(final Collection<Projection> projections) {
+        Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
-                result.add((ColumnProjection) each);
-            }
-            if (each instanceof ShorthandProjection) {
-                result.addAll(((ShorthandProjection) each).getActualColumns().values());
+                result.add(each);
+            } else if (each instanceof ExpressionProjection) {
+                result.add(each);
+            }else if (each instanceof ShorthandProjection) {
+                result.addAll(((ShorthandProjection) each).getResultSetColumns().values());
             }
         }
         return result;

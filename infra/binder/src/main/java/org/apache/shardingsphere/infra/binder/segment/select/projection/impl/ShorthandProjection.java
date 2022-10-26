@@ -39,10 +39,17 @@ public final class ShorthandProjection implements Projection {
     private final String owner;
     
     private final Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
-    
-    public ShorthandProjection(final String owner, final Collection<ColumnProjection> columnProjections) {
+
+    private final Map<String, Projection> resultSetColumns = new LinkedHashMap<>();
+
+    public ShorthandProjection(final String owner, final Collection<Projection> projections) {
         this.owner = owner;
-        columnProjections.forEach(each -> actualColumns.put(each.getExpression().toLowerCase(), each));
+        for (Projection projection : projections) {
+            if(projection instanceof ColumnProjection){
+                actualColumns.put(projection.getExpression().toLowerCase(), (ColumnProjection) projection);
+            }
+            resultSetColumns.put(projection.getExpression().toLowerCase(), projection);
+        }
     }
     
     @Override
