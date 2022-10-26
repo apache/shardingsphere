@@ -41,9 +41,8 @@ public final class SingleTableRulesQueryResultSetTest {
         DatabaseDistSQLResultSet resultSet = new SingleTableRulesQueryResultSet();
         resultSet.init(mockDatabase(), mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(1));
         Iterator<Object> rowData = actual.iterator();
-        assertThat(rowData.next(), is("default"));
         assertThat(rowData.next(), is("foo_ds"));
     }
     

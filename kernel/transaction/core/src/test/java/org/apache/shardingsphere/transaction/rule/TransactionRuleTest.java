@@ -65,7 +65,7 @@ public final class TransactionRuleTest {
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
-        when(result.getDatabaseTypes()).thenReturn(databaseTypes);
+        when(result.getStorageTypes()).thenReturn(databaseTypes);
         return result;
     }
     

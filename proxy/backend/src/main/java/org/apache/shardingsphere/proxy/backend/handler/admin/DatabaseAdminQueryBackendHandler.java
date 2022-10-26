@@ -62,7 +62,7 @@ public final class DatabaseAdminQueryBackendHandler implements ProxyBackendHandl
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
         ShardingSphereDatabase database = null == connectionSession.getDatabaseName() ? null : ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
-        DatabaseType databaseType = null == database ? connectionSession.getDatabaseType() : database.getProtocolType();
+        DatabaseType databaseType = null == database ? connectionSession.getProtocolType() : database.getProtocolType();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseType);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
             result.add(queryHeaderBuilderEngine.build(queryResultMetaData, database, columnIndex));

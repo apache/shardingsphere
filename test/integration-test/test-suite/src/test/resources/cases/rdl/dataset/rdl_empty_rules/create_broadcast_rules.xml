@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="sharding_broadcast_tables" />
+        <column name="broadcast_table" />
     </metadata>
     <row values="t_product_category" />
 </dataset>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -38,12 +38,12 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         SingleTableRule rule = database.getRuleMetaData().getSingleRule(SingleTableRule.class);
-        rule.getConfiguration().getDefaultDataSource().ifPresent(optional -> data = Collections.singleton(optional).iterator());
+        data = Collections.singleton(rule.getConfiguration().getDefaultDataSource().orElse("RANDOM")).iterator();
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "resource_name");
+        return Arrays.asList("storage_unit_name");
     }
     
     @Override
@@ -53,11 +53,11 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     
     @Override
     public Collection<Object> getRowData() {
-        return Arrays.asList("default", data.next());
+        return Arrays.asList(data.next());
     }
     
     @Override
     public String getType() {
-        return ShowSingleTableRulesStatement.class.getName();
+        return ShowDefaultSingleTableStorageUnitStatement.class.getName();
     }
 }

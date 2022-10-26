@@ -106,7 +106,6 @@ public final class SingleTableSQLRouterTest {
     @Test
     public void assertCreateRouteContextWithMultiDataSource() throws SQLException {
         SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
-        rule.getSingleTableDataNodes().put("t_order", Collections.singleton(createDataNode("ds_0")));
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createQueryContext(), database, rule, new ConfigurationProperties(new Properties()), new ConnectionContext());
         List<RouteUnit> routeUnits = new ArrayList<>(actual.getRouteUnits());

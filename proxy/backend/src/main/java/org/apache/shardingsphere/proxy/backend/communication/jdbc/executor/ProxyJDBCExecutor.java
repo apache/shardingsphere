@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Proxy JDBC executor.
@@ -68,13 +69,13 @@ public final class ProxyJDBCExecutor {
             EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
             DatabaseType protocolType = database.getProtocolType();
-            DatabaseType databaseType = database.getResourceMetaData().getDatabaseType();
+            Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
             ExecuteProcessEngine.initializeExecution(queryContext, executionGroupContext, eventBusContext);
             SQLStatementContext<?> context = queryContext.getSqlStatementContext();
             List<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             true),
-                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
+                    ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             false));
             ExecuteProcessEngine.finishExecution(executionGroupContext.getExecutionID(), eventBusContext);
             return result;

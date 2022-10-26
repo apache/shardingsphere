@@ -121,8 +121,8 @@ public final class AlterShadowRuleStatementUpdaterTest {
     public void assertExecuteSuccess() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("name", prop));
-        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("name", prop));
+        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SIMPLE_HINT", prop));
+        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SIMPLE_HINT", prop));
         AlterShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment2))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);

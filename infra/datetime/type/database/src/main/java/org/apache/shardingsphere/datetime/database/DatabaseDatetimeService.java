@@ -39,7 +39,7 @@ public final class DatabaseDatetimeService implements DatetimeService {
     @Override
     public Date getDatetime() {
         try {
-            return loadDatetime(timeServiceConfig.getDataSource(), DatetimeLoadingSQLProviderFactory.getInstance(timeServiceConfig.getDatabaseType()).getDatetimeLoadingSQL());
+            return loadDatetime(timeServiceConfig.getDataSource(), DatetimeLoadingSQLProviderFactory.getInstance(timeServiceConfig.getStorageType()).getDatetimeLoadingSQL());
         } catch (final SQLException ex) {
             throw new DatetimeLoadingException(ex);
         }

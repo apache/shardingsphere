@@ -67,11 +67,11 @@
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_single_and_single_data_node_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order (order_id))" />
-        <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk_t_single FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id))" />
+        <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_order_0 (order_id))" />
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_single_and_broadcast_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
-        <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk_t_single FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
+        <output sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_config (order_id))" />
     </rewrite-assertion>
     <rewrite-assertion id="create_table_with_single_table_with_add_foreign_constraint" db-types="MySQL,PostgreSQL,openGauss">
         <input sql="CREATE TABLE t_single(order_id INT PRIMARY KEY, CONSTRAINT t_single_fk FOREIGN KEY (order_id) REFERENCES t_single_extend (order_id))" />

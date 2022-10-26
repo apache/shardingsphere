@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ConfigurationParameterClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EmptyStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ExplainableStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LoadContext;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLAnalyzeTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLEmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLLoadStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
@@ -191,5 +193,10 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         }
         // TODO visit refresh materialized view statement
         return visit(ctx.refreshMatViewStmt());
+    }
+    
+    @Override
+    public ASTNode visitEmptyStatement(final EmptyStatementContext ctx) {
+        return new PostgreSQLEmptyStatement();
     }
 }

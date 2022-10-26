@@ -31,36 +31,24 @@ dropShardingTableRule
     : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
     ;
 
-createShardingBindingTableRules
-    : CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
+createShardingTableReferenceRule
+    : CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*
     ;
 
-alterShardingBindingTableRules
-    : ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition (COMMA bindTableRulesDefinition)*
+alterShardingTableReferenceRule
+    : ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*
     ;
 
-dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES ifExists? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+dropShardingTableReferenceRule
+    : DROP SHARDING TABLE REFERENCE RULE ifExists? (tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*)?
     ;
 
-createShardingBroadcastTableRules
-    : CREATE SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
+createBroadcastTableRule
+    : CREATE BROADCAST TABLE RULE tableName (COMMA tableName)*
     ;
 
-alterShardingBroadcastTableRules
-    : ALTER SHARDING BROADCAST TABLE RULES LP tableName (COMMA tableName)* RP
-    ;
-
-dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES ifExists? (tableName (COMMA tableName)*)?
-    ;
-
-createShardingAlgorithm
-    : CREATE SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA shardingAlgorithmDefinition)*
-    ;
-
-alterShardingAlgorithm
-    : ALTER SHARDING ALGORITHM shardingAlgorithmDefinition (COMMA shardingAlgorithmDefinition)*
+dropBroadcastTableRule
+    : DROP BROADCAST TABLE RULE ifExists? tableName (COMMA tableName)*
     ;
 
 dropShardingAlgorithm
@@ -77,14 +65,6 @@ alterDefaultShardingStrategy
 
 dropDefaultShardingStrategy
     : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifExists?
-    ;
-
-createShardingKeyGenerator
-    : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
-    ;
-
-alterShardingKeyGenerator
-    : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
 dropShardingKeyGenerator
@@ -108,11 +88,11 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
+    : tableName LP resources COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? RP
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDeclaration)? (COMMA auditDeclaration)? RP
+    : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDefinition)? (COMMA auditDeclaration)? RP
     ;
 
 keyGeneratorDefinition
@@ -164,19 +144,7 @@ shardingColumns
     ;
 
 shardingAlgorithm
-    : existingAlgorithm | autoCreativeAlgorithm
-    ;
-
-existingAlgorithm
-    : SHARDING_ALGORITHM EQ shardingAlgorithmName
-    ;
-
-autoCreativeAlgorithm
     : SHARDING_ALGORITHM LP algorithmDefinition RP
-    ;
-
-keyGenerator
-    : KEY_GENERATOR EQ shardingAlgorithmName
     ;
 
 shardingStrategy
@@ -191,16 +159,8 @@ tableStrategy
     : TABLE_STRATEGY LP shardingStrategy RP
     ;
 
-keyGenerateDeclaration
-    : keyGenerateDefinition | keyGenerateStrategy
-    ;
-
 keyGenerateDefinition
     : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
-    ;
-
-keyGenerateStrategy
-    : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA keyGenerator RP
     ;
 
 auditDeclaration
@@ -239,8 +199,8 @@ columnName
     : IDENTIFIER
     ;
 
-bindTableRulesDefinition
-    : LP tableName (COMMA tableName)* RP
+tableReferenceRuleDefinition
+    : ruleName? LP tableName (COMMA tableName)* RP
     ;
 
 shardingAlgorithmDefinition

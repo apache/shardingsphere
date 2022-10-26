@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQueryResultSet;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,8 @@ public final class DataSourceQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         DatabaseDistSQLResultSet resultSet = new DataSourceQueryResultSet();
-        resultSet.init(database, mock(ShowResourcesStatement.class));
+        ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
+        resultSet.init(database, showStorageUnitsStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();

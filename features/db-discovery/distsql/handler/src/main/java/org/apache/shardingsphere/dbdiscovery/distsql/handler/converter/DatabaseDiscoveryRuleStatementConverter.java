@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
@@ -54,8 +53,6 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         DatabaseDiscoveryRuleConfiguration result = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
         segmentMap.getOrDefault(DatabaseDiscoveryDefinitionSegment.class.getSimpleName(), Collections.emptyList())
                 .forEach(each -> addRuleConfiguration(result, (DatabaseDiscoveryDefinitionSegment) each));
-        segmentMap.getOrDefault(DatabaseDiscoveryConstructionSegment.class.getSimpleName(), Collections.emptyList())
-                .forEach(each -> addRuleConfiguration(result, (DatabaseDiscoveryConstructionSegment) each));
         return result;
     }
     
@@ -69,12 +66,6 @@ public final class DatabaseDiscoveryRuleStatementConverter {
         ruleConfig.getDataSources().add(dataSourceRuleConfig);
         ruleConfig.getDiscoveryTypes().put(discoveryTypeName, discoveryType);
         ruleConfig.getDiscoveryHeartbeats().put(heartbeatName, heartbeatConfig);
-    }
-    
-    private static void addRuleConfiguration(final DatabaseDiscoveryRuleConfiguration ruleConfig, final DatabaseDiscoveryConstructionSegment segment) {
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig =
-                new DatabaseDiscoveryDataSourceRuleConfiguration(segment.getName(), new LinkedList<>(segment.getDataSources()), segment.getDiscoveryHeartbeatName(), segment.getDiscoveryTypeName());
-        ruleConfig.getDataSources().add(dataSourceRuleConfig);
     }
     
     private static String getName(final String ruleName, final String type) {
