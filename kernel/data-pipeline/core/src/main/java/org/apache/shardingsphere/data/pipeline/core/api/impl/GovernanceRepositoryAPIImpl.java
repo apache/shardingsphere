@@ -51,6 +51,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public boolean isExisted(final String key) {
+        // TODO delegate to repository isExisted
         return null != repository.getDirectly(key);
     }
     
