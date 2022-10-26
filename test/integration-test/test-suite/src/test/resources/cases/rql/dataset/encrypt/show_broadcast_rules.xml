@@ -17,6 +17,6 @@
 
 <dataset>
     <metadata>
-        <column name="broadcast_tables" />
+        <column name="broadcast_table" />
     </metadata>
 </dataset>

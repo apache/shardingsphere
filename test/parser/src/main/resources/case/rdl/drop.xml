@@ -45,15 +45,13 @@
         <table>t_order_item</table>
     </drop-sharding-table-rule>
     
-    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-rules" />
-
-    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-specified-rules">
+    <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule">
         <rule>t_1,t_2</rule>
-    </drop-sharding-binding-table-rules>
+    </drop-sharding-table-reference-rule>
 
-    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-specified-rules-if-exists" if-exists="true">
+    <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule-if-exists" if-exists="true">
         <rule>t_1,t_2</rule>
-    </drop-sharding-binding-table-rules>
+    </drop-sharding-table-reference-rule>
     
     <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >
         <table>t_1</table>

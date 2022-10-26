@@ -17,9 +17,9 @@
   -->
 
 <sql-parser-test-cases>
-    <show-sharding-binding-table-rules sql-case-id="show-sharding-binding-table-rules">
-        <database name="sharding_db" start-index="39" stop-index="49" />
-    </show-sharding-binding-table-rules>
+    <show-sharding-table-reference-rules sql-case-id="show-sharding-table-reference-rules">
+        <database name="sharding_db" start-index="41" stop-index="51" />
+    </show-sharding-table-reference-rules>
     
     <show-broadcast-table-rules sql-case-id="show-broadcast-table-rules">
         <database name="sharding_db" start-index="32" stop-index="42" />

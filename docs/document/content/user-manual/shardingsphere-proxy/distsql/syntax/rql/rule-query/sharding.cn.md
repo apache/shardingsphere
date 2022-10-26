@@ -39,10 +39,10 @@ tableRule:
 -  支持查询所有分片算法；
 -  支持查询所有分片审计算法。
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
+SHOW SHARDING TABLE REFERENCE RULES [FROM databaseName]
 ```
 
 ### Broadcast Table Rule
@@ -53,24 +53,24 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 
 ### Sharding Table Rule
 
-| 列                                 | 说明                      |
-|-----------------------------------|-------------------------|
-| table                             | 逻辑表名                    |
-| actual_data_nodes                 | 实际的数据节点                 |
-| actual_data_sources               | 实际的数据源（通过 RDL 创建的规则时显示） |
-| database_strategy_type            | 数据库分片策略类型               |
-| database_sharding_column          | 数据库分片键                  |
-| database_sharding_algorithm_type  | 数据库分片算法类型               |
-| database_sharding_algorithm_props | 数据库分片算法参数               |
-| table_strategy_type               | 表分片策略类型                 |
-| table_sharding_column             | 表分片键                    |
-| table_sharding_algorithm_type     | 表分片算法类型                 |
-| table_sharding_algorithm_props    | 表分片算法参数                 |
-| key_generate_column               | 分布式主键生成列                |
-| key_generator_type                | 分布式主键生成器类型              |
-| key_generator_props               | 分布式主键生成器参数              |
-| auditor_types                     | 分片审计生成器参数               |
-| allow_hint_disable                | 是否禁用分片审计hint            |
+| 列                                  | 说明                                  |
+|------------------------------------|---------------------------------------|
+| table                              | 逻辑表名                               |
+| actual_data_nodes                  | 实际的数据节点                          |
+| actual_data_sources                | 实际的数据源（通过 RDL 创建的规则时显示）   |
+| database_strategy_type             | 数据库分片策略类型                       |
+| database_sharding_column           | 数据库分片键                            |
+| database_sharding_algorithm_type   | 数据库分片算法类型                       |
+| database_sharding_algorithm_props  | 数据库分片算法参数                       |
+| table_strategy_type                | 表分片策略类型                          |
+| table_sharding_column              | 表分片键                               |
+| table_sharding_algorithm_type      | 表分片算法类型                          |
+| table_sharding_algorithm_props     | 表分片算法参数                          |
+| key_generate_column                | 分布式主键生成列                        |
+| key_generator_type                 | 分布式主键生成器类型                     |
+| key_generator_props                | 分布式主键生成器参数                     |
+| auditor_types                      | 分片审计生成器参数                       |
+| allow_hint_disable                 | 是否禁用分片审计hint                     |
 
 ### Sharding Algorithms
 
@@ -138,17 +138,17 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 | name  | 分片规则名称    |
 | nodes | 分片节点       |
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
-| 列                      | 说明      |
-| ----------------------- | -------- |
-| sharding_binding_tables | 绑定表名称 |
+| 列                       | 说明      |
+|--------------------------|---------- |
+| sharding_table_reference | 表关联关系 |
 
 ### Broadcast Table Rule
 
-| 列                | 说明      |
-| ---------------- | -------- |
-| broadcast_tables | 广播表名称 |
+| 列              | 说明      |
+| --------------- | -------- |
+| broadcast_table | 广播表名称 |
 
 ### Sharding Table Rule
 
@@ -303,16 +303,16 @@ mysql> SHOW SHARDING TABLE NODES;
 1 row in set (0.02 sec)
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-mysql> SHOW SHARDING BINDING TABLE RULES;
-+----------------------+
-| sharding_binding_tables |
-+----------------------+
-| t_order,t_order_item |
-| t1,t2                |
-+----------------------+
+mysql> SHOW SHARDING TABLE REFERENCE RULES;
++--------------------------+
+| sharding_table_reference |
++--------------------------+
+| t_order,t_order_item     |
+| t1,t2                    |
++--------------------------+
 2 rows in set (0.00 sec)
 ```
 
@@ -321,7 +321,7 @@ mysql> SHOW SHARDING BINDING TABLE RULES;
 ```sql
 mysql> SHOW BROADCAST TABLE RULES;
 +------------------------+
-| broadcast_tables |
+| broadcast_table        |
 +------------------------+
 | t_1                    |
 | t_2                    |

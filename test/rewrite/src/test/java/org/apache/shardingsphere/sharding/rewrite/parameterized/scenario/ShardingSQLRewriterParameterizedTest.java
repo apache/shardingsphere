@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractS
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
@@ -69,9 +71,9 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     }
     
     @Override
-    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName) {
+    protected void mockRules(final Collection<ShardingSphereRule> rules, final String schemaName, final SQLStatement sqlStatement) {
         Optional<SingleTableRule> singleTableRule = rules.stream().filter(each -> each instanceof SingleTableRule).map(each -> (SingleTableRule) each).findFirst();
-        if (singleTableRule.isPresent()) {
+        if (singleTableRule.isPresent() && !(sqlStatement instanceof CreateTableStatement)) {
             singleTableRule.get().put("db", schemaName, "t_single");
             singleTableRule.get().put("db", schemaName, "t_single_extend");
         }

@@ -26,11 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -47,8 +43,6 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
     private final MigrationJobAPI jobAPI = MigrationJobAPIFactory.getInstance();
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-    
-    private final PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
     
     // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
@@ -67,7 +61,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         MigrationProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         MigrationTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingItem, initProgress, jobProcessContext, taskConfig, dataSourceManager);
-        if (getTasksRunnerMap().containsKey(shardingItem)) {
+        if (containsTasksRunner(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
@@ -78,9 +72,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             prepare(jobItemContext);
             tasksRunner.start();
         });
-        getTasksRunnerMap().put(shardingItem, tasksRunner);
-        PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        pipelineDistributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        addTasksRunner(shardingItem, tasksRunner);
     }
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
@@ -92,7 +84,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
-            PipelineJobCenter.stop(jobItemContext.getJobId());
+            jobAPI.stop(jobItemContext.getJobId());
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
             jobAPI.persistJobItemProgress(jobItemContext);
             jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
@@ -118,12 +110,9 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             return;
         }
         log.info("stop tasks runner, jobId={}", jobId);
-        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
-        for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
+        for (PipelineTasksRunner each : getTasksRunners()) {
             each.stop();
-            pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, each.getJobItemContext().getShardingItem());
         }
-        getTasksRunnerMap().clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
+        clearTasksRunner();
     }
 }

@@ -84,6 +84,10 @@ public final class PipelineDistributedBarrier {
      * @param shardingItem sharding item
      */
     public void persistEphemeralChildrenNode(final String parentPath, final int shardingItem) {
+        if (!getRepository().isExisted(parentPath)) {
+            log.info("parent path {} not exist, ignore", parentPath);
+            return;
+        }
         String key = String.join("/", parentPath, Integer.toString(shardingItem));
         getRepository().delete(key);
         getRepository().persistEphemeral(key, "");

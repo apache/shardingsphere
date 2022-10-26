@@ -43,7 +43,7 @@ public final class BroadcastTableRuleQueryResultSet implements DatabaseDistSQLRe
     
     @Override
     public Collection<String> getColumnNames() {
-        return Collections.singleton("broadcast_tables");
+        return Collections.singleton("broadcast_table");
     }
     
     @Override

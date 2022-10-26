@@ -19,6 +19,9 @@ namespace
    ├     ├     ├     ├     ├──tables          # 表结构配置
    ├     ├     ├     ├     ├     ├──${tableName} 
    ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # 视图结构配置
+   ├     ├     ├     ├     ├     ├──${viewName} 
+   ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # 元数据版本列表      
    ├     ├     ├     ├──${versionNumber}      # 元数据版本号

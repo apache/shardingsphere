@@ -42,7 +42,7 @@ public class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDefiniti
     
     private static final String SHADOW = "shadow";
     
-    private static final String DEFAULT_ALGORITHM_NAME = "default";
+    private static final String DEFAULT_ALGORITHM_NAME = "default_shadow_algorithm";
     
     @Override
     public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterDefaultShadowAlgorithmStatement sqlStatement) {
