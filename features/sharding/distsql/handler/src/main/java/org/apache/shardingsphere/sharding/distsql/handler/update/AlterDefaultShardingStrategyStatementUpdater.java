@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategy
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterDefaultShardingStrategyStatement;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -57,15 +56,10 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
         ShardingSpherePreconditions.checkState(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType()).isValid(sqlStatement.getShardingColumn()),
                 () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkState(isAlgorithmDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);
-        if (null == sqlStatement.getShardingAlgorithmName() && null != sqlStatement.getAlgorithmSegment()) {
-            return;
-        }
-        boolean isAlgorithmExist = currentRuleConfig.getShardingAlgorithms().containsKey(sqlStatement.getShardingAlgorithmName());
-        ShardingSpherePreconditions.checkState(isAlgorithmExist, () -> new MissingRequiredAlgorithmException(databaseName, Collections.singleton(sqlStatement.getShardingAlgorithmName())));
     }
     
     private boolean isAlgorithmDefinitionExists(final AlterDefaultShardingStrategyStatement sqlStatement) {
-        return null != sqlStatement.getShardingAlgorithmName() || null != sqlStatement.getAlgorithmSegment();
+        return null != sqlStatement.getAlgorithmSegment();
     }
     
     private void checkExist(final String databaseName, final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
@@ -92,7 +86,7 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     }
     
     private String getShardingAlgorithmName(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfig) {
-        return null == sqlStatement.getShardingAlgorithmName() ? createDefaultAlgorithm(sqlStatement, shardingRuleConfig) : sqlStatement.getShardingAlgorithmName();
+        return createDefaultAlgorithm(sqlStatement, shardingRuleConfig);
     }
     
     private String createDefaultAlgorithm(final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration shardingRuleConfig) {

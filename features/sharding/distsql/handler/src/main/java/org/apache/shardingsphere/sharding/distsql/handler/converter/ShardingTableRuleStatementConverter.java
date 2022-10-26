@@ -158,8 +158,7 @@ public final class ShardingTableRuleStatementConverter {
     
     private static ShardingStrategyConfiguration createShardingStrategyConfiguration(final String logicTable, final ShardingStrategyLevelType strategyLevel, final String type,
                                                                                      final ShardingStrategySegment segment) {
-        String shardingAlgorithmName = null == segment.getShardingAlgorithmName() ? getTableShardingAlgorithmName(logicTable, strategyLevel, segment.getAlgorithmSegment().getName())
-                : segment.getShardingAlgorithmName();
+        String shardingAlgorithmName = getTableShardingAlgorithmName(logicTable, strategyLevel, segment.getAlgorithmSegment().getName());
         return createStrategyConfiguration(ShardingStrategyType.getValueOf(type).name(), segment.getShardingColumn(), shardingAlgorithmName);
     }
     

@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedAlgorithm;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -31,9 +30,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class ExpectedShardingKeyGenerator extends AbstractExpectedIdentifierSQLSegment {
-    
-    @XmlAttribute(name = "key-generator-name")
-    private String keyGeneratorName;
     
     @XmlElement(name = "algorithm")
     private ExpectedAlgorithm algorithmSegment;

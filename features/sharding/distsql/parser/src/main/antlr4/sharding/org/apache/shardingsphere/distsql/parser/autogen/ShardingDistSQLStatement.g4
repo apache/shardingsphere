@@ -42,11 +42,7 @@ execute
     | addShardingHintTableValue
     | showShardingHintStatus
     | clearShardingHint
-    | createShardingAlgorithm
-    | alterShardingAlgorithm
     | showShardingTableNodes
-    | createShardingKeyGenerator
-    | alterShardingKeyGenerator
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
     | showShardingAuditors

@@ -112,50 +112,76 @@
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
         </rule>
     </create-sharding-table-rule>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-enum-inline-expression">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${['abc','ac']}.table</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
         </rule>
     </create-sharding-table-rule>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="complex" sharding-column="order_id,user_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="database_inline" />
+            </database-strategy>
         </rule>
     </create-sharding-table-rule>
     
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auto-create-algorithm">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id">
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="table_inline" />
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" >
                 <algorithm-segment algorithm-name="inline">
                     <properties>
                         <property key="algorithm-expression" value="ms_group_${order_id% 2}" />
@@ -379,17 +405,20 @@
     </create-sharding-algorithm>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
-        <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="table" strategy-type="standard" sharding-column="order_id">
+            <algorithm-segment algorithm-name="algorithms_name" />
         </strategy>
     </create-default-sharding-strategy>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy">
-        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID">
+            <algorithm-segment algorithm-name="algorithms_name" />
         </strategy>
     </create-default-sharding-strategy>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy-complex">
-        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id">
+            <algorithm-segment algorithm-name="algorithms_name" />
         </strategy>
     </create-default-sharding-strategy>
     
@@ -405,12 +434,6 @@
     </create-default-shadow-algorithm>
     
     <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
-    
-    <create-sharding-key-generator sql-case-id="create-sharding-key-generator">
-        <sharding-key-generator key-generator-name="uuid_key_generator">
-            <algorithm algorithm-name="uuid" />
-        </sharding-key-generator>
-    </create-sharding-key-generator>
     
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">
