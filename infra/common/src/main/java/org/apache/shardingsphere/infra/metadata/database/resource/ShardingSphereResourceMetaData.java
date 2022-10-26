@@ -45,18 +45,14 @@ public final class ShardingSphereResourceMetaData {
     
     private final Map<String, DatabaseType> storageTypes;
     
-    // TODO remove databaseType when all scenarios have been replaced
-    private final DatabaseType databaseType;
-    
     @Getter(AccessLevel.NONE)
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
     public ShardingSphereResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
-        databaseType = getDatabaseType(enabledDataSources);
         storageTypes = createStorageTypes(enabledDataSources);
-        dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
+        dataSourceMetaDataMap = createDataSourceMetaDataMap(enabledDataSources, storageTypes);
     }
     
     private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources) {
@@ -71,11 +67,12 @@ public final class ShardingSphereResourceMetaData {
         return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(dataSources.values());
     }
     
-    private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources) {
+    private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
-            result.put(entry.getKey(), databaseType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
+            DatabaseType storageType = storageTypes.get(entry.getKey());
+            result.put(entry.getKey(), storageType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
         }
         return result;
     }
@@ -107,6 +104,16 @@ public final class ShardingSphereResourceMetaData {
      */
     public DataSourceMetaData getDataSourceMetaData(final String dataSourceName) {
         return dataSourceMetaDataMap.get(dataSourceName);
+    }
+    
+    /**
+     * Get storage type.
+     *
+     * @param dataSourceName data source name
+     * @return storage type
+     */
+    public DatabaseType getStorageType(final String dataSourceName) {
+        return storageTypes.get(dataSourceName);
     }
     
     /**

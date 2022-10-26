@@ -73,7 +73,7 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     private Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db");
-        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
