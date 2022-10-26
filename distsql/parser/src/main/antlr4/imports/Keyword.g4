@@ -59,14 +59,6 @@ SHOW
     : S H O W
     ;
 
-RESOURCE
-    : R E S O U R C E
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
 FROM
     : F R O M
     ;

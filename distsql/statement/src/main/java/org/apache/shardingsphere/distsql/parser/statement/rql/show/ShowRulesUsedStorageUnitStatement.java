@@ -15,21 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.Optional;
 
 /**
- * Show rules used resource statement test case.
+ * Show rules used storage unit statement.
  */
-@Getter
-@Setter
-public final class ShowRulesUsedResourceStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowRulesUsedStorageUnitStatement extends ShowRulesStatement {
     
-    @XmlAttribute(name = "resource-name")
-    private String resourceName;
+    private final String storageUnitName;
+    
+    public ShowRulesUsedStorageUnitStatement(final String storageUnitName, final DatabaseSegment database) {
+        super(database);
+        this.storageUnitName = storageUnitName;
+    }
+    
+    /**
+     * Get resource name.
+     *
+     * @return resource name
+     */
+    public Optional<String> getStorageUnitName() {
+        return Optional.ofNullable(storageUnitName);
+    }
 }

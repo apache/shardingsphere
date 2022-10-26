@@ -19,6 +19,6 @@ org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQ
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.UnusedDataSourceQueryResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableQueryResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.SingleTableRulesQueryResultSet
-org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedResourceQueryResultSet
+org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.RulesUsedStorageUnitQueryResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule.CountSingleTableRuleQueryResultSet
 org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowMigrationRuleQueryResultSet

@@ -87,7 +87,7 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         cachedDatasourceMetadata.put("mock_url", new MockDataSourceMetaData());
         Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
         storageTypes.put("mock.db", new MySQLDatabaseType());
-        ReflectiveUtil.setProperty(mock, "storageTypes", storageTypes);
+        ReflectiveUtil.setField(mock, "storageTypes", storageTypes);
         targetObject = (AdviceTargetObject) mock;
     }
 }

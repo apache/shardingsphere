@@ -62,7 +62,7 @@ weight = 3
 
 #### Single Table
 
-`SINGLE`, `STORAGE`, `UNIT`
+`SINGLE`, `STORAGE`, `UNIT`, `COUNT`, `SINGLE_TABLE`
 
 ## Supplement
 

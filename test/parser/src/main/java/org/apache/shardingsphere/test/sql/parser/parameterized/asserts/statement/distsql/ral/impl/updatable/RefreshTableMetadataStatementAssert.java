@@ -46,8 +46,8 @@ public final class RefreshTableMetadataStatementAssert {
             if (null != expected.getTableName()) {
                 assertThat(assertContext.getText("Table name assertion error"), actual.getTableName().get(), is(expected.getTableName()));
             }
-            if (null != expected.getResourceName()) {
-                assertThat(assertContext.getText("Resource name assertion error"), actual.getResourceName().get(), is(expected.getResourceName()));
+            if (null != expected.getStorageUnitName()) {
+                assertThat(assertContext.getText("Storage unit name assertion error"), actual.getStorageUnitName().get(), is(expected.getStorageUnitName()));
             }
             if (null != expected.getSchemaName()) {
                 assertThat(assertContext.getText("Schema name assertion error"), actual.getSchemaName().get(), is(expected.getSchemaName()));

@@ -34,7 +34,7 @@
     <test-case sql="CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_binding_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
-            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));"></initial-sql>
+            CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));"/>
             <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
             <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
@@ -43,7 +43,7 @@
         <assertion expected-data-file="alter_binding_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));
-            CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);"></initial-sql>
+            CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);"/>
             <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
             <destroy-sql sql="DROP SHARDING BINDING TABLE RULES;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
@@ -52,7 +52,7 @@
         <assertion expected-data-file="drop_binding_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..1}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))));
-            CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);"></initial-sql>
+            CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);"/>
             <assertion-sql sql="SHOW SHARDING BINDING TABLE RULES;" />
             <destroy-sql sql="DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
@@ -92,7 +92,7 @@
         <assertion expected-data-file="create_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
-            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;"></initial-sql>
+            SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;"/>
             <assertion-sql sql="SHOW SINGLE TABLES ;" />
             <destroy-sql sql="DROP TABLE temp;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>

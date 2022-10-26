@@ -16,6 +16,12 @@ DROP SHADOW ALGORITHM algorithmName [, algorithmName] ...
 
 CREATE DEFAULT SHADOW ALGORITHM shadowAlgorithm
 
+ALTER DEFAULT SHADOW ALGORITHM shadowAlgorithm
+
+SHOW DEFAULT SHADOW ALGORITHM
+
+SHOW SHADOW ALGORITHMS
+
 shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
 
 resourceMapping: SOURCE=resourceName, SHADOW=resourceName
