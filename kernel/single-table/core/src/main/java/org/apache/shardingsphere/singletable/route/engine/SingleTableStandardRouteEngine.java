@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.singletable.route.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.singletable.exception.DuplicatedSingleTableException;
 import org.apache.shardingsphere.singletable.exception.SingleTableNotFoundException;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -82,8 +82,8 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
         if (sqlStatement instanceof CreateTableStatement) {
             String dataSourceName = rule.assignNewDataSourceName();
             QualifiedTable table = singleTableNames.iterator().next();
-            if (isDuplicatedTable(table, rule)) {
-                throw new DuplicatedSingleTableException(table.getTableName());
+            if (isTableExists(table, rule)) {
+                throw new TableExistsException(table.getTableName());
             }
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
@@ -91,7 +91,7 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
         }
     }
     
-    private boolean isDuplicatedTable(final QualifiedTable table, final SingleTableRule rule) {
+    private boolean isTableExists(final QualifiedTable table, final SingleTableRule rule) {
         return rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName()).isPresent();
     }
     

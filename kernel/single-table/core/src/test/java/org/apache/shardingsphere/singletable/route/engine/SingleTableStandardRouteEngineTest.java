@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.singletable.route.engine;
 
+import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.singletable.exception.DuplicatedSingleTableException;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -126,7 +126,7 @@ public final class SingleTableStandardRouteEngineTest {
         return result;
     }
     
-    @Test(expected = DuplicatedSingleTableException.class)
+    @Test(expected = TableExistsException.class)
     public void assertRouteDuplicateSingleTable() {
         SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement());
         engine.route(new RouteContext(), mockSingleTableRule());
