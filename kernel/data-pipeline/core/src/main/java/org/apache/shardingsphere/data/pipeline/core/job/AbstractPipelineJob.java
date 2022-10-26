@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -61,22 +62,27 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
     }
     
-    protected void addTaskRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
+    @Override
+    public Collection<Integer> getShardingItems() {
+        return new ArrayList<>(tasksRunnerMap.keySet());
+    }
+    
+    protected void addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
         tasksRunnerMap.put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
         distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
     }
     
-    protected boolean containsTaskRunner(final int shardingItem) {
+    protected boolean containsTasksRunner(final int shardingItem) {
         return tasksRunnerMap.containsKey(shardingItem);
     }
     
-    protected void clearTaskRunner() {
+    protected void clearTasksRunner() {
         tasksRunnerMap.clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
     
-    protected Collection<PipelineTasksRunner> getTaskRunners() {
+    protected Collection<PipelineTasksRunner> getTasksRunners() {
         return tasksRunnerMap.values();
     }
 }

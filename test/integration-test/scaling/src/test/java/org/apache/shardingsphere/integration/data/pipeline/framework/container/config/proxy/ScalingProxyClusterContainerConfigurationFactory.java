@@ -59,6 +59,7 @@ public final class ScalingProxyClusterContainerConfigurationFactory {
         } else {
             result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
         }
+        result.put("/env/logback.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
         return result;
     }
 }
