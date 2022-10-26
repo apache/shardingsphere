@@ -50,7 +50,7 @@ public final class DefaultShadowAlgorithmQueryResultSet implements DatabaseDistS
             ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
             String defaultAlgorithm = config.getDefaultShadowAlgorithmName();
             data = config.getShadowAlgorithms().entrySet().stream().filter(each -> each.getKey().equals(defaultAlgorithm))
-                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v2)).entrySet().iterator();
+                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> currentValue)).entrySet().iterator();
         }
     }
     

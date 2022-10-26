@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBindingTableRuleQueryResultSet;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableReferenceRuleQueryResultSet;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
@@ -37,12 +37,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingBindingTableRuleQueryResultSetTest {
+public final class ShardingTableReferenceRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingBindingTableRuleQueryResultSet resultSet = new ShardingBindingTableRuleQueryResultSet();
-        resultSet.init(mockDatabase(), mock(ShowShardingBindingTableRulesStatement.class));
+        ShardingTableReferenceRuleQueryResultSet resultSet = new ShardingTableReferenceRuleQueryResultSet();
+        resultSet.init(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(1));
         assertTrue(actual.contains("t_order,t_order_item"));

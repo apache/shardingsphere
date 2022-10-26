@@ -6,8 +6,15 @@ weight = 3
 ## Syntax
 
 ```sql
-SHOW READWRITE_SPLITTING RULES [FROM databaseName]
+SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName)  [FROM databaseName]
 ```
+
+## 参数解释
+
+| Name         | DateType     | Description   |
+|:-------------|:-------------|:--------------|
+| groupName    | IDENTIFIER   | Rule name     |
+| databaseName | IDENTIFIER   | Database name |
 
 ## Return Value Description
 

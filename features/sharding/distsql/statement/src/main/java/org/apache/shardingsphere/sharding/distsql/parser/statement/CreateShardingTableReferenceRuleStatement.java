@@ -15,31 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 /**
- * Binding table rule segment.
+ * Create sharding table reference rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BindingTableRuleSegment implements ASTNode {
+public final class CreateShardingTableReferenceRuleStatement extends CreateRuleStatement {
     
-    private final String tableGroups;
+    private final Collection<TableReferenceRuleSegment> rules;
     
     /**
-     * Get binding tables.
-     * 
-     * @return binding tables
+     * Get table references.
+     *
+     * @return table references
      */
-    public Collection<String> getBindingTables() {
-        return Arrays.stream(tableGroups.split(",")).map(String::trim).collect(Collectors.toList());
+    public Collection<String> getTableReferences() {
+        Collection<String> result = new LinkedList<>();
+        for (TableReferenceRuleSegment each : rules) {
+            result.addAll(each.getTableReference());
+        }
+        return result;
     }
 }

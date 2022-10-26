@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock;
+package org.apache.shardingsphere.sharding.distsql.parser.segment;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Internal lock provider.
+ * Table reference rule segment.
  */
-public interface InternalLockProvider {
+@RequiredArgsConstructor
+@Getter
+public final class TableReferenceRuleSegment implements ASTNode {
+    
+    private final String tableGroup;
     
     /**
-     * Get internal lock.
-     *
-     * @param lockKey lock key
-     * @return internal lock
+     * Get table reference.
+     * 
+     * @return table reference
      */
-    InternalLock getInternalLock(String lockKey);
+    public Collection<String> getTableReference() {
+        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    }
 }

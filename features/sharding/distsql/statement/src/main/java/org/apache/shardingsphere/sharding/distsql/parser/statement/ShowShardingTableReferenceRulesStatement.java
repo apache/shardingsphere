@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
+
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Internal lock.
+ * Show sharding table reference rules statement.
  */
-public interface InternalLock {
+public final class ShowShardingTableReferenceRulesStatement extends ShowRulesStatement {
     
-    /**
-     * Try lock.
-     *
-     * @param timeoutMillis timeout millis
-     * @return is locked or not
-     */
-    boolean tryLock(long timeoutMillis);
-    
-    /**
-     * Unlock.
-     */
-    void unlock();
+    public ShowShardingTableReferenceRulesStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingBindingTableRule;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingTableReferenceRule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,25 +29,25 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Sharding binding table rule assert.
+ * Sharding table reference rule assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingBindingTableRuleAssert {
+public final class ShardingTableReferenceRuleAssert {
     
     /**
-     * Assert sharding binding table rule is correct with expected parser result.
+     * Assert sharding table reference rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual sharding binding table rule
-     * @param expected expected sharding binding table rule test case
+     * @param actual actual sharding table reference rule
+     * @param expected expected sharding table reference rule test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final BindingTableRuleSegment actual, final ExpectedShardingBindingTableRule expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final TableReferenceRuleSegment actual, final ExpectedShardingTableReferenceRule expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual sharding binding table rule should not exist."), actual);
+            assertNull(assertContext.getText("Actual sharding table reference rule should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual sharding binding table rule should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s sharding binding table rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getTableGroups(), is(expected.getTableGroups()));
+            assertNotNull(assertContext.getText("Actual sharding table reference rule should exist."), actual);
+            assertThat(assertContext.getText(String.format("`%s`'s sharding table reference rule segment assertion error: ",
+                    actual.getClass().getSimpleName())), actual.getTableGroup(), is(expected.getTableGroups()));
         }
     }
 }

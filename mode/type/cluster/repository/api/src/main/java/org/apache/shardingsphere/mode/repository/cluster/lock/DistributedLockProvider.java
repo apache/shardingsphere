@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.config;
+package org.apache.shardingsphere.mode.repository.cluster.lock;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class DatabaseDatetimeServiceConfigurationTest {
+/**
+ * Distributed lock provider.
+ */
+public interface DistributedLockProvider {
     
-    @Test
-    public void assertGetInstance() {
-        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getStorageType().getType(), is("H2"));
-        assertThat(DatabaseDatetimeServiceConfiguration.getInstance().getDataSource(), instanceOf(HikariDataSource.class));
-    }
+    /**
+     * Get distributed lock.
+     *
+     * @param lockKey lock key
+     * @return distributed lock
+     */
+    DistributedLock getDistributedLock(String lockKey);
 }

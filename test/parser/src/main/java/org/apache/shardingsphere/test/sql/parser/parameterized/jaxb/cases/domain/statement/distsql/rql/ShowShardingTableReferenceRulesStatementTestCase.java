@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DropRuleStatementTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
- * Drop sharding binding table rules statement test case.
+ * Show sharding table reference rules statement test case.
  */
-@Setter
-@Getter
-public final class DropShardingBindingTableRulesStatementTestCase extends DropRuleStatementTestCase {
-    
-    @XmlElement(name = "rule")
-    private final List<String> rules = new LinkedList<>();
+public final class ShowShardingTableReferenceRulesStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -36,7 +36,7 @@ import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereCo
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereQueryParams;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -44,11 +44,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Consul internal lock holder.
+ * Consul distributed lock.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ConsulInternalLock implements InternalLock {
+public final class ConsulDistributedLock implements DistributedLock {
     
     private static final String CONSUL_ROOT_PATH = "sharding/lock";
     

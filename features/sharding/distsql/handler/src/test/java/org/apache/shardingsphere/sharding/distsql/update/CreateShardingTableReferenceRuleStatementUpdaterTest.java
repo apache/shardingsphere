@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRul
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingBindingTableRuleStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableReferenceRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -35,12 +35,12 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CreateShardingBindingTableRuleStatementUpdaterTest {
+public final class CreateShardingTableReferenceRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private final CreateShardingBindingTableRuleStatementUpdater updater = new CreateShardingBindingTableRuleStatementUpdater();
+    private final CreateShardingTableReferenceRuleStatementUpdater updater = new CreateShardingTableReferenceRuleStatementUpdater();
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentTableRule() {
@@ -49,20 +49,20 @@ public final class CreateShardingBindingTableRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateTables() {
-        List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item"));
-        CreateShardingBindingTableRulesStatement statement = new CreateShardingBindingTableRulesStatement(segments);
+        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("t_order,t_order_item"), new TableReferenceRuleSegment("t_order,t_order_item"));
+        CreateShardingTableReferenceRuleStatement statement = new CreateShardingTableReferenceRuleStatement(segments);
         updater.checkSQLStatement(database, statement, getCurrentRuleConfig());
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() {
-        List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("T_ORDER,T_ORDER_ITEM"), new BindingTableRuleSegment("t_order,t_order_item"));
-        CreateShardingBindingTableRulesStatement statement = new CreateShardingBindingTableRulesStatement(segments);
+        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("T_ORDER,T_ORDER_ITEM"), new TableReferenceRuleSegment("t_order,t_order_item"));
+        CreateShardingTableReferenceRuleStatement statement = new CreateShardingTableReferenceRuleStatement(segments);
         updater.checkSQLStatement(database, statement, getCurrentRuleConfig());
     }
     
-    private CreateShardingBindingTableRulesStatement createSQLStatement() {
-        return new CreateShardingBindingTableRulesStatement(Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_1,t_2")));
+    private CreateShardingTableReferenceRuleStatement createSQLStatement() {
+        return new CreateShardingTableReferenceRuleStatement(Arrays.asList(new TableReferenceRuleSegment("t_order,t_order_item"), new TableReferenceRuleSegment("t_1,t_2")));
     }
     
     private ShardingRuleConfiguration getCurrentRuleConfig() {

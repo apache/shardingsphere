@@ -19,30 +19,30 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingBindingTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableReferenceRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Drop sharding binding table rule statement assert.
+ * Drop sharding table reference rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropShardingBindingTableRulesStatementAssert {
+public final class DropShardingTableReferenceRulesStatementAssert {
     
     /**
-     * Assert drop sharding binding table rule statement is correct with expected parser result.
+     * Assert drop sharding table reference rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop sharding binding table rule statement
-     * @param expected expected drop sharding binding table rule statement test case
+     * @param actual actual drop sharding table reference rule statement
+     * @param expected expected drop sharding table reference rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingBindingTableRulesStatement actual, final DropShardingBindingTableRulesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingTableReferenceRuleStatement actual, final DropShardingTableReferenceRuleStatementTestCase expected) {
         assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-        assertThat(assertContext.getText("Binding table rule assertion error: "), actual.getBindingGroups(), is(expected.getRules()));
-        assertThat(assertContext.getText("Binding table rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
+        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getTableReferences(), is(expected.getRules()));
+        assertThat(assertContext.getText("Sharding able reference rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
     }
 }

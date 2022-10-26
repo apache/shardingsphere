@@ -39,8 +39,8 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -144,13 +144,13 @@ public final class CuratorZookeeperRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void mockInternalLockHolder() {
-        Field internalLockProviderFiled = CuratorZookeeperRepository.class.getDeclaredField("internalLockProvider");
+        Field internalLockProviderFiled = CuratorZookeeperRepository.class.getDeclaredField("distributedLockProvider");
         internalLockProviderFiled.setAccessible(true);
-        ZookeeperInternalLockProvider holder = new ZookeeperInternalLockProvider(client);
-        Field locksFiled = ZookeeperInternalLockProvider.class.getDeclaredField("locks");
+        ZookeeperDistributedLockProvider distributedLockProvider = new ZookeeperDistributedLockProvider(client);
+        Field locksFiled = ZookeeperDistributedLockProvider.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLock(interProcessLock)));
-        internalLockProviderFiled.set(REPOSITORY, holder);
+        locksFiled.set(distributedLockProvider, Collections.singletonMap("/locks/glock", new ZookeeperDistributedLock(interProcessLock)));
+        internalLockProviderFiled.set(REPOSITORY, distributedLockProvider);
     }
     
     private void mockBuilder() {

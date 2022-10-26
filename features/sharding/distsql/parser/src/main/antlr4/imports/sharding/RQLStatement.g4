@@ -23,8 +23,8 @@ showShardingTableRules
     : SHOW SHARDING TABLE (tableRule | RULES) (FROM databaseName)?
     ;
 
-showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM databaseName)?
+showShardingTableReferenceRules
+    : SHOW SHARDING TABLE REFERENCE RULES (FROM databaseName)?
     ;
 
 showBroadcastTableRules

@@ -192,15 +192,15 @@
         </rule>
     </create-sharding-table-rule>
     
-    <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
+    <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule">
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2" />
-    </create-sharding-binding-table-rule>
+    </create-sharding-table-reference-rule>
 
-    <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule-with-quota">
+    <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule-with-quota">
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2"/>
-    </create-sharding-binding-table-rule>
+    </create-sharding-table-reference-rule>
     
     <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule">
         <table>t_1</table>
