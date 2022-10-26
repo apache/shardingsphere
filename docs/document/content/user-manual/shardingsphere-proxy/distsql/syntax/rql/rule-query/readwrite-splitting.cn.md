@@ -11,22 +11,22 @@ SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName)  [FROM databaseNam
 
 ## 参数解释
 
-| 名称                 | 数据类型        | 说明    |
-|:-------------------|:------------|:------|
-| groupName          | IDENTIFIER  | 规则组名称 |
-| databaseName       | IDENTIFIER  | 数据库名称 |
+| 名称               | 数据类型     | 说明        |
+|:------------------|:------------|:-----------|
+| groupName         | IDENTIFIER  | 规则组名称   |
+| databaseName      | IDENTIFIER  | 数据库名称   |
 
 ## 返回值说明
 
-| 列                          | 说明                                  |
-| --------------------------- | ------------------------------------ |
-| name                        | 规则名称                               |
-| auto_aware_data_source_name | 自动发现数据源名称（配置动态读写分离规则显示）|
-| write_data_source_query_enabled | 读库全部下线，主库是否承担读流量      |
-| write_data_source_name      | 写数据源名称                            |
-| read_data_source_names      | 读数据源名称列表                         |
-| load_balancer_type          | 负载均衡算法类型                         |
-| load_balancer_props         | 负载均衡算法参数                         |
+| 列                                | 说明                                   |
+|----------------------------------|----------------------------------------|
+| name                             | 规则名称                                 |
+| auto_aware_data_source_name      | 自动发现数据源名称（配置动态读写分离规则显示） |
+| write_data_source_query_enabled  | 读库全部下线，主库是否承担读流量             |
+| write_data_source_name           | 写数据源名称                              |
+| read_data_source_names           | 读数据源名称列表                           |
+| load_balancer_type               | 负载均衡算法类型                           |
+| load_balancer_props              | 负载均衡算法参数                           |
 
 ## 示例
 
