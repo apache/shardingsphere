@@ -203,13 +203,9 @@ PMC vote is +1 binding, all others is +1 non-binding.
 
 Checklist for reference:
 
-[ ] Download links are valid.
-
-[ ] Checksums and PGP signatures are valid.
-
 [ ] Source code distributions have correct names matching the current release.
 
-[ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
+[ ] LICENSE and NOTICE files are correct for each ShardingSphere on Cloud repo.
 
 [ ] All files have license headers if necessary.
 
