@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViol
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingBindingTableRulesStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableReferenceRuleStatementUpdater;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableReferenceRuleStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -38,42 +38,42 @@ import java.util.Collections;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AlterShardingBindingTableRulesStatementUpdaterTest {
+public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private final AlterShardingBindingTableRulesStatementUpdater updater = new AlterShardingBindingTableRulesStatementUpdater();
+    private final AlterShardingTableReferenceRuleStatementUpdater updater = new AlterShardingTableReferenceRuleStatementUpdater();
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new BindingTableRuleSegment("t_order,t_order_item"))), null);
+        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new TableReferenceRuleSegment("t_order,t_order_item"))), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithNotExistedTables() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new BindingTableRuleSegment("t_3,t_4"))), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new TableReferenceRuleSegment("t_3,t_4"))), createCurrentRuleConfiguration());
     }
     
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithOneTable() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new BindingTableRuleSegment("t_order"))), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new TableReferenceRuleSegment("t_order"))), createCurrentRuleConfiguration());
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDuplicateTables() throws RuleDefinitionViolationException {
-        List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("t_order,t_order_item"), new BindingTableRuleSegment("t_order,t_order_item"));
+        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("t_order,t_order_item"), new TableReferenceRuleSegment("t_order,t_order_item"));
         updater.checkSQLStatement(database, createSQLStatement(segments), createCurrentRuleConfiguration());
     }
     
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() throws RuleDefinitionViolationException {
-        List<BindingTableRuleSegment> segments = Arrays.asList(new BindingTableRuleSegment("T_ORDER,T_ORDER_ITEM"), new BindingTableRuleSegment("t_order,t_order_item"));
+        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("T_ORDER,T_ORDER_ITEM"), new TableReferenceRuleSegment("t_order,t_order_item"));
         updater.checkSQLStatement(database, createSQLStatement(segments), createCurrentRuleConfiguration());
     }
     
-    private AlterShardingBindingTableRulesStatement createSQLStatement(final List<BindingTableRuleSegment> segments) {
-        return new AlterShardingBindingTableRulesStatement(segments);
+    private AlterShardingTableReferenceRuleStatement createSQLStatement(final List<TableReferenceRuleSegment> segments) {
+        return new AlterShardingTableReferenceRuleStatement(segments);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

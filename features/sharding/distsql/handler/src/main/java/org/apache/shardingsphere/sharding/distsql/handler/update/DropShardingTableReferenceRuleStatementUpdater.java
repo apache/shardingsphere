@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,14 +39,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Drop sharding binding table rule statement updater.
+ * Drop sharding table reference rule statement updater.
  */
-public final class DropShardingBindingTableRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class DropShardingTableReferenceRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
     private Map<String, String> bindingTableRules = Collections.emptyMap();
     
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
@@ -57,7 +57,8 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) {
-        ShardingSpherePreconditions.checkState(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(), () -> new MissingRequiredRuleException("Binding", databaseName));
+        ShardingSpherePreconditions.checkState(null != currentRuleConfig && !currentRuleConfig.getBindingTableGroups().isEmpty(),
+                () -> new MissingRequiredRuleException("Sharding table reference", databaseName));
     }
     
     private Map<String, String> buildBindingTableRule(final ShardingRuleConfiguration config) {
@@ -66,28 +67,28 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         return result;
     }
     
-    private void checkBindingTableRuleExist(final String databaseName, final DropShardingBindingTableRulesStatement sqlStatement,
+    private void checkBindingTableRuleExist(final String databaseName, final DropShardingTableReferenceRuleStatement sqlStatement,
                                             final Map<String, String> bindingRelationship) {
         if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> notExistBindingGroups = new LinkedList<>();
-        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
+        for (TableReferenceRuleSegment each : sqlStatement.getRules()) {
             if (!isToBeDroppedRuleExists(each, bindingRelationship)) {
-                notExistBindingGroups.add(each.getTableGroups());
+                notExistBindingGroups.add(each.getTableGroup());
             }
         }
         ShardingSpherePreconditions.checkState(notExistBindingGroups.isEmpty(), () -> new MissingRequiredRuleException("Binding", databaseName, notExistBindingGroups));
     }
     
-    private boolean isToBeDroppedRuleExists(final BindingTableRuleSegment bindingRule, final Map<String, String> bindingRelationship) {
-        Optional<String> anyTableInToBeAlteredRule = bindingRule.getBindingTables().stream().findAny();
+    private boolean isToBeDroppedRuleExists(final TableReferenceRuleSegment bindingRule, final Map<String, String> bindingRelationship) {
+        Optional<String> anyTableInToBeAlteredRule = bindingRule.getTableReference().stream().findAny();
         if (anyTableInToBeAlteredRule.isPresent()) {
             Optional<String> currentBindingRule = bindingRelationship.entrySet().stream()
                     .filter(each -> each.getKey().equalsIgnoreCase(anyTableInToBeAlteredRule.get())).map(Entry::getValue).findFirst();
             if (currentBindingRule.isPresent() && !Strings.isNullOrEmpty(currentBindingRule.get())) {
                 Collection<String> currentBindingTables = Splitter.on(",").trimResults().splitToList(currentBindingRule.get());
-                return bindingRule.getBindingTables().stream().allMatch(each -> containsIgnoreCase(currentBindingTables, each));
+                return bindingRule.getTableReference().stream().allMatch(each -> containsIgnoreCase(currentBindingTables, each));
             }
         }
         return false;
@@ -98,7 +99,7 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     }
     
     @Override
-    public boolean hasAnyOneToBeDropped(final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean hasAnyOneToBeDropped(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (!isExistRuleConfig(currentRuleConfig)) {
             return false;
         }
@@ -108,21 +109,21 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         return !getExistedBindingGroups(sqlStatement, bindingTableRules).isEmpty();
     }
     
-    private Collection<String> getExistedBindingGroups(final DropShardingBindingTableRulesStatement sqlStatement, final Map<String, String> bindingTableRules) {
+    private Collection<String> getExistedBindingGroups(final DropShardingTableReferenceRuleStatement sqlStatement, final Map<String, String> bindingTableRules) {
         Collection<String> result = new LinkedList<>();
         if (sqlStatement.getRules().isEmpty()) {
             return new LinkedHashSet<>(bindingTableRules.values());
         }
-        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
+        for (TableReferenceRuleSegment each : sqlStatement.getRules()) {
             if (isToBeDroppedRuleExists(each, bindingTableRules)) {
-                result.add(each.getTableGroups());
+                result.add(each.getTableGroup());
             }
         }
         return result;
     }
     
     @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+    public boolean updateCurrentRuleConfiguration(final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.getBindingTableGroups().clear();
         if (!sqlStatement.getRules().isEmpty()) {
             getToBeRemoveShardingTable(sqlStatement).forEach(each -> bindingTableRules.remove(each));
@@ -131,8 +132,8 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
         return false;
     }
     
-    private Collection<String> getToBeRemoveShardingTable(final DropShardingBindingTableRulesStatement sqlStatement) {
-        Collection<String> toBeRemoveBindingTables = sqlStatement.getRules().stream().map(BindingTableRuleSegment::getBindingTables).flatMap(Collection::stream).collect(Collectors.toSet());
+    private Collection<String> getToBeRemoveShardingTable(final DropShardingTableReferenceRuleStatement sqlStatement) {
+        Collection<String> toBeRemoveBindingTables = sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getTableReference).flatMap(Collection::stream).collect(Collectors.toSet());
         return bindingTableRules.keySet().stream().filter(each -> containsIgnoreCase(toBeRemoveBindingTables, each)).collect(Collectors.toSet());
     }
     
@@ -143,6 +144,6 @@ public final class DropShardingBindingTableRuleStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return DropShardingBindingTableRulesStatement.class.getName();
+        return DropShardingTableReferenceRuleStatement.class.getName();
     }
 }

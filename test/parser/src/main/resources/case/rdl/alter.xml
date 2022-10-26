@@ -114,10 +114,10 @@
         </rule>
     </alter-sharding-table-rule>
     
-    <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
+    <alter-sharding-table-reference-rule sql-case-id="alter-sharding-table-reference-rule">
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2" />
-    </alter-sharding-binding-table-rules>
+    </alter-sharding-table-reference-rule>
     
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">

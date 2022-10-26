@@ -39,10 +39,10 @@ tableRule:
 -  Support query all sharding algorithms
 -  Support query all sharding audit algorithms
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
+SHOW SHARDING TABLE REFERENCE RULES [FROM databaseName]
 ```
 
 ### Broadcast Table Rule
@@ -138,17 +138,17 @@ SHOW BROADCAST TABLE RULES [FROM databaseName]
 | name   | Sharding rule name   |
 | nodes  | Sharding nodes        |
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
-| Column                  | Description                 | 
-| ----------------------- | --------------------------- |
-| sharding_binding_tables | sharding Binding Table list |
+| Column                   | Description              | 
+| ------------------------ |--------------------------|
+| sharding_table_reference | Sharding table reference |
 
 ### Broadcast Table Rule
 
-| Column             | Description               |
-|--------------------|---------------------------|
-| broadcast_tables   | Broadcast Table list      |
+| Column           | Description         |
+|------------------|---------------------|
+| broadcast_table  | Broadcast table     |
 
 ### Sharding Table Rule
 
@@ -303,16 +303,16 @@ mysql> SHOW SHARDING TABLE NODES;
 1 row in set (0.02 sec)
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-mysql> SHOW SHARDING BINDING TABLE RULES;
-+----------------------+
-| sharding_binding_tables |
-+----------------------+
-| t_order,t_order_item |
-| t1,t2                |
-+----------------------+
+mysql> SHOW SHARDING TABLE REFERENCE RULES;
++--------------------------+
+| sharding_table_reference |
++--------------------------+
+| t_order,t_order_item     |
+| t1,t2                    |
++--------------------------+
 2 rows in set (0.00 sec)
 ```
 
@@ -320,11 +320,11 @@ mysql> SHOW SHARDING BINDING TABLE RULES;
 
 ```sql
 mysql> SHOW BROADCAST TABLE RULES;
-+------------------------+
-| broadcast_tables       |
-+------------------------+
-| t_1                    |
-| t_2                    |
-+------------------------+
++-----------------------+
+| broadcast_table       |
++-----------------------+
+| t_1                   |
+| t_2                   |
++-----------------------+
 2 rows in set (0.00 sec)
 ```

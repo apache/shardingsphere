@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-sharding-binding-table-rules" value="SHOW SHARDING BINDING TABLE RULES FROM sharding_db" />
+    <distsql-case id="show-sharding-table-reference-rules" value="SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db" />
     <distsql-case id="show-broadcast-table-rules" value="SHOW BROADCAST TABLE RULES FROM sharding_db" />
     <distsql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM databaseName" />
     <distsql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" />

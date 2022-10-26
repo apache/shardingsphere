@@ -28,21 +28,21 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingBindingTableRulesStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableReferenceRuleStatement;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
- * Alter sharding binding table rules statement updater.
+ * Alter sharding table reference rule statement updater.
  */
-public final class AlterShardingBindingTableRulesStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingBindingTableRulesStatement, ShardingRuleConfiguration> {
+public final class AlterShardingTableReferenceRuleStatementUpdater implements RuleDefinitionAlterUpdater<AlterShardingTableReferenceRuleStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final AlterShardingBindingTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
+                                  final AlterShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
         String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlertedBindingTables(databaseName, sqlStatement, currentRuleConfig);
@@ -54,10 +54,10 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Sharding", databaseName));
     }
     
-    private void checkToBeAlertedBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement,
+    private void checkToBeAlertedBindingTables(final String databaseName, final AlterShardingTableReferenceRuleStatement sqlStatement,
                                                final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
         Collection<String> currentLogicTables = getCurrentLogicTables(currentRuleConfig);
-        Collection<String> notExistedBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !containsIgnoreCase(currentLogicTables, each)).collect(Collectors.toSet());
+        Collection<String> notExistedBindingTables = sqlStatement.getTableReferences().stream().filter(each -> !containsIgnoreCase(currentLogicTables, each)).collect(Collectors.toSet());
         ShardingSpherePreconditions.checkState(notExistedBindingTables.isEmpty(), () -> new MissingRequiredRuleException("Sharding", databaseName, notExistedBindingTables));
     }
     
@@ -68,11 +68,12 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
         return result;
     }
     
-    private void checkToBeAlteredDuplicateBindingTables(final String databaseName, final AlterShardingBindingTableRulesStatement sqlStatement) throws DuplicateRuleException {
+    private void checkToBeAlteredDuplicateBindingTables(final String databaseName, final AlterShardingTableReferenceRuleStatement sqlStatement) throws DuplicateRuleException {
         Collection<String> toBeAlteredBindingTables = new HashSet<>();
-        Collection<String> duplicateBindingTables = sqlStatement.getBindingTables().stream().filter(each -> !toBeAlteredBindingTables.add(each.toLowerCase())).collect(Collectors.toSet());
-        Collection<String> duplicateBindingTablesForDisplay = sqlStatement.getBindingTables().stream().filter(each -> containsIgnoreCase(duplicateBindingTables, each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicateBindingTablesForDisplay.isEmpty(), () -> new DuplicateRuleException("binding", databaseName, duplicateBindingTablesForDisplay));
+        Collection<String> duplicateBindingTables = sqlStatement.getTableReferences().stream().filter(each -> !toBeAlteredBindingTables.add(each.toLowerCase())).collect(Collectors.toSet());
+        Collection<String> duplicateBindingTablesForDisplay = sqlStatement.getTableReferences().stream().filter(each -> containsIgnoreCase(duplicateBindingTables, each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(duplicateBindingTablesForDisplay.isEmpty(),
+                () -> new DuplicateRuleException("sharding table reference", databaseName, duplicateBindingTablesForDisplay));
     }
     
     private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
@@ -80,10 +81,10 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     }
     
     @Override
-    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingBindingTableRulesStatement sqlStatement) {
+    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingTableReferenceRuleStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        for (BindingTableRuleSegment each : sqlStatement.getRules()) {
-            result.getBindingTableGroups().add(each.getTableGroups());
+        for (TableReferenceRuleSegment each : sqlStatement.getRules()) {
+            result.getBindingTableGroups().add(each.getTableGroup());
         }
         return result;
     }
@@ -109,6 +110,6 @@ public final class AlterShardingBindingTableRulesStatementUpdater implements Rul
     
     @Override
     public String getType() {
-        return AlterShardingBindingTableRulesStatement.class.getName();
+        return AlterShardingTableReferenceRuleStatement.class.getName();
     }
 }

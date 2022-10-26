@@ -47,9 +47,6 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
         if (sqlStatement.isIfExists()) {
             return;
         }
-        if (sqlStatement.getRules().isEmpty()) {
-            return;
-        }
         Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
         Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", databaseName, notExistRules));
@@ -65,9 +62,6 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        if (sqlStatement.getRules().isEmpty()) {
-            return true;
-        }
         return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getBroadcastTables(), sqlStatement.getRules()).isEmpty();
     }
     

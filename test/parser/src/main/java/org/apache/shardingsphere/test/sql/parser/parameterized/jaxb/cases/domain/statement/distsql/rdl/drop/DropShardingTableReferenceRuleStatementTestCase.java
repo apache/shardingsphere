@@ -26,11 +26,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Drop sharding binding table rules statement test case.
+ * Drop sharding table reference rule statement test case.
  */
 @Setter
 @Getter
-public final class DropShardingBindingTableRulesStatementTestCase extends DropRuleStatementTestCase {
+public final class DropShardingTableReferenceRuleStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElement(name = "rule")
     private final List<String> rules = new LinkedList<>();
