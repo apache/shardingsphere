@@ -31,18 +31,6 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
     
     private static final String MYSQL_CONNECTOR_VERSION = initMysqlConnectorVersion();
     
-    private static String initMysqlConnectorVersion() {
-        try {
-            Class<?> mysqlDriverClass = MySQLJdbcQueryPropertiesExtension.class.getClassLoader().loadClass("com.mysql.jdbc.Driver");
-            String mysqlConnectorVersion = mysqlDriverClass.getPackage().getImplementationVersion();
-            log.info("mysql connector version {}", mysqlConnectorVersion);
-            return mysqlConnectorVersion;
-        } catch (final ClassNotFoundException ex) {
-            log.warn("not find com.mysql.jdbc.Driver class");
-            return null;
-        }
-    }
-    
     private final Properties queryProps = new Properties();
     
     public MySQLJdbcQueryPropertiesExtension() {
@@ -52,9 +40,8 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
         queryProps.setProperty("zeroDateTimeBehavior", getZeroDateTimeBehavior());
         queryProps.setProperty("noDatetimeStringSync", Boolean.TRUE.toString());
         queryProps.setProperty("jdbcCompliantTruncation", Boolean.FALSE.toString());
-
     }
-
+    
     private String getZeroDateTimeBehavior() {
         // refer https://bugs.mysql.com/bug.php?id=91065
         String zeroDateTimeBehavior = "convertToNull";
@@ -62,6 +49,18 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
             zeroDateTimeBehavior = new ServerVersion(MYSQL_CONNECTOR_VERSION).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : zeroDateTimeBehavior;
         }
         return zeroDateTimeBehavior;
+    }
+    
+    private static String initMysqlConnectorVersion() {
+        try {
+            Class<?> mysqlDriverClass = MySQLJdbcQueryPropertiesExtension.class.getClassLoader().loadClass("com.mysql.jdbc.Driver");
+            String result = mysqlDriverClass.getPackage().getImplementationVersion();
+            log.info("mysql connector version {}", result);
+            return result;
+        } catch (final ClassNotFoundException ex) {
+            log.warn("not find com.mysql.jdbc.Driver class");
+            return null;
+        }
     }
     
     @Override
