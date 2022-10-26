@@ -62,7 +62,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         MigrationProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         MigrationTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         MigrationJobItemContext jobItemContext = new MigrationJobItemContext(jobConfig, shardingItem, initProgress, jobProcessContext, taskConfig, dataSourceManager);
-        if (containsTaskRunner(shardingItem)) {
+        if (containsTasksRunner(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
@@ -73,7 +73,7 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             prepare(jobItemContext);
             tasksRunner.start();
         });
-        addTaskRunner(shardingItem, tasksRunner);
+        addTasksRunner(shardingItem, tasksRunner);
     }
     
     private void prepare(final MigrationJobItemContext jobItemContext) {
@@ -111,9 +111,9 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
             return;
         }
         log.info("stop tasks runner, jobId={}", jobId);
-        for (PipelineTasksRunner each : getTaskRunners()) {
+        for (PipelineTasksRunner each : getTasksRunners()) {
             each.stop();
         }
-        clearTaskRunner();
+        clearTasksRunner();
     }
 }

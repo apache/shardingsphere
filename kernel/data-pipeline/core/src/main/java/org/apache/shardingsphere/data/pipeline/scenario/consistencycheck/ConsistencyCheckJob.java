@@ -47,7 +47,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         setJobId(checkJobId);
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(jobConfig, shardingItem, JobStatus.RUNNING);
-        if (containsTaskRunner(shardingItem)) {
+        if (containsTasksRunner(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
@@ -55,7 +55,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         jobAPI.cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         ConsistencyCheckTasksRunner tasksRunner = new ConsistencyCheckTasksRunner(jobItemContext);
         tasksRunner.start();
-        addTaskRunner(shardingItem, tasksRunner);
+        addTasksRunner(shardingItem, tasksRunner);
     }
     
     @Override
@@ -68,9 +68,9 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
             log.info("stop consistency check job, jobId is null, ignore");
             return;
         }
-        for (PipelineTasksRunner each : getTaskRunners()) {
+        for (PipelineTasksRunner each : getTasksRunners()) {
             each.stop();
         }
-        clearTaskRunner();
+        clearTasksRunner();
     }
 }
