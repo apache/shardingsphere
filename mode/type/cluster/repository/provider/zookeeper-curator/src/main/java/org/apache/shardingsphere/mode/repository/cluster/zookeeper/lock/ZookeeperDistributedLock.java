@@ -19,16 +19,16 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Zookeeper internal lock.
+ * Zookeeper distributed lock.
  */
 @RequiredArgsConstructor
-public final class ZookeeperInternalLock implements InternalLock {
+public final class ZookeeperDistributedLock implements DistributedLock {
     
     private final InterProcessLock lock;
     

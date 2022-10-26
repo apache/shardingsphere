@@ -18,20 +18,15 @@
 package org.apache.shardingsphere.mode.repository.cluster.lock;
 
 /**
- * Internal lock.
+ * Distributed lock provider.
  */
-public interface InternalLock {
+public interface DistributedLockProvider {
     
     /**
-     * Try lock.
+     * Get distributed lock.
      *
-     * @param timeoutMillis timeout millis
-     * @return is locked or not
+     * @param lockKey lock key
+     * @return distributed lock
      */
-    boolean tryLock(long timeoutMillis);
-    
-    /**
-     * Unlock.
-     */
-    void unlock();
+    DistributedLock getDistributedLock(String lockKey);
 }

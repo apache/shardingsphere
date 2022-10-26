@@ -23,8 +23,8 @@ import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,55 +32,35 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Consul internal lock holder.
+ * Consul distributed lock provider.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class ConsulInternalLockProvider implements InternalLockProvider {
+public class ConsulDistributedLockProvider implements DistributedLockProvider {
     
     private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
-    private final Map<String, ConsulInternalLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ConsulDistributedLock> locks = new ConcurrentHashMap<>();
     
     private final ConsulClient consulClient;
     
     private final ConsulProperties consulProps;
     
     @Override
-    public InternalLock getInternalLock(final String lockKey) {
-        return getInternalReentrantMutexLock(lockKey);
-    }
-    
-    /**
-     * Get internal mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal mutex lock
-     */
-    public InternalLock getInternalMutexLock(final String lockName) {
-        return getInternalReentrantMutexLock(lockName);
-    }
-    
-    /**
-     * Get internal reentrant mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal reentrant mutex lock
-     */
-    public InternalLock getInternalReentrantMutexLock(final String lockName) {
-        ConsulInternalLock result = locks.get(lockName);
+    public DistributedLock getDistributedLock(final String lockKey) {
+        ConsulDistributedLock result = locks.get(lockKey);
         if (null == result) {
-            result = createLock(lockName);
-            locks.put(lockName, result);
+            result = createLock(lockKey);
+            locks.put(lockKey, result);
         }
         return result;
     }
     
-    private ConsulInternalLock createLock(final String lockName) {
+    private ConsulDistributedLock createLock(final String lockName) {
         try {
             NewSession session = new NewSession();
             session.setName(lockName);
-            return new ConsulInternalLock(consulClient, lockName, consulProps);
+            return new ConsulDistributedLock(consulClient, lockName, consulProps);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
