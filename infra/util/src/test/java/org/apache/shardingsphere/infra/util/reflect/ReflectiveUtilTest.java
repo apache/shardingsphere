@@ -1,43 +1,58 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.infra.util.reflect;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class ReflectiveUtilTest {
-
+public final class ReflectiveUtilTest {
+    
     @Test
-    public void testGetFieldValue() {
+    public void assertGetFieldValue() {
         UserPojo pojo = new UserPojo("test");
-        String fieldValue = (String)ReflectiveUtil.getFieldValue(pojo, "foo");
+        String fieldValue = (String) ReflectiveUtil.getFieldValue(pojo, "foo");
         assertTrue("test".equals(fieldValue));
     }
-
+    
     @Test
-    public void testSetField() {
+    public void assertSetField() {
         UserPojo pojo = new UserPojo();
         ReflectiveUtil.setField(pojo, "foo", "test");
         assertTrue("test".equals(pojo.getFoo()));
     }
-
+    
     @Test
-    public void testSetStaticField() {
+    public void assertSetStaticField() {
         ReflectiveUtil.setStaticField(UserPojo.class, "bar", "test");
         assertTrue("test".equals(UserPojo.bar));
     }
-
+    
     @AllArgsConstructor
     @NoArgsConstructor
-    static class UserPojo {
-
+    private static final class UserPojo {
+        
+        private static String bar;
+        
         @Getter
         private String foo;
-
-        private static String bar;
     }
 }
