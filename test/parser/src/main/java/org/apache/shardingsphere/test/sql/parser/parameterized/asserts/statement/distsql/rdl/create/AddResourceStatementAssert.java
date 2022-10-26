@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.DataSourceAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
@@ -47,7 +47,7 @@ public final class AddResourceStatementAssert {
      * @param actual actual add resource statement
      * @param expected expected add resource statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AddResourceStatement actual, final AddResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RegisterStorageUnitStatement actual, final AddResourceStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

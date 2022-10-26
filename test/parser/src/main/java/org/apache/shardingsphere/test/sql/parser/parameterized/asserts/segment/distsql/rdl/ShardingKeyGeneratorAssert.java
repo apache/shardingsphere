@@ -43,7 +43,7 @@ public final class ShardingKeyGeneratorAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShardingKeyGeneratorSegment actual, final ExpectedShardingKeyGenerator expected) {
         assertNotNull(assertContext.getText("Actual sharding key generator segment should exist."), actual.getAlgorithmSegment());
-        assertThat(actual.getKeyGeneratorName(), is(expected.getKeyGeneratorName()));
+        assertThat(actual.getAlgorithmSegment().getName(), is(expected.getAlgorithmSegment().getName()));
         AlgorithmAssert.assertIs(assertContext, actual.getAlgorithmSegment(), expected.getAlgorithmSegment());
     }
 }

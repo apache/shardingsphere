@@ -6,7 +6,7 @@ weight = 5
 ## 资源操作
 
 ```sql
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -70,7 +70,7 @@ DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 - 删除数据源
 
 ```sql
-DROP RESOURCE ds_0,ds_1,ds_2;
+UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;
 ```
 
 - 删除分布式数据库

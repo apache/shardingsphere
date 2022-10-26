@@ -244,7 +244,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('max-vibration-offset'='3')));";
+        String sql = "CREATE SHARDING TABLE RULE t_order (RESOURCES(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));";
         ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
@@ -259,7 +259,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test
     public void assertUnsupportedRQLStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW SINGLE TABLE RULES";
+        String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
     }

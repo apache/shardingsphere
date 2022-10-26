@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.DatabaseTypeAware;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 
@@ -38,23 +35,20 @@ import java.util.Optional;
 /**
  * JDBC backend statement.
  */
-@Getter
-@Setter
-public final class JDBCBackendStatement implements ExecutorJDBCStatementManager, DatabaseTypeAware {
-    
-    private DatabaseType databaseType;
+public final class JDBCBackendStatement implements ExecutorJDBCStatementManager {
     
     @Override
-    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+    public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         Statement result = connection.createStatement();
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
-            setFetchSize(result);
+            setFetchSize(result, databaseType);
         }
         return result;
     }
     
     @Override
-    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
+                                           final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> parameters = executionUnit.getSqlUnit().getParameters();
         PreparedStatement result = option.isReturnGeneratedKeys()
@@ -69,12 +63,12 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager,
             }
         }
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {
-            setFetchSize(result);
+            setFetchSize(result, databaseType);
         }
         return result;
     }
     
-    private void setFetchSize(final Statement statement) throws SQLException {
+    private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {
         Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = StatementMemoryStrictlyFetchSizeSetterFactory.findInstance(databaseType.getType());
         if (fetchSizeSetter.isPresent()) {
             fetchSizeSetter.get().setFetchSize(statement);

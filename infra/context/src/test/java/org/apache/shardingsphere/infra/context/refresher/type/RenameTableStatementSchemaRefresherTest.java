@@ -82,7 +82,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     private ShardingSphereResourceMetaData mockShardingSphereResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDataSources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()));
-        when(result.getDatabaseTypes()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType()));
+        when(result.getStorageTypes()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType()));
         return result;
     }
 }

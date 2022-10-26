@@ -31,21 +31,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Setter
 public final class CommonSQLCommand {
     
-    @XmlElement(name = "create-database-sharding-algorithm")
-    private String createDatabaseShardingAlgorithm;
-    
-    @XmlElement(name = "create-database-id-sharding-algorithm")
-    private String createDatabaseIdShardingAlgorithm;
-    
-    @XmlElement(name = "create-order-sharding-algorithm")
-    private String createOrderShardingAlgorithm;
-    
-    @XmlElement(name = "create-order-item-sharding-algorithm")
-    private String createOrderItemShardingAlgorithm;
-    
-    @XmlElement(name = "create-account-sharding-algorithm")
-    private String createAccountShardingAlgorithm;
-    
     @XmlElement(name = "create-order-table-rule")
     private String createOrderTableRule;
     

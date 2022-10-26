@@ -46,7 +46,7 @@ weight = 3
 
 ### 基础保留字
 
-`SHOW`、`RULE`、`RULES`、`TABLE`、`DATABASE`、`FROM`
+`SHOW`、`DEFAULT`、`RULE`、`RULES`、`TABLE`、`DATABASE`、`FROM`
 
 ### 资源定义
 
@@ -57,6 +57,10 @@ weight = 3
 #### 分片
 
 `UNUSED`、`SHARDING`、`ALGORITHMS`
+
+#### 单表
+
+`SINGLE`、`STORAGE`、`UNIT`、`COUNT`、`SINGLE_TABLE`
 
 ## 补充说明
 

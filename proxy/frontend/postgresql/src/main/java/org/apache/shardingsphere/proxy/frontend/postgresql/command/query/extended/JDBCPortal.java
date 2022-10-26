@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -51,8 +50,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
@@ -96,15 +95,10 @@ public final class JDBCPortal implements Portal<Void> {
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
-        DatabaseType databaseType = getDatabaseType(databaseName);
+        DatabaseType protocolType = ProxyContext.getInstance().getDatabase(databaseName).getProtocolType();
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
         backendConnection.getConnectionSession().setQueryContext(queryContext);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, backendConnection.getConnectionSession(), true);
-    }
-    
-    private static DatabaseType getDatabaseType(final String databaseName) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        return null != database.getResourceMetaData().getDatabaseType() ? database.getResourceMetaData().getDatabaseType() : database.getProtocolType();
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, backendConnection.getConnectionSession(), true);
     }
     
     @SneakyThrows(SQLException.class)

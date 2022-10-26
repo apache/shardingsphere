@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedResourcesStatement;
-import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.UnusedDataSourceQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQueryResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,8 +102,9 @@ public final class UnusedDataSourceQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        DatabaseDistSQLResultSet resultSet = new UnusedDataSourceQueryResultSet();
-        resultSet.init(database, mock(ShowUnusedResourcesStatement.class));
+        DataSourceQueryResultSet resultSet = new DataSourceQueryResultSet();
+        ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
+        resultSet.init(database, showStorageUnitsStatement);
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(12));
         Iterator<Object> rowData = actual.iterator();

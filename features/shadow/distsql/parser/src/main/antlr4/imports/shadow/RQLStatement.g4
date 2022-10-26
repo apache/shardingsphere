@@ -31,6 +31,10 @@ showShadowAlgorithms
     : SHOW SHADOW ALGORITHMS (FROM databaseName)?
     ;
 
+showDefaultShadowAlgorithm
+    : SHOW DEFAULT SHADOW ALGORITHM (FROM databaseName)?
+    ;
+
 shadowRule
     : RULE ruleName
     ;

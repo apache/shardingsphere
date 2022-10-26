@@ -22,32 +22,27 @@ import Symbol, RALStatement, RDLStatement, RQLStatement;
 execute
     : (createShardingTableRule
     | createDefaultShardingStrategy
-    | createShardingBindingTableRules
-    | createShardingBroadcastTableRules
+    | createShardingTableReferenceRule
+    | createBroadcastTableRule
     | alterShardingTableRule
-    | alterShardingBindingTableRules
-    | alterShardingBroadcastTableRules
+    | alterShardingTableReferenceRule
     | dropShardingTableRule
-    | dropShardingBindingTableRules
-    | dropShardingBroadcastTableRules
+    | dropShardingTableReferenceRule
+    | dropBroadcastTableRule
     | dropShardingAlgorithm
     | showShardingTableRulesUsedAlgorithm
     | showShardingTableRulesUsedKeyGenerator
     | showShardingTableRulesUsedAuditor
     | showShardingTableRules
-    | showShardingBindingTableRules
-    | showShardingBroadcastTableRules
+    | showShardingTableReferenceRules
+    | showBroadcastTableRules
     | showShardingAlgorithms
     | setShardingHintDatabaseValue
     | addShardingHintDatabaseValue
     | addShardingHintTableValue
     | showShardingHintStatus
     | clearShardingHint
-    | createShardingAlgorithm
-    | alterShardingAlgorithm
     | showShardingTableNodes
-    | createShardingKeyGenerator
-    | alterShardingKeyGenerator
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
     | showShardingAuditors

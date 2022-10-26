@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.wrapper;
 
 import io.prometheus.client.Summary;
-import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

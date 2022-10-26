@@ -45,25 +45,26 @@
         <table>t_order_item</table>
     </drop-sharding-table-rule>
     
-    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-rules" />
-
-    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-specified-rules">
+    <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule">
         <rule>t_1,t_2</rule>
-    </drop-sharding-binding-table-rules>
+    </drop-sharding-table-reference-rule>
 
-    <drop-sharding-binding-table-rules sql-case-id="drop-sharding-binding-table-specified-rules-if-exists" if-exists="true">
+    <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule-if-exists" if-exists="true">
         <rule>t_1,t_2</rule>
-    </drop-sharding-binding-table-rules>
+    </drop-sharding-table-reference-rule>
     
-    <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-rules" />
+    <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >
+        <table>t_1</table>
+    </drop-broadcast-table-rule>
 
-    <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-specified-table" >
-        <table>t_order</table>
-    </drop-sharding-broadcast-table-rules>
+    <drop-broadcast-table-rule sql-case-id="drop-multiple-broadcast-table-rules" >
+        <table>t_1</table>
+        <table>t_2</table>
+    </drop-broadcast-table-rule>
 
-    <drop-sharding-broadcast-table-rules sql-case-id="drop-sharding-broadcast-table-specified-table-if-exists" if-exists="true">
-        <table>t_order</table>
-    </drop-sharding-broadcast-table-rules>
+    <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule-if-exists" if-exists="true">
+        <table>t_1</table>
+    </drop-broadcast-table-rule>
 
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
         <rule>ms_group_0</rule>

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.enums.HintSourceType;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintManagerHolder;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 
 /**
  * Set readwrite-splitting hint statement executor.

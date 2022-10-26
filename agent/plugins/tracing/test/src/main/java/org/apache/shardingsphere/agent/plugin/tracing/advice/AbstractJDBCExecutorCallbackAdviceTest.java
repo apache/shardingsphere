@@ -23,10 +23,13 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
 import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.runner.RunWith;
 import org.mockito.internal.util.reflection.FieldReader;
 
@@ -36,6 +39,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -78,8 +82,12 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
                     return invocation.callRealMethod();
             }
         });
-        Map<String, DataSourceMetaData> map = (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
-        map.put("mock_url", new MockDataSourceMetaData());
+        Map<String, DataSourceMetaData> cachedDatasourceMetadata =
+                (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
+        cachedDatasourceMetadata.put("mock_url", new MockDataSourceMetaData());
+        Map<String, DatabaseType> storageTypes = new LinkedHashMap<>(1, 1);
+        storageTypes.put("mock.db", new MySQLDatabaseType());
+        ReflectiveUtil.setField(mock, "storageTypes", storageTypes);
         targetObject = (AdviceTargetObject) mock;
     }
 }
