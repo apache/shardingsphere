@@ -105,7 +105,7 @@ CREATE DATABASE sharding_db;
 
 USE sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_10?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -313,7 +313,7 @@ CREATE DATABASE sharding_db;
 
 \c sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:postgresql://127.0.0.1:5432/migration_ds_10",
     USER="postgres",
     PASSWORD="root",
@@ -510,7 +510,7 @@ CREATE DATABASE sharding_db;
 
 \c sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
     PASSWORD="Root@123",
