@@ -27,7 +27,7 @@ SET SHARDING HINT DATABASE_VALUE = 100;
 
 ### Reserved word
 
-`SET`、`SHARDING`、`HINT`、`DATABASE_VALUE`
+`SET`, `SHARDING`, `HINT`, `DATABASE_VALUE`
 
 ### Related links
 

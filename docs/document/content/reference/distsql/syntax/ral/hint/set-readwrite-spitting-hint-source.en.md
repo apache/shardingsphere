@@ -30,7 +30,7 @@ SET READWRITE_SPLITTING HINT SOURCE = write;
 
 ### Reserved word
 
-`SET`、`READWRITE_SPLITTING`、`HINT`、`SOURCE`
+`SET`, `READWRITE_SPLITTING`, `HINT`, `SOURCE`
 
 ### Related links
 

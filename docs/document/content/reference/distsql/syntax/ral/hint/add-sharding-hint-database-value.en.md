@@ -33,7 +33,7 @@ ADD SHARDING HINT DATABASE_VALUE t_order = 100;
 
 ### Reserved word
 
-`ADD`、`SHARDING`、`HINT`、`DATABASE_VALUE`
+`ADD`, `SHARDING`, `HINT`, `DATABASE_VALUE`
 
 ### Related links
 
