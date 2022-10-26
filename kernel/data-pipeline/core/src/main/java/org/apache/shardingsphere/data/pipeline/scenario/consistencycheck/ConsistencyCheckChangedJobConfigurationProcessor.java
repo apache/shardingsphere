@@ -22,7 +22,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -35,12 +37,15 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public final class ConsistencyCheckChangedJobConfigurationProcessor implements PipelineChangedJobConfigurationProcessor {
     
+    private final PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance();
+    
     @Override
     public void process(final DataChangedEvent.Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
             log.info("{} is disabled", jobId);
-            PipelineJobCenter.stop(jobId, false);
+            PipelineJobCenter.stop(jobId);
+            distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), 0);
             return;
         }
         switch (eventType) {
@@ -59,7 +64,7 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 break;
             case DELETED:
                 log.info("deleted consistency check job id: {}", jobId);
-                PipelineJobCenter.stop(jobId, true);
+                PipelineJobCenter.stop(jobId);
                 break;
             default:
                 break;

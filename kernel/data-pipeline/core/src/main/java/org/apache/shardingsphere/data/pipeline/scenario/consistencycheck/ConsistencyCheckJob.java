@@ -24,8 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -37,8 +35,6 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 public final class ConsistencyCheckJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
     
     private final ConsistencyCheckJobAPI jobAPI = ConsistencyCheckJobAPIFactory.getInstance();
-    
-    private final PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
@@ -52,7 +48,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         setJobId(checkJobId);
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
         ConsistencyCheckJobItemContext jobItemContext = new ConsistencyCheckJobItemContext(jobConfig, shardingItem, JobStatus.RUNNING);
-        if (getTasksRunnerMap().containsKey(shardingItem)) {
+        if (containsTaskRunner(shardingItem)) {
             log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
@@ -61,7 +57,7 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
         ConsistencyCheckTasksRunner tasksRunner = new ConsistencyCheckTasksRunner(jobItemContext);
         tasksRunner.start();
         PipelineJobProgressPersistService.addJobProgressPersistContext(checkJobId, shardingContext.getShardingItem());
-        getTasksRunnerMap().put(shardingItem, tasksRunner);
+        addTaskRunner(shardingItem, tasksRunner);
     }
     
     @Override
@@ -74,12 +70,9 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
             log.info("stop consistency check job, jobId is null, ignore");
             return;
         }
-        for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
+        for (PipelineTasksRunner each : getTaskRunners()) {
             each.stop();
         }
-        getTasksRunnerMap().clear();
-        String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(getJobId());
-        pipelineDistributedBarrier.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+        clearTaskRunner();
     }
 }
