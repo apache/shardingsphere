@@ -20,28 +20,28 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.InternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Zookeeper internal lock holder.
+ * Zookeeper distributed lock provider.
  */
 @RequiredArgsConstructor
-public final class ZookeeperInternalLockProvider implements InternalLockProvider {
+public final class ZookeeperDistributedLockProvider implements DistributedLockProvider {
     
-    private final Map<String, ZookeeperInternalLock> locks = new LinkedHashMap<>();
+    private final Map<String, ZookeeperDistributedLock> locks = new LinkedHashMap<>();
     
     private final CuratorFramework client;
     
     @Override
-    public synchronized InternalLock getInternalLock(final String lockKey) {
-        ZookeeperInternalLock result = locks.get(lockKey);
+    public synchronized DistributedLock getDistributedLock(final String lockKey) {
+        ZookeeperDistributedLock result = locks.get(lockKey);
         if (Objects.isNull(result)) {
-            result = new ZookeeperInternalLock(new InterProcessMutex(client, lockKey));
+            result = new ZookeeperDistributedLock(new InterProcessMutex(client, lockKey));
             locks.put(lockKey, result);
         }
         return result;
