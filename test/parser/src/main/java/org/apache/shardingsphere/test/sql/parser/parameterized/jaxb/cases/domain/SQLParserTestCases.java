@@ -302,10 +302,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowDistVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowDistVariablesStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceInfoStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowComputeNodeInfoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowComputeNodesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowMigrationListStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowModeInfoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowComputeNodeModeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
@@ -1108,7 +1108,7 @@ public final class SQLParserTestCases {
     private final List<InstallPluginStatementTestCase> installPluginTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-compute-nodes")
-    private final List<ShowInstanceListStatementTestCase> showInstanceTestCases = new LinkedList<>();
+    private final List<ShowComputeNodesStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
@@ -1615,10 +1615,10 @@ public final class SQLParserTestCases {
     private final List<CreateForeignTableStatementTestCase> createForeignTableStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-compute-node-info")
-    private final List<ShowInstanceInfoStatementTestCase> showInstanceInfoStatementTestCases = new LinkedList<>();
+    private final List<ShowComputeNodeInfoStatementTestCase> showComputeNodeInfoStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-compute-node-mode")
-    private final List<ShowModeInfoStatementTestCase> showModeInfoStatementTestCases = new LinkedList<>();
+    private final List<ShowComputeNodeModeStatementTestCase> showComputeNodeModeStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-group")
     private final List<CreateGroupStatementTestCase> createGroupStatementTestCases = new LinkedList<>();

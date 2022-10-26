@@ -26,9 +26,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRul
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
@@ -54,8 +54,8 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.migration.upd
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ConvertYamlConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowAllVariablesHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceInfoHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowInstanceListHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodeInfoHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowComputeNodesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowModeInfoHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowReadwriteSplittingReadResourcesHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.ShowTableMetadataHandler;
@@ -96,15 +96,15 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ApplyDistSQLStatement.class, ApplyDistSQLHandler.class);
         HANDLERS.put(DiscardDistSQLStatement.class, DiscardDistSQLHandler.class);
         HANDLERS.put(ImportDatabaseConfigurationStatement.class, ImportDatabaseConfigurationHandler.class);
-        HANDLERS.put(ShowInstanceListStatement.class, ShowInstanceListHandler.class);
+        HANDLERS.put(ShowComputeNodesStatement.class, ShowComputeNodesHandler.class);
         HANDLERS.put(ShowDistVariableStatement.class, ShowVariableHandler.class);
         HANDLERS.put(ShowDistVariablesStatement.class, ShowAllVariablesHandler.class);
         HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
         HANDLERS.put(ShowTableMetadataStatement.class, ShowTableMetadataHandler.class);
         HANDLERS.put(ExportDatabaseConfigurationStatement.class, ExportDatabaseConfigurationHandler.class);
         HANDLERS.put(ConvertYamlConfigurationStatement.class, ConvertYamlConfigurationHandler.class);
-        HANDLERS.put(ShowInstanceInfoStatement.class, ShowInstanceInfoHandler.class);
-        HANDLERS.put(ShowModeInfoStatement.class, ShowModeInfoHandler.class);
+        HANDLERS.put(ShowComputeNodeInfoStatement.class, ShowComputeNodeInfoHandler.class);
+        HANDLERS.put(ShowComputeNodeModeStatement.class, ShowModeInfoHandler.class);
     }
     
     /**

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -33,7 +33,7 @@ import java.util.Collections;
 /**
  * Show mode info handler.
  */
-public final class ShowModeInfoHandler extends QueryableRALBackendHandler<ShowModeInfoStatement> {
+public final class ShowModeInfoHandler extends QueryableRALBackendHandler<ShowComputeNodeModeStatement> {
     
     private static final String TYPE = "type";
     

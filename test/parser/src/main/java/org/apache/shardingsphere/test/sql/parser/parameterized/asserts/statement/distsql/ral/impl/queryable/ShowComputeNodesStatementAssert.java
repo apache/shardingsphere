@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowModeInfoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowComputeNodesStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Show mode info statement assert.
+ * Show compute nodes statement assert.
  */
-public final class ShowModeInfoStatementAssert {
+public final class ShowComputeNodesStatementAssert {
     
     /**
-     * Assert show mode info statement is correct with expected parser result.
+     * Assert show compute nodes statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show mode info statement
-     * @param expected expected show mode info statement test case
+     * @param actual actual show compute nodes statement
+     * @param expected expected show compute nodes statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowModeInfoStatement actual, final ShowModeInfoStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowComputeNodesStatement actual, final ShowComputeNodesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

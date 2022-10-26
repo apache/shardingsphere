@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -44,7 +44,7 @@ public final class ShowModeInfoHandlerTest extends ProxyContextRestorer {
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
         ShowModeInfoHandler handler = new ShowModeInfoHandler();
-        handler.init(new ShowModeInfoStatement(), null);
+        handler.init(new ShowComputeNodeModeStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();

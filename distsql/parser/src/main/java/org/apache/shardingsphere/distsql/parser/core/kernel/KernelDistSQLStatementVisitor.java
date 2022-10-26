@@ -77,10 +77,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertY
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInventoryIncrementalRuleStatement;
@@ -154,17 +154,17 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowComputeNodes(final ShowComputeNodesContext ctx) {
-        return new ShowInstanceListStatement();
+        return new ShowComputeNodesStatement();
     }
     
     @Override
     public ASTNode visitShowComputeNodeInfo(final ShowComputeNodeInfoContext ctx) {
-        return new ShowInstanceInfoStatement();
+        return new ShowComputeNodeInfoStatement();
     }
     
     @Override
     public ASTNode visitShowComputeNodeMode(final ShowComputeNodeModeContext ctx) {
-        return new ShowModeInfoStatement();
+        return new ShowComputeNodeModeStatement();
     }
     
     @Override

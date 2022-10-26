@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Show instance info statement.
+ * Show compute node mode statement test case.
  */
-public final class ShowInstanceInfoStatement extends QueryableRALStatement {
+public final class ShowComputeNodeModeStatementTestCase extends SQLParserTestCase {
 }

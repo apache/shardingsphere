@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodeInfoStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -38,15 +38,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceInfoHandlerTest extends ProxyContextRestorer {
+public final class ShowComputeNodeInfoHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceInfoHandler handler = new ShowInstanceInfoHandler();
-        handler.init(new ShowInstanceInfoStatement(), null);
+        ShowComputeNodeInfoHandler handler = new ShowComputeNodeInfoHandler();
+        handler.init(new ShowComputeNodeInfoStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
