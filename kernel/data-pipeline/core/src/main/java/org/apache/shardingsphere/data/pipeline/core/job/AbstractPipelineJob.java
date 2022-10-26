@@ -73,6 +73,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected void clearTaskRunner() {
         tasksRunnerMap.clear();
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
     
     protected Collection<PipelineTasksRunner> getTaskRunners() {
