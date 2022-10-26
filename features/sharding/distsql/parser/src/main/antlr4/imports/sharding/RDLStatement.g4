@@ -88,7 +88,7 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? RP
+    : tableName LP storageUnits COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? RP
     ;
 
 shardingTableRule
@@ -111,11 +111,11 @@ auditorName
     : IDENTIFIER
     ;
 
-resources
-    : RESOURCES LP resource (COMMA resource)* RP
+storageUnits
+    : STORAGE_UNITS LP storageUnit (COMMA storageUnit)* RP
     ;
 
-resource
+storageUnit
     : IDENTIFIER | STRING
     ;
 

@@ -161,7 +161,7 @@ ALTER SHARDING TABLE RULE t_order (
 
 ```sql
 ALTER SHARDING TABLE RULE t_order (
-    RESOURCES(ds_0, ds_1),
+    STORAGE_UNITS(ds_0, ds_1),
     SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
 );
 ```
