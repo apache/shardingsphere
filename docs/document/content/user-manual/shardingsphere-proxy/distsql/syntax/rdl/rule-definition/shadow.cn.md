@@ -18,7 +18,7 @@ CREATE DEFAULT SHADOW ALGORITHM shadowAlgorithm
 
 ALTER DEFAULT SHADOW ALGORITHM shadowAlgorithm
 
-DROP DEFAULT SHADOW ALGORITHM
+DROP DEFAULT SHADOW ALGORITHM [IF EXISTS]
 
 SHOW DEFAULT SHADOW ALGORITHM
 
@@ -39,13 +39,13 @@ algorithmProperty: key=value
 
 ### 参数解释
 
-| 名称                  | 数据类型       | 说明     |
-|:--------------------|:-----------|:-------|
-| ruleName            | IDENTIFIER | 规则名称   |
-| resourceName        | IDENTIFIER | 数据库名称  |
-| tableName           | IDENTIFIER | 影子表名称  |
-| algorithmName       | IDENTIFIER | 影子算法名称 |
-| shadowAlgorithmType | STRING     | 影子算法类型 |
+| 名称                  | 数据类型     | 说明         |
+|:--------------------|:-------------|:------------|
+| ruleName            | IDENTIFIER   | 规则名称      |
+| resourceName        | IDENTIFIER   | 数据库名称    |
+| tableName           | IDENTIFIER   | 影子表名称    |
+| algorithmName       | IDENTIFIER   | 影子算法名称   |
+| shadowAlgorithmType | STRING       | 影子算法类型   |
 
 ### 注意事项
 
