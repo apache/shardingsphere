@@ -38,7 +38,6 @@ public final class PipelineJobCenter {
     
     private static final PipelineDistributedBarrier DISTRIBUTED_BARRIER = PipelineDistributedBarrier.getInstance();
     
-    
     /**
      * Add job.
      *
@@ -75,7 +74,7 @@ public final class PipelineJobCenter {
         job.stop();
         if (!isAsync) {
             String jobBarrierDisablePath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
-            // all item already stopped, only need persist 0, because
+            // all item already stopped, only need persist 0
             DISTRIBUTED_BARRIER.persistEphemeralChildrenNode(jobBarrierDisablePath, 0);
         }
         log.info("remove job, jobId={}", jobId);
