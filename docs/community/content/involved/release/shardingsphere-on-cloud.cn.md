@@ -116,9 +116,9 @@ helm package shardingsphere-proxy
 ### 1. 检查发布文件内容
 
 解压缩
+- `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-operator-cluster-charts-${RELEASE.VERSION}.tgz`
 - `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
-- `apache-shardingsphere-cluster-charts-${RELEASE.VERSION}.tgz`
-- `shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
 
 进行如下检查:
 
@@ -139,8 +139,14 @@ helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
 helm search repo apache
 ```
 
-可以查询到三个制品即为发布成功
+可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo` 会根据 index.yaml 中的校验值进行校验 
 
+```shell
+NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
+apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
+apache/apache-shardingsphere-operator-cluster-...	${RELEASE.VERSION}        	xxx      	A Helm chart for ShardingSphere-Operator-Cluster
+apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
+```
 
 ## 发起投票
 
@@ -178,14 +184,10 @@ https://github.com/apache/shardingsphere-on-cloud/tree/${RELEASE.VERSION}/
 Release Commit ID:
 https://github.com/apache/shardingsphere-on-cloud/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
-Keys to verify the Release Candidate:
-https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/involved/release/shardingsphere/
+https://shardingsphere.apache.org/community/en/involved/release/shardingsphere-on-cloud/
 
-GPG user ID:
-${YOUR.GPG.USER.ID}
 
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 

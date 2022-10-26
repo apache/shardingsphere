@@ -117,9 +117,9 @@ Update the following pages:
 
 Decompress:
 
-- `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
-- `apache-shardingsphere-cluster-charts-${RELEASE.VERSION}.tgz`
 - `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-operator-cluster-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
 
 To check the following items:
 
@@ -140,8 +140,15 @@ helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
 helm search repo apache
 ```
 
-If you can find three products, the release is successful
+If three products can be queried, the release is successful, and `helm repo add` and `helm search repo` will be verified according to the verification value in index.yaml
 
+
+```shell
+NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
+apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
+apache/apache-shardingsphere-operator-cluster-...	${RELEASE.VERSION}        	xxx      	A Helm chart for ShardingSphere-Operator-Cluster
+apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
+```
 
 ## Call for a Vote
 
@@ -180,14 +187,10 @@ https://github.com/apache/shardingsphere-on-cloud/tree/${RELEASE.VERSION}/
 Release Commit ID:
 https://github.com/apache/shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
-Keys to verify the Release Candidate:
-https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
 https://shardingsphere.apache.org/community/en/involved/release/shardingsphere/
 
-GPG user ID:
-${YOUR.GPG.USER.ID}
 
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 
