@@ -6,8 +6,15 @@ weight = 3
 ## 语法说明
 
 ```sql
-SHOW READWRITE_SPLITTING RULES [FROM databaseName]
+SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName)  [FROM databaseName]
 ```
+
+## 参数解释
+
+| 名称                 | 数据类型        | 说明    |
+|:-------------------|:------------|:------|
+| groupName          | IDENTIFIER  | 规则组名称 |
+| databaseName       | IDENTIFIER  | 数据库名称 |
 
 ## 返回值说明
 
