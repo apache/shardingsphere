@@ -36,13 +36,13 @@ writeDataSourceQueryEnabled:
 ```
 
 ### 参数解释
-| 名称                            | 数据类型      | 说明                        |
-|:-------------------------------|:-------------|:---------------------------|
-| ruleName                       | IDENTIFIER   | 规则名称                     |
-| storageUnitName                | IDENTIFIER   | 已经注册的数据源名称           |
-| autoAwareResourceName          | IDENTIFIER   | 数据库发现的逻辑数据源名称      |
-| writeDataSourceQueryEnabled    | BOOLEAN      | 读库全部下线，主库是否承担读流量 |
-| loadBalancerType               | STRING       | 负载均衡算法类型              |
+| 名称                            | 数据类型      | 说明                         |
+|:-------------------------------|:-------------|:----------------------------|
+| ruleName                       | IDENTIFIER   | 规则名称                      |
+| storageUnitName                | IDENTIFIER   | 已注册的数据源名称              |
+| autoAwareResourceName          | IDENTIFIER   | 数据库发现的逻辑数据源名称       |
+| writeDataSourceQueryEnabled    | BOOLEAN      | 读库全部下线，主库是否承担读流量  |
+| loadBalancerType               | STRING       | 负载均衡算法类型               |
 
 ### 注意事项
 
