@@ -11,18 +11,15 @@ The `CREATE DB_DISCOVERY RULE` syntax is used to create a database discovery rul
 
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) ( ',' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) )*
+  'CREATE' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition ( ',' databaseDiscoveryDefinition)*
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
-    
-databaseDiscoveryConstruction ::=
-    ruleName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
-    
+    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
+        
 ruleName ::=
   identifier
 
-storageUnitName ::=
+resourceName ::=
   identifier
 
 typeName ::=
@@ -39,7 +36,7 @@ discoveryHeartbeatName ::=
 
 ### Example
 
-#### When creating a `discoveryRule`, create both `discoveryType` and `discoveryHeartbeat`
+- Create database discovery rule
 
 ```sql
 CREATE
@@ -48,18 +45,6 @@ DB_DISCOVERY RULE db_discovery_group_0 (
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
-```
-
-#### Use the existing `discoveryType` and `discoveryHeartbeat` to create a `discoveryRule`
-
-```sql
-CREATE
-DB_DISCOVERY RULE db_discovery_group_1 (
-    STORAGE_UNITS(ds_0, ds_1, ds_2),
-    TYPE=db_discovery_group_1_mgr,
-    HEARTBEAT=db_discovery_group_1_heartbeat
-);
-
 ```
 
 ### Reserved word

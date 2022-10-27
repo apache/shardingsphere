@@ -3,11 +3,11 @@ title = "ALTER ENCRYPT RULE"
 weight = 3
 +++
 
-## Description
+## 说明
 
-The `ALTER ENCRYPT RULE` syntax is used to alter an encryption rule.
+ `ALTER ENCRYPT RULE` 语法用于修改加密规则
 
-### Syntax
+### 语法
 
 ```sql
 AlterEncryptRule ::=
@@ -37,13 +37,14 @@ encryptAlgorithmType ::=
 
 ### Supplement
 
-- `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column 
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to Encryption Algorithm 
-- `queryWithCipherColumn` support uppercase or lowercase true or false
+- `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列；
+- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
+- 重复的 `tableName` 将无法被创建；
+- `queryWithCipherColumn` 支持大写或小写的 true 或 false。
 
-### Example
+### 示例
 
-- Alter an encrypt rule
+- 修改加密规则
 
 ```sql
 ALTER ENCRYPT RULE t_encrypt (
@@ -53,10 +54,10 @@ COLUMNS(
 ), QUERY_WITH_CIPHER_COLUMN=TRUE);
 ```
 
-### Reserved words
+### 保留字
 
-`ALTER`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `PLAIN`, `QUERY_WITH_CIPHER_COLUMN`, `TYPE`, `TRUE`, `FALSE`
+`ALTER`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`PLAIN`、`QUERY_WITH_CIPHER_COLUMN`、`TYPE`、`TRUE`、`FALSE`
 
-### Related links
+### 相关链接
 
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)
