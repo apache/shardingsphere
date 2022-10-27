@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceListHandlerTest extends ProxyContextRestorer {
+public final class ShowComputeNodesHandlerTest extends ProxyContextRestorer {
     
     private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     
@@ -49,8 +49,8 @@ public final class ShowInstanceListHandlerTest extends ProxyContextRestorer {
     public void assertExecuteWithStandaloneMode() throws SQLException {
         InstanceContext instanceContext = createStandaloneInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceListHandler handler = new ShowInstanceListHandler();
-        handler.init(new ShowInstanceListStatement(), null);
+        ShowComputeNodesHandler handler = new ShowComputeNodesHandler();
+        handler.init(new ShowComputeNodesStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
@@ -69,8 +69,8 @@ public final class ShowInstanceListHandlerTest extends ProxyContextRestorer {
     public void assertExecuteWithClusterMode() throws SQLException {
         InstanceContext instanceContext = createClusterInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceListHandler handler = new ShowInstanceListHandler();
-        handler.init(new ShowInstanceListStatement(), null);
+        ShowComputeNodesHandler handler = new ShowComputeNodesHandler();
+        handler.init(new ShowComputeNodesStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();

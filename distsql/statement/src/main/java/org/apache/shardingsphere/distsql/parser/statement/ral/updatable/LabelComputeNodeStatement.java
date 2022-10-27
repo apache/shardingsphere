@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show mode info statement.
+ * Label compute node statement.
  */
-public final class ShowModeInfoStatement extends QueryableRALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class LabelComputeNodeStatement extends UpdatableRALStatement {
+    
+    private final boolean overwrite;
+    
+    private final String instanceId;
+    
+    private final Collection<String> labels;
 }

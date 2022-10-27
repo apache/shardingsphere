@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -30,27 +30,30 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALB
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
- * Label instance handler.
+ * Unlabel compute node handler.
  */
-public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement> {
+public final class UnlabelComputeNodeHandler extends UpdatableRALBackendHandler<UnlabelComputeNodeStatement> {
     
     @Override
-    public void update(final ContextManager contextManager) {
+    protected void update(final ContextManager contextManager) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        ShardingSpherePreconditions.checkState(null != persistService && null != persistService.getRepository() && !(persistService.getRepository() instanceof StandalonePersistRepository),
-                () -> new UnsupportedSQLOperationException("Labels can only be added in cluster mode"));
+        ShardingSpherePreconditions.checkState(null != persistService.getRepository() && !(persistService.getRepository() instanceof StandalonePersistRepository),
+                () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode"));
         String instanceId = getSqlStatement().getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
-            Collection<String> labels = new LinkedHashSet<>(getSqlStatement().getLabels());
-            if (!getSqlStatement().isOverwrite()) {
-                labels.addAll(computeNodeInstance.get().getLabels());
+            Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
+            if (getSqlStatement().getLabels().isEmpty()) {
+                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
+            } else {
+                labels.removeAll(getSqlStatement().getLabels());
+                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new ArrayList<>(labels)));
             }
-            contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new ArrayList<>(labels)));
         }
     }
 }

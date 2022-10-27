@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * Unlabel instance statement test case.
+ * Unlabel compute node statement test case.
  */
 @Getter
 @Setter
-public final class UnlabelInstanceStatementTestCase extends SQLParserTestCase {
+public final class UnlabelComputeNodeStatementTestCase extends SQLParserTestCase {
     
     @XmlAttribute(name = "instance-id")
     private String instanceId;

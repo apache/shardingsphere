@@ -15,40 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowComputeNodesStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Alter instance statement assert.
+ * Show compute nodes statement assert.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterInstanceStatementAssert {
+public final class ShowComputeNodesStatementAssert {
     
     /**
-     * Assert alter instance statement is correct with expected parser result.
+     * Assert show compute nodes statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual alter instance statement
-     * @param expected expected alter instance statement test case
+     * @param actual actual show compute nodes statement
+     * @param expected expected show compute nodes statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterInstanceStatement actual, final AlterInstanceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowComputeNodesStatement actual, final ShowComputeNodesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(actual.getInstanceId(), is(expected.getInstanceId()));
-            assertThat(actual.getKey(), is(expected.getKey()));
-            assertThat(actual.getValue(), is(actual.getValue()));
         }
     }
 }
