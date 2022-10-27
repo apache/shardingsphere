@@ -124,9 +124,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         jobConfigPOJO.getProps().remove("stop_time_millis");
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         String barrierPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
     }
     
@@ -138,9 +138,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         jobConfigPOJO.getProps().setProperty("stop_time_millis", System.currentTimeMillis() + "");
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         String barrierPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
     }
     
