@@ -85,10 +85,11 @@ public final class PipelineDistributedBarrier {
     /**
      * Persist ephemeral children node.
      *
-     * @param parentPath parent path
+     * @param jobId job id
      * @param shardingItem sharding item
      */
-    public void persistEphemeralChildrenNode(final String parentPath, final int shardingItem) {
+    public void persistEphemeralChildrenNode(final String jobId, final int shardingItem) {
+        String parentPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         if (!getRepository().isExisted(parentPath)) {
             log.info("parent path {} not exist, ignore", parentPath);
             return;
@@ -101,9 +102,10 @@ public final class PipelineDistributedBarrier {
     /**
      * Persist ephemeral children node.
      *
-     * @param parentPath parent path
+     * @param jobId job id
      */
-    public void removeParentNode(final String parentPath) {
+    public void unregister(final String jobId) {
+        String parentPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         getRepository().delete(String.join("/", parentPath));
         InnerCountDownLatchHolder holder = countDownLatchMap.remove(parentPath);
         if (null != holder) {
@@ -114,12 +116,13 @@ public final class PipelineDistributedBarrier {
     /**
      * Await until all children node is ready.
      *
-     * @param parentPath parent path
+     * @param jobId job id
      * @param timeout timeout
      * @param timeUnit time unit
      * @return true if the count reached zero and false if the waiting time elapsed before the count reached zero
      */
-    public boolean await(final String parentPath, final long timeout, final TimeUnit timeUnit) {
+    public boolean await(final String jobId, final long timeout, final TimeUnit timeUnit) {
+        String parentPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         InnerCountDownLatchHolder holder = countDownLatchMap.get(parentPath);
         if (null == holder) {
             return false;

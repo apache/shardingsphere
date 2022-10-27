@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.BeforeClass;
@@ -39,26 +42,30 @@ public final class PipelineDistributedBarrierTest {
     
     @Test
     public void assertRegisterAndRemove() throws NoSuchFieldException, IllegalAccessException {
+        String jobId = "123";
+        PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        repository.persist(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
-        String parentPath = "/test";
-        instance.register(parentPath, 1);
+        instance.register(jobId, 1);
         Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
         assertNotNull(countDownLatchMap);
-        assertTrue(countDownLatchMap.containsKey(parentPath));
-        instance.removeParentNode(parentPath);
-        assertFalse(countDownLatchMap.containsKey(parentPath));
+        assertTrue(countDownLatchMap.containsKey(PipelineMetaDataNode.getJobBarrierEnablePath(jobId)));
+        instance.unregister(jobId);
+        assertFalse(countDownLatchMap.containsKey(jobId));
     }
     
     @Test
     public void assertAwait() {
+        String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
+        PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
+        repository.persist(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
-        String parentPath = "/scaling/j0130317c3054317c7363616c696e675f626d73716c/barrier/enable";
-        instance.register(parentPath, 1);
-        instance.persistEphemeralChildrenNode(parentPath, 1);
-        boolean actual = instance.await(parentPath, 1, TimeUnit.SECONDS);
+        instance.register(jobId, 1);
+        instance.persistEphemeralChildrenNode(jobId, 1);
+        boolean actual = instance.await(jobId, 1, TimeUnit.SECONDS);
         assertFalse(actual);
-        instance.checkChildrenNodeCount(new DataChangedEvent("/scaling/j0130317c3054317c7363616c696e675f626d73716c/barrier/enable/1", "", Type.ADDED));
-        actual = instance.await(parentPath, 1, TimeUnit.SECONDS);
+        instance.checkChildrenNodeCount(new DataChangedEvent(PipelineMetaDataNode.getJobBarrierEnablePath(jobId) + "/0", "", Type.ADDED));
+        actual = instance.await(jobId, 1, TimeUnit.SECONDS);
         assertTrue(actual);
     }
 }
