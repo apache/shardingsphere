@@ -42,19 +42,19 @@ shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
 
 shardingAutoTableRule:
-    tableName(resources, shardingColumn, algorithmDefinition [, keyGenerateDeclaration] [, auditDeclaration])
+    tableName(storageUnits, shardingColumn, algorithmDefinition [, keyGenerateDeclaration] [, auditDeclaration])
 
 shardingTableRule:
     tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDeclaration] [, auditDeclaration])
 
-resources:
-    RESOURCES(resource [, resource] ...)
+storageUnits:
+    STORAGE_UNITS(storageUnit [, storageUnit] ...)
 
 dataNodes:
     DATANODES(dataNode [, dataNode] ...)
 
-resource:
-    resourceName | inlineExpression
+storageUnit:
+    storageUnitName | inlineExpression
 
 dataNode:
     dataNodeName | inlineExpression
@@ -128,7 +128,7 @@ auditorDefinition:
 auditorAlgorithmDefinition:
     TYPE(NAME=auditorAlgorithmType [, PROPERTIES([algorithmProperties])])
 ```
-- `RESOURCES` needs to use data source resources managed by RDL
+- `STORAGE_UNITS` needs to use storage units managed by RDL
 - `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/)
 - `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/common-config/builtin-algorithm/keygen/)
 - `auditorAlgorithmType` specifies the sharding audit strategy, please refer to [Sharding Audit Algorithm](/cn/user-manual/common-config/builtin-algorithm/audit/)；
@@ -196,14 +196,14 @@ DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor;
 *Auto Table*
 ```sql
 CREATE SHARDING TABLE RULE t_order (
-RESOURCES(resource_0,resource_1),
+STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order (
-RESOURCES(resource_0,resource_1,resource_2,resource_3),
+STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
@@ -222,21 +222,21 @@ TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 
 );
 
 CREATE SHARDING TABLE RULE t_order_item (
-DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME="inline",PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
+TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}"))
 ),table_inline (
 TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
 );
 
 ALTER SHARDING TABLE RULE t_order_item (
-DATANODES("resource_${0..3}.t_order_item${0..3}"),
+DATANODES("ds_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),
