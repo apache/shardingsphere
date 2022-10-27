@@ -198,7 +198,7 @@ public final class ProjectionEngine {
                 result.add(each);
             } else if (each instanceof ExpressionProjection) {
                 result.add(each);
-            }else if (each instanceof ShorthandProjection) {
+            } else if (each instanceof ShorthandProjection) {
                 result.addAll(((ShorthandProjection) each).getResultSetColumns().values());
             }
         }

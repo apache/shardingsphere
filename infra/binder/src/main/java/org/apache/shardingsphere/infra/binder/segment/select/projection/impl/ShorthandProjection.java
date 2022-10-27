@@ -45,7 +45,7 @@ public final class ShorthandProjection implements Projection {
     public ShorthandProjection(final String owner, final Collection<Projection> projections) {
         this.owner = owner;
         for (Projection projection : projections) {
-            if(projection instanceof ColumnProjection){
+            if (projection instanceof ColumnProjection) {
                 actualColumns.put(projection.getExpression().toLowerCase(), (ColumnProjection) projection);
             }
             resultSetColumns.put(projection.getExpression().toLowerCase(), projection);
