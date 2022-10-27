@@ -128,7 +128,7 @@ auditorDefinition:
 auditorAlgorithmDefinition:
     TYPE(NAME=auditorAlgorithmType [, PROPERTIES([algorithmProperties])])
 ```
-- `STORAGE_UNITS` needs to use data source storageUnits managed by RDL
+- `STORAGE_UNITS` needs to use storage units managed by RDL
 - `shardingAlgorithmType` specifies the type of automatic sharding algorithm, please refer to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/)
 - `keyGenerateStrategyType` specifies the distributed primary key generation strategy, please refer to [Key Generate Algorithm](/en/user-manual/common-config/builtin-algorithm/keygen/)
 - `auditorAlgorithmType` specifies the sharding audit strategy, please refer to [Sharding Audit Algorithm](/cn/user-manual/common-config/builtin-algorithm/audit/)；
