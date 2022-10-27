@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -88,12 +89,7 @@ public final class SQLHintExtractor {
         Object result = sqlHintProperties.getProps().containsKey(key)
                 ? sqlHintProperties.getProps().get(key)
                 : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
-        if (result instanceof Comparable) {
-            return (Comparable<?>) result;
-        }
-        return sqlHintProperties.getProps().containsKey(key)
-                ? sqlHintProperties.getProps().getProperty(key)
-                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
+        return result instanceof Comparable ? (Comparable<?>) result : Objects.toString(result);
     }
     
     /**
@@ -118,12 +114,7 @@ public final class SQLHintExtractor {
         Object result = sqlHintProperties.getProps().containsKey(key)
                 ? sqlHintProperties.getProps().get(key)
                 : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
-        if (result instanceof Comparable) {
-            return (Comparable<?>) result;
-        }
-        return sqlHintProperties.getProps().containsKey(key)
-                ? sqlHintProperties.getProps().getProperty(key)
-                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+        return result instanceof Comparable ? (Comparable<?>) result : Objects.toString(result);
     }
     
     /**

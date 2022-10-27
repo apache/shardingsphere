@@ -244,7 +244,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "CREATE SHARDING TABLE RULE t_order (RESOURCES(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));";
+        String sql = "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));";
         ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
