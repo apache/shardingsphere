@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * Local configuration condition.
  */
-public final class LocalRulesCondition extends SpringBootCondition {
+public final class ShardingSphereSpringBootCondition extends SpringBootCondition {
     
     private static final String SHARDING_PREFIX = "spring.shardingsphere";
     
