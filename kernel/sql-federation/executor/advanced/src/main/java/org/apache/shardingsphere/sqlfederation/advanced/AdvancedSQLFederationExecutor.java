@@ -143,7 +143,8 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
         initializePlanManagement(sqlFederationSchema);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(selectStatementContext.getSqlStatement());
-        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode, parameters);
+        // TODO Replace "false" by variable in future, after statement and prepared statement are split.
+        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode, parameters, false);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
         Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(planManagement.getValidator(), planManagement.getConverter(), parameters)).enumerator();
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());

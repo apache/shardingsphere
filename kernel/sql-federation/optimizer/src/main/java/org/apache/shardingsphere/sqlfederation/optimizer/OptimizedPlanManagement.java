@@ -65,9 +65,13 @@ public class OptimizedPlanManagement {
      *
      * @param sqlNode ast node
      * @param parameters sql parameters
+     * @param useCache whether use cache
      * @return rel node
      */
-    public SQLOptimizeContext get(final SqlNode sqlNode, final Map<String, Object> parameters) {
+    public SQLOptimizeContext get(final SqlNode sqlNode, final Map<String, Object> parameters, final boolean useCache) {
+        if (useCache) {
+            return optimizer.optimize(sqlNode);
+        }
         SQLOptimizeContext result = cache.getIfPresent(new SQLInfo(sqlNode, parameters).toString());
         if (null == result) {
             result = optimizer.optimize(sqlNode);
