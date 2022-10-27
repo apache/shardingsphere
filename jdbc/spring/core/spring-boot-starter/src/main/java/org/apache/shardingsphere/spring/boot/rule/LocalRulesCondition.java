@@ -24,16 +24,16 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Local rules condition.
+ * Local configuration condition.
  */
 public final class LocalRulesCondition extends SpringBootCondition {
     
-    private static final String SHARDING_PREFIX = "spring.shardingsphere.rules";
+    private static final String SHARDING_PREFIX = "spring.shardingsphere";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
         return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDING_PREFIX)
                 ? ConditionOutcome.match()
-                : ConditionOutcome.noMatch("Can't find ShardingSphere rule configuration in local file.");
+                : ConditionOutcome.noMatch("Can't find ShardingSphere configuration in local file.");
     }
 }
