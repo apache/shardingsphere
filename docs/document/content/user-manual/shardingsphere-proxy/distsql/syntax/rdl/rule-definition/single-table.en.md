@@ -6,12 +6,9 @@ weight = 2
 ## Definition
 
 ```sql
-SET DEFAULT SINGLE TABLE storageUnitDefinition
-
-storageUnitDefinition:
-    STORAGE UNIT = storageUnitName | RANDOM
+SET DEFAULT SINGLE TABLE STORAGE UNIT = (storageUnitName | RANDOM)
 ```
-- `STORAGE UNIT` needs to use storage unit managed by RDL. The RANDOM keyword stands for random storage.
+- `storageUnitName` needs to use storage unit managed by RDL. The `RANDOM` stands for random storage.
 
 ## Example
 ```sql

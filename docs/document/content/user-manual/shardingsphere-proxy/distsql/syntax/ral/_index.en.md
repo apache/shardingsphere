@@ -35,12 +35,12 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 
 ## Circuit Breaker
 
-| Statement                                                                                        | Function                           | Example                                                  |
-|:-------------------------------------------------------------------------------------------------|:-----------------------------------|:---------------------------------------------------------|
-| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) resourceName [FROM databaseName] | Enable or disable read data source | ALTER READWRITE_SPLITTING RULE group_1 ENABLE resource_0 |
-| [ENABLE / DISABLE] COMPUTE NODE instanceId                                                       | Enable or disable proxy instance   | DISABLE COMPUTE NODE instance_1                          |
-| SHOW COMPUTE NODES                                                                               | Query proxy instance information   | SHOW COMPUTE NODES                                       |
-| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                | Query all read resources status    | SHOW STATUS FROM READWRITE_SPLITTING RULES               |
+| Statement                                                                                           | Function                           | Example                                                  |
+|:----------------------------------------------------------------------------------------------------|:-----------------------------------|:---------------------------------------------------------|
+| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) storageUnitName [FROM databaseName] | Enable or disable read data source | ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_1  |
+| [ENABLE / DISABLE] COMPUTE NODE instanceId                                                          | Enable or disable proxy instance   | DISABLE COMPUTE NODE instance_1                          |
+| SHOW COMPUTE NODES                                                                                  | Query proxy instance information   | SHOW COMPUTE NODES                                       |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                   | Query all read resources status    | SHOW STATUS FROM READWRITE_SPLITTING RULES               |
 
 ## Global Rule
 

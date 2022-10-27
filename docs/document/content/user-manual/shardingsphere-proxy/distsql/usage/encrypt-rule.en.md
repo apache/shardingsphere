@@ -53,7 +53,7 @@ ALTER ENCRYPT RULE t_encrypt (
 DROP ENCRYPT RULE t_encrypt;
 ```
 
-- Drop resource
+- Unregister storage unit
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0;

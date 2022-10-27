@@ -43,9 +43,9 @@ property:
 - Confirm that the storage unit to be added or altered can be connected, otherwise the operation will not be successful;
 - Duplicate `storageUnitName` is not allowed;
 - `PROPERTIES` is used to customize connection pool parameters, `key` and `value` are both STRING types;
-- `ALTER RESOURCE` is not allowed to change the real data source associated with this storage unit;
-- `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
-- `DROP RESOURCE` will only delete logical storage unit, not real data sources;
+- `ALTER STORAGE UNIT` is not allowed to change the real data source associated with this storage unit;
+- `ALTER STORAGE UNIT` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
+- `UNREGISTER STORAGE UNIT` will only delete logical storage unit, not real data sources;
 - Storage unit referenced by rules cannot be deleted;
 - If the storage unit is only referenced by `single table rule`, and the user confirms that the restriction can be ignored, the optional parameter `ignore single tables` can be added to perform forced deletion.
 
