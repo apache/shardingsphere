@@ -44,6 +44,108 @@ Open [GitHub milestone](https://github.com/apache/shardingsphere-on-cloud/milest
 1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%;
 1. Click `close` to close milestone.
 
+## GPG Settings
+
+### 1. Install GPG
+
+Download installation package on [official GnuPG website](https://www.gnupg.org/download/index.html).
+The command of GnuPG 1.x version can differ a little from that of 2.x version.
+The following instructions take `GnuPG-2.1.23` version for example.
+After the installation, execute the following command to check the version number.
+
+```shell
+gpg --version
+```
+
+### 2. Create Key
+
+After the installation, execute the following command to create key.
+
+This command indicates `GnuPG-2.x` can be used:
+
+```shell
+gpg --full-gen-key
+```
+
+This command indicates `GnuPG-1.x` can be used:
+
+```shell
+gpg --gen-key
+```
+
+Finish the key creation according to instructions:
+
+> To be noticed: Please use Apache mail for key creation.
+
+```shell
+gpg (GnuPG) 2.0.12; Copyright (C) 2009 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Please select what kind of key you want:
+  (1) RSA and RSA (default)
+  (2) DSA and Elgamal
+  (3) DSA (sign only)
+  (4) RSA (sign only)
+Your selection? 1
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (2048) 4096
+Requested keysize is 4096 bits
+Please specify how long the key should be valid.
+        0 = key does not expire
+     <n>  = key expires in n days
+     <n>w = key expires in n weeks
+     <n>m = key expires in n months
+     <n>y = key expires in n years
+Key is valid for? (0) 
+Key does not expire at all
+Is this correct? (y/N) y
+
+GnuPG needs to construct a user ID to identify your key.
+
+Real name: ${Input username}
+Email address: ${Input email}
+Comment: ${Input comment}
+You selected this USER-ID:
+   "${Inputed username} (${Inputed comment}) <${Inputed email}>"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+You need a Passphrase to protect your secret key. # Input passwords
+```
+
+### 3. Check Generated Key
+
+```shell
+gpg --list-keys
+```
+
+Execution Result:
+
+```shell
+pub   4096R/700E6065 2019-03-20
+uid                  ${Username} (${Comment}) <{Email}>
+sub   4096R/0B7EF5B2 2019-03-20
+```
+
+Among them, 700E6065 is public key ID.
+
+### 4. Export v1 version secret
+
+``` shell
+gpg --export >~/.gnupg/pubring.gpg
+gpg --export-secret-keys >~/.gnupg/secring.gpg
+```
+
+### 5. Upload the Public Key to Key Server
+
+The command is as follows:
+
+```shell
+gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
+```
+
+`keyserver.ubuntu.com` is randomly chosen from public key server.
+Each server will automatically synchronize with one another, so it would be okay to choose any one.
 
 ## Prepare Branch for Release
 
@@ -65,9 +167,9 @@ git push origin ${RELEASE.VERSION}-release
 Update the version in `Chart.yaml` file in release branch:
 
 ```
-~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml
-~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster/Chart.yaml
-~/shardingsphere-on-cloud/charts/shardingsphere-proxy/Chart.yaml
+~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
+~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts/Chart.yaml
+~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
 ```
 
 Modify `version` to `${RELEASE.VERSION}`, `appVersion` to the corresponding application version, and submit a PR to release branch.
@@ -86,22 +188,22 @@ git push origin --tags
 Before packaging charts, you need to download dependent packages through `helm dependency build` command, and then package charts. The specific operation steps are as follows:
 
 ```shell
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy/charts/governance
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/charts/governance
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts
 helm dependency build
 
 cd ~/shardingsphere-on-cloud/charts
-helm package shardingsphere-operator
-helm package shardingsphere-operator-cluster
-helm package shardingsphere-proxy
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
 
 ### 5. Update the download page
@@ -113,7 +215,48 @@ Update the following pages:
 
 ### Check Release
 
-**1. Check Released Files**
+**1. Check gpg Signature**
+
+First, import releaser's public key. Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
+
+```shell
+curl https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS >> KEYS
+gpg --import KEYS
+gpg --edit-key "${releaser gpg username}"
+  > trust
+
+Please decide how far you trust this user to correctly verify other users' keys
+(by looking at passports, checking fingerprints from different sources, etc.)
+
+  1 = I don't know or won't say
+  2 = I do NOT trust
+  3 = I trust marginally
+  4 = I trust fully
+  5 = I trust ultimately
+  m = back to the main menu
+
+Your decision? 5
+
+  > save
+```
+
+Download all prov files and tgz files, then, check the gpg signature.
+
+Checking can be performed by the following command under Bash:
+
+```bash
+for each in $(ls *.tgz); do helm verify $each; done
+```
+
+Or checking each file manually:
+
+```shell
+helm verify apache-shardingsphere-operator-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-operator-cluster-${RELEASE.VERSION}.tgz
+helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
+```
+
+**2. Check Released Files**
 
 Decompress:
 
@@ -131,7 +274,7 @@ To check the following items:
   *   All software licenses mentioned in `LICENSE`
   *   All the third party dependency licenses are under `licenses` folder
   *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
-### 2. Check products
+### 3. Check products
 
 add repo
 ```shell
@@ -187,10 +330,14 @@ https://github.com/apache/shardingsphere-on-cloud/tree/${RELEASE.VERSION}/
 Release Commit ID:
 https://github.com/apache/shardingsphere/commit/xxxxxxxxxxxxxxxxxxxxxxx
 
+Keys to verify the Release Candidate:
+https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
 https://shardingsphere.apache.org/community/en/involved/release/shardingsphere/
 
+GPG user ID:
+${YOUR.GPG.USER.ID}
 
 The vote will be open for at least 72 hours or until necessary number of votes are reached.
 
@@ -205,6 +352,8 @@ Please vote accordingly:
 PMC vote is +1 binding, all others is +1 non-binding.
 
 Checklist for reference:
+
+[ ] Checksums and PGP signatures are valid.
 
 [ ] Source code distributions have correct names matching the current release.
 
