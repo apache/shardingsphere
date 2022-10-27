@@ -35,12 +35,12 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 ## 熔断
 
-| 语句                                                                                              | 说明                         | 示例                                                           |
-|:-------------------------------------------------------------------------------------------------|:-----------------------------|:--------------------------------------------------------------|
-| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) storageUnitName [FROM databaseName] | 启用 / 禁用读库                       | ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_1    |
-| [ENABLE / DISABLE] COMPUTE NODE instanceId                                                       | 启用 / 禁用 proxy 实例         | DISABLE COMPUTE NODE instance_1                               |
-| SHOW COMPUTE NODES                                                                               | 查询 proxy 实例信息            | SHOW COMPUTE NODES                                            |
-| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                | 查询所有读库的状态              | SHOW STATUS FROM READWRITE_SPLITTING RULES                    |
+| 语句                                                                                                  | 说明                         | 示例                                                          |
+|:-----------------------------------------------------------------------------------------------------|:-----------------------------|:-------------------------------------------------------------|
+| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) storageUnitName [FROM databaseName]  | 启用 / 禁用读库                | ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_1      |
+| [ENABLE / DISABLE] COMPUTE NODE instanceId                                                           | 启用 / 禁用 proxy 实例         | DISABLE COMPUTE NODE instance_1                              |
+| SHOW COMPUTE NODES                                                                                   | 查询 proxy 实例信息            | SHOW COMPUTE NODES                                           |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                    | 查询所有读库的状态              | SHOW STATUS FROM READWRITE_SPLITTING RULES                   |
 
 ## 全局规则
 
