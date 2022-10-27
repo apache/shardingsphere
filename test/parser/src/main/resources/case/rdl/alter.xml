@@ -239,12 +239,6 @@
         </shadow-algorithm>
     </alter-default-shadow-algorithm>
     
-    <alter-sharding-key-generator sql-case-id="alter-sharding-key-generator">
-        <sharding-key-generator key-generator-name="uuid_key_generator">
-            <algorithm algorithm-name="uuid" />
-        </sharding-key-generator>
-    </alter-sharding-key-generator>
-    
     <alter-sharding-auditor sql-case-id="alter-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">
             <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />

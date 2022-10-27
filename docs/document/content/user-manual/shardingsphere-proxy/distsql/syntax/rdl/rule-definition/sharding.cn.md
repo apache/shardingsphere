@@ -20,15 +20,7 @@ ALTER DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
 
 DROP DEFAULT SHARDING shardingScope STRATEGY;
 
-CREATE SHARDING ALGORITHM shardingAlgorithmDefinition [, shardingAlgorithmDefinition] ...
-
-ALTER SHARDING ALGORITHM shardingAlgorithmDefinition [, shardingAlgorithmDefinition] ...
-
 DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
-
-CREATE SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
-
-ALTER SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
 
 DROP SHARDING KEY GENERATOR [IF EXISTS] keyGeneratorName [, keyGeneratorName] ...
     
@@ -168,14 +160,6 @@ DROP BROADCAST TABLE RULES tableName [, tableName] ...
 *Key Generator*
 
 ```sql
-CREATE SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME="SNOWFLAKE")
-);
-
-ALTER SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME="SNOWFLAKE")
-);
-
 DROP SHARDING KEY GENERATOR snowflake_key_generator;
 ```
 
@@ -217,9 +201,6 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 *Table*
 
 ```sql
-CREATE SHARDING ALGORITHM table_inline (
-TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
-);
 
 CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("ds_${0..1}.t_order_item_${0..1}"),
@@ -227,12 +208,6 @@ DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYP
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
-);
-
-ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}"))
-),table_inline (
-TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
 );
 
 ALTER SHARDING TABLE RULE t_order_item (
