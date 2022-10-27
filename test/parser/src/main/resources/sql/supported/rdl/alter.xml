@@ -40,6 +40,6 @@
     <distsql-case id="alter-sharding-table-rule-complex" value="ALTER SHARDING TABLE RULE t_order (DATANODES('ms_group_${0..1}'),DATABASE_STRATEGY(TYPE='complex',sharding_columns = order_id,user_id, sharding_algorithm(type(name='database_inline'))),TABLE_STRATEGY(TYPE='standard',sharding_column = user_id,sharding_algorithm(type(name='table_inline'))),KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
     <distsql-case id="alter-default-single-table" value="SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_0" />
     <distsql-case id="alter-sharding-auditor" value="ALTER SHARDING AUDITOR sharding_key_required_auditor(TYPE(NAME='DML_SHARDING_CONDITIONS'))" />
-    <distsql-case id="alter-default-sharding-strategy" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='algorithms_name')))" />
-    <distsql-case id="alter-default-sharding-strategy-complex" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id,user_id, SHARDING_ALGORITHM(TYPE(NAME='algorithms_name')))" />
+    <distsql-case id="alter-default-sharding-strategy" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='INLINE')))" />
+    <distsql-case id="alter-default-sharding-strategy-complex" value="ALTER DEFAULT SHARDING TABLE STRATEGY(TYPE='complex', SHARDING_COLUMNS=order_id,user_id, SHARDING_ALGORITHM(TYPE(NAME='INLINE')))" />
 </sql-cases>
