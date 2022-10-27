@@ -34,7 +34,7 @@ PASSWORD="12345678",
 PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="30000","maxLifetimeMilliseconds"="1800000","idleTimeoutMilliseconds"="60000","maxPoolSize"="50")
 );
 CREATE READWRITE_SPLITTING RULE readwrite_ds (
-WRITE_RESOURCE=write_ds_0,
-READ_RESOURCES(read_ds_0,read_ds_1),
+WRITE_STORAGE_UNIT=write_ds_0,
+READ_STORAGE_UNITS(read_ds_0,read_ds_1),
 TYPE(NAME="RANDOM")
 );

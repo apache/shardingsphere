@@ -30,3 +30,7 @@ resourceName
 groupName
     : IDENTIFIER
     ;
+
+storageUnitName
+    : IDENTIFIER
+    ;
