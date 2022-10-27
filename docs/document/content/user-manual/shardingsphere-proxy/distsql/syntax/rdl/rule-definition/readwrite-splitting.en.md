@@ -17,10 +17,10 @@ readwriteSplittingRuleDefinition:
               [, loadBalancerDefinition])
 
 staticReadwriteSplittingRuleDefinition:
-    WRITE_RESOURCE=writeResourceName, READ_RESOURCES(resourceName [, resourceName] ... )
+    WRITE_STORAGE_UNIT=storageUnitName, READ_STORAGE_UNITS(storageUnitName [, storageUnitName] ... )
 
 dynamicReadwriteSplittingRuleDefinition:
-    AUTO_AWARE_RESOURCE=resourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
+    AUTO_AWARE_RESOURCE=autoAwareResourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
 
 loadBalancerDefinition:
     TYPE(NAME=loadBalancerType [, PROPERTIES([algorithmProperties] )] )
@@ -39,8 +39,7 @@ writeDataSourceQueryEnabled:
 | name                        | DateType   | Description                                                                                                 |
 |:----------------------------|:-----------|:------------------------------------------------------------------------------------------------------------|
 | ruleName                    | IDENTIFIER | Rule name                                                                                                   |
-| writeResourceName           | IDENTIFIER | Write data source name                                                                                      |
-| readResourceName            | IDENTIFIER | Read data source name                                                                                       |
+| storageUnitName             | IDENTIFIER | Registered data source name                                                                                 |
 | autoAwareResourceName       | IDENTIFIER | Database discovery logic data source name                                                                   |
 | writeDataSourceQueryEnabled | BOOLEAN    | All read data source are offline, write data source whether the data source is responsible for read traffic |
 | loadBalancerType            | STRING     | Load balancing algorithm type                                                                               |
@@ -57,8 +56,8 @@ writeDataSourceQueryEnabled:
 ```sql
 // Static
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds_0,read_ds_1),
+WRITE_STORAGE_UNIT=write_ds,
+READ_STORAGE_UNITS(read_ds_0,read_ds_1),
 TYPE(NAME="random")
 );
 
@@ -70,8 +69,8 @@ TYPE(NAME="random",PROPERTIES(write_ds=2,read_ds_0=2,read_ds_1=2,read_ds_2=1))
 );
 
 ALTER READWRITE_SPLITTING RULE ms_group_1 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds_0,read_ds_1,read_ds_2),
+WRITE_STORAGE_UNIT=write_ds,
+READ_STORAGE_UNITS(read_ds_0,read_ds_1,read_ds_2),
 TYPE(NAME="random",PROPERTIES(write_ds=2,read_ds_0=2,read_ds_1=2,read_ds_2=1))
 );
 

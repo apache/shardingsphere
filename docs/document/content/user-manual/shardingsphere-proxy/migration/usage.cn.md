@@ -123,7 +123,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -212,20 +212,6 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | t_order | true   | 100                 | 0                 | 2022-10-13 11:18:15.171 | 2022-10-13 11:18:15.878 | 0                |               |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
-```
-
-数据一致性校验是在后台异步执行的，可以通过如下命令启动或者停止
-
-停止示例：
-
-```sql
-STOP MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
-```
-
-启动示例：
-
-```sql
-START MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
 7. 完成作业。
@@ -331,7 +317,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -411,20 +397,6 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | t_order | true   | 100                 | 0                 | 2022-10-13 11:18:15.171 | 2022-10-13 11:18:15.878 | 0                |               |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
-```
-
-数据一致性校验是在后台异步执行的，可以通过如下命令启动或者停止
-
-停止示例：
-
-```sql
-STOP MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
-```
-
-启动示例：
-
-```sql
-START MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
 7. 完成作业。
@@ -528,7 +500,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -608,20 +580,6 @@ SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | t_order | true   | 100                 | 0                 | 2022-10-13 11:18:15.171 | 2022-10-13 11:18:15.878 | 0                |               |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
-```
-
-数据一致性校验是在后台异步执行的，可以通过如下命令启动或者停止
-
-停止示例：
-
-```sql
-STOP MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
-```
-
-启动示例：
-
-```sql
-START MIGRATION CHECK 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 ```
 
 7. 完成作业。

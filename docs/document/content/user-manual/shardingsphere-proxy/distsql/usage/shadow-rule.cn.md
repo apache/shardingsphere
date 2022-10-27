@@ -54,7 +54,7 @@ t_order_item(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))));
 DROP SHADOW RULE group_0;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;

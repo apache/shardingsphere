@@ -24,9 +24,9 @@ SHOW DEFAULT SHADOW ALGORITHM
 
 SHOW SHADOW ALGORITHMS
 
-shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
+shadowRuleDefinition: ruleName(storageUnitMapping, shadowTableRule [, shadowTableRule] ...)
 
-resourceMapping: SOURCE=resourceName, SHADOW=resourceName
+storageUnitMapping: SOURCE=storageUnitName, SHADOW=storageUnitName
 
 shadowTableRule: tableName(shadowAlgorithm [, shadowAlgorithm] ...)
 
@@ -41,7 +41,7 @@ algorithmProperty: key=value
 | name                | DateType   | Description           |
 |:--------------------|:-----------|:----------------------|
 | ruleName            | IDENTIFIER | Rule name             |
-| resourceName        | IDENTIFIER | Resource name         |
+| storageUnitName     | IDENTIFIER | Storage unit name     |
 | tableName           | IDENTIFIER | Shadow table name     |
 | algorithmName       | IDENTIFIER | Shadow algorithm name |
 | shadowAlgorithmType | STRING     | Shadow algorithm type | 
@@ -49,7 +49,7 @@ algorithmProperty: key=value
 ### Notes
 
 - Duplicate `ruleName` cannot be created
-- `resourceMapping` specifies the mapping relationship between the source database and the shadow library. You need to use the `resource` managed by RDL, please refer to [resource](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)
+- `storageUnitMapping` specifies the mapping relationship between the source database and the shadow library. You need to use the `storage unit` managed by RDL, please refer to [storage unit](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)
 - `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time
 - `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`
 - `shadowTableRule` can be reused by different `shadowRuleDefinition`, so when executing `DROP SHADOW RULE`, the corresponding `shadowTableRule` will not be removed
@@ -79,6 +79,8 @@ DROP SHADOW ALGORITHM simple_hint_algorithm;
 CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
 
 ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar");
+
+SHOW DEFAULT SHADOW ALGORITHM;
 
 DROP DEFAULT SHADOW ALGORITHM;
 ```

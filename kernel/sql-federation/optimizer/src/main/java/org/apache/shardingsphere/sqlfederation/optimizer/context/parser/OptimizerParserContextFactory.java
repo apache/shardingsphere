@@ -21,8 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,7 +46,7 @@ public final class OptimizerParserContextFactory {
     public static Map<String, OptimizerParserContext> create(final Map<String, ShardingSphereDatabase> databases) {
         Map<String, OptimizerParserContext> result = new ConcurrentHashMap<>();
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            DatabaseType databaseType = entry.getValue().getProtocolType();
+            DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(entry.getValue().getProtocolType().getType());
             result.put(entry.getKey(), new OptimizerParserContext(databaseType, createSQLDialectProperties(databaseType)));
         }
         return result;

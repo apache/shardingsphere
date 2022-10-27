@@ -17,7 +17,7 @@ tableDefinition ::=
    tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+    tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
@@ -34,7 +34,7 @@ propertyDefinition ::=
 tableName ::=
   identifier
 
-resourceName ::=
+storageUnitName ::=
   identifier
 
 columnName ::=
@@ -65,7 +65,7 @@ algorithmType ::=
       supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
       with `SHARDING_COLUMNS`.
 - use auto sharding table rule:
-    - `RESOURCES` can only use resources that have been added to the current database, and the required resources can be
+    - `STORAGE_UNITS` can only use storage units that have been registered to the current database, and the required storage units can be
       specified by enumeration or INLINE expression;
     - Only auto sharding algorithm can be used, please refer
       to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#auto-sharding-algorithm).
@@ -166,14 +166,14 @@ CREATE SHARDING TABLE RULE t_order (
 
 ```sql
 CREATE SHARDING TABLE RULE t_order (
-    RESOURCES(ds_0, ds_1),
+    STORAGE_UNITS(ds_0, ds_1),
     SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
 );
 ```
 
 ### Reserved word
 
-`CREATE`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `RESOURCES`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
+`CREATE`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
 
 ### Related links
 
