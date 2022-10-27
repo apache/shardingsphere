@@ -36,9 +36,9 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import java.util.Properties;
 
 /**
- * Set variable statement handler.
+ * Set dist variable statement handler.
  */
-public final class SetVariableHandler extends UpdatableRALBackendHandler<SetDistVariableStatement> {
+public final class SetDistVariableHandler extends UpdatableRALBackendHandler<SetDistVariableStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {

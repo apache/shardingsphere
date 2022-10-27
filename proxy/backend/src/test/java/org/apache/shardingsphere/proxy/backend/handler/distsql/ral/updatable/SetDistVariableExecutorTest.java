@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SetVariableExecutorTest extends ProxyContextRestorer {
+public final class SetDistVariableExecutorTest extends ProxyContextRestorer {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -52,7 +52,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithTransactionType() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(statement, connectionSession);
         handler.execute();
         assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
@@ -61,7 +61,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     @Test
     public void assertExecuteWithAgent() throws SQLException {
         SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(statement, connectionSession);
         handler.execute();
         String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
@@ -73,7 +73,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
         ContextManager contextManager = new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), null);
         ProxyContext.init(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(statement, connectionSession);
         handler.execute();
         Object actualValue = contextManager.getMetaDataContexts().getMetaData().getProps().getProps().get("proxy-frontend-flush-threshold");
