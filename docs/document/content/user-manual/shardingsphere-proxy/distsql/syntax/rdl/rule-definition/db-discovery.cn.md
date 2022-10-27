@@ -40,7 +40,7 @@ databaseDiscoveryHeartbaetDefinition
     discoveryHeartbeatName (PROPERTIES (properties)) 
 
 storageUnits:
-    STORAGE_UNITS(storageUnit [, storageUnit] ...)
+    STORAGE_UNITS(storageUnitName [, storageUnitName] ...)
 
 typeDefinition:
     TYPE(NAME=typeName [, PROPERTIES([properties] )] )
@@ -56,13 +56,13 @@ property:
 ```
 
 ### 参数解释
-| 名称                     | 数据类型    | 说明                          |
-|:------------------------|:-----------|:-----------------------------|
-| discoveryTypeName       | IDENTIFIER | 数据库发现类型名                |
-| ruleName                | IDENTIFIER | 规则名称                       |
-| discoveryHeartbeatName  | IDENTIFIER | 监听心跳名称                    |
-| typeName                | STRING     | 数据库发现类型，如：MySQL.MGR    |
-| storageUnit             | IDENTIFIER | 资源名称                       |
+| 名称                    | 数据类型    | 说明                          |
+|:-----------------------|:-----------|:-----------------------------|
+| discoveryTypeName      | IDENTIFIER | 数据库发现类型名                |
+| ruleName               | IDENTIFIER | 规则名称                       |
+| discoveryHeartbeatName | IDENTIFIER | 监听心跳名称                    |
+| typeName               | STRING     | 数据库发现类型，如：MySQL.MGR    |
+| storageUnitName        | IDENTIFIER | 资源名称                       |
 
 ### 注意事项
 

@@ -80,7 +80,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     }
     
     private List<String> buildResources(final StorageUnitsContext ctx) {
-        return ctx.storageUnit().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
+        return ctx.storageUnitName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
     }
     
     @Override

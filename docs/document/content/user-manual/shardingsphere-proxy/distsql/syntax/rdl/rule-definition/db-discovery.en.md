@@ -40,7 +40,7 @@ databaseDiscoveryHeartbaetDefinition
     discoveryHeartbeatName (PROPERTIES (properties)) 
 
 storageUnits:
-    STORAGE_UNITS(storageUnit [, storageUnit] ...)
+    STORAGE_UNITS(storageUnitName [, storageUnitName] ...)
 
 typeDefinition:
     TYPE(NAME=typeName [, PROPERTIES([properties] )] )
@@ -63,7 +63,7 @@ property:
 | ruleName               | IDENTIFIER | Rule name                                   |
 | discoveryHeartbeatName | IDENTIFIER | Detect heartbeat name                       |
 | typeName               | STRING     | Database discovery type, such as: MySQL.MGR |
-| storageUnit            | IDENTIFIER | Storage unit name                           |
+| storageUnitName        | IDENTIFIER | Storage unit name                           |
 
 ### Notes
 

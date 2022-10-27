@@ -56,10 +56,10 @@ ruleName
     ;
 
 storageUnits
-    : STORAGE_UNITS LP storageUnit (COMMA storageUnit)* RP
+    : STORAGE_UNITS LP storageUnitName (COMMA storageUnitName)* RP
     ;
 
-storageUnit
+storageUnitName
     : IDENTIFIER
     ;
 
