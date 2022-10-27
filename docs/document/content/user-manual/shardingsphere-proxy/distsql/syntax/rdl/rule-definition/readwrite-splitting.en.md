@@ -17,7 +17,7 @@ readwriteSplittingRuleDefinition:
               [, loadBalancerDefinition])
 
 staticReadwriteSplittingRuleDefinition:
-    WRITE_STORAGE_UNIT=writeStorageUnitName, READ_STORAGE_UNITS(readStorageUnitName [, readStorageUnitName] ... )
+    WRITE_STORAGE_UNIT=storageUnitName, READ_STORAGE_UNITS(storageUnitName [, storageUnitName] ... )
 
 dynamicReadwriteSplittingRuleDefinition:
     AUTO_AWARE_RESOURCE=resourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
@@ -39,8 +39,7 @@ writeDataSourceQueryEnabled:
 | name                        | DateType   | Description                                                                                                 |
 |:----------------------------|:-----------|:------------------------------------------------------------------------------------------------------------|
 | ruleName                    | IDENTIFIER | Rule name                                                                                                   |
-| writeStorageUnitName        | IDENTIFIER | Write data source name                                                                                      |
-| readStorageUnitName         | IDENTIFIER | Read data source name                                                                                       |
+| storageUnitName             | IDENTIFIER | Registered data source name                                                                                 |
 | autoAwareResourceName       | IDENTIFIER | Database discovery logic data source name                                                                   |
 | writeDataSourceQueryEnabled | BOOLEAN    | All read data source are offline, write data source whether the data source is responsible for read traffic |
 | loadBalancerType            | STRING     | Load balancing algorithm type                                                                               |
