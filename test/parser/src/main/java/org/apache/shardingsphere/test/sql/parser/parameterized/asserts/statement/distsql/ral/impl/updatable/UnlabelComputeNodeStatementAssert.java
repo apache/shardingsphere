@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.UnlabelComputeNodeStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,24 +29,23 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Label instance statement assert.
+ * Unlabel compute node statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LabelInstanceStatementAssert {
+public final class UnlabelComputeNodeStatementAssert {
     
     /**
-     * Assert label instance statement is correct with expected parser result.
+     * Assert unlabel instance compute node is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual label instance statement
-     * @param expected expected label instance statement test case
+     * @param actual actual unlabel compute node statement
+     * @param expected expected unlabel compute node statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final LabelInstanceStatement actual, final LabelInstanceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UnlabelComputeNodeStatement actual, final UnlabelComputeNodeStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
             assertThat(actual.getInstanceId(), is(expected.getInstanceId()));
         }
     }

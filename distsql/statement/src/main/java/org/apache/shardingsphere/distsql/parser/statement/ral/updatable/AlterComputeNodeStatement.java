@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Unlabel instance statement test case.
+ * Alter compute node statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class UnlabelInstanceStatementTestCase extends SQLParserTestCase {
+public final class AlterComputeNodeStatement extends UpdatableRALStatement {
     
-    @XmlAttribute(name = "instance-id")
-    private String instanceId;
+    private final String instanceId;
     
-    @XmlElement(name = "label")
-    private Collection<String> labels;
+    private final String key;
+    
+    private final String value;
 }

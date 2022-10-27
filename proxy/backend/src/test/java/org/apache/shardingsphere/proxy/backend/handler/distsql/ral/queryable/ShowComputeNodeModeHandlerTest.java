@@ -36,14 +36,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowModeInfoHandlerTest extends ProxyContextRestorer {
+public final class ShowComputeNodeModeHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowModeInfoHandler handler = new ShowModeInfoHandler();
+        ShowComputeNodeModeHandler handler = new ShowComputeNodeModeHandler();
         handler.init(new ShowComputeNodeModeStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();

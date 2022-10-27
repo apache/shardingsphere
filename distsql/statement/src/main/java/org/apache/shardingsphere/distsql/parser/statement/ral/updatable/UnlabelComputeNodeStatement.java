@@ -21,16 +21,16 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
+import java.util.Collection;
+
 /**
- * Alter instance statement.
+ * Unlabel compute node statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterInstanceStatement extends UpdatableRALStatement {
+public final class UnlabelComputeNodeStatement extends UpdatableRALStatement {
     
     private final String instanceId;
     
-    private final String key;
-    
-    private final String value;
+    private final Collection<String> labels;
 }

@@ -31,9 +31,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show mode info handler.
+ * Show compute node mode handler.
  */
-public final class ShowModeInfoHandler extends QueryableRALBackendHandler<ShowComputeNodeModeStatement> {
+public final class ShowComputeNodeModeHandler extends QueryableRALBackendHandler<ShowComputeNodeModeStatement> {
     
     private static final String TYPE = "type";
     
