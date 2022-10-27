@@ -40,7 +40,7 @@ public final class ReadwriteSplittingDistSQLTest {
     
     @Test
     public void assertCreateReadwriteSplitting() {
-        String sql = "CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))))";
+        String sql = "CREATE READWRITE_SPLITTING RULE ms_group_0 (WRITE_STORAGE_UNIT=primary_ds, READ_STORAGE_UNITS(replica_ds_0,replica_ds_1), TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))))";
         CreateReadwriteSplittingRuleStatement distSQLStatement = (CreateReadwriteSplittingRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertReadwriteSplittingRuleSegment(distSQLStatement.getRules().iterator().next());
@@ -48,7 +48,7 @@ public final class ReadwriteSplittingDistSQLTest {
     
     @Test
     public void assertAlterReadwriteSplitting() {
-        String sql = "ALTER READWRITE_SPLITTING RULE ms_group_0 (WRITE_RESOURCE=primary_ds, READ_RESOURCES(replica_ds_0,replica_ds_1), TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))))";
+        String sql = "ALTER READWRITE_SPLITTING RULE ms_group_0 (WRITE_STORAGE_UNIT=primary_ds, READ_STORAGE_UNITS(replica_ds_0,replica_ds_1), TYPE(NAME='random', PROPERTIES('read_weight'='2:1'))))";
         AlterReadwriteSplittingRuleStatement distSQLStatement = (AlterReadwriteSplittingRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
         assertReadwriteSplittingRuleSegment(distSQLStatement.getRules().iterator().next());
