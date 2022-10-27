@@ -65,7 +65,7 @@ algorithmType ::=
       supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
       with `SHARDING_COLUMNS`.
 - use auto sharding table rule:
-    - `STORAGE_UNITS` can only use storage units that have been added to the current database, and the required storage units can be
+    - `STORAGE_UNITS` can only use storage units that have been registered to the current database, and the required storage units can be
       specified by enumeration or INLINE expression;
     - Only auto sharding algorithm can be used, please refer
       to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#auto-sharding-algorithm).
