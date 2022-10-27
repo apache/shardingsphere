@@ -28,10 +28,10 @@ ruleDefinition:
     (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
 
 databaseDiscoveryRuleDefinition
-    ruleName (resources, typeDefinition, heartbeatDefinition)
+    ruleName (storageUnits, typeDefinition, heartbeatDefinition)
 
 databaseDiscoveryRuleConstruction
-    ruleName (resources, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
+    ruleName (storageUnits, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
 
 databaseDiscoveryTypeDefinition
     discoveryTypeName (typeDefinition)
@@ -39,8 +39,8 @@ databaseDiscoveryTypeDefinition
 databaseDiscoveryHeartbaetDefinition
     discoveryHeartbeatName (PROPERTIES (properties)) 
 
-resources:
-    RESOURCES(resourceName [, resourceName] ...)
+storageUnits:
+    STORAGE_UNITS(storageUnit [, storageUnit] ...)
 
 typeDefinition:
     TYPE(NAME=typeName [, PROPERTIES([properties] )] )
@@ -56,13 +56,13 @@ property:
 ```
 
 ### 参数解释
-| 名称                     | 数据类型       | 说明                  |
-|:-----------------------|:-----------|:--------------------|
-| discoveryTypeName      | IDENTIFIER | 数据库发现类型名            |
-| ruleName               | IDENTIFIER | 规则名称                |
-| discoveryHeartbeatName | IDENTIFIER | 监听心跳名称              |
-| typeName               | STRING     | 数据库发现类型，如：MySQL.MGR |
-| resourceName           | IDENTIFIER | 资源名称                |
+| 名称                     | 数据类型    | 说明                          |
+|:------------------------|:-----------|:-----------------------------|
+| discoveryTypeName       | IDENTIFIER | 数据库发现类型名                |
+| ruleName                | IDENTIFIER | 规则名称                       |
+| discoveryHeartbeatName  | IDENTIFIER | 监听心跳名称                    |
+| typeName                | STRING     | 数据库发现类型，如：MySQL.MGR    |
+| storageUnit             | IDENTIFIER | 资源名称                       |
 
 ### 注意事项
 
@@ -78,13 +78,13 @@ property:
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='246e9612-aaf1')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -109,7 +109,7 @@ CREATE DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
 );
 
 CREATE DB_DISCOVERY RULE db_discovery_group_1 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE=db_discovery_group_1_mgr,
 HEARTBEAT=db_discovery_group_1_heartbeat
 );
@@ -123,7 +123,7 @@ ALTER DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
 );
 
 ALTER DB_DISCOVERY RULE db_discovery_group_1 (
-RESOURCES(ds_0, ds_1),
+STORAGE_UNITS(ds_0, ds_1),
 TYPE=db_discovery_group_1_mgr,
 HEARTBEAT=db_discovery_group_1_heartbeat
 );

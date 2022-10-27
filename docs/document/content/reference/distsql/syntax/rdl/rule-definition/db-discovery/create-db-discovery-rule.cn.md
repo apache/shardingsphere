@@ -14,15 +14,15 @@ CreateDatabaseDiscoveryRule ::=
   'CREATE' 'DB_DISCOVERY' 'RULE' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) ( ',' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) )*
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
+    ruleName '(' 'STORAGE_UNITS' '(' storageUnit ( ',' storageUnit )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
     
 databaseDiscoveryConstruction ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
+    ruleName '(' 'STORAGE_UNITS' '(' storageUnit ( ',' storageUnit )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
     
 ruleName ::=
   identifier
 
-resourceName ::=
+storageUnit ::=
   identifier
 
 typeName ::=
@@ -43,7 +43,7 @@ discoveryHeartbeatName ::=
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-    RESOURCES(ds_0, ds_1, ds_2),
+    STORAGE_UNITS(ds_0, ds_1, ds_2),
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -53,7 +53,7 @@ CREATE DB_DISCOVERY RULE db_discovery_group_0 (
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_1 (
-    RESOURCES(ds_0, ds_1, ds_2),
+    STORAGE_UNITS(ds_0, ds_1, ds_2),
     TYPE=db_discovery_group_1_mgr,
     HEARTBEAT=db_discovery_group_1_heartbeat
 );
@@ -61,7 +61,7 @@ CREATE DB_DISCOVERY RULE db_discovery_group_1 (
 
 ### 保留字
 
-`CREATE`、`DB_DISCOVERY`、`RULE`、`RESOURCES`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
+`CREATE`、`DB_DISCOVERY`、`RULE`、`STORAGE_UNITS`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
 
 ### 相关链接
 
