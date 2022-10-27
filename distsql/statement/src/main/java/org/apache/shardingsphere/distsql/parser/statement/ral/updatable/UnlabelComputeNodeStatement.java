@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+
+import java.util.Collection;
 
 /**
- * Show mode info statement test case.
+ * Unlabel compute node statement.
  */
-public final class ShowModeInfoStatementTestCase extends SQLParserTestCase {
+@RequiredArgsConstructor
+@Getter
+public final class UnlabelComputeNodeStatement extends UpdatableRALStatement {
+    
+    private final String instanceId;
+    
+    private final Collection<String> labels;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowComputeNodesStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -33,9 +33,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Show instance list handler.
+ * Show compute nodes handler.
  */
-public final class ShowInstanceListHandler extends QueryableRALBackendHandler<ShowInstanceListStatement> {
+public final class ShowComputeNodesHandler extends QueryableRALBackendHandler<ShowComputeNodesStatement> {
     
     private static final String ID = "instance_id";
     

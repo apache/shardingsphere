@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.LabelComputeNodeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowModeInfoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelComputeNodeStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Show mode info statement assert.
+ * Label compute node statement assert.
  */
-public final class ShowModeInfoStatementAssert {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LabelComputeNodeStatementAssert {
     
     /**
-     * Assert show mode info statement is correct with expected parser result.
+     * Assert label compute node statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show mode info statement
-     * @param expected expected show mode info statement test case
+     * @param actual actual label compute node statement
+     * @param expected expected label compute node statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowModeInfoStatement actual, final ShowModeInfoStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final LabelComputeNodeStatement actual, final LabelComputeNodeStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
+            assertThat(actual.getInstanceId(), is(expected.getInstanceId()));
         }
     }
 }

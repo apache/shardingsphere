@@ -15,12 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Show instance list statement.
+ * Alter compute node statement.
  */
-public final class ShowInstanceListStatement extends QueryableRALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterComputeNodeStatement extends UpdatableRALStatement {
+    
+    private final String instanceId;
+    
+    private final String key;
+    
+    private final String value;
 }

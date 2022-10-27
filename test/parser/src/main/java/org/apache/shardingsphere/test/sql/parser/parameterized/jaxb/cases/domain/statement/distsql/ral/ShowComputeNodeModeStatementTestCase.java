@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Show instance list statement test case.
+ * Show compute node mode statement test case.
  */
-public final class ShowInstanceListStatementTestCase extends SQLParserTestCase {
+public final class ShowComputeNodeModeStatementTestCase extends SQLParserTestCase {
 }
