@@ -196,14 +196,14 @@ DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor;
 *Auto Table*
 ```sql
 CREATE SHARDING TABLE RULE t_order (
-STORAGE_UNITS(storageUnit_0,storageUnit_1),
+STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order (
-STORAGE_UNITS(storageUnit_0,storageUnit_1,storageUnit_2,storageUnit_3),
+STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
 SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
@@ -222,21 +222,21 @@ TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 
 );
 
 CREATE SHARDING TABLE RULE t_order_item (
-DATANODES("storageUnit_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="storageUnit_${user_id % 2}")))),
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),
 AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME="inline",PROPERTIES("algorithm-expression"="storageUnit_${user_id % 4}"))
+TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}"))
 ),table_inline (
 TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
 );
 
 ALTER SHARDING TABLE RULE t_order_item (
-DATANODES("storageUnit_${0..3}.t_order_item${0..3}"),
+DATANODES("ds_${0..3}.t_order_item${0..3}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
 TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
 KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator),

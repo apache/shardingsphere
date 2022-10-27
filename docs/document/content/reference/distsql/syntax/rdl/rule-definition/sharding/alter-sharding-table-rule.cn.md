@@ -17,7 +17,7 @@ tableDefinition ::=
    tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'STORAGE_UNITS' '(' storageUnit ( ',' storageUnit )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ','  'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+    tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ','  'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
@@ -39,7 +39,7 @@ propertyDefinition ::=
 tableName ::=
   identifier
 
-storageUnit ::=
+storageUnitName ::=
   identifier
 
 columnName ::=
@@ -91,7 +91,7 @@ ALTER SHARDING ALGORITHM database_inline (
 
 -- 修改分片规则为指定分片算法
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("storageUnit_${0..3}.t_order_item${0..3}"),
+    DATANODES("ds_${0..3}.t_order_item${0..3}"),
     DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
     TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
@@ -114,7 +114,7 @@ ALTER DEFAULT SHARDING DATABASE STRATEGY (
 
 -- 修改分片规则为指定分片算法
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("storageUnit_${0..3}.t_order_item${0..3}"),
+    DATANODES("ds_${0..3}.t_order_item${0..3}"),
     TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
@@ -141,7 +141,7 @@ ALTER DEFAULT SHARDING TABLE STRATEGY (
 
 -- 修改分片规则
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("storageUnit_${0..3}.t_order_item${0..3}")
+    DATANODES("ds_${0..3}.t_order_item${0..3}")
 );
 ```
 
@@ -149,7 +149,7 @@ ALTER SHARDING TABLE RULE t_order (
 
 ```sql
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("storageUnit_${0..3}.t_order_item${0..3}"),
+    DATANODES("ds_${0..3}.t_order_item${0..3}"),
     DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
     TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
 );
