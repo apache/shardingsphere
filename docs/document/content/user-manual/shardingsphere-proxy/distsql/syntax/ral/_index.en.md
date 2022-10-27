@@ -27,11 +27,14 @@ RAL (Resource & Rule Administration Language) responsible for hint, circuit brea
 | SHOW MIGRATION STATUS jobId                             | Query migration status                         | SHOW MIGRATION STATUS 1234                      |
 | STOP MIGRATION jobId                                    | Stop migration                                 | STOP MIGRATION 1234                             |
 | START MIGRATION jobId                                   | Start stopped migration                        | START MIGRATION 1234                            |
-| ROLLBACK MIGRATION jobId                                | Rollback migration                             | ROLLBACK MIGRATION 1234                         |
-| COMMIT MIGRATION jobId                                  | Commit migration                               | COMMIT MIGRATION 1234                           |
 | CHECK MIGRATION jobId                                   | Data consistency check                         | CHECK MIGRATION 1234                            |
 | SHOW MIGRATION CHECK ALGORITHMS                         | Show available consistency check algorithms    | SHOW MIGRATION CHECK ALGORITHMS                 |
-| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | Data consistency check with defined algorithm  | CHECK MIGRATION 1234 by type(name="DATA_MATCH") |
+| CHECK MIGRATION jobId BY TYPE(NAME=algorithmTypeName)   | Data consistency check with defined algorithm  | CHECK MIGRATION 1234 BY TYPE(NAME="DATA_MATCH") |
+| SHOW MIGRATION CHECK STATUS jobId                       | Query data consistency check status            | SHOW MIGRATION CHECK STATUS 1234                |
+| STOP MIGRATION CHECK jobId                              | Stop data consistency check                    | STOP MIGRATION CHECK 1234                       |
+| START MIGRATION CHECK jobId                             | Start data consistency check                   | START MIGRATION CHECK 1234                      |
+| ROLLBACK MIGRATION jobId                                | Rollback migration                             | ROLLBACK MIGRATION 1234                         |
+| COMMIT MIGRATION jobId                                  | Commit migration                               | COMMIT MIGRATION 1234                           |
 
 ## Circuit Breaker
 
