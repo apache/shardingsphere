@@ -20,7 +20,7 @@ staticReadwriteSplittingRuleDefinition:
     WRITE_STORAGE_UNIT=storageUnitName, READ_STORAGE_UNITS(storageUnitName [, storageUnitName] ... )
 
 dynamicReadwriteSplittingRuleDefinition:
-    AUTO_AWARE_RESOURCE=resourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
+    AUTO_AWARE_RESOURCE=autoAwareResourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
 
 loadBalancerDefinition:
     TYPE(NAME=loadBalancerType [, PROPERTIES([algorithmProperties] )] )

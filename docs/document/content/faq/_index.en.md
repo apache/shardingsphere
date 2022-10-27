@@ -95,9 +95,9 @@ Answer:
 
 Answer:
 
-1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `database` or does not add a `resource`, ShardingSphere-Proxy cannot execute SQL.
-2. It is recommended to create `database` and `resource` first, and then use third-party database tools to connect.
-3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) the details about `resource`.
+1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `database` or does not add a `Storage Unit`, ShardingSphere-Proxy cannot execute SQL.
+2. It is recommended to create `database` and `storage unit` first, and then use third-party database tools to connect.
+3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) the details about `storage unit`.
 
 ## Sharding
 
@@ -186,7 +186,7 @@ Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
-3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) for above rules.
+3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) for above rules.
 
 ### [DistSQL] How to solve ` Resource [xxx] is still used by [SingleTableRule].` exception when dropping a data source using DistSQL?
 
@@ -195,7 +195,7 @@ Answer：
 1. Resources referenced by rules cannot be deleted
 2. If the resource is only referenced by single table rule, and the user confirms that the restriction can be ignored, the optional parameter ignore single tables can be added to perform forced deletion
 ```
-DROP RESOURCE dataSourceName [, dataSourceName] ... [ignore single tables]
+UNREGISTER STORAGE UNIT storageUnitName [, storageUnitName] ... [ignore single tables]
 ```
 
 ### [DistSQL] How to solve ` Failed to get driver instance for jdbcURL=xxx.` exception when adding a data source using DistSQL?
@@ -204,7 +204,7 @@ Answer：
 
 ShardingSphere Proxy do not have jdbc driver during deployment. Some example of this include `mysql-connector`. To use it otherwise following syntax can be used:
 ```
-ADD RESOURCE dataSourceName [..., dataSourceName]
+REGISTER STORAGE UNIT storageUnit [..., storageUnit]
 ```
 
 ## Other
