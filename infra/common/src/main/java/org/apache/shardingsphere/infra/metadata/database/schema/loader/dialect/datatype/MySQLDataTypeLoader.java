@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatypeloader;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatype;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
 

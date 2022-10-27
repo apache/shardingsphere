@@ -53,7 +53,7 @@ public final class SchemaTableNamesLoaderTest {
     private ResultSet mockResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
-        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl");
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl");
         return result;
     }
     
