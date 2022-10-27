@@ -70,31 +70,31 @@ public final class PipelineDistributedBarrier {
     /**
      * Register count down latch.
      *
-     * @param jobId job id
+     * @param jobId jobId job id
+     * @param barrierPath barrier path
      * @param totalCount total count
      */
-    public void register(final String jobId, final int totalCount) {
-        if (!getRepository().isExisted(PipelineMetaDataNode.getJobRootPath(jobId))) {
+    public void register(final String jobId, final String barrierPath, final int totalCount) {
+        String jobRootPath = PipelineMetaDataNode.getJobRootPath(jobId);
+        if (!getRepository().isExisted(jobRootPath)) {
             return;
         }
-        String parentPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
-        getRepository().persist(parentPath, "");
-        countDownLatchMap.computeIfAbsent(parentPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
+        getRepository().persist(barrierPath, "");
+        countDownLatchMap.computeIfAbsent(barrierPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
     }
     
     /**
      * Persist ephemeral children node.
      *
-     * @param jobId job id
+     * @param barrierPath barrier path
      * @param shardingItem sharding item
      */
-    public void persistEphemeralChildrenNode(final String jobId, final int shardingItem) {
-        String parentPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
-        if (!getRepository().isExisted(parentPath)) {
-            log.info("parent path {} not exist, ignore", parentPath);
+    public void persistEphemeralChildrenNode(final String barrierPath, final int shardingItem) {
+        if (!getRepository().isExisted(barrierPath)) {
+            log.info("barrier path {} not exist, ignore", barrierPath);
             return;
         }
-        String key = String.join("/", parentPath, Integer.toString(shardingItem));
+        String key = String.join("/", barrierPath, Integer.toString(shardingItem));
         getRepository().delete(key);
         getRepository().persistEphemeral(key, "");
     }
@@ -102,35 +102,33 @@ public final class PipelineDistributedBarrier {
     /**
      * Persist ephemeral children node.
      *
-     * @param jobId job id
+     * @param barrierPath barrier path
      */
-    public void unregister(final String jobId) {
-        String parentPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
-        getRepository().delete(String.join("/", parentPath));
-        InnerCountDownLatchHolder holder = countDownLatchMap.remove(parentPath);
+    public void unregister(final String barrierPath) {
+        getRepository().delete(String.join("/", barrierPath));
+        InnerCountDownLatchHolder holder = countDownLatchMap.remove(barrierPath);
         if (null != holder) {
             holder.getCountDownLatch().countDown();
         }
     }
     
     /**
-     * Await until all children node is ready.
+     * Await barrier path all children node is ready.
      *
-     * @param jobId job id
+     * @param barrierPath barrier path
      * @param timeout timeout
      * @param timeUnit time unit
      * @return true if the count reached zero and false if the waiting time elapsed before the count reached zero
      */
-    public boolean await(final String jobId, final long timeout, final TimeUnit timeUnit) {
-        String parentPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
-        InnerCountDownLatchHolder holder = countDownLatchMap.get(parentPath);
+    public boolean await(final String barrierPath, final long timeout, final TimeUnit timeUnit) {
+        InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
         if (null == holder) {
             return false;
         }
         try {
             boolean result = holder.getCountDownLatch().await(timeout, timeUnit);
             if (!result) {
-                log.info("await timeout, parent path: {}, timeout: {}, time unit: {}", parentPath, timeout, timeUnit);
+                log.info("await timeout, barrier path: {}, timeout: {}, time unit: {}", barrierPath, timeout, timeUnit);
             }
             return result;
         } catch (final InterruptedException ignored) {
@@ -139,7 +137,7 @@ public final class PipelineDistributedBarrier {
     }
     
     /**
-     * Check child node count equal shardingCount.
+     * Check child node count equal sharding count.
      *
      * @param event event
      */
@@ -147,12 +145,12 @@ public final class PipelineDistributedBarrier {
         if (Strings.isNullOrEmpty(event.getKey())) {
             return;
         }
-        String parentPath = event.getKey().substring(0, event.getKey().lastIndexOf("/"));
-        InnerCountDownLatchHolder holder = countDownLatchMap.get(parentPath);
+        String barrierPath = event.getKey().substring(0, event.getKey().lastIndexOf("/"));
+        InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
         if (null == holder) {
             return;
         }
-        List<String> childrenKeys = getRepository().getChildrenKeys(parentPath);
+        List<String> childrenKeys = getRepository().getChildrenKeys(barrierPath);
         log.info("children keys: {}, total count: {}", childrenKeys, holder.getTotalCount());
         if (childrenKeys.size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();

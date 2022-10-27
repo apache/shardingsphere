@@ -42,30 +42,32 @@ public final class PipelineDistributedBarrierTest {
     
     @Test
     public void assertRegisterAndRemove() throws NoSuchFieldException, IllegalAccessException {
-        String jobId = "123";
+        String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
-        repository.persist(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), "");
+        repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
-        instance.register(jobId, 1);
+        String parentPath = "/barrier";
+        instance.register(jobId, parentPath, 1);
         Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
         assertNotNull(countDownLatchMap);
-        assertTrue(countDownLatchMap.containsKey(PipelineMetaDataNode.getJobBarrierEnablePath(jobId)));
-        instance.unregister(jobId);
-        assertFalse(countDownLatchMap.containsKey(jobId));
+        assertTrue(countDownLatchMap.containsKey(parentPath));
+        instance.unregister(parentPath);
+        assertFalse(countDownLatchMap.containsKey(parentPath));
     }
     
     @Test
     public void assertAwait() {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
-        repository.persist(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), "");
+        repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
-        instance.register(jobId, 1);
-        instance.persistEphemeralChildrenNode(jobId, 1);
-        boolean actual = instance.await(jobId, 1, TimeUnit.SECONDS);
+        String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
+        instance.register(jobId, barrierEnablePath, 1);
+        instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
+        boolean actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
         assertFalse(actual);
-        instance.checkChildrenNodeCount(new DataChangedEvent(PipelineMetaDataNode.getJobBarrierEnablePath(jobId) + "/0", "", Type.ADDED));
-        actual = instance.await(jobId, 1, TimeUnit.SECONDS);
+        instance.checkChildrenNodeCount(new DataChangedEvent(barrierEnablePath + "/0", "", Type.ADDED));
+        actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
         assertTrue(actual);
     }
 }

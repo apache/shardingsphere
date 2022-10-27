@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 
@@ -69,7 +70,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     protected void addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
         tasksRunnerMap.put(shardingItem, tasksRunner);
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        distributedBarrier.persistEphemeralChildrenNode(getJobId(), shardingItem);
+        distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
     }
     
     protected boolean containsTasksRunner(final int shardingItem) {

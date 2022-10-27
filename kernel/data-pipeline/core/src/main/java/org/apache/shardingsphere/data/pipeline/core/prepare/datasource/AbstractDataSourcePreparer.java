@@ -83,7 +83,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 statement.execute(sql);
             }
         } catch (final SQLException ex) {
-            log.warn(ex.getMessage());
+            log.error(ex.getMessage());
         }
     }
     
