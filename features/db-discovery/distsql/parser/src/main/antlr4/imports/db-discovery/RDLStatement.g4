@@ -40,7 +40,7 @@ dropDatabaseDiscoveryHeartbeat
     ;
 
 databaseDiscoveryRule
-    : ruleName LP resources COMMA typeDefinition COMMA discoveryHeartbeat RP
+    : ruleName LP storageUnits COMMA typeDefinition COMMA discoveryHeartbeat RP
     ;
 
 databaseDiscoveryTypeDefinition
@@ -55,11 +55,11 @@ ruleName
     : IDENTIFIER
     ;
 
-resources
-    : RESOURCES LP resourceName (COMMA resourceName)* RP
+storageUnits
+    : STORAGE_UNITS LP storageUnitName (COMMA storageUnitName)* RP
     ;
 
-resourceName
+storageUnitName
     : IDENTIFIER
     ;
 

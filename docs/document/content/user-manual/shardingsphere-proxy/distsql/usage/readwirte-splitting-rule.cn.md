@@ -49,7 +49,7 @@ TYPE(NAME="random",PROPERTIES("read_weight"="2:0"))
 DROP READWRITE_SPLITTING RULE group_0;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
 UNREGISTER STORAGE UNIT write_ds,read_ds;

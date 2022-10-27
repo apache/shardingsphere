@@ -6,12 +6,9 @@ weight = 2
 ## 定义
 
 ```sql
-SET DEFAULT SINGLE TABLE storageUnitDefinition
-
-storageUnitDefinition:
-    STORAGE UNIT = storageUnitName | RANDOM
+SET DEFAULT SINGLE TABLE STORAGE UNIT = (storageUnitName | RANDOM)
 ```
-- `STORAGE UNIT` 需使用 RDL 管理的存储单元。RANDOM 关键字代表随机存储。
+- `storageUnitName` 需使用 RDL 管理的存储单元。`RANDOM` 代表随机存储。
 
 
 ## 示例
