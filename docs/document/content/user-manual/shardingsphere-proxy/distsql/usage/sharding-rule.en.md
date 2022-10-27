@@ -59,7 +59,7 @@ DROP TABLE t_order;
 DROP SHARDING TABLE RULE t_order;
 ```
 
-- Drop storage unit
+- Unregister storage unit
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0, ds_1;

@@ -67,7 +67,7 @@ DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 ```
 
-- Drop storage unit
+- Unregister storage unit
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;
