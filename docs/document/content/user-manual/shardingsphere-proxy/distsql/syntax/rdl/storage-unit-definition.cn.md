@@ -27,15 +27,15 @@ property:
 
 ### 参数解释
 
-| 名称                 | 数据类型    | 说明     |
-|:-------------------|:-----------|:-------|
-| storageUnitName    | IDENTIFIER | 存储单元名称 |
-| hostname           | STRING     | 数据源地址  |
-| port               | INT        | 数据源端口  |
-| dbName             | STRING     | 物理库名称  |
-| url                | STRING     | URL 地址 |
-| user               | STRING     | 用户名    |
-| password           | STRING     | 密码     |
+| 名称              | 数据类型    | 说明          |
+|:-----------------|:-----------|:-------------|
+| storageUnitName  | IDENTIFIER | 存储单元名称   |
+| hostname         | STRING     | 数据源地址     |
+| port             | INT        | 数据源端口     |
+| dbName           | STRING     | 物理库名称     |
+| url              | STRING     | URL 地址      |
+| user             | STRING     | 用户名        |
+| password         | STRING     | 密码          |
 
 ### 注意事项
 
@@ -52,43 +52,43 @@ property:
 ## 示例
 
 ```sql
-REGISTER STORAGE UNIT su_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),su_1 (
+),ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db1",
     USER="root"
-),su_2 (
+),ds_2 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db2",
     USER="root",
     PROPERTIES("maximumPoolSize"="10")
-),su_3 (
+),ds_3 (
     URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-ALTER STORAGE UNIT su_0 (
+ALTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3309,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),su_1 (
+),ds_1 (
     URL="jdbc:mysql://127.0.0.1:3309/db1?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-UNREGISTER STORAGE UNIT su_0, su_1;
-UNREGISTER STORAGE UNIT su_2, su_3 ignore single tables;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
+UNREGISTER STORAGE UNIT ds_2, ds_3 ignore single tables;
 ```

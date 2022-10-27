@@ -119,7 +119,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -314,7 +314,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -497,7 +497,7 @@ REGISTER STORAGE UNIT ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
