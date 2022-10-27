@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatypeloader;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatype;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
 
@@ -25,9 +25,9 @@ import java.sql.Types;
 import java.util.Map;
 
 /**
- * MySQL data type loader.
+ * Oracle data type loader.
  */
-public final class MySQLDataTypeLoader extends AbstractDataTypeLoader {
+public final class OracleDataTypeLoader extends AbstractDataTypeLoader {
     
     /**
      * Load data type.
@@ -38,19 +38,12 @@ public final class MySQLDataTypeLoader extends AbstractDataTypeLoader {
      */
     public Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
         Map<String, Integer> result = super.load(database);
-        result.putIfAbsent("JSON", Types.LONGVARCHAR);
-        result.putIfAbsent("GEOMETRY", Types.BINARY);
-        result.putIfAbsent("YEAR", Types.DATE);
-        result.putIfAbsent("POINT", Types.BINARY);
-        result.putIfAbsent("MULTIPOINT", Types.BINARY);
-        result.putIfAbsent("POLYGON", Types.BINARY);
-        result.putIfAbsent("MULTIPOLYGON", Types.BINARY);
-        result.putIfAbsent("MULTILINESTRING", Types.BINARY);
+        result.putIfAbsent("NUMBER", Types.NUMERIC);
         return result;
     }
     
     @Override
     public String getType() {
-        return "MySQL";
+        return "Oracle";
     }
 }
