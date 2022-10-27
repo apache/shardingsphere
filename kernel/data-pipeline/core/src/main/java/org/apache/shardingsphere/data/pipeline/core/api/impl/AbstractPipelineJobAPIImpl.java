@@ -139,7 +139,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.getProps().setProperty("stop_time_millis", System.currentTimeMillis() + "");
         pipelineDistributedBarrier.register(jobId, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        pipelineDistributedBarrier.await(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), 5, TimeUnit.SECONDS);
+        pipelineDistributedBarrier.await(jobId, 5, TimeUnit.SECONDS);
     }
     
     protected void dropJob(final String jobId) {
