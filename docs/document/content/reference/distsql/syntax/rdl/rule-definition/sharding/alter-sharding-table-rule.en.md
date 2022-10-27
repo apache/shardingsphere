@@ -17,7 +17,7 @@ tableDefinition ::=
    tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+    tableName '(' 'STORAGE_UNITS' '(' storageUnit ( ',' storageUnit )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
@@ -39,7 +39,7 @@ propertyDefinition ::=
 tableName ::=
   identifier
 
-resourceName ::=
+storageUnit ::=
   identifier
 
 columnName ::=
@@ -70,7 +70,7 @@ strategyType ::=
       supports `STANDARD`, `COMPLEX`. Using `COMPLEX` requires specifying multiple sharding columns
       with `SHARDING_COLUMNS`.
 - use auto sharding table rule:
-    - `RESOURCES` can only use resources that have been added to the current database, and the required resources can be
+    - `STORAGE_UNITS` can only use resources that have been added to the current database, and the required resources can be
       specified by enumeration or INLINE expression;
     - Only auto sharding algorithm can be used, please refer
       to [Auto Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/#auto-sharding-algorithm).
@@ -101,7 +101,7 @@ ALTER SHARDING ALGORITHM database_inline (
 
 -- alter a sharding rule to the specified sharding algorithms being altered
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("resource_${0..3}.t_order_item${0..3}"),
+    DATANODES("storageUnit_${0..3}.t_order_item${0..3}"),
     DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
     TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
@@ -124,7 +124,7 @@ ALTER DEFAULT SHARDING DATABASE STRATEGY (
 
 -- alter a sharding table rule to the specified sharding algorithm being altered
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("resource_${0..3}.t_order_item${0..3}"),
+    DATANODES("storageUnit_${0..3}.t_order_item${0..3}"),
     TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
 );
 ```
@@ -151,7 +151,7 @@ ALTER DEFAULT SHARDING TABLE STRATEGY (
 
 -- alter a sharding table rule
 ALTER SHARDING TABLE RULE t_order (
-    DATANODES("resource_${0..3}.t_order_item${0..3}")
+    DATANODES("storageUnit_${0..3}.t_order_item${0..3}")
 );
 ```
 
@@ -178,7 +178,7 @@ ALTER SHARDING TABLE RULE t_order (
 
 ### Reserved word
 
-`ALTER`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `RESOURCES`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
+`ALTER`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
 
 ### Related links
 
