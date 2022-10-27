@@ -174,3 +174,23 @@ RESOURCE
 RESOURCES
     : R E S O U R C E S
     ;
+
+REGISTER
+    : R E G I S T E R
+    ;
+
+UNREGISTER
+    : U N R E G I S T E R
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+UNIT
+    : U N I T
+    ;
+
+UNITS
+    : U N I T S
+    ;

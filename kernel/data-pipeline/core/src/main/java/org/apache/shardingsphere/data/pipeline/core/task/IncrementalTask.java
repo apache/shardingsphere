@@ -42,6 +42,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDump
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -65,6 +66,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     @Getter
     private final IncrementalTaskProgress taskProgress;
     
+    // TODO simplify parameters
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalExecuteEngine,
@@ -82,8 +84,9 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position, final InventoryIncrementalJobItemProgress jobItemProgress) {
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
         incrementalTaskProgress.setPosition(position);
-        if (null != jobItemProgress) {
-            incrementalTaskProgress.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay());
+        if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
+            Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
+                    .ifPresent(optional -> incrementalTaskProgress.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
         return incrementalTaskProgress;
     }
@@ -123,6 +126,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             public void onFailure(final Throwable throwable) {
                 log.error("incremental dumper onFailure, taskId={}", taskId);
                 stop();
+                close();
             }
         });
         CompletableFuture<?> importerFuture = incrementalExecuteEngine.submitAll(importers, new ExecuteCallback() {
@@ -136,6 +140,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             public void onFailure(final Throwable throwable) {
                 log.error("importer onFailure, taskId={}", taskId, throwable);
                 stop();
+                close();
             }
         });
         return CompletableFuture.allOf(dumperFuture, importerFuture);

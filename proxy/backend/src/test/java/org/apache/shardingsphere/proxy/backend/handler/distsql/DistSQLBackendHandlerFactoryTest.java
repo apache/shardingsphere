@@ -91,7 +91,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
         return result;
@@ -245,7 +245,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     private MetaDataContexts mockMetaDataContexts() {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getResourceMetaData().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));

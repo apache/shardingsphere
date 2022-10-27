@@ -20,9 +20,9 @@ table:
 
 ### Single Table Storage Unit
 
-| 列                  | 说明      |
-|--------------------|---------|
-| storage_unit_name  | 存储单元名称  |
+| 列                  | 说明           |
+|--------------------|----------------|
+| storage_unit_name  | 存储单元名称     |
 
 ### Single Table
 
@@ -33,11 +33,11 @@ table:
 
 ### Single Table Rule Count
 
-| 列        | 说明                 |
-|-----------|---------------------|
-| rule_name | 规则名称              |
-| database  | 单表所在的数据库名称    |
-| count     | 规则个数              |
+| 列          | 说明                 |
+|------------|---------------------|
+| rule_name  | 规则名称              |
+| database   | 单表所在的数据库名称    |
+| count      | 规则个数              |
 
 ## 示例
 

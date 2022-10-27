@@ -21,9 +21,9 @@
     
     <refresh-table-metadata sql-case-id="refresh-table-metadata" />
     <refresh-table-metadata sql-case-id="refresh-table-metadata-with-table-name" table-name="t_order" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" resource-name="ds_0" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" resource-name="ds_0" schema-name="public" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" resource-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" storage-unit-name="ds_0" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" storage-unit-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" storage-unit-name="ds_0" schema-name="public" />
     
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
         <sql-parser sqlCommentParseEnabled="false">

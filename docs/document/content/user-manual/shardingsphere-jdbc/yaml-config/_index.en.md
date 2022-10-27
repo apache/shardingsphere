@@ -9,6 +9,9 @@ chapter = true
 YAML configuration provides interaction with ShardingSphere JDBC through configuration files.
 When used with the governance module together, the configuration of persistence in the configuration center is YAML format.
 
+Note:
+The YAML configuration file supports more than 3MB of configuration content.
+
 YAML configuration is the most common configuration mode, which can omit the complexity of programming and simplify user configuration.
 
 ## Usage

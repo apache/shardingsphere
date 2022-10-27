@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.fixture;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.SQLExecutionUnitBuilder;
@@ -25,7 +26,7 @@ public final class FixtureSQLExecutionUnitBuilder implements SQLExecutionUnitBui
     
     @Override
     public FixtureDriverExecutionUnit build(final ExecutionUnit executionUnit, final FixtureExecutorStatementManager executorManager,
-                                            final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option) {
+                                            final Object connection, final ConnectionMode connectionMode, final FixtureStorageResourceOption option, final DatabaseType databaseType) {
         return new FixtureDriverExecutionUnit();
     }
     

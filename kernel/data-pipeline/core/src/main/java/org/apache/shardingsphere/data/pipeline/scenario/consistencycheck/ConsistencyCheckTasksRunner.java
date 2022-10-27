@@ -108,15 +108,11 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         }
         
         @Override
-        protected void doStop() {
+        protected void doStop() throws SQLException {
             DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm;
             log.info("doStop, algorithm={}", algorithm);
             if (null != algorithm) {
-                try {
-                    algorithm.cancel();
-                } catch (final SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+                algorithm.cancel();
             }
         }
     }

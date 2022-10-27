@@ -40,7 +40,7 @@ public final class ShadowDistSQLTest {
     
     @Test
     public void assertCreateShadowRule() {
-        String sql = "CREATE SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((simple_hint_algorithm,TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar')))))";
+        String sql = "CREATE SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order(TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar'))))";
         CreateShadowRuleStatement shadowDistSQLStatement = (CreateShadowRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(shadowDistSQLStatement.getRules().size(), is(1));
         assertShadowRuleSegment(shadowDistSQLStatement.getRules().iterator().next());
@@ -48,7 +48,7 @@ public final class ShadowDistSQLTest {
     
     @Test
     public void assertAlterShadowRule() {
-        String sql = "ALTER SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order((simple_hint_algorithm,TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar')))))";
+        String sql = "ALTER SHADOW RULE `shadow_rule`(SOURCE=demo_ds,SHADOW=demo_ds_shadow,t_order(TYPE(NAME='SIMPLE_HINT',PROPERTIES('shadow'='true','foo'='bar'))))";
         AlterShadowRuleStatement shadowDistSQLStatement = (AlterShadowRuleStatement) getShadowDistSQLStatement(sql);
         assertThat(shadowDistSQLStatement.getRules().size(), is(1));
         assertShadowRuleSegment(shadowDistSQLStatement.getRules().iterator().next());
@@ -61,7 +61,7 @@ public final class ShadowDistSQLTest {
         assertThat(shadowRuleSegment.getShadowTableRules().size(), is(1));
         assertThat(shadowRuleSegment.getShadowTableRules().containsKey("t_order"), is(true));
         ShadowAlgorithmSegment shadowAlgorithmSegment = shadowRuleSegment.getShadowTableRules().get("t_order").iterator().next();
-        assertThat(shadowAlgorithmSegment.getAlgorithmName(), is("simple_hint_algorithm"));
+        assertThat(shadowAlgorithmSegment.getAlgorithmName(), is("shadow_rule_t_order_simple_hint_0"));
         assertThat(shadowAlgorithmSegment.getAlgorithmSegment().getName(), is("SIMPLE_HINT"));
         Properties properties = new Properties();
         properties.setProperty("shadow", "true");

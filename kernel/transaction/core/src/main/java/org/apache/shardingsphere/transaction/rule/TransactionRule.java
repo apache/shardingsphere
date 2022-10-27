@@ -70,7 +70,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             ShardingSphereDatabase database = entry.getValue();
             database.getResourceMetaData().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
-            database.getResourceMetaData().getDatabaseTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
+            database.getResourceMetaData().getStorageTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
         }
         if (dataSourceMap.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine();

@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <show-migration-source-resources sql-case-id="show-migration-source-resources" />
+    <show-migration-source-storage-units sql-case-id="show-migration-source-storage-units" />
     <show-migration-list sql-case-id="show-migration-list" />
     <show-migration-check-algorithms sql-case-id="show-migration-check-algorithms" />
     
@@ -86,8 +86,16 @@
         <job-id>123</job-id>
     </start-migration>
     
-    <drop-migration-source-resource sql-case-id="drop-migration-source-resource">
+    <start-migration-check sql-case-id="start-migration-check">
+        <job-id>123</job-id>
+    </start-migration-check>
+    
+    <stop-migration-check sql-case-id="stop-migration-check">
+        <job-id>123</job-id>
+    </stop-migration-check>
+    
+    <unregister-migration-source-storage-unit sql-case-id="unregister-migration-source-storage-unit">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
-    </drop-migration-source-resource>
+    </unregister-migration-source-storage-unit>
 </sql-parser-test-cases>

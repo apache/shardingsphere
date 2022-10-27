@@ -72,7 +72,7 @@ public final class AdvancedSQLFederationExecutorTest {
     
     private ShardingSphereResourceMetaData mockResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        when(result.getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(result.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new H2DatabaseType()));
         return result;
     }
     

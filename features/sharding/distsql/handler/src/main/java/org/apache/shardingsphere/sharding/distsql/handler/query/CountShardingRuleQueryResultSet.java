@@ -41,9 +41,9 @@ public final class CountShardingRuleQueryResultSet implements DatabaseDistSQLRes
     
     private static final String SHARDING_TABLE = "sharding_table";
     
-    private static final String SHARDING_BINDING_TABLE = "sharding_binding_table";
+    private static final String SHARDING_BINDING_TABLE = "sharding_table_reference";
     
-    private static final String SHARDING_BROADCAST_TABLE = "sharding_broadcast_table";
+    private static final String SHARDING_BROADCAST_TABLE = "broadcast_table";
     
     private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     

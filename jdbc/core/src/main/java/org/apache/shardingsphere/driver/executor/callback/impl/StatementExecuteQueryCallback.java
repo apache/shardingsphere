@@ -25,14 +25,16 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 /**
  * Statement execute query callback.
  */
 public final class StatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public StatementExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown, final EventBusContext eventBusContext) {
-        super(databaseType, sqlStatement, isExceptionThrown, eventBusContext);
+    public StatementExecuteQueryCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown,
+                                         final EventBusContext eventBusContext) {
+        super(protocolType, storageTypes, sqlStatement, isExceptionThrown, eventBusContext);
     }
     
     @Override

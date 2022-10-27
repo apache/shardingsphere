@@ -22,6 +22,8 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,5 +87,16 @@ public final class PipelineJobCenter {
         }
         Optional<PipelineTasksRunner> tasksRunner = job.getTasksRunner(shardingItem);
         return tasksRunner.map(PipelineTasksRunner::getJobItemContext);
+    }
+    
+    /**
+     * Get sharding items.
+     *
+     * @param jobId job id
+     * @return sharding items.
+     */
+    public static Collection<Integer> getShardingItems(final String jobId) {
+        PipelineJob pipelineJob = JOB_MAP.get(jobId);
+        return null == pipelineJob ? Collections.emptyList() : pipelineJob.getShardingItems();
     }
 }

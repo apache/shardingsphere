@@ -46,6 +46,6 @@ public final class PluginConfiguration {
      */
     public void validate(final String type) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(host), "Hostname of %s is required", type);
-        Preconditions.checkArgument(port > 0, "Port `%d` of %s must be a positive number", port, type);
+        Preconditions.checkArgument(port > 0, "Port `%s` of %s must be a positive number", port, type);
     }
 }

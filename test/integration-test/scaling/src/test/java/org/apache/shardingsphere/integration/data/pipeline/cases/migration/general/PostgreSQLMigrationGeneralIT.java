@@ -119,7 +119,9 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         Comparable<?> recordId = KEY_GENERATE_ALGORITHM.generateKey();
         sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
         startMigrationByJobId(jobId);
-        assertProxyOrderRecordExist(recordId);
+        // must refresh firstly, otherwise proxy can't get schema and table info
+        proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
+        assertProxyOrderRecordExist(recordId, String.join(".", SCHEMA_NAME, getTargetTableOrderName()));
         assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     

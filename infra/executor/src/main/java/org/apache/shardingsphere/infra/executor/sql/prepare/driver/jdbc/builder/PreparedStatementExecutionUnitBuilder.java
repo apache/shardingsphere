@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -35,15 +36,15 @@ public final class PreparedStatementExecutionUnitBuilder implements JDBCExecutio
     
     @Override
     public JDBCExecutionUnit build(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager,
-                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+                                   final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         PreparedStatement preparedStatement = createPreparedStatement(
-                executionUnit, statementManager, connection, connectionMode, option);
+                executionUnit, statementManager, connection, connectionMode, option, databaseType);
         return new JDBCExecutionUnit(executionUnit, connectionMode, preparedStatement);
     }
     
     private PreparedStatement createPreparedStatement(final ExecutionUnit executionUnit, final ExecutorJDBCStatementManager statementManager, final Connection connection,
-                                                      final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
-        return (PreparedStatement) statementManager.createStorageResource(executionUnit, connection, connectionMode, option);
+                                                      final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
+        return (PreparedStatement) statementManager.createStorageResource(executionUnit, connection, connectionMode, option, databaseType);
     }
     
     @Override

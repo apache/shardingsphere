@@ -55,13 +55,13 @@ public final class TableRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getTableStrategySegment().getType(), is(expected.getTableStrategy().getType()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getTableStrategySegment().getShardingAlgorithmName(), is(expected.getTableStrategy().getShardingAlgorithmName()));
+                    actual.getTableStrategySegment().getAlgorithmSegment().getName(), is(expected.getTableStrategy().getAlgorithmSegment().getName()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDatabaseStrategySegment().getShardingColumn(), is(expected.getDataStrategy().getShardingColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                     actual.getDatabaseStrategySegment().getType(), is(expected.getDataStrategy().getType()));
             assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getDatabaseStrategySegment().getShardingAlgorithmName(), is(expected.getDataStrategy().getShardingAlgorithmName()));
+                    actual.getDatabaseStrategySegment().getAlgorithmSegment().getName(), is(expected.getDataStrategy().getAlgorithmSegment().getName()));
             if (null != actual.getKeyGenerateStrategySegment()) {
                 assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                         actual.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));

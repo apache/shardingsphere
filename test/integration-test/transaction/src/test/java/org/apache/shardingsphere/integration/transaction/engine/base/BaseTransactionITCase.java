@@ -52,19 +52,9 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     private void initProxyConfig() throws SQLException {
         addResources();
-        initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect());
         initTableRules();
         createTables();
-    }
-    
-    private void initShardingAlgorithm() throws SQLException {
-        Connection connection = getProxyConnection();
-        executeWithLog(connection, getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateDatabaseIdShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateAccountShardingAlgorithm());
     }
     
     private boolean waitShardingAlgorithmEffect() throws SQLException {
