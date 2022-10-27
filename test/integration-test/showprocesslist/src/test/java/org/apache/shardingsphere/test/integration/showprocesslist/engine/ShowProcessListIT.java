@@ -100,7 +100,7 @@ public final class ShowProcessListIT {
     
     private void assertRows(final ResultSet resultSet) throws SQLException {
         int count = 0;
-        while (resultSet.next()) {
+        while(resultSet.next()) {
             if (SELECT_SLEEP.equals(resultSet.getObject(8).toString())) {
                 count++;
             }
