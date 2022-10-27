@@ -29,7 +29,10 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | START MIGRATION jobId                                   | 开启停止的作业                            | START MIGRATION 1234                            |
 | CHECK MIGRATION jobId                                   | 数据一致性校验                            | CHECK MIGRATION 1234                            |
 | SHOW MIGRATION CHECK ALGORITHMS                         | 展示可用的一致性校验算法                    | SHOW MIGRATION CHECK ALGORITHMS                 |
-| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | 数据一致性校验，使用指定的校验算法            | CHECK MIGRATION 1234 by type(name="DATA_MATCH") |
+| CHECK MIGRATION jobId by type(name=algorithmTypeName)   | 数据一致性校验，使用指定的校验算法            | CHECK MIGRATION 1234 by type(name="DATA_MATCH") |
+| SHOW MIGRATION CHECK STATUS jobId                       | 查询数据一致性校验进度                      | SHOW MIGRATION CHECK STATUS 1234    |
+| STOP MIGRATION CHECK jobId                              | 停止数据一致性校验                          | STOP MIGRATION CHECK 1234          |
+| START MIGRATION CHECK jobId                             | 开启数据一致性校验                          | START MIGRATION CHECK 1234      |
 | ROLLBACK MIGRATION jobId                                | 撤销作业。注意：该语句会清理目标端表，请谨慎操作 | ROLLBACK MIGRATION 1234                         |
 | COMMIT MIGRATION jobId                                  | 完成作业                                  | COMMIT MIGRATION 1234                           |
 
