@@ -47,7 +47,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
+public final class ShowDistVariableBackendHandlerTest extends ProxyContextRestorer {
     
     private ConnectionSession connectionSession;
     
@@ -61,7 +61,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertShowTransactionType() throws SQLException {
         connectionSession.setCurrentDatabase("db");
-        ShowVariableHandler backendHandler = new ShowVariableHandler();
+        ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement("transaction_type"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
@@ -75,7 +75,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertShowCachedConnections() throws SQLException {
         connectionSession.setCurrentDatabase("db");
-        ShowVariableHandler backendHandler = new ShowVariableHandler();
+        ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement("cached_connections"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
@@ -89,7 +89,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test(expected = UnsupportedVariableException.class)
     public void assertShowCachedConnectionFailed() {
         connectionSession.setCurrentDatabase("db");
-        ShowVariableHandler backendHandler = new ShowVariableHandler();
+        ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement("cached_connectionss"), connectionSession);
         backendHandler.execute();
     }
@@ -98,7 +98,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
     public void assertShowAgentPluginsEnabled() throws SQLException {
         SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString());
         connectionSession.setCurrentDatabase("db");
-        ShowVariableHandler backendHandler = new ShowVariableHandler();
+        ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name()), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
@@ -119,7 +119,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         Properties props = new Properties();
         props.put("sql-show", Boolean.TRUE.toString());
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
-        ShowVariableHandler backendHandler = new ShowVariableHandler();
+        ShowDistVariableHandler backendHandler = new ShowDistVariableHandler();
         backendHandler.init(new ShowDistVariableStatement("SQL_SHOW"), connectionSession);
         ResponseHeader actual = backendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));

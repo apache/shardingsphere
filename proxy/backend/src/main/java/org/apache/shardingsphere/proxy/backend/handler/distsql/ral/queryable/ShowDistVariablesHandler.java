@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Show all variables handler.
+ * Show dist variables handler.
  */
-public final class ShowAllVariablesHandler extends QueryableRALBackendHandler<ShowDistVariablesStatement> {
+public final class ShowDistVariablesHandler extends QueryableRALBackendHandler<ShowDistVariablesStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     

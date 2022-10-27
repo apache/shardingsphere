@@ -43,7 +43,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowAllVariablesHandlerTest extends ProxyContextRestorer {
+public final class ShowDistVariablesHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
@@ -65,7 +65,7 @@ public final class ShowAllVariablesHandlerTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
         connectionSession.setCurrentDatabase("foo_db");
-        ShowAllVariablesHandler handler = new ShowAllVariablesHandler();
+        ShowDistVariablesHandler handler = new ShowDistVariablesHandler();
         handler.init(new ShowDistVariablesStatement(), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));

@@ -56,7 +56,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
+public final class SetDistVariableBackendHandlerTest extends ProxyContextRestorer {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
@@ -93,7 +93,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(new SetDistVariableStatement("transaction_type", "XA"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -103,7 +103,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(new SetDistVariableStatement("transaction_type", "BASE"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -113,7 +113,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(new SetDistVariableStatement("transaction_type", "LOCAL"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
@@ -122,7 +122,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         handler.init(new SetDistVariableStatement("transaction_type", "XXX"), connectionSession);
         handler.execute();
@@ -130,14 +130,14 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         handler.init(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
         handler.execute();
     }
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         handler.init(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null);
         ResponseHeader actual = handler.execute();
@@ -147,7 +147,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         handler.init(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null);
         ResponseHeader actual = handler.execute();
@@ -157,7 +157,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
-        SetVariableHandler handler = new SetVariableHandler();
+        SetDistVariableHandler handler = new SetDistVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         handler.init(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
         ResponseHeader actual = handler.execute();

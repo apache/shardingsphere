@@ -33,9 +33,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show variable handler.
+ * Show dist variable handler.
  */
-public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowDistVariableStatement> {
+public final class ShowDistVariableHandler extends QueryableRALBackendHandler<ShowDistVariableStatement> {
     
     private static final String VARIABLE_NAME = "variable_name";
     
