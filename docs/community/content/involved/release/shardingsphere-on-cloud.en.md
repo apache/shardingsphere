@@ -323,6 +323,8 @@ This is a call for vote to release Apache ShardingSphere on Cloud version ${RELE
 Release notes:
 https://github.com/apache/shardingsphere-on-cloud/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 
+The release candidates:
+https://github.com/apache/shardingsphere-on-cloud/releases/tag/${RELEASE.VERSION}
 
 Git tag for the release:
 https://github.com/apache/shardingsphere-on-cloud/tree/${RELEASE.VERSION}/
