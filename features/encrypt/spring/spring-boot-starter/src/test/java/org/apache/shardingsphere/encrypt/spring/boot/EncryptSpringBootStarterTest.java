@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.spring.boot;
 
-import org.apache.shardingsphere.encrypt.algorithm.AESEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.algorithm.MD5EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.encrypt.AESEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.encrypt.MD5EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;

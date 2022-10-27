@@ -139,31 +139,27 @@ auditorAlgorithmDefinition:
 - `Sharding Table Rule` supports both `Auto Table` and `Table` at the same time. The two types are different in syntax. For the corresponding configuration file, please refer to [Sharding](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)
 - When using the `autoCreativeAlgorithm` way to specify `shardingStrategy`, a new sharding algorithm will be created automatically. The algorithm naming rule is `tableName_strategyType_shardingAlgorithmType`, such as `t_order_database_inline`
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-DROP SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+DROP SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-bindTableRulesDefinition:
+tableReferenceRuleDefinition:
     (tableName [, tableName] ... )
 ```
 - `ALTER` will overwrite the binding table configuration in the database with the new configuration
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-CREATE SHARDING BROADCAST TABLE RULES (tableName [, tableName] ... )
+CREATE BROADCAST TABLE RULE tableName [, tableName] ...
 
-ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ... )
-
-DROP SHARDING BROADCAST TABLE RULES
+DROP BROADCAST TABLE RULE tableName [, tableName] ...
 ```
-- `ALTER` will overwrite the broadcast table configuration in the database with the new configuration
-
 
 ## Example
 
@@ -262,24 +258,22 @@ TYPE="standard",SHARDING_COLUMN=another_id,SHARDING_ALGORITHM=database_inline
 DROP DEFAULT SHARDING DATABASE STRATEGY;
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_1,t_2);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_1,t_2);
 
-ALTER SHARDING BINDING TABLE RULES (t_order,t_order_item);
+ALTER SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 
-DROP SHARDING BINDING TABLE RULES;
+DROP SHARDING TABLE REFERENCE RULE;
 
-DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
+DROP SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-CREATE SHARDING BROADCAST TABLE RULES (t_b,t_a);
+CREATE BROADCAST TABLE RULE t_a,t_b;
 
-ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
-
-DROP SHARDING BROADCAST TABLE RULES;
+DROP BROADCAST TABLE RULE t_a;
 ```

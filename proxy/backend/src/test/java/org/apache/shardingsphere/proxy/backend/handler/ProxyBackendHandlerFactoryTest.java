@@ -114,13 +114,13 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     
     @Test
     public void assertNewInstanceWithDistSQL() throws SQLException {
-        String sql = "set variable transaction_type='LOCAL'";
+        String sql = "set dist variable transaction_type='LOCAL'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SetVariableHandler.class));
-        sql = "show variable transaction_type";
+        sql = "show dist variable where name = transaction_type";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
-        sql = "show all variables";
+        sql = "show dist variables";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "set sharding hint database_value=1";
@@ -244,7 +244,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test(expected = UnsupportedSQLOperationException.class)
     public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('max-vibration-offset'='3')));";
+        String sql = "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));";
         ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
@@ -259,7 +259,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     @Test
     public void assertUnsupportedRQLStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW SINGLE TABLE RULES";
+        String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
     }

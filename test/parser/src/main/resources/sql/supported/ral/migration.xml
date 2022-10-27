@@ -18,15 +18,13 @@
 
 <sql-cases>
     <distsql-case id="show-migration-list" value="SHOW MIGRATION LIST;" />
-    <distsql-case id="show-migration-source-resources" value="SHOW MIGRATION SOURCE RESOURCES;" />
+    <distsql-case id="show-migration-source-storage-units" value="SHOW MIGRATION SOURCE STORAGE UNITS;" />
     <distsql-case id="show-migration-check-algorithms" value="SHOW MIGRATION CHECK ALGORITHMS;" />
     <distsql-case id="check-migration" value="CHECK MIGRATION 123;" />
     <distsql-case id="show-migration-status" value="SHOW MIGRATION STATUS 123;" />
     <distsql-case id="show-migration-check-status" value="SHOW MIGRATION CHECK STATUS 123;" />
     <distsql-case id="check-migration-with-type" value="CHECK MIGRATION 123 by TYPE(name='DEFAULT', PROPERTIES('test-property'='4'));" />
     
-    <distsql-case id="drop-migration-process-configuration-read" value="DROP MIGRATION PROCESS CONFIGURATION '/READ';" />
-    <distsql-case id="drop-migration-process-configuration-read-rate-limiter" value="DROP MIGRATION PROCESS CONFIGURATION '/READ/RATE_LIMITER';" />
     <distsql-case id="migrate-table-without-schema-target-db" value="MIGRATE TABLE ds_0.t_order INTO t_order;" />
     <distsql-case id="migrate-table-with-schema" value="MIGRATE TABLE ds_0.public.t_order INTO t_order;" />
     <distsql-case id="migrate-table-with-target-db" value="MIGRATE TABLE ds_0.t_order INTO sharding_db.t_order;" />
@@ -35,5 +33,7 @@
     <distsql-case id="commit-migration" value="COMMIT MIGRATION 123;" />
     <distsql-case id="stop-migration" value="STOP MIGRATION 123;" />
     <distsql-case id="start-migration" value="START MIGRATION 123;" />
-    <distsql-case id="drop-migration-source-resource" value="DROP MIGRATION SOURCE RESOURCE ds_0,ds_1" />
+    <distsql-case id="stop-migration-check" value="STOP MIGRATION CHECK 123;" />
+    <distsql-case id="start-migration-check" value="START MIGRATION CHECK 123;" />
+    <distsql-case id="unregister-migration-source-storage-unit" value="UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0,ds_1" />
 </sql-cases>

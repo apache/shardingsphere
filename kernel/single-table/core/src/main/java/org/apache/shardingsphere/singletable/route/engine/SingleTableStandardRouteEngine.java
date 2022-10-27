@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.singletable.route.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -80,11 +81,18 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
             String dataSourceName = rule.assignNewDataSourceName();
-            String tableName = singleTableNames.iterator().next().getTableName();
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(tableName, tableName))));
+            QualifiedTable table = singleTableNames.iterator().next();
+            if (isTableExists(table, rule)) {
+                throw new TableExistsException(table.getTableName());
+            }
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));
         }
+    }
+    
+    private boolean isTableExists(final QualifiedTable table, final SingleTableRule rule) {
+        return rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName()).isPresent();
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {

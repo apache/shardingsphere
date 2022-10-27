@@ -30,25 +30,21 @@ alterShadowRule
 dropShadowRule
     : DROP SHADOW RULE ifExists? ruleName (COMMA ruleName)*
     ;
-   
-createShadowAlgorithm
-    : CREATE SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
-    ;
-
-alterShadowAlgorithm
-    : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
-    ;
 
 dropShadowAlgorithm
     : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
-    : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
+    : CREATE DEFAULT SHADOW ALGORITHM shadowAlgorithmDefinition
     ;
 
 dropDefaultShadowAlgorithm
     : DROP DEFAULT SHADOW ALGORITHM ifExists?
+    ;
+
+alterDefaultShadowAlgorithm
+    : ALTER DEFAULT SHADOW ALGORITHM shadowAlgorithmDefinition
     ;
 
 shadowRuleDefinition
@@ -72,7 +68,7 @@ tableName
     ;
 
 shadowAlgorithmDefinition
-    :  LP (algorithmName COMMA) ? TYPE LP NAME EQ shadowAlgorithmType COMMA PROPERTIES LP algorithmProperties RP RP RP
+    : TYPE LP NAME EQ shadowAlgorithmType COMMA PROPERTIES LP algorithmProperties RP RP
     ;
 
 algorithmName

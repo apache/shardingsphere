@@ -26,3 +26,11 @@ databaseName
 resourceName
     : IDENTIFIER
     ;
+
+groupName
+    : IDENTIFIER
+    ;
+
+storageUnitName
+    : IDENTIFIER
+    ;

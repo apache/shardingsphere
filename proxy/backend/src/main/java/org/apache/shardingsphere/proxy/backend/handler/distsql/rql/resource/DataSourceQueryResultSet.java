@@ -17,24 +17,34 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Query result set for show data source.
@@ -63,10 +73,53 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         resourceMetaData = database.getResourceMetaData();
         dataSourcePropsMap = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1);
-        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+        Integer usageCount = ((ShowStorageUnitsStatement) sqlStatement).getUsageCount();
+        if (null == usageCount) {
+            for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
+                dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+            }
+        } else {
+            Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
+            for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
+                Integer currentUsageCount = inUsedMultiMap.containsKey(entry.getKey()) ? inUsedMultiMap.get(entry.getKey()).size() : 0;
+                if (currentUsageCount != usageCount) {
+                    continue;
+                }
+                dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
+            }
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
+    }
+    
+    private Multimap<String, String> getInUsedResources(final ShardingSphereRuleMetaData ruleMetaData) {
+        Multimap<String, String> result = LinkedListMultimap.create();
+        for (ShardingSphereRule each : ruleMetaData.getRules()) {
+            if (each instanceof DataSourceContainedRule) {
+                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
+                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
+            }
+            if (each instanceof DataNodeContainedRule) {
+                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
+                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
+        Set<String> result = new HashSet<>();
+        for (Collection<String> each : rule.getDataSourceMapper().values()) {
+            result.addAll(each);
+        }
+        return result;
+    }
+    
+    private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
+        Set<String> result = new HashSet<>();
+        for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
+            result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toSet()));
+        }
+        return result;
     }
     
     @Override
@@ -86,7 +139,7 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
         DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
-        result.add(resourceMetaData.getDatabaseType().getType());
+        result.add(resourceMetaData.getStorageType(dataSourceName).getType());
         result.add(metaData.getHostname());
         result.add(metaData.getPort());
         result.add(metaData.getCatalog());
@@ -112,6 +165,6 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     
     @Override
     public String getType() {
-        return ShowResourcesStatement.class.getName();
+        return ShowStorageUnitsStatement.class.getName();
     }
 }

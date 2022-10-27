@@ -17,7 +17,7 @@
 
 CREATE DATABASE sharding_db;
 USE sharding_db;
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
 URL="jdbc:mysql://127.0.0.1:3306/demo_sharding_ds_0?serverTimezone=UTC&useSSL=false",
 USER="root",
 PASSWORD="12345678",
@@ -48,4 +48,4 @@ TABLE_STRATEGY(TYPE="complex", SHARDING_COLUMNS=order_id, user_id, SHARDING_ALGO
 KEY_GENERATE_STRATEGY(COLUMN=order_item_id, KEY_GENERATOR=snowflake)
 );
 CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
-CREATE SHARDING BROADCAST TABLE RULES (t_order,t_order_item);
+CREATE BROADCAST TABLE RULE t_order,t_order_item;

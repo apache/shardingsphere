@@ -39,5 +39,11 @@
             <artifactId>shardingsphere-postgresql-dialect-exception</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.opengauss</groupId>
+            <artifactId>opengauss-jdbc</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -19,9 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Create default shadow algorithm statement test case.
@@ -30,6 +33,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class CreateDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "algorithm")
-    private String algorithmName;
+    @XmlElement(name = "shadow-algorithm")
+    private final Collection<ExpectedShadowAlgorithm> rules = new LinkedList<>();
 }

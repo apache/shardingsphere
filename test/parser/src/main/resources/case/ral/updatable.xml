@@ -17,13 +17,13 @@
   -->
 
 <sql-parser-test-cases>
-    <set-variable sql-case-id="set-variable" />
+    <set-dist-variable sql-case-id="set-dist-variable" />
     
     <refresh-table-metadata sql-case-id="refresh-table-metadata" />
     <refresh-table-metadata sql-case-id="refresh-table-metadata-with-table-name" table-name="t_order" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" resource-name="ds_0" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" resource-name="ds_0" schema-name="public" />
-    <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" resource-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" storage-unit-name="ds_0" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" storage-unit-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" storage-unit-name="ds_0" schema-name="public" />
     
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
         <sql-parser sqlCommentParseEnabled="false">
@@ -68,22 +68,22 @@
         <rule-name>rule_name</rule-name>
     </drop-traffic-rule>
     
-    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
-    <alter-instance sql-case-id="alter-instance-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
+    <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
+    <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
     
-    <label-instance sql-case-id="label-instance" instance-id="instance_label" overwrite="false">
+    <label-compute-node sql-case-id="label-compute-node" instance-id="instance_label" overwrite="false">
         <label>OLAP_1</label>
         <label>OLAP_2</label>
-    </label-instance>
-    <label-instance sql-case-id="relabel-instance" instance-id="instance_relabel" overwrite="true">
+    </label-compute-node>
+    <label-compute-node sql-case-id="relabel-compute-node" instance-id="instance_relabel" overwrite="true">
         <label>OLAP_1</label>
         <label>OLAP_2</label>
-    </label-instance>
-    <unlabel-instance sql-case-id="unlabel-instance" instance-id="instance_unlabel">
+    </label-compute-node>
+    <unlabel-compute-node sql-case-id="unlabel-compute-node" instance-id="instance_unlabel">
         <label>OLAP_1</label>
-    </unlabel-instance>
-    <unlabel-instance sql-case-id="unlabel-instance-without-label" instance-id="instance_unlabel_2">
-    </unlabel-instance>
+    </unlabel-compute-node>
+    <unlabel-compute-node sql-case-id="unlabel-compute-node-without-label" instance-id="instance_unlabel_2">
+    </unlabel-compute-node>
     
     <prepare-distsql sql-case-id="prepare-distsql" />
     <apply-distsql sql-case-id="apply-distsql" />

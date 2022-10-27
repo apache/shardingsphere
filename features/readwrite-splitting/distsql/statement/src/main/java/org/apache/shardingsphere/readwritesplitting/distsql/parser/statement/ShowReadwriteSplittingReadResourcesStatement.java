@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -27,13 +28,18 @@ import java.util.Optional;
 /**
  * Show readwrite-splitting read resources statement.
  */
+
+@Getter
 @RequiredArgsConstructor
 public final class ShowReadwriteSplittingReadResourcesStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
-    private final DatabaseSegment schema;
+    private final DatabaseSegment database;
+    
+    private final String groupName;
     
     @Override
     public Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(schema);
+        return Optional.ofNullable(database);
     }
+    
 }
