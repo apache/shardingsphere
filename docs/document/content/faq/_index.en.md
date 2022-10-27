@@ -95,7 +95,7 @@ Answer:
 
 Answer:
 
-1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `database` or does not add a `Storage Unit`, ShardingSphere-Proxy cannot execute SQL.
+1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `Database` or does not add a `Storage Unit`, ShardingSphere-Proxy cannot execute SQL.
 2. It is recommended to create `database` and `storage unit` first, and then use third-party database tools to connect.
 3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) the details about `storage unit`.
 
