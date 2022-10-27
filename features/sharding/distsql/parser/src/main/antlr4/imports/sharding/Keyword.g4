@@ -51,8 +51,8 @@ FROM
     : F R O M
     ;
 
-RESOURCES
-    : R E S O U R C E S
+STORAGE_UNITS
+    : S T O R A G E UL_ U N I T S
     ;
 
 KEY_GENERATE_STRATEGY

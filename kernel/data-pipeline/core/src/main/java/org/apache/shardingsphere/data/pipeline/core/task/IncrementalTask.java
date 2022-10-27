@@ -66,6 +66,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     @Getter
     private final IncrementalTaskProgress taskProgress;
     
+    // TODO simplify parameters
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalExecuteEngine,
@@ -125,6 +126,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             public void onFailure(final Throwable throwable) {
                 log.error("incremental dumper onFailure, taskId={}", taskId);
                 stop();
+                close();
             }
         });
         CompletableFuture<?> importerFuture = incrementalExecuteEngine.submitAll(importers, new ExecuteCallback() {
@@ -138,6 +140,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             public void onFailure(final Throwable throwable) {
                 log.error("importer onFailure, taskId={}", taskId, throwable);
                 stop();
+                close();
             }
         });
         return CompletableFuture.allOf(dumperFuture, importerFuture);
