@@ -1,17 +1,17 @@
 +++
-title = "CREATE DEFAULT SHARDING STRATEGY"
-weight = 5
+title = "ALTER DEFAULT SHARDING STRATEGY"
+weight = 6
 +++
 
 ## 描述
 
-`CREATE DEFAULT SHARDING STRATEGY` 语法用于创建默认的分片策略
+`ALTER DEFAULT SHARDING STRATEGY` 语法用于修改默认的分片策略
 
 ### 语法定义
 
 ```sql
-CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
+AlterDefaultShardingStrategy ::=
+  'ALTER' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
 shardingStrategy ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
@@ -39,17 +39,17 @@ algorithmType ::=
 
 ### 示例
 
-- 创建默认分表策略
+- 修改默认分表策略
 
 ```sql
-CREATE DEFAULT SHARDING TABLE STRATEGY (
+ALTER DEFAULT SHARDING TABLE STRATEGY (
     TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```
 
 ### 保留字
 
-`CREATE`、`DEFAULT`、`SHARDING`、`DATABASE`、`TABLE`、`STRATEGY`、`TYPE`、`SHARDING_COLUMN`、`SHARDING_COLUMNS`、`SHARDING_ALGORITHM`、`NAME`、`PROPERTIES`
+`ALTER`、`DEFAULT`、`SHARDING`、`DATABASE`、`TABLE`、`STRATEGY`、`TYPE`、`SHARDING_COLUMN`、`SHARDING_COLUMNS`、`SHARDING_ALGORITHM`、`NAME`、`PROPERTIES`
 
 ### 相关链接
 

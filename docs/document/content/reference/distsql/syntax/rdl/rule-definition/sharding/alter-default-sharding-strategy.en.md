@@ -1,17 +1,17 @@
 +++
-title = "CREATE DEFAULT SHARDING STRATEGY"
-weight = 5
+title = "ALTER DEFAULT SHARDING STRATEGY"
+weight = 6
 +++
 
 ## Description
 
-The `CREATE DEFAULT SHARDING STRATEGY` syntax is used to create a default sharding strategy
+The `ALTER DEFAULT SHARDING STRATEGY` syntax is used to alter a default sharding strategy
 
 ### Syntax
 
 ```sql
-CreateDefaultShardingStrategy ::=
-  'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
+AlterDefaultShardingStrategy ::=
+  'ALTER' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
 shardingStrategy ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
@@ -40,18 +40,17 @@ algorithmType ::=
 
 ### Example
 
-- create a default sharding table strategy
+- Alter a default sharding table strategy
 
 ```sql
--- create a default sharding table strategy
-CREATE DEFAULT SHARDING TABLE STRATEGY (
+ALTER DEFAULT SHARDING TABLE STRATEGY (
     TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
 ```
 
 ### Reserved word
 
-`CREATE`, `DEFAULT`, `SHARDING`, `DATABASE`, `TABLE`, `STRATEGY`, `TYPE`, `SHARDING_COLUMN`, `SHARDING_COLUMNS`, `SHARDING_ALGORITHM`, `NAME`, `PROPERTIES`
+`ALTER`, `DEFAULT`, `SHARDING`, `DATABASE`, `TABLE`, `STRATEGY`, `TYPE`, `SHARDING_COLUMN`, `SHARDING_COLUMNS`, `SHARDING_ALGORITHM`, `NAME`, `PROPERTIES`
 
 ### Related links
 
