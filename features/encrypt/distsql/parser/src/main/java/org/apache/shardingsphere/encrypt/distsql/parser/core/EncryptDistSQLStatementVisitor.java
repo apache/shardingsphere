@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -94,11 +95,17 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().plainColumnName()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()),
+                null == ctx.fuzzyQueryColumnDefinition() ? null : getIdentifierValue(ctx.fuzzyQueryColumnDefinition().fuzzyQueryColumnName()),
                 getIdentifierValue(ctx.columnDefinition().dataType()),
                 getIdentifierValue(ctx.cipherColumnDefinition().dataType()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
-                algorithmSegments.get(0), 1 == algorithmSegments.size() ? null : algorithmSegments.get(1));
+                null == ctx.fuzzyQueryColumnDefinition() ? null : getIdentifierValue(ctx.fuzzyQueryColumnDefinition().dataType()),
+                algorithmSegments.get(0),
+                null == ctx.assistedQueryColumnDefinition() || 1 == algorithmSegments.size() ? null : algorithmSegments.get(1),
+                null == ctx.fuzzyQueryColumnDefinition() ? null
+                        : Optional.ofNullable(algorithmSegments).filter(algorithm -> algorithm.size() > 2).map(algorithm -> algorithm.get(2)).orElse(algorithmSegments.get(1)));
+        
     }
     
     @Override
