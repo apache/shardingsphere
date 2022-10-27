@@ -124,10 +124,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         jobConfigPOJO.getProps().remove("stop_time_millis");
-        String barrierPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
-        pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        pipelineDistributedBarrier.register(jobId, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
+        pipelineDistributedBarrier.await(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), 5, TimeUnit.SECONDS);
     }
     
     @Override
@@ -138,10 +137,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         jobConfigPOJO.getProps().setProperty("stop_time_millis", System.currentTimeMillis() + "");
-        String barrierPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
-        pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        pipelineDistributedBarrier.register(jobId, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
+        pipelineDistributedBarrier.await(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), 5, TimeUnit.SECONDS);
     }
     
     protected void dropJob(final String jobId) {
