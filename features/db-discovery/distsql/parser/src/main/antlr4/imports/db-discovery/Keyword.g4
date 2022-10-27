@@ -39,8 +39,8 @@ SHOW
     : S H O W
     ;
 
-RESOURCES
-    : R E S O U R C E S
+STORAGE_UNITS
+    : S T O R A G E UL_ U N I T S
     ;
 
 RULE

@@ -153,7 +153,7 @@ public final class DistSQLScriptConstants {
     
     public static final String DB_DISCOVERY = " %s ("
             + System.lineSeparator()
-            + "RESOURCES(%s),"
+            + "STORAGE_UNITS(%s),"
             + System.lineSeparator()
             + "%s,"
             + System.lineSeparator()

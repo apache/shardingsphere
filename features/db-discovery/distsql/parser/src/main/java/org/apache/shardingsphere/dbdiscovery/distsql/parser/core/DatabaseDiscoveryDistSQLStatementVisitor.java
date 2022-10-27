@@ -42,10 +42,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQL
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DropDatabaseDiscoveryTypeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.PropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.PropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryHeartbeatsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryTypesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.StorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.TypeDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
@@ -76,11 +76,11 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     @Override
     public ASTNode visitDatabaseDiscoveryRule(final DatabaseDiscoveryRuleContext ctx) {
         return new DatabaseDiscoveryDefinitionSegment(
-                getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()), (AlgorithmSegment) visit(ctx.typeDefinition()), getProperties(ctx.discoveryHeartbeat().properties()));
+                getIdentifierValue(ctx.ruleName()), buildResources(ctx.storageUnits()), (AlgorithmSegment) visit(ctx.typeDefinition()), getProperties(ctx.discoveryHeartbeat().properties()));
     }
     
-    private List<String> buildResources(final ResourcesContext ctx) {
-        return ctx.resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
+    private List<String> buildResources(final StorageUnitsContext ctx) {
+        return ctx.storageUnitName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
     }
     
     @Override
