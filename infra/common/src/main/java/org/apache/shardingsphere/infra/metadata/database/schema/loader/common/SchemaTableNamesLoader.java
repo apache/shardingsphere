@@ -104,6 +104,6 @@ public final class SchemaTableNamesLoader {
     }
     
     private static boolean isSystemTable(final String table) {
-        return table.contains("$") || table.contains("/");
+        return table.contains("$") || table.contains("/") || table.contains("##");
     }
 }

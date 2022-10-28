@@ -24,9 +24,9 @@ SHOW DEFAULT SHADOW ALGORITHM
 
 SHOW SHADOW ALGORITHMS
 
-shadowRuleDefinition: ruleName(resourceMapping, shadowTableRule [, shadowTableRule] ...)
+shadowRuleDefinition: ruleName(storageUnitMapping, shadowTableRule [, shadowTableRule] ...)
 
-resourceMapping: SOURCE=resourceName, SHADOW=resourceName
+storageUnitMapping: SOURCE=storageUnitName, SHADOW=storageUnitName
 
 shadowTableRule: tableName(shadowAlgorithm [, shadowAlgorithm] ...)
 
@@ -39,18 +39,18 @@ algorithmProperty: key=value
 
 ### 参数解释
 
-| 名称                  | 数据类型     | 说明         |
+| 名称                 | 数据类型     | 说明          |
 |:--------------------|:-------------|:------------|
 | ruleName            | IDENTIFIER   | 规则名称      |
-| resourceName        | IDENTIFIER   | 数据库名称    |
-| tableName           | IDENTIFIER   | 影子表名称    |
+| storageUnitName     | IDENTIFIER   | 存储单元名称   |
+| tableName           | IDENTIFIER   | 影子表名称     |
 | algorithmName       | IDENTIFIER   | 影子算法名称   |
 | shadowAlgorithmType | STRING       | 影子算法类型   |
 
 ### 注意事项
 
 - 重复的`ruleName`无法被创建；
-- `resourceMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `resource` ，请参考 [数据源资源](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/)；
+- `storageUnitMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `storage unit` ，请参考 [存储单元](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)；
 - `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`；
 - `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
 - `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除；
@@ -79,6 +79,8 @@ DROP SHADOW ALGORITHM simple_hint_algorithm;
 CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
 
 ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar");
+    
+SHOW DEFAULT SHADOW ALGORITHM;
 
 DROP DEFAULT SHADOW ALGORITHM;
 ```

@@ -133,7 +133,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertCheckCreateShardingStatement() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
-                + "RESOURCES(ds_0,ds_1),"
+                + "STORAGE_UNITS(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
                 + "TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='6')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
@@ -144,7 +144,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     @Test(expected = DistSQLException.class)
     public void assertCheckCreateShardingStatementThrows() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
-                + "RESOURCES(ds_0,ds_1),"
+                + "STORAGE_UNITS(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
                 + "TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')),"
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";

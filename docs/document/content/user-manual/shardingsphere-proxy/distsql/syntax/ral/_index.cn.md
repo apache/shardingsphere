@@ -29,18 +29,21 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 | START MIGRATION jobId                                   | 开启停止的作业                            | START MIGRATION 1234                            |
 | CHECK MIGRATION jobId                                   | 数据一致性校验                            | CHECK MIGRATION 1234                            |
 | SHOW MIGRATION CHECK ALGORITHMS                         | 展示可用的一致性校验算法                    | SHOW MIGRATION CHECK ALGORITHMS                 |
-| CHECK MIGRATION jobId (by type(name=algorithmTypeName)? | 数据一致性校验，使用指定的校验算法            | CHECK MIGRATION 1234 by type(name="DATA_MATCH") |
+| CHECK MIGRATION jobId by type(name=algorithmTypeName)   | 数据一致性校验，使用指定的校验算法            | CHECK MIGRATION 1234 by type(name="DATA_MATCH") |
+| SHOW MIGRATION CHECK STATUS jobId                       | 查询数据一致性校验进度                      | SHOW MIGRATION CHECK STATUS 1234    |
+| STOP MIGRATION CHECK jobId                              | 停止数据一致性校验                          | STOP MIGRATION CHECK 1234          |
+| START MIGRATION CHECK jobId                             | 开启数据一致性校验                          | START MIGRATION CHECK 1234      |
 | ROLLBACK MIGRATION jobId                                | 撤销作业。注意：该语句会清理目标端表，请谨慎操作 | ROLLBACK MIGRATION 1234                         |
 | COMMIT MIGRATION jobId                                  | 完成作业                                  | COMMIT MIGRATION 1234                           |
 
 ## 熔断
 
-| 语句                                                                                               | 说明                                  | 示例                                                            |
-|:-------------------------------------------------------------------------------------------------|:------------------------------------|:--------------------------------------------------------------|
-| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) resourceName [FROM databaseName] | 启用 / 禁用读库        | ALTER READWRITE_SPLITTING RULE group_1 ENABLE resource_0      |
-| [ENABLE / DISABLE] INSTANCE instanceId                                                           | 启用 / 禁用 proxy 实例                    | DISABLE INSTANCE instance_1                                   |
-| SHOW INSTANCE LIST                                                                               | 查询 proxy 实例信息                       | SHOW INSTANCE LIST                                            |
-| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                | 查询所有读库的状态          | SHOW STATUS FROM READWRITE_SPLITTING RULES                    |
+| 语句                                                                                                  | 说明                         | 示例                                                          |
+|:-----------------------------------------------------------------------------------------------------|:-----------------------------|:-------------------------------------------------------------|
+| ALTER READWRITE_SPLITTING RULE [ groupName ] (ENABLE / DISABLE) storageUnitName [FROM databaseName]  | 启用 / 禁用读库                | ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_1      |
+| [ENABLE / DISABLE] COMPUTE NODE instanceId                                                           | 启用 / 禁用 proxy 实例         | DISABLE COMPUTE NODE instance_1                              |
+| SHOW COMPUTE NODES                                                                                   | 查询 proxy 实例信息            | SHOW COMPUTE NODES                                           |
+| SHOW STATUS FROM READWRITE_SPLITTING (RULES / RULE groupName) [FROM databaseName]                    | 查询所有读库的状态              | SHOW STATUS FROM READWRITE_SPLITTING RULES                   |
 
 ## 全局规则
 
@@ -54,23 +57,23 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 ## 其他
 
-| 语句                                                                        | 说明                                                                                                             | 示例                                                              |
-|:---------------------------------------------------------------------------| :--------------------------------------------------------------------------------------------------------------- |:-----------------------------------------------------------------|
-| SHOW INSTANCE INFO                                                         | 查询当前 proxy 的实例信息                                                                                          | SHOW INSTANCE INFO                                               |
-| SHOW MODE INFO                                                             | 查询当前 proxy 的 mode 配置                                                                                        | SHOW MODE INFO                                                   |
-| SET DIST VARIABLE proxy_property_name = xx                                 | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)，需使用下划线命名 | SET DIST VARIABLE sql_show = true                                |
-| SET DIST VARIABLE transaction_type = xx                                    | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                                                                         | SET DIST VARIABLE transaction_type = "XA"                        |
-| SET DIST VARIABLE agent_plugins_enabled = [TRUE / FALSE]                   | 设置 agent 插件的启用状态，默认值 false                                                                             | SET DIST VARIABLE agent_plugins_enabled = TRUE                   |
-| SHOW DIST VARIABLES                                                        | 查询 proxy 所有的属性配置                                                                                          | SHOW DIST VARIABLES                                              |
-| SHOW DIST VARIABLE WHERE name = variable_name                              | 查询 proxy 属性，需使用下划线命名                                                                                   | SHOW DIST VARIABLE WHERE name = sql_show                         |
-| REFRESH TABLE METADATA                                                     | 刷新所有表的元数据                                                                                                 | REFRESH TABLE METADATA                                           |
-| REFRESH TABLE METADATA tableName                                           | 刷新指定表的元数据                                                                                                 | REFRESH TABLE METADATA t_order                                   |
-| REFRESH TABLE METADATA tableName FROM STORAGE UNIT storageUnitName         | 刷新指定数据源中表的元数据                                                                                          | REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1            |
-| REFRESH TABLE METADATA FROM STORAGE UNIT storageUnitName SCHEMA schemaName | 刷新指定 schema 中表的元数据，如果 schema 中不存在表，则会删除该 schema                                                | REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema   |
-| SHOW TABLE METADATA tableName [, tableName] ...                            | 查询表的元数据                                                                                                    | SHOW TABLE METADATA t_order                                       |
-| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]           | 将 database 中的资源和规则配置导出为 YAML 格式                                                                       | EXPORT DATABASE CONFIG FROM readwrite_splitting_db               |
-| IMPORT DATABASE CONFIG FILE="file_path"                                    | 将 YAML 中的配置导入到 database 中，仅支持对空库进行导入操作                                                           | IMPORT DATABASE CONFIG FILE = "/xxx/config-sharding.yaml"        |
-| SHOW RULES USED RESOURCE resourceName [from database]                      | 查询 database 中使用指定资源的规则                                                                                  | SHOW RULES USED RESOURCE ds_0 FROM databaseName                   |
+| 语句                                                                 | 说明                                                                                                            | 示例                                                        |
+|:--------------------------------------------------------------------| :-------------------------------------------------------------------------------------------------------------- |:-----------------------------------------------------------|
+| SHOW COMPUTE NODE INFO                                              | 查询当前 proxy 的实例信息                                                                                          | SHOW COMPUTE NODE INFO                                     |
+| SHOW COMPUTE NODE MODE                                              | 查询当前 proxy 的 mode 配置                                                                                       | SHOW COMPUTE NODE MODE                                     |
+| SET DIST VARIABLE proxy_property_name = xx                          | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)，需使用下划线命名 | SET DIST VARIABLE sql_show = true                          |
+| SET DIST VARIABLE transaction_type = xx                             | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                                                                         | SET DIST VARIABLE transaction_type = "XA"                  |
+| SET DIST VARIABLE agent_plugins_enabled = [TRUE / FALSE]            | 设置 agent 插件的启用状态，默认值 false                                                                             | SET DIST VARIABLE agent_plugins_enabled = TRUE             |
+| SHOW DIST VARIABLES                                                 | 查询 proxy 所有的属性配置                                                                                          | SHOW DIST VARIABLES                                        |
+| SHOW DIST VARIABLE WHERE name = variable_name                       | 查询 proxy 属性，需使用下划线命名                                                                                   | SHOW DIST VARIABLE WHERE name = sql_show                   |
+| REFRESH TABLE METADATA                                              | 刷新所有表的元数据                                                                                                 | REFRESH TABLE METADATA                                     |
+| REFRESH TABLE METADATA tableName                                    | 刷新指定表的元数据                                                                                                 | REFRESH TABLE METADATA t_order                             |
+| REFRESH TABLE METADATA tableName FROM RESOURCE resourceName         | 刷新指定数据源中表的元数据                                                                                          | REFRESH TABLE METADATA t_order FROM RESOURCE ds_1          |
+| REFRESH TABLE METADATA FROM RESOURCE resourceName SCHEMA schemaName | 刷新指定 schema 中表的元数据，如果 schema 中不存在表，则会删除该 schema                                                 | REFRESH TABLE METADATA FROM RESOURCE ds_1 SCHEMA db_schema |
+| SHOW TABLE METADATA tableName [, tableName] ...                     | 查询表的元数据                                                                                                    | SHOW TABLE METADATA t_order                                |
+| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]    | 将 database 中的资源和规则配置导出为 YAML 格式                                                                       | EXPORT DATABASE CONFIG FROM readwrite_splitting_db         |
+| IMPORT DATABASE CONFIG FILE="file_path"                             | 将 YAML 中的配置导入到 database 中，仅支持对空库进行导入操作                                                           | IMPORT DATABASE CONFIG FILE = "/xxx/config-sharding.yaml"  |
+| SHOW RULES USED RESOURCE resourceName [from database]               | 查询 database 中使用指定资源的规则                                                                                  | SHOW RULES USED RESOURCE ds_0 FROM databaseName            |
 
 ## 注意事项
 

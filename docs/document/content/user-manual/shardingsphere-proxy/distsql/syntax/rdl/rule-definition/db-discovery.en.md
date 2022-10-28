@@ -28,10 +28,10 @@ ruleDefinition:
     (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
 
 databaseDiscoveryRuleDefinition
-    ruleName (resources, typeDefinition, heartbeatDefinition)
+    ruleName (storageUnits, typeDefinition, heartbeatDefinition)
 
 databaseDiscoveryRuleConstruction
-    ruleName (resources, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
+    ruleName (storageUnits, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
 
 databaseDiscoveryTypeDefinition
     discoveryTypeName (typeDefinition)
@@ -39,8 +39,8 @@ databaseDiscoveryTypeDefinition
 databaseDiscoveryHeartbaetDefinition
     discoveryHeartbeatName (PROPERTIES (properties)) 
 
-resources:
-    RESOURCES(resourceName [, resourceName] ...)
+storageUnits:
+    STORAGE_UNITS(storageUnitName [, storageUnitName] ...)
 
 typeDefinition:
     TYPE(NAME=typeName [, PROPERTIES([properties] )] )
@@ -63,7 +63,7 @@ property:
 | ruleName               | IDENTIFIER | Rule name                                   |
 | discoveryHeartbeatName | IDENTIFIER | Detect heartbeat name                       |
 | typeName               | STRING     | Database discovery type, such as: MySQL.MGR |
-| resourceName           | IDENTIFIER | Resource name                               |
+| storageUnitName        | IDENTIFIER | Storage unit name                           |
 
 ### Notes
 
@@ -80,13 +80,13 @@ property:
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='246e9612-aaf1')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -111,7 +111,7 @@ CREATE DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
 );
 
 CREATE DB_DISCOVERY RULE db_discovery_group_1 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE=db_discovery_group_1_mgr,
 HEARTBEAT=db_discovery_group_1_heartbeat
 );
@@ -125,7 +125,7 @@ ALTER DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
 );
 
 ALTER DB_DISCOVERY RULE db_discovery_group_1 (
-RESOURCES(ds_0, ds_1),
+STORAGE_UNITS(ds_0, ds_1),
 TYPE=db_discovery_group_1_mgr,
 HEARTBEAT=db_discovery_group_1_heartbeat
 );
