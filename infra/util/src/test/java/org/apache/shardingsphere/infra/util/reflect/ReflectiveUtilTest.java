@@ -53,7 +53,7 @@ public final class ReflectiveUtilTest {
     @NoArgsConstructor
     @Getter
     @Setter(AccessLevel.PRIVATE)
-    public static final class ReflectiveFixture {
+    private static final class ReflectiveFixture {
         
         private static String staticValue;
         
