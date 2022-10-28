@@ -31,7 +31,7 @@ public final class PipelineJobMetaData {
     
     private final boolean active;
     
-    private final int shardingTotalCount;
+    private final int jobItemCount;
     
     private final String createTime;
     

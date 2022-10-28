@@ -63,6 +63,10 @@ FROM
     : F R O M
     ;
 
+TO
+    : T O
+    ;
+
 URL
     : U R L
     ;
@@ -221,10 +225,6 @@ YAML
 
 CONFIGURATION
     : C O N F I G U R A T I O N
-    ;
-
-CONFIG
-    : C O N F I G
     ;
 
 FILE

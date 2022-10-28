@@ -42,7 +42,7 @@ public class DatabaseDiscoveryDistSQLTest {
     @Test
     public void assertCreateDatabaseDiscoveryRule() {
         String sql = "CREATE DB_DISCOVERY RULE db_discovery_group_0 ("
-                + "RESOURCES(ds_0, ds_1), TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b')),"
+                + "STORAGE_UNITS(ds_0, ds_1), TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b')),"
                 + "HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?')))";
         CreateDatabaseDiscoveryRuleStatement distSQLStatement = (CreateDatabaseDiscoveryRuleStatement) getDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));
@@ -52,7 +52,7 @@ public class DatabaseDiscoveryDistSQLTest {
     @Test
     public void assertAlterDatabaseDiscoveryRule() {
         String sql = "ALTER DB_DISCOVERY RULE db_discovery_group_0 ("
-                + "RESOURCES(ds_0, ds_1), TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b')),"
+                + "STORAGE_UNITS(ds_0, ds_1), TYPE(NAME='mgr',PROPERTIES('group-name'='92504d5b')),"
                 + "HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?')))";
         AlterDatabaseDiscoveryRuleStatement distSQLStatement = (AlterDatabaseDiscoveryRuleStatement) getDistSQLStatement(sql);
         assertThat(distSQLStatement.getRules().size(), is(1));

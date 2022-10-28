@@ -135,9 +135,9 @@ public final class DistSQLScriptConstants {
     
     public static final String READWRITE_SPLITTING = " %s ("
             + System.lineSeparator()
-            + "WRITE_RESOURCE=%s,"
+            + "WRITE_STORAGE_UNIT=%s,"
             + System.lineSeparator()
-            + "READ_RESOURCES(%s),"
+            + "READ_STORAGE_UNITS(%s),"
             + System.lineSeparator()
             + "%s"
             + System.lineSeparator()
@@ -153,7 +153,7 @@ public final class DistSQLScriptConstants {
     
     public static final String DB_DISCOVERY = " %s ("
             + System.lineSeparator()
-            + "RESOURCES(%s),"
+            + "STORAGE_UNITS(%s),"
             + System.lineSeparator()
             + "%s,"
             + System.lineSeparator()

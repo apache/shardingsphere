@@ -255,10 +255,10 @@ The text of each license is the standard Apache 2.0 license.
     httpclient5 5.1.3: https://hc.apache.org/httpcomponents-client-5.1.x, Apache 2.0
     httpcore5-h2 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
     httpcore5 5.1.3: https://hc.apache.org/httpcomponents-core-5.1.x, Apache 2.0
-    jackson-annotations 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-core 2.13.2: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-databind 2.10.0: http://github.com/FasterXML/jackson, Apache 2.0
-    jackson-dataformat-yaml 2.13.2: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-annotations 2.13.4: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-core 2.13.4: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-databind 2.13.4: http://github.com/FasterXML/jackson, Apache 2.0
+    jackson-dataformat-yaml 2.13.4: http://github.com/FasterXML/jackson, Apache 2.0
     jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-common 0.7.3: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-core 0.7.3: https://github.com/etcd-io/jetcd, Apache 2.0

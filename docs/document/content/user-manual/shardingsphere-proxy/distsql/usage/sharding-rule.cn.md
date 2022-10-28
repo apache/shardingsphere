@@ -3,7 +3,7 @@ title = "数据分片"
 weight = 1
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
@@ -27,7 +27,7 @@ REGISTER STORAGE UNIT ds_0 (
 
 ```sql
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_0,ds_1),
+STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -57,7 +57,7 @@ DROP TABLE t_order;
 DROP SHARDING TABLE RULE t_order;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0, ds_1;

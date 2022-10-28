@@ -29,17 +29,7 @@ import java.util.Properties;
 @Slf4j
 public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropertiesExtension {
     
-    private static String mysqlConnectorVersion;
-    
-    static {
-        try {
-            Class<?> mysqlDriverClass = MySQLJdbcQueryPropertiesExtension.class.getClassLoader().loadClass("com.mysql.jdbc.Driver");
-            mysqlConnectorVersion = mysqlDriverClass.getPackage().getImplementationVersion();
-            log.info("mysql connector version {}", mysqlConnectorVersion);
-        } catch (final ClassNotFoundException ex) {
-            log.warn("not find com.mysql.jdbc.Driver class");
-        }
-    }
+    private static final String MYSQL_CONNECTOR_VERSION = initMysqlConnectorVersion();
     
     private final Properties queryProps = new Properties();
     
@@ -47,14 +37,30 @@ public final class MySQLJdbcQueryPropertiesExtension implements JdbcQueryPropert
         queryProps.setProperty("useSSL", Boolean.FALSE.toString());
         queryProps.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());
         queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
-        // refer https://bugs.mysql.com/bug.php?id=91065
-        String zeroDateTimeBehavior = "convertToNull";
-        if (null != mysqlConnectorVersion) {
-            zeroDateTimeBehavior = new ServerVersion(mysqlConnectorVersion).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : zeroDateTimeBehavior;
-        }
-        queryProps.setProperty("zeroDateTimeBehavior", zeroDateTimeBehavior);
+        queryProps.setProperty("zeroDateTimeBehavior", getZeroDateTimeBehavior());
         queryProps.setProperty("noDatetimeStringSync", Boolean.TRUE.toString());
         queryProps.setProperty("jdbcCompliantTruncation", Boolean.FALSE.toString());
+    }
+    
+    private String getZeroDateTimeBehavior() {
+        // refer https://bugs.mysql.com/bug.php?id=91065
+        String zeroDateTimeBehavior = "convertToNull";
+        if (null != MYSQL_CONNECTOR_VERSION) {
+            zeroDateTimeBehavior = new ServerVersion(MYSQL_CONNECTOR_VERSION).greaterThanOrEqualTo(8, 0, 0) ? "CONVERT_TO_NULL" : zeroDateTimeBehavior;
+        }
+        return zeroDateTimeBehavior;
+    }
+    
+    private static String initMysqlConnectorVersion() {
+        try {
+            Class<?> mysqlDriverClass = MySQLJdbcQueryPropertiesExtension.class.getClassLoader().loadClass("com.mysql.jdbc.Driver");
+            String result = mysqlDriverClass.getPackage().getImplementationVersion();
+            log.info("mysql connector version {}", result);
+            return result;
+        } catch (final ClassNotFoundException ex) {
+            log.warn("not find com.mysql.jdbc.Driver class");
+            return null;
+        }
     }
     
     @Override
