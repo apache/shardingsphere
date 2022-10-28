@@ -45,5 +45,5 @@
     <distsql-case id="apply-distsql" value="APPLY DISTSQL" />
     <distsql-case id="discard-distsql" value="DISCARD DISTSQL" />
     
-    <distsql-case id="import-database-config" value="IMPORT DATABASE CONFIG FILE='/yaml/config-sharding.yaml'" />
+    <distsql-case id="import-database-config" value="IMPORT DATABASE CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" />
 </sql-cases>

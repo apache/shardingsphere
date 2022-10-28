@@ -69,7 +69,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     protected void addMigrationSourceResource() throws SQLException {
         if (ITEnvTypeEnum.NATIVE == ENV.getItEnvType()) {
             try {
-                proxyExecuteWithLog("DROP MIGRATION SOURCE RESOURCE ds_0", 2);
+                proxyExecuteWithLog("UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0", 2);
             } catch (final SQLException ex) {
                 log.warn("Drop sharding_db failed, maybe it's not exist. error msg={}", ex.getMessage());
             }

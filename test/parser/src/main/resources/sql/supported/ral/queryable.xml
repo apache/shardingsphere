@@ -34,6 +34,6 @@
     <distsql-case id="show-compute-node-info" value="SHOW COMPUTE NODE INFO" />
     <distsql-case id="show-compute-node-mode" value="SHOW COMPUTE NODE MODE" />
     
-    <distsql-case id="export-database-config" value="EXPORT DATABASE CONFIG FROM database_name" />
-    <distsql-case id="convert-yaml-config" value="CONVERT YAML CONFIG FILE='/yaml/config-resource.yaml'" />
+    <distsql-case id="export-database-config" value="EXPORT DATABASE CONFIGURATION FROM database_name" />
+    <distsql-case id="convert-yaml-config" value="CONVERT YAML CONFIGURATION FROM FILE '/yaml/config-resource.yaml'" />
 </sql-cases>

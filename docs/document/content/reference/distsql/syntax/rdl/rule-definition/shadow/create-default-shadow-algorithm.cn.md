@@ -1,6 +1,6 @@
 +++
 title = "CREATE DEFAULT SHADOW ALGORITHM"
-weight = 4
+weight = 5
 +++
 
 ## 描述
@@ -11,23 +11,30 @@ weight = 4
 
 ```sql
 CreateDefaultShadowAlgorithm ::=
-  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' 'NAME' '=' algorithmName
+  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
+
+shadowAlgorithm ::=
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
     
-algorithmName ::=
-  identifier
+shadowAlgorithmType ::=
+  string
 ```
+
+### 补充说明
+
+- `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`。
 
 ### 示例
 
-#### 创建影子库压测算法
+- 创建默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
 ```
 
 ### 保留字
 
-`CREATE`、`DEFAULT`、`SHADOW`、`ALGORITHM`、`NAME`
+`CREATE`、`DEFAULT`、`SHADOW`、`ALGORITHM`、`TYPE`、`NAME`、`PROPERTIES`
 
 ### 相关链接
 

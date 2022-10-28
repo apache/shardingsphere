@@ -82,10 +82,10 @@
     </create-target-order-item-table-rule>
     
     <migration-single-table>
-        MIGRATE TABLE ds_0.%s INTO sharding_db.%s;
+        MIGRATE TABLE ds_0.%s INTO sharding_DB.%s;
     </migration-single-table>
     
     <migration-single-table-with-schema>
-        MIGRATE TABLE ds_0.test.%s INTO sharding_db.%s;
+        MIGRATE TABLE ds_0.test.%s INTO sharding_DB.%s;
     </migration-single-table-with-schema>
 </command>

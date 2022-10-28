@@ -53,7 +53,7 @@ ALTER ENCRYPT RULE t_encrypt (
 DROP ENCRYPT RULE t_encrypt;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0;
