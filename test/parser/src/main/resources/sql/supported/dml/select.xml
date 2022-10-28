@@ -132,4 +132,5 @@
     <sql-case id="select_with_xml_namespaces_clause" value="WITH XMLNAMESPACES ('uri' AS ns1) SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS" db-types="SQLServer" />
     <sql-case id="select_with_xml_default_namespaces_clause" value="WITH XMLNAMESPACES ('uri1' AS ns1, 'uri2' AS ns2, DEFAULT 'uri2') SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS XSINIL" db-types="SQLServer" />
     <sql-case id="select_with_mysql_main_and_utc_data_and_so_on" value="SELECT MYSQL_MAIN,UTC_DATE,UTC_TIME,UTC_TIMESTAMP FROM test" db-types="MySQL" />
+    <sql-case id="select_with_analytic_function" value="SELECT order_id, ROW_NUMBER () OVER (PARTITION BY user_id ORDER BY order_id DESC) AS row_number FROM t_order WHERE order_id = ?" db-types="Oracle" />
 </sql-cases>

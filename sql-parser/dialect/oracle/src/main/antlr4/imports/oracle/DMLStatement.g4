@@ -670,14 +670,6 @@ modelExpr
     | analyticFunction) (PLUS_ modelExpr | ASTERISK_ numberLiterals (ASTERISK_ modelExpr)?)?
     ;
 
-analyticFunction
-    : analyticFunctionName LP_ arguments? RP_ OVER LP_ analyticClause RP_
-    ;
-
-arguments
-    : dataType*
-    ;
-
 forUpdateClause
     : FOR UPDATE (OF forUpdateClauseList)? ((NOWAIT | WAIT INTEGER_) | SKIP_SYMBOL LOCKED)?
     ;
