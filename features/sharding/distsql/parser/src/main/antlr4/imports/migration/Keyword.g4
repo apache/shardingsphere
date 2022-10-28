@@ -167,14 +167,6 @@ ADD
     : A D D
     ;
 
-RESOURCE
-    : R E S O U R C E
-    ;
-    
-RESOURCES
-    : R E S O U R C E S
-    ;
-
 REGISTER
     : R E G I S T E R
     ;
