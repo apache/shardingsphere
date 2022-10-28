@@ -40,13 +40,14 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-// TODO add workflow, add jdbc
+// TODO add jdbc
 @RunWith(Parameterized.class)
 public final class ShowProcessListIT {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
+    
+    private static final String SELECT_SLEEP = "select sleep(10)";
     
     private final ClusterShowProcessListContainerComposer containerComposer;
     
@@ -77,17 +78,15 @@ public final class ShowProcessListIT {
     
     @Test
     public void assertShowProcessList() throws SQLException, InterruptedException {
-        CompletableFuture<Void> executeSelectSleep1 = CompletableFuture.runAsync(getExecuteSleepThread("proxy"));
-        CompletableFuture<Void> executeSelectSleep2 = CompletableFuture.runAsync(getExecuteSleepThread("proxy"));
-        CompletableFuture<Void> executeSelectSleep3 = CompletableFuture.runAsync(getExecuteSleepThread("proxy"));
-        Thread.sleep(100);
+        CompletableFuture<Void> executeSelectSleep = CompletableFuture.runAsync(getExecuteSleepThread("proxy"));
+        Thread.sleep(5000);
         try (
                 Connection connection = containerComposer.getProxyDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("show processlist");
             assertResultSet(resultSet);
         }
-        CompletableFuture.allOf(executeSelectSleep1, executeSelectSleep2, executeSelectSleep3).join();
+        executeSelectSleep.join();
     }
     
     private void assertResultSet(final ResultSet resultSet) throws SQLException {
@@ -100,9 +99,13 @@ public final class ShowProcessListIT {
     }
     
     private void assertRows(final ResultSet resultSet) throws SQLException {
-        assertTrue(resultSet.next());
-        assertTrue(resultSet.next());
-        assertTrue(resultSet.next());
+        int count = 0;
+        while (resultSet.next()) {
+            if (SELECT_SLEEP.equals(resultSet.getObject(8).toString())) {
+                count++;
+            }
+        }
+        assertThat(count, is(1));
     }
     
     private Runnable getExecuteSleepThread(final String targetContainer) {
@@ -110,7 +113,7 @@ public final class ShowProcessListIT {
             try (
                     Connection connection = "proxy".equals(targetContainer) ? containerComposer.getProxyDataSource().getConnection() : containerComposer.getJdbcDataSource().getConnection();
                     Statement statement = connection.createStatement()) {
-                statement.executeQuery("select sleep(10)");
+                statement.executeQuery(SELECT_SLEEP);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }

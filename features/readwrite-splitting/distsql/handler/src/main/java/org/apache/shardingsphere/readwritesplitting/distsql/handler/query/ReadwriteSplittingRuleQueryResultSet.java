@@ -112,7 +112,8 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DatabaseDistS
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "auto_aware_data_source_name", "write_data_source_query_enabled", "write_data_source_name", "read_data_source_names", "load_balancer_type", "load_balancer_props");
+        return Arrays.asList("name", "auto_aware_data_source_name", "write_data_source_query_enabled",
+                "write_storage_unit_name", "read_storage_unit_names", "load_balancer_type", "load_balancer_props");
     }
     
     @Override

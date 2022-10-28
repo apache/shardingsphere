@@ -42,7 +42,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -82,7 +82,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         this.instanceMetaData = instanceMetaData;
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        distributedLockProvider = new ZookeeperDistributedLockProvider(client);
+        distributedLockProvider = new CuratorZookeeperDistributedLockProvider(client);
         initCuratorClient(zookeeperProps);
     }
     

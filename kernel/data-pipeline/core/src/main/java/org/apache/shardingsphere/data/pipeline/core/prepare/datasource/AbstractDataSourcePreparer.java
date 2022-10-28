@@ -82,8 +82,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
-        } catch (final SQLException ignored) {
-            // TODO should not ignore the exception, if do not catch it, the scaling IT will fail.
+        } catch (final SQLException ex) {
+            log.error("create schema failed, {}", ex.getMessage());
         }
     }
     

@@ -39,8 +39,8 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -146,10 +146,10 @@ public final class CuratorZookeeperRepositoryTest {
     private void mockInternalLockHolder() {
         Field internalLockProviderFiled = CuratorZookeeperRepository.class.getDeclaredField("distributedLockProvider");
         internalLockProviderFiled.setAccessible(true);
-        ZookeeperDistributedLockProvider distributedLockProvider = new ZookeeperDistributedLockProvider(client);
-        Field locksFiled = ZookeeperDistributedLockProvider.class.getDeclaredField("locks");
+        CuratorZookeeperDistributedLockProvider distributedLockProvider = new CuratorZookeeperDistributedLockProvider(client);
+        Field locksFiled = CuratorZookeeperDistributedLockProvider.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(distributedLockProvider, Collections.singletonMap("/locks/glock", new ZookeeperDistributedLock(interProcessLock)));
+        locksFiled.set(distributedLockProvider, Collections.singletonMap("/locks/glock", new CuratorZookeeperDistributedLock(interProcessLock)));
         internalLockProviderFiled.set(REPOSITORY, distributedLockProvider);
     }
     
