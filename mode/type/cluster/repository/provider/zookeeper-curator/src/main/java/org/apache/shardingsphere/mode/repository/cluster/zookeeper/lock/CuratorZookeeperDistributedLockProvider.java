@@ -23,9 +23,8 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Curator ZooKeeper distributed lock provider.
@@ -33,14 +32,14 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class CuratorZookeeperDistributedLockProvider implements DistributedLockProvider {
     
-    private final Map<String, CuratorZookeeperDistributedLock> locks = new LinkedHashMap<>();
+    private final Map<String, CuratorZookeeperDistributedLock> locks = new HashMap<>();
     
     private final CuratorFramework client;
     
     @Override
     public synchronized DistributedLock getDistributedLock(final String lockKey) {
         CuratorZookeeperDistributedLock result = locks.get(lockKey);
-        if (Objects.isNull(result)) {
+        if (null == result) {
             result = new CuratorZookeeperDistributedLock(new InterProcessMutex(client, lockKey));
             locks.put(lockKey, result);
         }

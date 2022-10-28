@@ -25,9 +25,8 @@ import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperty
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Etcd distributed lock provider.
@@ -36,7 +35,7 @@ import java.util.Objects;
 @Slf4j
 public final class EtcdDistributedLockProvider implements DistributedLockProvider {
     
-    private final Map<String, EtcdDistributedLock> locks = new LinkedHashMap<>();
+    private final Map<String, EtcdDistributedLock> locks = new HashMap<>();
     
     private final Client client;
     
@@ -45,7 +44,7 @@ public final class EtcdDistributedLockProvider implements DistributedLockProvide
     @Override
     public synchronized DistributedLock getDistributedLock(final String lockKey) {
         EtcdDistributedLock result = locks.get(lockKey);
-        if (Objects.isNull(result)) {
+        if (null == result) {
             result = createLock(lockKey);
             locks.put(lockKey, result);
         }
