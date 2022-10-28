@@ -22,16 +22,16 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Abstr
 import java.nio.ByteBuffer;
 
 /**
- * logical replication decoding plugin interface.
+ * Logical replication decoding plugin.
  */
 public interface DecodingPlugin {
     
     /**
-     * Decode wal event from logical replication data.
+     * Decode WAL event from logical replication data.
      *
      * @param data of logical replication
-     * @param logSequenceNumber wal lsn
-     * @return wal event
+     * @param logSequenceNumber log sequence number
+     * @return WAL event
      */
     AbstractWalEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
 }
