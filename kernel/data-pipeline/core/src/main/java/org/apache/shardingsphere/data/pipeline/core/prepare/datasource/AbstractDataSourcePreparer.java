@@ -83,7 +83,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 statement.execute(sql);
             }
         } catch (final SQLException ex) {
-            log.error(ex.getMessage());
+            log.error("create schema failed, {}", ex.getMessage());
         }
     }
     

@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
@@ -70,15 +69,10 @@ public final class PipelineDistributedBarrier {
     /**
      * Register count down latch.
      *
-     * @param jobId jobId job id
      * @param barrierPath barrier path
      * @param totalCount total count
      */
-    public void register(final String jobId, final String barrierPath, final int totalCount) {
-        String jobRootPath = PipelineMetaDataNode.getJobRootPath(jobId);
-        if (!getRepository().isExisted(jobRootPath)) {
-            return;
-        }
+    public void register(final String barrierPath, final int totalCount) {
         getRepository().persist(barrierPath, "");
         countDownLatchMap.computeIfAbsent(barrierPath, k -> new InnerCountDownLatchHolder(totalCount, new CountDownLatch(1)));
     }

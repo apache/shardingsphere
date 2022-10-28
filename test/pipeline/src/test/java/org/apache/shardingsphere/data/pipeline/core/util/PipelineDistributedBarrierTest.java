@@ -47,7 +47,7 @@ public final class PipelineDistributedBarrierTest {
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
         String parentPath = "/barrier";
-        instance.register(jobId, parentPath, 1);
+        instance.register(parentPath, 1);
         Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
         assertNotNull(countDownLatchMap);
         assertTrue(countDownLatchMap.containsKey(parentPath));
@@ -62,7 +62,7 @@ public final class PipelineDistributedBarrierTest {
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
-        instance.register(jobId, barrierEnablePath, 1);
+        instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
         boolean actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
         assertFalse(actual);
