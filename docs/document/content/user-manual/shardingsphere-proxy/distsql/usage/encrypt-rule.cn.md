@@ -3,7 +3,7 @@ title = "数据加密"
 weight = 3
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
