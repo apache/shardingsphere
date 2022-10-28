@@ -331,7 +331,7 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertReloadDatabase() {
+    public void assertReloadTableMetaData() {
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(1, 1);
         dataSourceMap.put("foo_ds", new MockedDataSource());
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
@@ -340,7 +340,7 @@ public final class ContextManagerTest {
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(persistService);
-        contextManager.reloadDatabase("foo_db");
+        contextManager.reloadTableMetaData("foo_db");
         verify(databaseMetaDataPersistService, times(1)).dropSchema(eq("foo_db"), eq("foo_schema"));
         verify(databaseMetaDataPersistService, times(1)).compareAndPersist(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
     }
