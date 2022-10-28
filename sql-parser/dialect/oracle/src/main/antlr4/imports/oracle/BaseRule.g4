@@ -438,6 +438,7 @@ expr
     : expr andOperator expr
     | expr orOperator expr
     | notOperator expr
+    | PRIOR expr
     | LP_ expr RP_
     | booleanPrimary
     ;
@@ -508,11 +509,15 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) RP_ (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | GROUPING
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG
+    ;
+
+listaggOverflowClause
+    : ON OVERFLOW (ERROR | (TRUNCATE stringLiterals? ((WITH | WITHOUT) COUNT)?))
     ;
 
 analyticClause

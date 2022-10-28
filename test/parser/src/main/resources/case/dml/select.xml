@@ -4436,4 +4436,13 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_listagg_function_start_with_connect_by">
+        <projections start-index="7" stop-index="101">
+            <expression-projection text="LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c.&quot;level&quot;) DESC)" start-index="7" stop-index="101" alias="category_level" />
+        </projections>
+        <from>
+            <simple-table name="t_product_category" start-index="108" stop-index="127" alias="c" />
+        </from>
+    </select>
 </sql-parser-test-cases>
