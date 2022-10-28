@@ -2722,7 +2722,7 @@
         <comment start-index="44" stop-index="76" text="-- this is another line comment &#x000A;"/>
     </select>
 
-    <select sql-case-id="select_with_single_comment_for_postgresql" >
+    <select sql-case-id="select_with_single_comment_without_whitespace" >
         <from>
             <simple-table name="t_order" start-index="76" stop-index="82" />
         </from>
