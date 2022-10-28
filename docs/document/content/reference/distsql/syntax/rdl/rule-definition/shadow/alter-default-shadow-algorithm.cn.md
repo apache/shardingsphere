@@ -1,17 +1,17 @@
 +++
-title = "CREATE DEFAULT SHADOW ALGORITHM"
-weight = 5
+title = "ALTER DEFAULT SHADOW ALGORITHM"
+weight = 6
 +++
 
 ## 描述
 
-`CREATE DEFAULT SHADOW ALGORITHM` 语法用于创建影子库默认算法规则。
+`ALTER DEFAULT SHADOW ALGORITHM` 语法用于修改影子库默认算法规则。
 
 ### 语法定义
 
 ```sql
-CreateDefaultShadowAlgorithm ::=
-  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
+AlterDefaultShadowAlgorithm ::=
+  'ALTER' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
 
 shadowAlgorithm ::=
   'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
@@ -26,15 +26,15 @@ shadowAlgorithmType ::=
 
 ### 示例
 
-- 创建默认影子库压测算法
+- 修改默认影子库压测算法
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
 ```
 
 ### 保留字
 
-`CREATE`、`DEFAULT`、`SHADOW`、`ALGORITHM`、`TYPE`、`NAME`、`PROPERTIES`
+`ALTER`、`DEFAULT`、`SHADOW`、`ALGORITHM`、`TYPE`、`NAME`、`PROPERTIES`
 
 ### 相关链接
 

@@ -3,7 +3,7 @@ title = "Sharding"
 weight = 1
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 - Configure data source information
 
