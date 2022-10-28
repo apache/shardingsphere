@@ -117,6 +117,7 @@ public final class CreateTableSQLGeneratorIT {
     
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
+        log.info("generate create table sql, parameterized: {}", parameterized);
         initData();
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
@@ -129,7 +130,6 @@ public final class CreateTableSQLGeneratorIT {
                 assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
-        log.info("generate create table sql success");
     }
     
     private void initData() throws SQLException {
