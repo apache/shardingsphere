@@ -154,7 +154,6 @@
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <caffeine.version>2.9.2</caffeine.version>
-        <jackson.version>2.14.0-rc2</jackson.version>
         <commons-io.version>2.11.0</commons-io.version>
     </properties>
     
