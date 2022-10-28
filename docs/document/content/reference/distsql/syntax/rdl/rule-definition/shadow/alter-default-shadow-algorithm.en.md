@@ -1,17 +1,17 @@
 +++
-title = "CREATE DEFAULT SHADOW ALGORITHM"
-weight = 5
+title = "ALTER DEFAULT SHADOW ALGORITHM"
+weight = 6
 +++
 
 ## Description
 
-The `CREATE DEFAULT SHADOW ALGORITHM` syntax is used to create a default shadow algorithm.
+The `ALTER DEFAULT SHADOW ALGORITHM` syntax is used to alter a default shadow algorithm.
 
 ### Syntax
 
 ```sql
-CreateDefaultShadowAlgorithm ::=
-  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
+AlterDefaultShadowAlgorithm ::=
+  'ALTER' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
 
 shadowAlgorithm ::=
   'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
@@ -26,15 +26,15 @@ shadowAlgorithmType ::=
 
 ### Example
 
-- Create default shadow algorithm
+- Alter default shadow algorithm
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
 ```
 
 ### Reserved word
 
-`CREATE`, `DEFAULT`, `SHADOW`, `ALGORITHM`, `TYPE`, `NAME`, `PROPERTIES`
+`ALTER`, `DEFAULT`, `SHADOW`, `ALGORITHM`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
 

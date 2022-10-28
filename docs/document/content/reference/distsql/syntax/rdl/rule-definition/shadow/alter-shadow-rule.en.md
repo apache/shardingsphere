@@ -1,17 +1,17 @@
 +++
-title = "CREATE SHADOW RULE"
-weight = 2
+title = "ALTER SHADOW RULE"
+weight = 3
 +++
 
 ## Description
 
-The `CREATE SHADOW RULE` syntax is used to create a shadow rule.
+The `ALTER SHADOW RULE` syntax is used to alter shadow rule.
 
 ### Syntax
 
 ```sql
-CreateShadowRule ::=
-  'CREATE' 'SHADOW' 'RULE' shadowDefinition ( ',' shadowDefinition )*
+AlterShadowRule ::=
+  'ALTER' 'SHADOW' 'RULE' shadowDefinition ( ',' shadowDefinition )*
 
 shadowDefinition ::=
   ruleName '(' storageUnitMapping shadowTableRule ( ',' shadowTableRule )* ')'
@@ -37,13 +37,11 @@ tableName ::=
 algorithmName ::=
   identifier
 
-shadowAlgorithmType ::=
-  string
+shadowAlgorithmType ::
 ```
 
 ### Supplement
 
-- Duplicate `ruleName` cannot be created;
 - `storageUnitMapping` specifies the mapping relationship between the `source` database and the shadow library. You need to
   use the storage unit managed by RDL, please refer
   to [STORAGE UNIT](https://shardingsphere.apache.org/document/current/en/reference/distsql/syntax/rdl/storage-unit-definition/);
@@ -57,7 +55,7 @@ shadowAlgorithmType ::=
 - Create a shadow rule
 
 ```sql
-CREATE SHADOW RULE shadow_rule(
+ALTER SHADOW RULE shadow_rule(
   SOURCE=demo_su,
   SHADOW=demo_su_shadow,
   t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar"))), 
@@ -67,7 +65,7 @@ CREATE SHADOW RULE shadow_rule(
 
 ### Reserved word
 
-`CREATE`, `SHADOW`, `RULE`, `SOURCE`, `SHADOW`, `TYPE`, `NAME`, `PROPERTIES`
+`ALTER`, `SHADOW`, `RULE`, `SOURCE`, `SHADOW`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
 
