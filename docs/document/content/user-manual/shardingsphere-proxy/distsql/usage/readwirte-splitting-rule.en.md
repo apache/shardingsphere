@@ -3,7 +3,7 @@ title = "Readwrite_splitting"
 weight = 2
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 ```sql
 REGISTER STORAGE UNIT write_ds (
