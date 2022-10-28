@@ -504,7 +504,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : aggregationFunction | analyticFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
@@ -526,6 +526,10 @@ queryPartitionClause
 windowingClause
     : (ROWS | RANGE) ((BETWEEN (UNBOUNDED PRECEDING | CURRENT ROW | expr (PRECEDING | FOLLOWING)) AND (UNBOUNDED FOLLOWING | CURRENT ROW | expr (PRECEDING | FOLLOWING)))
     | (UNBOUNDED PRECEDING | CURRENT ROW | expr PRECEDING))
+    ;
+
+analyticFunction
+    : analyticFunctionName LP_ dataType* RP_ OVER LP_ analyticClause RP_
     ;
 
 specialFunction

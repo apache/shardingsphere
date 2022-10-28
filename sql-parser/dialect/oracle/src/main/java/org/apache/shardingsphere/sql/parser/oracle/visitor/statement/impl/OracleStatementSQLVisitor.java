@@ -27,6 +27,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
@@ -477,10 +478,22 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.specialFunction()) {
             return visit(ctx.specialFunction());
         }
+        if (null != ctx.analyticFunction()) {
+            return visit(ctx.analyticFunction());
+        }
         if (null != ctx.regularFunction()) {
             return visit(ctx.regularFunction());
         }
-        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction or specialFunction.");
+        throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, analyticFunction or specialFunction.");
+    }
+    
+    @Override
+    public ASTNode visitAnalyticFunction(final AnalyticFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.analyticFunctionName().getText(), getOriginalText(ctx));
+        for (DataTypeContext each : ctx.dataType()) {
+            result.getParameters().add((DataTypeSegment) visit(each));
+        }
+        return result;
     }
     
     @Override
