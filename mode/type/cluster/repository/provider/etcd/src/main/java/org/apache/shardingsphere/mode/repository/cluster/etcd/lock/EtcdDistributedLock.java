@@ -38,9 +38,9 @@ public final class EtcdDistributedLock implements DistributedLock {
     private final long leaseId;
     
     @Override
-    public boolean tryLock(final long timeout) {
+    public boolean tryLock(final long timeoutMillis) {
         try {
-            this.lock.lock(ByteSequence.from(lockKey, StandardCharsets.UTF_8), leaseId).get(timeout, TimeUnit.MILLISECONDS);
+            lock.lock(ByteSequence.from(lockKey, StandardCharsets.UTF_8), leaseId).get(timeoutMillis, TimeUnit.MILLISECONDS);
             return true;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
