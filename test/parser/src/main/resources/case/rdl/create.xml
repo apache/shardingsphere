@@ -236,8 +236,8 @@
     
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-definition-rule">
         <rule rule-name="ha_group_0" type="mgr">
-            <data-source>ds0</data-source>
-            <data-source>ds1</data-source>
+            <data-source>ds_0</data-source>
+            <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec" />
@@ -248,8 +248,8 @@
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
-            <data-source>ds2</data-source>
-            <data-source>ds3</data-source>
+            <data-source>ds_2</data-source>
+            <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec-2" />
@@ -263,8 +263,8 @@
 
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
         <rule rule-name="ha_group_0" type="mgr">
-            <data-source>ds0</data-source>
-            <data-source>ds1</data-source>
+            <data-source>ds_0</data-source>
+            <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec"/>
@@ -275,8 +275,8 @@
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
-            <data-source>ds2</data-source>
-            <data-source>ds3</data-source>
+            <data-source>ds_2</data-source>
+            <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec-2"/>
