@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALEventConverter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
@@ -56,7 +56,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private final WALEventConverter walEventConverter;
     
-    private final LogicalReplication logicalReplication;
+    private final PostgreSQLLogicalReplication logicalReplication;
     
     public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition<WALPosition> position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -66,7 +66,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         walPosition = (WALPosition) position;
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
-        logicalReplication = new LogicalReplication();
+        logicalReplication = new PostgreSQLLogicalReplication();
     }
     
     @Override

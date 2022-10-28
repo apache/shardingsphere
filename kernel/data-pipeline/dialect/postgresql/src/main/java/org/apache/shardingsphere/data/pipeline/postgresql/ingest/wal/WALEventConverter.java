@@ -37,7 +37,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import java.util.List;
 
 /**
- * Convert WAL event to {@code Record}.
+ * WAL event converter.
  */
 public final class WALEventConverter {
     

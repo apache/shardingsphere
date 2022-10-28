@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class LogicalReplicationTest {
+public final class PostgreSQLLogicalReplicationTest {
     
     @Mock
     private PgConnection connection;
@@ -57,11 +57,11 @@ public final class LogicalReplicationTest {
     @Mock
     private ChainedLogicalStreamBuilder chainedLogicalStreamBuilder;
     
-    private LogicalReplication logicalReplication;
+    private PostgreSQLLogicalReplication logicalReplication;
     
     @Before
     public void setUp() {
-        logicalReplication = new LogicalReplication();
+        logicalReplication = new PostgreSQLLogicalReplication();
     }
     
     @Test

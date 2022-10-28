@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
- * PostgreSQL WAL position.
+ * WAL position.
  */
 @RequiredArgsConstructor
 @Getter

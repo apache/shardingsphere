@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.Multip
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.After;
@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
 public final class PostgreSQLWALDumperTest {
     
     @Mock
-    private LogicalReplication logicalReplication;
+    private PostgreSQLLogicalReplication logicalReplication;
     
     @Mock
     private PgConnection pgConnection;
