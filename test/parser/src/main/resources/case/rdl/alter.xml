@@ -92,10 +92,18 @@
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy type="standard" sharding-column="user_id">
-                <algorithm-segment algorithm-name="table_inline" />
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
             </table-strategy>
             <database-strategy type="standard" sharding-column="order_id">
-                <algorithm-segment algorithm-name="database_inline" />
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                    </properties>
+                </algorithm-segment>
             </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -103,12 +111,20 @@
 
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-source>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-source>
             <table-strategy type="standard" sharding-column="user_id">
-                <algorithm-segment algorithm-name="table_inline" />
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
             </table-strategy>
             <database-strategy type="complex" sharding-column="order_id,user_id">
-                <algorithm-segment algorithm-name="database_inline" />
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
             </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -249,13 +265,21 @@
 
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
-            <algorithm-segment algorithm-name="INLINE" />
+            <algorithm-segment algorithm-name="INLINE">
+                <properties>
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}" />
+                </properties>
+            </algorithm-segment>
         </strategy>
     </alter-default-sharding-strategy>
     
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy-complex">
         <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id">
-            <algorithm-segment algorithm-name="INLINE" />
+            <algorithm-segment algorithm-name="INLINE">
+                <properties>
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}_${user_id % 2}" />
+                </properties>
+            </algorithm-segment>
         </strategy>
     </alter-default-sharding-strategy>
 </sql-parser-test-cases>
