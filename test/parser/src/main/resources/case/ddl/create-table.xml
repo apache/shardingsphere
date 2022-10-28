@@ -1784,4 +1784,14 @@
             <column name="status" />
         </column-definition>
     </create-table>
+    
+    <create-table sql-case-id="create_table_with_varchar2_char_and_byte_type">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="VARCHAR2" start-index="22" stop-index="62">
+            <column name="SYS_ID" />
+        </column-definition>
+        <column-definition type="VARCHAR2" start-index="65" stop-index="118">
+            <column name="ATTACHMENT_NAME" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
