@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.createtable;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -58,6 +59,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Parameterized.class)
+@Slf4j
 public final class CreateTableSQLGeneratorIT {
     
     private static final String POSTGRES_CASE_FILE_PATH = "postgresql/create-table-sql-generator.xml";
@@ -127,6 +129,7 @@ public final class CreateTableSQLGeneratorIT {
                 assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
+        log.info("generate create table sql success");
     }
     
     private void initData() throws SQLException {
