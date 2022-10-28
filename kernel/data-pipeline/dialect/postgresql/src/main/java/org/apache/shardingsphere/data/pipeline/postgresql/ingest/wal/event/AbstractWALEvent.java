@@ -23,12 +23,12 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
- * Abstract wal event.
+ * Abstract WAL event.
  */
 @Getter
 @Setter
 @ToString
-public abstract class AbstractWalEvent {
+public abstract class AbstractWALEvent {
     
     private BaseLogSequenceNumber logSequenceNumber;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
 
 import java.nio.ByteBuffer;
 
@@ -33,5 +33,5 @@ public interface DecodingPlugin {
      * @param logSequenceNumber log sequence number
      * @return WAL event
      */
-    AbstractWalEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
+    AbstractWALEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
 }

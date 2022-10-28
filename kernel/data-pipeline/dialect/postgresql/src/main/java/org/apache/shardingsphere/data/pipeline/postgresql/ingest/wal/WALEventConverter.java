@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTable
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -37,26 +37,26 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import java.util.List;
 
 /**
- * Convert wal event to {@code Record}.
+ * Convert WAL event to {@code Record}.
  */
-public final class WalEventConverter {
+public final class WALEventConverter {
     
     private final DumperConfiguration dumperConfig;
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
-    public WalEventConverter(final DumperConfiguration dumperConfig, final PipelineTableMetaDataLoader metaDataLoader) {
+    public WALEventConverter(final DumperConfiguration dumperConfig, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperConfig = dumperConfig;
         this.metaDataLoader = metaDataLoader;
     }
     
     /**
-     * Convert wal event to {@code Record}.
+     * Convert WAL event to {@code Record}.
      *
      * @param event of wal
      * @return record
      */
-    public Record convert(final AbstractWalEvent event) {
+    public Record convert(final AbstractWALEvent event) {
         if (filter(event)) {
             return createPlaceholderRecord(event);
         }
@@ -75,7 +75,7 @@ public final class WalEventConverter {
         throw new UnsupportedSQLOperationException("");
     }
     
-    private boolean filter(final AbstractWalEvent event) {
+    private boolean filter(final AbstractWALEvent event) {
         if (isRowEvent(event)) {
             AbstractRowEvent rowEvent = (AbstractRowEvent) event;
             return !dumperConfig.containsTable(rowEvent.getTableName());
@@ -83,12 +83,12 @@ public final class WalEventConverter {
         return false;
     }
     
-    private boolean isRowEvent(final AbstractWalEvent event) {
+    private boolean isRowEvent(final AbstractWALEvent event) {
         return event instanceof WriteRowEvent || event instanceof UpdateRowEvent || event instanceof DeleteRowEvent;
     }
     
-    private PlaceholderRecord createPlaceholderRecord(final AbstractWalEvent event) {
-        return new PlaceholderRecord(new WalPosition(event.getLogSequenceNumber()));
+    private PlaceholderRecord createPlaceholderRecord(final AbstractWALEvent event) {
+        return new PlaceholderRecord(new WALPosition(event.getLogSequenceNumber()));
     }
     
     private DataRecord handleWriteRowsEvent(final WriteRowEvent writeRowEvent) {
@@ -122,7 +122,7 @@ public final class WalEventConverter {
     }
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
-        DataRecord result = new DataRecord(new WalPosition(rowsEvent.getLogSequenceNumber()), columnCount);
+        DataRecord result = new DataRecord(new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
         result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
         return result;
     }

@@ -23,16 +23,16 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
- * PostgreSQL wal position.
+ * PostgreSQL WAL position.
  */
 @RequiredArgsConstructor
 @Getter
-public final class WalPosition implements IngestPosition<WalPosition> {
+public final class WALPosition implements IngestPosition<WALPosition> {
     
     private final BaseLogSequenceNumber logSequenceNumber;
     
     @Override
-    public int compareTo(final WalPosition position) {
+    public int compareTo(final WALPosition position) {
         return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
     }
     
