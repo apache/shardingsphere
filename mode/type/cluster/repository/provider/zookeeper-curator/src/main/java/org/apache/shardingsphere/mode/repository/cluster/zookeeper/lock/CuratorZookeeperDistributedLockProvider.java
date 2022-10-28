@@ -18,40 +18,32 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
 
-import java.util.concurrent.TimeUnit;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * Zookeeper distributed lock.
+ * Curator ZooKeeper distributed lock provider.
  */
 @RequiredArgsConstructor
-public final class ZookeeperDistributedLock implements DistributedLock {
+public final class CuratorZookeeperDistributedLockProvider implements DistributedLockProvider {
     
-    private final InterProcessLock lock;
+    private final Map<String, CuratorZookeeperDistributedLock> locks = new LinkedHashMap<>();
     
-    @Override
-    public boolean tryLock(final long timeout) {
-        try {
-            return lock.acquire(timeout, TimeUnit.MILLISECONDS);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        return false;
-    }
+    private final CuratorFramework client;
     
     @Override
-    public void unlock() {
-        try {
-            lock.release();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+    public synchronized DistributedLock getDistributedLock(final String lockKey) {
+        CuratorZookeeperDistributedLock result = locks.get(lockKey);
+        if (Objects.isNull(result)) {
+            result = new CuratorZookeeperDistributedLock(new InterProcessMutex(client, lockKey));
+            locks.put(lockKey, result);
         }
+        return result;
     }
 }
