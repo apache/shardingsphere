@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
@@ -36,6 +37,7 @@ import java.util.Properties;
 import java.util.ArrayList;
 
 @RequiredArgsConstructor
+@SingletonSPI
 public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String sqlCaseId;
@@ -90,5 +92,6 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sqlCaseValue, false);
         new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
         System.out.println("ParserError: " + sqlCaseId + " value: " + sqlCaseValue + " db-type: " + databaseType);
+        throw new RuntimeException();
     }
 }
