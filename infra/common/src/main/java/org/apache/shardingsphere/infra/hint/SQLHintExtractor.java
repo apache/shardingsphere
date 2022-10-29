@@ -44,13 +44,8 @@ public final class SQLHintExtractor {
     }
     
     public SQLHintExtractor(final String sqlComment) {
-        if (Strings.isNullOrEmpty(sqlComment)) {
-            sqlHintProperties = DEFAULT_SQL_HINT_PROPERTIES;
-        } else {
-            Properties props = new Properties();
-            props.putAll(SQLHintUtils.getSQLHintProps(sqlComment));
-            sqlHintProperties = new SQLHintProperties(props);
-        }
+        sqlHintProperties = Strings.isNullOrEmpty(sqlComment)
+                ? DEFAULT_SQL_HINT_PROPERTIES : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {
