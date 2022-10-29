@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.hint;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
@@ -40,6 +41,16 @@ public final class SQLHintExtractor {
         sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
                 ? extract((AbstractSQLStatement) sqlStatement)
                 : DEFAULT_SQL_HINT_PROPERTIES;
+    }
+    
+    public SQLHintExtractor(final String sqlComment) {
+        if (Strings.isNullOrEmpty(sqlComment)) {
+            sqlHintProperties = DEFAULT_SQL_HINT_PROPERTIES;
+        } else {
+            Properties props = new Properties();
+            props.putAll(SQLHintUtils.getSQLHintProps(sqlComment));
+            sqlHintProperties = new SQLHintProperties(props);
+        }
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {
@@ -66,6 +77,15 @@ public final class SQLHintExtractor {
      */
     public boolean isHintSkipEncryptRewrite() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
+    }
+    
+    /**
+     * Judge whether is hint routed to shadow data source or not.
+     *
+     * @return whether is hint routed to shadow data source or not
+     */
+    public boolean isShadow() {
+        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHADOW_KEY);
     }
     
     /**
