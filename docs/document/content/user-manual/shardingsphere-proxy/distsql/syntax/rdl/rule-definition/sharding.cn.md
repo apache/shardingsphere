@@ -190,7 +190,6 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 *Table*
 
 ```sql
-
 CREATE SHARDING TABLE RULE t_order_item (
 DATANODES("ds_${0..1}.t_order_item_${0..1}"),
 DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),

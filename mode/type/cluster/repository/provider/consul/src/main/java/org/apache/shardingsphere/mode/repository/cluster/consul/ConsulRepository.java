@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -61,38 +60,6 @@ public class ConsulRepository implements ClusterPersistRepository {
         consulProps = new ConsulProperties(config.getProps());
         consulDistributedLockProvider = new ConsulDistributedLockProvider(consulClient, consulProps);
         watchKeyMap = new HashMap<>(6, 1);
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
     }
     
     @Override
@@ -125,16 +92,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     @Override
     public void delete(final String key) {
         consulClient.deleteKVValue(key);
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return consulClient;
     }
     
     @Override
@@ -176,7 +133,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
         Thread watchThread = new Thread(() -> watchChildKeyChangeEvent(key, listener));
         watchThread.setDaemon(true);
         watchThread.start();

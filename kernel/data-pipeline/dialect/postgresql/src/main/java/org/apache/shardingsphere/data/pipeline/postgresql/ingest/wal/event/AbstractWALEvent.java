@@ -15,23 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-
-import java.nio.ByteBuffer;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
- * Logical replication decoding plugin.
+ * Abstract WAL event.
  */
-public interface DecodingPlugin {
+@Getter
+@Setter
+@ToString
+public abstract class AbstractWALEvent {
     
-    /**
-     * Decode WAL event from logical replication data.
-     *
-     * @param data of logical replication
-     * @param logSequenceNumber log sequence number
-     * @return WAL event
-     */
-    AbstractWALEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
+    private BaseLogSequenceNumber logSequenceNumber;
 }

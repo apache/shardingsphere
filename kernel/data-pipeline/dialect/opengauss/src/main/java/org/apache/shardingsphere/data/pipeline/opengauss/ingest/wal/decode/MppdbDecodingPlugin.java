@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Base
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -60,8 +60,8 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     private final BaseTimestampUtils timestampUtils;
     
     @Override
-    public AbstractWalEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
-        AbstractWalEvent result;
+    public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
+        AbstractWALEvent result;
         char eventType = readOneChar(data);
         result = '{' == eventType ? readTableEvent(readMppData(data)) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);

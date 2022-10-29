@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
-
-import java.nio.ByteBuffer;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
- * Logical replication decoding plugin.
+ * WAL position.
  */
-public interface DecodingPlugin {
+@RequiredArgsConstructor
+@Getter
+public final class WALPosition implements IngestPosition<WALPosition> {
     
-    /**
-     * Decode WAL event from logical replication data.
-     *
-     * @param data of logical replication
-     * @param logSequenceNumber log sequence number
-     * @return WAL event
-     */
-    AbstractWALEvent decode(ByteBuffer data, BaseLogSequenceNumber logSequenceNumber);
+    private final BaseLogSequenceNumber logSequenceNumber;
+    
+    @Override
+    public int compareTo(final WALPosition position) {
+        return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+    }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(logSequenceNumber.asLong());
+    }
 }

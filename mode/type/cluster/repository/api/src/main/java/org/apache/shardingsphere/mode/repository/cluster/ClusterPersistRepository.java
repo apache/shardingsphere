@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.concurrent.Executor;
-
 /**
  * Cluster persist repository.
  */
@@ -35,59 +33,6 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @param instanceMetaData instance meta data
      */
     void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
-    
-    /**
-     * Get current time from registry center.
-     *
-     * @param key key
-     * @return current time from registry center
-     */
-    long getRegistryCenterTime(String key);
-    
-    /**
-     * Get raw client for registry center client.
-     **
-     * @return registry center raw client
-     */
-    Object getRawClient();
-    
-    /**
-     * Get children number.
-     *
-     * @param key key
-     * @return children number
-     */
-    int getNumChildren(String key);
-    
-    /**
-     * Add data to cache.
-     *
-     * @param cachePath cache path
-     */
-    void addCacheData(String cachePath);
-    
-    /**
-     * Evict data from cache.
-     *
-     * @param cachePath cache path
-     */
-    void evictCacheData(String cachePath);
-    
-    /**
-     * Get raw cache object of registry center.
-     *
-     * @param cachePath cache path
-     * @return raw cache object of registry center
-     */
-    Object getRawCache(String cachePath);
-    
-    /**
-     * Update data in transaction.
-     *
-     * @param key key
-     * @param value value
-     */
-    void updateInTransaction(String key, String value);
     
     /**
      * Persist ephemeral data.
@@ -126,7 +71,6 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key key of data
      * @param listener data changed event listener
-     * @param executor event notify executor
      */
-    void watch(String key, DataChangedEventListener listener, Executor executor);
+    void watch(String key, DataChangedEventListener listener);
 }

@@ -33,9 +33,9 @@ public final class CuratorZookeeperDistributedLock implements DistributedLock {
     private final InterProcessLock lock;
     
     @Override
-    public boolean tryLock(final long timeout) {
+    public boolean tryLock(final long timeoutMillis) {
         try {
-            return lock.acquire(timeout, TimeUnit.MILLISECONDS);
+            return lock.acquire(timeoutMillis, TimeUnit.MILLISECONDS);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

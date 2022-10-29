@@ -27,7 +27,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public abstract class AbstractRowEvent extends AbstractWalEvent {
+public abstract class AbstractRowEvent extends AbstractWALEvent {
     
     private String databaseName;
     
