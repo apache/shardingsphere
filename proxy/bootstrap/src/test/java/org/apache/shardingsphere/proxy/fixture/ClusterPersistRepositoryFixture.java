@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
