@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot.rule;
+package org.apache.shardingsphere.spring.boot.condition;
 
 import org.apache.shardingsphere.spring.boot.util.PropertyUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -24,15 +24,15 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Local configuration condition.
+ * ShardingSphere spring boot condition.
  */
 public final class ShardingSphereSpringBootCondition extends SpringBootCondition {
     
-    private static final String SHARDING_PREFIX = "spring.shardingsphere";
+    private static final String SHARDINGSPHERE_PREFIX = "spring.shardingsphere";
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDING_PREFIX)
+        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDINGSPHERE_PREFIX)
                 ? ConditionOutcome.match()
                 : ConditionOutcome.noMatch("Can't find ShardingSphere configuration in local file.");
     }
