@@ -77,8 +77,8 @@ public final class EncryptRuleTest {
     public void assertGetEncryptValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
                 .getEncryptValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (final Object value : encryptAssistedQueryValues) {
-            assertNull(value);
+        for (Object actual : encryptAssistedQueryValues) {
+            assertNull(actual);
         }
     }
     
@@ -106,8 +106,8 @@ public final class EncryptRuleTest {
     public void assertGetEncryptAssistedQueryValues() {
         List<Object> encryptAssistedQueryValues = new EncryptRule(createEncryptRuleConfiguration())
                 .getEncryptAssistedQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (final Object value : encryptAssistedQueryValues) {
-            assertNull(value);
+        for (Object actual : encryptAssistedQueryValues) {
+            assertNull(actual);
         }
     }
     
@@ -132,8 +132,8 @@ public final class EncryptRuleTest {
     public void assertGetEncryptFuzzyQueryValues() {
         List<Object> encryptFuzzyQueryValues = new EncryptRule(createEncryptRuleConfiguration())
                 .getEncryptFuzzyQueryValues(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "pwd", Collections.singletonList(null));
-        for (final Object value : encryptFuzzyQueryValues) {
-            assertNull(value);
+        for (Object actual : encryptFuzzyQueryValues) {
+            assertNull(actual);
         }
     }
     
@@ -150,19 +150,16 @@ public final class EncryptRuleTest {
                 Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         EncryptRule actual = new EncryptRule(ruleConfig);
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-        
         encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", null);
         tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), false);
         ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         actual = new EncryptRule(ruleConfig);
         assertFalse(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-        
         encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", true);
         tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), false);
         ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
         actual = new EncryptRule(ruleConfig);
         assertTrue(actual.isQueryWithCipherColumn("t_encrypt", "encrypt_column"));
-        
         encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "", "test_encryptor", false);
         tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
         ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("test_encryptor", new CoreEncryptAlgorithmFixture()), true);
