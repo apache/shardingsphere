@@ -17,27 +17,24 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.junit.Test;
+import org.postgresql.replication.LogSequenceNumber;
 
-/**
- * PostgreSQL wal position.
- */
-@RequiredArgsConstructor
-@Getter
-public final class WalPosition implements IngestPosition<WalPosition> {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public final class WALPositionTest {
     
-    private final BaseLogSequenceNumber logSequenceNumber;
-    
-    @Override
-    public int compareTo(final WalPosition position) {
-        return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+    @Test
+    public void assertCompareTo() {
+        WALPosition walPosition = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
+        assertThat(walPosition.compareTo(null), is(1));
+        assertThat(walPosition.compareTo(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)))), is(0));
     }
     
-    @Override
-    public String toString() {
-        return String.valueOf(logSequenceNumber.asLong());
+    @Test
+    public void assertToString() {
+        assertThat(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))).toString(), is("100"));
     }
 }

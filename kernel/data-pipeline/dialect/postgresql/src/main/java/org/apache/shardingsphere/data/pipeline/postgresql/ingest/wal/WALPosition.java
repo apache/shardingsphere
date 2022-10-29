@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event;
+package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 
 /**
- * Abstract wal event.
+ * WAL position.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
-public abstract class AbstractWalEvent {
+public final class WALPosition implements IngestPosition<WALPosition> {
     
-    private BaseLogSequenceNumber logSequenceNumber;
+    private final BaseLogSequenceNumber logSequenceNumber;
+    
+    @Override
+    public int compareTo(final WALPosition position) {
+        return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+    }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(logSequenceNumber.asLong());
+    }
 }

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.Multip
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.After;
 import org.junit.Before;
@@ -59,10 +59,10 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLWalDumperTest {
+public final class PostgreSQLWALDumperTest {
     
     @Mock
-    private LogicalReplication logicalReplication;
+    private PostgreSQLLogicalReplication logicalReplication;
     
     @Mock
     private PgConnection pgConnection;
@@ -70,11 +70,11 @@ public final class PostgreSQLWalDumperTest {
     @Mock
     private PGReplicationStream pgReplicationStream;
     
-    private WalPosition position;
+    private WALPosition position;
     
     private DumperConfiguration dumperConfig;
     
-    private PostgreSQLWalDumper walDumper;
+    private PostgreSQLWALDumper walDumper;
     
     private MultiplexMemoryPipelineChannel channel;
     
@@ -82,11 +82,11 @@ public final class PostgreSQLWalDumperTest {
     
     @Before
     public void setUp() {
-        position = new WalPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
+        position = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         channel = new MultiplexMemoryPipelineChannel();
         dumperConfig = mockDumperConfiguration();
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig()));
-        walDumper = new PostgreSQLWalDumper(dumperConfig, position, channel, metaDataLoader);
+        walDumper = new PostgreSQLWALDumper(dumperConfig, position, channel, metaDataLoader);
         
     }
     

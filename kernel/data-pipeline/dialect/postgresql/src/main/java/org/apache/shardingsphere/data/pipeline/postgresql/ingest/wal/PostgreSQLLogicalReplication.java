@@ -33,8 +33,7 @@ import java.util.Properties;
 /**
  * PostgreSQL logical replication.
  */
-// TODO add prefix PostgreSQL
-public final class LogicalReplication {
+public final class PostgreSQLLogicalReplication {
     
     /**
      * Create connection.

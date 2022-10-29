@@ -26,14 +26,14 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.LogicalReplication;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalEventConverter;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALEventConverter;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingPlugin;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.TestDecodingPlugin;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWalEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.postgresql.jdbc.PgConnection;
@@ -46,27 +46,27 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
+public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
     
-    private final WalPosition walPosition;
+    private final WALPosition walPosition;
     
     private final PipelineChannel channel;
     
-    private final WalEventConverter walEventConverter;
+    private final WALEventConverter walEventConverter;
     
-    private final LogicalReplication logicalReplication;
+    private final PostgreSQLLogicalReplication logicalReplication;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final IngestPosition<WalPosition> position,
+    public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition<WALPosition> position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
-                () -> new UnsupportedSQLOperationException("PostgreSQLWalDumper only support PipelineDataSourceConfiguration"));
+                () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
-        walPosition = (WalPosition) position;
+        walPosition = (WALPosition) position;
         this.channel = channel;
-        walEventConverter = new WalEventConverter(dumperConfig, metaDataLoader);
-        logicalReplication = new LogicalReplication();
+        walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
+        logicalReplication = new PostgreSQLLogicalReplication();
     }
     
     @Override
@@ -84,7 +84,7 @@ public final class PostgreSQLWalDumper extends AbstractLifecycleExecutor impleme
                     ThreadUtil.sleep(10L);
                     continue;
                 }
-                AbstractWalEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
+                AbstractWALEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
                 channel.pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
