@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.spring.boot;
+package org.apache.shardingsphere.spring.boot.condition;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
+
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SpringBootStarterWithoutRulesTest.class)
+@SpringBootTest(classes = ShardingSphereSpringBootConditionTest.class)
 @SpringBootApplication
 @ActiveProfiles("no-rules")
-public class SpringBootStarterWithoutRulesTest {
+public class ShardingSphereSpringBootConditionTest {
     
-    @Autowired
+    @Resource
     private ShardingSphereDataSource dataSource;
     
     @Test
-    public void assertSpringBootStartup() {
+    public void assertCreateDataSourceWhenConfigNoRules() {
         assertNotNull(dataSource);
     }
 }
