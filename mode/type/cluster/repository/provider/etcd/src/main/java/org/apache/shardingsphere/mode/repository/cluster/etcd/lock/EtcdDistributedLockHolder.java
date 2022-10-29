@@ -23,17 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Etcd distributed lock provider.
+ * Etcd distributed lock holder.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class EtcdDistributedLockProvider implements DistributedLockProvider {
+public final class EtcdDistributedLockHolder implements DistributedLockHolder {
     
     private final Map<String, EtcdDistributedLock> locks = new HashMap<>();
     

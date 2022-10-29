@@ -23,7 +23,7 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -98,7 +98,7 @@ public final class ConsulRepositoryTest {
         // when(responseGetValueList.getValue()).thenReturn(getValueList);
         when(client.setKVValue(any(String.class), any(String.class))).thenReturn(responseBoolean);
         Plugins.getMemberAccessor().set(repository.getClass().getDeclaredField("consulClient"), repository, client);
-        Plugins.getMemberAccessor().set(repository.getClass().getDeclaredField("consulDistributedLockProvider"), repository, mock(ConsulDistributedLockProvider.class));
+        Plugins.getMemberAccessor().set(repository.getClass().getDeclaredField("consulDistributedLockHolder"), repository, mock(ConsulDistributedLockHolder.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

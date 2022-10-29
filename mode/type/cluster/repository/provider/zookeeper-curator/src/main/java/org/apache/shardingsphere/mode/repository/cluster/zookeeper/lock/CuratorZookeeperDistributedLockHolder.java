@@ -21,16 +21,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Curator ZooKeeper distributed lock provider.
+ * Curator ZooKeeper distributed lock holder.
  */
 @RequiredArgsConstructor
-public final class CuratorZookeeperDistributedLockProvider implements DistributedLockProvider {
+public final class CuratorZookeeperDistributedLockHolder implements DistributedLockHolder {
     
     private final Map<String, CuratorZookeeperDistributedLock> locks = new HashMap<>();
     

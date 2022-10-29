@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.repository.cluster.lock;
 
 /**
- * Distributed lock provider.
+ * Distributed lock holder.
  */
-public interface DistributedLockProvider {
+public interface DistributedLockHolder {
     
     /**
      * Get distributed lock.
