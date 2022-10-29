@@ -31,7 +31,6 @@ import com.ecwid.consul.v1.session.model.Session;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereConsulClient;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereQueryParams;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
@@ -47,7 +46,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Consul distributed lock.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ConsulDistributedLock implements DistributedLock {
     
     private static final String CONSUL_ROOT_PATH = "sharding/lock";
@@ -100,7 +98,6 @@ public final class ConsulDistributedLock implements DistributedLock {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("EtcdRepository tryLock error, lockName:{}", lockName, ex);
             return false;
         }
     }
@@ -190,7 +187,6 @@ public final class ConsulDistributedLock implements DistributedLock {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("EtcdRepository unlock error, lockName: {}", lockName, ex);
         } finally {
             lockSessionMap.remove();
         }
