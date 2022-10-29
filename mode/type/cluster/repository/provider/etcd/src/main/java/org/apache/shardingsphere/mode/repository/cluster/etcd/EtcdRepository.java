@@ -23,11 +23,7 @@ import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.Watch;
-import io.etcd.jetcd.options.DeleteOption;
-import io.etcd.jetcd.options.GetOption;
-import io.etcd.jetcd.options.OptionsUtil;
-import io.etcd.jetcd.options.PutOption;
-import io.etcd.jetcd.options.WatchOption;
+import io.etcd.jetcd.options.*;
 import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.support.Util;
 import io.etcd.jetcd.watch.WatchEvent;
@@ -46,7 +42,6 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockPro
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -144,7 +139,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
                 Type type = getEventChangedType(each);

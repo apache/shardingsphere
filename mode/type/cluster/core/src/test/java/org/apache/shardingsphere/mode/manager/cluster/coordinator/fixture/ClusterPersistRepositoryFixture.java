@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -77,7 +76,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override

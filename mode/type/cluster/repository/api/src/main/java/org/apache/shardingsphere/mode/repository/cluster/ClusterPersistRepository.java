@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.concurrent.Executor;
-
 /**
  * Cluster persist repository.
  */
@@ -73,7 +71,6 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param key key of data
      * @param listener data changed event listener
-     * @param executor event notify executor
      */
-    void watch(String key, DataChangedEventListener listener, Executor executor);
+    void watch(String key, DataChangedEventListener listener);
 }
