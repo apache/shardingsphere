@@ -64,38 +64,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
-    }
-    
-    @Override
     public String getDirectly(final String key) {
         Response<GetValue> response = consulClient.getKVValue(key);
         return null == response ? null : response.getValue().getValue();
@@ -125,16 +93,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     @Override
     public void delete(final String key) {
         consulClient.deleteKVValue(key);
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return consulClient;
     }
     
     @Override

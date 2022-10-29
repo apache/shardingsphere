@@ -75,32 +75,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         initServiceMetadata();
     }
     
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
-    }
-    
     private NamingService createClient(final ClusterPersistRepositoryConfiguration config) {
         Properties props = new Properties();
         props.setProperty("serverAddr", config.getServerLists());
@@ -179,12 +153,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         } catch (final NacosException ex) {
             throw new ClusterPersistRepositoryException(ex);
         }
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
     }
     
     @Override
@@ -339,16 +307,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         } catch (final NacosException ex) {
             throw new ClusterPersistRepositoryException(ex);
         }
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
     }
     
     private Collection<Instance> findExistedInstance(final String key, final boolean ephemeral) throws NacosException {

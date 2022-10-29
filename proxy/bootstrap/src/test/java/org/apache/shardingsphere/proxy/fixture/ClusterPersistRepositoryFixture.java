@@ -37,33 +37,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-    }
-    
-    @Override
-    public String get(final String key) {
-        return null;
-    }
-    
-    @Override
     public String getDirectly(final String key) {
         return REGISTRY_DATA.get(key);
     }
@@ -98,16 +71,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     
     @Override
     public void delete(final String key) {
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return null;
     }
     
     @Override

@@ -70,38 +70,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
         distributedLockHolder = new EtcdDistributedLockProvider(client, etcdProps);
     }
     
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
-    }
-    
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
     @Override
     public String getDirectly(final String key) {
@@ -173,16 +141,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().isPrefix(true).build());
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
     }
     
     @Override

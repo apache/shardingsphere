@@ -37,59 +37,6 @@ public interface ClusterPersistRepository extends PersistRepository {
     void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
     
     /**
-     * Get current time from registry center.
-     *
-     * @param key key
-     * @return current time from registry center
-     */
-    long getRegistryCenterTime(String key);
-    
-    /**
-     * Get raw client for registry center client.
-     **
-     * @return registry center raw client
-     */
-    Object getRawClient();
-    
-    /**
-     * Get children number.
-     *
-     * @param key key
-     * @return children number
-     */
-    int getNumChildren(String key);
-    
-    /**
-     * Add data to cache.
-     *
-     * @param cachePath cache path
-     */
-    void addCacheData(String cachePath);
-    
-    /**
-     * Evict data from cache.
-     *
-     * @param cachePath cache path
-     */
-    void evictCacheData(String cachePath);
-    
-    /**
-     * Get raw cache object of registry center.
-     *
-     * @param cachePath cache path
-     * @return raw cache object of registry center
-     */
-    Object getRawCache(String cachePath);
-    
-    /**
-     * Update data in transaction.
-     *
-     * @param key key
-     * @param value value
-     */
-    void updateInTransaction(String key, String value);
-    
-    /**
      * Persist ephemeral data.
      *
      * @param key key of data
