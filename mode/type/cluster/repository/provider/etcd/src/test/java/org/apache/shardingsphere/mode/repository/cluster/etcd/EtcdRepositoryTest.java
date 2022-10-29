@@ -173,7 +173,7 @@ public final class EtcdRepositoryTest {
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", event -> {
-        }, null);
+        });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -185,7 +185,7 @@ public final class EtcdRepositoryTest {
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", event -> {
-        }, null);
+        });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
@@ -197,7 +197,7 @@ public final class EtcdRepositoryTest {
             return mock(Watch.Watcher.class);
         }).when(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
         repository.watch("key1", event -> {
-        }, null);
+        });
         verify(watch).watch(any(ByteSequence.class), any(WatchOption.class), any(Watch.Listener.class));
     }
     
