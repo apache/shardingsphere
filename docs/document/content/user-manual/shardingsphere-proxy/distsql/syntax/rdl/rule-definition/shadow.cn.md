@@ -55,7 +55,7 @@ algorithmProperty: key=value
 - `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
 - `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除；
 - `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除。
-- `algorithmName` 创建规则时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 和算法集合下标自动生成。默认算法名称为 `default_shadow_algorithm`。
+- 创建规则时，会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 和算法集合下标自动生成 `algorithmName` 。默认算法名称为 `default_shadow_algorithm`。
 
 ## 示例
 

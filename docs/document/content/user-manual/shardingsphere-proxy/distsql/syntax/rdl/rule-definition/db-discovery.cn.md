@@ -75,5 +75,4 @@ DROP DB_DISCOVERY RULE db_discovery_group_0;
 DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 
 DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
-
 ```
