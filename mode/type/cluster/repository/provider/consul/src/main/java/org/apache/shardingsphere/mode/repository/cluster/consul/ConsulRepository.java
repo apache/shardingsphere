@@ -27,7 +27,7 @@ import com.ecwid.consul.v1.session.model.Session;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -51,7 +51,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private ConsulProperties consulProps;
     
-    private ConsulDistributedLockProvider consulDistributedLockProvider;
+    private ConsulDistributedLockHolder consulDistributedLockHolder;
     
     private Map<String, Collection<String>> watchKeyMap;
     
@@ -59,7 +59,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
         consulProps = new ConsulProperties(config.getProps());
-        consulDistributedLockProvider = new ConsulDistributedLockProvider(consulClient, consulProps);
+        consulDistributedLockHolder = new ConsulDistributedLockHolder(consulClient, consulProps);
         watchKeyMap = new HashMap<>(6, 1);
     }
     
@@ -149,7 +149,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         PutParams putParams = new PutParams();
         putParams.setAcquireSession(sessionId);
         consulClient.setKVValue(key, value, putParams);
-        consulDistributedLockProvider.generatorFlushSessionTtlTask(consulClient, sessionId);
+        consulDistributedLockHolder.generatorFlushSessionTtlTask(consulClient, sessionId);
     }
     
     private NewSession createNewSession(final String key) {
@@ -167,12 +167,12 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return consulDistributedLockProvider.getDistributedLock(lockKey).tryLock(timeoutMillis);
+        return consulDistributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        consulDistributedLockProvider.getDistributedLock(lockKey).unlock();
+        consulDistributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

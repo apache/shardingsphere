@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,11 +32,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Consul distributed lock provider.
+ * Consul distributed lock holder.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class ConsulDistributedLockProvider implements DistributedLockProvider {
+public class ConsulDistributedLockHolder implements DistributedLockHolder {
     
     private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
