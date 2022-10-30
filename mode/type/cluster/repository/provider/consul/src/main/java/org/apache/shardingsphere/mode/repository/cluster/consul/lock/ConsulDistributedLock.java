@@ -59,29 +59,29 @@ public final class ConsulDistributedLock implements DistributedLock {
     
     private final String timeToLiveSeconds;
     
-    private final ThreadLocal<String> lockSessionMap;
+    private final ThreadLocal<String> lockSessionId;
     
     public ConsulDistributedLock(final String lockKey, final ConsulClient client, final ConsulProperties props) {
         lockPath = String.format(LOCK_PATH_PATTERN, lockKey);
         this.client = client;
         timeToLiveSeconds = props.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS);
-        lockSessionMap = new ThreadLocal<>();
+        lockSessionId = new ThreadLocal<>();
     }
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        if (!Strings.isNullOrEmpty(lockSessionMap.get())) {
+        if (!Strings.isNullOrEmpty(lockSessionId.get())) {
             return true;
         }
+        PutParams putParams = new PutParams();
+        long remainingMillis = timeoutMillis;
         try {
-            PutParams putParams = new PutParams();
-            long remainingMillis = timeoutMillis;
             while (true) {
                 String sessionId = createSessionId();
                 putParams.setAcquireSession(sessionId);
                 Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
                 if (response.getValue()) {
-                    lockSessionMap.set(sessionId);
+                    lockSessionId.set(sessionId);
                     SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
                     return true;
                 }
@@ -118,7 +118,7 @@ public final class ConsulDistributedLock implements DistributedLock {
                 return timeoutMillis;
             }
             Response<GetValue> response = getResponse(
-                    ((ShardingSphereConsulClient) client).getRawClient().makeGetRequest("/v1/kv/" + lockPath, null, new ShardingSphereQueryParams(remainingMillis, currentIndex)));
+                    ((ShardingSphereConsulClient) client).getRawClient().makeGetRequest(String.format("/v1/kv/%s", lockPath), null, new ShardingSphereQueryParams(remainingMillis, currentIndex)));
             spentMillis += System.currentTimeMillis() - startTime;
             remainingMillis -= spentMillis;
             Long index = response.getConsulIndex();
@@ -158,17 +158,17 @@ public final class ConsulDistributedLock implements DistributedLock {
     
     @Override
     public void unlock() {
+        String sessionId = lockSessionId.get();
+        PutParams putParams = new PutParams();
+        putParams.setReleaseSession(sessionId);
         try {
-            PutParams putParams = new PutParams();
-            String sessionId = lockSessionMap.get();
-            putParams.setReleaseSession(sessionId);
             client.setKVValue(lockPath, UNLOCK_VALUE, putParams);
             client.sessionDestroy(sessionId, null);
             // CHECKSTYLE:OFF
         } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         } finally {
-            lockSessionMap.remove();
+            lockSessionId.remove();
         }
     }
 }
