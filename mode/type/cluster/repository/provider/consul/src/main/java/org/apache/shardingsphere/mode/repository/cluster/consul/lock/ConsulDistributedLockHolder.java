@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 
 import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Consul distributed lock holder.
@@ -37,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class ConsulDistributedLockHolder implements DistributedLockHolder {
-    
-    private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
     private final Map<String, ConsulDistributedLock> locks = new ConcurrentHashMap<>();
     
@@ -69,13 +63,4 @@ public class ConsulDistributedLockHolder implements DistributedLockHolder {
         return null;
     }
     
-    /**
-     * Flush session by update TTL.
-     * 
-     * @param consulClient consul client
-     * @param sessionId session id
-     */
-    public void generatorFlushSessionTtlTask(final ConsulClient consulClient, final String sessionId) {
-        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> consulClient.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
-    }
 }
