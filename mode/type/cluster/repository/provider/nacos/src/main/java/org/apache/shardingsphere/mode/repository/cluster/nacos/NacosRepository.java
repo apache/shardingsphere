@@ -127,12 +127,13 @@ public final class NacosRepository implements ClusterPersistRepository {
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         // TODO
-        return false;
+        throw new UnsupportedOperationException("Can not support tryLock on Nacos yet.");
     }
     
     @Override
     public void unlock(final String lockKey) {
         // TODO
+        throw new UnsupportedOperationException("Can not support unlock on Nacos yet.");
     }
     
     @Override
