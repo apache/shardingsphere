@@ -26,10 +26,10 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.exceptions.base.MockitoException;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.plugins.MemberAccessor;
@@ -69,16 +69,16 @@ public final class ConsulRepositoryTest {
     @Mock
     private Response<Boolean> responseBoolean;
     
-    // @Mock
-    // private Response<String> sessionResponse;
+    @Mock
+    private Response<String> sessionResponse;
     
     @Mock
     private GetValue getValue;
     
-    // @Mock
-    // private List<GetValue> getValueList;
-    //
-    // private long index = 123456L;
+    @Mock
+    private List<GetValue> getValueList;
+    
+    private long index = 123456L;
     
     @Before
     public void setUp() {
@@ -90,12 +90,12 @@ public final class ConsulRepositoryTest {
     private void setClient() {
         when(client.getKVValue(any(String.class))).thenReturn(response);
         when(response.getValue()).thenReturn(getValue);
-        // when(client.getKVValues(any(String.class), any(QueryParams.class))).thenReturn(responseGetValueList);
+        when(client.getKVValues(any(String.class), any(QueryParams.class))).thenReturn(responseGetValueList);
         when(client.getKVKeysOnly(any(String.class))).thenReturn(responseList);
-        // when(client.sessionCreate(any(NewSession.class), any(QueryParams.class))).thenReturn(sessionResponse);
-        // when(sessionResponse.getValue()).thenReturn("12323ddsf3sss");
-        // when(responseGetValueList.getConsulIndex()).thenReturn(index++);
-        // when(responseGetValueList.getValue()).thenReturn(getValueList);
+        when(client.sessionCreate(any(NewSession.class), any(QueryParams.class))).thenReturn(sessionResponse);
+        when(sessionResponse.getValue()).thenReturn("12323ddsf3sss");
+        when(responseGetValueList.getConsulIndex()).thenReturn(index++);
+        when(responseGetValueList.getValue()).thenReturn(getValueList);
         when(client.setKVValue(any(String.class), any(String.class))).thenReturn(responseBoolean);
         Plugins.getMemberAccessor().set(repository.getClass().getDeclaredField("consulClient"), repository, client);
         Plugins.getMemberAccessor().set(repository.getClass().getDeclaredField("consulDistributedLockHolder"), repository, mock(ConsulDistributedLockHolder.class));
@@ -109,7 +109,7 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertGetKey() {
+    public void assertDirectlyKey() {
         repository.getDirectly("key");
         verify(client).getKVValue("key");
         verify(response).getValue();
@@ -134,17 +134,13 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    @Ignore
     public void assertPersistEphemeral() throws InterruptedException {
         repository.persistEphemeral("key1", "value1");
         verify(client).sessionCreate(any(NewSession.class), any(QueryParams.class));
         verify(client).setKVValue(any(String.class), any(String.class), any(PutParams.class));
-        Thread.sleep(6000L);
-        verify(client).renewSession(any(String.class), any(QueryParams.class));
     }
     
     @Test
-    @Ignore
     public void assertWatchUpdate() throws InterruptedException {
         final String key = "sharding/key";
         final String k1 = "sharding/key/key1";
@@ -157,12 +153,18 @@ public final class ConsulRepositoryTest {
         repository.watch(key, event -> {
         });
         client.setKVValue(k1, "value1-1");
-        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
-        Thread.sleep(10000L);
+        while (true) {
+            Thread.sleep(100L);
+            try {
+                verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
+                break;
+            } catch (MockitoException e) {
+                continue;
+            }
+        }
     }
     
     @Test
-    @Ignore
     public void assertWatchDelete() throws InterruptedException {
         final String key = "sharding/key";
         final String k1 = "sharding/key/key1";
@@ -178,8 +180,15 @@ public final class ConsulRepositoryTest {
         repository.watch(key, event -> {
         });
         client.deleteKVValue(k2);
-        verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
-        Thread.sleep(10000L);
+        while (true) {
+            Thread.sleep(100L);
+            try {
+                verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
+                break;
+            } catch (MockitoException e) {
+                continue;
+            }
+        }
     }
     
     @Test
