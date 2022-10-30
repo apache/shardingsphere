@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.mode.repository.cluster.etcd.lock;
 
 import io.etcd.jetcd.ByteSequence;
-import io.etcd.jetcd.Lock;
+import io.etcd.jetcd.Client;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
+import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
 import java.nio.charset.StandardCharsets;
@@ -31,19 +33,20 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class EtcdDistributedLock implements DistributedLock {
     
-    private final Lock lock;
-    
     private final String lockKey;
     
-    private final long leaseId;
+    private final Client client;
+    
+    private final EtcdProperties props;
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
         try {
-            lock.lock(ByteSequence.from(lockKey, StandardCharsets.UTF_8), leaseId).get(timeoutMillis, TimeUnit.MILLISECONDS);
+            long leaseId = client.getLeaseClient().grant(props.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
+            client.getLockClient().lock(ByteSequence.from(lockKey, StandardCharsets.UTF_8), leaseId).get(timeoutMillis, TimeUnit.MILLISECONDS);
             return true;
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
             return false;
         }
@@ -52,9 +55,9 @@ public final class EtcdDistributedLock implements DistributedLock {
     @Override
     public void unlock() {
         try {
-            lock.unlock(ByteSequence.from(lockKey, StandardCharsets.UTF_8)).get();
+            client.getLockClient().unlock(ByteSequence.from(lockKey, StandardCharsets.UTF_8)).get();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
     }
