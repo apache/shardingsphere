@@ -31,15 +31,15 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class ShardingSphereQueryParams implements UrlParameters {
     
-    private final long waitTime;
+    private final long waitMillis;
     
     private final long index;
     
     @Override
     public List<String> toUrlParameters() {
         List<String> result = new ArrayList<>(2);
-        if (-1 != waitTime) {
-            result.add(String.format("wait=%dms", TimeUnit.MILLISECONDS.toMillis(waitTime)));
+        if (-1 != waitMillis) {
+            result.add(String.format("wait=%dms", TimeUnit.MILLISECONDS.toMillis(waitMillis)));
         }
         if (-1 != index) {
             result.add(String.format("index=%s", Utils.toUnsignedString(index)));
