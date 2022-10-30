@@ -23,11 +23,11 @@
     <distsql-case id="add-resource-url-single-without-password" value="REGISTER STORAGE UNIT ds_0(URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT');" />
     <distsql-case id="add-resource-url-single-with-password" value="REGISTER STORAGE UNIT ds_0(URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456');" />
     <distsql-case id="add-resource-url-multiple" value="REGISTER STORAGE UNIT ds_0(URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456'), ds_1(URL='jdbc:mysql://127.0.0.1:3306/test1',USER='ROOT',PASSWORD='123456');" />
-    <distsql-case id="add-resource-single-with-properties" value="REGISTER STORAGE UNIT ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT',PASSWORD='123456',PROPERTIES('maxPoolSize'='30'));" />
+    <distsql-case id="add-resource-single-with-properties" value="REGISTER STORAGE UNIT ds_0(HOST='127.0.0.1',PORT=3306,DB='test0',USER='ROOT',PASSWORD='123456',PROPERTIES('maxPoolSize'='30','idleTimeout'=30000));" />
     <distsql-case id="add-resource-url-single-with-empty-properties" value="REGISTER STORAGE UNIT ds_0(URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PROPERTIES())" />
     <distsql-case id="add-resource-url-single-with-properties" value="REGISTER STORAGE UNIT ds_0(URL='jdbc:mysql://127.0.0.1:3306/test0',USER='ROOT',PASSWORD='123456',PROPERTIES('maxPoolSize'='30'))" />
     <distsql-case id="create-sharding-auto-table-rule" value="CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')), KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
-    <distsql-case id="create-sharding-auto-table-rule-with-inline-expression" value="CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS('ms_group_${0..1}'), SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'='4')), KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
+    <distsql-case id="create-sharding-auto-table-rule-with-inline-expression" value="CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS('ms_group_${0..1}'), SHARDING_COLUMN=order_id,TYPE(NAME='hash_mod',PROPERTIES('sharding-count'=4)), KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME='snowflake')))" />
     <distsql-case id="create-sharding-table-reference-rule" value="CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item), (t_1,t_2)" />
     <distsql-case id="create-sharding-table-reference-rule-with-quota" value="CREATE SHARDING TABLE REFERENCE RULE (`t_order`,`t_order_item`), (t_1,t_2)" />
     <distsql-case id="create-broadcast-table-rule" value="CREATE BROADCAST TABLE RULE t_1,t_2" />

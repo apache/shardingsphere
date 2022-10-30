@@ -55,6 +55,7 @@
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
+                <property key="idleTimeout" value="30000" />
             </properties>
         </data-source>
     </add-resource>

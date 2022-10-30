@@ -88,7 +88,7 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP storageUnits COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? RP
+    : tableName LP storageUnits COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? (COMMA auditDeclaration)? RP
     ;
 
 shardingTableRule
@@ -191,10 +191,6 @@ auditAllowHintDisable
     : TRUE | FALSE
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmTypeName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
 columnName
     : IDENTIFIER
     ;
@@ -207,20 +203,8 @@ shardingAlgorithmDefinition
     : shardingAlgorithmName LP algorithmDefinition RP
     ;
 
-algorithmTypeName
-    : STRING
-    ;
-
 strategyType
     : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=STRING
     ;
 
 ifExists
