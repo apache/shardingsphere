@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
@@ -40,7 +39,7 @@ public final class CuratorZookeeperDistributedLockHolder implements DistributedL
     public synchronized DistributedLock getDistributedLock(final String lockKey) {
         CuratorZookeeperDistributedLock result = locks.get(lockKey);
         if (null == result) {
-            result = new CuratorZookeeperDistributedLock(new InterProcessMutex(client, lockKey));
+            result = new CuratorZookeeperDistributedLock(lockKey, client);
             locks.put(lockKey, result);
         }
         return result;
