@@ -58,7 +58,7 @@ public final class ConsulDistributedLock implements DistributedLock {
     
     private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
-    private final String lockName;
+    private final String lockKey;
     
     private final ConsulClient client;
     
@@ -74,7 +74,7 @@ public final class ConsulDistributedLock implements DistributedLock {
         try {
             long lockTime = timeoutMillis;
             PutParams putParams = new PutParams();
-            String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockName;
+            String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockKey;
             while (true) {
                 String sessionId = createSession(lockPath);
                 putParams.setAcquireSession(sessionId);
@@ -181,7 +181,7 @@ public final class ConsulDistributedLock implements DistributedLock {
             PutParams putParams = new PutParams();
             String sessionId = lockSessionMap.get();
             putParams.setReleaseSession(sessionId);
-            String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockName;
+            String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockKey;
             client.setKVValue(lockPath, DEFAULT_CONSUL_UNLOCK_VALUE, putParams);
             client.sessionDestroy(sessionId, null);
             // CHECKSTYLE:OFF
