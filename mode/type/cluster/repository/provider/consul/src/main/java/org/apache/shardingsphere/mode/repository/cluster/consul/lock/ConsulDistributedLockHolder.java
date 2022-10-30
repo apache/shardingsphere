@@ -36,9 +36,9 @@ public class ConsulDistributedLockHolder implements DistributedLockHolder {
     
     private final Map<String, ConsulDistributedLock> locks = new ConcurrentHashMap<>();
     
-    private final ConsulClient consulClient;
+    private final ConsulClient client;
     
-    private final ConsulProperties consulProps;
+    private final ConsulProperties props;
     
     @Override
     public DistributedLock getDistributedLock(final String lockKey) {
@@ -54,7 +54,7 @@ public class ConsulDistributedLockHolder implements DistributedLockHolder {
         try {
             NewSession session = new NewSession();
             session.setName(lockName);
-            return new ConsulDistributedLock(consulClient, lockName, consulProps);
+            return new ConsulDistributedLock(lockName, client, props);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -62,5 +62,4 @@ public class ConsulDistributedLockHolder implements DistributedLockHolder {
         }
         return null;
     }
-    
 }
