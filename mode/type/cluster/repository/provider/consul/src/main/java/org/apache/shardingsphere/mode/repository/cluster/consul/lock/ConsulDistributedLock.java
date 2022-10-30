@@ -108,7 +108,7 @@ public final class ConsulDistributedLock implements DistributedLock {
     }
     
     private long waitUntilRelease(final long valueIndex, final long timeoutMillis) {
-        long currentIndex = valueIndex  < 0 ? 0 : valueIndex;
+        long currentIndex = valueIndex < 0 ? 0 : valueIndex;
         long spentMillis = 0L;
         long timeoutTime = System.currentTimeMillis() + timeoutMillis;
         long remainingMillis = timeoutMillis;
