@@ -207,7 +207,7 @@ public class ConsulRepository implements ClusterPersistRepository {
      * @param sessionId session id
      */
     public void generatorFlushSessionTtlTask(final ConsulClient consulClient, final String sessionId) {
-        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> consulClient.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
+        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> consulClient.renewSession(sessionId, QueryParams.DEFAULT), 1L, 10L, TimeUnit.SECONDS);
     }
     
     @Override
