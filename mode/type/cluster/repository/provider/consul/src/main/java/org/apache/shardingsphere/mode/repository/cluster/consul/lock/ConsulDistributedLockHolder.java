@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 
 import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Consul distributed lock holder.
  */
 @RequiredArgsConstructor
-@Slf4j
 public class ConsulDistributedLockHolder implements DistributedLockHolder {
     
     private final Map<String, ConsulDistributedLock> locks = new ConcurrentHashMap<>();
@@ -44,22 +42,9 @@ public class ConsulDistributedLockHolder implements DistributedLockHolder {
     public DistributedLock getDistributedLock(final String lockKey) {
         ConsulDistributedLock result = locks.get(lockKey);
         if (null == result) {
-            result = createLock(lockKey);
+            result = new ConsulDistributedLock(lockKey, client, props);
             locks.put(lockKey, result);
         }
         return result;
-    }
-    
-    private ConsulDistributedLock createLock(final String lockName) {
-        try {
-            NewSession session = new NewSession();
-            session.setName(lockName);
-            return new ConsulDistributedLock(lockName, client, props);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("ConsulRepository tryLock error, lockName:{}", lockName, ex);
-        }
-        return null;
     }
 }
