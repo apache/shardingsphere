@@ -27,10 +27,9 @@ import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
-import com.ecwid.consul.v1.session.model.Session;
+import com.ecwid.consul.v1.session.model.Session.Behavior;
 import com.google.common.base.Strings;
 import com.google.common.reflect.TypeToken;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereConsulClient;
 import org.apache.shardingsphere.mode.repository.cluster.consul.ShardingSphereQueryParams;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
@@ -40,121 +39,103 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Consul distributed lock.
  */
-@RequiredArgsConstructor
 public final class ConsulDistributedLock implements DistributedLock {
     
-    private static final String CONSUL_ROOT_PATH = "sharding/lock";
+    private static final String LOCK_PATH_PATTERN = "lock/%s";
     
-    private static final String CONSUL_PATH_SEPARATOR = "/";
+    private static final String LOCK_VALUE = "LOCKED";
     
-    private static final String DEFAULT_CONSUL_LOCK_VALUE = "LOCKED";
-    
-    private static final String DEFAULT_CONSUL_UNLOCK_VALUE = "UNLOCKED";
+    private static final String UNLOCK_VALUE = "UNLOCKED";
     
     private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
-    private final ConsulClient consulClient;
+    private final String lockPath;
     
-    private final String lockName;
+    private final ConsulClient client;
     
-    private final ConsulProperties consulProperties;
+    private final String timeToLiveSeconds;
     
-    private final ThreadLocal<String> lockSessionMap = new ThreadLocal<>();
+    private final ThreadLocal<String> lockSessionId;
+    
+    public ConsulDistributedLock(final String lockKey, final ConsulClient client, final ConsulProperties props) {
+        lockPath = String.format(LOCK_PATH_PATTERN, lockKey);
+        this.client = client;
+        timeToLiveSeconds = props.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS);
+        lockSessionId = new ThreadLocal<>();
+    }
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        if (!Strings.isNullOrEmpty(lockSessionMap.get())) {
+        if (!Strings.isNullOrEmpty(lockSessionId.get())) {
             return true;
         }
+        PutParams putParams = new PutParams();
+        long remainingMillis = timeoutMillis;
         try {
-            long lockTime = timeoutMillis;
-            PutParams putParams = new PutParams();
-            String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockName;
             while (true) {
-                String sessionId = createSession(lockPath);
+                String sessionId = createSessionId();
                 putParams.setAcquireSession(sessionId);
-                Response<Boolean> response = consulClient.setKVValue(lockPath, DEFAULT_CONSUL_LOCK_VALUE, putParams);
+                Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
                 if (response.getValue()) {
-                    // lock success
-                    lockSessionMap.set(sessionId);
-                    SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> consulClient.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
+                    lockSessionId.set(sessionId);
+                    SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
                     return true;
                 }
-                // lock failed,exist race so retry
-                // block query if value is change so return
-                consulClient.sessionDestroy(sessionId, null);
-                long waitTime = doWaitRelease(lockPath, response.getConsulIndex(), lockTime);
-                if (waitTime < lockTime) {
-                    lockTime = lockTime - waitTime;
-                    continue;
+                client.sessionDestroy(sessionId, null);
+                long waitingMillis = waitUntilRelease(response.getConsulIndex(), remainingMillis);
+                if (waitingMillis >= remainingMillis) {
+                    return false;
                 }
-                return false;
+                remainingMillis -= waitingMillis;
             }
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
             return false;
         }
     }
     
-    private String createSession(final String lockName) {
+    private String createSessionId() {
         NewSession session = new NewSession();
-        session.setName(lockName);
-        // lock was released by force while session is invalid
-        session.setBehavior(Session.Behavior.RELEASE);
-        session.setTtl(consulProperties.getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS));
-        return consulClient.sessionCreate(session, null).getValue();
+        session.setName(lockPath);
+        session.setTtl(timeToLiveSeconds);
+        session.setBehavior(Behavior.RELEASE);
+        return client.sessionCreate(session, null).getValue();
     }
     
-    private long doWaitRelease(final String key, final long valueIndex, final long waitTime) {
-        long currentIndex = valueIndex;
-        if (currentIndex < 0) {
-            currentIndex = 0;
-        }
-        AtomicBoolean running = new AtomicBoolean(true);
-        long waitCostTime = 0L;
-        long now = System.currentTimeMillis();
-        long deadlineWaitTime = now + waitTime;
-        long blockWaitTime = waitTime;
-        while (running.get()) {
-            long startWaitTime = System.currentTimeMillis();
-            if (startWaitTime >= deadlineWaitTime) {
-                // wait time is reached max
-                return waitTime;
+    private long waitUntilRelease(final long valueIndex, final long timeoutMillis) {
+        long currentIndex = valueIndex < 0 ? 0 : valueIndex;
+        long spentMillis = 0L;
+        long timeoutTime = System.currentTimeMillis() + timeoutMillis;
+        long remainingMillis = timeoutMillis;
+        while (true) {
+            long startTime = System.currentTimeMillis();
+            if (startTime >= timeoutTime) {
+                return timeoutMillis;
             }
-            RawResponse rawResponse = ((ShardingSphereConsulClient) consulClient).getRawClient().makeGetRequest("/v1/kv/" + key, null, new ShardingSphereQueryParams(blockWaitTime, currentIndex));
-            Response<GetValue> response = warpRawResponse(rawResponse);
+            Response<GetValue> response = getResponse(
+                    ((ShardingSphereConsulClient) client).getRawClient().makeGetRequest(String.format("/v1/kv/%s", lockPath), null, new ShardingSphereQueryParams(remainingMillis, currentIndex)));
+            spentMillis += System.currentTimeMillis() - startTime;
+            remainingMillis -= spentMillis;
             Long index = response.getConsulIndex();
-            waitCostTime += System.currentTimeMillis() - startWaitTime;
-            blockWaitTime -= waitCostTime;
             if (null != index && index >= currentIndex) {
-                if (currentIndex == 0) {
-                    currentIndex = index;
-                    continue;
+                if (0 != currentIndex && (null == response.getValue() || null == response.getValue().getValue() || lockPath.equals(response.getValue().getKey()))) {
+                    return spentMillis;
                 }
                 currentIndex = index;
-                GetValue getValue = response.getValue();
-                if (null == getValue || null == getValue.getValue()) {
-                    return waitCostTime;
-                }
-                if (!key.equals(getValue.getKey())) {
-                    continue;
-                }
-                return waitCostTime;
+                continue;
             }
             if (null != index) {
                 currentIndex = 0;
             }
         }
-        return -1;
     }
     
-    private Response<GetValue> warpRawResponse(final RawResponse rawResponse) {
+    private Response<GetValue> getResponse(final RawResponse rawResponse) {
         if (200 == rawResponse.getStatusCode()) {
             List<GetValue> value = GsonFactory.getGson().fromJson(rawResponse.getContent(), new TypeToken<List<GetValue>>() {
                 
@@ -177,18 +158,17 @@ public final class ConsulDistributedLock implements DistributedLock {
     
     @Override
     public void unlock() {
+        String sessionId = lockSessionId.get();
+        PutParams putParams = new PutParams();
+        putParams.setReleaseSession(sessionId);
         try {
-            PutParams putParams = new PutParams();
-            String sessionId = lockSessionMap.get();
-            putParams.setReleaseSession(sessionId);
-            String lockPath = CONSUL_ROOT_PATH + CONSUL_PATH_SEPARATOR + lockName;
-            consulClient.setKVValue(lockPath, DEFAULT_CONSUL_UNLOCK_VALUE, putParams);
-            consulClient.sessionDestroy(sessionId, null);
+            client.setKVValue(lockPath, UNLOCK_VALUE, putParams);
+            client.sessionDestroy(sessionId, null);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         } finally {
-            lockSessionMap.remove();
+            lockSessionId.remove();
         }
     }
 }

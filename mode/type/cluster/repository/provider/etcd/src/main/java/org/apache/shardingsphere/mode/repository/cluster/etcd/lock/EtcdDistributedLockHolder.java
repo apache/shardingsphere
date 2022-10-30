@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mode.repository.cluster.etcd.lock;
 
 import io.etcd.jetcd.Client;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
-import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
@@ -32,14 +30,13 @@ import java.util.Map;
  * Etcd distributed lock holder.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class EtcdDistributedLockHolder implements DistributedLockHolder {
     
     private final Map<String, EtcdDistributedLock> locks = new HashMap<>();
     
     private final Client client;
     
-    private final EtcdProperties etcdProps;
+    private final EtcdProperties props;
     
     @Override
     public synchronized DistributedLock getDistributedLock(final String lockKey) {
@@ -52,14 +49,6 @@ public final class EtcdDistributedLockHolder implements DistributedLockHolder {
     }
     
     private EtcdDistributedLock createLock(final String lockKey) {
-        try {
-            long leaseId = client.getLeaseClient().grant(etcdProps.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS)).get().getID();
-            return new EtcdDistributedLock(client.getLockClient(), lockKey, leaseId);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Create etcd internal lock failed, lockName:{}", lockKey, ex);
-        }
-        return null;
+        return new EtcdDistributedLock(lockKey, client, props);
     }
 }

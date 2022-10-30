@@ -34,7 +34,6 @@ import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -70,6 +69,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -114,9 +114,6 @@ public final class CuratorZookeeperRepositoryTest {
     @Mock
     private Builder builder;
     
-    @Mock
-    private InterProcessLock interProcessLock;
-    
     @Before
     public void init() {
         mockClient();
@@ -149,7 +146,7 @@ public final class CuratorZookeeperRepositoryTest {
         CuratorZookeeperDistributedLockHolder distributedLockHolder = new CuratorZookeeperDistributedLockHolder(client);
         Field locksFiled = CuratorZookeeperDistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", new CuratorZookeeperDistributedLock(interProcessLock)));
+        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));
         distributedLockHolderField.set(REPOSITORY, distributedLockHolder);
     }
     

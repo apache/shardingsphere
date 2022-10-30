@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.consul;
 
+import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.ConsulRawClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
@@ -24,6 +25,7 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -39,12 +41,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Registry repository of Consul.
  */
 public class ConsulRepository implements ClusterPersistRepository {
+    
+    private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
     private ShardingSphereConsulClient consulClient;
     
@@ -56,7 +62,8 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
-        consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
+        ConsulRawClient rawClient = Strings.isNullOrEmpty(config.getServerLists()) ? new ConsulRawClient() : new ConsulRawClient(config.getServerLists());
+        consulClient = new ShardingSphereConsulClient(rawClient);
         consulProps = new ConsulProperties(config.getProps());
         consulDistributedLockHolder = new ConsulDistributedLockHolder(consulClient, consulProps);
         watchKeyMap = new HashMap<>(6, 1);
@@ -76,7 +83,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean isExisted(final String key) {
-        return false;
+        return null != consulClient.getKVValue(key).getValue();
     }
     
     @Override
@@ -86,7 +93,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void update(final String key, final String value) {
-        // TODO
+        consulClient.setKVValue(key, value);
     }
     
     @Override
@@ -106,7 +113,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         PutParams putParams = new PutParams();
         putParams.setAcquireSession(sessionId);
         consulClient.setKVValue(key, value, putParams);
-        consulDistributedLockHolder.generatorFlushSessionTtlTask(consulClient, sessionId);
+        generatorFlushSessionTtlTask(consulClient, sessionId);
     }
     
     private NewSession createNewSession(final String key) {
@@ -185,6 +192,16 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private void fireDataChangeEvent(final GetValue getValue, final DataChangedEventListener listener, final DataChangedEvent.Type type) {
         listener.onChange(new DataChangedEvent(getValue.getKey(), getValue.getValue(), type));
+    }
+    
+    /**
+     * Flush session by update TTL.
+     *
+     * @param consulClient consul client
+     * @param sessionId session id
+     */
+    public void generatorFlushSessionTtlTask(final ConsulClient consulClient, final String sessionId) {
+        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> consulClient.renewSession(sessionId, QueryParams.DEFAULT), 1L, 10L, TimeUnit.SECONDS);
     }
     
     @Override
