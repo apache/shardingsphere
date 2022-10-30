@@ -134,7 +134,7 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertPersistEphemeral() throws InterruptedException {
+    public void assertPersistEphemeral() {
         repository.persistEphemeral("key1", "value1");
         verify(client).sessionCreate(any(NewSession.class), any(QueryParams.class));
         verify(client).setKVValue(any(String.class), any(String.class), any(PutParams.class));
@@ -158,8 +158,7 @@ public final class ConsulRepositoryTest {
             try {
                 verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
                 break;
-            } catch (MockitoException e) {
-                continue;
+            } catch (final MockitoException ignored) {
             }
         }
     }
@@ -185,8 +184,7 @@ public final class ConsulRepositoryTest {
             try {
                 verify(client, atLeastOnce()).getKVValues(any(String.class), any(QueryParams.class));
                 break;
-            } catch (MockitoException e) {
-                continue;
+            } catch (final MockitoException ignored) {
             }
         }
     }

@@ -25,6 +25,7 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -61,13 +62,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
-        ConsulRawClient rawClient;
-        String serverList = config.getServerLists();
-        if (serverList == null || serverList.length() <= 0) {
-            rawClient = new ConsulRawClient();
-        } else {
-            rawClient = new ConsulRawClient(serverList);
-        }
+        ConsulRawClient rawClient = Strings.isNullOrEmpty(config.getServerLists()) ? new ConsulRawClient() : new ConsulRawClient(config.getServerLists());
         consulClient = new ShardingSphereConsulClient(rawClient);
         consulProps = new ConsulProperties(config.getProps());
         consulDistributedLockHolder = new ConsulDistributedLockHolder(consulClient, consulProps);
@@ -88,8 +83,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean isExisted(final String key) {
-        Response<GetValue> response = consulClient.getKVValue(key);
-        return response.getValue() == null ? false : true;
+        return null != consulClient.getKVValue(key).getValue();
     }
     
     @Override
