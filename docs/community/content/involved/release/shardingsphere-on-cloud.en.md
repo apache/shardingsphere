@@ -268,7 +268,9 @@ To check the following items:
 
 * `LICENSE` and `NOTICE` files exist
 * Correct year in `NOTICE` file
-* All text files have ASF headers
+* All text files have ASF headers, excepts the following files:
+    * All Chart.yaml
+    * All Chart.lock
 * Check the third party dependency license:
   *   The software has a compatible license
   *   All software licenses mentioned in `LICENSE`
@@ -372,7 +374,7 @@ Title：
 
 
 ```
-[RESULT][VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
+[RESULT][VOTE] Release Apache ShardingSphere on Cloud ${RELEASE.VERSION}
 ```
 
 Body：
@@ -399,7 +401,7 @@ Announcement e-mail template:
 Title:
 
 ```
-[ANNOUNCE] Apache ShardingSphere On-Cloud-${RELEASE.VERSION} available
+[ANNOUNCE] Apache ShardingSphere on Cloud ${RELEASE.VERSION} available
 ```
 
 Body：
@@ -407,18 +409,24 @@ Body：
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere On-Cloud-${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere on Cloud ${RELEASE.VERSION}.
 
 The shardingsphere-on-cloud project, including ShardingSphere Operator, Helm Charts, and other cloud solutions, aims at enhancing the deployment and management capabilities of Apache ShardingSphere Proxy on the cloud. 
 ShardingSphere Operator is a Kubernetes software extension written with the Operator extension pattern of Kubernetes. ShardingSphere Operator can be used to quickly deploy an Apache ShardingSphere Proxy cluster in the Kubernetes environment and manage the entire cluster life cycle.
 
+Download Links: https://github.com/apache/shardingsphere-on-cloud/releases/tag/${RELEASE.VERSION}
 
 Release Notes: https://github.com/apache/shardingsphere-on-cloud/blob/master/RELEASE-NOTES.md
 
+Website: https://shardingsphere.apache.org/
+
+ShardingSphere on Cloud Resources:
+- Issue: https://github.com/apache/shardingsphere-on-cloud/issues/
+- Mailing list: dev@shardingsphere.apache.org
+- Documents: https://shardingsphere.apache.org/document/current/
 
 
 
 - Apache ShardingSphere Team
 
 ```
-````
