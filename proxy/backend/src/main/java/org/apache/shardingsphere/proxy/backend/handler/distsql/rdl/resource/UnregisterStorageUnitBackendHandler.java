@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Drop storage unit backend handler.
+ * Unregister storage unit backend handler.
  */
 @Slf4j
 public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
