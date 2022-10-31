@@ -23,6 +23,14 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
 CREATE
     : C R E A T E
     ;
@@ -167,10 +175,22 @@ ADD
     : A D D
     ;
 
-RESOURCE
-    : R E S O U R C E
+REGISTER
+    : R E G I S T E R
     ;
-    
-RESOURCES
-    : R E S O U R C E S
+
+UNREGISTER
+    : U N R E G I S T E R
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+UNIT
+    : U N I T
+    ;
+
+UNITS
+    : U N I T S
     ;

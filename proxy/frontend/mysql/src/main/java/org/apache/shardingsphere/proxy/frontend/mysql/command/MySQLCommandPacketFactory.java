@@ -35,7 +35,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fie
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 
 /**
  * Command packet factory for MySQL.
@@ -64,8 +64,9 @@ public final class MySQLCommandPacketFactory {
             case COM_STMT_PREPARE:
                 return new MySQLComStmtPreparePacket(payload);
             case COM_STMT_EXECUTE:
-                MySQLPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
-                return new MySQLComStmtExecutePacket(payload, preparedStatement.getSqlStatement().getParameterCount());
+                MySQLServerPreparedStatement serverPreparedStatement =
+                        connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(payload.getByteBuf().getIntLE(payload.getByteBuf().readerIndex()));
+                return new MySQLComStmtExecutePacket(payload, serverPreparedStatement.getSqlStatement().getParameterCount());
             case COM_STMT_SEND_LONG_DATA:
                 return new MySQLComStmtSendLongDataPacket(payload);
             case COM_STMT_RESET:

@@ -19,17 +19,10 @@ package org.apache.shardingsphere.dbdiscovery.distsql.parser.core;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.AbstractDatabaseDiscoverySegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryConstructionSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryDefinitionSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryHeartbeatSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryTypeStatement;
@@ -38,34 +31,26 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDataba
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlterDatabaseDiscoveryHeartbeatContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlterDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.AlterDatabaseDiscoveryTypeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryHeartbeatContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.CreateDatabaseDiscoveryTypeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryRuleConstructionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryRuleDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseDiscoveryTypeDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DropDatabaseDiscoveryHeartbeatContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DropDatabaseDiscoveryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.DropDatabaseDiscoveryTypeContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.PropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.PropertyContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryHeartbeatsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.ShowDatabaseDiscoveryTypesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.TypeDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DatabaseDiscoveryDistSQLStatementParser.StorageUnitsContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -88,24 +73,12 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDatabaseDiscoveryRule(final DatabaseDiscoveryRuleContext ctx) {
-        return null == ctx.databaseDiscoveryRuleDefinition() ? visit(ctx.databaseDiscoveryRuleConstruction()) : visit(ctx.databaseDiscoveryRuleDefinition());
+        return new DatabaseDiscoveryDefinitionSegment(getIdentifierValue(ctx.ruleName()), buildResources(ctx.storageUnits()), (AlgorithmSegment) visit(ctx.algorithmDefinition()),
+                getProperties(ctx.discoveryHeartbeat().propertiesDefinition()));
     }
     
-    @Override
-    public ASTNode visitDatabaseDiscoveryRuleConstruction(final DatabaseDiscoveryRuleConstructionContext ctx) {
-        return new DatabaseDiscoveryConstructionSegment(
-                getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()), getIdentifierValue(ctx.discoveryTypeName()), getIdentifierValue(ctx.discoveryHeartbeatName()));
-    }
-    
-    @Override
-    public ASTNode visitDatabaseDiscoveryRuleDefinition(final DatabaseDiscoveryRuleDefinitionContext ctx) {
-        return new DatabaseDiscoveryDefinitionSegment(
-                getIdentifierValue(ctx.ruleName()), buildResources(ctx.resources()), (AlgorithmSegment) visit(ctx.typeDefinition()), getProperties(ctx.discoveryHeartbeat().properties()));
-        
-    }
-    
-    private List<String> buildResources(final ResourcesContext ctx) {
-        return ctx.resourceName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
+    private List<String> buildResources(final StorageUnitsContext ctx) {
+        return ctx.storageUnitName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList());
     }
     
     @Override
@@ -119,34 +92,8 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     }
     
     @Override
-    public ASTNode visitCreateDatabaseDiscoveryHeartbeat(final CreateDatabaseDiscoveryHeartbeatContext ctx) {
-        return new CreateDatabaseDiscoveryHeartbeatStatement(ctx.heartbeatDefinition().stream()
-                .map(each -> new DatabaseDiscoveryHeartbeatSegment(getIdentifierValue(each.discoveryHeartbeatName()), getProperties(each.properties()))).collect(Collectors.toList()));
-    }
-    
-    @Override
-    public ASTNode visitAlterDatabaseDiscoveryHeartbeat(final AlterDatabaseDiscoveryHeartbeatContext ctx) {
-        return new AlterDatabaseDiscoveryHeartbeatStatement(ctx.heartbeatDefinition().stream()
-                .map(each -> new DatabaseDiscoveryHeartbeatSegment(getIdentifierValue(each.discoveryHeartbeatName()), getProperties(each.properties()))).collect(Collectors.toList()));
-    }
-    
-    @Override
-    public ASTNode visitCreateDatabaseDiscoveryType(final CreateDatabaseDiscoveryTypeContext ctx) {
-        return new CreateDatabaseDiscoveryTypeStatement(buildAlgorithmEntry(ctx.databaseDiscoveryTypeDefinition()));
-    }
-    
-    @Override
-    public ASTNode visitAlterDatabaseDiscoveryType(final AlterDatabaseDiscoveryTypeContext ctx) {
-        return new AlterDatabaseDiscoveryTypeStatement(buildAlgorithmEntry(ctx.databaseDiscoveryTypeDefinition()));
-    }
-    
-    private Collection<DatabaseDiscoveryProviderAlgorithmSegment> buildAlgorithmEntry(final List<DatabaseDiscoveryTypeDefinitionContext> ctx) {
-        return ctx.stream().map(each -> (DatabaseDiscoveryProviderAlgorithmSegment) visit(each)).collect(Collectors.toList());
-    }
-    
-    @Override
-    public ASTNode visitDatabaseDiscoveryTypeDefinition(final DatabaseDiscoveryTypeDefinitionContext ctx) {
-        return new DatabaseDiscoveryProviderAlgorithmSegment(getIdentifierValue(ctx.discoveryTypeName()), (AlgorithmSegment) visit(ctx.typeDefinition()));
+    public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
     }
     
     @Override
@@ -169,11 +116,6 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     }
     
     @Override
-    public ASTNode visitTypeDefinition(final TypeDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.discoveryType()), null == ctx.properties() ? new Properties() : getProperties(ctx.properties()));
-    }
-    
-    @Override
     public ASTNode visitDropDatabaseDiscoveryType(final DropDatabaseDiscoveryTypeContext ctx) {
         return new DropDatabaseDiscoveryTypeStatement(null != ctx.ifExists(), ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
@@ -188,9 +130,12 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
         return new CountDatabaseDiscoveryRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
     }
     
-    private Properties getProperties(final PropertiesContext ctx) {
+    private Properties getProperties(final PropertiesDefinitionContext ctx) {
         Properties result = new Properties();
-        for (PropertyContext each : ctx.property()) {
+        if (null == ctx || null == ctx.properties()) {
+            return result;
+        }
+        for (PropertyContext each : ctx.properties().property()) {
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;

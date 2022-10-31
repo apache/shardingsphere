@@ -19,6 +19,7 @@ package org.apache.shardingsphere.shadow.algorithm.shadow.hint;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.hint.HintShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.shadow.api.shadow.hint.PreciseHintShadowValue;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -65,16 +65,8 @@ public final class SimpleHintShadowAlgorithm implements HintShadowAlgorithm<Stri
         if (ShadowOperationType.HINT_MATCH != noteShadowValue.getShadowOperationType() && !shadowTableNames.contains(noteShadowValue.getLogicTableName())) {
             return false;
         }
-        return ShadowHintExtractor.extractSimpleHint(noteShadowValue.getValue()).filter(this::containsHint).isPresent();
-    }
-    
-    private boolean containsHint(final Map<String, String> preciseHint) {
-        for (Entry<String, String> entry : simpleHint.entrySet()) {
-            if (!entry.getValue().equals(preciseHint.get(entry.getKey()))) {
-                return false;
-            }
-        }
-        return true;
+        SQLHintExtractor sqlHintExtractor = new SQLHintExtractor(noteShadowValue.getValue());
+        return sqlHintExtractor.isShadow();
     }
     
     @Override

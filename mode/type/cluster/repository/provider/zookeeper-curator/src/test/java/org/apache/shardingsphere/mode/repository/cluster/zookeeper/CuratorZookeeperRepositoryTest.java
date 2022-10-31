@@ -34,12 +34,12 @@ import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -69,6 +69,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -113,16 +114,13 @@ public final class CuratorZookeeperRepositoryTest {
     @Mock
     private Builder builder;
     
-    @Mock
-    private InterProcessLock interProcessLock;
-    
     @Before
     public void init() {
         mockClient();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.init(config);
-        mockInternalLockHolder();
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
+        mockDistributedLockHolder();
     }
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
@@ -142,14 +140,14 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void mockInternalLockHolder() {
-        Field internalLockProviderFiled = CuratorZookeeperRepository.class.getDeclaredField("internalLockProvider");
-        internalLockProviderFiled.setAccessible(true);
-        ZookeeperInternalLockProvider holder = new ZookeeperInternalLockProvider(client);
-        Field locksFiled = ZookeeperInternalLockProvider.class.getDeclaredField("locks");
+    private void mockDistributedLockHolder() {
+        Field distributedLockHolderField = CuratorZookeeperRepository.class.getDeclaredField("distributedLockHolder");
+        distributedLockHolderField.setAccessible(true);
+        CuratorZookeeperDistributedLockHolder distributedLockHolder = new CuratorZookeeperDistributedLockHolder(client);
+        Field locksFiled = CuratorZookeeperDistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(holder, Collections.singletonMap("/locks/glock", new ZookeeperInternalLock(interProcessLock)));
-        internalLockProviderFiled.set(REPOSITORY, holder);
+        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));
+        distributedLockHolderField.set(REPOSITORY, distributedLockHolder);
     }
     
     private void mockBuilder() {
@@ -207,7 +205,7 @@ public final class CuratorZookeeperRepositoryTest {
         ChildData data = new ChildData("/test/children_updated/1", null, "value2".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CHANGED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_updated/1", settableFuture::set, null);
+        REPOSITORY.watch("/test/children_updated/1", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_updated/1"));
@@ -221,7 +219,7 @@ public final class CuratorZookeeperRepositoryTest {
         ChildData data = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_DELETED, oldData, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_deleted/5", settableFuture::set, null);
+        REPOSITORY.watch("/test/children_deleted/5", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_deleted/5"));
@@ -234,7 +232,7 @@ public final class CuratorZookeeperRepositoryTest {
         ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CREATED, null, data))).when(listenable).addListener(any(CuratorCacheListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch("/test/children_added/4", settableFuture::set, null);
+        REPOSITORY.watch("/test/children_added/4", settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(Type.ADDED));
         assertThat(dataChangedEvent.getKey(), is("/test/children_added/4"));
@@ -263,7 +261,7 @@ public final class CuratorZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
     }
     
     @Test
@@ -271,7 +269,7 @@ public final class CuratorZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
     }
     
     @Test
@@ -279,7 +277,7 @@ public final class CuratorZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
     }
     
     @Test
@@ -287,7 +285,7 @@ public final class CuratorZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config);
+        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     

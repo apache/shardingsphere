@@ -51,8 +51,8 @@ FROM
     : F R O M
     ;
 
-RESOURCES
-    : R E S O U R C E S
+STORAGE_UNITS
+    : S T O R A G E UL_ U N I T S
     ;
 
 KEY_GENERATE_STRATEGY
@@ -91,8 +91,8 @@ COLUMN
     : C O L U M N
     ;
 
-BINDING
-    : B I N D I N G
+REFERENCE
+    : R E F E R E N C E
     ;
 
 BROADCAST
@@ -229,4 +229,12 @@ AUDIT_STRATEGY
 
 ALLOW_HINT_DISABLE
     : A L L O W UL_ H I N T UL_ D I S A B L E
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
     ;

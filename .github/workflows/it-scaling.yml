@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Integration Test - Scaling
+name: IT - Scaling
 
 on:
   push:
@@ -29,7 +29,6 @@ on:
       - '**/*-distsql*/**/src/main/**'
       - 'kernel/data-pipeline/**/src/main/**'
       - 'kernel/data-pipeline/**/pom.xml'
-      - 'features/**/src/main/**/scaling/**'
       - '**/src/main/**/data/pipeline/**'
       - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!test/**'
@@ -49,7 +48,6 @@ on:
       - '**/*-distsql*/**/src/main/**'
       - 'kernel/data-pipeline/**/src/main/**'
       - 'kernel/data-pipeline/**/pom.xml'
-      - 'features/**/src/main/**/scaling/**'
       - '**/src/main/**/data/pipeline/**'
       - '**/src/main/resources/META-INF/services/*.data.pipeline.*'
       - '!test/**'

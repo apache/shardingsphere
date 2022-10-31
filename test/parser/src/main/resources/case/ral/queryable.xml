@@ -17,10 +17,10 @@
   -->
 
 <sql-parser-test-cases>
-    <show-variable sql-case-id="show-variable" name="CACHED_CONNECTIONS" />
-    <show-all-variables sql-case-id="show-all-variables" />
+    <show-dist-variable sql-case-id="show-dist-variable" name="CACHED_CONNECTIONS" />
+    <show-dist-variables sql-case-id="show-dist-variables" />
     
-    <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
+    <show-status-from-readwrite-splitting-rules sql-case-id="show-status-from-readwrite-splitting-rules" />
     
     <show-table-metadata sql-case-id="show-table-metadata">
         <table-name>t_order</table-name>
@@ -33,9 +33,9 @@
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name" />
     <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
 
-    <show-instance-list sql-case-id="show-instance-list" />
-    <show-instance-info sql-case-id="show-instance-info" />
-    <show-mode-info sql-case-id="show-mode-info" />
+    <show-compute-nodes sql-case-id="show-compute-nodes" />
+    <show-compute-node-info sql-case-id="show-compute-node-info" />
+    <show-compute-node-mode sql-case-id="show-compute-node-mode" />
     
     <export-database-config sql-case-id="export-database-config">
         <database name="database_name" start-index="28" stop-index="40" />

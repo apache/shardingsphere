@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -42,26 +43,32 @@ public final class ShardingSphereResourceMetaData {
     
     private final Map<String, DataSource> dataSources;
     
-    private final DatabaseType databaseType;
+    private final Map<String, DatabaseType> storageTypes;
     
     @Getter(AccessLevel.NONE)
     private final Map<String, DataSourceMetaData> dataSourceMetaDataMap;
     
     public ShardingSphereResourceMetaData(final String databaseName, final Map<String, DataSource> dataSources) {
         this.dataSources = dataSources;
-        databaseType = getDatabaseType(databaseName, dataSources);
-        dataSourceMetaDataMap = createDataSourceMetaDataMap(dataSources);
+        Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources);
+        storageTypes = createStorageTypes(enabledDataSources);
+        dataSourceMetaDataMap = createDataSourceMetaDataMap(enabledDataSources, storageTypes);
     }
     
-    private DatabaseType getDatabaseType(final String databaseName, final Map<String, DataSource> dataSources) {
-        return dataSources.isEmpty() ? null : DatabaseTypeEngine.getDatabaseType(DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, dataSources).values());
+    private Map<String, DatabaseType> createStorageTypes(final Map<String, DataSource> dataSources) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(dataSources.size(), 1);
+        for (Entry<String, DataSource> entry : dataSources.entrySet()) {
+            result.put(entry.getKey(), DatabaseTypeEngine.getStorageType(Collections.singletonList(entry.getValue())));
+        }
+        return result;
     }
     
-    private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources) {
+    private Map<String, DataSourceMetaData> createDataSourceMetaDataMap(final Map<String, DataSource> dataSources, final Map<String, DatabaseType> storageTypes) {
         Map<String, DataSourceMetaData> result = new LinkedHashMap<>(dataSources.size(), 1);
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             Map<String, Object> standardProps = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
-            result.put(entry.getKey(), databaseType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
+            DatabaseType storageType = storageTypes.get(entry.getKey());
+            result.put(entry.getKey(), storageType.getDataSourceMetaData(standardProps.get("url").toString(), standardProps.get("username").toString()));
         }
         return result;
     }
@@ -93,6 +100,16 @@ public final class ShardingSphereResourceMetaData {
      */
     public DataSourceMetaData getDataSourceMetaData(final String dataSourceName) {
         return dataSourceMetaDataMap.get(dataSourceName);
+    }
+    
+    /**
+     * Get storage type.
+     *
+     * @param dataSourceName data source name
+     * @return storage type
+     */
+    public DatabaseType getStorageType(final String dataSourceName) {
+        return storageTypes.get(dataSourceName);
     }
     
     /**

@@ -3,10 +3,10 @@ title = "读写分离"
 weight = 2
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
-ADD RESOURCE write_ds (
+REGISTER STORAGE UNIT write_ds (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -27,8 +27,8 @@ ADD RESOURCE write_ds (
 
 ```sql
 CREATE READWRITE_SPLITTING RULE group_0 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds),
+WRITE_STORAGE_UNIT=write_ds,
+READ_STORAGE_UNITS(read_ds),
 TYPE(NAME="random")
 );
 ```
@@ -37,8 +37,8 @@ TYPE(NAME="random")
 
 ```sql
 ALTER READWRITE_SPLITTING RULE group_0 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds),
+WRITE_STORAGE_UNIT=write_ds,
+READ_STORAGE_UNITS(read_ds),
 TYPE(NAME="random",PROPERTIES("read_weight"="2:0"))
 );
 ```
@@ -49,10 +49,10 @@ TYPE(NAME="random",PROPERTIES("read_weight"="2:0"))
 DROP READWRITE_SPLITTING RULE group_0;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
-DROP RESOURCE write_ds,read_ds;
+UNREGISTER STORAGE UNIT write_ds,read_ds;
 ```
 
 - 删除分布式数据库

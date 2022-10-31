@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,6 +65,17 @@ public final class InsertValueContextTest {
         InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
         Object valueFromInsertValueContext = insertValueContext.getLiteralValue(0).get();
         assertThat(valueFromInsertValueContext, is(parameterValue));
+    }
+
+    @Test
+    public void assertGetLiteralValueWhenParameterisNull() {
+        Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
+        String parameterValue = null;
+        List<Object> parameters = Collections.singletonList(parameterValue);
+        int parametersOffset = 0;
+        InsertValueContext insertValueContext = new InsertValueContext(assignments, parameters, parametersOffset);
+        Optional<Object> literalValue = insertValueContext.getLiteralValue(0);
+        assertThat(false, is(literalValue.isPresent()));
     }
     
     private Collection<ExpressionSegment> makeParameterMarkerExpressionSegment() {

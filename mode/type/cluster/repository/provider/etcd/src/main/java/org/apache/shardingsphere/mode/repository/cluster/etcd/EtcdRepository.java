@@ -17,99 +17,56 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.etcd;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KeyValue;
-import io.etcd.jetcd.Util;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.options.DeleteOption;
 import io.etcd.jetcd.options.GetOption;
+import io.etcd.jetcd.options.OptionsUtil;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.support.Observers;
+import io.etcd.jetcd.support.Util;
 import io.etcd.jetcd.watch.WatchEvent;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
-import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdInternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
  * Registry repository of ETCD.
  */
-@Slf4j
 public final class EtcdRepository implements ClusterPersistRepository {
     
     private Client client;
     
     private EtcdProperties etcdProps;
     
-    private EtcdInternalLockProvider etcdInternalLockHolder;
+    private DistributedLockHolder distributedLockHolder;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         etcdProps = new EtcdProperties(config.getProps());
         client = Client.builder().endpoints(Util.toURIs(Splitter.on(",").trimResults().splitToList(config.getServerLists())))
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        etcdInternalLockHolder = new EtcdInternalLockProvider(client, etcdProps);
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
-        // TODO
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
+        distributedLockHolder = new EtcdDistributedLockHolder(client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -186,17 +143,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener dataChangedEventListener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener dataChangedEventListener) {
         Watch.Listener listener = Watch.listener(response -> {
             for (WatchEvent each : response.getEvents()) {
                 Type type = getEventChangedType(each);
@@ -206,8 +153,10 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 }
             }
         });
-        client.getWatchClient().watch(ByteSequence.from(key, StandardCharsets.UTF_8),
-                WatchOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build(), listener);
+        ByteSequence prefix = ByteSequence.from(key, StandardCharsets.UTF_8);
+        Preconditions.checkNotNull(prefix, "prefix should not be null");
+        client.getWatchClient().watch(prefix,
+                WatchOption.newBuilder().withRange(OptionsUtil.prefixEndOf(prefix)).build(), listener);
     }
     
     private Type getEventChangedType(final WatchEvent event) {
@@ -226,12 +175,12 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        etcdInternalLockHolder.getInternalLock(lockKey).unlock();
+        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

@@ -17,13 +17,13 @@
   -->
 
 <sql-parser-test-cases>
-    <show-sharding-binding-table-rules sql-case-id="show-sharding-binding-table-rules">
-        <database name="sharding_db" start-index="39" stop-index="49" />
-    </show-sharding-binding-table-rules>
-    
-    <show-sharding-broadcast-table-rules sql-case-id="show-sharding-broadcast-table-rules">
+    <show-sharding-table-reference-rules sql-case-id="show-sharding-table-reference-rules">
         <database name="sharding_db" start-index="41" stop-index="51" />
-    </show-sharding-broadcast-table-rules>
+    </show-sharding-table-reference-rules>
+    
+    <show-broadcast-table-rules sql-case-id="show-broadcast-table-rules">
+        <database name="sharding_db" start-index="32" stop-index="42" />
+    </show-broadcast-table-rules>
     
     <show-sharding-table-rules sql-case-id="show-sharding-table-rules">
         <database name="databaseName" start-index="31" stop-index="42" />
@@ -81,6 +81,10 @@
     <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
         <database name="shadow_db" start-index="28" stop-index="36" />
     </show-shadow-algorithms>
+
+    <show-default-shadow-algorithm sql-case-id="show-default-shadow-algorithm">
+        <database name="shadow_db" start-index="35" stop-index="43" />
+    </show-default-shadow-algorithm>
     
     <show-single-table sql-case-id="show-single-table">
         <name name="t_order" start-index="19" stop-index="25" />
@@ -88,7 +92,7 @@
     </show-single-table>
     
     <show-single-table-rules sql-case-id="show-single-table-rules">
-        <database name="single_table_db" start-index="29" stop-index="43" />
+        <database name="single_table_db" start-index="44" stop-index="58" />
     </show-single-table-rules>
     
     <show-sharding-table-nodes sql-case-id="show-sharding-table-nodes" table="t_order">
@@ -115,9 +119,9 @@
         <database name="databaseName" start-index="35" stop-index="46" />
     </show-unused-sharding-auditors>
     
-    <show-rules-used-resource sql-case-id="show-rules-used-resource" resource-name="ds_0">
-        <database name="databaseName" start-index="35" stop-index="46" />
-    </show-rules-used-resource>
+    <show-rules-used-storage-unit sql-case-id="show-rules-used-storage-unit" storage-unit-name="ds_0">
+        <database name="databaseName" start-index="39" stop-index="50" />
+    </show-rules-used-storage-unit>
     
     <show-sharding-table-rules-used-key-generator sql-case-id="show-sharding-table-rules-used-key-generator" key-generator="snowflake">
         <database name="sharding_db" start-index="60" stop-index="70" />

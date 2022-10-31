@@ -32,13 +32,12 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,19 +57,20 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        ShardingSphereSQLParserEngine sqlParserEngine = null;
+        ShardingSphereSQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
         String sql = packet.getSql();
-        SQLStatement sqlStatement = sql.trim().isEmpty() ? new EmptyStatement() : (sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName())).parse(sql, true);
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         if (sqlStatement.getParameterCount() > 0) {
             sql = convertSQLToJDBCStyle(sqlStatement, sql);
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
-        SQLStatementContext<?> sqlStatementContext = !(sqlStatement instanceof DistSQLStatement || sqlStatement instanceof EmptyStatement)
+        SQLStatementContext<?> sqlStatementContext = !(sqlStatement instanceof DistSQLStatement)
                 ? SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                         sqlStatement, connectionSession.getDefaultDatabaseName())
                 : null;
-        connectionSession.getPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), new PostgreSQLPreparedStatement(sql, sqlStatement, sqlStatementContext, paddedColumnTypes));
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatement, sqlStatementContext, paddedColumnTypes);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
     }
     

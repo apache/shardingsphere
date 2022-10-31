@@ -21,9 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -86,6 +89,10 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new PostgreSQLDatabaseType()));
+        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
@@ -95,7 +102,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     public void assertExecuteBatch() throws SQLException {
         PostgreSQLInsertStatement insertStatement = mock(PostgreSQLInsertStatement.class, RETURNS_DEEP_STUBS);
         when(insertStatement.getTable().getTableName().getIdentifier().getValue()).thenReturn("t");
-        PostgreSQLPreparedStatement postgreSQLPreparedStatement = new PostgreSQLPreparedStatement("insert into t (id, col) values (?, ?)", insertStatement, null,
+        PostgreSQLServerPreparedStatement postgreSQLPreparedStatement = new PostgreSQLServerPreparedStatement("insert into t (id, col) values (?, ?)", insertStatement, null,
                 Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
@@ -105,7 +112,8 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1, 1, 1});
-        when(backendStatement.createStorageResource(any(ExecutionUnit.class), eq(connection), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(preparedStatement);
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), eq(connection), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
+                .thenReturn(preparedStatement);
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgreSQLPreparedStatement, parameterSets);
         prepareExecutionUnitParameters(actual, parameterSets);
         int actualUpdated = actual.executeBatch();

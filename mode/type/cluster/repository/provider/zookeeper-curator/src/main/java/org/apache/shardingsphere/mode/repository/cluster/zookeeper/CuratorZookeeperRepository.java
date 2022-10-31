@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.transaction.CuratorOp;
-import org.apache.curator.framework.api.transaction.TransactionOp;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
@@ -33,17 +29,17 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperInternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -51,17 +47,13 @@ import org.apache.zookeeper.KeeperException.NodeExistsException;
 import org.apache.zookeeper.KeeperException.OperationTimeoutException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
-import org.apache.zookeeper.data.Stat;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.List;
 import java.util.Map;
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -75,13 +67,16 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private CuratorFramework client;
     
-    private ZookeeperInternalLockProvider internalLockProvider;
+    private DistributedLockHolder distributedLockHolder;
+    
+    private InstanceMetaData instanceMetaData;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+        this.instanceMetaData = instanceMetaData;
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        internalLockProvider = new ZookeeperInternalLockProvider(client);
+        distributedLockHolder = new CuratorZookeeperDistributedLockHolder(client);
         initCuratorClient(zookeeperProps);
     }
     
@@ -130,118 +125,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         } catch (final InterruptedException | OperationTimeoutException ex) {
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        try {
-            Stat stat = client.checkExists().forPath(key);
-            if (null != stat) {
-                return stat.getNumChildren();
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        CuratorCache cache = CuratorCache.build(client, cachePath);
-        try {
-            cache.start();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        caches.put(cachePath + "/", cache);
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        CuratorCache cache = caches.remove(cachePath + "/");
-        if (null != cache) {
-            cache.close();
-        }
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return caches.get(cachePath + "/");
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) throws Exception {
-        client.transaction().forOperations(toCuratorOps(transactionOperations));
-    }
-    
-    private List<CuratorOp> toCuratorOps(final List<TransactionOperation> transactionOperations) {
-        List<CuratorOp> result = new ArrayList<>(transactionOperations.size());
-        TransactionOp transactionOp = client.transactionOp();
-        for (TransactionOperation each : transactionOperations) {
-            result.add(toCuratorOp(each, transactionOp));
-        }
-        return result;
-    }
-    
-    private CuratorOp toCuratorOp(final TransactionOperation each, final TransactionOp transactionOp) {
-        try {
-            switch (each.getType()) {
-                case CHECK_EXISTS:
-                    return transactionOp.check().forPath(each.getKey());
-                case ADD:
-                    return transactionOp.create().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
-                case UPDATE:
-                    return transactionOp.setData().forPath(each.getKey(), each.getValue().getBytes(StandardCharsets.UTF_8));
-                case DELETE:
-                    return transactionOp.delete().forPath(each.getKey());
-                default:
-                    throw new UnsupportedOperationException(each.toString());
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(ex);
-        }
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        try {
-            TransactionOp transactionOp = client.transactionOp();
-            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-    }
-    
-    @Override
-    public String get(final String key) {
-        CuratorCache cache = findCuratorCache(key);
-        if (null == cache) {
-            return getDirectly(key);
-        }
-        Optional<ChildData> resultInCache = cache.get(key);
-        return resultInCache.map(v -> null == v.getData() ? null : new String(v.getData(), StandardCharsets.UTF_8)).orElseGet(() -> getDirectly(key));
-    }
-    
-    private CuratorCache findCuratorCache(final String key) {
-        for (Map.Entry<String, CuratorCache> entry : caches.entrySet()) {
-            if (key.startsWith(entry.getKey())) {
-                return entry.getValue();
-            }
-        }
-        return null;
     }
     
     @Override
@@ -350,27 +233,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public long getRegistryCenterTime(final String key) {
-        long result = 0L;
-        try {
-            persist(key, "");
-            result = client.checkExists().forPath(key).getMtime();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        Preconditions.checkState(0L != result, "Cannot get registry center time.");
-        return result;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
         CuratorCache cache = caches.get(key);
         if (null == cache) {
             cache = CuratorCache.build(client, key);
@@ -384,11 +247,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                                 new String(treeCacheListener.getData().getData(), StandardCharsets.UTF_8), changedType));
                     }
                 }).build();
-        if (null != executor) {
-            cache.listenable().addListener(curatorCacheListener, executor);
-        } else {
-            cache.listenable().addListener(curatorCacheListener);
-        }
+        cache.listenable().addListener(curatorCacheListener);
         start(cache);
     }
     
@@ -417,12 +276,12 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return internalLockProvider.getInternalLock(lockKey).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        internalLockProvider.getInternalLock(lockKey).unlock();
+        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override
@@ -446,7 +305,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceContext, this));
+        client.getConnectionStateListenable().addListener(new SessionConnectionListener(instanceMetaData, instanceContext, this));
     }
     
     @Override

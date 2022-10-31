@@ -82,22 +82,6 @@ assistedQueryColumnDefinition
 assistedQueryColumnName
     : IDENTIFIER
     ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
-    ;
     
 queryWithCipherColumn
     : TRUE | FALSE

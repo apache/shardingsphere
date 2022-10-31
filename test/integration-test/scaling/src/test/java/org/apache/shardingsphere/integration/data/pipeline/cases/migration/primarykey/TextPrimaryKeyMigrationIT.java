@@ -97,7 +97,6 @@ public class TextPrimaryKeyMigrationIT extends AbstractMigrationITCase {
         } else {
             assertCheckMigrationSuccess(jobId, "DATA_MATCH");
         }
-        stopMigrationByJobId(jobId);
         if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
             commitMigrationByJobId(jobId);
             List<String> lastJobIds = listJobId();

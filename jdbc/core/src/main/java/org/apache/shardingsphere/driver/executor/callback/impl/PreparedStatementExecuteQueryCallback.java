@@ -26,14 +26,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 /**
  * Prepared statement execute query callback.
  */
 public final class PreparedStatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public PreparedStatementExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown, final EventBusContext eventBusContext) {
-        super(databaseType, sqlStatement, isExceptionThrown, eventBusContext);
+    public PreparedStatementExecuteQueryCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown,
+                                                 final EventBusContext eventBusContext) {
+        super(protocolType, storageTypes, sqlStatement, isExceptionThrown, eventBusContext);
     }
     
     @Override

@@ -39,16 +39,16 @@ tableRule:
 -  Support query all sharding algorithms
 -  Support query all sharding audit algorithms
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
+SHOW SHARDING TABLE REFERENCE RULES [FROM databaseName]
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
+SHOW BROADCAST TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Table Rule
@@ -138,17 +138,17 @@ SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 | name   | Sharding rule name   |
 | nodes  | Sharding nodes        |
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
-| Column                  | Description                 | 
-| ----------------------- | --------------------------- |
-| sharding_binding_tables | sharding Binding Table list |
+| Column                   | Description              | 
+| ------------------------ |--------------------------|
+| sharding_table_reference | Sharding table reference |
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
-| Column                    | Description                   |
-| ------------------------- | ----------------------------- |
-| sharding_broadcast_tables | sharding Broadcast Table list |
+| Column           | Description         |
+|------------------|---------------------|
+| broadcast_table  | Broadcast table     |
 
 ### Sharding Table Rule
 
@@ -303,28 +303,28 @@ mysql> SHOW SHARDING TABLE NODES;
 1 row in set (0.02 sec)
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-mysql> SHOW SHARDING BINDING TABLE RULES;
-+----------------------+
-| sharding_binding_tables |
-+----------------------+
-| t_order,t_order_item |
-| t1,t2                |
-+----------------------+
+mysql> SHOW SHARDING TABLE REFERENCE RULES;
++--------------------------+
+| sharding_table_reference |
++--------------------------+
+| t_order,t_order_item     |
+| t1,t2                    |
++--------------------------+
 2 rows in set (0.00 sec)
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-mysql> SHOW SHARDING BROADCAST TABLE RULES;
-+------------------------+
-| sharding_broadcast_tables |
-+------------------------+
-| t_1                    |
-| t_2                    |
-+------------------------+
+mysql> SHOW BROADCAST TABLE RULES;
++-----------------------+
+| broadcast_table       |
++-----------------------+
+| t_1                   |
+| t_2                   |
++-----------------------+
 2 rows in set (0.00 sec)
 ```

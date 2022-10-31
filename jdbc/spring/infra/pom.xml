@@ -22,14 +22,14 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-spring</artifactId>
-        <version>5.2.1-SNAPSHOT</version>
+        <version>5.2.2-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-jdbc-spring-infra</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-jdbc-spring-boot-starter-infra</module>
-        <module>shardingsphere-jdbc-spring-namespace-infra</module>
+        <module>spring-boot-starter</module>
+        <module>spring-namespace</module>
     </modules>
 </project>

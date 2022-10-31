@@ -63,7 +63,7 @@ HintManager hintManager = HintManager.getInstance();
 - Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
 - Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
-> Users can use `hintManager.setDatabaseShardingValue` to add sharding in hint route to some certain sharding database without sharding tables.
+> Users can use `hintManager.setDatabaseShardingValue` to set sharding value in hint route to some certain sharding database without sharding tables.
 
 #### Clean Hint Values
 
@@ -107,14 +107,17 @@ try (HintManager hintManager = HintManager.getInstance();
 ##### Terms of Use
 
 To use SQL Hint function, users need to set `sqlCommentParseEnabled` to `true`.
-The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute names needs to be `SHARDING_DATABASE_VALUE` and `SHARDING_TABLE_VALUE`.
+The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and optional attributes include:
 
-- Use `SHARDING_DATABASE_VALUE` to specify sharding key value of data source.
-- Use `SHARDING_TABLE_VALUE` to specify sharding key value of table.
+- `{table}.SHARDING_DATABASE_VALUE`: used to add the data source sharding value corresponding to `{table}` table, multiple attributes are separated by commas;
+- `{table}.SHARDING_TABLE_VALUE`: used to add the table sharding value corresponding to `{table}` table, multiple attributes are separated by commas.
+
+> Users can use `SHARDING_DATABASE_VALUE` to set sharding value in hint route to some certain sharding database without sharding tables.
 
 ##### Codes:
+
 ```sql
-/* SHARDINGSPHERE_HINT: SHARDING_DATABASE_VALUE=1, SHARDING_TABLE_VALUE=1 */
+/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=1, t_order.SHARDING_TABLE_VALUE=1 */
 SELECT * FROM t_order;
 ```
 

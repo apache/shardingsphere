@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
@@ -59,7 +59,7 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     private DataSourcePropertiesValidator validator;
     
     @Mock
-    private AddResourceStatement addResourceStatement;
+    private RegisterStorageUnitStatement registerStorageUnitStatement;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -79,8 +79,8 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     public void setUp() throws Exception {
         when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
-        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        addResourceBackendHandler = new AddResourceBackendHandler(addResourceStatement, connectionSession);
+        when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
+        addResourceBackendHandler = new AddResourceBackendHandler(registerStorageUnitStatement, connectionSession);
         Field field = addResourceBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);
         field.set(addResourceBackendHandler, validator);
@@ -109,14 +109,14 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
     }
     
-    private AddResourceStatement createAddResourceStatement() {
-        return new AddResourceStatement(Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
+    private RegisterStorageUnitStatement createAddResourceStatement() {
+        return new RegisterStorageUnitStatement(Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
     }
     
-    private AddResourceStatement createAlterResourceStatementWithDuplicateResourceNames() {
+    private RegisterStorageUnitStatement createAlterResourceStatementWithDuplicateResourceNames() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
         result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));
-        return new AddResourceStatement(result);
+        return new RegisterStorageUnitStatement(result);
     }
 }

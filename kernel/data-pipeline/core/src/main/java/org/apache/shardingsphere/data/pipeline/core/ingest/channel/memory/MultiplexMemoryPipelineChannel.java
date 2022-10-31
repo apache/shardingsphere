@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
@@ -33,7 +32,6 @@ import java.util.Map;
 /**
  * Multiplex memory pipeline channel.
  */
-@Slf4j
 public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     
     private static final EmptyAckCallback EMPTY_ACK_CALLBACK = new EmptyAckCallback();

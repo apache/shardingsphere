@@ -41,13 +41,13 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     @Override
     protected void update(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
-        checkResources(databaseName, contextManager.getDataSourceMap(databaseName));
+        checkDataSources(databaseName, contextManager.getDataSourceMap(databaseName));
         String schemaName = getSchemaName(databaseName);
-        if (getSqlStatement().getResourceName().isPresent()) {
+        if (getSqlStatement().getStorageUnitName().isPresent()) {
             if (getSqlStatement().getTableName().isPresent()) {
-                contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getResourceName().get(), getSqlStatement().getTableName().get());
+                contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getStorageUnitName().get(), getSqlStatement().getTableName().get());
             } else {
-                contextManager.reloadSchema(databaseName, schemaName, getSqlStatement().getResourceName().get());
+                contextManager.reloadSchema(databaseName, schemaName, getSqlStatement().getStorageUnitName().get());
             }
             return;
         }
@@ -58,11 +58,11 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
         }
     }
     
-    private void checkResources(final String databaseName, final Map<String, DataSource> resources) {
-        ShardingSpherePreconditions.checkState(!resources.isEmpty(), () -> new EmptyResourceException(databaseName));
-        if (getSqlStatement().getResourceName().isPresent()) {
-            String resourceName = getSqlStatement().getResourceName().get();
-            ShardingSpherePreconditions.checkState(resources.containsKey(resourceName), () -> new MissingRequiredResourcesException(databaseName, Collections.singletonList(resourceName)));
+    private void checkDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
+        ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new EmptyResourceException(databaseName));
+        if (getSqlStatement().getStorageUnitName().isPresent()) {
+            String storageUnitName = getSqlStatement().getStorageUnitName().get();
+            ShardingSpherePreconditions.checkState(dataSources.containsKey(storageUnitName), () -> new MissingRequiredResourcesException(databaseName, Collections.singletonList(storageUnitName)));
         }
     }
     
@@ -80,6 +80,6 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
     private String getSchemaName(final String databaseName) {
         return getSqlStatement().getSchemaName().isPresent()
                 ? getSqlStatement().getSchemaName().get()
-                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), databaseName);
+                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getProtocolType(), databaseName);
     }
 }

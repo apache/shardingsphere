@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.props;
 
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,15 +30,12 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class DataSourcePropertiesTest {
-    
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     
     @SuppressWarnings("unchecked")
     @Test

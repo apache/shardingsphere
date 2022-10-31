@@ -38,7 +38,7 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
         globalRules.stream().filter(each -> each instanceof TransactionRule).forEach(each -> ((TransactionRule) each).closeStaleResource());
         globalRules.removeIf(each -> each instanceof TransactionRule);
         TransactionRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration(sqlStatement);
-        globalRules.add(new TransactionRule(toBeAlteredRuleConfig, metaData.getDatabases(), null));
+        globalRules.add(new TransactionRule(toBeAlteredRuleConfig, metaData.getDatabases()));
     }
     
     private TransactionRuleConfiguration createToBeAlteredRuleConfiguration(final SQLStatement sqlStatement) {

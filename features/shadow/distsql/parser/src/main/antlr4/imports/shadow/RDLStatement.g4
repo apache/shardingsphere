@@ -30,25 +30,21 @@ alterShadowRule
 dropShadowRule
     : DROP SHADOW RULE ifExists? ruleName (COMMA ruleName)*
     ;
-   
-createShadowAlgorithm
-    : CREATE SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
-    ;
-
-alterShadowAlgorithm
-    : ALTER SHADOW ALGORITHM shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)*
-    ;
 
 dropShadowAlgorithm
     : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
-    : CREATE DEFAULT SHADOW ALGORITHM NAME EQ algorithmName 
+    : CREATE DEFAULT SHADOW ALGORITHM algorithmDefinition
     ;
 
 dropDefaultShadowAlgorithm
     : DROP DEFAULT SHADOW ALGORITHM ifExists?
+    ;
+
+alterDefaultShadowAlgorithm
+    : ALTER DEFAULT SHADOW ALGORITHM algorithmDefinition
     ;
 
 shadowRuleDefinition
@@ -56,39 +52,23 @@ shadowRuleDefinition
     ;
 
 shadowTableRule
-    : tableName LP shadowAlgorithmDefinition (COMMA shadowAlgorithmDefinition)* RP
+    : tableName LP algorithmDefinition (COMMA algorithmDefinition)* RP
     ;
 
 source
-    : IDENTIFIER | STRING
+    : IDENTIFIER
     ;
 
 shadow
-    : IDENTIFIER | STRING
+    : IDENTIFIER
     ;
 
 tableName
     : IDENTIFIER
     ;
 
-shadowAlgorithmDefinition
-    :  LP (algorithmName COMMA) ? TYPE LP NAME EQ shadowAlgorithmType COMMA PROPERTIES LP algorithmProperties RP RP RP
-    ;
-
 algorithmName
     : IDENTIFIER
-    ;
-
-shadowAlgorithmType
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key = STRING EQ value = (NUMBER | INT | STRING)
     ;
 
 ifExists

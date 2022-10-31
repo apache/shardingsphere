@@ -22,13 +22,14 @@
     <#include "mode/${mode}.ftl" />
 </#if>
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@:root
-      - sharding@:sharding
-    provider:
-      type: ALL_PERMITTED
+authority:
+  users:
+    - user: root
+      password: root
+    - user: sharding
+      password: sharding
+  privilege:
+    type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1

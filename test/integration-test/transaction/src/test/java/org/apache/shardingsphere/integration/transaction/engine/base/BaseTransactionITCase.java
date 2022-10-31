@@ -52,22 +52,13 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     private void initProxyConfig() throws SQLException {
         addResources();
-        initShardingAlgorithm();
-        assertTrue(waitShardingAlgorithmEffect(15));
+        assertTrue(waitShardingAlgorithmEffect());
         initTableRules();
         createTables();
     }
     
-    private void initShardingAlgorithm() throws SQLException {
-        Connection connection = getProxyConnection();
-        executeWithLog(connection, getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateDatabaseIdShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
-        executeWithLog(connection, getCommonSQLCommand().getCreateAccountShardingAlgorithm());
-    }
-    
-    private boolean waitShardingAlgorithmEffect(final int maxWaitTimes) throws SQLException {
+    private boolean waitShardingAlgorithmEffect() throws SQLException {
+        long maxWaitTimes = 15;
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
@@ -162,7 +153,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         }
         String alterLocalTransactionRule = getCommonSQLCommand().getAlterLocalTransactionRule();
         executeWithLog(connection, alterLocalTransactionRule);
-        assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, "", 5));
+        assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, ""));
     }
     
     private void alterXaTransactionRule(final String providerType) throws SQLException {
@@ -172,7 +163,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         }
         String alterXaTransactionRule = getCommonSQLCommand().getAlterXATransactionRule().replace("${providerType}", providerType);
         executeWithLog(connection, alterXaTransactionRule);
-        assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType, 5));
+        assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType));
     }
     
     private boolean isExpectedTransactionRule(final Connection connection, final TransactionType expectedTransType, final String expectedProviderType) throws SQLException {
@@ -181,7 +172,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
                 && Objects.equals(transactionRuleMap.get(TransactionTestConstants.PROVIDER_TYPE), expectedProviderType);
     }
     
-    private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final int maxWaitTimes) throws SQLException {
+    private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType) throws SQLException {
         ThreadUtil.sleep(5, TimeUnit.SECONDS);
         Connection connection = getProxyConnection();
         int waitTimes = 0;
@@ -191,7 +182,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
             waitTimes++;
-        } while (waitTimes <= maxWaitTimes);
+        } while (waitTimes <= 3);
         return false;
     }
     

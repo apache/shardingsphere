@@ -41,8 +41,8 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -82,7 +82,7 @@ public final class RenameTableStatementSchemaRefresherTest {
     private ShardingSphereResourceMetaData mockShardingSphereResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         when(result.getDataSources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new MockedDataSource()));
-        when(result.getDatabaseType()).thenReturn(new SQL92DatabaseType());
+        when(result.getStorageTypes()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new SQL92DatabaseType()));
         return result;
     }
 }

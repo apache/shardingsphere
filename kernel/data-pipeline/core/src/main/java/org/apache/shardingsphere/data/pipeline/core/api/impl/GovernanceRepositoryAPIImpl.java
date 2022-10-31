@@ -51,6 +51,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public boolean isExisted(final String key) {
+        // TODO delegate to repository isExisted
         return null != repository.getDirectly(key);
     }
     
@@ -130,7 +131,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        repository.watch(key, listener, null);
+        repository.watch(key, listener);
     }
     
     @Override

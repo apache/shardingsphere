@@ -23,6 +23,14 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
 CREATE
     : C R E A T E
     ;
@@ -39,8 +47,8 @@ SHOW
     : S H O W
     ;
 
-RESOURCES
-    : R E S O U R C E S
+STORAGE_UNITS
+    : S T O R A G E UL_ U N I T S
     ;
 
 RULE

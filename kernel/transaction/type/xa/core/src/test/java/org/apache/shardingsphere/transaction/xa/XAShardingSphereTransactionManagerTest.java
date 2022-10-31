@@ -34,15 +34,13 @@ import javax.transaction.Transaction;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class XAShardingSphereTransactionManagerTest {
@@ -51,8 +49,9 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        Collection<ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeFactory.getInstance("H2"));
-        xaTransactionManager.init(DatabaseTypeFactory.getInstance("H2"), resourceDataSources, "Atomikos");
+        Map<String, ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeFactory.getInstance("H2"));
+        Map<String, DatabaseType> databaseTypes = createDatabaseTypes(DatabaseTypeFactory.getInstance("H2"));
+        xaTransactionManager.init(databaseTypes, resourceDataSources, "Atomikos");
     }
     
     @After
@@ -82,9 +81,9 @@ public final class XAShardingSphereTransactionManagerTest {
     @Test
     public void assertGetConnection() throws SQLException {
         xaTransactionManager.begin();
-        Connection actual1 = xaTransactionManager.getConnection("demo_ds_1", "ds1");
-        Connection actual2 = xaTransactionManager.getConnection("demo_ds_2", "ds2");
-        Connection actual3 = xaTransactionManager.getConnection("demo_ds_3", "ds3");
+        Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0");
+        Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1");
+        Connection actual3 = xaTransactionManager.getConnection("sharding_db", "ds_2");
         assertThat(actual1, instanceOf(Connection.class));
         assertThat(actual2, instanceOf(Connection.class));
         assertThat(actual3, instanceOf(Connection.class));
@@ -93,10 +92,10 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Test
     public void assertGetConnectionOfNestedTransaction() throws SQLException {
-        ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("demo_ds_1.ds1"));
+        ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("sharding_db.ds_1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
-        xaTransactionManager.getConnection("demo_ds_1", "ds1");
+        xaTransactionManager.getConnection("sharding_db", "ds_1");
         assertThat(transactions.get().size(), is(1));
         executeNestedTransaction(transactions);
         assertThat(transactions.get().size(), is(1));
@@ -106,7 +105,7 @@ public final class XAShardingSphereTransactionManagerTest {
     
     private void executeNestedTransaction(final ThreadLocal<Map<Transaction, Connection>> transactions) throws SQLException {
         xaTransactionManager.begin();
-        xaTransactionManager.getConnection("demo_ds_1", "ds1");
+        xaTransactionManager.getConnection("sharding_db", "ds_1");
         assertThat(transactions.get().size(), is(2));
         xaTransactionManager.commit(false);
         assertThat(transactions.get().size(), is(1));
@@ -151,11 +150,19 @@ public final class XAShardingSphereTransactionManagerTest {
         return (ThreadLocal<Map<Transaction, Connection>>) field.get(transactionDataSource);
     }
     
-    private Collection<ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
-        List<ResourceDataSource> result = new LinkedList<>();
-        result.add(new ResourceDataSource("demo_ds_1.ds1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
-        result.add(new ResourceDataSource("demo_ds_2.ds2", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_2")));
-        result.add(new ResourceDataSource("demo_ds_3.ds3", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_3")));
+    private Map<String, ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
+        Map<String, ResourceDataSource> result = new LinkedHashMap<>(3, 1);
+        result.put("sharding_db.ds_0", new ResourceDataSource("sharding_db.ds_0", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_0")));
+        result.put("sharding_db.ds_1", new ResourceDataSource("sharding_db.ds_1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
+        result.put("sharding_db.ds_2", new ResourceDataSource("sharding_db.ds_2", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_2")));
+        return result;
+    }
+    
+    private Map<String, DatabaseType> createDatabaseTypes(final DatabaseType databaseType) {
+        Map<String, DatabaseType> result = new LinkedHashMap<>(3, 1);
+        result.put("sharding_db.ds_0", databaseType);
+        result.put("sharding_db.ds_1", databaseType);
+        result.put("sharding_db.ds_2", databaseType);
         return result;
     }
 }

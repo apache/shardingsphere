@@ -17,55 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return null;
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-    }
-    
-    @Override
-    public String get(final String key) {
-        return null;
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
     }
     
     @Override
@@ -104,16 +67,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return null;
-    }
-    
-    @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
@@ -123,7 +76,7 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override

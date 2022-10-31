@@ -40,7 +40,7 @@ ShardingSphere-Proxy 支持配置多个逻辑数据源，每个以 `config-` 前
 
 ShardingSphere-Proxy 默认集成 ZooKeeper Curator 客户端，集群模式使用 ZooKeeper 无须引入其他依赖。
 
-如果集群模式使用 Etcd，需要将 Etcd 的客户端驱动程序 [jetcd-core 0.5.0](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.5.0/jetcd-core-0.5.0.jar) 复制至目录 `ext-lib`。
+如果集群模式使用 Etcd，需要将 Etcd 的客户端驱动程序 [jetcd-core 0.7.3](https://repo1.maven.org/maven2/io/etcd/jetcd-core/0.7.3/jetcd-core-0.7.3.jar) 复制至目录 `ext-lib`。
 
 6. （可选）引入分布式事务所需依赖
 

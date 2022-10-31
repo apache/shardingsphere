@@ -418,7 +418,7 @@ alias
     ;
 
 dataTypeLength
-    : LP_ (INTEGER_ (COMMA_ INTEGER_)?)? RP_
+    : LP_ (INTEGER_ (COMMA_ INTEGER_)? (CHAR | BYTE)?)? RP_
     ;
 
 primaryKey
@@ -438,6 +438,7 @@ expr
     : expr andOperator expr
     | expr orOperator expr
     | notOperator expr
+    | PRIOR expr
     | LP_ expr RP_
     | booleanPrimary
     ;
@@ -504,15 +505,19 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | specialFunction | regularFunction 
+    : aggregationFunction | analyticFunction | specialFunction | regularFunction 
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) RP_ (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | GROUPING
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG
+    ;
+
+listaggOverflowClause
+    : ON OVERFLOW (ERROR | (TRUNCATE stringLiterals? ((WITH | WITHOUT) COUNT)?))
     ;
 
 analyticClause
@@ -526,6 +531,10 @@ queryPartitionClause
 windowingClause
     : (ROWS | RANGE) ((BETWEEN (UNBOUNDED PRECEDING | CURRENT ROW | expr (PRECEDING | FOLLOWING)) AND (UNBOUNDED FOLLOWING | CURRENT ROW | expr (PRECEDING | FOLLOWING)))
     | (UNBOUNDED PRECEDING | CURRENT ROW | expr PRECEDING))
+    ;
+
+analyticFunction
+    : analyticFunctionName LP_ dataType* RP_ OVER LP_ analyticClause RP_
     ;
 
 specialFunction

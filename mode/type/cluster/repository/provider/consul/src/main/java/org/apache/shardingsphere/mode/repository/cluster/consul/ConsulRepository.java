@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.consul;
 
+import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.ConsulRawClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
@@ -24,15 +25,15 @@ import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
+import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.LeaderExecutionCallback;
-import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulInternalLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.transaction.TransactionOperation;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -48,62 +50,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ConsulRepository implements ClusterPersistRepository {
     
+    private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
+    
     private ShardingSphereConsulClient consulClient;
     
     private ConsulProperties consulProps;
     
-    private ConsulInternalLockProvider consulInternalLockProvider;
+    private ConsulDistributedLockHolder consulDistributedLockHolder;
     
     private Map<String, Collection<String>> watchKeyMap;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config) {
-        consulClient = new ShardingSphereConsulClient(new ConsulRawClient(config.getServerLists()));
+    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+        ConsulRawClient rawClient = Strings.isNullOrEmpty(config.getServerLists()) ? new ConsulRawClient() : new ConsulRawClient(config.getServerLists());
+        consulClient = new ShardingSphereConsulClient(rawClient);
         consulProps = new ConsulProperties(config.getProps());
-        consulInternalLockProvider = new ConsulInternalLockProvider(consulClient, consulProps);
+        consulDistributedLockHolder = new ConsulDistributedLockHolder(consulClient, consulProps);
         watchKeyMap = new HashMap<>(6, 1);
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void executeInLeader(final String key, final LeaderExecutionCallback callback) {
-        // TODO
-    }
-    
-    @Override
-    public void executeInTransaction(final List<TransactionOperation> transactionOperations) {
-        // TODO
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
     }
     
     @Override
@@ -120,7 +83,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean isExisted(final String key) {
-        return false;
+        return null != consulClient.getKVValue(key).getValue();
     }
     
     @Override
@@ -130,22 +93,12 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public void update(final String key, final String value) {
-        // TODO
+        consulClient.setKVValue(key, value);
     }
     
     @Override
     public void delete(final String key) {
         consulClient.deleteKVValue(key);
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return consulClient;
     }
     
     @Override
@@ -160,7 +113,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         PutParams putParams = new PutParams();
         putParams.setAcquireSession(sessionId);
         consulClient.setKVValue(key, value, putParams);
-        consulInternalLockProvider.generatorFlushSessionTtlTask(consulClient, sessionId);
+        generatorFlushSessionTtlTask(consulClient, sessionId);
     }
     
     private NewSession createNewSession(final String key) {
@@ -178,16 +131,16 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return consulInternalLockProvider.getInternalMutexLock(lockKey).tryLock(timeoutMillis);
+        return consulDistributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        consulInternalLockProvider.getInternalMutexLock(lockKey).unlock();
+        consulDistributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
         Thread watchThread = new Thread(() -> watchChildKeyChangeEvent(key, listener));
         watchThread.setDaemon(true);
         watchThread.start();
@@ -239,6 +192,16 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private void fireDataChangeEvent(final GetValue getValue, final DataChangedEventListener listener, final DataChangedEvent.Type type) {
         listener.onChange(new DataChangedEvent(getValue.getKey(), getValue.getValue(), type));
+    }
+    
+    /**
+     * Flush session by update TTL.
+     *
+     * @param consulClient consul client
+     * @param sessionId session id
+     */
+    public void generatorFlushSessionTtlTask(final ConsulClient consulClient, final String sessionId) {
+        SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> consulClient.renewSession(sessionId, QueryParams.DEFAULT), 1L, 10L, TimeUnit.SECONDS);
     }
     
     @Override

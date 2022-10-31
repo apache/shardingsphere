@@ -20,7 +20,6 @@ package org.apache.shardingsphere.schedule.core.context;
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
@@ -43,7 +42,6 @@ import java.util.function.Consumer;
  * Cluster schedule context.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ClusterScheduleContext implements ScheduleContext {
     
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>();

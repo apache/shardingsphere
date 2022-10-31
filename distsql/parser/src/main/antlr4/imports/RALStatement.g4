@@ -19,32 +19,32 @@ grammar RALStatement;
 
 import BaseRule;
 
-setVariable
-    : SET VARIABLE variableName EQ variableValue
+setDistVariable
+    : SET DIST VARIABLE variableName EQ variableValue
     ;
 
-showVariable
-    : SHOW VARIABLE variableName
+showDistVariable
+    : SHOW DIST VARIABLE WHERE NAME EQ variableName
     ;
 
-showAllVariables
-    : SHOW ALL VARIABLES
+showDistVariables
+    : SHOW DIST VARIABLES
     ;
 
-alterInstance
-    : ALTER INSTANCE instanceId SET variableName EQ variableValues
+alterComputeNode
+    : ALTER COMPUTE NODE instanceId SET variableName EQ variableValues
     ;
 
-enableInstance
-    : ENABLE INSTANCE instanceId
+enableComputeNode
+    : ENABLE COMPUTE NODE instanceId
     ;
 
-disableInstance
-    : DISABLE INSTANCE instanceId
+disableComputeNode
+    : DISABLE COMPUTE NODE instanceId
     ;
 
-showInstanceList
-    : SHOW INSTANCE LIST
+showComputeNodes
+    : SHOW COMPUTE NODES
     ;
 
 clearHint
@@ -59,51 +59,43 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showInstanceInfo
-    : SHOW INSTANCE INFO
+showComputeNodeInfo
+    : SHOW COMPUTE NODE INFO
     ;
 
-showModeInfo
-    : SHOW MODE INFO
+showComputeNodeMode
+    : SHOW COMPUTE NODE MODE
     ;
 
-labelInstance
-    : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
+labelComputeNode
+    : (LABEL | RELABEL) COMPUTE NODE instanceId WITH label (COMMA label)*
     ;
 
-unlabelInstance
-    : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
+unlabelComputeNode
+    : UNLABEL COMPUTE NODE instanceId (WITH label (COMMA label)*)?
     ;
 
 exportDatabaseConfiguration
-    : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
+    : EXPORT DATABASE CONFIGURATION (FROM databaseName)? (TO FILE filePath)?
     ;
 
 importDatabaseConfiguration
-    : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
+    : IMPORT DATABASE CONFIGURATION FROM FILE filePath
     ;
 
 convertYamlConfiguration
-    : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
+    : CONVERT YAML CONFIGURATION FROM FILE filePath
     ;
 
-showMigrationProcessConfiguration
-    : SHOW MIGRATION PROCESS CONFIGURATION
+showMigrationRule
+    : SHOW MIGRATION RULE
     ;
 
-createMigrationProcessConfiguration
-    : CREATE MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
+alterMigrationRule
+    : ALTER MIGRATION RULE inventoryIncrementalRule?
     ;
 
-alterMigrationProcessConfiguration
-    : ALTER MIGRATION PROCESS CONFIGURATION inventoryIncrementalProcessConfiguration?
-    ;
-
-dropMigrationProcessConfiguration
-    : DROP MIGRATION PROCESS CONFIGURATION confPath
-    ;
-
-inventoryIncrementalProcessConfiguration
+inventoryIncrementalRule
     : LP readDefinition? (COMMA? writeDefinition)? (COMMA? streamChannel)? RP
     ;
 
@@ -152,7 +144,7 @@ variableValues
     ;
 
 variableValue
-    : STRING | (MINUS)? INT | TRUE | FALSE
+    : literal
     ;
 
 instanceId
@@ -164,7 +156,7 @@ refreshScope
     ;
 
 fromSegment
-    : FROM RESOURCE resourceName (SCHEMA schemaName)?
+    : FROM STORAGE UNIT storageUnitName (SCHEMA schemaName)?
     ;
 
 label

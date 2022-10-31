@@ -75,7 +75,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final MetaDataContexts metaDataContexts;
     
-    private final PostgreSQLPreparedStatement preparedStatement;
+    private final PostgreSQLServerPreparedStatement preparedStatement;
     
     private final Map<ExecutionUnit, List<List<Object>>> executionUnitParameters = new HashMap<>();
     
@@ -83,7 +83,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
-    public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+    public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
@@ -148,7 +148,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
                 metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),
-                new StatementOption(false), rules, connectionSession.getDatabaseType());
+                new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParameters.keySet());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {
@@ -176,9 +176,9 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
-        DatabaseType databaseType = database.getResourceMetaData().getDatabaseType();
+        Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         DatabaseType protocolType = database.getProtocolType();
-        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, storageTypes, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -191,12 +191,12 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(protocolType, databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
+        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+            super(protocolType, storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override
-        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
             try {
                 return statement.executeBatch();
             } finally {

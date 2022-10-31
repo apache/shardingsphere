@@ -51,7 +51,7 @@ public final class ParseDistSQLHandler extends SQLRULBackendHandler<ParseStateme
     
     private SQLStatement parseSQL(final ContextManager contextManager) {
         SQLParserRule sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        String databaseType = getConnectionSession().getDatabaseType().getType();
+        String databaseType = getConnectionSession().getProtocolType().getType();
         return sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
     }
 }

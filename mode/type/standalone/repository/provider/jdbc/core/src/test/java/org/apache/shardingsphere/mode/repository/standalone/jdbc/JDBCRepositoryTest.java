@@ -17,20 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.zaxxer.hikari.HikariDataSource;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Properties;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.fixture.JDBCRepositoryProviderFixture;
 import org.h2.jdbc.JdbcCallableStatement;
 import org.h2.jdbc.JdbcConnection;
@@ -43,6 +30,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.List;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class JDBCRepositoryTest {
@@ -73,7 +72,7 @@ public final class JDBCRepositoryTest {
         this.mockedConstruction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection));
         when(mockJdbcConnection.createStatement()).thenReturn(mockStatement);
         repository = new JDBCRepository();
-        repository.init(getHikariProperties());
+        repository.init(createProperties());
     }
     
     @After
@@ -95,16 +94,18 @@ public final class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString(eq("value"))).thenReturn(value);
-        String actualResponse = repository.getDirectly(key);
+        String actual = repository.getDirectly(key);
         verify(mockPreparedStatement).setString(eq(1), eq(key));
-        assertEquals(value, actualResponse);
+        assertThat(actual, is(value));
     }
     
     @Test
     public void assertGetFailure() throws Exception {
-        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-        String actualResponse = repository.getDirectly("key");
-        assertEquals("", actualResponse);
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+        String actual = repository.getDirectly("key");
+        assertThat(actual, is(""));
     }
     
     @Test
@@ -127,9 +128,11 @@ public final class JDBCRepositoryTest {
     
     @Test
     public void assertPersistAndGetChildrenKeysFailure() throws Exception {
-        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenThrow(new SQLException());
-        List<String> actualResponse = repository.getChildrenKeys("key");
-        assertEquals(0, actualResponse.size());
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByParentKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+        List<String> actual = repository.getChildrenKeys("key");
+        assertThat(actual.size(), is(0));
     }
     
     @Test
@@ -194,7 +197,7 @@ public final class JDBCRepositoryTest {
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString(eq("value"))).thenReturn("oldValue");
-        when(mockJdbcConnection.prepareStatement(eq(fixture.updateSQL()))).thenThrow(new SQLException());
+        when(mockJdbcConnection.prepareStatement(eq(fixture.updateSQL()))).thenReturn(mockPreparedStatement);
         repository.persist(key, "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
@@ -218,10 +221,11 @@ public final class JDBCRepositoryTest {
     
     @Test
     public void assertPersistFailureDuringInsert() throws Exception {
-        String key = "key";
-        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenThrow(new SQLException());
-        when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenThrow(new SQLException());
-        repository.persist(key, "value");
+        when(mockJdbcConnection.prepareStatement(eq(fixture.selectByKeySQL()))).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+        when(mockJdbcConnection.prepareStatement(eq(fixture.insertSQL()))).thenReturn(mockPreparedStatement);
+        repository.persist("key", "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
     
@@ -237,7 +241,7 @@ public final class JDBCRepositoryTest {
     @Test
     public void assertDeleteFailure() throws Exception {
         String key = "key";
-        when(mockJdbcConnection.prepareStatement(eq(fixture.deleteSQL()))).thenThrow(new SQLException());
+        when(mockJdbcConnection.prepareStatement(eq(fixture.deleteSQL()))).thenReturn(mockPreparedStatementForPersist);
         repository.delete(key);
         verify(mockPreparedStatement, times(0)).executeUpdate();
     }
@@ -249,12 +253,12 @@ public final class JDBCRepositoryTest {
         verify(hikariDataSource).close();
     }
     
-    private Properties getHikariProperties() {
-        Properties props = new Properties();
-        props.setProperty("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
-        props.setProperty("username", "sa");
-        props.setProperty("password", "");
-        props.setProperty("provider", "FIXTURE");
-        return props;
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
+        result.setProperty("username", "sa");
+        result.setProperty("password", "");
+        result.setProperty("provider", "FIXTURE");
+        return result;
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
@@ -30,7 +29,6 @@ import java.lang.reflect.Method;
 /**
  * Channel handler advice.
  */
-@Slf4j
 public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
     
     public static final String CHANNEL_READ = "channelRead";

@@ -33,24 +33,27 @@
 #      maxRetries: 3
 #      operationTimeoutMilliseconds: 500
 #
+#authority:
+#  users:
+#    - user: root@%
+#      password: root
+#    - user: sharding
+#      password: sharding
+#  privilege:
+#    type: ALL_PERMITTED
+#
 #rules:
-#  - !AUTHORITY
-#    users:
-#      - root@%:root
-#      - sharding@:sharding
-#    provider:
-#      type: ALL_PERMITTED
-#  - !TRANSACTION
-#    defaultType: XA
-#    providerType: Atomikos
-#  - !SQL_PARSER
-#    sqlCommentParseEnabled: true
-#    sqlStatementCache:
-#      initialCapacity: 2000
-#      maximumSize: 65535
-#    parseTreeCache:
-#      initialCapacity: 128
-#      maximumSize: 1024
+#- !TRANSACTION
+#  defaultType: XA
+#  providerType: Atomikos
+#- !SQL_PARSER
+#  sqlCommentParseEnabled: true
+#  sqlStatementCache:
+#    initialCapacity: 2000
+#    maximumSize: 65535
+#  parseTreeCache:
+#    initialCapacity: 128
+#    maximumSize: 1024
 
 #props:
 #  max-connections-size-per-query: 1

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Getter
 @Setter
-@Slf4j
 public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext, PipelineJobProgressListener {
     
     private final String jobId;
@@ -49,9 +48,9 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private volatile JobStatus status;
     
-    private Collection<String> tableNames;
+    private final Collection<String> tableNames = new CopyOnWriteArraySet<>();
     
-    private volatile Long recordsCount;
+    private volatile long recordsCount;
     
     private final AtomicLong checkedRecordsCount = new AtomicLong(0);
     

@@ -26,7 +26,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.2.1-SNAPSHOT</version>
+    <version>5.2.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
@@ -60,14 +60,15 @@
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
         
         <guava.version>30.0-jre</guava.version>
-        <commons-lang3.version>3.8</commons-lang3.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
         
         <antlr4.version>4.9.2</antlr4.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
-        <groovy.version>4.0.3</groovy.version>
+        <jackson.version>2.13.4</jackson.version>
+        <groovy.version>4.0.6</groovy.version>
         
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
@@ -75,20 +76,20 @@
         
         <calcite.version>1.32.0</calcite.version>
         <vertx.version>4.3.3</vertx.version>
-        <netty.version>4.1.80.Final</netty.version>
+        <netty.version>4.1.84.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
         
-        <zookeeper.version>3.6.0</zookeeper.version>
-        <curator.version>5.1.0</curator.version>
-        <jetcd.version>0.5.10</jetcd.version>
+        <zookeeper.version>3.8.0</zookeeper.version>
+        <curator.version>5.3.0</curator.version>
+        <jetcd.version>0.7.3</jetcd.version>
         
         <elasticjob.version>3.0.1</elasticjob.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
         
-        <bytebuddy.version>1.12.10</bytebuddy.version>
+        <bytebuddy.version>1.12.12</bytebuddy.version>
         <prometheus.version>0.11.0</prometheus.version>
         <prometheus.jmx.version>0.16.1</prometheus.jmx.version>
         <opentracing.version>0.31.0</opentracing.version>
@@ -99,7 +100,7 @@
         <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
         
         <slf4j.version>1.7.36</slf4j.version>
-        <logback.version>1.2.10</logback.version>
+        <logback.version>1.2.11</logback.version>
         
         <lombok.version>1.18.20</lombok.version>
         
@@ -113,9 +114,10 @@
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         
-        <junit.version>4.13.2</junit.version>
+        <junit5.version>5.9.1</junit5.version>
+        <junit4.version>4.13.2</junit4.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>4.5.1</mockito.version>
+        <mockito.version>4.8.0</mockito.version>
         
         <!-- Plugin versions -->
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
@@ -123,7 +125,7 @@
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <maven-release-plugin.version>3.0.0-M6</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
@@ -151,7 +153,7 @@
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
-        <caffeine.version>2.9.2</caffeine.version>
+        <caffeine.version>2.9.3</caffeine.version>
     </properties>
     
     <dependencyManagement>
@@ -203,6 +205,26 @@
                 <version>${gson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.groovy</groupId>
                 <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
@@ -227,7 +249,6 @@
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${annotation-api.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>javax.activation</groupId>
@@ -373,6 +394,14 @@
                     <exclusion>
                         <groupId>com.google.android</groupId>
                         <artifactId>annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.vertx</groupId>
+                        <artifactId>vertx-grpc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-transport-native-unix-common</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -612,7 +641,13 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
+                <version>${junit4.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>${junit5.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -710,6 +745,10 @@
             <artifactId>junit</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-library</artifactId>
         </dependency>
@@ -774,6 +813,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <trimStackTrace>false</trimStackTrace>
                         <excludes>

@@ -8,7 +8,7 @@ Spring 命名空间的配置方式，适用于传统的 Spring 项目，它通�
 
 ## 参数解释
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.0.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.2.1.xsd)
 
 \<sql-parser:rule />
 

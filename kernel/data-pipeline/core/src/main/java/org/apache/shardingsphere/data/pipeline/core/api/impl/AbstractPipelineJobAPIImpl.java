@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
@@ -74,7 +74,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     protected void checkModeConfig() {
         ModeConfiguration modeConfig = PipelineContext.getModeConfig();
         Preconditions.checkNotNull(modeConfig, "Mode configuration is required.");
-        Preconditions.checkArgument("Cluster".equalsIgnoreCase(modeConfig.getType()), "Mode must be `Cluster`.");
+        Preconditions.checkArgument("Cluster".equals(modeConfig.getType()), "Mode must be `Cluster`.");
     }
     
     private Stream<JobBriefInfo> getJobBriefInfos() {
@@ -118,29 +118,29 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
     @Override
     public void startDisabledJob(final String jobId) {
         log.info("Start disabled pipeline job {}", jobId);
-        pipelineDistributedBarrier.removeParentNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
+        pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierDisablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineJobHasAlreadyStartedException(jobId));
         jobConfigPOJO.setDisabled(false);
         jobConfigPOJO.getProps().remove("stop_time");
         jobConfigPOJO.getProps().remove("stop_time_millis");
+        String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
+        pipelineDistributedBarrier.register(barrierEnablePath, jobConfigPOJO.getShardingTotalCount());
         PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        String barrierPath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
-        pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
-        pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
+        pipelineDistributedBarrier.await(barrierEnablePath, 5, TimeUnit.SECONDS);
     }
     
     @Override
     public void stop(final String jobId) {
         log.info("Stop pipeline job {}", jobId);
-        pipelineDistributedBarrier.removeParentNode(PipelineMetaDataNode.getJobBarrierEnablePath(jobId));
+        pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierEnablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         jobConfigPOJO.getProps().setProperty("stop_time_millis", System.currentTimeMillis() + "");
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         String barrierPath = PipelineMetaDataNode.getJobBarrierDisablePath(jobId);
         pipelineDistributedBarrier.register(barrierPath, jobConfigPOJO.getShardingTotalCount());
+        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
         pipelineDistributedBarrier.await(barrierPath, 5, TimeUnit.SECONDS);
     }
     

@@ -30,9 +30,9 @@
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
     </add-resource>
     
-    <add-migration-source-resource sql-case-id="single-add-migration-source-resource">
+    <register-migration-source-storage-unit sql-case-id="single-register-migration-source-storage-unit">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" url="jdbc:mysql://127.0.0.1:3306/test0"/>
-    </add-migration-source-resource>
+    </register-migration-source-storage-unit>
 
     <add-resource sql-case-id="add-resource-with-quota">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
@@ -55,6 +55,7 @@
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
+                <property key="idleTimeout" value="30000" />
             </properties>
         </data-source>
     </add-resource>
@@ -112,53 +113,131 @@
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
             <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_item_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
         </rule>
     </create-sharding-table-rule>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-enum-inline-expression">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${['abc','ac']}.table</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <data-source>ms_group_${['abc','ac']}.t_order_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_name">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_name}" />
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <data-source>ms_group_${0..1}.t_order_item_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_item_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
         </rule>
     </create-sharding-table-rule>
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="database_inline" />
+            <data-source>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="complex" sharding-column="order_id,user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id" sharding-algorithm-name="database_inline" />
+            <data-source>ms_group_${0..1}.t_order_item_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="t_order_item_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </database-strategy>
         </rule>
     </create-sharding-table-rule>
     
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auto-create-algorithm">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
-            <table-strategy type="standard" sharding-column="user_id" sharding-algorithm-name="table_inline" />
-            <database-strategy type="standard" sharding-column="order_id">
-                <algorithm-segment algorithm-name="inline">
+            <data-source>ms_group_${0..1}.t_order_${0..1}</data-source>
+            <table-strategy type="standard" sharding-column="user_id">
+                <algorithm-segment algorithm-name="INLINE">
                     <properties>
-                        <property key="algorithm-expression" value="ms_group_${order_id% 2}" />
+                        <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                    </properties>
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="order_id" >
+                <algorithm-segment algorithm-name="INLINE">
+                    <properties>
+                        <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
                     </properties>
                 </algorithm-segment>
             </database-strategy>
@@ -166,25 +245,25 @@
         </rule>
     </create-sharding-table-rule>
     
-    <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule">
+    <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule">
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2" />
-    </create-sharding-binding-table-rule>
+    </create-sharding-table-reference-rule>
 
-    <create-sharding-binding-table-rule sql-case-id="create-sharding-binding-table-rule-with-quota">
+    <create-sharding-table-reference-rule sql-case-id="create-sharding-table-reference-rule-with-quota">
         <rule table-groups="t_order,t_order_item" />
         <rule table-groups="t_1,t_2"/>
-    </create-sharding-binding-table-rule>
+    </create-sharding-table-reference-rule>
     
-    <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule">
+    <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule">
         <table>t_1</table>
         <table>t_2</table>
-    </create-sharding-broadcast-table-rule>
+    </create-broadcast-table-rule>
 
-    <create-sharding-broadcast-table-rule sql-case-id="create-sharding-broadcast-table-rule-with-quota">
+    <create-broadcast-table-rule sql-case-id="create-broadcast-table-rule-with-quota">
         <table>t_1</table>
         <table>t_2</table>
-    </create-sharding-broadcast-table-rule>
+    </create-broadcast-table-rule>
     
     <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
         <rule name="ms_group_0" write-data-source="primary_ds" load-balancer="random">
@@ -210,8 +289,8 @@
     
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-definition-rule">
         <rule rule-name="ha_group_0" type="mgr">
-            <data-source>resource0</data-source>
-            <data-source>resource1</data-source>
+            <data-source>ds_0</data-source>
+            <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec" />
@@ -222,8 +301,8 @@
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
-            <data-source>resource2</data-source>
-            <data-source>resource3</data-source>
+            <data-source>ds_2</data-source>
+            <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec-2" />
@@ -235,39 +314,10 @@
         </rule>
     </create-database-discovery-definition-rule>
 
-    <create-database-discovery-construction-rule sql-case-id="create-database-discovery-construction-rule">
-        <rule rule-name="ha_group_0" type="ha_group_0_mgr" heartbeat="ha_group_0_heartbeat">
-            <data-source>resource0</data-source>
-            <data-source>resource1</data-source>
-        </rule>
-    </create-database-discovery-construction-rule>
-
-    <create-database-discovery-type sql-case-id="create-database-discovery-type">
-        <type discovery-type-name="primary_replica_ds_mgr">
-            <algorithm algorithm-name="mgr">
-                <properties>
-                    <property key="groupName" value="92504d5b-6dec" />
-                </properties>
-            </algorithm>
-        </type>
-        <type discovery-type-name="primary_replica_ds_mgr_2">
-            <algorithm algorithm-name="mgr" />
-        </type>
-    </create-database-discovery-type>
-
-
-    <create-database-discovery-heartbeat sql-case-id="create-database-discovery-heartbeat">
-        <rule heartbeat-name="mgr_heartbeat" >
-            <properties>
-                <property key="keepAliveCron" value="0/5 * * * * ?" />
-            </properties>
-        </rule>
-    </create-database-discovery-heartbeat>
-
     <create-database-discovery-definition-rule sql-case-id="create-database-discovery-rule-with-quota">
         <rule rule-name="ha_group_0" type="mgr">
-            <data-source>resource0</data-source>
-            <data-source>resource1</data-source>
+            <data-source>ds_0</data-source>
+            <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec"/>
@@ -278,8 +328,8 @@
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
-            <data-source>resource2</data-source>
-            <data-source>resource3</data-source>
+            <data-source>ds_2</data-source>
+            <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
                     <property key="groupName" value="92504d5b-6dec-2"/>
@@ -352,7 +402,7 @@
     <create-shadow-rule sql-case-id="create-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>
@@ -361,7 +411,7 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true"/>
@@ -376,7 +426,7 @@
     <create-shadow-rule sql-case-id="create-shadow-rule-with-quota">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
             <table-rule table-name="t_order">
-                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
                             <property key="operation" value="insert"/>
@@ -385,7 +435,7 @@
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
-                <shadow-algorithm algorithm-id="simple_hint_algorithm">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
                             <property key="shadow" value="true"/>
@@ -397,35 +447,38 @@
         </rule>
     </create-shadow-rule>
     
-    <create-sharding-algorithm sql-case-id="create-sharding-algorithm">
-        <shardingAlgorithm sharding-algorithm-name="algorithm_name">
-            <algorithm algorithm-name="hash_mod">
-                <properties>
-                    <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
-                </properties>
-            </algorithm>
-        </shardingAlgorithm>
-    </create-sharding-algorithm>
-    
-    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm" algorithm="simple_hint_algorithm"/>
-    
     <create-default-sharding-strategy sql-case-id="create-default-sharding-table-strategy-with-lower-case">
-        <strategy default-type="table" strategy-type="standard" sharding-column="order_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="table" strategy-type="standard" sharding-column="order_id">
+            <algorithm-segment algorithm-name="INLINE">
+                <properties>
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}" />
+                </properties>
+            </algorithm-segment>
         </strategy>
     </create-default-sharding-strategy>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-database-strategy">
-        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="DATABASE" strategy-type="STANDARD" sharding-column="ORDER_ID">
+            <algorithm-segment algorithm-name="INLINE">
+                <properties>
+                    <property key="algorithm-expression" value="ms_group_${user_id % 2}" />
+                </properties>
+            </algorithm-segment>
         </strategy>
     </create-default-sharding-strategy>
     
     <create-default-sharding-strategy sql-case-id="create-default-sharding-strategy-complex">
-        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id" sharding-algorithm-name="algorithms_name">
+        <strategy default-type="TABLE" strategy-type="complex" sharding-column="order_id,user_id">
+            <algorithm-segment algorithm-name="INLINE">
+                <properties>
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}_${order_id % 2}" />
+                </properties>
+            </algorithm-segment>
         </strategy>
     </create-default-sharding-strategy>
     
-    <create-shadow-algorithm sql-case-id="create-shadow-algorithm">
-        <shadow-algorithm algorithm-id="simple_hint_algorithm">
+    <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm">
+        <shadow-algorithm algorithm-id="default">
             <algorithm algorithm-name="HINT">
                 <properties>
                     <property key="shadow" value="true"/>
@@ -433,15 +486,9 @@
                 </properties>
             </algorithm>
         </shadow-algorithm>
-    </create-shadow-algorithm>
+    </create-default-shadow-algorithm>
     
     <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
-    
-    <create-sharding-key-generator sql-case-id="create-sharding-key-generator">
-        <sharding-key-generator key-generator-name="uuid_key_generator">
-            <algorithm algorithm-name="uuid" />
-        </sharding-key-generator>
-    </create-sharding-key-generator>
     
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">

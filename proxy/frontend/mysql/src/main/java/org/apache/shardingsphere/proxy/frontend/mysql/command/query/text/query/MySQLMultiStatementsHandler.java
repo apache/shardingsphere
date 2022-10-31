@@ -139,7 +139,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps()
                 .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), (JDBCBackendConnection) connectionSession.getBackendConnection(),
-                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules, connectionSession.getDatabaseType());
+                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules,
+                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), samplingExecutionUnit());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {
@@ -166,8 +167,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private UpdateResponseHeader executeBatchedStatements(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getDatabaseType();
-        JDBCExecutorCallback<int[]> callback = new BatchedJDBCExecutorCallback(databaseType, sqlStatementSample, isExceptionThrown);
+        Map<String, DatabaseType> storageTypes = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes();
+        JDBCExecutorCallback<int[]> callback = new BatchedJDBCExecutorCallback(storageTypes, sqlStatementSample, isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int updated = 0;
         for (int[] eachResult : executeResults) {
@@ -181,12 +182,12 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private static class BatchedJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        BatchedJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(DatabaseTypeFactory.getInstance("MySQL"), databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
+        BatchedJDBCExecutorCallback(final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+            super(DatabaseTypeFactory.getInstance("MySQL"), storageTypes, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override
-        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+        protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
             try {
                 return statement.executeBatch();
             } finally {

@@ -49,6 +49,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
     
+    // TODO it's just used for openGauss
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
@@ -82,8 +83,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(sql);
             }
-        } catch (final SQLException ignored) {
-            // TODO should not ignore the exception, if do not catch it, the scaling IT will fail.
+        } catch (final SQLException ex) {
+            log.warn("create schema failed, error: {}", ex.getMessage());
         }
     }
     

@@ -23,11 +23,12 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.exception.UnsupportedActualDataNodeStructureException;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterials;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -45,30 +46,36 @@ public class SchemaMetaDataUtil {
      * Get schema meta data loader materials.
      *
      * @param tableNames table name collection
-     * @param materials materials
+     * @param material material
      * @param checkMetaDataEnable check meta data enable config
      * @return schema meta data loader materials
      */
-    public static Collection<SchemaMetaDataLoaderMaterials> getSchemaMetaDataLoaderMaterials(final Collection<String> tableNames,
-                                                                                             final GenericSchemaBuilderMaterials materials, final boolean checkMetaDataEnable) {
+    public static Collection<SchemaMetaDataLoaderMaterial> getSchemaMetaDataLoaderMaterials(final Collection<String> tableNames,
+                                                                                            final GenericSchemaBuilderMaterial material, final boolean checkMetaDataEnable) {
         Map<String, Collection<String>> dataSourceTableGroups = new LinkedHashMap<>();
-        DataNodes dataNodes = new DataNodes(materials.getRules());
+        Collection<DatabaseType> notSupportThreeTierStructureStorageTypes = getNotSupportThreeTierStructureStorageTypes(material.getStorageTypes().values());
+        DataNodes dataNodes = new DataNodes(material.getRules());
         for (String each : tableNames) {
-            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(materials.getStorageType(), dataNodes, each);
+            checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(notSupportThreeTierStructureStorageTypes, dataNodes, each);
             if (checkMetaDataEnable) {
-                addAllActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
+                addAllActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             } else {
-                addOneActualTableDataNode(materials, dataSourceTableGroups, dataNodes, each);
+                addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return dataSourceTableGroups.entrySet().stream().map(entry -> new SchemaMetaDataLoaderMaterials(entry.getValue(),
-                materials.getDataSourceMap().get(entry.getKey().contains(".") ? entry.getKey().split("\\.")[0] : entry.getKey()), materials.getDefaultSchemaName())).collect(Collectors.toList());
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new SchemaMetaDataLoaderMaterial(entry.getValue(),
+                getDataSource(material, entry.getKey()), material.getStorageTypes().get(entry.getKey()), material.getDefaultSchemaName())).collect(Collectors.toList());
     }
     
-    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final DatabaseType databaseType, final DataNodes dataNodes, final String tableName) {
+    private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
+        return material.getDataSourceMap().get(dataSourceName.contains(".") ? dataSourceName.split("\\.")[0] : dataSourceName);
+    }
+    
+    private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes, final DataNodes dataNodes,
+                                                                                 final String tableName) {
         for (DataNode dataNode : dataNodes.getDataNodes(tableName)) {
-            ShardingSpherePreconditions.checkState(null == databaseType.getType() || "MySQL".equals(databaseType.getType()) || !dataNode.getDataSourceName().contains("."),
-                    () -> new UnsupportedActualDataNodeStructureException(dataNode, databaseType.getJdbcUrlPrefixes()));
+            ShardingSpherePreconditions.checkState(notSupportThreeTierStructureStorageTypes.isEmpty() || !dataNode.getDataSourceName().contains("."),
+                    () -> new UnsupportedActualDataNodeStructureException(dataNode, notSupportThreeTierStructureStorageTypes.iterator().next().getJdbcUrlPrefixes()));
             if (dataNode.getDataSourceName().contains(".")) {
                 String database = dataNode.getDataSourceName().split("\\.")[1];
                 GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().put(dataNode.getTableName(), database);
@@ -76,27 +83,37 @@ public class SchemaMetaDataUtil {
         }
     }
     
-    private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterials materials,
+    private static Collection<DatabaseType> getNotSupportThreeTierStructureStorageTypes(final Collection<DatabaseType> storageTypes) {
+        Collection<DatabaseType> result = new LinkedList<>();
+        for (DatabaseType each : storageTypes) {
+            if (!"MySQL".equals(each.getType())) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
-        Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(materials, each)).findFirst();
-        String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> materials.getDataSourceMap().keySet().iterator().next());
+        Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(material, each)).findFirst();
+        String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getDataSourceMap().keySet().iterator().next());
         String tableName = dataNode.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
     }
     
-    private static boolean isSameDataSourceNameSchemaName(final GenericSchemaBuilderMaterials materials, final DataNode dataNode) {
+    private static boolean isSameDataSourceNameSchemaName(final GenericSchemaBuilderMaterial material, final DataNode dataNode) {
         String dataSourceName = dataNode.getDataSourceName().contains(".") ? dataNode.getDataSourceName().split("\\.")[0] : dataNode.getDataSourceName();
-        if (!materials.getDataSourceMap().containsKey(dataSourceName)) {
+        if (!material.getDataSourceMap().containsKey(dataSourceName)) {
             return false;
         }
-        return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(materials.getDefaultSchemaName());
+        return null == dataNode.getSchemaName() || dataNode.getSchemaName().equalsIgnoreCase(material.getDefaultSchemaName());
     }
     
-    private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterials materials,
+    private static void addAllActualTableDataNode(final GenericSchemaBuilderMaterial material,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(table);
         if (tableDataNodes.isEmpty()) {
-            addDataSourceTableGroups(materials.getDataSourceMap().keySet().iterator().next(), table, dataSourceTableGroups);
+            addDataSourceTableGroups(material.getDataSourceMap().keySet().iterator().next(), table, dataSourceTableGroups);
         } else {
             tableDataNodes.forEach(each -> addDataSourceTableGroups(each.getDataSourceName(), each.getTableName(), dataSourceTableGroups));
         }

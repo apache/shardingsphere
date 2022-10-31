@@ -19,6 +19,9 @@ namespace
    ├     ├     ├     ├     ├──tables          # Table configuration
    ├     ├     ├     ├     ├     ├──${tableName} 
    ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # View configuration
+   ├     ├     ├     ├     ├     ├──${viewName} 
+   ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # Metadata version list      
    ├     ├     ├     ├──${versionNumber}      # Metadata version
@@ -55,15 +58,14 @@ namespace
 
 ### /rules
 
-global rule configurations, including configure the username and password for ShardingSphere-Proxy.
+Global rule configuration, which can include transaction configuration, SQL parser configuration, etc.
 
 ```yaml
-- !AUTHORITY
-users:
-  - root@%:root
-  - sharding@127.0.0.1:sharding
-provider:
-  type: ALL_PERMITTED
+- !TRANSACTION
+  defaultType: XA
+  providerType: Atomikos
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 ### /props
