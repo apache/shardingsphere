@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
@@ -74,24 +75,9 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         addTasksRunner(shardingItem, tasksRunner);
     }
     
-    private void prepare(final MigrationJobItemContext jobItemContext) {
-        try {
-            long startTimeMillis = System.currentTimeMillis();
-            jobPreparer.prepare(jobItemContext);
-            log.info("prepare cost {} ms", System.currentTimeMillis() - startTimeMillis);
-            // CHECKSTYLE:OFF
-        } catch (final SQLException | RuntimeException ex) {
-            // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", getJobId(), jobItemContext.getShardingItem(), ex);
-            jobAPI.stop(jobItemContext.getJobId());
-            jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
-            jobAPI.persistJobItemProgress(jobItemContext);
-            jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
-            if (ex instanceof RuntimeException) {
-                throw (RuntimeException) ex;
-            }
-            throw new RuntimeException(ex);
-        }
+    @Override
+    protected void doPrepare(final PipelineJobItemContext jobItemContext) throws SQLException {
+        jobPreparer.prepare((MigrationJobItemContext) jobItemContext);
     }
     
     @Override

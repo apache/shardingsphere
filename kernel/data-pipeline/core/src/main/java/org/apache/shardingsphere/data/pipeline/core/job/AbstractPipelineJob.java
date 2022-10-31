@@ -21,8 +21,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -59,6 +63,30 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         new Thread(runnable).start();
     }
     
+    protected void prepare(final PipelineJobItemContext jobItemContext) {
+        try {
+            long startTimeMillis = System.currentTimeMillis();
+            doPrepare(jobItemContext);
+            log.info("prepare cost {} ms", System.currentTimeMillis() - startTimeMillis);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            String jobId = jobItemContext.getJobId();
+            log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
+            PipelineJobAPI jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
+            jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
+            jobAPI.persistJobItemProgress(jobItemContext);
+            jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+            jobAPI.stop(jobId);
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException) ex;
+            }
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws Exception;
+    
     @Override
     public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
         return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
@@ -91,8 +119,8 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerStop() {
         setStopping(true);
-        if (null != getJobBootstrap()) {
-            getJobBootstrap().shutdown();
+        if (null != jobBootstrap) {
+            jobBootstrap.shutdown();
         }
         log.info("stop tasks runner, jobId={}", getJobId());
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
