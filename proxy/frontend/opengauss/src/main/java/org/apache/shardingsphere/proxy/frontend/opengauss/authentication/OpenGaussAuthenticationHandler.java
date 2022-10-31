@@ -81,6 +81,18 @@ public final class OpenGaussAuthenticationHandler {
         return bytesToHexString(result);
     }
     
+    private static String bytesToHexString(final byte[] src) {
+        StringBuilder result = new StringBuilder();
+        for (byte each : src) {
+            String hex = Integer.toHexString(each & 255);
+            if (hex.length() < 2) {
+                result.append(0);
+            }
+            result.append(hex);
+        }
+        return result.toString();
+    }
+    
     /**
      * Login with SCRAM SHA-256 password.
      *
@@ -165,18 +177,6 @@ public final class OpenGaussAuthenticationHandler {
             result[i] = (byte) (charToByte(hexChars[pos]) << 4 | charToByte(hexChars[pos + 1]));
         }
         return result;
-    }
-    
-    private static String bytesToHexString(byte[] src) {
-        StringBuilder result = new StringBuilder();
-        for (byte each : src) {
-            String hex = Integer.toHexString(each & 255);
-            if (hex.length() < 2) {
-                result.append(0);
-            }
-            result.append(hex);
-        }
-        return result.toString();
     }
     
     private static byte charToByte(final char c) {
