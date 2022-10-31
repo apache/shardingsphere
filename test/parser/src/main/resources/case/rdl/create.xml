@@ -112,7 +112,7 @@
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -130,7 +130,7 @@
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_item_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -150,7 +150,7 @@
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-enum-inline-expression">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${['abc','ac']}.t_order_${0..1}</data-source>
+            <data-node>ms_group_${['abc','ac']}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -168,7 +168,7 @@
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}.t_order_item_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_item_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -188,7 +188,7 @@
 
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-source>
+            <data-node>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -206,7 +206,7 @@
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
         <rule name="t_order_item" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}.t_order_item_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_item_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -226,7 +226,7 @@
     
     <create-sharding-table-rule sql-case-id="create-sharding-table-rule-with-auto-create-algorithm">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}.t_order_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>

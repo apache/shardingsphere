@@ -90,7 +90,7 @@
 
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -111,7 +111,7 @@
 
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-source>
+            <data-node>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
