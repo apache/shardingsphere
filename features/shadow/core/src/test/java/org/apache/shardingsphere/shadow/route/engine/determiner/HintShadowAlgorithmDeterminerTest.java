@@ -69,6 +69,6 @@ public final class HintShadowAlgorithmDeterminerTest {
     }
     
     private ShadowDetermineCondition createShadowDetermineCondition() {
-        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT).initSQLComments(Collections.singleton("/*foo:foo_value*/"));
+        return new ShadowDetermineCondition("t_order", ShadowOperationType.INSERT).initSQLComments(Collections.singleton("/* SHARDINGSPHERE_HINT: SHADOW=true */"));
     }
 }
