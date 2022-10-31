@@ -45,8 +45,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public abstract class AbstractPipelineJob implements PipelineJob {
     
-    @Setter
     private volatile String jobId;
+    
+    @Getter(value = AccessLevel.PROTECTED)
+    private volatile PipelineJobAPI jobAPI;
     
     @Setter
     private volatile boolean stopping;
@@ -58,6 +60,11 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     private final PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance();
+    
+    protected void setJobId(final String jobId) {
+        this.jobId = jobId;
+        jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
+    }
     
     protected void runInBackground(final Runnable runnable) {
         new Thread(runnable).start();
@@ -73,7 +80,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             // CHECKSTYLE:ON
             String jobId = jobItemContext.getJobId();
             log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
-            PipelineJobAPI jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
             jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
             jobAPI.persistJobItemProgress(jobItemContext);
             jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
