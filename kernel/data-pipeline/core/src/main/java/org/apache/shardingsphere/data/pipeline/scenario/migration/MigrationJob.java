@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
@@ -95,24 +94,8 @@ public final class MigrationJob extends AbstractPipelineJob implements SimpleJob
         }
     }
     
-    /**
-     * Stop job.
-     */
-    public void stop() {
-        setStopping(true);
+    @Override
+    public void doClean() {
         dataSourceManager.close();
-        if (null != getJobBootstrap()) {
-            getJobBootstrap().shutdown();
-        }
-        String jobId = getJobId();
-        if (null == jobId) {
-            log.info("stop, jobId is null, ignore");
-            return;
-        }
-        log.info("stop tasks runner, jobId={}", jobId);
-        for (PipelineTasksRunner each : getTasksRunners()) {
-            each.stop();
-        }
-        clearTasksRunner();
     }
 }

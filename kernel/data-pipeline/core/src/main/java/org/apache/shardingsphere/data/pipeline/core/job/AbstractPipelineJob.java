@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
@@ -37,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Abstract pipeline job.
  */
 @Getter
+@Slf4j
 public abstract class AbstractPipelineJob implements PipelineJob {
     
     @Setter
@@ -77,12 +79,31 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return tasksRunnerMap.containsKey(shardingItem);
     }
     
-    protected void clearTasksRunner() {
-        tasksRunnerMap.clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
+    @Override
+    public void stop() {
+        try {
+            innerStop();
+        } finally {
+            innerClean();
+            doClean();
+        }
     }
     
-    protected Collection<PipelineTasksRunner> getTasksRunners() {
-        return tasksRunnerMap.values();
+    private void innerStop() {
+        setStopping(true);
+        if (null != getJobBootstrap()) {
+            getJobBootstrap().shutdown();
+        }
+        log.info("stop tasks runner, jobId={}", getJobId());
+        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+            each.stop();
+        }
     }
+    
+    private void innerClean() {
+        tasksRunnerMap.clear();
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
+    }
+    
+    protected abstract void doClean();
 }

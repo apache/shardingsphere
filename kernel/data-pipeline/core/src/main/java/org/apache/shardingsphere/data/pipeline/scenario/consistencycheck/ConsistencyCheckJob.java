@@ -20,8 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -31,7 +29,7 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
  * Consistency check job.
  */
 @Slf4j
-public final class ConsistencyCheckJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
+public final class ConsistencyCheckJob extends AbstractPipelineJob implements SimpleJob {
     
     private final ConsistencyCheckJobAPI jobAPI = ConsistencyCheckJobAPIFactory.getInstance();
     
@@ -59,18 +57,6 @@ public final class ConsistencyCheckJob extends AbstractPipelineJob implements Si
     }
     
     @Override
-    public void stop() {
-        setStopping(true);
-        if (null != getJobBootstrap()) {
-            getJobBootstrap().shutdown();
-        }
-        if (null == getJobId()) {
-            log.info("stop consistency check job, jobId is null, ignore");
-            return;
-        }
-        for (PipelineTasksRunner each : getTasksRunners()) {
-            each.stop();
-        }
-        clearTasksRunner();
+    protected void doClean() {
     }
 }
