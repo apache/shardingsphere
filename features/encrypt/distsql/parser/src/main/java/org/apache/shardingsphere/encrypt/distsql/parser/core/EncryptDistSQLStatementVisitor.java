@@ -104,7 +104,7 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 algorithmSegments.get(0),
                 null == ctx.assistedQueryColumnDefinition() || 1 == algorithmSegments.size() ? null : algorithmSegments.get(1),
                 null == ctx.fuzzyQueryColumnDefinition() ? null
-                        : Optional.ofNullable(algorithmSegments).filter(algorithm -> algorithm.size() > 2).map(algorithm -> algorithm.get(2)).orElse(algorithmSegments.get(1)));
+                        : Optional.ofNullable(algorithmSegments).filter(algorithm -> algorithm.size() > 2).map(algorithm -> algorithm.get(2)).orElse(null));
         
     }
     
