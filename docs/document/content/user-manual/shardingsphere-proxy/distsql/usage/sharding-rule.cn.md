@@ -3,7 +3,7 @@ title = "数据分片"
 weight = 1
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (

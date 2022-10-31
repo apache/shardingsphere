@@ -56,7 +56,12 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Hint sharding table value.
      */
-    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "", Comparable.class);
+    SHARDING_TABLE_VALUE_KEY("SHARDING_TABLE_VALUE", "", Comparable.class),
+    
+    /**
+     * Whether to use shadow or not.
+     */
+    SHADOW_KEY("SHADOW", String.valueOf(Boolean.FALSE), boolean.class);
     
     private final String key;
     

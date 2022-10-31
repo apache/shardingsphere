@@ -282,7 +282,7 @@ public final class NacosRepositoryTest {
         Event event = new NamingEvent(ephemeralService.getServiceName(), Collections.singletonList(instance));
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(null, event))).when(client).subscribe(anyString(), any(EventListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch(key, settableFuture::set, null);
+        REPOSITORY.watch(key, settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(DataChangedEvent.Type.ADDED));
         assertThat(dataChangedEvent.getKey(), is(key));
@@ -308,7 +308,7 @@ public final class NacosRepositoryTest {
         Event event = new NamingEvent(persistentService.getServiceName(), Collections.singletonList(instance));
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(preInstance, event))).when(client).subscribe(anyString(), any(EventListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch(key, settableFuture::set, null);
+        REPOSITORY.watch(key, settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(DataChangedEvent.Type.UPDATED));
         assertThat(dataChangedEvent.getKey(), is(key));
@@ -325,7 +325,7 @@ public final class NacosRepositoryTest {
         Event event = new NamingEvent(persistentService.getServiceName(), Collections.emptyList());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(preInstance, event))).when(client).subscribe(anyString(), any(EventListener.class));
         SettableFuture<DataChangedEvent> settableFuture = SettableFuture.create();
-        REPOSITORY.watch(key, settableFuture::set, null);
+        REPOSITORY.watch(key, settableFuture::set);
         DataChangedEvent dataChangedEvent = settableFuture.get();
         assertThat(dataChangedEvent.getType(), is(DataChangedEvent.Type.DELETED));
         assertThat(dataChangedEvent.getKey(), is(key));

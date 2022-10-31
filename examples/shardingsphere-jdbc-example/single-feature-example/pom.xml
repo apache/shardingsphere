@@ -36,6 +36,5 @@
         <module>shadow-example</module>
         <module>sharding-example</module>
         <module>transaction-example</module>
-        <module>readwrite-splitting-example</module>
     </modules>
 </project>

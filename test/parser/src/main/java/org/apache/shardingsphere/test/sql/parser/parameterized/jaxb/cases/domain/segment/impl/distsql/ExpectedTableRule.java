@@ -33,8 +33,8 @@ import java.util.List;
 @Setter
 public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "data-source")
-    private List<String> dataSources;
+    @XmlElement(name = "data-node")
+    private List<String> dataNodes;
     
     @XmlElement(name = "table-strategy")
     private ExpectedShardingStrategy tableStrategy;

@@ -3,7 +3,7 @@ title = "Encrypt"
 weight = 3
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (

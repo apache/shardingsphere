@@ -3,7 +3,7 @@ title = "DB Discovery"
 weight = 5
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
