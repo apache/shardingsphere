@@ -19,7 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.db.protocol.opengauss.constant.OpenGaussProtocolVersion;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
@@ -33,6 +35,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
@@ -50,22 +54,25 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     
     private static final int SSL_REQUEST_CODE = 80877103;
     
-    private boolean startupMessageReceived;
+    private static final int PROTOCOL_351_SERVER_ITERATOR = 10000;
     
-    private String clientEncoding;
+    private static final int PROTOCOL_350_SERVER_ITERATOR = 2048;
     
     private final String saltHexString;
     
     private final String nonceHexString;
     
-    private final int serverIteration;
+    private boolean startupMessageReceived;
+    
+    private String clientEncoding;
+    
+    private int serverIteration;
     
     private AuthenticationResult currentAuthResult;
     
     public OpenGaussAuthenticationEngine() {
         saltHexString = generateRandomHexString(64);
         nonceHexString = generateRandomHexString(8);
-        serverIteration = 10000;
     }
     
     private String generateRandomHexString(final int length) {
@@ -101,9 +108,21 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         if (Strings.isNullOrEmpty(user)) {
             throw new EmptyUsernameException();
         }
-        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(saltHexString.getBytes(), nonceHexString.getBytes(), serverIteration));
+        serverIteration = comStartupPacket.getVersion() == OpenGaussProtocolVersion.PROTOCOL_351.getVersion() ? PROTOCOL_351_SERVER_ITERATOR : PROTOCOL_350_SERVER_ITERATOR;
+        String serverSignature = calculateServerSignature(comStartupPacket.getVersion(), user);
+        context.writeAndFlush(new OpenGaussAuthenticationSCRAMSha256Packet(
+                comStartupPacket.getVersion(), saltHexString.getBytes(), nonceHexString.getBytes(), serverSignature.getBytes(), serverIteration));
         currentAuthResult = AuthenticationResultBuilder.continued(user, "", comStartupPacket.getDatabase());
         return currentAuthResult;
+    }
+    
+    private String calculateServerSignature(final int version, final String username) {
+        if (version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
+            return "";
+        }
+        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
+                .flatMap(authorityRule -> authorityRule.findUser(new Grantee(username, "%")))
+                .map(user -> OpenGaussAuthenticationHandler.calculateServerSignature(user.getPassword(), saltHexString, nonceHexString, serverIteration)).orElse("");
     }
     
     private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
