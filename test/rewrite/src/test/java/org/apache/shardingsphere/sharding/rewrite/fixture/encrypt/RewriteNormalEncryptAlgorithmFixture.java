@@ -35,11 +35,17 @@ public final class RewriteNormalEncryptAlgorithmFixture implements EncryptAlgori
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
+        if (null == plainValue) {
+            return null;
+        }
         return "encrypt_" + plainValue;
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
+        if (null == cipherValue) {
+            return null;
+        }
         return cipherValue.replaceAll("encrypt_", "");
     }
     

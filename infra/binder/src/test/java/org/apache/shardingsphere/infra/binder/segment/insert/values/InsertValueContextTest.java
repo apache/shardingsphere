@@ -66,7 +66,7 @@ public final class InsertValueContextTest {
         Object valueFromInsertValueContext = insertValueContext.getLiteralValue(0).get();
         assertThat(valueFromInsertValueContext, is(parameterValue));
     }
-
+    
     @Test
     public void assertGetLiteralValueWhenParameterisNull() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();

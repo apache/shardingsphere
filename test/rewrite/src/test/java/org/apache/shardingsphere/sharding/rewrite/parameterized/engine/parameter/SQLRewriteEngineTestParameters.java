@@ -43,7 +43,7 @@ public final class SQLRewriteEngineTestParameters {
     
     private final List<String> outputSQLs;
     
-    private final List<List<String>> outputGroupedParameters;
+    private final List<List<Object>> outputGroupedParameters;
     
     private final String databaseType;
     
