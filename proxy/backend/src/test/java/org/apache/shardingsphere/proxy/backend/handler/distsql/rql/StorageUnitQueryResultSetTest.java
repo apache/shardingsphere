@@ -105,12 +105,12 @@ public final class StorageUnitQueryResultSetTest {
         StorageUnitQueryResultSet resultSet = new StorageUnitQueryResultSet();
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
         resultSet.init(database, showStorageUnitsStatement);
-        Map<Integer, String> nameMap = new HashMap<>(3,1);
-        nameMap.put(0,"ds_2");
-        nameMap.put(1,"ds_1");
-        nameMap.put(2,"ds_0");
+        Map<Integer, String> nameMap = new HashMap<>(3, 1);
+        nameMap.put(0, "ds_2");
+        nameMap.put(1, "ds_1");
+        nameMap.put(2, "ds_0");
         int index = 0;
-        while (resultSet.next()){
+        while (resultSet.next()) {
             Collection<Object> actual = resultSet.getRowData();
             assertThat(actual.size(), is(12));
             Iterator<Object> rowData = actual.iterator();

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -27,11 +26,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Alter resource statement test case.
  */
 @Getter
-@Setter
-public final class AddResourceStatementTestCase extends SQLParserTestCase {
+public final class AlterStorageUnitStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "data-source")
     private final List<ExpectedDataSource> dataSources = new LinkedList<>();

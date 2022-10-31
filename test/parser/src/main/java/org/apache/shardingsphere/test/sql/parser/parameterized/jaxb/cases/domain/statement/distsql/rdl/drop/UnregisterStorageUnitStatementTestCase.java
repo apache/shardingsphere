@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Alter resource statement test case.
+ * Drop resource statement test case.
  */
 @Getter
-public final class AlterResourceStatementTestCase extends SQLParserTestCase {
+@Setter
+public final class UnregisterStorageUnitStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
     
     @XmlElement(name = "data-source")
-    private final List<ExpectedDataSource> dataSources = new LinkedList<>();
+    private final List<String> dataSources = new LinkedList<>();
+    
+    @XmlElement(name = "ignore-single-tables")
+    private final List<Boolean> ignoreSingleTables = new LinkedList<>();
 }

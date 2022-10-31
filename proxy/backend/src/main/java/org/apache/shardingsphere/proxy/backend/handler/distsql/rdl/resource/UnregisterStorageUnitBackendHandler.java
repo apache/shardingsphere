@@ -49,9 +49,9 @@ import java.util.stream.Collectors;
  * Drop storage unit backend handler.
  */
 @Slf4j
-public final class DropStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
+public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
     
-    public DropStorageUnitBackendHandler(final UnregisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
+    public UnregisterStorageUnitBackendHandler(final UnregisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     

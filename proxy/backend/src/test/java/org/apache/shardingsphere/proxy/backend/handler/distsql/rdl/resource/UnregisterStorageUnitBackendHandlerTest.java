@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestorer {
+public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private UnregisterStorageUnitStatement unregisterStorageUnitStatement;
@@ -79,7 +79,7 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
     
     private ContextManager contextManager;
     
-    private DropStorageUnitBackendHandler dropStorageUnitBackendHandler;
+    private UnregisterStorageUnitBackendHandler unregisterStorageUnitBackendHandler;
     
     @Before
     public void setUp() {
@@ -93,7 +93,7 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        dropStorageUnitBackendHandler = new DropStorageUnitBackendHandler(unregisterStorageUnitStatement, connectionSession);
+        unregisterStorageUnitBackendHandler = new UnregisterStorageUnitBackendHandler(unregisterStorageUnitStatement, connectionSession);
     }
     
     @Test
@@ -103,13 +103,13 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false);
-        assertThat(dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
     }
     
     @Test(expected = MissingRequiredResourcesException.class)
     public void assertStorageUnitNameNotExistedExecute() {
-        dropStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test(expected = ResourceInUsedException.class)
@@ -120,7 +120,7 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        dropStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test(expected = ResourceInUsedException.class)
@@ -133,7 +133,7 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        dropStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        unregisterStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test
@@ -147,14 +147,14 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true);
-        assertThat(dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
     }
     
     @Test
     public void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
-        assertThat(dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
     }
     
@@ -165,6 +165,6 @@ public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestore
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
-        dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement);
+        unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement);
     }
 }
