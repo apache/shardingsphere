@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.DataSourceQueryResultSet;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.resource.StorageUnitQueryResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class UnusedDataSourceQueryResultSetTest {
+public final class StorageUnitQueryResultSetTest {
     
     @Mock
     private ShardingSphereDatabase database;
@@ -101,8 +101,38 @@ public final class UnusedDataSourceQueryResultSetTest {
     }
     
     @Test
-    public void assertGetRowData() {
-        DataSourceQueryResultSet resultSet = new DataSourceQueryResultSet();
+    public void assertAllStorageUnit() {
+        StorageUnitQueryResultSet resultSet = new StorageUnitQueryResultSet();
+        ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), null);
+        resultSet.init(database, showStorageUnitsStatement);
+        Map<Integer, String> nameMap = new HashMap<>(3,1);
+        nameMap.put(0,"ds_2");
+        nameMap.put(1,"ds_1");
+        nameMap.put(2,"ds_0");
+        int index = 0;
+        while (resultSet.next()){
+            Collection<Object> actual = resultSet.getRowData();
+            assertThat(actual.size(), is(12));
+            Iterator<Object> rowData = actual.iterator();
+            assertThat(rowData.next(), is(nameMap.get(index)));
+            assertThat(rowData.next(), is("MySQL"));
+            assertThat(rowData.next(), is("localhost"));
+            assertThat(rowData.next(), is(3307));
+            assertThat(rowData.next(), is(nameMap.get(index)));
+            assertThat(rowData.next(), is(""));
+            assertThat(rowData.next(), is(""));
+            assertThat(rowData.next(), is(""));
+            assertThat(rowData.next(), is("100"));
+            assertThat(rowData.next(), is("10"));
+            assertThat(rowData.next(), is(""));
+            assertThat(rowData.next(), is(""));
+            index++;
+        }
+    }
+    
+    @Test
+    public void assertUnusedStorageUnit() {
+        StorageUnitQueryResultSet resultSet = new StorageUnitQueryResultSet();
         ShowStorageUnitsStatement showStorageUnitsStatement = new ShowStorageUnitsStatement(mock(DatabaseSegment.class), 0);
         resultSet.init(database, showStorageUnitsStatement);
         Collection<Object> actual = resultSet.getRowData();

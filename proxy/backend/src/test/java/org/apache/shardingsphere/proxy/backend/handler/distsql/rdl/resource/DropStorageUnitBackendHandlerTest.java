@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
+public final class DropStorageUnitBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private UnregisterStorageUnitStatement unregisterStorageUnitStatement;
@@ -79,7 +79,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
     
     private ContextManager contextManager;
     
-    private DropResourceBackendHandler dropResourceBackendHandler;
+    private DropStorageUnitBackendHandler dropStorageUnitBackendHandler;
     
     @Before
     public void setUp() {
@@ -93,7 +93,7 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        dropResourceBackendHandler = new DropResourceBackendHandler(unregisterStorageUnitStatement, connectionSession);
+        dropStorageUnitBackendHandler = new DropStorageUnitBackendHandler(unregisterStorageUnitStatement, connectionSession);
     }
     
     @Test
@@ -103,28 +103,28 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false);
-        assertThat(dropResourceBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
     }
     
     @Test(expected = MissingRequiredResourcesException.class)
-    public void assertResourceNameNotExistedExecute() {
-        dropResourceBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+    public void assertStorageUnitNameNotExistedExecute() {
+        dropStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test(expected = ResourceInUsedException.class)
-    public void assertResourceNameInUseExecute() {
+    public void assertStorageUnitNameInUseExecute() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        dropResourceBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        dropStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test(expected = ResourceInUsedException.class)
-    public void assertResourceNameInUseWithoutIgnoreSingleTables() {
+    public void assertStorageUnitNameInUseWithoutIgnoreSingleTables() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
@@ -133,11 +133,11 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("foo_ds", dataSource));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
-        dropResourceBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
+        dropStorageUnitBackendHandler.execute("test", new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false));
     }
     
     @Test
-    public void assertResourceNameInUseIgnoreSingleTables() throws SQLException {
+    public void assertStorageUnitNameInUseIgnoreSingleTables() throws SQLException {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(singleTableRule));
         when(singleTableRule.getType()).thenReturn("SingleTableRule");
         DataNode dataNode = mock(DataNode.class);
@@ -147,24 +147,24 @@ public final class DropResourceBackendHandlerTest extends ProxyContextRestorer {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true);
-        assertThat(dropResourceBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
     }
     
     @Test
     public void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
-        assertThat(dropResourceBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
+        assertThat(dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
         verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
     }
     
     @Test(expected = DistSQLException.class)
-    public void assertResourceNameInUseWithIfExists() {
+    public void assertStorageUnitNameInUseWithIfExists() {
         when(ruleMetaData.getRules()).thenReturn(Collections.singleton(shadowRule));
         when(shadowRule.getType()).thenReturn("ShadowRule");
         when(shadowRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("", Collections.singleton("foo_ds")));
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
-        dropResourceBackendHandler.execute("test", unregisterStorageUnitStatement);
+        dropStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement);
     }
 }

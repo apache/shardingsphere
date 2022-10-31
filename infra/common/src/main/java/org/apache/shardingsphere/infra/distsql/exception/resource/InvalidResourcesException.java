@@ -29,6 +29,6 @@ public final class InvalidResourcesException extends ResourceDefinitionViolation
     private static final long serialVersionUID = 7029641448948791509L;
     
     public InvalidResourcesException(final Collection<String> errorMessages) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid resources, error message is: %s", errorMessages);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 0, "Can not process invalid storage units, error message is: %s", errorMessages);
     }
 }

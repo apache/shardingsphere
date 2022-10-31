@@ -42,16 +42,16 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * Add resource backend handler.
+ * Register storage unit backend handler.
  */
 @Slf4j
-public final class AddResourceBackendHandler extends DatabaseRequiredBackendHandler<RegisterStorageUnitStatement> {
+public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<RegisterStorageUnitStatement> {
     
     private final DatabaseType databaseType;
     
     private final DataSourcePropertiesValidator validator;
     
-    public AddResourceBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
+    public RegisterStorageUnitBackendHandler(final RegisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
         validator = new DataSourcePropertiesValidator();
