@@ -97,7 +97,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
             assertThat(each.getSql(), is(testParameters.getOutputSQLs().get(count)));
             assertThat(each.getParameters().size(), is(testParameters.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
-                assertThat(each.getParameters().get(i).toString(), is(testParameters.getOutputGroupedParameters().get(count).get(i)));
+                assertThat(each.getParameters().get(i), is(testParameters.getOutputGroupedParameters().get(count).get(i)));
             }
             count++;
         }

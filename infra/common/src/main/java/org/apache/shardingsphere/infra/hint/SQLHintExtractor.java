@@ -46,7 +46,8 @@ public final class SQLHintExtractor {
     
     public SQLHintExtractor(final String sqlComment) {
         sqlHintProperties = Strings.isNullOrEmpty(sqlComment)
-                ? DEFAULT_SQL_HINT_PROPERTIES : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
+                ? DEFAULT_SQL_HINT_PROPERTIES
+                : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {
