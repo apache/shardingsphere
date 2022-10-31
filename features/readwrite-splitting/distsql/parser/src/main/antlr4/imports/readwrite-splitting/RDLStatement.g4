@@ -55,22 +55,6 @@ readStorageUnitsNames
     : storageUnitName (COMMA storageUnitName)*
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=(NUMBER | INT | STRING)
-    ;
-
 ifExists
     : IF EXISTS
     ;
