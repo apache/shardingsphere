@@ -56,7 +56,6 @@ on:
       - 'test/integration-test/env/**'
       - 'test/integration-test/scaling/**'
       - '!*.md'
-      - 'pom.xml'
   schedule:
     - cron: '0 22 */1 * *'  # once a day. UTC time
 
