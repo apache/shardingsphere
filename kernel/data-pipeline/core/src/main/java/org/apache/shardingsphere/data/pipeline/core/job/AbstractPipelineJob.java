@@ -66,10 +66,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
     }
     
-    protected void runInBackground(final Runnable runnable) {
-        new Thread(runnable).start();
-    }
-    
     protected void prepare(final PipelineJobItemContext jobItemContext) {
         try {
             long startTimeMillis = System.currentTimeMillis();
@@ -103,14 +99,14 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return new ArrayList<>(tasksRunnerMap.keySet());
     }
     
-    protected void addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
-        tasksRunnerMap.put(shardingItem, tasksRunner);
+    protected boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
+        if (null != tasksRunnerMap.putIfAbsent(shardingItem, tasksRunner)) {
+            log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
+            return false;
+        }
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
         distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
-    }
-    
-    protected boolean containsTasksRunner(final int shardingItem) {
-        return tasksRunnerMap.containsKey(shardingItem);
+        return true;
     }
     
     @Override

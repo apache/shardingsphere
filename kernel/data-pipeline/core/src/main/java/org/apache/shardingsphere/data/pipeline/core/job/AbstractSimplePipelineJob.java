@@ -35,25 +35,22 @@ public abstract class AbstractSimplePipelineJob extends AbstractPipelineJob impl
     
     @Override
     public void execute(final ShardingContext shardingContext) {
+        String jobId = shardingContext.getJobName();
         int shardingItem = shardingContext.getShardingItem();
-        log.info("Execute job {}-{}", shardingContext.getJobName(), shardingItem);
+        log.info("Execute job {}-{}", jobId, shardingItem);
         if (isStopping()) {
             log.info("stopping true, ignore");
             return;
         }
-        setJobId(shardingContext.getJobName());
+        setJobId(jobId);
         PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(shardingContext);
-        if (containsTasksRunner(shardingItem)) {
-            log.warn("tasksRunnerMap contains shardingItem {}, ignore", shardingItem);
+        PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
+        if (!addTasksRunner(shardingItem, tasksRunner)) {
             return;
         }
-        PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
-        getJobAPI().cleanJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-        runInBackground(() -> {
-            prepare(jobItemContext);
-            tasksRunner.start();
-            log.info("start tasks runner, jobId={}, shardingItem={}", getJobId(), shardingItem);
-        });
-        addTasksRunner(shardingItem, tasksRunner);
+        getJobAPI().cleanJobItemErrorMessage(jobId, jobItemContext.getShardingItem());
+        prepare(jobItemContext);
+        log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
+        tasksRunner.start();
     }
 }
