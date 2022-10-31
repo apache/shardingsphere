@@ -3,9 +3,11 @@ title = "Readwrite-splitting"
 weight = 2
 +++
 
-## Configuration Item Explanation
+## Background
+Spring namespace read/write splitting configuration method is suitable for conventional Spring projects, determine sharding rules and properties through namespace XML configuration files, and let Spring do the creation and management of ShardingSphereDataSource objects, avoiding additional coding work.
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.2.xsd)
+## Parameters Explained
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.2.0.xsd)
 
 \<readwrite-splitting:rule />
 
@@ -50,5 +52,29 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | type      | Attribute  | Load balance algorithm type       |
 | props (?) | Tag        | Load balance algorithm properties |
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
-Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about query consistent routing.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-config/builtin-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
+
+## Operating Procedures
+1. Add read/write splitting data source.
+2. Set the load balancing algorithm.
+3. Using read/write splitting data sources.
+
+## Configuration Example
+```xml
+<readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    
+<readwrite-splitting:rule id="readWriteSplittingRule">
+    <readwrite-splitting:data-source-rule id="demo_ds" load-balance-algorithm-ref="randomStrategy">
+        <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="demo_write_ds" read-data-source-names="demo_read_ds_0, demo_read_ds_1"/>
+    </readwrite-splitting:data-source-rule>
+</readwrite-splitting:rule>
+
+<shardingsphere:data-source id="readWriteSplittingDataSource" data-source-names="demo_write_ds, demo_read_ds_0, demo_read_ds_1" rule-refs="readWriteSplittingRule" />
+```
+
+## Related References
+- [Read-write splitting-Core features](/en/features/readwrite-splitting/)
+- [Java API: read-write splitting](/en/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
+- [YAML Configuration: read-write splitting](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
+- [Spring Boot Starter: read-write splitting](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)

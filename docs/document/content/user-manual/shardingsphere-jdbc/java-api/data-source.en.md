@@ -4,31 +4,51 @@ weight = 2
 chapter = true
 +++
 
-ShardingSphere-JDBC Supports all JDBC drivers and database connection pools.
+## Background
 
-## Example
+ShardingSphere-JDBC supports all database JDBC drivers and connection pools.
 
-In this example, the database driver is MySQL, and connection pool is HikariCP, which can be replaced with other database drivers and connection pools. When using ShardingSphere JDBC, the property name of the JDBC pool depends on the definition of the respective JDBC pool, and is not defined by ShardingSphere. For related processing, please refer to the class `org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`.
+This section describes how to configure data sources through the `JAVA API`.
+
+## Procedure
+
+### 1. Import Maven dependency.
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+> Notice: Please change `${latest.release.version}` to the actual version.
+
+## Sample
 
 ```java
-Map<String, DataSource> dataSourceMap = new HashMap<>();
+ModeConfiguration modeConfig = // Build running mode
+Map<String, DataSource> dataSourceMap = createDataSources();
+Collection<RuleConfiguration> ruleConfigs = ... // Build specific rules
+Properties props = ... // Build attribute configuration
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
-// Configure the 1st data source
-HikariDataSource dataSource1 = new HikariDataSource();
-dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds_1");
-dataSource1.setUsername("root");
-dataSource1.setPassword("");
-dataSourceMap.put("ds_1", dataSource1);
-
-// Configure the 2nd data source
-HikariDataSource dataSource2 = new HikariDataSource();
-dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource2.setJdbcUrl("jdbc:mysql://localhost:3306/ds_2");
-dataSource2.setUsername("root");
-dataSource2.setPassword("");
-dataSourceMap.put("ds_2", dataSource2);
-
-// Configure other data sources
-...
+private Map<String, DataSource> createDataSources() {
+    Map<String, DataSource> dataSourceMap = new HashMap<>();
+    // Configure the 1st data source
+    HikariDataSource dataSource1 = new HikariDataSource();
+    dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds_1");
+    dataSource1.setUsername("root");
+    dataSource1.setPassword("");
+    dataSourceMap.put("ds_1", dataSource1);
+    
+    // Configure the 2nd data source
+    HikariDataSource dataSource2 = new HikariDataSource();
+    dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource2.setJdbcUrl("jdbc:mysql://localhost:3306/ds_2");
+    dataSource2.setUsername("root");
+    dataSource2.setPassword("");
+    dataSourceMap.put("ds_2", dataSource2);
+}
 ```

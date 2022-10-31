@@ -93,7 +93,7 @@
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <version>1.4.2</version>
+            <version>1.5.2</version>
         </dependency>
     </#if>
     <#if framework?contains("jpa")>
@@ -186,14 +186,12 @@
         </dependency>
     </#if>
         
-    <#if feature=="encrypt">
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
-    </#if>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
@@ -216,6 +214,33 @@
             <version>1.2.10</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>example-generator</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <#assign package = feature?replace('-', '')?replace(',', '.') />
+                                    <mainClass>org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.ExampleMain</mainClass>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     
     <build>
         <plugins>

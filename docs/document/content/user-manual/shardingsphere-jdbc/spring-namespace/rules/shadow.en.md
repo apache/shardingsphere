@@ -31,8 +31,8 @@ Therefore, enterprises usually select the full link voltage test method, i.e. a 
 |  *Name*  |  *Type*  | *Description*  |
 | ------- | -------- | ------- |
 | id | Attribute | Spring Bean Id |
-| source-data-source-name | Attribute | Production data source name |
-| shadow-data-source-name | Attribute | Shadow data source name |
+| production-data-source-name | Attribute | Production data source name |
+| shadow-data-source-name     | Attribute | Shadow data source name     |
 
 ###  Shadow table configuration:
 ```xml
@@ -63,7 +63,7 @@ Therefore, enterprises usually select the full link voltage test method, i.e. a 
 | id | Attribute | Shadow algorithm name |
 | type | Attribute | Shadow algorithm type |
 | props (?) | Tag | Shadow algorithm attribute configuration |
-Refer to [Builin Shadow Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow/) for details
+Refer to [Builin Shadow Algorithm](/en/user-manual/common-config/builtin-algorithm/shadow/) for details
 
 ## Procedure
 1. Create production and shadow data sources.
@@ -88,7 +88,7 @@ Refer to [Builin Shadow Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-a
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
+        <shadow:data-source id="shadow-data-source" production-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
         </shadow:shadow-table>

@@ -146,6 +146,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/20503072?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/strongduanmu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -156,6 +161,9 @@ chapter = true
         </td>
         <td>
             <b>Weijie Wu</b>
+        </td>
+        <td>
+            <b>Zhengqiang Duan</b>
         </td>
     </tr>
 </table>
@@ -250,13 +258,13 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/strongduanmu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/Technoboy-" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
         <td>
-            <a href="https://github.com/Technoboy-" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/Lucas-307" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
     </tr>
@@ -277,18 +285,13 @@ chapter = true
             <b>Jingshang Lu</b>
         </td>
         <td>
-            <b>Zhengqiang Duan</b>
+            <b>Jiwei Guo</b>
         </td>
         <td>
-            <b>Jiwei Guo</b>
+            <b>Lu Qiu</b>
         </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/Lucas-307" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/sandynz" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
@@ -319,11 +322,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/LeeGuoPing" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Lu Qiu</b>
-        </td>
         <td>
             <b>Hongsheng Zhong</b>
         </td>
@@ -342,13 +347,11 @@ chapter = true
         <td>
             <b>Guocheng Tang</b>
         </td>
+        <td>
+            <b>Guoping Li</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/LeeGuoPing" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/zjcnb" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
@@ -379,11 +382,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/mabaiwan" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>Guoping Li</b>
-        </td>
         <td>
             <b>Jinchao Zhao</b>
         </td>
@@ -402,6 +407,53 @@ chapter = true
         <td>
             <b>Qunxing Lei</b>
         </td>
+        <td>
+            <b>Chen Ma</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/JiekerTime" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/Swastyy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yy2so" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/natehuangting" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+       <td>
+            <a href="https://github.com/taojintianxia" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>Junjie Zhang</b>        
+        </td>
+        <td>
+            <b>Swastika Gupta</b>
+        </td>
+        <td>
+            <b>Yacine Si Tayeb</b>
+        </td>
+        <td>
+            <b>Ting Huang</b>
+        </td>
+        <td>
+            <b>Nianjun Sun</b>
+        </td>
     </tr>
 </table>
 
@@ -417,7 +469,7 @@ You can find all of the ShardingSphere contributors directly in GitHub's contrib
 The ShardingSphere community follows the [Apache Community’s process](http://community.apache.org/newcommitter.html) on accepting a new committer.
 Contributors that actively participate in ShardingSphere's community will be invited by the project's (P)PMC and Committers to join them by becoming a committer.
 
-You can read the [Contributor Guide](/en/contribute/contributor/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/contribute/committer/) for more details on how to become a committer.
+You can read the [Contributor Guide](/en/involved/contribute/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/involved/committer/) for more details on how to become a committer.
 
 ### How Can I Become a Contributor
 

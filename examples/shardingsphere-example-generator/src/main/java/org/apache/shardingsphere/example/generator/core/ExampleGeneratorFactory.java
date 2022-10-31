@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.example.generator.core;
 
+import com.google.common.collect.Lists;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfiguration;
 import org.apache.shardingsphere.example.generator.core.yaml.config.YamlExampleConfigurationValidator;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 
 /**
  * Example generator factory.
@@ -63,11 +66,43 @@ public final class ExampleGeneratorFactory {
      * @throws IOException IO exception
      */
     public void generate() throws TemplateException, IOException {
-        YamlExampleConfiguration exampleConfig = swapConfigToObject();
+        YamlExampleConfiguration exampleConfig = buildExampleConfiguration();
         YamlExampleConfigurationValidator.validate(exampleConfig);
         for (String each : exampleConfig.getProducts()) {
             TypedSPIRegistry.getRegisteredService(ExampleGenerator.class, each).generate(templateConfig, exampleConfig);
         }
+    }
+    
+    private YamlExampleConfiguration buildExampleConfiguration() {
+        YamlExampleConfiguration result = swapConfigToObject();
+        Properties props = new Properties();
+        for (String each : System.getProperties().stringPropertyNames()) {
+            props.setProperty(each, System.getProperty(each));
+        }
+        if (!props.isEmpty()) {
+            if (props.containsKey("products")) {
+                result.setProducts(getSysEnvByKey(props, "products"));
+            }
+            if (props.containsKey("modes")) {
+                result.setModes(getSysEnvByKey(props, "modes"));
+            }
+    
+            if (props.containsKey("transactions")) {
+                result.setTransactions(getSysEnvByKey(props, "transactions"));
+            }
+            if (props.containsKey("features")) {
+                result.setFeatures(getSysEnvByKey(props, "features"));
+            }
+    
+            if (props.containsKey("frameworks")) {
+                result.setFrameworks(getSysEnvByKey(props, "frameworks"));
+            }
+        }
+        return result;
+    }
+    
+    private List<String> getSysEnvByKey(final Properties props, final String key) {
+        return Lists.newArrayList(props.getProperty(key).split(","));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})

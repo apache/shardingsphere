@@ -5,128 +5,196 @@ weight = 1
 chapter = true
 +++
 
-[![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg?style=social&label=Release)](https://github.com/apache/shardingsphere/releases)&nbsp;
-[![GitHub stars](https://img.shields.io/github/stars/apache/shardingsphere.svg?style=social&label=Star)](https://github.com/apache/shardingsphere/stargazers)&nbsp;
-[![GitHub forks](https://img.shields.io/github/forks/apache/shardingsphere.svg?style=social&label=Fork)](https://github.com/apache/shardingsphere/fork)&nbsp;
-[![GitHub watchers](https://img.shields.io/github/watchers/apache/shardingsphere.svg?style=social&label=Watch)](https://github.com/apache/shardingsphere/watchers)
+## What is ShardingSphere
 
-**Stargazers Over Time**
+### Introduction
 
-[![Stargazers Over Time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere)
+Apache ShardingSphere is an ecosystem to transform any database into a distributed database system,
+and enhance it with sharding, elastic scaling, encryption features & more.
 
-**Contributors Over Time**
+The project is committed to providing a multi-source heterogeneous, enhanced database platform and further building an ecosystem around the upper layer of the platform.
+Database Plus, the design philosophy of Apache ShardingSphere, aims at building the standard and ecosystem on the upper layer of the heterogeneous database.
+It focuses on how to make full and reasonable use of the computing and storage capabilities of existing databases rather than creating a brand new database.
+It attaches greater importance to the collaboration between multiple databases instead of the database itself.
 
-[![Contributors Over Time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere)
-
-Apache ShardingSphere is positioned as a Database Plus, and aims at building a standard layer and ecosystem above heterogeneous databases. 
-It focuses on how to reuse existing databases and their respective upper layer, rather than creating a new database. The goal is to minimize or eliminate the challenges caused by underlying databases fragmentation.
-
-The concepts at the core of the project are Connect, Enhance and Pluggable.
-
-- `Connect:` Flexible adaptation of database protocol, SQL dialect and database storage. It can quickly connect applications and heterogeneous databases quickly.
-- `Enhance:` Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
-- `Pluggable:` Leveraging the micro kernel and 3 layers pluggable mode, features and database ecosystem can be embedded flexibily. Developers can customize their ShardingSphere just like building with LEGO blocks.
-
-ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
-
-Welcome to interact with community via the official [mail list](mailto:dev@shardingsphere.apache.org) and the [ShardingSphere Slack](https://app.slack.com/client/T026JKU2DPF/C026MLH7F34).
-
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![GitHub release](https://img.shields.io/github/release/apache/shardingsphere.svg)](https://github.com/apache/shardingsphere/releases)
-
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
-[![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
-[![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
-
-[![Build Status](https://api.travis-ci.org/apache/shardingsphere.svg?branch=master&status=created)](https://travis-ci.org/apache/shardingsphere)
-[![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
-[![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
-[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
-
-[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
-[![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
-
-![Overview](https://shardingsphere.apache.org/document/current/img/overview.en.png)
-
-## Introduction
-
-Apache ShardingSphere including 3 independent products: JDBC, Proxy & Sidecar (Planning).
-They all provide functions of data scale-out, distributed transaction and distributed governance,
-applicable in a variety of situations such as Java isomorphism, heterogeneous language and Cloud-Native.
-
-As the cornerstone of enterprises, the relational database has a huge market share. Therefore, we prefer to focus on its incrementation instead of a total overturn.
-
-### ShardingSphere-JDBC
+#### ShardingSphere-JDBC
 
 [![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
-ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra services at the Java JDBC layer.
-With the client end connecting directly to the database, it provides services in the form of a jar and requires no extra deployment and dependence.
-It can be considered as an enhanced JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
 
-* Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template or direct use of JDBC;
-* Supports any third-party database connection pool, such as DBCP, C3P0, BoneCP, HikariCP;
-* Support any kind of JDBC standard database: MySQL, PostgreSQL, Oracle, SQLServer and any JDBC adapted databases.
+#### ShardingSphere-Proxy
+
+[![Nightly-Download](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
+[![Download](https://img.shields.io/badge/release-download-orange.svg)](/cn/downloads/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://hub.docker.com/r/apache/shardingsphere-proxy)
+
+ShardingSphere-Proxy is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
+
+### Product Features
+
+| Feature                 | Definition |
+| ----------------------- | ---------- |
+| Data Sharding           | Data sharding is an effective way to deal with massive data storage and computing. ShardingSphere provides a distributed database solution based on the underlying database, which can scale computing and storage horizontally. |
+| Distributed Transaction | Transactional capability is key to ensuring database integrity and security and is also one of the databases' core technologies. With a hybrid engine based on XA and BASE transactions, ShardingSphere provides distributed transaction capabilities on top of standalone databases, enabling data security across underlying data sources. |
+| Read/write Splitting    | Read/write splitting can be used to cope with business access with high stress. ShardingSphere provides flexible read/write splitting capabilities and can achieve read access load balancing based on the understanding of SQL semantics and the ability to perceive the underlying database topology. |
+| High Availability       | High availability is a basic requirement for a data storage and computing platform. Guarantee the HA of your distributed database cluster with ShardingSphere’s Operator on Kubernetes, and the native HA of your existing data sources. |
+| Data Migration          | Data migration is the key to connecting data ecosystems. SharingSphere provides migration capabilities to help users migrate the data from other data sources, while simultaneously performing data sharding. |
+| Query Federation        | Federated queries are effective in utilizing data in a complex data environment. ShardingSphere provides complex data query and analysis capabilities across data sources, simplifying the data aggregation from different data locations. |
+| Data Encryption         | Data Encryption is a basic way to ensure data security. ShardingSphere provides a complete, transparent, secure, and low-cost data encryption solution. |
+| Shadow Database         | In full-link online load testing scenarios, ShardingSphere supports data isolation in complex load testing scenarios through the shadow database function. Execute your load testing scenarios in a production environment without worrying about test data polluting your production data. |
+
+### Advantages
+
+- Ultimate Performance 
+
+Having been polished for years, the driver is close to a native JDBC in terms of efficiency, with ultimate performance.
+
+- Ecosystem Compatibility
+
+The proxy can be accessed by any application using MySQL/PostgreSQL protocol, and the driver can connect to any database that implements JDBC specifications.
+
+- Zero Business Intrusion
+
+In response to database switchover scenarios, ShardingSphere can achieve smooth business migration without business intrusion.
+
+- Low Ops & Maintenance Cost
+
+ShardingSphere offers a flat learning curve to DBAs and is interaction-friendly while allowing the original technology stack to remain unchanged.
+
+- Security & Stability
+
+It can provide enhancement capability based on mature databases while ensuring security and stability.
+
+- Elastic Extention
+
+It supports computing, storage, and smooth online expansion, which can meet diverse business needs.
+
+- Open Ecosystem
+
+It can provide users with flexibility thanks to custom systems based on multi-level (kernel, feature, and ecosystem) plugin capabilities.
+
+## Design Philosophy
+
+ShardingSphere adopts the database plus design philosophy, which is committed to building the standards and ecology of the upper layer of the database and supplementing the missing capabilities of the database in the ecology.
+
+![Design](https://shardingsphere.apache.org/document/current/img/design_en.png)
+
+### Connect: Create database upper level standard
+
+ Through flexible adaptation of database protocols, SQL dialects, and database storage, it can quickly build standards on top of multi-modal heterogeneous databases, while providing standardized connection mode for applications through built-in DistSQL.
+
+### Enhance: Database computing enhancement engine
+
+It can further provide distributed capabilities and traffic enhancement functions based on native database capabilities. The former can break through the bottleneck of the underlying database in computing and storage, while the latter provides more diversified data application enhancement capabilities through traffic deformation, redirection, governance, authentication, and analysis.
+
+### Pluggable: Building database function ecology
+
+![Overview](https://shardingsphere.apache.org/document/current/img/overview_en.png)
+
+The pluggable architecture of Apache ShardingSphere is composed of three layers - L1 Kernel Layer, L2 Feature Layer and L3 Ecosystem Layer.
+
+#### L1 Kernel Layer
+
+An abstraction of databases' basic capabilities.
+All the components are required and the specific implementation method can be replaced thanks to plugins.
+It includes a query optimizer, distributed transaction engine, distributed execution engine, permission engine and scheduling engine.
+
+#### L2 Feature Layer
+
+Used to provide enhancement capabilities.
+All components are optional, allowing you to choose whether to include zero or multiple components.
+Components are isolated from each other, and multiple components can be used together by overlaying.
+It includes data sharding, read/write splitting, database high availability, data encryption and shadow database and so on.
+The user-defined feature can be fully customized and extended for the top-level interface defined by Apache ShardingSphere without changing kernel codes.
+
+#### L3 Ecosystem Layer
+
+It is used to integrate and merge the current database ecosystems.
+The ecosystem layer includes database protocol, SQL parser and storage adapter, corresponding to the way in which Apache ShardingSphere provides services by database protocol, the way in which SQL dialect operates data, and the database type that interacts with storage nodes.
+
+## Deployment
+
+Apache ShardingSphere includes two independent clients: ShardingSphere-JDBC & ShardingSphere-Proxy. They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of scenarios such as Java isomorphism, heterogeneous languages, and a cloud-native environment.
+
+### Using ShardingSphere-JDBC
+
+ShardingSphere-JDBC is a lightweight Java framework that provides additional services at Java's JDBC layer.
+With the client connecting directly to the database, it provides services in the form of jar and requires no extra deployment and dependence.
+It can be considered as an enhanced version of the JDBC driver, which is fully compatible with JDBC and all kinds of ORM frameworks.
+
+- Applicable in any ORM framework based on JDBC, such as JPA, Hibernate, Mybatis, Spring JDBC Template, or direct use of JDBC;
+- Support any third-party database connection pool, such as DBCP, C3P0, BoneCP, HikariCP;
+- Support any kind of JDBC standard database: MySQL, PostgreSQL, Oracle, SQLServer and any JDBC adapted databases.
 
 ![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
 
-### ShardingSphere-Proxy
+|                        | ShardingSphere-JDBC | ShardingSphere-Proxy |
+| ---------------------- | ------------------- | -------------------- |
+| Database               | `Any`               | MySQL/PostgreSQL     |
+| Connections Count Cost | `More`              | Less                 |
+| Heterogeneous language | `Java Only`         | Any                  |
+| Performance            | `Low loss`          | Relatively High loss |
+| Decentralization       | `Yes`               | No                   |
+| Static entry           | `No`                | Yes                  |
 
-[![Nightly-Download](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
-[![Download](https://img.shields.io/badge/release-download-orange.svg)](/en/downloads/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/apache/shardingsphere-proxy.svg)](https://hub.docker.com/r/apache/shardingsphere-proxy)
+### Using ShardingSphere-Proxy
 
-ShardingSphere-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
-Currently, MySQL and PostgreSQL (compatible with PostgreSQL-based databases, such as openGauss) versions are provided.
-It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, etc.) that is compatible of MySQL or PostgreSQL protocol to operate data, which is friendlier to DBAs.
+ShardingSphere-Proxy is a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages.
+Currently, MySQL and PostgreSQL protocols are provided.
+It can use any kind of terminal that is compatible with MySQL or PostgreSQL protocol to operate data, which is more friendly to DBAs.
 
-* Transparent towards applications, it can be used directly as MySQL and PostgreSQL servers;
-* Applicable to any kind of terminal that is compatible with MySQL and PostgreSQL protocol.
+- Transparent to applications, it can be used directly as MySQL/PostgreSQL;
+- Compatible with MySQL-based databases, such as MariaDB, and PostgreSQL-based databases, such as openGauss;
+- Applicable to any kind of client that is compatible with MySQL/PostgreSQL protocol, such as MySQL Command Client, MySQL Workbench, etc.
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
-### ShardingSphere-Sidecar(TODO)
-
-ShardingSphere-Sidecar (TODO) defines itself as a cloud-native database agent of the Kubernetes environment, in charge of all database access in the form of a sidecar.
-It provides a mesh layer interacting with the database, we call this `Database Mesh`.
-
-Database Mesh emphasizes how to connect distributed data-access applications with the databases.
-Focusing on interaction, it effectively organizes the interaction between messy applications and databases.
-The applications and databases that use Database Mesh to visit databases will form a large grid system, where they just need to be put into the right positions accordingly. 
-They are all governed by the mesh layer.
-
-![ShardingSphere-Sidecar Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-sidecar-brief.png)
-
-|                         | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* | *ShardingSphere-Sidecar* |
-| ----------------------- | --------------------- | ---------------------- | ------------------------ |
-| Database                | Any                   | MySQL/PostgreSQL       | MySQL/PostgreSQL         |
-| Connections Count Cost  | High                  | Low                    | High                     |
-| Supported Languages     | Java Only             | Any                    | Any                      |
-| Performance             | Low loss              | Relatively High loss   | Low loss                 |
-| Decentralization        | Yes                   | No                     | No                       |
-| Static Entry            | No                    | Yes                    | No                       |
+|                        | ShardingSphere-JDBC | ShardingSphere-Proxy   |
+| ---------------------- | ------------------- | ---------------------- |
+| Database               | Any                 | `MySQL/PostgreSQL`     |
+| Connections Count Cost | More                | `Less`                 |
+| Heterogeneous language | Java Only           | `Any`                  |
+| Performance            | Low loss            | `Relatively High loss` |
+| Decentralization       | Yes                 | `No`                   |
+| Static entry           | No                  | `Yes`                  |
 
 ### Hybrid Architecture
 
-ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP application developed with Java. 
-ShardingSphere-Proxy provides static entry and all languages support, applicable for OLAP application and the sharding databases management and operation situation.
+ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP applications developed with Java.
+ShardingSphere-Proxy provides static entry and supports all languages, applicable to OLAP applications and the sharding databases management and operation situation.
 
-ShardingSphere is an ecosystem consisting of multiple endpoints together.
-Through a mixed use of ShardingSphere-JDBC and ShardingSphere-Proxy and a unified sharding strategy by the same registry center, ShardingSphere can build an application system that is applicable to all kinds of scenarios. 
-Architects can adjust the system architecture to the most applicable one to their needs to conduct business more freely.
+Apache ShardingSphere is an ecosystem composed of multiple access ports.
+By combining ShardingSphere-JDBC and ShardingSphere-Proxy, and using the same registry to configure sharding strategies, it can flexibly build application systems for various scenarios, allowing architects to freely adjust the system architecture according to the current businesses. 
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
 
-## Solution
+## Running Modes
 
-| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*              | *Stress Testing* |
-| -------------------- | ----------------------- | ---------------------| ------------------------------- | ---------------- |
-|                      | Data Sharding           | Data Encrypt         | Heterogeneous Databases Supported | Shadow Database  |
-|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)    | Observability    |
-|                      | Distributed Transaction | SQL Audit (TODO)     |                                 |                  |
-|                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                 |                  |
-|                      | Highly Available        |                      |                                 |                  |
+Apache ShardingSphere provides two running modes: standalone mode and cluster mode.
+
+### Standalone Mode
+
+It can achieve data persistence in terms of metadata information such as data sources and rules,
+but it is not able to synchronize metadata to multiple Apache ShardingSphere instances or be aware of each other in a cluster environment.
+Updating metadata through one instance causes inconsistencies in other instances because they cannot get the latest metadata.
+
+It is ideal for engineers to build a ShardingSphere environment locally.
+
+### Cluster Mode
+
+It provides metadata sharing between multiple Apache ShardingSphere instances and the capability to coordinate states in distributed scenarios.
+
+It provides the capabilities necessary for distributed systems, such as horizontal scaling of computing capability and high availability.
+Clustered environments need to store metadata and coordinate nodes' status through a separately deployed registry center.
+
+We suggest using cluster mode in production environment.
 
 ## Roadmap
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_en.png)
+
+## Get Involved
+
+ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
+You are welcome to check out the mailing list and discuss via [mail](mailto:dev@shardingsphere.apache.org).

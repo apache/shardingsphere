@@ -247,7 +247,7 @@ If you feel confused, please keep it in mind CONNECTION_STRICTLY is a scenario t
 ### 03 Summary
 Sharding-Sphere has been continuous improvement and development since 2016. A growing number of companies and individuals uses it, and they provide many successful cases for us.  We will move forward to improve current features, achieve soft transaction, data governance and so on in succession. If someone has good ideas or wants to do proposals, welcome to join Sharding-Sphere open source project.
 
-*   https://github.com/sharding-sphere/sharding-sphere/
+*   https://github.com/apache/shardingsphere
     
 *   https://gitee.com/sharding-sphere/sharding-sphere/
     

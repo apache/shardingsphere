@@ -15,8 +15,10 @@
   ~ limitations under the License.
   -->
 
-spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.source-data-source-name=ds-0
+spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.production-data-source-name=ds-0
 spring.shardingsphere.rules.shadow.data-sources.shadow-data-source.shadow-data-source-name=ds-1
+
+spring.shardingsphere.rules.shadow.default-shadow-algorithm-name=simple-hint-algorithm
 
 spring.shardingsphere.rules.shadow.tables.t_order.data-source-names=shadow-data-source
 spring.shardingsphere.rules.shadow.tables.t_order.shadow-algorithm-names=user-id-insert-match-algorithm,user-id-delete-match-algorithm,user-id-select-match-algorithm,simple-hint-algorithm
@@ -41,5 +43,3 @@ spring.shardingsphere.rules.shadow.shadow-algorithms.simple-hint-algorithm.props
 spring.shardingsphere.rules.shadow.shadow-algorithms.simple-hint-algorithm.props.foo=bar
 
 spring.shardingsphere.rules.sql-parser.sql-comment-parse-enabled=true
-
-spring.shardingsphere.props.sql-show=true

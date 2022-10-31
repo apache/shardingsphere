@@ -3,21 +3,18 @@ title = "Core Concept"
 weight = 1
 +++
 
-## Logic Column
+## Logic column
 
-Column name used to encryption, it is the logical column identification in SQL.
-It includes cipher column(required), query assistant column(optional) and plain column(optional).
+It is used to calculate the encryption and decryption columns and it is the logical identifier of the column in SQL. Logical columns contain ciphertext columns (mandatory), query-helper columns (optional), and plaintext columns (optional).
 
-## Cipher Column
+## Cipher column
 
-Encrypted data column.
+Encrypted data columns.
 
-## Query Assistant Column
+## Query assistant column
 
-Column used to assistant for query.
-For non-idempotent encryption algorithms with higher security level, irreversible idempotent columns provided for query.
+It is a helper column used for queries. For some non-idempotent encryption algorithms with higher security levels, irreversible idempotent columns are provided for queries.
 
-## Plain Column
+## Plain column
 
-Column used to persist plain column, for service provided during data encrypting.
-Should remove them after data clean.
+The column is used to store plaintext and provide services during the migration of encrypted data. It can be deleted after the data cleansing is complete.

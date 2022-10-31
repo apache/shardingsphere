@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <describe sql-case-id="explain_select_constant_without_table">
+        <select>
+            <projections start-index="15" stop-index="20">
+                <expression-projection text="1" alias="a" start-index="15" stop-index="20" />
+            </projections>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_update_without_condition">
+        <update>
+            <table start-index="15" stop-index="21">
+                <simple-table name="t_order" start-index="15" stop-index="21"/>
+            </table>
+            <set start-index="23" stop-index="45">
+                <assignment start-index="23" stop-index="45">
+                    <column name="status" start-index="27" stop-index="32" />
+                    <assignment-value>
+                        <literal-expression value="finished" start-index="36" stop-index="45" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+
+    <describe sql-case-id="explain_insert_without_parameters">
+        <insert>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <columns start-index="28" stop-index="54">
+                <column name="order_id" start-index="29" stop-index="36" />
+                <column name="user_id" start-index="39" stop-index="45" />
+                <column name="status" start-index="48" stop-index="53" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="0" />
+                        <literal-expression value="1" start-index="64" stop-index="64" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="1" />
+                        <literal-expression value="1" start-index="67" stop-index="67" />
+                    </assignment-value>
+                    <assignment-value>
+                        <parameter-marker-expression parameter-index="2" />
+                        <literal-expression value="insert" start-index="70" stop-index="77" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
+
+    <describe sql-case-id="explain_delete_without_sharding_value">
+        <delete>
+            <table name="t_order" start-index="20" stop-index="26" />
+            <where start-index="28" stop-index="41" literal-stop-index="46">
+                <expr>
+                    <binary-operation-expression start-index="34" stop-index="41" literal-stop-index="46">
+                        <left>
+                            <column name="status" start-index="34" stop-index="39" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="init" start-index="41" stop-index="46" />
+                            <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
+
+    <describe sql-case-id="explain_select_with_binding_tables">
+        <select>
+            <from>
+                <join-table join-type="INNER">
+                    <left>
+                        <simple-table name="t_order" alias="o" start-index="24" stop-index="32" />
+                    </left>
+                    <right>
+                        <simple-table name="t_order_item" alias="i" start-index="39" stop-index="52" />
+                    </right>
+                    <using-columns name="order_id" start-index="60" stop-index="67" />
+                </join-table>
+            </from>
+            <projections start-index="15" stop-index="17">
+                <shorthand-projection start-index="15" stop-index="17">
+                    <owner name="i" start-index="15" stop-index="15" />
+                </shorthand-projection>
+            </projections>
+            <where start-index="70" stop-index="90">
+                <expr>
+                    <binary-operation-expression start-index="76" stop-index="90">
+                        <left>
+                            <column name="order_id" start-index="76" stop-index="85">
+                                <owner name="o" start-index="76" stop-index="76" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="10" start-index="89" stop-index="90" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+
+    <describe sql-case-id="explain_create_table_as_select">
+        <create-table>
+            <table name="t_order_new" start-index="21" stop-index="31" />
+            <select>
+                <from>
+                    <simple-table name="t_order" start-index="186" stop-index="192"/>
+                </from>
+                <projections start-index="179" stop-index="179">
+                    <shorthand-projection start-index="179" stop-index="179"/>
+                </projections>
+            </select>
+        </create-table>
+    </describe>
+
+    <describe sql-case-id="explain_create_table_as_select_with_explicit_column_names">
+        <create-table>
+            <table name="t_order_new" start-index="21" stop-index="31" />
+            <column name="order_id_new" start-index="34" stop-index="45" />
+            <column name="user_id_new" start-index="48" stop-index="58" />
+            <select>
+                <from>
+                    <simple-table name="t_order" start-index="230" stop-index="236"/>
+                </from>
+                <projections start-index="207" stop-index="223">
+                    <column-projection name="order_id" start-index="207" stop-index="214"/>
+                    <column-projection name="user_id" start-index="217" stop-index="223"/>
+                </projections>
+            </select>
+        </create-table>
+    </describe>
+
+    <describe sql-case-id="explain_create_remote_table_as_select">
+        <create-table>
+            <table name="t_order_new" start-index="28" stop-index="38" />
+            <select>
+                <from>
+                    <join-table join-type="INNER">
+                        <left>
+                            <simple-table name="t_order_item" alias="i" start-index="127" stop-index="140" />
+                        </left>
+                        <right>
+                            <simple-table name="t_order" alias="o" start-index="147" stop-index="155" />
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="160" stop-index="182">
+                                <left>
+                                    <column name="order_id" start-index="160" stop-index="169">
+                                        <owner name="i" start-index="160" stop-index="160" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="order_id" start-index="173" stop-index="182">
+                                        <owner name="o" start-index="173" stop-index="173" />
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </from>
+                <projections start-index="118" stop-index="120">
+                    <shorthand-projection start-index="118" stop-index="120">
+                        <owner name="i" start-index="118" stop-index="118" />
+                    </shorthand-projection>
+                </projections>
+            </select>
+        </create-table>
+    </describe>
+    <describe sql-case-id="explain_with_analyze">
+        <select>
+            <projections start-index="23" stop-index="23">
+                <shorthand-projection start-index="23" stop-index="23" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="30" stop-index="36"/>
+            </from>
+            <where start-index="38" stop-index="55">
+                <expr>
+                    <binary-operation-expression start-index="44" stop-index="55">
+                        <left>
+                            <column name="order_id" start-index="44" stop-index="51" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="55" stop-index="55" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    <describe sql-case-id="explain_with_analyze_format">
+        <select>
+            <projections start-index="37" stop-index="37">
+                <shorthand-projection start-index="37" stop-index="37" />
+            </projections>
+            <from>
+                <simple-table name="t_order" start-index="44" stop-index="50"/>
+            </from>
+            <where start-index="52" stop-index="69">
+                <expr>
+                    <binary-operation-expression start-index="58" stop-index="69">
+                        <left>
+                            <column name="order_id" start-index="58" stop-index="65" />
+                        </left>
+                        <operator>></operator>
+                        <right>
+                            <literal-expression value="8" start-index="69" stop-index="69" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </select>
+    </describe>
+    <describe sql-case-id="desc_table">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+    </describe>
+    <describe sql-case-id="desc_table_with_col_name">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="colName" start-index="15" stop-index="21" />
+    </describe>
+    <describe sql-case-id="desc_table_with_placeholder">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="___" start-index="15" stop-index="17" />
+    </describe>
+    <describe sql-case-id="desc_table_with_wild">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+    </describe>
+    <describe sql-case-id="describe_table">
+        <simple-table name="tableName" start-index="9" stop-index="17" />
+    </describe>
+    <describe sql-case-id="describe_table_with_col_name">
+        <simple-table name="tableName" start-index="9" stop-index="17" />
+        <column-wild name="colName" start-index="19" stop-index="25" />
+    </describe>
+    <describe sql-case-id="describe_table_with_placeholder">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="___" start-index="15" stop-index="17" />
+    </describe>
+    <describe sql-case-id="describe_table_with_wild">
+        <simple-table name="tableName" start-index="5" stop-index="13" />
+        <column-wild name="u%" start-delimiter="`" end-delimiter="`" start-index="15" stop-index="18" />
+    </describe>
+    
+    <describe sql-case-id="explain_table">
+        <select>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+            <order-by>
+                <column-item name="order_id" start-index="31" stop-index="38" />
+            </order-by>
+            <limit start-index="40" stop-index="55">
+                <offset value="2" literal-start-index="55" literal-stop-index="55" />
+                <row-count value="1" start-index="46" stop-index="46"/>
+            </limit>
+        </select>
+    </describe>
+    
+    <describe sql-case-id="explain_create_materialized_view_with_data"/>
+    <describe sql-case-id="explain_create_materialized_view_with_no_data"/>
+</sql-parser-test-cases>

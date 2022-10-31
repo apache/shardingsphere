@@ -3,7 +3,11 @@ title = "读写分离"
 weight = 2
 +++
 
-## 配置项说明
+## 背景信息
+
+读写分离 YAML 配置方式可读性高，通过 YAML 格式，能够快速地理解读写分片规则之间的依赖关系，ShardingSphere 会根据 YAML 配置，自动完成 ShardingSphereDataSource 对象的创建，减少用户不必要的编码工作。
+
+## 参数解释
 
 ### 静态读写分离
 
@@ -44,6 +48,34 @@ rules:
       props: # 负载均衡算法属性配置
         # ...
 ```
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
+查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
-查询一致性路由的详情，请参见[使用规范](/cn/features/readwrite-splitting/use-norms)。
+## 操作步骤
+1. 添加读写分离数据源
+2. 设置负载均衡算法
+3. 使用读写分离数据源
+
+## 配置示例
+```yaml
+rules:
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds:
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1
+      loadBalancerName: random
+  loadBalancers:
+    random:
+      type: RANDOM
+```
+
+## 相关参考
+
+- [核心特性：读写分离](/cn/features/readwrite-splitting/)
+- [Java API：读写分离](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
+- [Spring Boot Starter：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)
+- [Spring 命名空间：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting/)

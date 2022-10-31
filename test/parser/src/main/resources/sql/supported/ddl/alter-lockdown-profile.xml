@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_lockdown_profile_disable_feature" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE FEATURE = ('LOB_FILE_ACCESS', 'TRACE_VIEW_ACCESS');" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_disable_feature_all_except" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE FEATURE ALL EXCEPT = ('COMMON_USER_LOCAL_SCHEMA_ACCESS', 'LOCAL_USER_COMMON_SCHEMA_ACCESS');" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_disable_feature_all" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE FEATURE ALL;" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_enable_feature" value="ALTER LOCKDOWN PROFILE hr_prof ENABLE FEATURE = ('UTL_HTTP', 'UTL_SMTP', 'OS_ACCESS');" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_enable_feature_all_except" value="ALTER LOCKDOWN PROFILE hr_prof ENABLE FEATURE ALL EXCEPT = ('AQ_PROTOCOLS', 'CTX_PROTOCOLS');" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_enable_feature_all" value="ALTER LOCKDOWN PROFILE hr_prof ENABLE FEATURE ALL;" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_disable_option" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE OPTION = ('DATABASE QUEUING');" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_enable_option" value="ALTER LOCKDOWN PROFILE hr_prof ENABLE OPTION = ('DATABASE QUEUING');" db-types="Oracle" />
+    <sql-case id="alter_lockdown_profile_enable_option_all" value="ALTER LOCKDOWN PROFILE hr_prof ENABLE OPTION ALL;" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_statement" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER DATABASE');" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_statement_and_clause" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER SYSTEM') CLAUSE = ('SUSPEND', 'RESUME');" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_statement_and_clause_all" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER PLUGGABLE DATABASE') CLAUSE ALL EXCEPT = ('DEFAULT TABLESPACE', 'DEFAULT TEMPORARY TABLESPACE');" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_statement_and_clause_and_option" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER SESSION') CLAUSE = ('SET') OPTION = ('COMMIT_WAIT', 'CURSOR_SHARING');" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_statement_and_clause_and_option_and_value" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER SYSTEM') CLAUSE = ('SET')  OPTION = ('PDB_FILE_NAME_CONVERT') VALUE = ('cdb1_pdb0', 'cdb1_pdb1');" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_min_value" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER SYSTEM') CLAUSE = ('SET') OPTION = ('CPU_COUNT') MINVALUE = '8';" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_disable_max_value" value="ALTER LOCKDOWN PROFILE hr_prof DISABLE STATEMENT = ('ALTER SYSTEM') CLAUSE = ('SET') OPTION = ('CPU_COUNT') MAXVALUE = '2';" db-types="Oracle" />
+    <sql-case id="alter_lockdown-profile_enable_statement_all_except" value="ALTER LOCKDOWN PROFILE hr_prof ENABLE STATEMENT ALL EXCEPT = ('ALTER DATABASE');" db-types="Oracle" />
+</sql-cases>

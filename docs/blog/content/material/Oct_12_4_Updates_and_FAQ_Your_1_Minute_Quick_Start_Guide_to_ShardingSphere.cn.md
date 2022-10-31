@@ -314,7 +314,7 @@ examples/shardingsphere-jdbc-example/extension-example/custom-sharding-algortihm
 * 注意 shardingAlgorithms 配置项，当 type 为 CLASS_BASED 时，可以通过 props 指定自定义算法的类别和全路径，这样就可以完成自定义算法的配置。
 
 详细配置说明请阅读配置手册：
-https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/
+https://shardingsphere.apache.org/document/current/cn/user-manual/common-config/builtin-algorithm/sharding/
 
 4.启动运行
 
@@ -332,4 +332,4 @@ https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere
 https://github.com/apache/shardingsphere/issues
 
 **贡献指南：**
-https://shardingsphere.apache.org/community/cn/contribute/
+https://shardingsphere.apache.org/community/cn/involved/

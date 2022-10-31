@@ -55,6 +55,18 @@ property:
     key=value                          
 ```
 
+### Parameters Explained
+
+| name                   | DateType   | Description                                 |
+|:-----------------------|:-----------|:--------------------------------------------|
+| discoveryTypeName      | IDENTIFIER | Database discovery type name                |
+| ruleName               | IDENTIFIER | Rule name                                   |
+| discoveryHeartbeatName | IDENTIFIER | Detect heartbeat name                       |
+| typeName               | STRING     | Database discovery type, such as: MySQL.MGR |
+| resourceName           | IDENTIFIER | Resource name                               |
+
+### Notes
+
 - `discoveryType` specifies the database discovery service type, `ShardingSphere` has built-in support for `MySQL.MGR`
 - Duplicate `ruleName` will not be created
 - The `discoveryType` and `discoveryHeartbeat` being used cannot be deleted

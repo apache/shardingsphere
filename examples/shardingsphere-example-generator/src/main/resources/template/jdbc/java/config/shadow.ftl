@@ -24,9 +24,7 @@
     } 
             
     private RuleConfiguration createSQLParserRuleConfiguration() {
-        SQLParserRuleConfiguration result = new DefaultSQLParserRuleConfigurationBuilder().build(); 
-        result.setSqlCommentParseEnabled(true);
-        return result;
+        return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024L), new CacheOption(2000, 65535L));
     }
     
     private Map<String, ShadowTableConfiguration> createShadowTables() {
@@ -56,26 +54,26 @@
         return result;
     }
 
-    private Map<String, ShardingSphereAlgorithmConfiguration> createShadowAlgorithmConfigurations() {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties userIdInsertProps = new Properties();
         userIdInsertProps.setProperty("operation", "insert");
         userIdInsertProps.setProperty("column", "order_type");
         userIdInsertProps.setProperty("value", "1");
-        result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
+        result.put("user-id-insert-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
         Properties userIdDeleteProps = new Properties();
         userIdDeleteProps.setProperty("operation", "delete");
         userIdDeleteProps.setProperty("column", "order_type");
         userIdDeleteProps.setProperty("value", "1");
-        result.put("user-id-delete-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
+        result.put("user-id-delete-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdDeleteProps));
         Properties userIdSelectProps = new Properties();
         userIdSelectProps.setProperty("operation", "select");
         userIdSelectProps.setProperty("column", "order_type");
         userIdSelectProps.setProperty("value", "1");
-        result.put("user-id-select-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
+        result.put("user-id-select-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdSelectProps));
         Properties noteAlgorithmProps = new Properties();
         noteAlgorithmProps.setProperty("shadow", "true");
         noteAlgorithmProps.setProperty("foo", "bar");
-        result.put("simple-hint-algorithm", new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
+        result.put("simple-hint-algorithm", new AlgorithmConfiguration("SIMPLE_HINT", noteAlgorithmProps));
         return result;
     }

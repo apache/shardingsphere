@@ -7,17 +7,17 @@ weight = 2
 
 ```sql
 ADD RESOURCE write_ds (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 ),read_ds (
-HOST=127.0.0.1,
-PORT=3307,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3307,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -29,7 +29,7 @@ PASSWORD=root
 CREATE READWRITE_SPLITTING RULE group_0 (
 WRITE_RESOURCE=write_ds,
 READ_RESOURCES(read_ds),
-TYPE(NAME=random)
+TYPE(NAME="random")
 );
 ```
 
@@ -39,7 +39,7 @@ TYPE(NAME=random)
 ALTER READWRITE_SPLITTING RULE group_0 (
 WRITE_RESOURCE=write_ds,
 READ_RESOURCES(read_ds),
-TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
+TYPE(NAME="random",PROPERTIES("read_weight"="2:0"))
 );
 ```
 

@@ -24,13 +24,23 @@
     
     <sharding:key-generate-algorithm id="snowflakeAlgorithm" type="SNOWFLAKE">
     </sharding:key-generate-algorithm>
+
+    <sharding:audit-algorithm id="auditAlgorithm" type="DML_SHARDING_CONDITIONS">
+    </sharding:audit-algorithm>
     
     <sharding:key-generate-strategy id="orderKeyGenerator" column="order_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="accountKeyGenerator" column="account_id" algorithm-ref="snowflakeAlgorithm" />
     <sharding:key-generate-strategy id="itemKeyGenerator" column="order_item_id" algorithm-ref="snowflakeAlgorithm" />
+
+    <sharding:audit-strategy id="shardingKeyAudit" allow-hint-disable="true">
+        <sharding:auditors>
+            <sharding:auditor algorithm-ref="auditAlgorithm" />
+        </sharding:auditors>
+    </sharding:audit-strategy>
     
     <sharding:rule id="shardingRule">
         <sharding:table-rules>
+            <!--todo add audit-->
             <sharding:table-rule logic-table="t_order" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="orderKeyGenerator" />
             <sharding:table-rule logic-table="t_order_item" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="itemKeyGenerator" />
             <sharding:table-rule logic-table="t_account" database-strategy-ref="databaseStrategy" key-generate-strategy-ref="accountKeyGenerator" />

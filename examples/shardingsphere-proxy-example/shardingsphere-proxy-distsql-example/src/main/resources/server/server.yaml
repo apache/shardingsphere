@@ -33,7 +33,6 @@ mode:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: false
 
 rules:
   - !AUTHORITY
@@ -55,8 +54,6 @@ props:
   proxy-hint-enabled: true
   sql-show: false
   check-table-metadata-enabled: false
-  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
-  show-process-list-enabled: false
     # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
   # The default value is -1, which means set the minimum value for different JDBC drivers.
   proxy-backend-query-fetch-size: -1

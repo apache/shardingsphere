@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING ALGORITHM"
-weight = 2
+weight = 4
 +++
 
 ## 描述
@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法定义
 
-```SQL
+```sql
 CreateShardingAlgorithm ::=
   'CREATE' 'SHARDING' 'ALGORITHM' shardingAlgorithmName '(' algorithmDefinition ')'
 
@@ -23,12 +23,12 @@ shardingAlgorithmName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明
 
-- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)。
 
 ### 示例
 
@@ -37,19 +37,19 @@ algorithmType ::=
 ```SQL
 -- 创建类型为 INLINE 的分片算法
 CREATE SHARDING ALGORITHM inline_algorithm (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 );
 
 -- 创建类型为 AUTO_INTERVAL 的分片算法
 CREATE SHARDING ALGORITHM interval_algorithm (
-    TYPE(NAME=auto_interval, PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
+    TYPE(NAME="auto_interval", PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
 );
 ```
 
 ### 保留字
 
-    CREATE、SHARDING、ALGORITHM、TYPE、NAME、PROPERTIES
+`CREATE`、`SHARDING`、`ALGORITHM`、`TYPE`、`NAME`、`PROPERTIES`
 
 ### 相关链接
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
 
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)

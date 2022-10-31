@@ -3,9 +3,12 @@ title = "读写分离"
 weight = 2
 +++
 
-## 配置项说明
+## 背景信息
+读写分离 Spring 命名空间的配置方式，适用于传统的 Spring 项目，通过命名空间 xml 配置文件的方式配置分片规则和属性，由 Spring 完成 ShardingSphereDataSource 对象的创建和管理，避免额外的编码工作。
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.2.xsd)
+## 参数解释
+
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.2.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.2.0.xsd)
 
 \<readwrite-splitting:rule />
 
@@ -50,5 +53,29 @@ weight = 2
 | type      | 属性  | 负载均衡算法类型    |
 | props (?) | 标签  | 负载均衡算法属性配置 |
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
-查询一致性路由的详情，请参见[使用规范](/cn/features/readwrite-splitting/use-norms)。
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
+查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
+
+## 操作步骤
+1. 添加读写分离数据源
+2. 设置负载均衡算法
+3. 使用读写分离数据源
+
+## 配置示例
+```xml
+<readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    
+<readwrite-splitting:rule id="readWriteSplittingRule">
+    <readwrite-splitting:data-source-rule id="demo_ds" load-balance-algorithm-ref="randomStrategy">
+        <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="demo_write_ds" read-data-source-names="demo_read_ds_0, demo_read_ds_1"/>
+    </readwrite-splitting:data-source-rule>
+</readwrite-splitting:rule>
+
+<shardingsphere:data-source id="readWriteSplittingDataSource" data-source-names="demo_write_ds, demo_read_ds_0, demo_read_ds_1" rule-refs="readWriteSplittingRule" />
+```
+
+## 相关参考
+- [核心特性：读写分离](/cn/features/readwrite-splitting/)
+- [Java API：读写分离](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
+- [YAML 配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
+- [Spring Boot Starter：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)

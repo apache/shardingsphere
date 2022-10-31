@@ -26,29 +26,29 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.1.3-SNAPSHOT</version>
+    <version>5.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
-        <module>shardingsphere-spi</module>
-        <module>shardingsphere-sql-parser</module>
-        <module>shardingsphere-distsql</module>
-        <module>shardingsphere-db-protocol</module>
-        <module>shardingsphere-infra</module>
-        <module>shardingsphere-mode</module>
-        <module>shardingsphere-kernel</module>
+        <module>infra</module>
+        <module>dialect-exception</module>
+        <module>sql-parser</module>
+        <module>distsql</module>
+        <module>db-protocol</module>
+        <module>mode</module>
+        <module>kernel</module>
         
-        <module>shardingsphere-jdbc</module>
-        <module>shardingsphere-proxy</module>
+        <module>jdbc</module>
+        <module>proxy</module>
         
-        <module>shardingsphere-features</module>
-        <module>shardingsphere-agent</module>
+        <module>features</module>
+        <module>agent</module>
         
-        <module>shardingsphere-test</module>
+        <module>test</module>
         
-        <module>shardingsphere-distribution</module>
+        <module>distribution</module>
     </modules>
     
     <properties>
@@ -65,23 +65,23 @@
         <commons-codec.version>1.15</commons-codec.version>
         
         <antlr4.version>4.9.2</antlr4.version>
-        <snakeyaml.version>1.30</snakeyaml.version>
-        <gson.version>2.8.6</gson.version>
+        <snakeyaml.version>1.33</snakeyaml.version>
+        <gson.version>2.9.1</gson.version>
         <groovy.version>4.0.3</groovy.version>
         
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
         <activation-api.version>1.2.0</activation-api.version>
         
-        <calcite.version>1.27.0</calcite.version>
-        <vertx.version>4.2.3</vertx.version>
-        <netty.version>4.1.73.Final</netty.version>
+        <calcite.version>1.32.0</calcite.version>
+        <vertx.version>4.3.3</vertx.version>
+        <netty.version>4.1.80.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
         
         <zookeeper.version>3.6.0</zookeeper.version>
         <curator.version>5.1.0</curator.version>
-        <jetcd.version>0.5.0</jetcd.version>
+        <jetcd.version>0.5.10</jetcd.version>
         
         <elasticjob.version>3.0.1</elasticjob.version>
         
@@ -98,35 +98,34 @@
         <opentelemetry.version>1.3.0</opentelemetry.version>
         <opentelemetry-autoconfigure.version>1.3.0-alpha</opentelemetry-autoconfigure.version>
         
-        <slf4j.version>1.7.7</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.10</logback.version>
         
         <lombok.version>1.18.20</lombok.version>
         
-        <postgresql.version>42.3.3</postgresql.version>
+        <postgresql.version>42.4.1</postgresql.version>
         <opengauss.version>3.0.0</opengauss.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <h2.version>1.4.196</h2.version>
+        <h2.version>2.1.214</h2.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
         
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.2</junit.version>
         <hamcrest.version>1.3</hamcrest.version>
         <mockito.version>4.5.1</mockito.version>
         
         <!-- Plugin versions -->
-        <takari-maven-plugin.version>0.6.1</takari-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
-        <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
+        <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
+        <maven-release-plugin.version>3.0.0-M6</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
         <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
@@ -138,7 +137,7 @@
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
@@ -150,7 +149,6 @@
         <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
         <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-        <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <caffeine.version>2.9.2</caffeine.version>
@@ -562,6 +560,12 @@
             </dependency>
             
             <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
@@ -589,12 +593,6 @@
                 <groupId>org.opengauss</groupId>
                 <artifactId>opengauss-jdbc</artifactId>
                 <version>${opengauss.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2.version}</version>
                 <scope>test</scope>
             </dependency>
             
@@ -745,12 +743,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.5.4 -->
-                <plugin>
-                    <groupId>io.takari</groupId>
-                    <artifactId>maven</artifactId>
-                    <version>${takari-maven-plugin.version}</version>
-                </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
@@ -967,7 +959,6 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <docencoding>${project.build.sourceEncoding}</docencoding>
@@ -1124,68 +1115,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <version>${apache-rat-plugin.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gen/**</exclude>
-                        <exclude>**/target/**</exclude>
-                        <exclude>**/logs/**</exclude>
-                        <exclude>**/*.log</exclude>
-                        <exclude>**/*.tokens</exclude>
-                        <!-- IDE files -->
-                        <exclude>**/*.iml</exclude>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/*.classpath</exclude>
-                        <exclude>**/.project</exclude>
-                        <exclude>**/.settings/**</exclude>
-                        <exclude>**/dependency-reduced-pom.xml</exclude>
-                        <!-- git files -->
-                        <exclude>**/.gitignore</exclude>
-                        <exclude>**/.gitmodules</exclude>
-                        <exclude>**/.git/**</exclude>
-                        <!-- CI files -->
-                        <exclude>**/.travis.yml</exclude>
-                        <exclude>**/.codecov.yml</exclude>
-                        <exclude>**/.mvn/jvm.config</exclude>
-                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
-                        <!-- GitHub files -->
-                        <exclude>**/.github/**</exclude>
-                        <!-- document files -->
-                        <exclude>**/*.md</exclude>
-                        <excldue>**/*.MD</excldue>
-                        <exclude>**/*.txt</exclude>
-                        <exclude>**/docs/**</exclude>
-                        <!-- UI files -->
-                        <exclude>**/.babelrc</exclude>
-                        <exclude>**/.editorconfig</exclude>
-                        <exclude>**/.eslintignore</exclude>
-                        <exclude>**/package.json</exclude>
-                        <exclude>**/assets/**</exclude>
-                        <exclude>**/dist/**</exclude>
-                        <exclude>**/etc/**</exclude>
-                        <exclude>**/node/**</exclude>
-                        <exclude>**/node_modules/**</exclude>
-                        <exclude>**/test/coverage/**</exclude>
-                        <exclude>**/package-lock.json</exclude>
-                        <!-- example files -->
-                        <exclude>/examples/**</exclude>
-                        <!-- Helm files -->
-                        <exclude>**/.helmignore</exclude>
-                        <exclude>**/_helpers.tpl</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>verify</phase>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
         <extensions>
             <extension>
@@ -1209,7 +1138,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
-                    <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <docencoding>${project.build.sourceEncoding}</docencoding>

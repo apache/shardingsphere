@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING ALGORITHM"
-weight = 2
+weight = 4
 +++
 
 ## Description
@@ -9,7 +9,7 @@ The `CREATE SHARDING ALGORITHM` syntax is used to create a sharding algorithm fo
 
 ### Syntax
 
-```SQL
+```sql
 CreateShardingAlgorithm ::=
   'CREATE' 'SHARDING' 'ALGORITHM' shardingAlgorithmName '(' algorithmDefinition ')'
 
@@ -23,12 +23,12 @@ shardingAlgorithmName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement
 
-- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
+- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/common-config/builtin-algorithm/sharding/).
 
 ### Example
 
@@ -37,19 +37,19 @@ algorithmType ::=
 ```SQL
 -- create a sharding algorithm of type INLINE
 CREATE SHARDING ALGORITHM inline_algorithm (
-    TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
+    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
 );
 
 -- create a sharding algorithm of type AUTO_INTERVAL
 CREATE SHARDING ALGORITHM interval_algorithm (
-    TYPE(NAME=auto_interval, PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
+    TYPE(NAME="auto_interval", PROPERTIES("datetime-lower"="2022-01-01 00:00:00", "datetime-upper"="2022-01-03 00:00:00", "sharding-seconds"="86400"))
 );
 ```
 
 ### Reserved word
 
-    CREATE、SHARDING、ALGORITHM、TYPE、NAME、PROPERTIES
+`CREATE`, `SHARDING`, `ALGORITHM`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
-- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
 
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)

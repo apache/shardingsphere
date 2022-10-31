@@ -119,4 +119,4 @@ ShardingSphere 在功能不断完善、新功能不断开发的进程中，一�
 
 <https://github.com/apache/shardingsphere>
 
-**在使用 ShardingSphere 的过程中，如果您发现任何问题，有新的想法、建议，欢迎点击 [链接](https://shardingsphere.apache.org/community/cn/contribute/subscribe/) 通过 Apache 邮件列表参与到 ShardingSphere 的社区建设中。**
+**在使用 ShardingSphere 的过程中，如果您发现任何问题，有新的想法、建议，欢迎点击 [链接](https://shardingsphere.apache.org/community/cn/involved/subscribe/) 通过 Apache 邮件列表参与到 ShardingSphere 的社区建设中。**

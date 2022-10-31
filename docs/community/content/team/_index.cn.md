@@ -146,6 +146,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/20503072?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/strongduanmu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -156,6 +161,9 @@ chapter = true
         </td>
         <td>
             <b>吴伟杰</b>
+        </td>
+        <td>
+            <b>端正强</b>
         </td>
     </tr>
 </table>
@@ -250,13 +258,13 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/strongduanmu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/Technoboy-" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
         <td>
-            <a href="https://github.com/Technoboy-" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/Lucas-307" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
     </tr>
@@ -277,18 +285,13 @@ chapter = true
             <b>陆敬尚</b>
         </td>
         <td>
-            <b>端正强</b>
+            <b>郭吉伟</b>
         </td>
         <td>
-            <b>郭吉伟</b>
+            <b>邱鹿</b>
         </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/Lucas-307" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/sandynz" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
@@ -319,11 +322,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/LeeGuoPing" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>邱鹿</b>
-        </td>
         <td>
             <b>钟红胜</b>
         </td>
@@ -342,13 +347,11 @@ chapter = true
         <td>
             <b>唐国城</b>
         </td>
+        <td>
+            <b>李国平</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/LeeGuoPing" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/zjcnb" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
@@ -379,11 +382,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/mabaiwan" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>李国平</b>
-        </td>
         <td>
             <b>赵锦超</b>
         </td>
@@ -402,6 +407,53 @@ chapter = true
         <td>
             <b>雷群星</b>
         </td>
+        <td>
+            <b>马称</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/JiekerTime" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/Swastyy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yy2so" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+       <td>
+            <a href="https://github.com/natehuangting" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+       <td>
+            <a href="https://github.com/taojintianxia" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>张俊杰</b>        
+        </td>
+        <td>
+            <b>Swastika Gupta</b>
+        </td>
+        <td>
+            <b>Yacine Si Tayeb</b>
+        </td>
+        <td>
+            <b>黄挺</b>
+        </td>
+        <td>
+            <b>孙念君</b>
+        </td>
     </tr>
 </table>
 
@@ -417,4 +469,4 @@ chapter = true
 ShardingSphere 社区遵循 [Apache 社区流程](http://community.apache.org/newcommitter.html)来接收新的提交者。
 当您积极参地与 ShardingSphere 社区之后，项目管理委员会和项目官方提交者会根据您的表现发起吸纳您成为官方提交者和项目管理委员会成员的流程。
 
-您可以阅读[贡献者指南](/cn/contribute/contributor/)来参与社区，并通过[提交者指南](/cn/contribute/committer/)获取更多信息。
+您可以阅读[贡献者指南](/cn/involved/contribute/)来参与社区，并通过[提交者指南](/cn/involved/committer/)获取更多信息。

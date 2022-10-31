@@ -19,11 +19,11 @@
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("phone", "phone", "", "phone_plain", "phone_encryptor", null);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("status", "status", "assisted_query_status", "", "string_encryptor", null);
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("status", "status", "assisted_query_status", "", "string_encryptor", "string_encryptor", null);
         EncryptTableRuleConfiguration orderItemRule = new EncryptTableRuleConfiguration("t_order_item", Collections.singleton(columnConfigAes), true);
         EncryptTableRuleConfiguration orderRule = new EncryptTableRuleConfiguration("t_order", Collections.singleton(columnConfigTest), true);
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>();
-        encryptAlgorithmConfigs.put("phone_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("string_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", props));
+        Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>();
+        encryptAlgorithmConfigs.put("phone_encryptor", new AlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("string_encryptor", new AlgorithmConfiguration("assistedTest", props));
         return new EncryptRuleConfiguration(Arrays.asList(orderRule, orderItemRule), encryptAlgorithmConfigs);
     }

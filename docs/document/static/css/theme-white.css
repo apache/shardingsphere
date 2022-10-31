@@ -73,7 +73,10 @@ header .select-style select{
 }
 
 #sidebar .leftMenu{
-    overflow-y: auto;
+    -ms-touch-action: auto;
+    touch-action: auto;
+    overflow: scroll;
+    -webkit-overflow-scrolling: touch;
 }
 
 #header-wrapper{
@@ -128,6 +131,7 @@ header .select-style select{
 #sidebar .highlightable{
     position:sticky;
     top:48px;
+    overflow: hidden;
 }
 
 #sidebar ul.topics > li.parent, #sidebar ul.topics > li.active{

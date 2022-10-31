@@ -1,55 +1,62 @@
 +++
-title = "Mode Configuration"
+title = "Mode"
 weight = 1
 +++
 
-## Configuration Item Explanation
+## Background
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
+The default configuration uses standalone mode.
 
-\<shardingsphere:mode />
-
-| *Name*             | *Type*      | *Description*                                                            | *Default Value* |
-| ------------------ | ----------- | ------------------------------------------------------------------------ | --------------- |
-| type               | Attribute   | Type of mode configuration. Values could be: Memory, Standalone, Cluster |                 |
-| repository-ref (?) | Attribute   | Persist repository configuration. Memory type does not need persist      |                 |
-| overwrite (?)      | Attribute   | Whether overwrite persistent configuration with local configuration      | false           |
-
-### Memory Mode
-
-It is the default value.
-
-#### Example
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
-    
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." />
-</beans>
-```
+## Parameters Explained
 
 ### Standalone Mode
 
-#### Configuration Item Explanation
-
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd)
-
+Namespace:[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd)
 <standalone:repository />
 
-| *Name*    | *Type*    | *Description*                    |
-| --------- | --------- | -------------------------------- |
-| id        | Attribute | Name of persist repository bean  |
-| type      | Attribute | Type of persist repository       |
-| props (?) | Tag       | Properties of persist repository |
+| *Name*    | *Type*   | *Description*                                 |
+| --------- | -------- | --------------------------------------------- |
+| id        | Property | Persistent repository Bean name               |
+| type      | Property | Persistent repository Type                    |
+| props (?) |Tag       | Properties required for persistent repository |
 
-#### Example
+### Cluster Mode(Recommended)
+
+Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd)
+
+<cluster:repository />
+
+| *Name*        | *Type*   | *Description*                                 |
+| ------------- | -------- | --------------------------------------------- |
+| id            | Property | Persistent repository Bean name               |
+| type          | Property | Persistent repository Type                    |
+| namespace     | Property | Registry Center namespace                     |
+| server-lists  | Property | Registry Center Link                          |
+| props (?)     | Tag      | Properties required for persistent repository |
+
+## Tips:
+
+1. For production environments, it is recommended to use cluster mode deployment.
+1. The `ZooKeeper` registry center is recommended for cluster mode deployment.
+1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
+
+## Operating Procedures
+
+Introduce MAVEN dependency
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+> Note: Please change `${latest.release.version}` to the actual version number.
+
+## Configuration Example
+
+### Standalone Mode
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -60,38 +67,19 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                  http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">target</prop>
-        </props>
+    <standalone:repository id="standaloneRepository" type="JDBC">
     </standalone:repository>
 
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="true" />
+    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
     </shardingsphere:data-source>
 </beans>
-```
+``` 
 
 ### Cluster Mode
-
-#### Configuration Item Explanation
-
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd)
-
-<cluster:repository />
-
-| *Name*        | *Type*    | *Description*                    |
-| ------------- | --------- | -------------------------------- |
-| id            | Attribute | Name of persist repository bean  |
-| type          | Attribute | Type of persist repository       |
-| namespace     | Attribute | Namespace of registry center     |
-| server-lists  | Attribute | Server lists of registry center  |
-| props (?)     | Tag       | Properties of persist repository |
-
-#### Example
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -112,10 +100,13 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
         </props>
     </cluster:repository>
     
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="true" />
+    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
 </beans>
-```
+``` 
 
-Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.
+## Relevant References
+
+- [Installation and use of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
+- For details about persistent repository, please refer to [List of Built-in repository types](/cn/user-manual/common-config/builtin-algorithm/metadata-repository/)

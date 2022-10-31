@@ -257,7 +257,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 #sidebar ul.topics ul ul {
     padding-bottom: 0;
 }
-#sidebar ul.topics li.parent ul, #sidebar ul.topics > li.active ul {
+#sidebar ul.topics li.parent>ul, #sidebar ul.topics > li.active>ul {
     display: block;
 }
 #sidebar ul.topics > li > a {
@@ -424,7 +424,8 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 }
 #chapter h3 {
     font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
-    font-weight: 500;
+    font-weight: 300;
+    text-align: center;
 }
 #chapter h1 {
     font-size: 5rem;

@@ -3,7 +3,10 @@ title = "Readwrite-splitting"
 weight = 2
 +++
 
-## Configuration Item Explanation
+## Background
+Read/write splitting YAML configuration is highly readable. The YAML format enables you to quickly understand the dependencies between read/write sharding rules. ShardingSphere automatically creates the ShardingSphereDataSource object according to the YAML configuration, which reduces unnecessary coding for users.
+
+## Parameters
 
 ### Static Readwrite-splitting
 
@@ -45,5 +48,34 @@ rules:
         # ...
 ```
 
-Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
-Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about query consistent routing.
+Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-config/builtin-algorithm/load-balance) for more details about type of algorithm.
+Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
+
+## Procedure
+1. Add read/write splitting data source.
+2. Set the load balancer algorithm.
+3. Use read/write data source.
+
+## Sample
+```yaml
+rules:
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds:
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1
+      loadBalancerName: random
+  loadBalancers:
+    random:
+      type: RANDOM
+```
+
+## Related References
+
+- [Read-write splitting-Core features](/en/features/readwrite-splitting/)
+- [Java API: read-write splitting](/en/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
+- [Spring Boot Starter: read-write splitting](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)
+- [Spring namespace: read-write splitting](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting/)
