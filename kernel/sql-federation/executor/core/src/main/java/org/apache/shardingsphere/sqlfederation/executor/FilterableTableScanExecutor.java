@@ -174,7 +174,6 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         Optional<ShardingSphereTableData> tableData = Optional.ofNullable(shardingSphereData.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
                 .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
         return tableData.map(this::createMemoryEnumerator).orElseGet(this::createEmptyEnumerable);
-        
     }
     
     private Enumerable<Object[]> createMemoryEnumerator(final ShardingSphereTableData tableData) {

@@ -126,7 +126,7 @@ public final class SQLOptimizeEngineTest {
     private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(new Properties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, null);
+        TranslatableSchema federationSchema = new TranslatableSchema(SCHEMA_NAME, schema, new JavaTypeFactoryImpl(), null);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
         H2DatabaseType databaseType = new H2DatabaseType();
         SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, relDataTypeFactory, databaseType, connectionConfig);
