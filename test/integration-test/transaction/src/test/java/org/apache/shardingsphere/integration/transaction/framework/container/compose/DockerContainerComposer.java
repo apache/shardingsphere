@@ -57,12 +57,12 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     public DockerContainerComposer(final TransactionParameterized parameterized) {
         this.databaseType = parameterized.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getStorageContainerImage(), "",
-                StorageContainerConfigurationFactory.newInstance(databaseType)));
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getStorageContainerImage(), parameterized.getScenario(),
+                        StorageContainerConfigurationFactory.newInstance(databaseType)));
         if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             jdbcContainer = null;
             proxyContainer = (ShardingSphereProxyClusterContainer) AdapterContainerFactory.newInstance(EnvironmentConstants.CLUSTER_MODE, AdapterContainerConstants.PROXY,
-                    databaseType, storageContainer, "", ProxyClusterContainerConfigurationFactory.newInstance(databaseType));
+                    databaseType, storageContainer, parameterized.getScenario(), ProxyClusterContainerConfigurationFactory.newInstance(parameterized.getScenario(), databaseType));
             proxyContainer.dependsOn(governanceContainer, storageContainer);
             getContainers().registerContainer(proxyContainer);
         } else {
