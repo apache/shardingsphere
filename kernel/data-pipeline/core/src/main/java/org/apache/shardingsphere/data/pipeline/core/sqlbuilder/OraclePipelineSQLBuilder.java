@@ -69,7 +69,7 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     public String buildSplitByPrimaryKeyRangeSQL(final String schemaName, final String tableName, final String primaryKey) {
         String qualifiedTableName = getQualifiedTableName(schemaName, tableName);
         String quotedUniqueKey = quote(primaryKey);
-        return String.format("SELECT MAX(%s) FROM (SELECT * FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s) WHERE ROWNUM<=?) t",
+        return String.format("SELECT MAX(%s), COUNT(1) FROM (SELECT * FROM (SELECT %s FROM %s WHERE %s>=? ORDER BY %s) WHERE ROWNUM<=?) t",
                 quotedUniqueKey, quotedUniqueKey, qualifiedTableName, quotedUniqueKey, quotedUniqueKey);
     }
     
