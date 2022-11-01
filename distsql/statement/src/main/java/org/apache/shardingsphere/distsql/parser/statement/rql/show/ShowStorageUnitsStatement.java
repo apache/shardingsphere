@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromD
 import java.util.Optional;
 
 /**
- * Show resources statement.
+ * Show storage unit statement.
  */
 @Getter
 @RequiredArgsConstructor
@@ -39,5 +39,14 @@ public final class ShowStorageUnitsStatement extends RQLStatement implements Fro
     @Override
     public Optional<DatabaseSegment> getDatabase() {
         return Optional.ofNullable(database);
+    }
+    
+    /**
+     * get usage count.
+     * 
+     * @return usage count
+     */
+    public Optional<Integer> getUsageCount() {
+        return Optional.ofNullable(usageCount);
     }
 }

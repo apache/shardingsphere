@@ -46,12 +46,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Drop resource backend handler.
+ * Unregister storage unit backend handler.
  */
 @Slf4j
-public final class DropResourceBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
+public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
     
-    public DropResourceBackendHandler(final UnregisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
+    public UnregisterStorageUnitBackendHandler(final UnregisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
     }
     

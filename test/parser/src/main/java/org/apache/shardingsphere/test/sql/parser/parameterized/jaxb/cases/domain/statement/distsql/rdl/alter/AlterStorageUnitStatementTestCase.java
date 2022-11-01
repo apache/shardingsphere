@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rql.show;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Optional;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Show unused resources statement.
+ * Alter storage unit statement test case.
  */
-@RequiredArgsConstructor
-public final class ShowUnusedResourcesStatement extends RQLStatement implements FromDatabaseAvailable {
+@Getter
+public final class AlterStorageUnitStatementTestCase extends SQLParserTestCase {
     
-    private final DatabaseSegment database;
-    
-    @Override
-    public Optional<DatabaseSegment> getDatabase() {
-        return Optional.ofNullable(database);
-    }
+    @XmlElement(name = "data-source")
+    private final List<ExpectedDataSource> dataSources = new LinkedList<>();
 }

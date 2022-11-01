@@ -43,13 +43,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Query result set for show data source.
+ * Query result set for show storage units.
  */
-public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet {
+public final class StorageUnitQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String CONNECTION_TIMEOUT_MILLISECONDS = "connectionTimeoutMilliseconds";
     
@@ -73,18 +74,17 @@ public final class DataSourceQueryResultSet implements DatabaseDistSQLResultSet 
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         resourceMetaData = database.getResourceMetaData();
         dataSourcePropsMap = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1);
-        Integer usageCount = ((ShowStorageUnitsStatement) sqlStatement).getUsageCount();
-        if (null == usageCount) {
-            for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
-                dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
-            }
-        } else {
+        Optional<Integer> usageCountOptional = ((ShowStorageUnitsStatement) sqlStatement).getUsageCount();
+        if (usageCountOptional.isPresent()) {
             Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());
             for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
                 Integer currentUsageCount = inUsedMultiMap.containsKey(entry.getKey()) ? inUsedMultiMap.get(entry.getKey()).size() : 0;
-                if (currentUsageCount != usageCount) {
-                    continue;
+                if (usageCountOptional.get().equals(currentUsageCount)) {
+                    dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
                 }
+            }
+        } else {
+            for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
                 dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
             }
         }
