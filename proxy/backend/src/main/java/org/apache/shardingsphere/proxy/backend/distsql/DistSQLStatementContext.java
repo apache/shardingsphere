@@ -15,26 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.session;
+package org.apache.shardingsphere.proxy.backend.distsql;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * Server prepared statement for clients of ShardingSphere-Proxy.
+ * SQL statement context for DistSQL.
  */
-public interface ServerPreparedStatement {
+@RequiredArgsConstructor
+@Getter
+public final class DistSQLStatementContext implements SQLStatementContext<DistSQLStatement> {
     
-    /**
-     * Get SQL of server prepared statement.
-     *
-     * @return SQL
-     */
-    String getSql();
+    private final DistSQLStatement sqlStatement;
     
-    /**
-     * Get {@link SQLStatementContext} of server prepared statement.
-     *
-     * @return {@link SQLStatementContext}
-     */
-    SQLStatementContext<?> getSqlStatementContext();
+    @Override
+    public TablesContext getTablesContext() {
+        throw new UnsupportedOperationException("Cannot get tables context of DistSQLStatementContext");
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        throw new UnsupportedOperationException("Cannot get database type of DistSQLStatementContext");
+    }
 }
