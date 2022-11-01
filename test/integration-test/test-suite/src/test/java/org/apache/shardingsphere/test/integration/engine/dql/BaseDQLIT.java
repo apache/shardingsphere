@@ -67,18 +67,6 @@ public abstract class BaseDQLIT extends SingleITCase {
         executeInitSQLs(getTargetDataSource(), expectedDataSource);
     }
     
-    private void executeInitSQLs(final DataSource actualDataSource, final DataSource expectedDataSource) throws SQLException {
-        if (null == getAssertion().getInitialSQL() || null == getAssertion().getInitialSQL().getSql()) {
-            return;
-        }
-        try (Connection actualConnection = actualDataSource.getConnection(); 
-             Connection expectedConnection = expectedDataSource.getConnection()) {
-            executeInitSQLs(actualConnection);
-            executeInitSQLs(expectedConnection);
-        }
-        sleep();
-    }
-    
     private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
         if (!FILLED_SUITES.contains(getItKey())) {
             synchronized (FILLED_SUITES) {
@@ -137,10 +125,24 @@ public abstract class BaseDQLIT extends SingleITCase {
         if (null == getAssertion().getDestroySQL() || null == getAssertion().getDestroySQL().getSql()) {
             return;
         }
-        try (Connection actualConnection = getTargetDataSource().getConnection(); 
-             Connection expectedConnection = expectedDataSource.getConnection()) {
+        try (
+                Connection actualConnection = getTargetDataSource().getConnection();
+                Connection expectedConnection = expectedDataSource.getConnection()) {
             executeDestroySQLs(actualConnection);
             executeDestroySQLs(expectedConnection);
+        }
+        sleep();
+    }
+    
+    private void executeInitSQLs(final DataSource actualDataSource, final DataSource expectedDataSource) throws SQLException {
+        if (null == getAssertion().getInitialSQL() || null == getAssertion().getInitialSQL().getSql()) {
+            return;
+        }
+        try (
+                Connection actualConnection = actualDataSource.getConnection();
+                Connection expectedConnection = expectedDataSource.getConnection()) {
+            executeInitSQLs(actualConnection);
+            executeInitSQLs(expectedConnection);
         }
         sleep();
     }
