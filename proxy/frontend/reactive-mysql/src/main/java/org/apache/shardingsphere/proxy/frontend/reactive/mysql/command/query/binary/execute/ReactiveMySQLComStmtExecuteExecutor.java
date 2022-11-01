@@ -87,13 +87,13 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
         preparedStatement.getLongData().forEach(parameters::set);
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
         connectionSession.setQueryContext(queryContext);
-        SQLStatement sqlStatement = preparedStatement.getSqlStatement();
+        SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         String databaseName = connectionSession.getDatabaseName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLCheckEngine.check(sqlStatementContext, parameters, getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
