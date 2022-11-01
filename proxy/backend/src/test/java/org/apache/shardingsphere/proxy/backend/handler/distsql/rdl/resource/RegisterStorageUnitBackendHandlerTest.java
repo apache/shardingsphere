@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
+public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private DataSourcePropertiesValidator validator;
@@ -73,17 +73,17 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     @Mock
     private ShardingSphereResourceMetaData resourceMetaData;
     
-    private AddResourceBackendHandler addResourceBackendHandler;
+    private RegisterStorageUnitBackendHandler registerStorageUnitBackendHandler;
     
     @Before
     public void setUp() throws Exception {
         when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        addResourceBackendHandler = new AddResourceBackendHandler(registerStorageUnitStatement, connectionSession);
-        Field field = addResourceBackendHandler.getClass().getDeclaredField("validator");
+        registerStorageUnitBackendHandler = new RegisterStorageUnitBackendHandler(registerStorageUnitStatement, connectionSession);
+        Field field = registerStorageUnitBackendHandler.getClass().getDeclaredField("validator");
         field.setAccessible(true);
-        field.set(addResourceBackendHandler, validator);
+        field.set(registerStorageUnitBackendHandler, validator);
     }
     
     @Test
@@ -94,26 +94,26 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
-        ResponseHeader responseHeader = addResourceBackendHandler.execute("test_db", createAddResourceStatement());
+        ResponseHeader responseHeader = registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatement());
         assertThat(responseHeader, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test(expected = DuplicateResourceException.class)
-    public void assertExecuteWithDuplicateResourceNames() {
+    public void assertExecuteWithDuplicateStorageUnitNames() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
-        addResourceBackendHandler.execute("test_db", createAlterResourceStatementWithDuplicateResourceNames());
+        registerStorageUnitBackendHandler.execute("test_db", createRegisterStorageUnitStatementWithDuplicateStorageUnitNames());
     }
     
-    private RegisterStorageUnitStatement createAddResourceStatement() {
+    private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {
         return new RegisterStorageUnitStatement(Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
     }
     
-    private RegisterStorageUnitStatement createAlterResourceStatementWithDuplicateResourceNames() {
+    private RegisterStorageUnitStatement createRegisterStorageUnitStatementWithDuplicateStorageUnitNames() {
         Collection<DataSourceSegment> result = new LinkedList<>();
         result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
         result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));

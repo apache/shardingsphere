@@ -49,16 +49,16 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Alter resource backend handler.
+ * Alter storage unit backend handler.
  */
 @Slf4j
-public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHandler<AlterStorageUnitStatement> {
+public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<AlterStorageUnitStatement> {
     
     private final DatabaseType databaseType;
     
     private final DataSourcePropertiesValidator validator;
     
-    public AlterResourceBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
+    public AlterStorageUnitBackendHandler(final AlterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getProtocolType();
         validator = new DataSourcePropertiesValidator();

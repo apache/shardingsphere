@@ -17,23 +17,23 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-resource sql-case-id="drop-resource">
+    <unregister-storage-unit sql-case-id="unregister-storage-unit">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
         <ignore-single-tables>false</ignore-single-tables>
-    </drop-resource>
+    </unregister-storage-unit>
 
-    <drop-resource sql-case-id="drop-resource-if-exists" if-exists="true">
+    <unregister-storage-unit sql-case-id="unregister-storage-unit-if-exists" if-exists="true">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
         <ignore-single-tables>false</ignore-single-tables>
-    </drop-resource>
+    </unregister-storage-unit>
     
-    <drop-resource sql-case-id="drop-resource-ignore-single-tables">
+    <unregister-storage-unit sql-case-id="unregister-storage-unit-ignore-single-tables">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
         <ignore-single-tables>true</ignore-single-tables>
-    </drop-resource>
+    </unregister-storage-unit>
     
     <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule" >
         <table>t_order</table>

@@ -27,11 +27,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Register storage unit statement test case.
  */
 @Getter
 @Setter
-public final class AddResourceStatementTestCase extends SQLParserTestCase {
+public final class RegisterStorageUnitStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "data-source")
     private final List<ExpectedDataSource> dataSources = new LinkedList<>();

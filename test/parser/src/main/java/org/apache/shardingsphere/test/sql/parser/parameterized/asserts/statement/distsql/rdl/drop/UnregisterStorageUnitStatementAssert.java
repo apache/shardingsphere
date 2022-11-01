@@ -21,17 +21,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.UnregisterStorageUnitStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Drop resource statement assert.
+ * Unregister storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropResourceStatementAssert {
+public final class UnregisterStorageUnitStatementAssert {
     
     /**
      * Assert drop resource statement is correct with expected parser result.
@@ -40,7 +40,7 @@ public final class DropResourceStatementAssert {
      * @param actual actual drop resource statement
      * @param expected expected drop resource statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterStorageUnitStatement actual, final DropResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterStorageUnitStatement actual, final UnregisterStorageUnitStatementTestCase expected) {
         if (null == expected.getDataSources()) {
             assertNull(assertContext.getText("Actual resource should not exist."), actual);
         } else {

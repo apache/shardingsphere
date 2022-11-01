@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.alter;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.DataSourceAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.RegisterStorageUnitStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,19 +35,19 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Alter Resource statement assert.
+ * Register storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AlterResourceStatementAssert {
+public final class RegisterStorageUnitStatementAssert {
     
     /**
-     * Assert alter resource statement is correct with expected parser result.
+     * Assert add resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual add resource statement
      * @param expected expected add resource statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final AlterStorageUnitStatement actual, final AlterResourceStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RegisterStorageUnitStatement actual, final RegisterStorageUnitStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

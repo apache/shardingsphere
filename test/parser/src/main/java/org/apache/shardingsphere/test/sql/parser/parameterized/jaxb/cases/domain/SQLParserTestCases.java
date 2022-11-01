@@ -333,13 +333,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAutoTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableReferenceRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AddResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.RegisterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.AlterDefaultShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateBroadcastTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
@@ -360,7 +360,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadwriteSplittingRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropResourceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.UnregisterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAlgorithmStatementTestCase;
@@ -870,14 +870,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "rename")
     private final List<RenameStatementTestCase> renameTestCases = new LinkedList<>();
     
-    @XmlElement(name = "add-resource")
-    private final List<AddResourceStatementTestCase> addResourceTestCases = new LinkedList<>();
+    @XmlElement(name = "register-storage-unit")
+    private final List<RegisterStorageUnitStatementTestCase> registerStorageUnitTestCases = new LinkedList<>();
     
     @XmlElement(name = "register-migration-source-storage-unit")
     private final List<RegisterMigrationSourceStorageUnitStatementTestCase> registerMigrationSourceStorageUnitStatementTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-resource")
-    private final List<AlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
+    @XmlElement(name = "alter-storage-unit")
+    private final List<AlterStorageUnitStatementTestCase> alterStorageUnitTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-database-discovery-definition-rule")
     private final List<AlterDatabaseDiscoveryDefinitionRuleStatementTestCase> alterDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
@@ -933,8 +933,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-readwrite-splitting-rule")
     private final List<DropReadwriteSplittingRuleStatementTestCase> dropReadwriteSplittingRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-resource")
-    private final List<DropResourceStatementTestCase> dropResourceTestCases = new LinkedList<>();
+    @XmlElement(name = "unregister-storage-unit")
+    private final List<UnregisterStorageUnitStatementTestCase> unregisterStorageUnitStatementTestCase = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-table-reference-rule")
     private final List<DropShardingTableReferenceRuleStatementTestCase> dropShardingTableReferenceRuleStatementTestCases = new LinkedList<>();
