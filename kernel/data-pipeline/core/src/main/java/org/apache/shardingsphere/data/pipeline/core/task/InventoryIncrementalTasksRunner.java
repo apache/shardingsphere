@@ -98,7 +98,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            futures.add(each.start());
+            futures.addAll(each.start());
         }
         CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
             if (null != throwable) {
@@ -143,7 +143,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            futures.add(each.start());
+            futures.addAll(each.start());
         }
         CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
             if (null != throwable) {

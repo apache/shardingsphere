@@ -22,8 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -34,7 +32,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public final class ExecuteEngineTest {
@@ -59,50 +56,6 @@ public final class ExecuteEngineTest {
         ExecuteCallback callback = mock(ExecuteCallback.class);
         ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
         Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
-        Throwable actualCause = null;
-        try {
-            future.get();
-        } catch (InterruptedException e) {
-            fail();
-        } catch (ExecutionException e) {
-            actualCause = e.getCause();
-        }
-        assertThat(actualCause, is(expectedException));
-        shutdownAndAwaitTerminal(executeEngine);
-        verify(callback).onFailure(expectedException);
-    }
-    
-    @Test(timeout = 30000)
-    public void assertSubmitAllAndTasksSucceeded() throws ExecutionException, InterruptedException {
-        int taskCount = 8;
-        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
-        List<LifecycleExecutor> lifecycleExecutors = new ArrayList<>(taskCount);
-        for (int i = 0; i < taskCount; i++) {
-            lifecycleExecutors.add(lifecycleExecutor);
-        }
-        ExecuteCallback callback = mock(ExecuteCallback.class);
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2, ExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submitAll(lifecycleExecutors, callback);
-        future.get();
-        shutdownAndAwaitTerminal(executeEngine);
-        verify(lifecycleExecutor, times(taskCount)).run();
-        verify(callback).onSuccess();
-    }
-    
-    @Test(timeout = 30000)
-    public void assertSubmitAllAndOneOfTasksFailed() {
-        LifecycleExecutor lifecycleExecutor = mock(LifecycleExecutor.class);
-        List<LifecycleExecutor> lifecycleExecutors = new ArrayList<>(8);
-        for (int i = 0; i < 7; i++) {
-            lifecycleExecutors.add(lifecycleExecutor);
-        }
-        LifecycleExecutor failedExecutor = mock(LifecycleExecutor.class);
-        RuntimeException expectedException = new RuntimeException("Expected");
-        doThrow(expectedException).when(failedExecutor).run();
-        lifecycleExecutors.add(failedExecutor);
-        ExecuteCallback callback = mock(ExecuteCallback.class);
-        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2, ExecuteEngineTest.class.getSimpleName());
-        Future<?> future = executeEngine.submitAll(lifecycleExecutors, callback);
         Throwable actualCause = null;
         try {
             future.get();
