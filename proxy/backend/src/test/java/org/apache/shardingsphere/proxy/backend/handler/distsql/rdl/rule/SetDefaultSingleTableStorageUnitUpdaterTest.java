@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CreateDefaultSingleTableRuleUpdaterTest {
+public final class SetDefaultSingleTableStorageUnitUpdaterTest {
     
     private final SetDefaultSingleTableStorageUnitStatementUpdater updater = new SetDefaultSingleTableStorageUnitStatementUpdater();
     
