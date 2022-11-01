@@ -41,22 +41,21 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Abstract pipeline job.
  */
-@Getter
 @Slf4j
 public abstract class AbstractPipelineJob implements PipelineJob {
     
+    @Getter
     private volatile String jobId;
     
     @Getter(value = AccessLevel.PROTECTED)
     private volatile PipelineJobAPI jobAPI;
     
-    @Setter
+    @Getter
     private volatile boolean stopping;
     
     @Setter
     private volatile JobBootstrap jobBootstrap;
     
-    @Getter(value = AccessLevel.PRIVATE)
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     private final PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance();
@@ -120,7 +119,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     private void innerStop() {
-        setStopping(true);
+        stopping = true;
         if (null != jobBootstrap) {
             jobBootstrap.shutdown();
         }
