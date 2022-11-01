@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor;
+package org.apache.shardingsphere.proxy.backend.distsql;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintManagerHolder;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * Clear sharding hint executor.
+ * SQL statement context for DistSQL.
  */
 @RequiredArgsConstructor
-public final class ClearShardingHintExecutor extends AbstractHintUpdateExecutor<ClearShardingHintStatement> {
+@Getter
+public final class DistSQLStatementContext implements SQLStatementContext<DistSQLStatement> {
     
-    private final ClearShardingHintStatement sqlStatement;
+    private final DistSQLStatement sqlStatement;
     
     @Override
-    public ResponseHeader execute() {
-        HintManagerHolder.get().clearShardingValues();
-        return new UpdateResponseHeader(sqlStatement);
+    public TablesContext getTablesContext() {
+        throw new UnsupportedOperationException("Cannot get tables context of DistSQLStatementContext");
+    }
+    
+    @Override
+    public DatabaseType getDatabaseType() {
+        throw new UnsupportedOperationException("Cannot get database type of DistSQLStatementContext");
     }
 }
