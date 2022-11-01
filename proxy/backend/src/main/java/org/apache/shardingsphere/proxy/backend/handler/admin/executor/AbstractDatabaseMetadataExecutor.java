@@ -33,8 +33,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.FunctionWithException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,13 +45,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -82,8 +82,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     
     private void handleResultSet(final String databaseName, final ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
-            Map<String, Object> rowMap = new LinkedHashMap<>();
-            Map<String, String> aliasMap = new LinkedHashMap<>();
+            Map<String, Object> rowMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+            Map<String, String> aliasMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
             ResultSetMetaData metaData = resultSet.getMetaData();
             for (int i = 1; i < metaData.getColumnCount() + 1; i++) {
                 aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
