@@ -15,11 +15,5 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS transaction_it_0;
-CREATE DATABASE transaction_it_0;
-
-DROP DATABASE IF EXISTS transaction_it_1;
-CREATE DATABASE transaction_it_1;
-
-DROP DATABASE IF EXISTS transaction_it_2;
-CREATE DATABASE transaction_it_2;
+DROP DATABASE IF EXISTS dataset;
+CREATE DATABASE dataset;

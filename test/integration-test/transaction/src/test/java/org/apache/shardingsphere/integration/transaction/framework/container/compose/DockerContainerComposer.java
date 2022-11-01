@@ -57,7 +57,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     public DockerContainerComposer(final TransactionParameterized parameterized) {
         this.databaseType = parameterized.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getStorageContainerImage(), parameterized.getScenario(),
+        storageContainer =
+                getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, parameterized.getStorageContainerImage(), parameterized.getScenario(),
                         StorageContainerConfigurationFactory.newInstance(databaseType)));
         if (AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
             jdbcContainer = null;

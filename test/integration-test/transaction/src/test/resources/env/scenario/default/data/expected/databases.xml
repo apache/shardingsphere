@@ -17,5 +17,5 @@
   -->
 
 <databases>
-    <database>sharding_db</database>
+    <database>dataset</database>
 </databases>
