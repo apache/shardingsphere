@@ -36,6 +36,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
@@ -120,9 +121,9 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         if (version >= OpenGaussProtocolVersion.PROTOCOL_350.getVersion()) {
             return "";
         }
-        return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
-                .flatMap(authorityRule -> authorityRule.findUser(new Grantee(username, "%")))
-                .map(user -> OpenGaussAuthenticationHandler.calculateServerSignature(user.getPassword(), saltHexString, nonceHexString, serverIteration)).orElse("");
+        String password = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(AuthorityRule.class)
+                .flatMap(authorityRule -> authorityRule.findUser(new Grantee(username, "%"))).map(ShardingSphereUser::getPassword).orElse("");
+        return OpenGaussAuthenticationHandler.calculateServerSignature(password, saltHexString, nonceHexString, serverIteration);
     }
     
     private AuthenticationResult processPasswordMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {
