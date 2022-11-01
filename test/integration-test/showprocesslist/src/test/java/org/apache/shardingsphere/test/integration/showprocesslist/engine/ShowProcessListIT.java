@@ -60,7 +60,9 @@ public final class ShowProcessListIT {
         Collection<ShowProcessListParameterized> result = new LinkedList<>();
         ENV.getScenarios().forEach(each -> {
             if (ITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-                result.add(new ShowProcessListParameterized(new MySQLDatabaseType(), each));
+                for (String runMode : ENV.getRunModes()) {
+                    result.add(new ShowProcessListParameterized(new MySQLDatabaseType(), each, runMode));
+                }
             }
         });
         return result;

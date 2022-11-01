@@ -51,25 +51,32 @@ public final class ClusterShowProcessListContainerComposer {
     
     public ClusterShowProcessListContainerComposer(final ShowProcessListParameterized parameterized) {
         containers = new ITContainers(parameterized.getScenario());
-        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"));
+        governanceContainer = isClusterMode(parameterized.getRunMode()) ? containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper")) : null;
         StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterized.getDatabaseType(), "", parameterized.getScenario(),
                 StorageContainerConfigurationFactory.newInstance(parameterized.getDatabaseType())));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(parameterized.getScenario(),
-                getMountedResources(parameterized.getScenario(), parameterized.getDatabaseType()), AdapterContainerUtil.getAdapterContainerImage());
-        jdbcContainer = AdapterContainerFactory.newInstance("cluster", "jdbc", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
-        proxyContainer = AdapterContainerFactory.newInstance("cluster", "proxy", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
+                getMountedResources(parameterized.getScenario(), parameterized.getDatabaseType(), parameterized.getRunMode()), AdapterContainerUtil.getAdapterContainerImage());
+        jdbcContainer = AdapterContainerFactory.newInstance(parameterized.getRunMode(), "jdbc", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
+        proxyContainer = AdapterContainerFactory.newInstance(parameterized.getRunMode(), "proxy", parameterized.getDatabaseType(), storageContainer, parameterized.getScenario(), containerConfig);
         if (proxyContainer instanceof DockerITContainer) {
-            ((DockerITContainer) proxyContainer).dependsOn(governanceContainer, storageContainer);
+            if (isClusterMode(parameterized.getRunMode())) {
+                ((DockerITContainer) proxyContainer).dependsOn(governanceContainer);
+            }
+            ((DockerITContainer) proxyContainer).dependsOn(storageContainer);
         }
         containers.registerContainer(proxyContainer);
         containers.registerContainer(jdbcContainer);
     }
     
-    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType) {
+    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final String runMode) {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put("/env/common/cluster/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        result.put(isClusterMode(runMode) ? "/env/common/cluster/proxy/conf/" : "/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
+    }
+    
+    private boolean isClusterMode(final String runMode) {
+        return "Cluster".equals(runMode);
     }
     
     /**
@@ -78,7 +85,7 @@ public final class ClusterShowProcessListContainerComposer {
      * @return data source
      */
     public DataSource getJdbcDataSource() {
-        return jdbcContainer.getTargetDataSource(governanceContainer.getServerLists());
+        return jdbcContainer.getTargetDataSource(null == governanceContainer ? null : governanceContainer.getServerLists());
     }
     
     /**
@@ -87,7 +94,7 @@ public final class ClusterShowProcessListContainerComposer {
      * @return data source
      */
     public DataSource getProxyDataSource() {
-        return proxyContainer.getTargetDataSource(governanceContainer.getServerLists());
+        return proxyContainer.getTargetDataSource(null == governanceContainer ? null : governanceContainer.getServerLists());
     }
     
     /**
