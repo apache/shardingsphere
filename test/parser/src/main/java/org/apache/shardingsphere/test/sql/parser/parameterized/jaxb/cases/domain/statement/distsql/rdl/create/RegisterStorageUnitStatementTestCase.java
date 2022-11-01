@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Add resource statement test case.
+ * Register storage unit statement test case.
  */
 @Getter
 @Setter

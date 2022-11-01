@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Add Resource statement assert.
+ * Register storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegisterStorageUnitStatementAssert {

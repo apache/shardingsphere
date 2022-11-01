@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Alter Resource statement assert.
+ * Alter storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterStorageUnitStatementAssert {

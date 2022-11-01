@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Alter resource statement test case.
+ * Alter storage unit statement test case.
  */
 @Getter
 public final class AlterStorageUnitStatementTestCase extends SQLParserTestCase {
