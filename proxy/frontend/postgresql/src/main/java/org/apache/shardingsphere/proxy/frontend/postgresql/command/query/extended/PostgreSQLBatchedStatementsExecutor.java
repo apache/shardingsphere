@@ -103,7 +103,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), parameters, preparedStatement.getSqlStatementContext().getSqlStatement(),
+                connectionSession.getDatabaseName());
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
@@ -178,7 +179,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
         Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
         DatabaseType protocolType = database.getProtocolType();
-        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, storageTypes, preparedStatement.getSqlStatement(), isExceptionThrown);
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, storageTypes, preparedStatement.getSqlStatementContext().getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
