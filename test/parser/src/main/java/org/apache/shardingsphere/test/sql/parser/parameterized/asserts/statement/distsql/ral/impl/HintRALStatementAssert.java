@@ -20,10 +20,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.hint.AddShardingHintDatabaseValueStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.hint.AddShardingHintTableValueStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 
 /**
@@ -42,6 +45,8 @@ public class HintRALStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final HintRALStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof AddShardingHintTableValueStatement) {
             AddShardingHintTableValueStatementAssert.assertIs(assertContext, (AddShardingHintTableValueStatement) actual, (AddShardingHintTableValueStatementTestCase) expected);
+        } else if (actual instanceof AddShardingHintDatabaseValueStatement) {
+            AddShardingHintDatabaseValueStatementAssert.assertIs(assertContext, (AddShardingHintDatabaseValueStatement) actual, (AddShardingHintDatabaseValueStatementTestCase) expected);
         }
     }
 }
