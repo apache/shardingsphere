@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show single table rules statement test case.
+ * Set default single table storage unit statement test case.
  */
 @Getter
 @Setter
-public final class ShowSingleTableRulesStatementTestCase extends DatabaseContainedTestCase {
+public final class SetDefaultSingleTableStorageUnitStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "default-storage-unit")
+    private String defaultStorageUnit;
 }

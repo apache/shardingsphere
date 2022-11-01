@@ -261,8 +261,6 @@
         </sharding-auditor>
     </alter-sharding-auditor>
     
-    <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
-
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
             <algorithm-segment algorithm-name="INLINE">

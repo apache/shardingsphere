@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.SetDefaultSingleTableStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultSingleTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.SetDefaultSingleTableStorageUnitStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,26 +29,26 @@ import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Create default single table rule statement assert.
+ * Set default single table storage unit statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CreateDefaultSingleTableRuleStatementAssert {
+public final class SetDefaultSingleTableStorageUnitStatementAssert {
     
     /**
-     * Assert create default single table rule statement is correct with expected parser result.
+     * Assert set default single table storage unit statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create default single table rule statement
-     * @param expected expected create default single table rule statement test case
+     * @param actual actual set default single table storage unit statement
+     * @param expected expected set default single table storage unit statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetDefaultSingleTableStorageUnitStatement actual,
-                                final CreateDefaultSingleTableRuleStatementTestCase expected) {
+                                final SetDefaultSingleTableStorageUnitStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s default data source assertion error: ", actual.getClass().getSimpleName())),
-                    actual.getDefaultResource(), is(expected.getDefaultDataSource()));
+                    actual.getDefaultStorageUnit(), is(expected.getDefaultStorageUnit()));
         }
     }
 }
