@@ -36,7 +36,7 @@ public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement 
     
     private final String groupName;
     
-    private final String resourceName;
+    private final String storageUnitName;
     
     private final String status;
     

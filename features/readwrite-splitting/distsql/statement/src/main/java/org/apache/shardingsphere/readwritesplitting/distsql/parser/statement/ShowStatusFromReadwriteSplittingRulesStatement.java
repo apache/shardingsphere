@@ -26,12 +26,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromD
 import java.util.Optional;
 
 /**
- * Show readwrite-splitting read resources statement.
+ * Show status from readwrite splitting rules statement.
  */
 
 @Getter
 @RequiredArgsConstructor
-public final class ShowReadwriteSplittingReadResourcesStatement extends QueryableRALStatement implements FromDatabaseAvailable {
+public final class ShowStatusFromReadwriteSplittingRulesStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
     private final DatabaseSegment database;
     

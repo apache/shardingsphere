@@ -36,7 +36,7 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,11 +50,11 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Show readwrite-splitting read resources executor.
+ * Show status from readwrite-splitting rules executor.
  */
-public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableRALBackendHandler<ShowReadwriteSplittingReadResourcesStatement> {
+public final class ShowStatusFromReadwriteSplittingRulesHandler extends QueryableRALBackendHandler<ShowStatusFromReadwriteSplittingRulesStatement> {
     
-    private static final String RESOURCE = "resource";
+    private static final String RESOURCE = "storage_unit";
     
     private static final String STATUS = "status";
     
