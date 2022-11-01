@@ -62,10 +62,10 @@ public final class HintRALStatementExecutorFactory {
             return new ShowReadwriteSplittingHintStatusExecutor();
         }
         if (sqlStatement instanceof ClearReadwriteSplittingHintStatement) {
-            return new ClearReadwriteSplittingHintExecutor();
+            return new ClearReadwriteSplittingHintExecutor((ClearReadwriteSplittingHintStatement) sqlStatement);
         }
         if (sqlStatement instanceof ClearHintStatement) {
-            return new ClearHintExecutor();
+            return new ClearHintExecutor((ClearHintStatement) sqlStatement);
         }
         if (sqlStatement instanceof SetShardingHintDatabaseValueStatement) {
             return new SetShardingHintDatabaseValueExecutor((SetShardingHintDatabaseValueStatement) sqlStatement);
@@ -80,7 +80,7 @@ public final class HintRALStatementExecutorFactory {
             return new ShowShardingHintStatusExecutor(connectionSession);
         }
         if (sqlStatement instanceof ClearShardingHintStatement) {
-            return new ClearShardingHintExecutor();
+            return new ClearShardingHintExecutor((ClearShardingHintStatement) sqlStatement);
         }
         throw new UnsupportedSQLOperationException(sqlStatement.getClass().getCanonicalName());
     }
