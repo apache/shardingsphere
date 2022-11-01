@@ -37,6 +37,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -60,7 +61,37 @@ public final class OpenGaussAuthenticationHandler {
     
     private static final String SHA256_ALGORITHM = "SHA-256";
     
+    private static final String SERVER_KEY = "Server Key";
+    
     private static final String CLIENT_KEY = "Client Key";
+    
+    /**
+     * Calculate server signature.
+     *
+     * @param password password
+     * @param salt salt in hex string
+     * @param nonce nonce in hex string
+     * @param serverIteration server iteration
+     * @return server signature
+     */
+    public static String calculateServerSignature(final String password, final String salt, final String nonce, final int serverIteration) {
+        byte[] k = generateKFromPBKDF2(password, salt, serverIteration);
+        byte[] serverKey = getKeyFromHmac(k, SERVER_KEY.getBytes(StandardCharsets.UTF_8));
+        byte[] result = getKeyFromHmac(serverKey, hexStringToBytes(nonce));
+        return bytesToHexString(result);
+    }
+    
+    private static String bytesToHexString(final byte[] src) {
+        StringBuilder result = new StringBuilder();
+        for (byte each : src) {
+            String hex = Integer.toHexString(each & 255);
+            if (hex.length() < 2) {
+                result.append(0);
+            }
+            result.append(hex);
+        }
+        return result.toString();
+    }
     
     /**
      * Login with SCRAM SHA-256 password.
