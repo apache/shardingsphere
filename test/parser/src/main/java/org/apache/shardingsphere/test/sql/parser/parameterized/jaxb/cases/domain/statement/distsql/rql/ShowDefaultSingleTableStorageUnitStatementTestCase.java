@@ -15,21 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 /**
- * Alter default single table rule statement test case.
+ * Show default single table storage unit statement test case.
  */
 @Getter
 @Setter
-public final class AlterDefaultSingleTableRuleStatementTestCase extends SQLParserTestCase {
-    
-    @XmlAttribute(name = "default-data-source")
-    private String defaultDataSource;
+public final class ShowDefaultSingleTableStorageUnitStatementTestCase extends DatabaseContainedTestCase {
 }

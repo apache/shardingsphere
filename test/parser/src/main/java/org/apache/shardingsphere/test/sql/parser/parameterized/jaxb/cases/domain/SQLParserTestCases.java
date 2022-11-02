@@ -345,7 +345,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultShardingStrategyStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateDefaultSingleTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.SetDefaultSingleTableStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateReadwriteSplittingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowRuleStatementTestCase;
@@ -393,7 +393,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableRulesUsedKeyGeneratorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultSingleTableStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAuditorsStatementTestCase;
@@ -1125,8 +1125,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-single-table")
     private final List<ShowSingleTableStatementTestCase> showSingleTableTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-single-table-rules")
-    private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesTestCases = new LinkedList<>();
+    @XmlElement(name = "show-default-single-table-storage-unit")
+    private final List<ShowDefaultSingleTableStorageUnitStatementTestCase> showDefaultSingleTableStorageUnitTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-nodes")
     private final List<ShowShardingTableNodesStatementTestCase> showShardingTableNodesTestCases = new LinkedList<>();
@@ -1197,14 +1197,11 @@ public final class SQLParserTestCases {
     @XmlElement(name = "shutdown")
     private final List<ShutdownStatementTestCase> shutdownTestCases = new LinkedList<>();
     
-    @XmlElement(name = "create-default-single-table")
-    private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "set-default-single-table-storage-unit")
+    private final List<SetDefaultSingleTableStorageUnitStatementTestCase> setDefaultSingleTableStorageUnitTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-default-single-table")
-    private final List<CreateDefaultSingleTableRuleStatementTestCase> alterDefaultSingleTableRuleTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "drop-default-single-table")
-    private final List<CreateDefaultSingleTableRuleStatementTestCase> dropDefaultSingleTableRuleTestCases = new LinkedList<>();
+    @XmlElement(name = "set-default-single-table-storage-unit-random")
+    private final List<SetDefaultSingleTableStorageUnitStatementTestCase> setDefaultSingleTableStorageUnitToRandomTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-open-tables")
     private final List<ShowOpenTablesStatementTestCase> showOpenTablesTestCases = new LinkedList<>();

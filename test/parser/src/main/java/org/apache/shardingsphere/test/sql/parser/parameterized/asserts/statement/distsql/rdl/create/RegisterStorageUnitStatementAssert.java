@@ -44,8 +44,8 @@ public final class RegisterStorageUnitStatementAssert {
      * Assert add resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual add resource statement
-     * @param expected expected add resource statement test case
+     * @param actual actual register storage unit statement
+     * @param expected expected register storage unit statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RegisterStorageUnitStatement actual, final RegisterStorageUnitStatementTestCase expected) {
         if (null == expected) {

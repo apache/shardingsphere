@@ -19,14 +19,11 @@ package org.apache.shardingsphere.proxy.backend.session;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public final class ServerServerPreparedStatementRegistryTest {
     
@@ -48,12 +45,7 @@ public final class ServerServerPreparedStatementRegistryTest {
         }
         
         @Override
-        public SQLStatement getSqlStatement() {
-            throw new UnsupportedSQLOperationException("");
-        }
-        
-        @Override
-        public Optional<SQLStatementContext<?>> getSqlStatementContext() {
+        public SQLStatementContext<?> getSqlStatementContext() {
             throw new UnsupportedSQLOperationException("");
         }
     }

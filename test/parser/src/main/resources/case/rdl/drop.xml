@@ -137,11 +137,7 @@
     </drop-shadow-algorithm>
 
     <drop-shadow-algorithm sql-case-id="drop-default-shadow-algorithm-if-exists" if-exists="true"/>
-
-    <drop-default-single-table sql-case-id="drop-default-single-table" />
     
-    <drop-default-single-table sql-case-id="drop-default-single-table-if-exists" if-exists="true"/>
-
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator" >
         <key-generator>uuid_key_generator</key-generator>
     </drop-sharding-key-generator>
