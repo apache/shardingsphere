@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.DropViewStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -55,7 +58,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
-        String dataSourceName = sqlStatementContext instanceof CursorAvailable
+        String dataSourceName = sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext)
                 ? shardingRule.getDataSourceNames().iterator().next()
                 : getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
@@ -80,6 +83,10 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             routeWithMultipleTables(result, shardingRule);
         }
         return result;
+    }
+    
+    private boolean isViewStatementContext(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext || sqlStatementContext instanceof DropViewStatementContext;
     }
     
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) {

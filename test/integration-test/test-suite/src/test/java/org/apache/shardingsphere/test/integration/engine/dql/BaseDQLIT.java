@@ -19,28 +19,23 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.h2.tools.RunScript;
 import org.junit.Before;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -60,17 +55,16 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     @Before
     public final void init() throws Exception {
-        initSQLAndFillDataOnlyOnce();
+        fillDataOnlyOnce();
         expectedDataSource = null == getAssertion().getExpectedDataSourceName() || 1 == getExpectedDataSourceMap().size()
                 ? getExpectedDataSourceMap().values().iterator().next()
                 : getExpectedDataSourceMap().get(getAssertion().getExpectedDataSourceName());
     }
     
-    private void initSQLAndFillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
+    private void fillDataOnlyOnce() throws SQLException, ParseException, IOException, JAXBException {
         if (!FILLED_SUITES.contains(getItKey())) {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
-                    executeLogicDatabaseInitSQLFile();
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.ACTUAL), getActualDataSourceMap()).fillData();
                     new DataSetEnvironmentManager(new ScenarioDataPath(getScenario()).getDataSetFile(Type.EXPECTED), getExpectedDataSourceMap()).fillData();
                     FILLED_SUITES.add(getItKey());
@@ -117,21 +111,6 @@ public abstract class BaseDQLIT extends SingleITCase {
                     assertThat(String.valueOf(actualValue), is(String.valueOf(expectedValue)));
                 }
             }
-        }
-    }
-    
-    private void executeLogicDatabaseInitSQLFile() throws SQLException, IOException {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(getScenario()).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, getDatabaseType());
-        if (logicDatabaseInitSQLFile.isPresent()) {
-            executeInitSQL(getTargetDataSource(), logicDatabaseInitSQLFile.get());
-        }
-    }
-    
-    private void executeInitSQL(final DataSource dataSource, final String logicDatabaseInitSQLFile) throws SQLException, IOException {
-        try (
-                Connection connection = dataSource.getConnection();
-                FileReader reader = new FileReader(logicDatabaseInitSQLFile)) {
-            RunScript.execute(connection, reader);
         }
     }
 }
