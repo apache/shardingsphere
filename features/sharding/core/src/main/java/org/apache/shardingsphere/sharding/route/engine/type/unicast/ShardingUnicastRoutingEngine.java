@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,9 +58,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
-        String dataSourceName = sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext)
-                ? shardingRule.getDataSourceNames().iterator().next()
-                : getRandomDataSourceName(shardingRule.getDataSourceNames());
+        String dataSourceName = getDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
@@ -85,6 +83,10 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         return result;
     }
     
+    private String getDataSourceName(final Collection<String> dataSourceNames) {
+        return sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
+    }
+    
     private boolean isViewStatementContext(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext || sqlStatementContext instanceof DropViewStatementContext;
     }
@@ -98,7 +100,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
             DataNode dataNode = tableRule.getActualDataNodes().get(0);
             tableMappers.add(new RouteMapper(each, dataNode.getTableName()));
             Set<String> currentDataSourceNames = tableRule.getActualDataNodes().stream().map(DataNode::getDataSourceName).collect(
-                    Collectors.toCollection(() -> new HashSet<>(tableRule.getActualDataSourceNames().size())));
+                    Collectors.toCollection(() -> new LinkedHashSet<>(tableRule.getActualDataSourceNames().size())));
             if (first) {
                 availableDataSourceNames = currentDataSourceNames;
                 first = false;
@@ -109,7 +111,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         if (availableDataSourceNames.isEmpty()) {
             throw new DataSourceIntersectionNotFoundException(logicTables);
         }
-        String dataSourceName = getRandomDataSourceName(availableDataSourceNames);
+        String dataSourceName = getDataSourceName(availableDataSourceNames);
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));
     }
     
