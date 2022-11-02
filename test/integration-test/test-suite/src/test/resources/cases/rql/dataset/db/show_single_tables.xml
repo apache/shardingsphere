@@ -20,15 +20,15 @@
         <column name="table_name" />
         <column name="resource_name" />
     </metadata>
+    <row values="t_merchant| ds_1" />
     <row values="t_order_aggregation_view| ds_0" />
-    <row values="t_product_detail| ds_1" />
-    <row values="t_single_table| ds_0" />
+    <row values="t_order_federate| ds_0" />
+    <row values="t_order_item_federate| ds_1" />
     <row values="t_order_subquery_view| ds_0" />
     <row values="t_order_union_view| ds_0" />
-    <row values="t_user| ds_0" />
-    <row values="t_order_item_federate| ds_1" />
-    <row values="t_order_federate| ds_0" />
-    <row values="t_product| ds_0" />
-    <row values="t_merchant| ds_1" />
     <row values="t_order_item_join_view| ds_0" />
+    <row values="t_product| ds_0" />
+    <row values="t_product_detail| ds_1" />
+    <row values="t_single_table| ds_0" />
+    <row values="t_user| ds_0" />
 </dataset>

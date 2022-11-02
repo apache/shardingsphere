@@ -55,7 +55,7 @@ public abstract class BaseITCase {
     
     private static final AtomicInteger COMPLETED_SUITES_COUNT = new AtomicInteger(0);
     
-    private static final Collection<String> FILLED_SUITES = new HashSet<>();
+    private static final Collection<String> INITIALIZED_SUITES = new HashSet<>();
     
     private final String mode;
     
@@ -99,11 +99,11 @@ public abstract class BaseITCase {
         if (!logicDatabaseInitSQLFile.isPresent()) {
             return;
         }
-        if (!FILLED_SUITES.contains(getItKey())) {
-            synchronized (FILLED_SUITES) {
-                if (!FILLED_SUITES.contains(getScenario())) {
+        if (!INITIALIZED_SUITES.contains(getItKey())) {
+            synchronized (INITIALIZED_SUITES) {
+                if (!INITIALIZED_SUITES.contains(getItKey())) {
                     executeInitSQL(targetDataSource, logicDatabaseInitSQLFile.get());
-                    FILLED_SUITES.add(getItKey());
+                    INITIALIZED_SUITES.add(getItKey());
                 }
             }
         }
