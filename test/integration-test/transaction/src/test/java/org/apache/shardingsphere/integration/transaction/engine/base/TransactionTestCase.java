@@ -53,9 +53,9 @@ public @interface TransactionTestCase {
     TransactionType[] transactionTypes() default {TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE};
     
     /**
-     * Specifies which group the test case belongs to.
+     * Specifies which scenario the test case belongs to.
      * 
      * @return test group
      */
-    String group() default "default";
+    String scenario() default "default";
 }
