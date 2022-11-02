@@ -69,8 +69,10 @@ public final class PostgresSQLAndOpenGaussTruncateTestCase extends BaseTransacti
     
     private void prepare() throws SQLException {
         Connection conn = getDataSource().getConnection();
+        conn.setAutoCommit(false);
         executeWithLog(conn, "delete from account;");
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+        conn.commit();
         conn.close();
     }
 }
