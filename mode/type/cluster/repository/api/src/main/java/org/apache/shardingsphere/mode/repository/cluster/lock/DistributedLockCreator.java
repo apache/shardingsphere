@@ -38,5 +38,5 @@ public interface DistributedLockCreator<C, P extends TypedProperties<?>> extends
      * @param props props
      * @return created distributed lock
      */
-    DistributedLock create(final String lockKey, final C client, final P props);
+    DistributedLock create(String lockKey, C client, P props);
 }
