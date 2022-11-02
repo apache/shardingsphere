@@ -17,27 +17,27 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable;
 
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingReadResourcesStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowStatusFromReadwriteSplittingRulesStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Show readwrite-splitting read resources statement assert.
+ * Show status from readwrite-splitting rules statement assert.
  */
-public final class ShowReadwriteSplittingReadResourcesStatementAssert {
+public final class ShowStatusFromReadwriteSplittingRulesStatementAssert {
     
     /**
      * Assert show readwrite-splitting read resources statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show readwrite-splitting read resources statement
-     * @param expected expected show readwrite-splitting read resources statement test case
+     * @param actual actual show status from readwrite-splitting rules statement
+     * @param expected expected show status from readwrite-splitting rules statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingReadResourcesStatement actual,
-                                final ShowReadwriteSplittingReadResourcesStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStatusFromReadwriteSplittingRulesStatement actual,
+                                final ShowStatusFromReadwriteSplittingRulesStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

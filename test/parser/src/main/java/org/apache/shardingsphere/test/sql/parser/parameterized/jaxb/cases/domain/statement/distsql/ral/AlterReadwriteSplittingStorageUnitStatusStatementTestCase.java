@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
-setReadwriteSplittingHintSource
-    : SET READWRITE_SPLITTING HINT SOURCE EQ sourceValue
-    ;
+import javax.xml.bind.annotation.XmlAttribute;
 
-showReadwriteSplittingHintStatus
-    : SHOW READWRITE_SPLITTING HINT STATUS
-    ;
-
-clearReadwriteSplittingHint
-    : CLEAR READWRITE_SPLITTING HINT
-    ;
-
-alterReadwriteSplittingStorageUnitStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
-    ;
-
-showStatusFromReadwriteSplittingRules
-    : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
-    ;
-
-sourceValue
-    : IDENTIFIER
-    ;
+/**
+ * Alter readwrite splitting storage unit status statement test case.
+ */
+@Getter
+@Setter
+public final class AlterReadwriteSplittingStorageUnitStatusStatementTestCase extends DatabaseContainedTestCase {
+    
+    @XmlAttribute(name = "group-name")
+    private String groupName;
+    
+    @XmlAttribute(name = "storage-unit-name")
+    private String storageUnitName;
+    
+    @XmlAttribute(name = "status")
+    private String status;
+}

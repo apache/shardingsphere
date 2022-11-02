@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Show readwrite-splitting read resources statement test case.
+ * Show status from readwrite-splitting rules statement test case.
  */
-public final class ShowReadwriteSplittingReadResourcesStatementTestCase extends SQLParserTestCase {
+public final class ShowStatusFromReadwriteSplittingRulesStatementTestCase extends SQLParserTestCase {
 }
