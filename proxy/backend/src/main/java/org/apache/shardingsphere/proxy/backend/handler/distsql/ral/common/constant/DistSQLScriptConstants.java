@@ -178,9 +178,9 @@ public final class DistSQLScriptConstants {
     
     public static final String CIPHER = "CIPHER=%s";
     
-    public static final String TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
+    public static final String TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
     
-    public static final String ENCRYPT_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME=\'%s\')";
+    public static final String ENCRYPT_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME='%s')";
     
     public static final String CREATE_SHADOW = "CREATE SHADOW RULE";
     

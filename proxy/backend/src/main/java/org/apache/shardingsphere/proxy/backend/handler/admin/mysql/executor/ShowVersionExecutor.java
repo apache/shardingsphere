@@ -37,8 +37,8 @@ import java.util.Collections;
 /**
  * Show version executor.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String FUNCTION_NAME = "version()";
