@@ -1,32 +1,24 @@
 +++
-pre = "<b>3.2. </b>"
+pre = "<b>3.5. </b>"
 title = "DB Gateway"
-weight = 2
+weight = 5
 chapter = true
 +++
 
-## Definition
+## Background
 
-As database fragmentation is an irreversible trend, the coexistence of multiple types of databases has been normal. An increasing number of scenarios use an SQL dialect to access heterogeneous databases. Diversified databases make it difficult to standardize SQL dialects for accessing databases. Engineers need to use different dialects for different kinds of databases, and a unified query platform is needed.
+With the trend of database fragmentation, using multiple types of databases together has become the norm. The scenario of using one SQL dialect to access all heterogeneous databases is increasing.
 
-The database gateway can automatically translate different types of database dialects into the dialects used by the back-end database, making it much easier for users to use the underlying heterogeneous database.
+## Challenges
 
-## Related Concepts
+The existence of diversified databases makes it difficult to standardize the SQL dialect accessing the database. Engineers need to use different dialects for different kinds of databases, and there is no unified query platform.
 
-### SQL Dialect
+Automatically translate different types of database dialects into the dialects used by the database, so that engineers can use any database dialect to access all heterogeneous databases, which can reduce development and maintenance cost greatly.
 
-SQL dialect means database dialect, and it indicates that some database projects have their own unique syntax in addition to SQL, which are also called dialects. Different database projects may have different SQL dialects.
+## Goal
 
-## Impact on the System
+The goal of database gateway for Apache ShardingSphere is translating SQL automatically among various databases.
 
-Through database gateway, engineers can use any database dialect to access all back-end heterogeneous databases, which can greatly reduce development and maintenance costs.
+## Application Scenarios
 
-## Limitations
-
-The SQL dialect translation of Apache ShardingSphere is experimental.
-
-Currently, only MySQL/PostgreSQL dialects can be automatically translated. Engineers can use MySQL dialects and protocols to access PostgreSQL databases and vice versa.
-
-## Related References
-
-Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-sql-translator
+As business scenarios and database products of enterprises become increasingly diversified, the connection between business applications and various database products becomes extremely complex. ShardingSphere database gateway can shield the connection between business applications and the underlying diversified databases. At the same time, it provides a unified access protocol and syntax system for different business scenarios, which can help enterprises quickly build a unified data access platform.

@@ -15,12 +15,12 @@ Class name: org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration
 
 Attributes:
 
-| *Name*   | *Data Type*  | *Description*  | *Default* |
-| -------- | ----------- | ------- | ------- |
-| dataSources  | Map\<String, ShadowDataSourceConfiguration\> | shadow data source mapping name and configuration | no  |
-| tables | Map\<String, ShadowTableConfiguration\> | shadow table name and configuration | no |
-| shadowAlgorithms | Map\<String, ShardingSphereAlgorithmConfiguration\> | shadow algorithm name and configuration | no  |
-| defaultShadowAlgorithmName | String | default shadow algorithm name  | no |
+| *Name*                     | *Data Type*                                  | *Description*                                     |
+| -------------------------- | -------------------------------------------- | ------------------------------------------------- |
+| dataSources                | Map\<String, ShadowDataSourceConfiguration\> | shadow data source mapping name and configuration |
+| tables                     | Map\<String, ShadowTableConfiguration\>      | shadow table name and configuration               |
+| shadowAlgorithms           | Map\<String, AlgorithmConfiguration\>        | shadow algorithm name and configuration           |
+| defaultShadowAlgorithmName | String                                       | default shadow algorithm name                     |
 
 ### Shadow Data Source Configuration
 
@@ -28,10 +28,10 @@ Class name: org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSou
 
 Attributes:
 
-| *Name*               | *DataType* | *Description*               |
-| -------------------- | ---------- | --------------------------- |
-| sourceDataSourceName | String     | Production data source name |
-| shadowDataSourceName | String     | Shadow data source name     |
+| *Name*                   | *DataType* | *Description*               |
+| ------------------------ | ---------- | --------------------------- |
+| productionDataSourceName | String     | Production data source name |
+| shadowDataSourceName     | String     | Shadow data source name     |
 
 ### Shadow Table Configuration
 
@@ -46,7 +46,7 @@ Attributes:
 
 ### Shadow Algorithm Configuration
 
-Class name：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
+Class name：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
 
 Attributes:
 
@@ -55,7 +55,7 @@ Attributes:
 | type | String | shadow algorithm type |
 | props | Properties | shadow algorithm configuration |
 
-Please refer to [Built-in Shadow Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow).
+Please refer to [Built-in Shadow Algorithm List](/en/user-manual/common-config/builtin-algorithm/shadow).
 
 ## Procedure
 
@@ -112,13 +112,13 @@ public final class ShadowConfiguration {
         return result;
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createShadowAlgorithmConfigurations() {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties userIdInsertProps = new Properties();
         userIdInsertProps.setProperty("operation", "insert");
         userIdInsertProps.setProperty("column", "user_type");
         userIdInsertProps.setProperty("value", "1");
-        result.put("user-id-insert-match-algorithm", new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
+        result.put("user-id-insert-match-algorithm", new AlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
         return result;
     }
 }

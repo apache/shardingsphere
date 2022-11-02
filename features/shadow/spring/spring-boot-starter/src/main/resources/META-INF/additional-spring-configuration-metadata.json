@@ -1,0 +1,101 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{
+  "groups": [
+    {
+      "name": "spring.shardingsphere.rules.shadow",
+      "type": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration",
+      "sourceType": "org.apache.shardingsphere.shadow.spring.boot.rule.YamlShadowRuleSpringBootConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.data-sources",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration>",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.tables",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration>",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.shadow-algorithms",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.shardingsphere.rules.shadow.default-shadow-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.data-sources",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration>",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.tables",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration>",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.shadow-algorithms",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.shardingsphere.rules.shadow.data-sources.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.tables.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.shadow.shadow-algorithms.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
+          }
+        }
+      ]
+    }
+  ]
+}

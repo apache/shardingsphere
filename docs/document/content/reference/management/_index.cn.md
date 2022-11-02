@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.2. </b>"
+pre = "<b>7.3. </b>"
 title = "管控"
-weight = 2
+weight = 3
 +++
 
 ## 注册中心数据结构
@@ -18,6 +18,9 @@ namespace
    ├     ├     ├     ├──${schemaName}         # 逻辑 Schema 名称
    ├     ├     ├     ├     ├──tables          # 表结构配置
    ├     ├     ├     ├     ├     ├──${tableName} 
+   ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # 视图结构配置
+   ├     ├     ├     ├     ├     ├──${viewName} 
    ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # 元数据版本列表      
@@ -37,40 +40,32 @@ namespace
    ├    ├     ├     ├     ├──UUID             # JDBC 实例唯一标识
    ├    ├     ├     ├     ├──....   
    ├    ├     ├──status
-   ├    ├     ├     ├──UUID
-   ├    ├     ├     ├──....
-   ├    ├     ├──xa_recovery_id
-   ├    ├     ├     ├──recovery_id
-   ├    ├     ├     ├     ├──UUID     
+   ├    ├     ├     ├──UUID                   
    ├    ├     ├     ├──....
    ├    ├     ├──worker_id
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....
    ├    ├     ├──process_trigger
    ├    ├     ├     ├──process_list_id:UUID
-   ├    ├     ├     ├──....            
-   ├    ├──storage_nodes
-   ├    ├     ├──disable
-   ├    ├     ├      ├──${schema_1.ds_0}
-   ├    ├     ├      ├──${schema_1.ds_1}
-   ├    ├     ├      ├──....
-   ├    ├     ├──primary
-   ├    ├     ├      ├──${schema_2.ds_0}
-   ├    ├     ├      ├──${schema_2.ds_1}
-   ├    ├     ├      ├──....
+   ├    ├     ├     ├──....
+   ├    ├     ├──labels                      
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....               
+   ├    ├──storage_nodes                       
+   ├    ├     ├──${databaseName.groupName.ds} 
+   ├    ├     ├──${databaseName.groupName.ds}
 ```
 
 ### /rules
 
-全局规则配置，可包括访问 ShardingSphere-Proxy 用户名和密码的权限配置。
+全局规则配置，可包含事务配置、SQL 解析配置等。
 
 ```yaml
-- !AUTHORITY
-users:
-  - root@%:root
-  - sharding@127.0.0.1:sharding
-provider:
-  type: ALL_PERMITTED
+- !TRANSACTION
+  defaultType: XA
+  providerType: Atomikos
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 ### /props

@@ -30,7 +30,7 @@ weight = 5
 |  *名称*  |  *类型*  | *说明*  |
 | ------- | -------- | ------- |
 | id | 属性 | Spring Bean Id |
-| source-data-source-name | 属性 | 生产数据源名称 |
+| production-data-source-name | 属性 | 生产数据源名称 |
 | shadow-data-source-name | 属性 | 影子数据源名称 |
 
 ###  影子表配置：
@@ -63,7 +63,7 @@ weight = 5
 | type | 属性 | 影子算法类型 |
 | props (?) | 标签 | 影子算法属性配置 |
 
-详情请参见[内置影子算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow)
+详情请参见[内置影子算法列表](/cn/user-manual/common-config/builtin-algorithm/shadow)
 
 ## 操作步骤
 1. 创建生产和影子数据源。
@@ -89,7 +89,7 @@ weight = 5
     </shadow:shadow-algorithm>
 
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
+        <shadow:data-source id="shadow-data-source" production-data-source-name="ds" shadow-data-source-name="ds_shadow"/>
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
         <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
         </shadow:shadow-table>

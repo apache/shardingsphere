@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <distsql-case id="set-dist-variable" value="SET DIST VARIABLE TRANSACTION_TYPE='LOCAL'" />
+    
+    <distsql-case id="refresh-table-metadata" value="REFRESH TABLE METADATA" />
+    <distsql-case id="refresh-table-metadata-with-table-name" value="REFRESH TABLE METADATA t_order" />
+    <distsql-case id="refresh-table-metadata-with-resource" value="REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_0" />
+    <distsql-case id="refresh-table-metadata-with-schema" value="REFRESH TABLE METADATA FROM STORAGE UNIT ds_0 SCHEMA public" />
+    <distsql-case id="refresh-table-metadata-table-with-schema" value="REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_0 SCHEMA public" />
+    
+    <distsql-case id="alter-sql-parser-rule" value="ALTER SQL_PARSER RULE SQL_COMMENT_PARSE_ENABLE=false,PARSE_TREE_CACHE(INITIAL_CAPACITY=10, MAXIMUM_SIZE=11,CONCURRENCY_LEVEL=1), SQL_STATEMENT_CACHE(INITIAL_CAPACITY=11, MAXIMUM_SIZE=11,CONCURRENCY_LEVEL=100)" />
+    <distsql-case id="alter-local-transaction-rule" value="ALTER TRANSACTION RULE (DEFAULT='LOCAL')" />
+    <distsql-case id="alter-xa-transaction-rule" value="ALTER TRANSACTION RULE(DEFAULT='XA', TYPE(NAME='Atomikos'))" />
+    
+    <distsql-case id="create-traffic-rule" value="CREATE TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" />
+    <distsql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME='SQL_MATCH',PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME='RANDOM', PROPERTIES('key'='value'))) )" />
+    <distsql-case id="drop-traffic-rule" value="DROP TRAFFIC RULE rule_name" />
+    
+    <distsql-case id="alter-compute-node-xa-recovery-nodes" value="ALTER COMPUTE NODE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" />
+    <distsql-case id="alter-compute-node-xa-recovery-nodes-with-multiple-values" value="ALTER COMPUTE NODE instance_xa_recovery_multiple SET XA_RECOVERY_NODES='instance_1,instance_2'" />
+    
+    <distsql-case id="label-compute-node" value="LABEL COMPUTE NODE instance_label WITH OLAP_1,OLAP_2" />
+    <distsql-case id="relabel-compute-node" value="RELABEL COMPUTE NODE instance_relabel WITH OLAP_1,OLAP_2" />
+    <distsql-case id="unlabel-compute-node" value="UNLABEL COMPUTE NODE instance_unlabel WITH OLAP_1" />
+    <distsql-case id="unlabel-compute-node-without-label" value="UNLABEL COMPUTE NODE instance_unlabel_2" />
+    
+    <distsql-case id="prepare-distsql" value="PREPARE DISTSQL" />
+    <distsql-case id="apply-distsql" value="APPLY DISTSQL" />
+    <distsql-case id="discard-distsql" value="DISCARD DISTSQL" />
+    
+    <distsql-case id="import-database-config" value="IMPORT DATABASE CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" />
+</sql-cases>

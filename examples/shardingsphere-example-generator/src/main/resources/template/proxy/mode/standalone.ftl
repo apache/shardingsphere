@@ -18,5 +18,4 @@
 mode:
   type: Standalone
   repository:
-    type: H2
-  overwrite: false
+    type: JDBC

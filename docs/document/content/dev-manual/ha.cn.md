@@ -5,18 +5,20 @@ weight = 9
 chapter = true
 +++
 
-## SPI 接口
+## DatabaseDiscoveryProviderAlgorithm
 
-| *SPI 名称*                                                    | *详细说明*                        |
-| ------------------------------------------------------------ | -------------------------------- |
-| DatabaseDiscoveryProviderAlgorithm                           | 数据库发现算法                      |
+### 全限定类名
 
-## 示例
+[`org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/db-discovery/api/src/main/java/org/apache/shardingsphere/dbdiscovery/spi/DatabaseDiscoveryProviderAlgorithm.java)
 
-### DatabaseDiscoveryProviderAlgorithm 
+### 定义
 
-| *已知实现类*                                                   | *详细说明*                         |
-| ------------------------------------------------------------ | --------------------------------- |
-| MGRDatabaseDiscoveryProviderAlgorithm                        | 基于 MySQL MGR 的数据库发现算法       |
-| MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm     | 基于 MySQL 主从同步的数据库发现算法     |
-| OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm | 基于 openGauss 主从同步的数据库发现算法 |
+数据库发现提供算法的定义
+
+### 已知实现
+
+| *配置标识*                     | *详细说明*                                     | *全限定类名*                  |
+| ---------------------------- | -----------------------------------------------| ---------------------------- |
+| MySQL.MGR                    | 基于 MySQL MGR 的数据库发现算法                   | [`org.apache.shardingsphere.dbdiscovery.mysql.type.MGRMySQLDatabaseDiscoveryProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/db-discovery/provider/mysql/src/main/java/org/apache/shardingsphere/dbdiscovery/mysql/type/MGRMySQLDatabaseDiscoveryProviderAlgorithm.java) |
+| MySQL.NORMAL_REPLICATION     | 基于 MySQL 主从同步的数据库发现算法                | [`org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/db-discovery/provider/mysql/src/main/java/org/apache/shardingsphere/dbdiscovery/mysql/type/MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm.java) |
+| openGauss.NORMAL_REPLICATION | 基于 openGauss 主从同步的数据库发现算法            | [`org.apache.shardingsphere.dbdiscovery.opengauss.OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/db-discovery/provider/opengauss/src/main/java/org/apache/shardingsphere/dbdiscovery/opengauss/OpenGaussNormalReplicationDatabaseDiscoveryProviderAlgorithm.java) |

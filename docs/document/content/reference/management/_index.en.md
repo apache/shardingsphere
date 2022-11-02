@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.2. </b>"
+pre = "<b>7.3. </b>"
 title = "Management"
-weight = 2
+weight = 3
 +++
 
 ## Data Structure in Registry Center
@@ -18,6 +18,9 @@ namespace
    ├     ├     ├     ├──${schemaName}         # Logic schema name
    ├     ├     ├     ├     ├──tables          # Table configuration
    ├     ├     ├     ├     ├     ├──${tableName} 
+   ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # View configuration
+   ├     ├     ├     ├     ├     ├──${viewName} 
    ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # Metadata version list      
@@ -37,40 +40,32 @@ namespace
    ├    ├     ├     ├     ├──UUID             # JDBC instance identifier
    ├    ├     ├     ├     ├──....   
    ├    ├     ├──status
-   ├    ├     ├     ├──UUID
-   ├    ├     ├     ├──....
-   ├    ├     ├──xa_recovery_id
-   ├    ├     ├     ├──recovery_id
-   ├    ├     ├     ├     ├──UUID     
+   ├    ├     ├     ├──UUID                   
    ├    ├     ├     ├──....
    ├    ├     ├──worker_id
    ├    ├     ├     ├──UUID
    ├    ├     ├     ├──....
    ├    ├     ├──process_trigger
    ├    ├     ├     ├──process_list_id:UUID
-   ├    ├     ├     ├──....            
-   ├    ├──storage_nodes
-   ├    ├     ├──disable
-   ├    ├     ├      ├──${schema_1.ds_0}
-   ├    ├     ├      ├──${schema_1.ds_1}
-   ├    ├     ├      ├──....
-   ├    ├     ├──primary
-   ├    ├     ├      ├──${schema_2.ds_0}
-   ├    ├     ├      ├──${schema_2.ds_1}
-   ├    ├     ├      ├──....   
+   ├    ├     ├     ├──....
+   ├    ├     ├──labels                      
+   ├    ├     ├     ├──UUID
+   ├    ├     ├     ├──....               
+   ├    ├──storage_nodes                       
+   ├    ├     ├──${databaseName.groupName.ds} 
+   ├    ├     ├──${databaseName.groupName.ds}
 ```
 
 ### /rules
 
-global rule configurations, including configure the username and password for ShardingSphere-Proxy.
+Global rule configuration, which can include transaction configuration, SQL parser configuration, etc.
 
 ```yaml
-- !AUTHORITY
-users:
-  - root@%:root
-  - sharding@127.0.0.1:sharding
-provider:
-  type: ALL_PERMITTED
+- !TRANSACTION
+  defaultType: XA
+  providerType: Atomikos
+- !SQL_PARSER
+  sqlCommentParseEnabled: true
 ```
 
 ### /props

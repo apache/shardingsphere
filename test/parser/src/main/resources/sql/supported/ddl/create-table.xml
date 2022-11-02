@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_table" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))" />
+    <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL" />
+    <sql-case id="create_table_with_keyword" value="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="create_temporary_table_if_not_exists" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="create_global_temporary_table" value="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_private_temporary_table" value="CREATE PRIVATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_shared_table" value="CREATE SHARDED TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_duplicated_table" value="CREATE DUPLICATED TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_metadata" value="CREATE TABLE t_log SHARING = METADATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_data" value="CREATE TABLE t_log SHARING = DATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_extended_data" value="CREATE TABLE t_log SHARING = EXTENDED DATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_none" value="CREATE TABLE t_log SHARING = NONE (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR READ" db-types="Oracle" />
+    <sql-case id="create_table_with_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
+    <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
+    <sql-case id="create_object_table" value="CREATE TABLE t_log OF t_log_type" db-types="Oracle" />
+    <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_unlogged_table" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_space" value="    CREATE TABLE t_order_item (
+        item_id INT,
+        order_id INT,
+        user_id INT,
+        status VARCHAR(10),
+        column1 VARCHAR(10),
+        column2 VARCHAR(10),
+        column3 VARCHAR(10)
+    )" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="create_table_with_back_quota" value="CREATE TABLE `t_order` (`order_id` INT, `user_id` INT, `status` VARCHAR(10), `column1` VARCHAR(10), `column2` VARCHAR(10), `column3` VARCHAR(10)) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_temporary_table" value="CREATE TEMPORARY TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_column_not_null" value="CREATE TABLE t_order (order_id INT NOT NULL, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_column_default" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_column_increment" value="CREATE TABLE t_order (order_id INT AUTO_INCREMENT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_column_generated" value="CREATE TABLE t_order (order_id INT GENERATED ALWAYS AS (user_id * 2), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_column_comment" value="CREATE TABLE t_order (order_id INT COMMENT 'order_id', user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_inline_primary_key" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_unique_key" value="CREATE TABLE t_order (order_id INT UNIQUE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_foreign_key" value="CREATE TABLE t_order_item (item_id INT, order_id INT REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_inline_constraints" value="CREATE TABLE t_order (order_id INT PRIMARY KEY UNIQUE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="MySQL,Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_out_of_line_primary_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT pk_order_id PRIMARY KEY (order_id))" />
+    <sql-case id="create_table_with_out_of_line_composite_primary_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT pk_order_id PRIMARY KEY (order_id, user_id, status))" />
+<!--    TODO support PostgreSQL,openGauss Oracle SQLServer-->
+    <sql-case id="create_table_with_out_of_line_unique_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT uk_order_id UNIQUE KEY order_id_index (order_id))" db-types="MySQL" />
+<!--    TODO support PostgreSQL,openGauss Oracle SQLServer-->
+    <sql-case id="create_table_with_out_of_line_composite_unique_key" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT uk_order_id UNIQUE (order_id, user_id, status))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_foreign_key" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE)" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_out_of_line_composite_foreign_key" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id, user_id, status) REFERENCES t_order (order_id, user_id, status) ON UPDATE CASCADE ON DELETE CASCADE)" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_table_with_out_of_line_check" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), CHECK (order_id > 0))" />
+<!--    TODO support PostgreSQL,openGauss SQLServer-->
+    <sql-case id="create_table_with_out_of_line_constraints" value="CREATE TABLE t_order_item (item_id INT, order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, CHECK (item_id > 0))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_composite_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id, user_id, status))" db-types="MySQL" />
+    <sql-case id="create_table_with_out_of_line_btree_index" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10), INDEX order_index (order_id) USING BTREE)" db-types="MySQL" />
+    <sql-case id="create_table_with_comment" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) COMMENT 't_order'" db-types="MySQL" />
+    <sql-case id="create_table_with_partition" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="MySQL" />
+    <sql-case id="create_table_with_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; NUMBER(10), &quot;user_id&quot; NUMBER(10), &quot;status&quot; VARCHAR2(10), &quot;column1&quot; VARCHAR2(10), &quot;column2&quot; VARCHAR2(10), &quot;column3&quot; VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_column_on_null_default" value="CREATE TABLE t_order (order_id NUMBER(10) DEFAULT ON NULL 0, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_column_identity" value="CREATE TABLE t_order (order_id NUMBER(10) GENERATED BY DEFAULT AS IDENTITY START WITH 1 MAXVALUE 100, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_column_encrypt" value="CREATE TABLE t_order (order_id NUMBER(10) ENCRYPT USING 'encrypt_algorithm' IDENTIFIED BY '123456', user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_inline_foreign_key_reference" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10) CONSTRAINT fk_order_id REFERENCES t_order (order_id) ON DELETE CASCADE, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_check" value="CREATE TABLE t_order (order_id NUMBER(10) CONSTRAINT chk_order_id CHECK (order_id > 0), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_inline_constraints_cascade" value="CREATE TABLE t_order_item (item_id NUMBER(10) PRIMARY KEY UNIQUE NOT NULL CHECK (order_id > 0), order_id NUMBER(10) CONSTRAINT fk_order_id REFERENCES t_order (order_id) ON DELETE CASCADE, user_id NUMBER(10), status VARCHAR2(10) NULL, column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle,PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_out_of_line_foreign_key_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE)" db-types="Oracle" />
+    <sql-case id="create_table_with_out_of_line_composite_foreign_key_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), CONSTRAINT fk_order_id FOREIGN KEY (order_id, user_id, status) REFERENCES t_order (order_id, user_id, status) ON DELETE CASCADE)" db-types="Oracle" />
+    <sql-case id="create_table_with_out_of_line_constraints_oracle" value="CREATE TABLE t_order_item (item_id NUMBER(10), order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10), PRIMARY KEY (item_id), UNIQUE (item_id), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE), CHECK (item_id > 0))" db-types="Oracle" />
+    <sql-case id="create_table_with_exist_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX order_index, user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_create_index" value="CREATE TABLE t_order (order_id NUMBER(10) PRIMARY KEY USING INDEX (CREATE INDEX order_index ON t_order (order_id)), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_double_quota" value="CREATE TABLE &quot;t_order&quot; (&quot;order_id&quot; INTEGER, &quot;user_id&quot; INTEGER, &quot;status&quot; VARCHAR(10), &quot;column1&quot; VARCHAR(10), &quot;column2&quot; VARCHAR(10), &quot;column3&quot; VARCHAR(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_local_temporary_table" value="CREATE LOCAL TEMPORARY TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_range_partition" value="CREATE TABLE t_order (order_id INTEGER, user_id INTEGER, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) PARTITION BY RANGE (order_id)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_partition_oracle" value="CREATE TABLE t_order (order_id NUMBER(10), user_id NUMBER(10), status VARCHAR2(10), column1 VARCHAR2(10), column2 VARCHAR2(10), column3 VARCHAR2(10)) PARTITION BY HASH (order_id) PARTITIONS 2" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_table_oracle" value="CREATE TABLE xwarehouses OF XMLTYPE XMLSCHEMA &quot;http://www.example.com/xwarehouses.xsd&quot; ELEMENT &quot;Warehouse&quot; ;" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_column_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS CLOB (TABLESPACE example STORAGE (INITIAL 6144) CHUNK 4000 NOCACHE LOGGING);" db-types="Oracle" />
+    <sql-case id="create_table_with_xmltype_column_clob_oracle" value="CREATE TABLE xwarehouses (warehouse_id NUMBER, warehouse_spec XMLTYPE) XMLTYPE warehouse_spec STORE AS SECUREFILE CLOB (TABLESPACE auto_seg_ts STORAGE (INITIAL 6144) CACHE);" db-types="Oracle" />
+    <!--    TODO support create table with like and inherits on PostgreSQL,openGauss-->
+    <sql-case id="create_table_with_bracket" value="CREATE TABLE [t_order] ([order_id] INT, [user_id] INT, [status] VARCHAR(10), [column1] VARCHAR(10), [column2] VARCHAR(10), [column3] VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_identity" value="CREATE TABLE t_order (order_id INT IDENTITY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_column_as" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column1 AS UPPER(status), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_column_encrypt_algorithm" value="CREATE TABLE t_order (order_id INT ENCRYPTED WITH (COLUMN_ENCRYPTION_KEY = key_name, ENCRYPTION_TYPE = RANDOMIZED, ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256'), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_primary_key_sqlserver" value="CREATE TABLE t_order (order_id INT CONSTRAINT pk_order_id PRIMARY KEY, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_unique_key_sqlserver" value="CREATE TABLE t_order (order_id INT CONSTRAINT uk_order_id UNIQUE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_foreign_key_sqlserver" value="CREATE TABLE t_order_item (item_id INT, order_id INT CONSTRAINT fk_order_id REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_check_sqlserver" value="CREATE TABLE t_order (order_id INT CONSTRAINT chk_order_id CHECK (order_id > 0), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_inline_constraints_sqlserver" value="CREATE TABLE t_order (order_id INT PRIMARY KEY UNIQUE CHECK (order_id > 0), user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_index" value="CREATE TABLE t_order (order_id INT INDEX order_index, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10))" db-types="SQLServer" />
+    <sql-case id="create_table_with_range_partitioned_and_values" value="CREATE TABLE t_order PARTITION OF cities (CONSTRAINT city_id_nonzero CHECK (city_id != 0)) FOR VALUES IN ('a', 'b') PARTITION BY RANGE (population)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_partition_by_hash" value="CREATE TABLE t_order (order_id bigint not null,cust_id bigint not null,status text) PARTITION BY HASH (order_id)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_partition_by_list" value="CREATE TABLE t_order (city_id bigserial not null,name text not null,population bigint) PARTITION BY LIST (left(lower(name), 1))" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_of_type" value="CREATE TABLE t_order OF employee_type (PRIMARY KEY (name),salary WITH OPTIONS DEFAULT 1000)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_in_tablespace" value="CREATE TABLE t_order (id serial,name text,location text) TABLESPACE diskvol1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_sign_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) SIGNED)" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_column" value="CREATE TABLE t_order(id INT PRIMARY KEY, order_id BIGINT(20) UNSIGNED)" db-types="MySQL" />
+    <sql-case id="create_table_with_on_update_current_timestamp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)" db-types="MySQL" />
+    <sql-case id="create_table_with_on_update_current_timestamp_and_fsp" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, create_time DATETIME DEFAULT CURRENT_TIMESTAMP, modify_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6))" db-types="MySQL" />
+    <sql-case id="create_table_with_on_other_vendor_data_type" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, num MIDDLEINT(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_enum_and_character_set" value="CREATE TABLE t_order (order_id INT PRIMARY KEY, status ENUM('0', '1') CHARACTER SET UTF8)" db-types="MySQL" />
+    <sql-case id="create_table_with_storage_parameter" value="CREATE TABLE t_order (order_id INT DEFAULT 0, user_id INT, status VARCHAR(10), column1 VARCHAR(10), column2 VARCHAR(10), column3 VARCHAR(10)) WITH (FILLFACTOR = 80, ORIENTATION=ROW)" db-types="openGauss" />
+    <sql-case id="create_table_as_select" value="CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
+    <sql-case id="create_table_as_select_with_explicit_column_names" value="CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="create_table_as_select_with_query_hint" value="CREATE TABLE dbo.t_order_new WITH (DISTRIBUTION = ROUND_ROBIN, CLUSTERED COLUMNSTORE INDEX) AS SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id OPTION ( HASH JOIN )" db-types="SQLServer" />
+    <sql-case id="create_remote_table_as_select" value="CREATE REMOTE TABLE t_order_new AT ('Data Source = ds_0, 3306; User ID = ROOT; Password = 123456;') AS SELECT i.* FROM t_order_item i JOIN t_order o ON i.order_id = o.order_id" db-types="SQLServer" />
+    <sql-case id="create_table_with_chinese_word" value="CREATE TABLE 测试表(id int PRIMARY KEY, status varchar(10))" />
+    <sql-case id="create_table_with_chinese_word_with_quote_mysql" value="CREATE TABLE `测试表`(id int PRIMARY KEY, status varchar(10))" db-types="MySQL" />
+    <sql-case id="create_table_with_chinese_word_with_quote" value="CREATE TABLE &quot;测试表&quot;(id int PRIMARY KEY, status varchar(10))" db-types="Oracle,PostgreSQL,openGauss,SQLServer,SQL92" />
+    <sql-case id="create_bit_xor_table" value="create table BIT_XOR(a int)" db-types="MySQL" />
+    <sql-case id="create_bit_xor_table_with_space" value="create table BIT_XOR (a int)" db-types="MySQL" />
+    <sql-case id="create_table_path" value="CREATE TABLE files (path PATH);" db-types="PostgreSQL" />
+    <sql-case id="create_table_national" value="CREATE TABLE t_order (national int);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_visible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) VISIBLE) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_invisible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) INVISIBLE) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_varchar2_char_and_byte_type" value="CREATE TABLE t_order (SYS_ID VARCHAR2(32 CHAR) VISIBLE NOT NULL, ATTACHMENT_NAME VARCHAR2(1024 BYTE) VISIBLE DEFAULT '')" db-types="Oracle" />
+</sql-cases>

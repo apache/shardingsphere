@@ -8,7 +8,7 @@ weight = 2
 
 ## 参数解释
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.1.2.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/readwrite-splitting/readwrite-splitting-5.2.1.xsd)
 
 \<readwrite-splitting:rule />
 
@@ -53,7 +53,7 @@ weight = 2
 | type      | 属性  | 负载均衡算法类型    |
 | props (?) | 标签  | 负载均衡算法属性配置 |
 
-算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
+算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
 查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
 
 ## 操作步骤
@@ -77,5 +77,5 @@ weight = 2
 ## 相关参考
 - [核心特性：读写分离](/cn/features/readwrite-splitting/)
 - [Java API：读写分离](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
-- [YAML配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
+- [YAML 配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
 - [Spring Boot Starter：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)

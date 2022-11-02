@@ -189,7 +189,6 @@ props:
   proxy-hint-enabled: false
   sql-show: false
   check-table-metadata-enabled: false
-  show-process-list-enabled: false
     # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
     # The default value is -1, which means set the minimum value for different JDBC drivers.
   proxy-backend-query-fetch-size: -1
@@ -427,7 +426,7 @@ This, then, is the beauty of cluster governance.
 
 [ShardingSphere Slack Channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9%7EI4rYcR18bq0SYTg)
 
-[Contributor Guide](https://shardingsphere.apache.org/community/cn/contribute/)
+[Contributor Guide](https://shardingsphere.apache.org/community/cn/involved/)
 
 ## Author
 

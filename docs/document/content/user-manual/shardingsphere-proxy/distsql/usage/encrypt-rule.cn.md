@@ -3,15 +3,15 @@ title = "数据加密"
 weight = 3
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
-ADD RESOURCE ds_0 (
-    HOST=127.0.0.1,
+REGISTER STORAGE UNIT ds_0 (
+    HOST="127.0.0.1",
     PORT=3306,
-    DB=ds_0,
-    USER=root,
-    PASSWORD=root
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -22,8 +22,8 @@ ADD RESOURCE ds_0 (
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
     COLUMNS(
-        (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc'))),
-        (NAME=order_id,PLAIN=order_plain,CIPHER =order_cipher,TYPE(NAME=RC4,PROPERTIES('rc4-key-value'='123456abc')))
+        (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),
+        (NAME=order_id,PLAIN=order_plain,CIPHER =order_cipher,TYPE(NAME='RC4',PROPERTIES('rc4-key-value'='123456abc')))
 ));
 ```
 
@@ -43,7 +43,7 @@ CREATE TABLE `t_encrypt` (
 ```sql
 ALTER ENCRYPT RULE t_encrypt (
     COLUMNS(
-        (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME=AES,PROPERTIES('aes-key-value'='123456abc')))
+        (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))
 ));
 ```
 
@@ -53,10 +53,10 @@ ALTER ENCRYPT RULE t_encrypt (
 DROP ENCRYPT RULE t_encrypt;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
-DROP RESOURCE ds_0;
+UNREGISTER STORAGE UNIT ds_0;
 ```
 
 - 删除分布式数据库

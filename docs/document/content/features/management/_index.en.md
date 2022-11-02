@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.3. </b>"
-title = "Cluster Management"
-weight = 3
+pre = "<b>3.6. </b>"
+title = "Traffic Governance"
+weight = 6
 chapter = true
 +++
 
@@ -21,4 +21,14 @@ In the overload traffic scenario, circuit breaker and request limiting for a nod
 
 ## Goal
 
-**The goal of Apache ShardingSphere management module is to realize the integrated management ability from database to computing node, and provide control ability for components in case of failure.**
+The goal of Apache ShardingSphere management module is to realize the integrated management ability from database to computing node, and provide control ability for components in case of failure.
+
+## Application Scenarios
+
+### Overloaded compute node protection
+
+When a compute node in a ShardingSphere cluster exceeds its load, the circuit breaker function is used to block the traffic to the compute node, to ensure that the whole cluster continues to provide stable services.
+
+### Storage node traffic limit
+
+In the read-write splitting scenario where a storage node responsible for the read traffic in a ShardingSphere cluster receives overloaded requests, the traffic limit function is used to block traffic from compute nodes to the storage node, to ensure normal response of the storage node cluster.

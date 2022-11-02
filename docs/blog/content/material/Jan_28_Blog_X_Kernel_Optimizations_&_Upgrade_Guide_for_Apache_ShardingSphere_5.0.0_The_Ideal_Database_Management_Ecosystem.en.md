@@ -684,7 +684,7 @@ As always, you’re welcome to join us in developing the Apache ShardingSphere p
 
 3. Automatic Sharding Strategies for Databases and Tables：https://github.com/apache/shardingsphere/issues/5937
 
-4. Contributor Guide：https://shardingsphere.apache.org/community/en/contribute/
+4. Contributor Guide：https://shardingsphere.apache.org/community/en/involved/
 
 5. https://docs.oracle.com/en/
 
@@ -703,8 +703,7 @@ ShardingSphere Slack Channel:https://join.slack.com/t/apacheshardingsphere/share
 
 GitHub Issues: https://github.com/apache/shardingsphere/issues
 
-Contributor Guide:https://shardingsphere.apache.org/community/cn/contribute/
-
+Contributor Guide:https://shardingsphere.apache.org/community/cn/involved/
 
 ### Author
 

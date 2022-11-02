@@ -3,27 +3,27 @@ title = "数据库发现"
 weight = 5
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
-ADD RESOURCE ds_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+REGISTER STORAGE UNIT ds_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 ),ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_1",
+    USER="root",
+    PASSWORD="root"
 ),ds_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_2",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -33,8 +33,8 @@ PASSWORD=root
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1),
-TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+STORAGE_UNITS(ds_0, ds_1),
+TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
@@ -43,8 +43,8 @@ HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 
 ```sql
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=mgr,PROPERTIES('group-name'='92504d5b-6dec')),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
+TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
@@ -67,10 +67,10 @@ DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
-DROP RESOURCE ds_0,ds_1,ds_2;
+UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;
 ```
 
 - 删除分布式数据库

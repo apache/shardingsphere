@@ -1,15 +1,14 @@
 +++
-pre = "<b>7.3. </b>"
+pre = "<b>7.4. </b>"
 title = "数据分片"
-weight = 3
+weight = 4
 chapter = true
 +++
 
-ShardingSphere 的 3 个产品的数据分片主要流程是完全一致的，按照是否进行查询优化，可以分为 Standard 内核流程和 Federation 执行引擎流程。 
-Standard 内核流程由 `SQL 解析 => SQL 路由 => SQL 改写 => SQL 执行 => 结果归并` 组成，主要用于处理标准分片场景下的 SQL 执行。
-Federation 执行引擎流程由 `SQL 解析 => 逻辑优化 => 物理优化 => 优化执行 => Standard 内核流程` 组成，Federation 执行引擎内部进行逻辑优化和物理优化，在优化执行阶段依赖 Standard 内核流程，对优化后的逻辑 SQL 进行路由、改写、执行和归并。
+ShardingSphere 数据分片的原理如下图所示，按照是否需要进行查询优化，可以分为 Simple Push Down 下推流程和 SQL Federation 执行引擎流程。 Simple Push Down 下推流程由 `SQL 解析 => SQL 绑定 => SQL 路由 => SQL 改写 => SQL 执行 => 结果归并` 组成，主要用于处理标准分片场景下的 SQL 执行。
+SQL Federation 执行引擎流程由 `SQL 解析 => SQL 绑定 => 逻辑优化 => 物理优化 => 数据拉取 => 算子执行` 组成，SQL Federation 执行引擎内部进行逻辑优化和物理优化，在优化执行阶段依赖 Standard 内核流程，对优化后的逻辑 SQL 进行路由、改写、执行和归并。
 
-![分片架构图](https://shardingsphere.apache.org/document/current/img/sharding/sharding_architecture_cn_v2.png)
+![分片架构图](https://shardingsphere.apache.org/document/current/img/sharding/sharding_architecture_cn_v3.png)
 
 ## SQL 解析
 

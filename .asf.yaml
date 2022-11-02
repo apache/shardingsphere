@@ -39,6 +39,7 @@ github:
     - dba
     - oltp
     - bigdata
+    - hacktoberfest
   features:
     issues: true
     projects: true
@@ -51,5 +52,4 @@ github:
         dismiss_stale_reviews: true
         required_approving_review_count: 1
   collaborators:
-    - yy2so
     - zhujunxxxxx

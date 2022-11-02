@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_update_without_condition" value="EXPLAIN UPDATE t_order SET status = 'finished'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_insert_without_parameters" value="EXPLAIN INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_delete_without_sharding_value" value="EXPLAIN DELETE FROM t_order WHERE status='init'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_select_with_binding_tables" value="EXPLAIN SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = 10" db-types="SQLServer" />
+    <sql-case id="explain_create_table_as_select" value="EXPLAIN CREATE TABLE t_order_new WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT * FROM t_order" db-types="SQLServer" />
+    <sql-case id="explain_create_table_as_select_with_explicit_column_names" value="EXPLAIN CREATE TABLE t_order_new (order_id_new, user_id_new) WITH (DISTRIBUTION = HASH(product_key), CLUSTERED COLUMNSTORE INDEX, PARTITION (order_date RANGE RIGHT FOR VALUES (20000101,20010101))) AS SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="explain_create_remote_table_as_select" value="EXPLAIN CREATE REMOTE TABLE t_order_new AT ('Data Source = ds_0, 3306; User ID = ROOT; Password = 123456;') AS SELECT i.* FROM t_order_item i JOIN t_order o ON i.order_id = o.order_id" db-types="SQLServer" />
+    <sql-case id="explain_with_analyze" value="EXPLAIN ANALYZE SELECT * FROM t_order WHERE order_id > 8" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_format" value="EXPLAIN ANALYZE FORMAT = TREE SELECT * FROM t_order WHERE order_id > 8" db-types="MySQL" />
+    <sql-case id="explain_table" value="EXPLAIN TABLE t_order ORDER BY order_id LIMIT 1 OFFSET 2" db-types="MySQL" />
+    <sql-case id="desc_table" value="DESC tableName" db-types="MySQL" />
+    <sql-case id="desc_table_with_col_name" value="DESC tableName colName" db-types="MySQL" />
+    <sql-case id="desc_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
+    <sql-case id="desc_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
+    <sql-case id="describe_table" value="DESCRIBE tableName" db-types="MySQL" />
+    <sql-case id="describe_table_with_col_name" value="DESCRIBE tableName colName" db-types="MySQL" />
+    <sql-case id="describe_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
+    <sql-case id="describe_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
+    <sql-case id="explain_create_materialized_view_with_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_withdata2 (a) AS SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
+    <sql-case id="explain_create_materialized_view_with_no_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_nodata2 (a) AS SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
+</sql-cases>

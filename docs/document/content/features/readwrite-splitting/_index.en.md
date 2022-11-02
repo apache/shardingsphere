@@ -1,49 +1,42 @@
 +++
-pre = "<b>3.6. </b>"
+pre = "<b>3.3. </b>"
 title = "Readwrite-splitting"
-weight = 6
+weight = 3
 chapter = true
 +++
 
-## Definition
+## Background
 
-Read/write splitting is to split the database into primary and secondary databases. The primary database is responsible for handling transactional operations including additions, deletions and changes.
-And the secondary database is responsible for the query operation of database architecture.
+Database throughput has faced the bottleneck with increasing TPS. For the application with massive concurrence read but less write in the same time, we can divide the database into a primary database and a replica database. The primary database is responsible for the insert, delete and update of transactions, while the replica database is responsible for queries. It can significantly improve the query performance of the whole system by effectively avoiding row locks.
 
-## Related Concepts
+One primary database with multiple replica databases can further enhance processing capacity by distributing queries evenly into multiple data replicas. Multiple primary databases with multiple replica databases can enhance not only throughput but also availability. Therefore, the system can still run normally, even though any database is down or physical disk destroyed.
 
-### Primary database
-The primary database is used to add, update, and delete data operations. Currently, only single primary database is supported.
+Different from the sharding that separates data to all nodes according to sharding keys, readwrite-splitting routes read and write separately to primary database and replica databases according SQL analysis.
 
-### Secondary database
-The secondary database is used to query data operations and multi-secondary databases are supported.
+![background](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/background.png)
 
-### Primary-Secondary synchronization
-It refers to the operation of asynchronously synchronizing data from a primary database to a secondary database. Due to the asynchronism of primary-secondary synchronization,
-data from the primary and secondary databases may be inconsistent for a short time.
+Data in readwrite-splitting nodes are consistent, whereas that in shards is not. The combined use of sharding and readwrite-splitting will effectively enhance the system performance.
 
-### Load balancer policy
-Channel query requests to different secondary databases through load balancer policy.
+## Challenges
 
-## Impact on the System
-There may be complex primary-secondary relational database clusters in users' systems, so applications need to access multiple data sources, which increases the cost of system maintenance and the
-difficulty of business development. ShardingSphere enables users to use database clusters like a database through read/write splitting function, and the impact of read/write splitting will be transparent to users.
+Though readwrite-splitting can enhance system throughput and availability, it also brings inconsistent data, including that among multiple primary databases and among primary databases and replica databases. What’s more, it also brings the same problem as data sharding, complicating developer and operator’s maintenance and operation. The following diagram has shown the complex topological relations between applications and database groups when sharding used together with readwrite-splitting.
 
-## Limitations
-* Data synchronization of primary and secondary databases is not supported.
-* Data inconsistency resulting from data synchronization delays between primary and secondary databases is not supported.
-* Multi-write of primary database is not supported.
-* Transactional consistency between primary and secondary databases is not supported. In the primary-secondary model, both data reads and writes in transactions use the primary database.
+![challenges](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/challenges.png)
 
-## How it works
-ShardingSphere's read/write splitting mainly relies on the related functions of its kernel, including a parsing engine and a routing engine.
-The parsing engine converts the user's SQL into Statement information that can be identified by ShardingSphere, and the routing engine performs SQL routing according to the read/write type of SQL and transactional status.
-The routing from the secondary database supports a variety of load balancing algorithms, including polling algorithm, random access algorithm, weight access algorithm, etc.
-Users can also expand the required algorithm according to the SPI mechanism. As shown in the figure below, ShardingSphere identifies read and write operations and routes them to different database instances respectively.
+## Goal
 
-![原理介绍](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/background.png)
+The main design goal of readwrite-splitting of Apache ShardingSphere is to try to reduce the influence of readwrite-splitting, in order to let users use primary-replica database group like one database.
 
-## 相关参考
+## Application Scenarios
+
+### Complex primary-secondary database architecture
+
+Many systems rely on the configuration of primary-secondary database architecture to improve the throughput of the whole system. Nevertheless, this configuration can make it more complex to use services. 
+
+After accessing ShardingSphere, the read/write splitting feature can be used to manage primary-secondary databases and achieve transparent read/write splitting, enabling users to use databases with primary/secondary architecture just like using one single database.
+
+## Related References
+
 [Java API](/en/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting)\
 [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting)\
 [Spring Boot Starter](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting)\

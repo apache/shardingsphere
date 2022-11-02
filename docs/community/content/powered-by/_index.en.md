@@ -13,13 +13,14 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 217 companies.
+Total: 225 companies.
 
 ### Infra Software
 <ul>
     <li><a href="http://www.sphere-ex.com/" rel="nofollow">SphereEx</a></li>
     <li><a href="https://www.opengauss.org/en/" rel="nofollow">Huawei openGauss</a>: <a href="https://dev.to/apache_shardingsphere/apache-shardingsphere-opengauss-breaking-the-distributed-database-performance-record-with-10-million-tpmc-28an" rel="nofollow">User Case</a></li>
     <li><a href="https://www.mogdb.io/" rel="nofollow">ENMOTECH MogDB</a></li>
+    <li><a href="https://www.kingbase.com.cn/" rel="nofollow">KingBase KingbaseES</a></li>
 </ul>
 
 ### Bank
@@ -29,6 +30,7 @@ Total: 217 companies.
     <li><a href="http://en.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">Ping An Bank</a></li>
     <li><a href="https://www.psbc.com/en/" rel="nofollow">Postal Savings Bank of China</a></li>
+    <li><a href="https://english.cmbchina.com/" rel="nofollow">China Merchants Bank</a></li> 
 </ul>
 
 ### Payment
@@ -40,7 +42,7 @@ Total: 217 companies.
 
 ### Telecommunications
 <ul>
-    <li><a href="https://www.cucloud.cn/" rel="nofollow">CU Cloud</a></li>
+    <li>CU Digital Technology</li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
 </ul>
 
@@ -98,6 +100,8 @@ Total: 217 companies.
     <li><a href="https://www.danchuangglobal.com/" rel="nofollow">VTN</a></li>
     <li><a href="https://jossney.com/" rel="nofollow">Jossney</a></li>
     <li><a href="https://www.belleintl.com/" rel="nofollow">Belle</a></li>
+    <li><a href="https://store.kinnls.com/" rel="nofollow">KINNLS</a></li>
+    <li><a href="https://www.zhidemai.com" rel="nofollow">ZHI-TECH</a></li>
 </ul>
 
 ### Digitalization & Cloud Services
@@ -129,6 +133,7 @@ Total: 217 companies.
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
     <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
     <li><a href="https://www.lingxing.com/" rel="nofollow">LINGXING</a></li>
+    <li><a href="http://sz.aisino.com/" rel="nofollow">Aisino</a></li>
 </ul>
 
 ### Transportation
@@ -159,6 +164,8 @@ Total: 217 companies.
     <li><a href="http://www.c-wms.net/" rel="nofollow">C-WMS</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">Xbnwl</a></li>
     <li><a href="https://www.huimin.cn" rel="nofollow">HuiMin</a></li>
+    <li><a href="https://www.nti56.com/" rel="nofollow">LOGIS-TECH</a></li>
+    <li><a href="https://www.inja.com" rel="nofollow">INJA</a></li>
 </ul>
 
 ### Travel
@@ -179,11 +186,17 @@ Total: 217 companies.
     <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
-    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
     <li><a href="http://www.dayang.com.cn" rel="nofollow">DAYANG</a></li>
+</ul>
+
+### Social
+
+<ul>
+    <li><a href="https://www.soulapp.cn/" rel="nofollow">Soul App</a></li>
+    <li><a href="http://www.tuodan666.com" rel="nofollow">tuodan666</a></li>
 </ul>
 
 ### E-Learning

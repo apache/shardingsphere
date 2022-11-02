@@ -6,91 +6,88 @@ weight = 4
 
 ## 测试目的
 
-验证 Scaling 自身功能和依赖模块的正确性。
+验证数据迁移以及依赖模块功能的正确性。
 
 ## 测试环境
 
-环境准备方式分为 Native 和 Docker
+目前支持 Native 和 Docker 两种环境。
 
-- Native 环境：用于本地调试，可以使用 IDE 的 debug 模式进行调试。
-- Docker 环境：环境由 Maven 运行，适用于云编译环境和测试 ShardingSphere-Proxy 的场景，如：GitHub Action。
+1. Native 环境直接运行在开发者提供的测试环境中，需要用户自己启动 ShardingSphere-Proxy 和对应的数据库实例，适于调试场景；
+1. Docker 环境由 Maven 运行，适用于云编译环境和测试 ShardingSphere-Proxy 的场景，如：GitHub Action。
 
-当前默认采用 Docker 环境，涉及到的 ShardingSphere-Proxy，Zookeeper，数据库实例 (MySQL, PostgreSQL)，都通过 Docker 自动启动。
-
-数据库类型目前支持 MySQL、PostgreSQL、openGauss。
+目前支持的数据库类型：MySQL、PostgreSQL、openGauss。
 
 ## 使用指南
 
-模块路径：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling`
+模块路径 `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling` 。
 
-测试的 Class 分布如下：
+### 环境配置
+`${DOCKER-IMAGE}` 表示 docker 镜像名称，如 `mysql:8` 。 `${DATABASE-TYPE}` 表示数据库类型。
+目录：`src/test/resources/env`
+- `it-env.properties`：集成测试启动参数。
+- `${DATABASE-TYPE}/server.yaml`：数据库对应的 ShardingSphere-Proxy 配置文件。
+- `${DATABASE-TYPE}/initdb.sql`：数据库初始化 SQL。
+- `${DATABASE-TYPE}/*.cnf,*.conf`：以 cnf 或者 conf 结尾的文件，是数据库的配置文件，用于 Docker 挂载。
+- `common/command.xml`：测试中用到的DistSQL。
+- `scenario/`：存放测试场景中的 SQL。
 
-核心用例：
-- MySQLGeneralScalingIT: 覆盖的测试场景最多，包括部分表迁移，表字段最多样等。
-- PostgreSQLGeneralScalingIT: 类似，只不过数据库类型是 PostgreSQL/openGauss，包含自定义 schema 迁移场景。
+### 测试用例
+目前所有的测试用例，都直接继承自 `BaseExtraSQLITCase`，间接继承了 `BaseITCase`。
+- `BaseITCase`：提供了通用方法给子类
+- `BaseExtraSQLITCase`：提供了建表、CRUD 语句执行方法
 
-主键用例：
+用例示例：MySQLGeneralScalingIT。
+覆盖的功能点如下：
+- 库级别迁移（所有表）
+- 表级别迁移（任意多个表）
+- 迁移数据一致性校验
+- 数据迁移过程中支持停写
+- 数据迁移过程中支持重启
+- 数据迁移支持整型主键
+- 数据迁移支持字符串主键
+- 使用非管理员账号进行数据迁移
 
-- TextPrimaryKeyScalingIT: 支持主键为文本类型的表迁移。
-
-
-### 配置文件
-
-目录：`resources/env/`
-- /common: 存放 Scaling 过程中用到的 DistSQL。
-- /{SQL-TYPE}: 存放数据库级别的配置文件。
-- /scenario: 存放测试的场景的配置文件，主要是 SQL，不同数据库可能写法不一样。
-- it-env.properties：存放对应的配置信息。
-
-### 运行测试引擎
-
-所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
-
-`${image-name}` 表示合法 Docker image 名称，比如：mysql:5.7， 多个的话用逗号隔开。
-`-Dscaling.it.docker.postgresql.version=${image-name}` 表示需要测试的 PostgreSQL 版本。
-`-Dscaling.it.docker.mysql.version=${image-name}` 表示需要测试的 MySQL 版本。
+### 运行测试用例
+`it-env.properties` 所有属性值都可以通过 Maven 命令行 `-D` 的方式传入，优先级高于配置文件。
 
 #### Native 环境启动
 
-Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依赖的 Cluster，比如 Zookeeper）和数据库，同时要求 ShardingSphere-Proxy 的端口是 3307，修改 it-env.properties 文件中的属性 `scaling.it.env.type=native`
-数据库的端口可以在 it-env.properties 中配置，如果是默认端口可以不配置。
-
-启动方式如下：找到需要测试的 Case，比如 MySQLGeneralScalingIT，在启动之前配置对应的 VM Option，新增如下配置。
-
+使用者在本地提前启动 ShardingSphere-Proxy 以及依赖的配置中心（如 ZooKeeper）和数据库。
+要求 ShardingSphere-Proxy 的端口是 3307。
+以 MySQL 为例，`it-env.properties` 可以配置如下：
 ```
--Dscaling.it.env.type=native -Dscaling.it.docker.mysql.version=${image-name}
+scaling.it.env.type=NATIVE
+scaling.it.native.database=mysql
+scaling.it.native.mysql.username=root
+scaling.it.native.mysql.password=root
+scaling.it.native.mysql.port=3306
 ```
 
-在 IDE 下使用 Junit 的方式启动即可。
+找到对应的用例，在 IDE 下使用 Junit 的方式启动即可。
 
-#### Docker 环境启动
+#### Docker环境启动
 
 第一步：打包镜像
 
-```bash
+```
 ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
 ```
 
-运行以上命令会构建出一个用于集成测试的 Docker 镜像 `apache/shardingsphere-proxy-test:latest`。
-如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。
+运行以上命令会构建出一个用于集成测试的 Docker 镜像 apache/shardingsphere-proxy-test:latest，该镜像设置了远程调试的端口，默认是3308。 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。
 
-**Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，默认是 3308。**
-可以在 ShardingSphereProxyDockerContainer 中自行修改。
+Docker 模式下，如果需要对 Docker 镜像启动参数进行调整，可以对修改 ShardingSphereProxyDockerContainer 文件中的相关配置。
 
-#### 运行用例
+ShardingSphere-Proxy 输出的日志带有 :Scaling-Proxy 前缀。
 
-和 Native 一样，只需要改一个参数。
+使用 Maven 的方式运行用例。以 MySQL 为例：
 
 ```
--Dscaling.it.env.type=docker
-```
-
-可以和 Native 一样使用 IDE 的方式运行用例，或者使用 Maven 的方式运行用例。
-
-```bash
 ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
-#### 注意事项
+也可以使用 IDE 的方式运行用例。`it-env.properties` 可以配置如下：
 
-Scaling 集成测试中的命令基本都是只连接 ShardingSphere-Proxy 中执行的，所以如果运行失败，多数情况是需要对 ShardingSphere-Proxy 进行 Debug，日志中带有 `:Scaling-Proxy` 前缀的，都是从 ShardingSphere-Proxy 容器中输出的日志。
+```
+scaling.it.env.type=DOCKER
+scaling.it.docker.mysql.version=mysql:5.7
+```

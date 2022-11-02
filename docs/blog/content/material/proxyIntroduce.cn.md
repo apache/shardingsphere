@@ -109,7 +109,6 @@ mode:
    type: H2
    props:
      jdbcUrl: jdbc:h2:file:~/config_data # 元数据持久化数据库连接 URL
- overwrite: false # 是否覆盖已存在的元数据
 
 rules: # 认证信息
  - !AUTHORITY
@@ -138,7 +137,6 @@ props: # 公用配置
  proxy-hint-enabled: false
  sql-show: false
  check-table-metadata-enabled: false
- show-process-list-enabled: false
    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
    # The default value is -1, which means set the minimum value for different JDBC drivers.
  proxy-backend-query-fetch-size: -1

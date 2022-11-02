@@ -15,11 +15,11 @@ weight = 5
 
 可配置属性：
 
-| *名称*                     | *数据类型*                                           | *说明*                                                 | *默认值* |
-| ------------------------- | --------------------------------------------------- | ----------------------------------------------------- | ------- |
-| tables (+)                | Collection\<EncryptTableRuleConfiguration\>         | 加密表规则配置                                           |        |
-| encryptors (+)            | Map\<String, ShardingSphereAlgorithmConfiguration\> | 加解密算法名称和配置                                      |        |
-| queryWithCipherColumn (?) | boolean                                             | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true   |
+| *名称*                     | *数据类型*                                   | *说明*                                                 | *默认值* |
+| ------------------------- | ------------------------------------------- | ----------------------------------------------------- | ------- |
+| tables (+)                | Collection\<EncryptTableRuleConfiguration\> | 加密表规则配置                                           |        |
+| encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | 加解密算法名称和配置                                      |        |
+| queryWithCipherColumn (?) | boolean                                     | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true   |
 
 ### 加密表规则配置
 
@@ -51,7 +51,7 @@ weight = 5
 
 ### 加解密算法配置
 
-类名称：org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration
+类名称：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
 
 可配置属性：
 
@@ -61,7 +61,7 @@ weight = 5
 | type       | String     | 加解密算法类型     |
 | properties | Properties | 加解密算法属性配置 |
 
-算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)。
+算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。
 
 ## 操作步骤
 
@@ -81,9 +81,9 @@ public final class EncryptDatabasesConfiguration implements ExampleConfiguration
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null);
         EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null);
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest), null);
-        Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
-        encryptAlgorithmConfigs.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", props));
-        encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", props));
+        Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
+        encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
+        encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
         try {
             return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);

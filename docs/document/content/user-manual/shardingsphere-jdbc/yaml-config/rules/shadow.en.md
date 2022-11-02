@@ -7,61 +7,13 @@ weight = 6
 Please refer to the following configuration in order to use the ShardingSphere shadow DB feature in ShardingSphere-Proxy.
 
 ## Parameters
-### Configuration entry
-
-```yaml
-rules:
-- !SHADOW
-```
-
-###  Configurable attributes
-
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| dataSources | shadow DB logical data source mapping the configuration list | none |
-| tables | shadow table configuration list | none |
-| defaultShadowAlgorithmName | name of default shadow algorithm | none, option |
-| shadowAlgorithms | shadow algorithm configuration list | none |
-
-### Shadow data source configuration
-
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| dataSourceName | shadow DB logical data source name | 无 |
-| sourceDataSourceName | production data source name | 无 |
-| shadowDataSourceName | shadow data source name | 无 |
-
-### Shadow table configuration
-
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| dataSourceNames | shadow table associates shadow DB logical data source name list | 无 |
-| shadowAlgorithmNames | shadow table associates shadow algorithm name list | 无 |
-
-### Shadow algorithm configuration
-
-| *Name*  | *Description*  | *Default*  |
-| ------- | ------ | ----- |
-| type | shadow algorithm type | none |
-| props | shadow algorithm configuration | none |
-
-Please refer to [Built-in shadow algorithm list](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/shadow) for more details.
-
-## Procedure
-1. Create production and shadow data sources.
-2. Configure shadow rules.
-    - Configure the shadow data source.
-    - Configure the shadow table.
-    - Configure the shadow algorithm.
-
-## Sample
 
 ```yaml
 rules:
 - !SHADOW
   dataSources:
     shadowDataSource:
-      sourceDataSourceName: # production data source name
+      productionDataSourceName: # production data source name
       shadowDataSourceName: # shadow data source name
   tables:
     <table-name>:
@@ -74,6 +26,64 @@ rules:
     <shadow-algorithm-name> (+): # shadow algorithm name
       type: # shadow algorithm type
       props: # shadow algorithm attribute configuration
+```
+
+Please refer to [Built-in shadow algorithm list](/en/user-manual/common-config/builtin-algorithm/shadow) for more details.
+
+## Procedure
+
+1. Configure shadow DB rules in the YAML file, including data sources, shadow library rules, global properties and other configuration items;
+2. Call the `createDataSource()` method of the `YamlShardingSphereDataSourceFactory` object to create a ShardingSphereDataSource based on the configuration information in the YAML file.
+
+## Sample
+
+The YAML configuration sample of shadow DB is as follows:
+
+```yaml
+dataSources:
+   ds:
+      url: jdbc:mysql://127.0.0.1:3306/ds?serverTimezone=UTC&useSSL=false
+      username: root
+      password:
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      maxLifetimeMilliseconds: 1800000
+      maxPoolSize: 50
+      minPoolSize: 1
+   shadow_ds:
+      url: jdbc:mysql://127.0.0.1:3306/shadow_ds?serverTimezone=UTC&useSSL=false
+      username: root
+      password:
+      connectionTimeoutMilliseconds: 30000
+      idleTimeoutMilliseconds: 60000
+      maxLifetimeMilliseconds: 1800000
+      maxPoolSize: 50
+      minPoolSize: 1
+
+rules:
+- !SHADOW
+  dataSources:
+    shadowDataSource:
+      productionDataSourceName: ds
+      shadowDataSourceName: shadow_ds
+  tables:
+    t_order:
+      dataSourceNames: 
+        - shadowDataSource
+      shadowAlgorithmNames: 
+        - user-id-insert-match-algorithm
+        - simple-hint-algorithm
+  shadowAlgorithms:
+    user-id-insert-match-algorithm:
+      type: REGEX_MATCH
+      props:
+        operation: insert
+        column: user_id
+        regex: "[1]"
+    simple-hint-algorithm:
+      type: SIMPLE_HINT
+      props:
+        foo: bar
 ```
 
 ## Related References

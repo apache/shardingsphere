@@ -9,7 +9,7 @@ Spring Namespace's data encryption configuration applies to the traditional Spri
 
 ## Parameters
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.2.1.xsd)
 
 \<encrypt:rule />
 
@@ -45,7 +45,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 | type      | Attribute  | Encrypt algorithm type       |
 | props (?) | Tag        | Encrypt algorithm properties |
 
-Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt) for more details about type of algorithm.
+Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/builtin-algorithm/encrypt) for more details about type of algorithm.
 
 ## Procedure 
 

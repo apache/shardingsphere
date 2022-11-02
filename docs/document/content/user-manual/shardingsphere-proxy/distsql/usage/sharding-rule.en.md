@@ -3,25 +3,23 @@ title = "Sharding"
 weight = 1
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 - Configure data source information
 
 ```sql
-ADD RESOURCE ds_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
-);
-
-ADD RESOURCE ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
-USER=root,
-PASSWORD=root
+REGISTER STORAGE UNIT ds_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_1",
+    USER="root",
+    PASSWORD="root"
+),ds_1 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_2",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -31,10 +29,10 @@ PASSWORD=root
 
 ```sql
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_0,ds_1),
+STORAGE_UNITS(ds_0,ds_1),
 SHARDING_COLUMN=order_id,
-TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
 );
 ```
 
@@ -61,10 +59,10 @@ DROP TABLE t_order;
 DROP SHARDING TABLE RULE t_order;
 ```
 
-- Drop resource
+- Unregister storage unit
 
 ```sql
-DROP RESOURCE ds_0, ds_1;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
 ```
 
 - Drop distributed database

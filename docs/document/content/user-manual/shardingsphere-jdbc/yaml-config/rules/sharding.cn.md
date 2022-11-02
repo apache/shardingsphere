@@ -29,6 +29,11 @@ rules:
       keyGenerateStrategy: # 分布式序列策略
         column: # 自增列名称，缺省表示不使用自增主键生成器
         keyGeneratorName: # 分布式序列算法名称
+      auditStrategy: # 分片审计策略
+        auditorNames: # 分片审计算法名称
+          - <auditor-name>
+          - <auditor-name>
+        allowHintDisable: true # 是否禁用分片审计hint
   autoTables: # 自动分片表规则配置
     t_order_auto: # 逻辑表名称
       actualDataSources (?): # 数据源名称
@@ -59,6 +64,12 @@ rules:
     <key-generate-algorithm-name> (+): # 分布式序列算法名称
       type: # 分布式序列算法类型
       props: # 分布式序列算法属性配置
+      # ...
+  # 分片审计算法配置
+  auditors:
+    <sharding-audit-algorithm-name> (+): # 分片审计算法名称
+      type: # 分片审计算法类型
+      props: # 分片审计算法属性配置
       # ...
 ```
 
@@ -98,6 +109,10 @@ rules:
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
+      auditStrategy:
+        auditorNames:
+          - sharding_key_required_auditor
+        allowHintDisable: true
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -147,6 +162,9 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
 
 props:
   sql-show: false

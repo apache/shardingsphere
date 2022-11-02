@@ -411,6 +411,50 @@ chapter = true
             <b>Chen Ma</b>
         </td>
     </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/JiekerTime" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/Swastyy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/yy2so" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/86716581?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/natehuangting" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/26433395?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+       <td>
+            <a href="https://github.com/taojintianxia" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/4112856?s=96&v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>Junjie Zhang</b>        
+        </td>
+        <td>
+            <b>Swastika Gupta</b>
+        </td>
+        <td>
+            <b>Yacine Si Tayeb</b>
+        </td>
+        <td>
+            <b>Ting Huang</b>
+        </td>
+        <td>
+            <b>Nianjun Sun</b>
+        </td>
+    </tr>
 </table>
 
 ## Contributors
@@ -425,7 +469,7 @@ You can find all of the ShardingSphere contributors directly in GitHub's contrib
 The ShardingSphere community follows the [Apache Community’s process](http://community.apache.org/newcommitter.html) on accepting a new committer.
 Contributors that actively participate in ShardingSphere's community will be invited by the project's (P)PMC and Committers to join them by becoming a committer.
 
-You can read the [Contributor Guide](/en/contribute/contributor/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/contribute/committer/) for more details on how to become a committer.
+You can read the [Contributor Guide](/en/involved/contribute/) for more information on how you can contribute to the community, as well as the [Committer Guide](/en/involved/committer/) for more details on how to become a committer.
 
 ### How Can I Become a Contributor
 

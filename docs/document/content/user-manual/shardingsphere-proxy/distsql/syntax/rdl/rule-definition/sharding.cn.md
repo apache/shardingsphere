@@ -20,38 +20,36 @@ ALTER DEFAULT SHARDING shardingScope STRATEGY (shardingStrategy)
 
 DROP DEFAULT SHARDING shardingScope STRATEGY;
 
-CREATE SHARDING ALGORITHM shardingAlgorithmDefinition [, shardingAlgorithmDefinition] ...
-
-ALTER SHARDING ALGORITHM shardingAlgorithmDefinition [, shardingAlgorithmDefinition] ...
-
 DROP SHARDING ALGORITHM algorithmName [, algorithmName] ...
 
-CREATE SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
-
-ALTER SHARDING KEY GENERATOR keyGeneratorDefinition [, keyGeneratorDefinition] ...
-
-DROP SHARDING KEY GENERATOR keyGeneratorName [, keyGeneratorName] ...
+DROP SHARDING KEY GENERATOR [IF EXISTS] keyGeneratorName [, keyGeneratorName] ...
+    
+CREATE SHARDING AUDITOR auditorDefinition [, auditorDefinition] ...
+    
+ALTER SHARDING AUDITOR auditorDefinition [, auditorDefinition] ...
+    
+DROP SHARDING AUDITOR [IF EXISTS] auditorName [, auditorName] ...
 
 shardingTableRuleDefinition:
     shardingAutoTableRule | shardingTableRule
 
 shardingAutoTableRule:
-    tableName(resources, shardingColumn, algorithmDefinition [, keyGenerateDeclaration])
+    tableName(storageUnits, shardingColumn, algorithmDefinition [, keyGenerateDefinition] [, auditDeclaration])
 
 shardingTableRule:
-    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDeclaration])
+    tableName(dataNodes [, databaseStrategy] [, tableStrategy] [, keyGenerateDefinition] [, auditDeclaration])
 
-resources:
-    RESOURCES(resource [, resource] ...)
+storageUnits:
+    STORAGE_UNITS(storageUnit [, storageUnit] ...)
 
 dataNodes:
     DATANODES(dataNode [, dataNode] ...)
 
-resource:
-    resourceName | inlineExpression
+storageUnit:
+    storageUnitName | inlineExpression
 
 dataNode:
-    resourceName | inlineExpression
+    dataNodeName | inlineExpression
 
 shardingColumn:
     SHARDING_COLUMN=columnName
@@ -59,11 +57,20 @@ shardingColumn:
 algorithmDefinition:
     TYPE(NAME=shardingAlgorithmType [, PROPERTIES([algorithmProperties])])
 
-keyGenerateDeclaration:
-    keyGenerateDefinition | keyGenerateConstruction
-
 keyGenerateDefinition:
     KEY_GENERATE_STRATEGY(COLUMN=columnName, strategyDefinition)
+    
+auditDeclaration:
+    auditDefinition | auditStrategy
+
+auditDefinition:
+    AUDIT_STRATEGY([(singleAuditDefinition),(singleAuditDefinition)], ALLOW_HINT_DISABLE=true)
+    
+singleAuditDefinition:
+    NAME=auditor1, algorithmDefinition
+    
+auditStrategy:
+    AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2], ALLOW_HINT_DISABLE=true)
 
 shardingScope:
     DATABASE | TABLE
@@ -74,19 +81,10 @@ databaseStrategy:
 tableStrategy:
     TABLE_STRATEGY(shardingStrategy)
 
-keyGenerateConstruction
-    KEY_GENERATE_STRATEGY(COLUMN=columnName, KEY_GENERATOR=keyGenerateAlgorithmName)
-
 shardingStrategy:
     TYPE=strategyType, shardingColumn, shardingAlgorithm
 
 shardingAlgorithm:
-    existingAlgorithm | autoCreativeAlgorithm
-
-existingAlgorithm:
-    SHARDING_ALGORITHM=shardingAlgorithmName
-
-autoCreativeAlgorithm:
     SHARDING_ALGORITHM(algorithmDefinition)
 
 strategyDefinition:
@@ -103,86 +101,46 @@ algorithmProperty:
 
 keyGeneratorDefinition: 
     keyGeneratorName (algorithmDefinition)
+
+auditorDefinition:
+    auditorName (auditorAlgorithmDefinition)
+    
+auditorAlgorithmDefinition:
+    TYPE(NAME=auditorAlgorithmType [, PROPERTIES([algorithmProperties])])
 ```
-- `RESOURCES` 需使用 RDL 管理的数据源资源；
-- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)；
-- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)；
+- `STORAGE_UNITS` 需使用 RDL 管理的数据源资源；
+- `shardingAlgorithmType` 指定自动分片算法类型，请参考  [自动分片算法](/cn/user-manual/common-config/builtin-algorithm/sharding/)；
+- `keyGenerateStrategyType` 指定分布式主键生成策略，请参考 [分布式主键](/cn/user-manual/common-config/builtin-algorithm/keygen/)；
+- `auditorAlgorithmType` 指定分片审计策略，请参考 [分片审计](/cn/user-manual/common-config/builtin-algorithm/audit/)；
 - 重复的 `tableName` 将无法被创建；
 - `shardingAlgorithm` 能够被不同的 `Sharding Table Rule` 复用，因此在执行 `DROP SHARDING TABLE RULE` 时，对应的 `shardingAlgorithm` 不会被移除；
 - 如需移除 `shardingAlgorithm`，请执行 `DROP SHARDING ALGORITHM`；
 - `strategyType` 指定分片策略，请参考[分片策略](/cn/features/sharding/concept/sharding/#%E5%88%86%E7%89%87%E7%AD%96%E7%95%A5)；
 - `Sharding Table Rule` 同时支持 `Auto Table` 和 `Table` 两种类型，两者在语法上有所差异，对应配置文件请参考 [数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/) ；
-- 使用 `autoCreativeAlgorithm` 方式指定 `shardingStrategy` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_strategyType_shardingAlgorithmType`，如 `t_order_database_inline`。
+- 执行 `CREATE SHARDING TABLE RULE` 时，将会自动创建新的分片算法，算法命名规则为 `tableName_scope_shardingAlgorithmType`，如 `t_order_database_inline`。
+- 执行 `CREATE DEFAULT SHARDING STRATEGY` 时，同样会自动创建新的分片算法，算法命名规则为 `default_scope_shardingAlgorithmType`，如 `default_database_inline`。
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-ALTER SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-DROP SHARDING BINDING TABLE RULES bindTableRulesDefinition [, bindTableRulesDefinition] ...
+DROP SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-bindTableRulesDefinition:
+tableReferenceRuleDefinition:
     (tableName [, tableName] ... )
 ```
-- `ALTER` 会使用新的配置直接覆盖数据库内的绑定表配置
+- `ALTER` 会使用新的配置覆盖数据库内的绑定表配置
 
-### Sharding Broadcast Table Rule
-
-```sql
-CREATE SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
-
-ALTER SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
-
-DROP SHARDING BROADCAST TABLE RULES (tableName [, tableName] ...)
-```
-- `ALTER` 会使用新的配置直接覆盖数据库内的广播表配置
-
-### Sharding Scaling Rule
+### Broadcast Table Rule
 
 ```sql
-CREATE SHARDING SCALING RULE scalingName [scalingRuleDefinition]
+CREATE BROADCAST TABLE RULE tableName [, tableName] ...
 
-DROP SHARDING SCALING RULE scalingName
-
-ENABLE SHARDING SCALING RULE scalingName
-
-DISABLE SHARDING SCALING RULE scalingName
-
-scalingRuleDefinition:
-    [inputDefinition] [, outputDefinition] [, streamChannel] [, completionDetector] [, dataConsistencyChecker]
-
-inputDefinition:
-    INPUT ([workerThread] [, batchSize] [, rateLimiter])
-
-outputDefinition:
-    OUTPUT ([workerThread] [, batchSize] [, rateLimiter])
-
-completionDetector:
-    COMPLETION_DETECTOR (algorithmDefinition)
-
-dataConsistencyChecker:
-    DATA_CONSISTENCY_CHECKER (algorithmDefinition)
-
-rateLimiter:
-    RATE_LIMITER (algorithmDefinition)
-
-streamChannel:
-    STREAM_CHANNEL (algorithmDefinition)
-
-workerThread:
-    WORKER_THREAD=intValue
-
-batchSize:
-    BATCH_SIZE=intValue
-
-intValue:
-    INT
+DROP BROADCAST TABLE RULES tableName [, tableName] ...
 ```
-- `ENABLE` 用于设置启用哪个弹性伸缩配置；
-- `DISABLE` 将禁用当前正在使用的配置；
-- 创建逻辑库中第一个弹性伸缩配置时，默认启用。
 
 ## 示例
 
@@ -191,29 +149,37 @@ intValue:
 *Key Generator*
 
 ```sql
-CREATE SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE)
-);
-
-ALTER SHARDING KEY GENERATOR snowflake_key_generator (
-TYPE(NAME=SNOWFLAKE)
-);
-
 DROP SHARDING KEY GENERATOR snowflake_key_generator;
+```
+
+*Auditor*
+
+```sql
+CREATE SHARDING AUDITOR sharding_key_required_auditor (
+TYPE(NAME="DML_SHARDING_CONDITIONS")
+);
+
+ALTER SHARDING AUDITOR sharding_key_required_auditor (
+TYPE(NAME="DML_SHARDING_CONDITIONS")
+);
+
+DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor;
 ```
 
 *Auto Table*
 ```sql
 CREATE SHARDING TABLE RULE t_order (
-RESOURCES(resource_0,resource_1),
-SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=4)),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))
+STORAGE_UNITS(ds_0,ds_1),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order (
-RESOURCES(resource_0,resource_1,resource_2,resource_3),
-SHARDING_COLUMN=order_id,TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=16)),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME=snowflake))
+STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 DROP SHARDING TABLE RULE t_order;
@@ -224,28 +190,20 @@ DROP SHARDING ALGORITHM t_order_hash_mod;
 *Table*
 
 ```sql
-CREATE SHARDING ALGORITHM table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}"))
-);
-
 CREATE SHARDING TABLE RULE t_order_item (
-DATANODES("resource_${0..1}.t_order_item_${0..1}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 2}")))),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
-);
-
-ALTER SHARDING ALGORITHM database_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="resource_${user_id % 4}"))
-),table_inline (
-TYPE(NAME=inline,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}"))
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 ALTER SHARDING TABLE RULE t_order_item (
-DATANODES("resource_${0..3}.t_order_item${0..3}"),
-DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=table_inline),
-KEY_GENERATE_STRATEGY(COLUMN=another_id,KEY_GENERATOR=snowflake_key_generator)
+DATANODES("ds_${0..3}.t_order_item${0..3}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 
 DROP SHARDING TABLE RULE t_order_item;
@@ -253,60 +211,32 @@ DROP SHARDING TABLE RULE t_order_item;
 DROP SHARDING ALGORITHM database_inline;
 
 CREATE DEFAULT SHARDING DATABASE STRATEGY (
-TYPE = standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=database_inline
+TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${order_id % 2}")))
 );
 
 ALTER DEFAULT SHARDING DATABASE STRATEGY (
-TYPE = standard,SHARDING_COLUMN=another_id,SHARDING_ALGORITHM=database_inline
+TYPE="standard",SHARDING_COLUMN=another_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${another_id % 2}")))
 );
 
 DROP DEFAULT SHARDING DATABASE STRATEGY;
 ```
 
-### Sharding Binding Table Rule
+### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_1,t_2);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_1,t_2);
 
-ALTER SHARDING BINDING TABLE RULES (t_order,t_order_item);
+ALTER SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 
-DROP SHARDING BINDING TABLE RULES;
+DROP SHARDING TABLE REFERENCE RULE;
 
-DROP SHARDING BINDING TABLE RULES (t_order,t_order_item);
+DROP SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 ```
 
-### Sharding Broadcast Table Rule
+### Broadcast Table Rule
 
 ```sql
-CREATE SHARDING BROADCAST TABLE RULES (t_b,t_a);
+CREATE BROADCAST TABLE RULE t_a,t_b;
 
-ALTER SHARDING BROADCAST TABLE RULES (t_b,t_a,t_3);
-
-DROP SHARDING BROADCAST TABLE RULES;
-
-DROP SHARDING BROADCAST TABLE RULES t_b;
-```
-
-### Sharding Scaling Rule
-
-```sql
-CREATE SHARDING SCALING RULE sharding_scaling(
-INPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000
-),
-OUTPUT(
-  WORKER_THREAD=40,
-  BATCH_SIZE=1000
-),
-STREAM_CHANNEL(TYPE(NAME=MEMORY, PROPERTIES("block-queue-size"=10000))),
-COMPLETION_DETECTOR(TYPE(NAME=IDLE, PROPERTIES("incremental-task-idle-seconds-threshold"=1800))),
-DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH, PROPERTIES("chunk-size"=1000)))
-);
-
-ENABLE SHARDING SCALING RULE sharding_scaling;
-
-DISABLE SHARDING SCALING RULE sharding_scaling;
-
-DROP SHARDING SCALING RULE sharding_scaling;
+DROP BROADCAST TABLE RULE t_a;
 ```

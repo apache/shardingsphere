@@ -1,47 +1,67 @@
 +++
-pre = "<b>3.11. </b>"
+pre = "<b>3.10. </b>"
 title = "Observability"
-weight = 11
+weight = 10
 +++
 
-## Definition
-Observing a cluster's operation status in order to quickly grasp the system's current status and efficiently be able to carry out maintenance work, represents a new challenge for distributed systems.
+## Background
 
-The point-to-point operation and maintenance method of logging into a specific server cannot be applied to scenarios facing a large number of distributed servers.
+In order to grasp the distributed system status, observe running state of the cluster is a new challenge. The point-to-point operation mode of logging in to a specific server cannot suite to large number of distributed servers. Telemetry through observable data is the recommended operation and maintenance mode for them. Tracking, metrics and logging are important ways to obtain observable data of system status.
 
-Telemetry of system-observable data is the recommended way of operating and maintaining distributed systems.
+APM (application performance monitoring) is to monitor and diagnose the performance of the system by collecting, storing and analyzing the observable data of the system. Its main functions include performance index monitoring, call stack analysis, service topology, etc.
 
-## Related Concepts
+Apache ShardingSphere is not responsible for gathering, storing and demonstrating APM data, but provides the necessary information for the APM. In other words, Apache ShardingSphere is only responsible for generating valuable data and submitting it to relevant systems through standard protocols or plug-ins. Tracing is to obtain the tracking information of SQL parsing and SQL execution. Apache ShardingSphere provides support for SkyWalking, Zipkin, Jaeger and OpenTelemetry by default. It also supports users to develop customized components through plug-in.
 
-### Agent
-Based on bytecode enhancement and plugin design to provide tracing, metrics and logging features.
+- Use Zipkin or Jaeger
+Just provides correct Zipkin or Jaeger server information in the agent configuration file.
 
-Only after the plugin of the Agent is enabled, the monitoring indicator data can be output to the third-party APM for display.
+- Use OpenTelemetry
+OpenTelemetry was merged by OpenTracing and OpenCencus in 2019. In this way, you only need to fill in the appropriate configuration in the agent configuration file according to OpenTelemetry SDK Autoconfigure Guide.
 
-### APM
-APM is an acronym for Application Performance Monitoring.
+- Use SkyWalking
+Enable the SkyWalking plug-in in configuration file and need to configure the SkyWalking apm-toolkit.
 
-Focusing on the performance diagnosis of distributed systems, its main functions include call chain display, application topology analysis, etc.
+- Use SkyWalking’s automatic monitor probe
+Cooperating with [Apache SkyWalking](https://skywalking.apache.org/) team, Apache ShardingSphere team has realized ShardingSphere automatic monitor probe to automatically send performance data to SkyWalking. Note that automatic probe in this way cannot be used together with Apache ShardingSphere plug-in probe.
 
-### Tracing
-Tracing data between distributed services or internal processes will be collected by agent. It will then be sent to third-party APM systems.
+Metrics used to collect and display statistical indicator of cluster. Apache ShardingSphere supports Prometheus by default.
 
-### Metrics
-System statistical indicators are collected through probes and written to the time series database for display by third-party applications.
+![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v3.png)
 
-### Logging
-The log can be easily expanded through the agent to provide more information for analyzing the system running status.
+## Challenges
 
-## How it works
-ShardingSphere-Agent module provides an observable framework for ShardingSphere, which is implemented based on Java Agent.
+Tracing and metrics need to collect system information through event tracking. Lots of events tracking make kernel code mess, difficult to maintain, and difficult to customize extend.
 
-Metrics, tracing and logging functions are integrated into the agent through plugins, as shown in the following figure:
+## Goal
 
-![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v4.png)
+The goal of Apache ShardingSphere observability module is providing as many performance and statistical indicators as possible and isolating kernel code and embedded code.
 
-- The Metrics plugin is used to collect and display statistical indicators for the entire cluster. Apache ShardingSphere supports Prometheus by default.
-- The tracing plugin is used to obtain the link trace information of SQL parsing and SQL execution. Apache ShardingSphere provides support for Jaeger, OpenTelemetry, OpenTracing(SkyWalking) and Zipkin by default. It also supports users developing customized tracing components through plugin.
-- The default logging plugin shows how to record additional logs in ShardingSphere. In practical applications, users need to explore according to their own needs.
+## Application Scenarios
+
+ShardingSphere provides observability for applications through the Agent module, and this feature applies to the following scenarios:
+
+### Monitoring panel
+
+The system's static information (such as application version) and dynamic information (such as the number of threads and SQL processing information) are exposed to a third-party application (such as Prometheus) using a standard interface. Administrators can visually monitor the real-time system status.
+
+### Monitoring application performance
+
+In ShardingSphere, a SQL statement needs to go through the processes of parsing, routing, rewriting, execution, and result merging before it is finally executed and the response can be output. If a SQL statement is complex and the overall execution takes a long time, how do we know which procedure has room for optimization?
+
+Through Agent plus Tracing, administrators can learn about the time consumption of each step of SQL execution. Thus, they can easily locate performance risks and formulate targeted SQL optimization schemes.
+
+### Tracing application links
+
+In a distributed application plus data sharding scenario, it is tricky to figure out which node the SQL statement is issued from and which data source the statement is finally executed on. If an exception occurs during SQL execution, how do we locate the node where the exception occurred?
+
+Agent + Tracing can help users solve the above problems.
+
+Through tracing the full link of the SQL execution process, users can get complete information such as "where the SQL comes from and where it is sent to". 
+
+They can also visually observe the SQL routing situation through the generated topological graph, make timely responses, and quickly locate the root cause of problems.
 
 ## Related References
-[Special API: Observability](/en/user-manual/shardingsphere-jdbc/special-api/observability/)
+
+- [Usage of observability](/en/user-manual/shardingsphere-proxy/observability/)
+- [Dev guide: observability](/en/dev-manual/agent/)
+- [Implementation](/en/reference/observability/)

@@ -47,22 +47,17 @@
     </shadow:shadow-algorithm>
     
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="ds_0" shadow-data-source-name="ds_1"/>
+        <shadow:data-source id="shadow-data-source" production-data-source-name="ds_0" shadow-data-source-name="ds_1"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
+        <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>
     </shadow:rule>
     
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parserTreeCache" sql-statement-cache-ref="sqlStatementCache" />
     
     <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024"/>
     <sql-parser:cache-option id="parserTreeCache" initial-capacity="1024" maximum-size="1024"/>
-    
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1" rule-refs="shadowRule, sqlParseRule">
-        <props>
-            <prop key="sql-show">true</prop>
-        </props>
-    </shardingsphere:data-source>

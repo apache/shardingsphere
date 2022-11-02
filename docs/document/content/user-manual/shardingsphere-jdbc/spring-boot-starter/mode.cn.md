@@ -3,41 +3,40 @@ title = "模式配置"
 weight = 1
 +++
 
-## Parameters
+## 参数解释
 
 ```properties
-spring.shardingsphere.mode.type= # Type of mode configuration. Value could be: Standalone or Cluster
-spring.shardingsphere.mode.repository= # Persist repository configuration
-spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
+spring.shardingsphere.mode.type= # 运行模式类型。可选配置：Standalone、Cluster
+spring.shardingsphere.mode.repository= # 持久化仓库配置。
 ```
 
-### Standalone Mode
+### 单机模式
 
 ```properties
 spring.shardingsphere.mode.type=Standalone
-spring.shardingsphere.mode.repository.type= # Type of persist repository
-spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
-spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
+spring.shardingsphere.mode.repository.type= # 持久化仓库类型
+spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
 ```
 
-### Cluster Mode (Recommended)
+### 集群模式 (推荐)
 
 ```properties
 spring.shardingsphere.mode.type=Cluster
-spring.shardingsphere.mode.repository.type= # Type of persist repository
-spring.shardingsphere.mode.repository.props.namespace= # Namespace of registry center
-spring.shardingsphere.mode.repository.props.server-lists= # Server lists of registry center
-spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
-spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
+spring.shardingsphere.mode.repository.type= # 持久化仓库类型
+spring.shardingsphere.mode.repository.props.namespace= # 注册中心命名空间
+spring.shardingsphere.mode.repository.props.server-lists= # 注册中心连接地址
+spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
 ```
 
-## Notes
+## 注意事项
 
-1. Cluster mode deployment is recommended for production environments.
-1. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+1. 生产环境建议使用集群模式部署。
+1. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+1. `ZooKeeper` 存在配置信息时，则以 `ZooKeeper` 中的配置为准。
 
-## Procedure
-1. Import MAVEN dependency.
+## 操作步骤
+
+1. 引入 MAVEN 依赖
 
 ```xml
 <dependency>
@@ -47,20 +46,18 @@ spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configurati
 </dependency>
 ```
 
-> Note: please change `${latest.release.version}' to the actual version number.
-> 
-## Sample
+注意：请将 `${latest.release.version}` 更改为实际的版本号。
 
-### Standalone Mode
+## 配置示例
+
+### 单机模式
 
 ```properties
 spring.shardingsphere.mode.type=Standalone
-spring.shardingsphere.mode.repository.type=File
-spring.shardingsphere.mode.repository.props.path=.shardingsphere
-spring.shardingsphere.mode.overwrite=false
+spring.shardingsphere.mode.repository.type=JDBC
 ```
 
-### Cluster Mode (Recommended)
+### 集群模式 (推荐)
 
 ```properties
 spring.shardingsphere.mode.type=Cluster
@@ -69,10 +66,9 @@ spring.shardingsphere.mode.repository.props.namespace=governance
 spring.shardingsphere.mode.repository.props.server-lists=localhost:2181
 spring.shardingsphere.mode.repository.props.retryIntervalMilliseconds=500
 spring.shardingsphere.mode.repository.props.timeToLiveSeconds=60
-spring.shardingsphere.mode.overwrite=false
 ```
 
-## Related References
+## 相关参考
 
-- [Installation and Usage of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
-- Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.
+- [ZooKeeper 注册中心安装与使用](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
+- - 持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/common-config/builtin-algorithm/metadata-repository/)。

@@ -9,7 +9,7 @@ weight = 4
 
 ## 参数解释
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.1.2.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.2.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt-5.2.1.xsd)
 
 \<encrypt:rule />
 
@@ -45,7 +45,7 @@ weight = 4
 | type      | 属性  | 加密算法类型    |
 | props (?) | 标签  | 加密算法属性配置 |
 
-算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/encrypt)。
+算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。
 
 ## 操作步骤
 

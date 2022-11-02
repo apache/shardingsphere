@@ -3,27 +3,27 @@ title = "影子库压测"
 weight = 5
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
-ADD RESOURCE ds_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+REGISTER STORAGE UNIT ds_0 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 ),ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_1",
+    USER="root",
+    PASSWORD="root"
 ),ds_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_2",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
@@ -35,8 +35,8 @@ PASSWORD=root
 CREATE SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_1,
-t_order((simple_hint_algorithm, TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar"))),(TYPE(NAME=REGEX_MATCH, PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]')))), 
-t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
+t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
+t_order_item(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))));
 ```
 
 - 修改影子库压测规则
@@ -45,7 +45,7 @@ t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 ALTER SHADOW RULE group_0(
 SOURCE=ds_0,
 SHADOW=ds_2,
-t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
+t_order_item(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))));
 ```
 
 - 删除影子库压测规则
@@ -54,10 +54,10 @@ t_order_item((TYPE(NAME=SIMPLE_HINT, PROPERTIES("foo"="bar")))));
 DROP SHADOW RULE group_0;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
-DROP RESOURCE ds_0,ds_1,ds_2;
+UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;
 ```
 
 9. 删除分布式数据库

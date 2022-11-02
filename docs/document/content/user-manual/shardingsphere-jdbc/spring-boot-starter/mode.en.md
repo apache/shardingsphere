@@ -1,5 +1,5 @@
 +++
-title = "Mode Configuration"
+title = "Mode"
 weight = 1
 +++
 
@@ -9,7 +9,6 @@ weight = 1
 mode (?): # Default value is Standalone
   type: # Type of mode configuration. Values could be: Standalone or Cluster
   repository (?): # Persist repository configuration
-  overwrite: # Whether overwrite persistent configuration with local configuration
 ```
 
 ### Standalone Mode
@@ -22,7 +21,6 @@ mode:
     props: # Properties of persist repository
       foo_key: foo_value
       bar_key: bar_value
-  overwrite: # Whether overwrite persistent configuration with local configuration
 ```
 
 ### Cluster Mode (recommended)
@@ -37,13 +35,13 @@ mode:
       server-lists: # Server lists of registry center
       foo_key: foo_value
       bar_key: bar_value
-  overwrite: # Whether overwrite persistent configuration with local configuration
 ```
 
 ## Notes
 
 1. Cluster mode deployment is recommended for production environment.
-1. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+1. The `ZooKeeper` registry center is recommended for cluster mode deployment.
+1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
 
 ## Sample
 
@@ -53,8 +51,7 @@ mode:
 mode:
   type: Standalone
   repository:
-    type: H2
-  overwrite: false
+    type: JDBC
 ```
 
 ### Cluster Mode (recommended)
@@ -69,10 +66,9 @@ mode:
       server-lists: localhost:2181
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
-  overwrite: false
 ```
 
 ## Related References
 
 - [Installation and Usage of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
-- Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about the type of repository.
+- Please refer to [Builtin Persist Repository List](/en/user-manual/common-config/builtin-algorithm/metadata-repository/) for more details about the type of repository.

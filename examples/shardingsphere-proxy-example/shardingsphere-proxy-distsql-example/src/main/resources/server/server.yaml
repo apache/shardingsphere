@@ -33,15 +33,17 @@ mode:
       timeToLiveSeconds: 60
       maxRetries: 3
       operationTimeoutMilliseconds: 500
-  overwrite: false
+
+authority:
+  users:
+    - user: root
+      password: root
+    - user: sharding
+      password: sharding
+  privilege:
+    type: ALL_PERMITTED
 
 rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-      - sharding@:sharding
-    provider:
-      type: ALL_PERMITTED
   - !TRANSACTION
     defaultType: XA
     providerType: Atomikos
@@ -55,7 +57,6 @@ props:
   proxy-hint-enabled: true
   sql-show: false
   check-table-metadata-enabled: false
-  show-process-list-enabled: false
     # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
   # The default value is -1, which means set the minimum value for different JDBC drivers.
   proxy-backend-query-fetch-size: -1

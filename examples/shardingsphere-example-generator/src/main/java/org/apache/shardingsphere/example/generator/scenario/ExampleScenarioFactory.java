@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.generator.scenario;
 import org.apache.shardingsphere.example.generator.scenario.feature.FeatureExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 import org.apache.shardingsphere.example.generator.scenario.transaction.TransactionExampleScenario;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Arrays;
 import java.util.Collection;

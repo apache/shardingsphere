@@ -14,16 +14,16 @@ DROP READWRITE_SPLITTING RULE ruleName [, ruleName] ...
 
 readwriteSplittingRuleDefinition:
     ruleName ([staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition] 
-              [, loadBanlancerDefinition])
+              [, loadBalancerDefinition])
 
 staticReadwriteSplittingRuleDefinition:
-    WRITE_RESOURCE=writeResourceName, READ_RESOURCES(resourceName [, resourceName] ... )
+    WRITE_STORAGE_UNIT=storageUnitName, READ_STORAGE_UNITS(storageUnitName [, storageUnitName] ... )
 
 dynamicReadwriteSplittingRuleDefinition:
-    AUTO_AWARE_RESOURCE=resourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
+    AUTO_AWARE_RESOURCE=autoAwareResourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
 
-loadBanlancerDefinition:
-    TYPE(NAME=loadBanlancerType [, PROPERTIES([algorithmProperties] )] )
+loadBalancerDefinition:
+    TYPE(NAME=loadBalancerType [, PROPERTIES([algorithmProperties] )] )
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -35,9 +35,20 @@ writeDataSourceQueryEnabled:
     TRUE | FALSE
 ```
 
+### 参数解释
+| 名称                            | 数据类型      | 说明                         |
+|:-------------------------------|:-------------|:----------------------------|
+| ruleName                       | IDENTIFIER   | 规则名称                      |
+| storageUnitName                | IDENTIFIER   | 已注册的数据源名称              |
+| autoAwareResourceName          | IDENTIFIER   | 数据库发现的逻辑数据源名称       |
+| writeDataSourceQueryEnabled    | BOOLEAN      | 读库全部下线，主库是否承担读流量  |
+| loadBalancerType               | STRING       | 负载均衡算法类型               |
+
+### 注意事项
+
 - 支持创建静态读写分离规则和动态读写分离规则；
 - 动态读写分离规则依赖于数据库发现规则；
-- `loadBanlancerType` 指定负载均衡算法类型，请参考 [负载均衡算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance/)；
+- `loadBalancerType` 指定负载均衡算法类型，请参考 [负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)；
 - 重复的 `ruleName` 将无法被创建。
 
 ## 示例
@@ -45,22 +56,22 @@ writeDataSourceQueryEnabled:
 ```sql
 // Static
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds_0,read_ds_1),
-TYPE(NAME=random)
+WRITE_STORAGE_UNIT=write_ds,
+READ_STORAGE_UNITS(read_ds_0,read_ds_1),
+TYPE(NAME="random")
 );
 
 // Dynamic
 CREATE READWRITE_SPLITTING RULE ms_group_1 (
 AUTO_AWARE_RESOURCE=group_0,
 WRITE_DATA_SOURCE_QUERY_ENABLED=false,
-TYPE(NAME=random,PROPERTIES(read_weight='2:1'))
+TYPE(NAME="random",PROPERTIES('write_ds'=2,'ead_ds_0'=2,'ead_ds_1'=2,'ead_ds_2'=1))
 );
 
 ALTER READWRITE_SPLITTING RULE ms_group_1 (
-WRITE_RESOURCE=write_ds,
-READ_RESOURCES(read_ds_0,read_ds_1,read_ds_2),
-TYPE(NAME=random,PROPERTIES(read_weight='2:0'))
+WRITE_STORAGE_UNIT=write_ds,
+READ_STORAGE_UNITS(read_ds_0,read_ds_1,read_ds_2),
+TYPE(NAME="random",PROPERTIES('write_ds'=2,'read_ds_0'=2,'read_ds_1'=2,'read_ds_2'=1))
 );
 
 DROP READWRITE_SPLITTING RULE ms_group_1;

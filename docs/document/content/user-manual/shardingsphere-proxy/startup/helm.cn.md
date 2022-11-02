@@ -3,77 +3,60 @@ title = "使用 Helm"
 weight = 3
 +++
 
-使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
+## 背景信息
 
-## 快速入门
+使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。关于 ShardingSphere Helm Charts 的更多内容可以参考：[ShardingSphere-on-Cloud 子项目](https://github.com/apache/shardingsphere-on-cloud)。
 
-注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
+## 前提条件
 
-```shell
-helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
-```
+- kubernetes 1.18+
+- kubectl
+- helm 3.3.0+
+- 可以动态申请 PV(Persistent Volumes) 的 StorageClass 用于持久化数据。（可选）
 
 ## 操作步骤
 
-### 必要条件
+### 在线安装
 
-1. kubernetes 1.18+
-1. kubectl
-1. helm 3.2.0+
-
-可以动态申请 PV(Persistent Volumes) 的 StorageClass（可选）。
-
-### 安装
-
-#### 在线安装
-
-将 ShardingSphere-Proxy 添加到 Helm 本地仓库：
+1. 将 ShardingSphere-Proxy 添加到 Helm 本地仓库：
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
-以 ShardingSphere-Proxy 命名安装 charts：
-注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
+2. 以 ShardingSphere-Proxy 命名安装 charts：
 
 ```shell
-helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
 ```
 
-如需修改配置，请执行以下操作:
+### 源码安装
+
+1. 执行下述命令以执行默认配置进行安装。
 
 ```shell
-helm pull shardingsphere/apache-shardingsphere-proxy
-tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
-# 修改 apache-shardingsphere-proxy/values.yaml 中 serverConfig 部分
-helm install shardingsphere-proxy apache-shardingsphere-proxy
+ git clone https://github.com/apache/shardingsphere-on-cloud.git
+ cd charts/shardingsphere-proxy/charts/governance
+ helm dependency build 
+ cd ../..
+ helm dependency build 
+ cd ..
+ helm install shardingsphere-proxy shardingsphere-proxy 
 ```
+说明：
 
-#### 源码安装
-
-```shell
-cd apache-shardingsphere-proxy/charts/governance
-helm dependency build 
-cd ../..                               
-helm dependency build                                   
-cd ..                                                   
-helm install shardingsphere-proxy apache-shardingsphere-proxy
-```
-
-执行上述命令以执行默认配置进行安装。
-其他的配置详见下方的配置列表。
-执行 `helm list` 获取所有安装的 release。
+1. 其他的配置详见下方的配置列表。
+2. 执行 helm list 获取所有安装的 release。
 
 ### 卸载
+
+1. 默认删除所有发布记录，增加 `--keep-history` 参数保留发布记录。
 
 ```shell
 helm uninstall shardingsphere-proxy
 ```
 
-默认删除所有发布记录，增加 `--keep-history` 参数保留发布记录。
-
-## 配置项
+## 参数解释
 
 ### 治理节点配置项
 
@@ -111,25 +94,164 @@ helm uninstall shardingsphere-proxy
 | `compute.service.port`              | ShardingSphere-Proxy 暴露端口           | `3307`                        |
 | `compute.mysqlConnector.version`    | MySQL 驱动版本                          | `5.1.49`                      |
 | `compute.startPort`                 | ShardingSphere-Proxy 启动端口           | `3307`                        |
+| `compute.serverConfig`              | ShardingSphere-Proxy 模式配置文件        |  `""`                         |
 
-### 计算节点 ShardingSphere-Proxy Server 配置 权限配置项
+## 配置示例
 
-| 配置项                                              | 描述                                                                                           | 值                         |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------- |
-| `compute.serverConfig.authority.privilege.type`    | 存储节点数据授权的权限提供者类型，缺省值为 ALL_PERMITTED                                              | `ALL_PRIVILEGES_PERMITTED` |
-| `compute.serverConfig.authority.users[0].password` | 用于登录计算节点的密码                                                                            | `root`                     |
-| `compute.serverConfig.authority.users[0].user`     | 用于登录计算节点的用户名，授权主机。格式: <username>@<hostname> hostname 为 % 或空字符串表示不限制授权主机 | `root@%`                   |
+```PlainText
+#
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 
-### 计算节点 ShardingSphere-Proxy Server 配置 模式配置项
+## @section Governance-Node parameters
+## @param governance.enabled Switch to enable or disable the governance helm chart
+##
+governance:
+  enabled: true
+  ## @section Governance-Node ZooKeeper parameters
+  zookeeper:
+    ## @param governance.zookeeper.enabled Switch to enable or disable the ZooKeeper helm chart
+    ##
+    enabled: true
+    ## @param governance.zookeeper.replicaCount Number of ZooKeeper nodes
+    ##
+    replicaCount: 1
+    ## ZooKeeper Persistence parameters
+    ## ref: https://kubernetes.io/docs/user-guide/persistent-volumes/
+    ## @param governance.zookeeper.persistence.enabled Enable persistence on ZooKeeper using PVC(s)
+    ## @param governance.zookeeper.persistence.storageClass Persistent Volume storage class
+    ## @param governance.zookeeper.persistence.accessModes Persistent Volume access modes
+    ## @param governance.zookeeper.persistence.size Persistent Volume size
+    ##
+    persistence:
+      enabled: false
+      storageClass: ""
+      accessModes:
+        - ReadWriteOnce
+      size: 8Gi
+    ## ZooKeeper's resource requests and limits
+    ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+    ## @param governance.zookeeper.resources.limits The resources limits for the ZooKeeper containers
+    ## @param governance.zookeeper.resources.requests.memory The requested memory for the ZooKeeper containers
+    ## @param governance.zookeeper.resources.requests.cpu The requested cpu for the ZooKeeper containers
+    ##
+    resources:
+      limits: {}
+      requests:
+        memory: 256Mi
+        cpu: 250m
 
-| 配置项                                                                     | 描述                                | 值                                                                     |
-| ------------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------- |
-| `compute.serverConfig.mode.type`                                          | 运行模式类型。 现阶段仅支持 Cluster 模式 | `Cluster`                                                             |
-| `compute.serverConfig.mode.repository.props.namespace`                    | 注册中心命名空间                      | `governance_ds`                                                        |
-| `compute.serverConfig.mode.repository.props.server-lists`                 | 注册中心连接地址                      | `{{ printf "%s-zookeeper.%s:2181" .Release.Name .Release.Namespace }}` |
-| `compute.serverConfig.mode.repository.props.maxRetries`                   | 客户端连接最大重试次数                 | `3`                                                                    |
-| `compute.serverConfig.mode.repository.props.operationTimeoutMilliseconds` | 客户端操作超时的毫秒数                 | `5000`                                                                 |
-| `compute.serverConfig.mode.repository.props.retryIntervalMilliseconds`    | 重试间隔毫秒数                       | `500`                                                                  |
-| `compute.serverConfig.mode.repository.props.timeToLiveSeconds`            | 临时数据失效的秒数                    | `60`                                                                   |
-| `compute.serverConfig.mode.repository.type`                               | 持久化仓库类型。 现阶段仅支持 ZooKeeper | `ZooKeeper`                                                            |
-| `compute.serverConfig.mode.overwrite`                                     | 是否使用本地配置覆盖持久化配置           | `true`                                                                |
+## @section Compute-Node parameters
+## 
+compute:
+  ## @section Compute-Node ShardingSphere-Proxy parameters
+  ## ref: https://kubernetes.io/docs/concepts/containers/images/
+  ## @param compute.image.repository Image name of ShardingSphere-Proxy.
+  ## @param compute.image.pullPolicy The policy for pulling ShardingSphere-Proxy image
+  ## @param compute.image.tag ShardingSphere-Proxy image tag
+  ##
+  image:
+    repository: "apache/shardingsphere-proxy"
+    pullPolicy: IfNotPresent
+    ## Overrides the image tag whose default is the chart appVersion.
+    ##
+    tag: "5.1.2"
+  ## @param compute.imagePullSecrets Specify docker-registry secret names as an array
+  ## e.g：
+  ## imagePullSecrets:
+  ##   - name: myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  ## ShardingSphere-Proxy resource requests and limits
+  ## ref: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+  ## @param compute.resources.limits The resources limits for the ShardingSphere-Proxy containers
+  ## @param compute.resources.requests.memory The requested memory for the ShardingSphere-Proxy containers
+  ## @param compute.resources.requests.cpu The requested cpu for the ShardingSphere-Proxy containers
+  ##
+  resources:
+    limits: {}
+    requests:
+      memory: 2Gi
+      cpu: 200m
+  ## ShardingSphere-Proxy Deployment Configuration
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
+  ## @param compute.replicas Number of cluster replicas
+  ##
+  replicas: 3
+  ## @param compute.service.type ShardingSphere-Proxy network mode
+  ## @param compute.service.port ShardingSphere-Proxy expose port
+  ##
+  service:
+    type: ClusterIP
+    port: 3307
+  ## MySQL connector Configuration
+  ## ref: https://shardingsphere.apache.org/document/current/en/quick-start/shardingsphere-proxy-quick-start/
+  ## @param compute.mysqlConnector.version MySQL connector version
+  ##
+  mysqlConnector:
+    version: "5.1.49"
+  ## @param compute.startPort ShardingSphere-Proxy start port
+  ## ShardingSphere-Proxy start port
+  ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/startup/docker/
+  ##
+  startPort: 3307
+  ## @section Compute-Node ShardingSphere-Proxy ServerConfiguration parameters
+  ## NOTE: If you use the sub-charts to deploy Zookeeper, the server-lists field must be "{{ printf \"%s-zookeeper.%s:2181\" .Release.Name .Release.Namespace }}",
+  ## otherwise please fill in the correct zookeeper address
+  ## The server.yaml is auto-generated based on this parameter.
+  ## If it is empty, the server.yaml is also empty.
+  ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/mode/
+  ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/metadata-repository/
+  ##
+  serverConfig:
+    ## @section Compute-Node ShardingSphere-Proxy ServerConfiguration authority parameters
+    ## NOTE: It is used to set up initial user to login compute node, and authority data of storage node.
+    ## ref: https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/yaml-config/authentication/
+    ## @param compute.serverConfig.authority.privilege.type authority provider for storage node, the default value is ALL_PERMITTED
+    ## @param compute.serverConfig.authority.users[0].password Password for compute node.
+    ## @param compute.serverConfig.authority.users[0].user Username,authorized host for compute node. Format: <username>@<hostname> hostname is % or empty string means do not care about authorized host
+    ##
+    authority:
+      privilege:
+        type: ALL_PRIVILEGES_PERMITTED
+      users:
+      - password: root
+        user: root@%
+    ## @section Compute-Node ShardingSphere-Proxy ServerConfiguration mode Configuration parameters
+    ## @param compute.serverConfig.mode.type Type of mode configuration. Now only support Cluster mode
+    ## @param compute.serverConfig.mode.repository.props.namespace Namespace of registry center
+    ## @param compute.serverConfig.mode.repository.props.server-lists Server lists of registry center
+    ## @param compute.serverConfig.mode.repository.props.maxRetries Max retries of client connection
+    ## @param compute.serverConfig.mode.repository.props.operationTimeoutMilliseconds Milliseconds of operation timeout
+    ## @param compute.serverConfig.mode.repository.props.retryIntervalMilliseconds Milliseconds of retry interval
+    ## @param compute.serverConfig.mode.repository.props.timeToLiveSeconds Seconds of ephemeral data live
+    ## @param compute.serverConfig.mode.repository.type Type of persist repository. Now only support ZooKeeper
+    ## @param compute.serverConfig.mode.overwrite Whether overwrite persistent configuration with local configuration
+    ##
+    mode:
+      type: Cluster
+      repository:
+        type: ZooKeeper
+        props:
+          maxRetries: 3
+          namespace: governance_ds
+          operationTimeoutMilliseconds: 5000
+          retryIntervalMilliseconds: 500
+          server-lists: "{{ printf \"%s-zookeeper.%s:2181\" .Release.Name .Release.Namespace }}"
+          timeToLiveSeconds: 60
+      overwrite: true
+```

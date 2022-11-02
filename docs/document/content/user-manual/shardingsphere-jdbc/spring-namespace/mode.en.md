@@ -1,11 +1,11 @@
 +++
-title = "Mode Configuration"
+title = "Mode"
 weight = 1
 +++
 
 ## Background
 
-The default configuration uses memory mode.
+The default configuration uses standalone mode.
 
 ## Parameters Explained
 
@@ -37,7 +37,8 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/mode-reposit
 ## Tips:
 
 1. For production environments, it is recommended to use cluster mode deployment.
-1. For cluster mode deployment, it is recommended to use `ZooKeeper` registry. 
+1. The `ZooKeeper` registry center is recommended for cluster mode deployment.
+1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
 
 ## Operating Procedures
 
@@ -69,14 +70,11 @@ Introduce MAVEN dependency
                   http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">.shardingsphere</prop>
-        </props>
+    <standalone:repository id="standaloneRepository" type="JDBC">
     </standalone:repository>
 
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
     </shardingsphere:data-source>
 </beans>
 ``` 
@@ -103,7 +101,7 @@ Introduce MAVEN dependency
     </cluster:repository>
     
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="false" />
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
 </beans>
 ``` 
@@ -111,4 +109,4 @@ Introduce MAVEN dependency
 ## Relevant References
 
 - [Installation and use of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
-- For details about persistent repository, please refer to [List of Built-in repository types](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)
+- For details about persistent repository, please refer to [List of Built-in repository types](/cn/user-manual/common-config/builtin-algorithm/metadata-repository/)

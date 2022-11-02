@@ -5,7 +5,7 @@ weight = 1
 
 ## 背景信息
 
-缺省配置为使用内存模式。
+缺省配置为使用单机模式。
 
 ## 参数解释
 
@@ -39,6 +39,7 @@ weight = 1
 
 1. 生产环境建议使用集群模式部署。
 1. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+1. `ZooKeeper` 存在配置信息时，则以 `ZooKeeper` 中的配置为准。
 
 ## 操作步骤
 
@@ -70,14 +71,11 @@ weight = 1
                   http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">.shardingsphere</prop>
-        </props>
+    <standalone:repository id="standaloneRepository" type="JDBC">
     </standalone:repository>
 
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
     </shardingsphere:data-source>
 </beans>
 ```
@@ -104,7 +102,7 @@ weight = 1
     </cluster:repository>
     
     <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="false" />
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />
     </shardingsphere:data-source>
 </beans>
 ```
@@ -112,4 +110,4 @@ weight = 1
 ## 相关参考
 
 - [ZooKeeper 注册中心安装与使用](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
-- 持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。
+- 持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/common-config/builtin-algorithm/metadata-repository/)。
