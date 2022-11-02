@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -37,18 +38,15 @@ import java.util.Collections;
 /**
  * Show connection id executor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String FUNCTION_NAME = "connection_id()";
     
-    private SelectStatement sqlStatement;
+    private final SelectStatement sqlStatement;
     
     private MergedResult mergedResult;
-    
-    public ShowConnectionIdExecutor(final SelectStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-    }
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
