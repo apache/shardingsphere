@@ -95,20 +95,17 @@ public abstract class BaseITCase {
     }
     
     private void executeLogicDatabaseInitSQLFileOnlyOnce(final DataSource targetDataSource) throws SQLException, IOException {
+        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(getScenario()).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, getDatabaseType());
+        if (!logicDatabaseInitSQLFile.isPresent()) {
+            return;
+        }
         if (!FILLED_SUITES.contains(getItKey())) {
             synchronized (FILLED_SUITES) {
                 if (!FILLED_SUITES.contains(getScenario())) {
-                    executeLogicDatabaseInitSQLFile(targetDataSource);
+                    executeInitSQL(targetDataSource, logicDatabaseInitSQLFile.get());
                     FILLED_SUITES.add(getItKey());
                 }
             }
-        }
-    }
-    
-    private void executeLogicDatabaseInitSQLFile(final DataSource targetDataSource) throws SQLException, IOException {
-        Optional<String> logicDatabaseInitSQLFile = new ScenarioDataPath(getScenario()).findActualDatabaseInitSQLFile(DefaultDatabase.LOGIC_NAME, getDatabaseType());
-        if (logicDatabaseInitSQLFile.isPresent()) {
-            executeInitSQL(targetDataSource, logicDatabaseInitSQLFile.get());
         }
     }
     
