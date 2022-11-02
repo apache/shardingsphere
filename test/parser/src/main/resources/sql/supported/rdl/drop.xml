@@ -42,7 +42,6 @@
     <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
     <distsql-case id="drop-default-shadow-algorithm-if-exists" value="DROP DEFAULT SHADOW ALGORITHM IF EXISTS" />
     <distsql-case id="drop-shadow-algorithm-if-exists" value="DROP SHADOW ALGORITHM IF EXISTS shadow_algorithm_1,shadow_algorithm_2" />
-    <distsql-case id="drop-default-single-table" value="SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM" />
     <distsql-case id="drop-sharding-key-generator" value="DROP SHARDING KEY GENERATOR uuid_key_generator" />
     <distsql-case id="drop-sharding-key-generator-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS uuid_key_generator" />
     <distsql-case id="drop-sharding-auditor" value="DROP SHARDING AUDITOR sharding_key_required_auditor" />

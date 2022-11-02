@@ -44,8 +44,8 @@ public final class AlterStorageUnitStatementAssert {
      * Assert alter resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual add resource statement
-     * @param expected expected add resource statement test case
+     * @param actual actual alter storage unit statement
+     * @param expected expected alter storage unit statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterStorageUnitStatement actual, final AlterStorageUnitStatementTestCase expected) {
         if (null == expected) {

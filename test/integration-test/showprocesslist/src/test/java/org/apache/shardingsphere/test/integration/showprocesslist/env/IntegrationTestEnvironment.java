@@ -33,6 +33,8 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
+    private final Collection<String> runModes;
+    
     private final Properties props;
     
     private final ITEnvTypeEnum itEnvType;
@@ -41,6 +43,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
+        runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         itEnvType = ITEnvTypeEnum.valueOf(props.getProperty("it.env.type", ITEnvTypeEnum.NONE.name()).toUpperCase());
         scenarios = getScenarios(props);
     }

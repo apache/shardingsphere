@@ -488,7 +488,8 @@
         </shadow-algorithm>
     </create-default-shadow-algorithm>
     
-    <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
+    <set-default-single-table-storage-unit sql-case-id="set-default-single-table-storage-unit" default-storage-unit="ds_0"/>
+    <set-default-single-table-storage-unit-random sql-case-id="set-default-single-table-storage-unit-random"/>
     
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">
