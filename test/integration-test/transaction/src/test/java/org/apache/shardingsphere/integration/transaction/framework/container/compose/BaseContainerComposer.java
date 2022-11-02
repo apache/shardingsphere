@@ -26,8 +26,8 @@ public abstract class BaseContainerComposer implements Startable {
     @Getter
     private final ITContainers containers;
     
-    public BaseContainerComposer() {
-        this.containers = new ITContainers("");
+    public BaseContainerComposer(final String scenario) {
+        this.containers = new ITContainers(scenario);
     }
     
     /**

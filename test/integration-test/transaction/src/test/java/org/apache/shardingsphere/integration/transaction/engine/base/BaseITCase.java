@@ -131,28 +131,8 @@ public abstract class BaseITCase {
         return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
     }
     
-    private ProxyDataSource createProxyDataSource() throws SQLException {
-        initProxyDatabase();
+    private ProxyDataSource createProxyDataSource() {
         return new ProxyDataSource(containerComposer, SHARDING_DB, ENV.getProxyUserName(), ENV.getProxyPassword());
-    }
-    
-    private void initProxyDatabase() throws SQLException {
-        String jdbcUrl = getProxyJdbcUrl(databaseType);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
-            executeWithLog(connection, "CREATE DATABASE " + SHARDING_DB);
-        }
-    }
-    
-    private String getProxyJdbcUrl(final DatabaseType databaseType) {
-        String defaultDatabaseName = "";
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            defaultDatabaseName = "postgres";
-        }
-        String result = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            result = JDBC_URL_APPENDER.appendQueryProperties(result, getPostgreSQLQueryProperties());
-        }
-        return result;
     }
     
     private Properties getPostgreSQLQueryProperties() {

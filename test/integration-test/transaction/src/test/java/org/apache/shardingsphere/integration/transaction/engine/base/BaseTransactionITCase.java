@@ -51,7 +51,6 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     private void initProxyConfig(final TransactionParameterized parameterized) throws SQLException {
-        addResources();
         // TODO
         if ("default".equals(parameterized.getScenario())) {
             createTables();
