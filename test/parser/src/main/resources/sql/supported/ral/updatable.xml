@@ -46,5 +46,7 @@
     <distsql-case id="discard-distsql" value="DISCARD DISTSQL" />
     
     <distsql-case id="import-database-config" value="IMPORT DATABASE CONFIGURATION FROM FILE '/yaml/config-sharding.yaml'" />
-    <distsql-case id="alter-readwrite-splitting-storage-unit-status" value="ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_0 FROM read_write" />
+    
+    <distsql-case id="alter-readwrite-splitting-storage-unit-status-enable" value="ALTER READWRITE_SPLITTING RULE group_1 ENABLE read_ds_0 FROM read_write" />
+    <distsql-case id="alter-readwrite-splitting-storage-unit-status-disable" value="ALTER READWRITE_SPLITTING RULE group_1 DISABLE read_ds_0 FROM read_write" />
 </sql-cases>

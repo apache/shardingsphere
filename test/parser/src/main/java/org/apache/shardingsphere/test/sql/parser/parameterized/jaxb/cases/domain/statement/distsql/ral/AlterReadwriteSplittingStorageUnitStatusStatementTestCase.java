@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.DatabaseContainedTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -26,10 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
  * Alter readwrite splitting storage unit status statement test case.
  */
 @Getter
-public class AlterReadwriteSplittingStorageUnitStatusStatementTestCase extends SQLParserTestCase {
-    
-    @XmlAttribute(name = "database")
-    private String database;
+@Setter
+public class AlterReadwriteSplittingStorageUnitStatusStatementTestCase extends DatabaseContainedTestCase {
     
     @XmlAttribute(name = "group-name")
     private String groupName;

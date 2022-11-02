@@ -1651,8 +1651,11 @@ public final class SQLParserTestCases {
     @XmlElement(name = "drop-materialized-zonemap")
     private final List<DropMaterializedZonemapStatementTestCase> dropMaterializedZonemapTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-readwrite-splitting-storage-unit-status")
-    private final List<AlterReadwriteSplittingStorageUnitStatusStatementTestCase> alterReadwriteSplittingStorageUnitStatusStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "alter-readwrite-splitting-storage-unit-status-enable")
+    private final List<AlterReadwriteSplittingStorageUnitStatusStatementTestCase> alterReadwriteSplittingStorageUnitStatusStatementEnableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-readwrite-splitting-storage-unit-status-disable")
+    private final List<AlterReadwriteSplittingStorageUnitStatusStatementTestCase> alterReadwriteSplittingStorageUnitStatusStatementDisableTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
