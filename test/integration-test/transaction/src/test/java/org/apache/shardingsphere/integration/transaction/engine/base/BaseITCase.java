@@ -83,10 +83,6 @@ public abstract class BaseITCase {
     
     protected static final String DATA_SOURCE_1 = TRANSACTION_IT + "_1";
     
-    protected static final String DATA_SOURCE_2 = TRANSACTION_IT + "_2";
-    
-    protected static final Collection<String> ALL_DATA_SOURCES = Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1, DATA_SOURCE_2);
-    
     protected static final List<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
     
     protected static final String SHARDING_DB = "sharding_db";
