@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public final class DistributedLockHolder {
     
-    private final DistributedLockCreator creator;
+    private final DistributedLockCreator<Object, TypedProperties<?>> creator;
     
     private final Object client;
     
@@ -35,6 +35,7 @@ public final class DistributedLockHolder {
     
     private final Map<String, DistributedLock> locks;
     
+    @SuppressWarnings("unchecked")
     public DistributedLockHolder(final String type, final Object client, final TypedProperties<?> props) {
         creator = DistributedLockCreatorFactory.newInstance(type);
         this.client = client;
@@ -48,7 +49,6 @@ public final class DistributedLockHolder {
      * @param lockKey lock key
      * @return distributed lock
      */
-    @SuppressWarnings("unchecked")
     public synchronized DistributedLock getDistributedLock(final String lockKey) {
         DistributedLock result = locks.get(lockKey);
         if (null == result) {
