@@ -17,31 +17,23 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreator;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 
 /**
- * Curator ZooKeeper distributed lock holder.
+ * Curator zooKeeper distributed lock creator.
  */
-@RequiredArgsConstructor
-public final class CuratorZookeeperDistributedLockHolder implements DistributedLockHolder {
-    
-    private final Map<String, CuratorZookeeperDistributedLock> locks = new HashMap<>();
-    
-    private final CuratorFramework client;
+public final class CuratorZooKeeperDistributedLockCreator implements DistributedLockCreator<CuratorFramework, ZookeeperProperties> {
     
     @Override
-    public synchronized DistributedLock getDistributedLock(final String lockKey) {
-        CuratorZookeeperDistributedLock result = locks.get(lockKey);
-        if (null == result) {
-            result = new CuratorZookeeperDistributedLock(lockKey, client);
-            locks.put(lockKey, result);
-        }
-        return result;
+    public DistributedLock create(final String lockKey, final CuratorFramework client, final ZookeeperProperties props) {
+        return new CuratorZookeeperDistributedLock(lockKey, client);
+    }
+    
+    @Override
+    public String getType() {
+        return "ZooKeeper";
     }
 }
