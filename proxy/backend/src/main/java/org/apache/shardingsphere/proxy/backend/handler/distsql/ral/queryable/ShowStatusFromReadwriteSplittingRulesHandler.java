@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  */
 public final class ShowStatusFromReadwriteSplittingRulesHandler extends QueryableRALBackendHandler<ShowStatusFromReadwriteSplittingRulesStatement> {
     
-    private static final String RESOURCE = "storage_unit";
+    private static final String STORAGE_UNIT = "storage_unit";
     
     private static final String STATUS = "status";
     
@@ -62,7 +62,7 @@ public final class ShowStatusFromReadwriteSplittingRulesHandler extends Queryabl
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(RESOURCE, STATUS, DELAY_TIME);
+        return Arrays.asList(STORAGE_UNIT, STATUS, DELAY_TIME);
     }
     
     @Override
