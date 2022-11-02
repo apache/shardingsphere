@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNull;
  * Alter default shadow algorithm statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlterDefaultShadowAlgorithmStatementAssert {
+public final class AlterDefaultShadowAlgorithmStatementAssert {
     
     /**
      * Assert alter default shadow algorithm statement is correct with expected parser result.

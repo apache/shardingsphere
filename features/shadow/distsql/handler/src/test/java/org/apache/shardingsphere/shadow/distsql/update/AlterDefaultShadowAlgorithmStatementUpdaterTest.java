@@ -39,7 +39,7 @@ import java.util.Properties;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AlterDefaultShadowAlgorithmStatementUpdaterTest {
+public final class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;

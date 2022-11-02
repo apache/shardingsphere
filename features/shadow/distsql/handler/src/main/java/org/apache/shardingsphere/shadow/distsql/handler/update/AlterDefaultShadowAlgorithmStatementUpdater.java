@@ -66,9 +66,7 @@ public class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDefiniti
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDefaultShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         checkConfigurationExist(database.getName(), currentRuleConfig);
-        String name = database.getName();
-        AlgorithmSegment algorithmSegment = sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment();
-        checkAlgorithms(name, algorithmSegment, currentRuleConfig);
+        checkAlgorithms(database.getName(), sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment(), currentRuleConfig);
     }
     
     private void checkConfigurationExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
