@@ -92,4 +92,6 @@
     <import-database-config sql-case-id="import-database-config">
         <file-path>/yaml/config-sharding.yaml</file-path>
     </import-database-config>
+    
+    <alter-readwrite-splitting-storage-unit-status sql-case-id="alter-readwrite-splitting-storage-unit-status" database="read_write" group-name="group_1" storage-unit-name="reda_ds_0" status="ENABLE"/>
 </sql-parser-test-cases>

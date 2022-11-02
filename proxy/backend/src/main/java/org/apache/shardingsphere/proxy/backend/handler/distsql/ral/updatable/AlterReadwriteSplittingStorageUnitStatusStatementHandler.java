@@ -38,7 +38,7 @@ import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledE
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
 import java.util.Arrays;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 /**
  * Set readwrite-splitting storage unit status handler.
  */
-public final class SetReadwriteSplittingStorageUnitStatusHandler extends UpdatableRALBackendHandler<SetReadwriteSplittingStatusStatement> {
+public final class AlterReadwriteSplittingStorageUnitStatusStatementHandler extends UpdatableRALBackendHandler<AlterReadwriteSplittingStorageUnitStatusStatement> {
     
     private static final String DISABLE = "DISABLE";
     

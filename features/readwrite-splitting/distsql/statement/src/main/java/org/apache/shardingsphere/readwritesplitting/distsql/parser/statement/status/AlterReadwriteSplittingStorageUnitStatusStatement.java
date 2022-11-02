@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable {
+public class AlterReadwriteSplittingStorageUnitStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable {
     
     private final DatabaseSegment database;
     

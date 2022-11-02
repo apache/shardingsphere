@@ -46,7 +46,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Sho
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -82,7 +82,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
         String groupName = getIdentifierValue(ctx.groupName());
         String status = null == ctx.ENABLE() ? ctx.DISABLE().getText().toUpperCase() : ctx.ENABLE().getText().toUpperCase();
         String storageUnitName = getIdentifierValue(ctx.storageUnitName());
-        return new SetReadwriteSplittingStatusStatement(databaseSegment, groupName, storageUnitName, status);
+        return new AlterReadwriteSplittingStorageUnitStatusStatement(databaseSegment, groupName, storageUnitName, status);
     }
     
     @Override

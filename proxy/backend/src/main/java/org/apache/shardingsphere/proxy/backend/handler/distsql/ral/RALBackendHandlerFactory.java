@@ -67,12 +67,12 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.Lab
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.PrepareDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.RefreshTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetInstanceStatusHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetReadwriteSplittingStorageUnitStatusHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.AlterReadwriteSplittingStorageUnitStatusStatementHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetDistVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.UnlabelComputeNodeHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +90,7 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(UnlabelComputeNodeStatement.class, UnlabelComputeNodeHandler.class);
         HANDLERS.put(SetInstanceStatusStatement.class, SetInstanceStatusHandler.class);
         HANDLERS.put(SetDistVariableStatement.class, SetDistVariableHandler.class);
-        HANDLERS.put(SetReadwriteSplittingStatusStatement.class, SetReadwriteSplittingStorageUnitStatusHandler.class);
+        HANDLERS.put(AlterReadwriteSplittingStorageUnitStatusStatement.class, AlterReadwriteSplittingStorageUnitStatusStatementHandler.class);
         HANDLERS.put(RefreshTableMetadataStatement.class, RefreshTableMetadataHandler.class);
         HANDLERS.put(PrepareDistSQLStatement.class, PrepareDistSQLHandler.class);
         HANDLERS.put(ApplyDistSQLStatement.class, ApplyDistSQLHandler.class);
