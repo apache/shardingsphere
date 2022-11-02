@@ -771,7 +771,7 @@
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
     </test-case>
 
