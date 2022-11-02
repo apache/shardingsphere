@@ -106,13 +106,6 @@ public final class TestCaseClassScanner {
         }
     }
     
-    @SuppressWarnings("unchecked")
-    private static void addClass(final List<Class<? extends BaseTransactionTestCase>> caseClasses, final Class<?> clazz) {
-        if (clazz.isAssignableFrom(BaseTransactionTestCase.class)) {
-            caseClasses.add((Class<? extends BaseTransactionTestCase>) clazz);
-        }
-    }
-    
     private static void scanClassFiles(final File file) {
         if (file.isDirectory()) {
             for (File f : Objects.requireNonNull(file.listFiles())) {
@@ -134,6 +127,13 @@ public final class TestCaseClassScanner {
                 Class<?> clazz = Class.forName(filePackage);
                 addClass(caseClasses, clazz);
             }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void addClass(final List<Class<? extends BaseTransactionTestCase>> caseClasses, final Class<?> clazz) {
+        if (BaseTransactionTestCase.class.isAssignableFrom(clazz)) {
+            caseClasses.add((Class<? extends BaseTransactionTestCase>) clazz);
         }
     }
 }
