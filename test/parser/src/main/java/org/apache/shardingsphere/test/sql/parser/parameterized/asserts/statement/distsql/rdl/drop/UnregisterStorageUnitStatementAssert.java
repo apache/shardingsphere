@@ -37,8 +37,8 @@ public final class UnregisterStorageUnitStatementAssert {
      * Assert drop resource statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual drop resource statement
-     * @param expected expected drop resource statement test case
+     * @param actual actual unregister storage unit statement
+     * @param expected expected unregister storage unit statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterStorageUnitStatement actual, final UnregisterStorageUnitStatementTestCase expected) {
         if (null == expected.getDataSources()) {
