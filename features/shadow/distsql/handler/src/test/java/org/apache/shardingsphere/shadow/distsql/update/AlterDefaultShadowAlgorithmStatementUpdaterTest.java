@@ -70,7 +70,6 @@ public class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteInvalidAlgorithmType() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_shadow_algorithm", new AlgorithmConfiguration("type", prop)));
         AlterDefaultShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("NOT_EXIST_SIMPLE_HINT", prop)));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
@@ -79,7 +78,6 @@ public class AlterDefaultShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteIncompletenessAlgorithm() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("default_shadow_algorithm", new AlgorithmConfiguration("type", prop)));
         AlterDefaultShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("", prop)));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
