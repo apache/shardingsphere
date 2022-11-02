@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
+public final class AlterReadwriteSplittingStorageUnitStatusStatementAssert {
     
     /**
      * Alter readwrite splitting storage unit status statement is correct with expected parser result.

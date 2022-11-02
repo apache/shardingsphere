@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public class AlterReadwriteSplittingStorageUnitStatusStatementTestCase extends DatabaseContainedTestCase {
+public final class AlterReadwriteSplittingStorageUnitStatusStatementTestCase extends DatabaseContainedTestCase {
     
     @XmlAttribute(name = "group-name")
     private String groupName;
