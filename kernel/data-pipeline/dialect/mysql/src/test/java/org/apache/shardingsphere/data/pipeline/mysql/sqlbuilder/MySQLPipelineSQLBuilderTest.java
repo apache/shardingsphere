@@ -35,7 +35,7 @@ public final class MySQLPipelineSQLBuilderTest {
     @Test
     public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"));
-        assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE sc=VALUES(sc),c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test

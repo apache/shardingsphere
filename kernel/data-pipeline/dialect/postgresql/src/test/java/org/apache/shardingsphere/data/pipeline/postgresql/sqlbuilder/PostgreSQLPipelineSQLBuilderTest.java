@@ -35,7 +35,7 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     public void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL("schema1", mockDataRecord());
         assertThat(actual, is("INSERT INTO schema1.t_order(order_id,user_id,status) VALUES(?,?,?) ON CONFLICT (order_id)"
-                + " DO UPDATE SET status=EXCLUDED.status"));
+                + " DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
     }
     
     private DataRecord mockDataRecord() {
