@@ -18,35 +18,22 @@
 package org.apache.shardingsphere.mode.repository.cluster.etcd.lock;
 
 import io.etcd.jetcd.Client;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreatorFactory;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreator;
 
 /**
- * Etcd distributed lock holder.
+ * Etcd distributed lock creator.
  */
-@RequiredArgsConstructor
-public final class EtcdDistributedLockHolder implements DistributedLockHolder {
+public final class EtcdDistributedLockCreator implements DistributedLockCreator<Client, EtcdProperties> {
     
-    private final Map<String, DistributedLock> locks = new HashMap<>();
-    
-    private final Client client;
-    
-    private final EtcdProperties props;
-    
-    @SuppressWarnings("unchecked")
     @Override
-    public synchronized DistributedLock getDistributedLock(final String lockKey) {
-        DistributedLock result = locks.get(lockKey);
-        if (null == result) {
-            result = DistributedLockCreatorFactory.newInstance("etcd").create(lockKey, client, props);
-            locks.put(lockKey, result);
-        }
-        return result;
+    public DistributedLock create(final String lockKey, final Client client, final EtcdProperties props) {
+        return new EtcdDistributedLock(lockKey, client, props);
+    }
+    
+    @Override
+    public String getType() {
+        return "etcd";
     }
 }

@@ -18,35 +18,22 @@
 package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 
 import com.ecwid.consul.v1.ConsulClient;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreatorFactory;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreator;
 
 /**
- * Consul distributed lock holder.
+ * Consul distributed lock creator.
  */
-@RequiredArgsConstructor
-public class ConsulDistributedLockHolder implements DistributedLockHolder {
+public final class ConsulDistributedLockCreator implements DistributedLockCreator<ConsulClient, ConsulProperties> {
     
-    private final Map<String, DistributedLock> locks = new ConcurrentHashMap<>();
-    
-    private final ConsulClient client;
-    
-    private final ConsulProperties props;
-    
-    @SuppressWarnings("unchecked")
     @Override
-    public DistributedLock getDistributedLock(final String lockKey) {
-        DistributedLock result = locks.get(lockKey);
-        if (null == result) {
-            result = DistributedLockCreatorFactory.newInstance("Consul").create(lockKey, client, props);
-            locks.put(lockKey, result);
-        }
-        return result;
+    public DistributedLock create(final String lockKey, final ConsulClient client, final ConsulProperties props) {
+        return new ConsulDistributedLock(lockKey, client, props);
+    }
+    
+    @Override
+    public String getType() {
+        return "Consul";
     }
 }
