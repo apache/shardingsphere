@@ -144,7 +144,7 @@ public final class CuratorZookeeperRepositoryTest {
     private void mockDistributedLockHolder() {
         Field distributedLockHolderField = CuratorZookeeperRepository.class.getDeclaredField("distributedLockHolder");
         distributedLockHolderField.setAccessible(true);
-        DistributedLockHolder distributedLockHolder = new DistributedLockHolder(client, new ZookeeperProperties(new Properties()));
+        DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
         Field locksFiled = DistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
         locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));

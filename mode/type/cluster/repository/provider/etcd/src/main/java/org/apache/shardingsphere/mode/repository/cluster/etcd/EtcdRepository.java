@@ -65,7 +65,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        distributedLockHolder = new DistributedLockHolder(client, etcdProps);
+        distributedLockHolder = new DistributedLockHolder(getType(), client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -174,12 +174,12 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return distributedLockHolder.getDistributedLock(lockKey, getType()).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        distributedLockHolder.getDistributedLock(lockKey, getType()).unlock();
+        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

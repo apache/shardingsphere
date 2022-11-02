@@ -65,7 +65,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         ConsulRawClient rawClient = Strings.isNullOrEmpty(config.getServerLists()) ? new ConsulRawClient() : new ConsulRawClient(config.getServerLists());
         consulClient = new ShardingSphereConsulClient(rawClient);
         consulProps = new ConsulProperties(config.getProps());
-        distributedLockHolder = new DistributedLockHolder(consulClient, consulProps);
+        distributedLockHolder = new DistributedLockHolder(getType(), consulClient, consulProps);
         watchKeyMap = new HashMap<>(6, 1);
     }
     
@@ -131,12 +131,12 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return distributedLockHolder.getDistributedLock(lockKey, getType()).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        distributedLockHolder.getDistributedLock(lockKey, getType()).unlock();
+        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

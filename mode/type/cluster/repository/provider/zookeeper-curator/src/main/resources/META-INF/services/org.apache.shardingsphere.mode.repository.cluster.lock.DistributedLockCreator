@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZooKeeperDistributedLockCreator
+org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZooKeeperDistributedLockCreator
