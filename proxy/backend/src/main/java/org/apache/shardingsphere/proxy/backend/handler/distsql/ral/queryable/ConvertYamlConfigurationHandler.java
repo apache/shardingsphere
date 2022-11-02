@@ -73,7 +73,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 /**
@@ -492,7 +491,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getAlgorithmProperties(final Properties properties) {
         StringBuilder result = new StringBuilder();
-        SortedMap<String, String> sortedMap = new TreeMap(properties);
+        Map<String, String> sortedMap = new TreeMap(properties);
         Iterator<String> iterator = sortedMap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
