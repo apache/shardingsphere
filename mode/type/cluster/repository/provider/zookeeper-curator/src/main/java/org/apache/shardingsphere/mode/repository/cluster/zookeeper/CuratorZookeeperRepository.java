@@ -39,7 +39,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -50,9 +49,9 @@ import org.apache.zookeeper.data.ACL;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +75,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         this.instanceMetaData = instanceMetaData;
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        distributedLockHolder = new CuratorZookeeperDistributedLockHolder(client);
+        distributedLockHolder = new DistributedLockHolder(client, zookeeperProps);
         initCuratorClient(zookeeperProps);
     }
     
@@ -276,12 +275,12 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey, getType()).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        distributedLockHolder.getDistributedLock(lockKey).unlock();
+        distributedLockHolder.getDistributedLock(lockKey, getType()).unlock();
     }
     
     @Override

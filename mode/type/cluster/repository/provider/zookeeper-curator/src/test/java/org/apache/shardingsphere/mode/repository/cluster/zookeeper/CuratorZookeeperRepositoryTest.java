@@ -38,8 +38,9 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -143,8 +144,8 @@ public final class CuratorZookeeperRepositoryTest {
     private void mockDistributedLockHolder() {
         Field distributedLockHolderField = CuratorZookeeperRepository.class.getDeclaredField("distributedLockHolder");
         distributedLockHolderField.setAccessible(true);
-        CuratorZookeeperDistributedLockHolder distributedLockHolder = new CuratorZookeeperDistributedLockHolder(client);
-        Field locksFiled = CuratorZookeeperDistributedLockHolder.class.getDeclaredField("locks");
+        DistributedLockHolder distributedLockHolder = new DistributedLockHolder(client, new ZookeeperProperties(new Properties()));
+        Field locksFiled = DistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
         locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));
         distributedLockHolderField.set(REPOSITORY, distributedLockHolder);

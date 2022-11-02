@@ -17,16 +17,38 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.lock;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Distributed lock holder.
  */
-public interface DistributedLockHolder {
+@RequiredArgsConstructor
+public final class DistributedLockHolder {
+    
+    private final Map<String, DistributedLock> locks = new HashMap<>();
+    
+    private final Object client;
+    
+    private final TypedProperties<?> props;
     
     /**
      * Get distributed lock.
-     *
+     * 
      * @param lockKey lock key
+     * @param type type
      * @return distributed lock
      */
-    DistributedLock getDistributedLock(String lockKey);
+    @SuppressWarnings("unchecked")
+    public synchronized DistributedLock getDistributedLock(final String lockKey, final String type) {
+        DistributedLock result = locks.get(lockKey);
+        if (null == result) {
+            result = DistributedLockCreatorFactory.newInstance(type).create(lockKey, client, props);
+            locks.put(lockKey, result);
+        }
+        return result;
+    }
 }
