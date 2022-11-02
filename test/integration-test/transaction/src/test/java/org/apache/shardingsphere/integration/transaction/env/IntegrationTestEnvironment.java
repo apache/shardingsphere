@@ -61,7 +61,6 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        
         itEnvType = TransactionITEnvTypeEnum.valueOf(props.getProperty("transaction.it.env.type", TransactionITEnvTypeEnum.NONE.name()).toUpperCase());
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
         postgresVersions = splitProperty("transaction.it.docker.postgresql.version");

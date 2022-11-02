@@ -60,9 +60,11 @@ public abstract class BaseTransactionTestCase {
     
     protected void beforeTest() throws SQLException {
         Connection conn = getDataSource().getConnection();
+        conn.setAutoCommit(false);
         executeWithLog(conn, "delete from account;");
         executeWithLog(conn, "delete from t_order;");
         executeWithLog(conn, "delete from t_order_item;");
+        conn.commit();
         conn.close();
     }
     
