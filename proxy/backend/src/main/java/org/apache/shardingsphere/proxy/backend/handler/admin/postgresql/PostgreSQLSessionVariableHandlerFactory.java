@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Factory for {@link PostgreSQLSessionVariableHandler}.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLSessionVariableHandlerFactory {
     
     static {

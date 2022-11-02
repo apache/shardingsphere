@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNull;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddShardingHintDatabaseValueStatementAssert {
-
+    
     /**
      * Assert add sharding hint database value statement is correct with expected parser result.
      *
