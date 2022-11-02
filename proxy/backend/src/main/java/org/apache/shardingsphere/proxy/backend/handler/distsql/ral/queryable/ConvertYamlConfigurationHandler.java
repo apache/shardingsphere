@@ -491,8 +491,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     
     private String getAlgorithmProperties(final Properties properties) {
         StringBuilder result = new StringBuilder();
-        Map<String, String> sortedMap = new TreeMap(properties);
-        Iterator<String> iterator = sortedMap.keySet().iterator();
+        Iterator<String> iterator = new TreeMap(properties).keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
             String value = properties.getProperty(key);
