@@ -44,15 +44,18 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     public BaseTransactionITCase(final TransactionParameterized parameterized) throws SQLException {
         super(parameterized);
         if (isProxyAdapter(parameterized)) {
-            initProxyConfig();
+            initProxyConfig(parameterized);
         } else {
             initJdbcConfig();
         }
     }
     
-    private void initProxyConfig() throws SQLException {
+    private void initProxyConfig(final TransactionParameterized parameterized) throws SQLException {
         addResources();
-        createTables();
+        // TODO
+        if ("default".equals(parameterized.getScenario())) {
+            createTables();
+        }
     }
     
     private void initJdbcConfig() throws SQLException {
