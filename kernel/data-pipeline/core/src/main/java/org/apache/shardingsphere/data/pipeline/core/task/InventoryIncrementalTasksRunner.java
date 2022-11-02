@@ -98,7 +98,7 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            futures.add(each.start());
+            futures.addAll(each.start());
         }
         CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
             if (null != throwable) {
@@ -143,15 +143,15 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            futures.add(each.start());
+            futures.addAll(each.start());
         }
         CompletableFuture.anyOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
             if (null != throwable) {
                 log.error("onFailure, incremental task execute failed.", throwable);
                 updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
-                PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId()))
-                        .persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), throwable);
-                stop();
+                String jobId = jobItemContext.getJobId();
+                jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
+                jobAPI.stop(jobId);
             }
         });
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).whenComplete((unused, throwable) -> {
