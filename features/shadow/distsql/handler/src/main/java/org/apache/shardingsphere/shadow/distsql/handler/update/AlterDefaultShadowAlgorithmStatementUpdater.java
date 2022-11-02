@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * Alter default shadow algorithm statement updater.
  */
-public class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
+public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShadowAlgorithmStatement, ShadowRuleConfiguration> {
     
     private static final String SHADOW = "shadow";
     
