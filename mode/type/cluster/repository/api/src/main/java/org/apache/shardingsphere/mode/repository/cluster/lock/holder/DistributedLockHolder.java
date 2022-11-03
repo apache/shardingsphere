@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
 import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreatorFactory;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -35,7 +36,7 @@ public final class DistributedLockHolder {
     
     private final TypedProperties<?> props;
     
-    private final ConcurrentHashMap<String, DistributedLock> locks;
+    private final Map<String, DistributedLock> locks;
     
     @SuppressWarnings("unchecked")
     public DistributedLockHolder(final String type, final Object client, final TypedProperties<?> props) {
