@@ -28,6 +28,7 @@ Apache ShardingSphere can configure system-level configuration through property 
 | proxy-default-port (?)              | String      | Proxy specifies the default window through configuration files.                                                                                                                                                                                                                                            | 3307     | False      |
 | proxy-netty-backlog (?)             | int         | Proxy specifies the default netty back_log parameter through configuration files.                                                                                                                                                                                                                          | 1024     | False      |
 |proxy-frontend-database-protocol-type| String      | Proxy front-end protocol type, supports MySQL, PostgreSQL, openGauss        |   ""    |    False     |
+| proxy-instance-type                 | String      | Proxy instance types, options:Proxy, SphereEx:Proxy, Proxy indicates the deployment type on the cloud, SphereEx:Proxy indicates the local deployment type.     |   Proxy   |  false  |
 
 Property configuration can be modified according to [DistSQL#RAL](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/).
 Properties that support dynamic change can take effect immediately. Properties that do not support dynamic change take effect after a restart.
