@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
@@ -34,7 +33,7 @@ public final class DynamicLoadingMySQLParserParameterizedTest extends DynamicLoa
     }
     
     @Parameters(name = "{0} (MySQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException {
+    public static Collection<Object[]> getTestParameters() throws IOException {
         return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
     }
 }

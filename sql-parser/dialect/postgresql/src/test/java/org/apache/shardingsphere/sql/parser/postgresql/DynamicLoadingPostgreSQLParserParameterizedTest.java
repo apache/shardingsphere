@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
@@ -34,7 +33,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedTest extends Dynam
     }
     
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() throws IOException, URISyntaxException {
+    public static Collection<Object[]> getTestParameters() throws IOException {
         return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
 }

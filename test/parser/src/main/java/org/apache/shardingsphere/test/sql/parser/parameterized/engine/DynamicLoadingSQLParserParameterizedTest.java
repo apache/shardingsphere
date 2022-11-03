@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -28,16 +27,16 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.junit.Test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @SingletonSPI
@@ -51,12 +50,15 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private static LinkedList<Map<String, Object>> getResponse(final String sqlCaseURL) throws IOException {
         String[] patches = sqlCaseURL.split("/", 8);
-        String url = "https://api.github.com/repos/" + patches[3] + "/" + patches[4] + "/contents/" + patches[7];
+        String sqlCasesOwner = patches[3];
+        String sqlCasesRepo = patches[4];
+        String sqlCasesDirectory = patches[7];
+        String url = "https://api.github.com/repos/" + sqlCasesOwner + "/" + sqlCasesRepo + "/contents/" + sqlCasesDirectory;
         return new JsonMapper().readValue(new URL(url), new TypeReference<LinkedList<Map<String, Object>>>() {
         });
     }
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException, URISyntaxException {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         List<Map<String, Object>> response = getResponse(sqlCaseURL);
         for (Map<String, Object> each : response) {
@@ -65,10 +67,11 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSqlCases(final Map<String, Object> elements) throws IOException, URISyntaxException {
+    private static Collection<Object[]> getSqlCases(final Map<String, Object> elements) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         String sqlCaseFileName = elements.get("name").toString();
-        String sqlCaseFileContent = IOUtils.toString(new URI(elements.get("download_url").toString()), StandardCharsets.UTF_8);
+        InputStreamReader inputStreamReader = new InputStreamReader(new URL(elements.get("download_url").toString()).openStream());
+        String sqlCaseFileContent = new BufferedReader(inputStreamReader).lines().collect(Collectors.joining(System.lineSeparator()));
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
         for (String each : lines) {
