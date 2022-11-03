@@ -101,14 +101,4 @@ public final class AtomikosTransactionManagerProviderTest {
         assertFalse(transactionManagerProvider.getTransactionManager().getForceShutdown());
         assertTrue(transactionManagerProvider.getTransactionManager().getStartupTransactionService());
     }
-    
-    @Test
-    public void assertGetType() {
-        assertThat(transactionManagerProvider.getType(), is("Atomikos"));
-    }
-    
-    @Test
-    public void assertIsDefault() {
-        assertTrue(transactionManagerProvider.isDefault());
-    }
 }
