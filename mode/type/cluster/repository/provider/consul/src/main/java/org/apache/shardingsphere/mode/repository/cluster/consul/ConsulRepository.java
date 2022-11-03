@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProp
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 import java.util.Collection;
 import java.util.Collections;

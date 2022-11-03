@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock;
+package org.apache.shardingsphere.mode.repository.cluster.lock.creator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

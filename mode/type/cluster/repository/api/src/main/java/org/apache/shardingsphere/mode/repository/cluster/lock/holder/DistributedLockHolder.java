@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock;
+package org.apache.shardingsphere.mode.repository.cluster.lock.holder;
 
 import org.apache.shardingsphere.infra.util.props.TypedProperties;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
+import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreatorFactory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Distributed lock holder.
@@ -40,7 +43,7 @@ public final class DistributedLockHolder {
         creator = DistributedLockCreatorFactory.newInstance(type);
         this.client = client;
         this.props = props;
-        locks = new HashMap<>();
+        locks = new ConcurrentHashMap<>();
     }
     
     /**
@@ -49,12 +52,7 @@ public final class DistributedLockHolder {
      * @param lockKey lock key
      * @return distributed lock
      */
-    public synchronized DistributedLock getDistributedLock(final String lockKey) {
-        DistributedLock result = locks.get(lockKey);
-        if (null == result) {
-            result = creator.create(lockKey, client, props);
-            locks.put(lockKey, result);
-        }
-        return result;
+    public DistributedLock getDistributedLock(final String lockKey) {
+        return locks.computeIfAbsent(lockKey, key -> creator.create(key, client, props));
     }
 }

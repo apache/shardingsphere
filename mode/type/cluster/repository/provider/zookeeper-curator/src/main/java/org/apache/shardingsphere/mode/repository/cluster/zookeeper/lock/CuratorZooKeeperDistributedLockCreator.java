@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreator;
+import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 
 /**

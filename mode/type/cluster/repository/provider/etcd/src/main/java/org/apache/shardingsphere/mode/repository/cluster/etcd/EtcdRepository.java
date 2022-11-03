@@ -40,7 +40,7 @@ import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperty
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

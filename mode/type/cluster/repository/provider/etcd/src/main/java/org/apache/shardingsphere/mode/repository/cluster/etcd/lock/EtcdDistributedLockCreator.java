@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.repository.cluster.etcd.lock;
 import io.etcd.jetcd.Client;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreator;
+import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
 
 /**
  * Etcd distributed lock creator.

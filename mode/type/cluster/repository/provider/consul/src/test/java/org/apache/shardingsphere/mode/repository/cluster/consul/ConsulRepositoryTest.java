@@ -24,7 +24,7 @@ import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
