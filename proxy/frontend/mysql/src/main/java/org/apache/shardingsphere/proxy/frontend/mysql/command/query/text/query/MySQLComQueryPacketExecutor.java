@@ -24,6 +24,11 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLCom
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -38,6 +43,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare.MySQLComStmtPrepareChecker;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -47,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * COM_QUERY command packet executor for MySQL.
@@ -68,8 +75,27 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         this.connectionSession = connectionSession;
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
-        proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
-                : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSql(), sqlStatement, connectionSession);
+        boolean isMultiStmt = areMultiStatements(connectionSession, sqlStatement, packet.getSql());
+        if (packet.getParameters().isEmpty()) {
+            proxyBackendHandler = isMultiStmt ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
+                    : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSql(), sqlStatement, connectionSession);
+        } else {
+            if (isMultiStmt) {
+                throw new UnsupportedPreparedStatementException();
+            }
+            if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
+                throw new UnsupportedPreparedStatementException();
+            }
+            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
+                    sqlStatement, connectionSession.getDefaultDatabaseName());
+            List<Object> parameters = packet.getParameters();
+            if (sqlStatementContext instanceof ParameterAware) {
+                ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
+            }
+            QueryContext queryContext = new QueryContext(sqlStatementContext, packet.getSql(), parameters);
+            connectionSession.setQueryContext(queryContext);
+            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, connectionSession, true);
+        }
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
