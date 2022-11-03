@@ -360,6 +360,7 @@ public final class ContextManagerTest {
     @Test
     public void assertReloadTable() {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", mock(DatabaseType.class)));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService persistService = mock(MetaDataPersistService.class);
         when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);

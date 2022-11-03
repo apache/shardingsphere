@@ -23,5 +23,5 @@ import lombok.ToString;
  * Placeholder event.
  */
 @ToString(callSuper = true)
-public final class PlaceholderEvent extends AbstractWalEvent {
+public final class PlaceholderEvent extends AbstractWALEvent {
 }

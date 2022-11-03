@@ -266,7 +266,9 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
 
 - 存在 `LICENSE` 和 `NOTICE` 文件；
 - `NOTICE` 文件中的年份正确；
-- 所有文本文件开头都有 ASF 许可证；
+- 所有文本文件开头都有 ASF 许可证，以下文件除外：
+  - 所有 Chart.yaml
+  - 所有 Chart.lock
 - 检查第三方依赖许可证：
   - 第三方依赖的许可证兼容；
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
@@ -367,7 +369,7 @@ Checklist for reference:
 标题：
 
 ```
-[RESULT][VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
+[RESULT][VOTE] Release Apache ShardingSphere on Cloud ${RELEASE.VERSION}
 ```
 
 正文：
@@ -387,7 +389,6 @@ I will process to publish the release and send ANNOUNCE.
 
 3. 邮件通知版本发布完成
 
-````
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
 通知邮件模板：
@@ -395,7 +396,7 @@ I will process to publish the release and send ANNOUNCE.
 标题：
 
 ```
-[ANNOUNCE] Apache ShardingSphere On-Cloud-${RELEASE.VERSION} available
+[ANNOUNCE] Apache ShardingSphere on Cloud ${RELEASE.VERSION} available
 ```
 
 正文：
@@ -403,18 +404,24 @@ I will process to publish the release and send ANNOUNCE.
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere On-Cloud-${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere on Cloud ${RELEASE.VERSION}.
 
 The shardingsphere-on-cloud project, including ShardingSphere Operator, Helm Charts, and other cloud solutions, aims at enhancing the deployment and management capabilities of Apache ShardingSphere Proxy on the cloud. 
 ShardingSphere Operator is a Kubernetes software extension written with the Operator extension pattern of Kubernetes. ShardingSphere Operator can be used to quickly deploy an Apache ShardingSphere Proxy cluster in the Kubernetes environment and manage the entire cluster life cycle.
 
+Download Links: https://github.com/apache/shardingsphere-on-cloud/releases/tag/${RELEASE.VERSION}
 
 Release Notes: https://github.com/apache/shardingsphere-on-cloud/blob/master/RELEASE-NOTES.md
 
+Website: https://shardingsphere.apache.org/
+
+ShardingSphere on Cloud Resources:
+- Issue: https://github.com/apache/shardingsphere-on-cloud/issues/
+- Mailing list: dev@shardingsphere.apache.org
+- Documents: https://shardingsphere.apache.org/document/current/
 
 
 
 - Apache ShardingSphere Team
 
 ```
-````

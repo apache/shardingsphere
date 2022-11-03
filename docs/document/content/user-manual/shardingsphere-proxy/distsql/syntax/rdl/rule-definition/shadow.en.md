@@ -54,7 +54,7 @@ algorithmProperty: key=value
 - `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`
 - `shadowTableRule` can be reused by different `shadowRuleDefinition`, so when executing `DROP SHADOW RULE`, the corresponding `shadowTableRule` will not be removed
 - `shadowAlgorithm` can be reused by different `shadowTableRule`, so when executing `ALTER SHADOW RULE`, the corresponding `shadowAlgorithm` will not be removed
-- If `algorithmName` it will be automatically generated according to `ruleName`, `tableName`, `shadowAlgorithmType` and algorithm collection index. The default name is `default_shadow_algorithm`.
+- When creating shadow rule, `algorithmName` will be automatically generated according to `ruleName`, `tableName`, `shadowAlgorithmType` and algorithm collection index. The default name is `default_shadow_algorithm`.
 
 
 ## Example
@@ -63,22 +63,22 @@ algorithmProperty: key=value
 CREATE SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
-t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1'))));
+t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
+t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"=1))));
 
 ALTER SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
-t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1'))));
+t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
+t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"=1))));
 
 DROP SHADOW RULE shadow_rule;
 
 DROP SHADOW ALGORITHM simple_hint_algorithm;
 
-CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar"));
 
-ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar");
+ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=false, "foo"="bar"));
 
 SHOW DEFAULT SHADOW ALGORITHM;
 

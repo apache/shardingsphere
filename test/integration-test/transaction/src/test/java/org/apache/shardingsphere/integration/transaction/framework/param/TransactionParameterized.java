@@ -43,12 +43,12 @@ public final class TransactionParameterized {
     
     private final String storageContainerImage;
     
-    private final String group;
+    private final String scenario;
     
     private final Collection<Class<? extends BaseTransactionTestCase>> transactionTestCaseClasses;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, storageContainerImage, group);
+        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionTypes, providers, storageContainerImage, scenario);
     }
 }

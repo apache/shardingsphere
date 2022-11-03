@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AddShardingHintDatabaseValueContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AddShardingHintTableValueContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterDefaultShardingStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingAuditorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableReferenceRuleContext;
@@ -49,6 +48,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.DropShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.KeyGenerateDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.PropertiesDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.SetShardingHintDatabaseValueContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingAutoTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ShardingColumnDefinitionContext;
@@ -309,6 +310,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShardingAutoTableRule(final ShardingAutoTableRuleContext ctx) {
         AutoTableRuleSegment result = new AutoTableRuleSegment(getIdentifierValue(ctx.tableName()), getResources(ctx.storageUnits()));
         Optional.ofNullable(ctx.keyGenerateDefinition()).ifPresent(optional -> result.setKeyGenerateStrategySegment((KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition())));
+        Optional.ofNullable(ctx.auditDeclaration()).ifPresent(optional -> result.setAuditStrategySegment((AuditStrategySegment) visit(ctx.auditDeclaration())));
         Optional.ofNullable(ctx.autoShardingColumnDefinition()).ifPresent(optional -> result.setShardingColumn(buildShardingColumn(ctx.autoShardingColumnDefinition())));
         Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(optional -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
         return result;
@@ -368,7 +370,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getAlgorithmProperties(ctx));
+        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
     }
     
     private String getIdentifierValue(final ParseTree context) {
@@ -386,12 +388,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         return value.trim();
     }
     
-    private Properties getAlgorithmProperties(final AlgorithmDefinitionContext ctx) {
+    private Properties getProperties(final PropertiesDefinitionContext ctx) {
         Properties result = new Properties();
-        if (null == ctx.algorithmProperties()) {
+        if (null == ctx || null == ctx.properties()) {
             return result;
         }
-        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+        for (PropertyContext each : ctx.properties().property()) {
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;

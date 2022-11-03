@@ -3,7 +3,7 @@ title = "读写分离"
 weight = 2
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
 REGISTER STORAGE UNIT write_ds (

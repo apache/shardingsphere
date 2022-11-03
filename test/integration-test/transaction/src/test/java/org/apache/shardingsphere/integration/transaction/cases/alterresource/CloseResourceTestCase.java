@@ -31,7 +31,7 @@ import java.sql.SQLException;
 /**
  * Integration test of close resource.
  */
-@TransactionTestCase(adapters = AdapterContainerConstants.PROXY, group = "closeResource")
+@TransactionTestCase(adapters = AdapterContainerConstants.PROXY, scenario = "closeResource")
 @Slf4j
 public final class CloseResourceTestCase extends BaseTransactionTestCase {
     

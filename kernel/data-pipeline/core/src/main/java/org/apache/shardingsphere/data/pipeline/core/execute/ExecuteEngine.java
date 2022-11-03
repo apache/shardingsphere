@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,29 +70,6 @@ public final class ExecuteEngine {
      */
     public CompletableFuture<?> submit(final LifecycleExecutor lifecycleExecutor, final ExecuteCallback executeCallback) {
         return CompletableFuture.runAsync(lifecycleExecutor, executorService).whenCompleteAsync((unused, throwable) -> {
-            if (null == throwable) {
-                executeCallback.onSuccess();
-            } else {
-                Throwable cause = throwable.getCause();
-                executeCallback.onFailure(null != cause ? cause : throwable);
-            }
-        }, executorService);
-    }
-    
-    /**
-     * Submit a collection of {@code LifecycleExecutor} with callback {@code ExecuteCallback} to execute.
-     *
-     * @param lifecycleExecutors lifecycle executor
-     * @param executeCallback execute callback
-     * @return execute future of all
-     */
-    public CompletableFuture<?> submitAll(final Collection<? extends LifecycleExecutor> lifecycleExecutors, final ExecuteCallback executeCallback) {
-        CompletableFuture<?>[] futures = new CompletableFuture[lifecycleExecutors.size()];
-        int i = 0;
-        for (LifecycleExecutor each : lifecycleExecutors) {
-            futures[i++] = CompletableFuture.runAsync(each, executorService);
-        }
-        return CompletableFuture.allOf(futures).whenCompleteAsync((unused, throwable) -> {
             if (null == throwable) {
                 executeCallback.onSuccess();
             } else {

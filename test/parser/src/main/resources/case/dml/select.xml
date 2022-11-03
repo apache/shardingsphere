@@ -2722,7 +2722,7 @@
         <comment start-index="44" stop-index="76" text="-- this is another line comment &#x000A;"/>
     </select>
 
-    <select sql-case-id="select_with_single_comment_for_postgresql" >
+    <select sql-case-id="select_with_single_comment_without_whitespace" >
         <from>
             <simple-table name="t_order" start-index="76" stop-index="82" />
         </from>
@@ -4407,5 +4407,42 @@
             <column-projection name="UTC_TIME" start-index="27" stop-index="34" />
             <column-projection name="UTC_TIMESTAMP" start-index="36" stop-index="48" />
         </projections>
+    </select>
+
+    <select sql-case-id="select_with_analytic_function" parameters="1">
+        <projections start-index="7" stop-index="94">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <expression-projection text="ROW_NUMBER () OVER (PARTITION BY user_id ORDER BY order_id DESC)" start-index="17" stop-index="94" alias="row_number">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="17" stop-index="80" text="ROW_NUMBER () OVER (PARTITION BY user_id ORDER BY order_id DESC)"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="101" stop-index="107" />
+        </from>
+        <where start-index="109" stop-index="126">
+            <expr>
+                <binary-operation-expression start-index="115" stop-index="126">
+                    <left>
+                        <column name="order_id" start-index="115" stop-index="122"/>
+                    </left>
+                    <right>
+                        <literal-expression value="1" start-index="126" stop-index="126" />
+                        <parameter-marker-expression parameter-index="0" start-index="126" stop-index="126" />
+                    </right>
+                    <operator>=</operator>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_with_listagg_function_start_with_connect_by">
+        <projections start-index="7" stop-index="101">
+            <expression-projection text="LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c.&quot;level&quot;) DESC)" start-index="7" stop-index="101" alias="category_level" />
+        </projections>
+        <from>
+            <simple-table name="t_product_category" start-index="108" stop-index="127" alias="c" />
+        </from>
     </select>
 </sql-parser-test-cases>

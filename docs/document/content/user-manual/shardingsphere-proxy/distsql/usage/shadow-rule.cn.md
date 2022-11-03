@@ -3,7 +3,7 @@ title = "影子库压测"
 weight = 5
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (

@@ -55,11 +55,18 @@ public class InsertValue {
         }
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
-            return literals instanceof String ? "'" + ((LiteralExpressionSegment) expressionSegment).getLiterals() + "'" : literals.toString();
+            return getLiteralValue((LiteralExpressionSegment) expressionSegment, literals);
         }
         if (expressionSegment instanceof BinaryOperationExpression) {
             return ((BinaryOperationExpression) expressionSegment).getText();
         }
         return ((ComplexExpressionSegment) expressionSegment).getText();
+    }
+    
+    private String getLiteralValue(final LiteralExpressionSegment expressionSegment, final Object literals) {
+        if (null == literals) {
+            return "NULL";
+        }
+        return literals instanceof String ? "'" + expressionSegment.getLiterals() + "'" : String.valueOf(literals);
     }
 }

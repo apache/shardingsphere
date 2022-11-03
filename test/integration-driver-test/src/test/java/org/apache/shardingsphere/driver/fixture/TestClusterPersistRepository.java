@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 public final class TestClusterPersistRepository implements ClusterPersistRepository {
     
@@ -36,33 +35,6 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
         registryData.put("/metadata", DefaultDatabase.LOGIC_NAME);
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-    }
-    
-    @Override
-    public String get(final String key) {
-        return null;
     }
     
     @Override
@@ -103,16 +75,6 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return null;
-    }
-    
-    @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
     }
@@ -122,7 +84,7 @@ public final class TestClusterPersistRepository implements ClusterPersistReposit
     }
     
     @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
     }
     
     @Override

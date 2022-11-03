@@ -28,8 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureIncrementalDu
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
+import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWALDumper;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWALDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreatorFactory;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -53,13 +53,13 @@ public final class IncrementalDumperCreatorFactoryTest {
     @Test
     public void assertIncrementalDumperCreatorForPostgreSQL() {
         IncrementalDumper actual = createIncrementalDumper("PostgreSQL");
-        assertThat(actual, instanceOf(PostgreSQLWalDumper.class));
+        assertThat(actual, instanceOf(PostgreSQLWALDumper.class));
     }
     
     @Test
     public void assertIncrementalDumperCreatorForOpenGauss() {
         IncrementalDumper actual = createIncrementalDumper("openGauss");
-        assertThat(actual, instanceOf(OpenGaussWalDumper.class));
+        assertThat(actual, instanceOf(OpenGaussWALDumper.class));
     }
     
     @Test

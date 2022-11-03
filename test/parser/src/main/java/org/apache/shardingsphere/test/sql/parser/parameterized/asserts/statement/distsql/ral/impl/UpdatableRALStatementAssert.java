@@ -27,8 +27,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.RefreshT
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelComputeNodeStatement;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.AlterComputeNodeStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.AlterReadwriteSplittingStorageUnitStatusStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.AlterSQLParserRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.AlterTrafficRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.AlterTransactionRuleStatementAssert;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.updatable.UnlabelComputeNodeStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterComputeNodeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CreateTrafficRuleStatementTestCase;
@@ -91,6 +94,9 @@ public final class UpdatableRALStatementAssert {
             ImportDatabaseConfigurationStatementAssert.assertIs(assertContext, (ImportDatabaseConfigurationStatement) actual, (ImportDatabaseConfigurationStatementTestCase) expected);
         } else if (actual instanceof AlterTransactionRuleStatement) {
             AlterTransactionRuleStatementAssert.assertIs(assertContext, (AlterTransactionRuleStatement) actual, expected);
+        } else if (actual instanceof AlterReadwriteSplittingStorageUnitStatusStatement) {
+            AlterReadwriteSplittingStorageUnitStatusStatementAssert.assertIs(assertContext,
+                    (AlterReadwriteSplittingStorageUnitStatusStatement) actual, (AlterReadwriteSplittingStorageUnitStatusStatementTestCase) expected);
         }
     }
 }

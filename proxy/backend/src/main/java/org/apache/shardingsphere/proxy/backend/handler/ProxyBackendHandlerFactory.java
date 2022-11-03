@@ -104,8 +104,6 @@ public final class ProxyBackendHandlerFactory {
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
         }
-        databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
-        checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
             checkUnsupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
@@ -132,6 +130,15 @@ public final class ProxyBackendHandlerFactory {
                                                   final boolean preferPreparedStatement) throws SQLException {
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
+        checkUnsupportedSQLStatement(sqlStatement);
+        if (sqlStatement instanceof EmptyStatement) {
+            return new SkipBackendHandler(sqlStatement);
+        }
+        if (sqlStatement instanceof DistSQLStatement) {
+            checkUnsupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
+            return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
+        }
         String sql = queryContext.getSql();
         handleAutoCommit(sqlStatement, connectionSession);
         if (sqlStatement instanceof TCLStatement) {
@@ -152,7 +159,7 @@ public final class ProxyBackendHandlerFactory {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
-        SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(),
+        SQLCheckEngine.check(sqlStatementContext, queryContext.getParameters(),
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement));

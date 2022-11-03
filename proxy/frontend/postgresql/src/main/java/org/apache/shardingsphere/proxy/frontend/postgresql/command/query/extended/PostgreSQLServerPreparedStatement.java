@@ -26,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,19 +40,12 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     private final String sql;
     
-    private final SQLStatement sqlStatement;
-    
     private final SQLStatementContext<?> sqlStatementContext;
     
     private final List<PostgreSQLColumnType> parameterTypes;
     
     @Getter(AccessLevel.NONE)
     private PostgreSQLPacket rowDescription;
-    
-    @Override
-    public Optional<SQLStatementContext<?>> getSqlStatementContext() {
-        return Optional.ofNullable(sqlStatementContext);
-    }
     
     /**
      * Describe parameters of the prepared statement.

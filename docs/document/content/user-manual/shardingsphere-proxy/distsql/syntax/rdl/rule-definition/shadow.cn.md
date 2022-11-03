@@ -55,7 +55,7 @@ algorithmProperty: key=value
 - `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
 - `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除；
 - `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除。
-- `algorithmName` 创建规则时会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 和算法集合下标自动生成。默认算法名称为 `default_shadow_algorithm`。
+- 创建规则时，会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 和算法集合下标自动生成 `algorithmName` 。默认算法名称为 `default_shadow_algorithm`。
 
 ## 示例
 
@@ -63,22 +63,22 @@ algorithmProperty: key=value
 CREATE SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
-t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1'))));
+t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
+t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"=1))));
 
 ALTER SHADOW RULE shadow_rule(
 SOURCE=demo_ds,
 SHADOW=demo_ds_shadow,
-t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
-t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"='1'))));
+t_order(TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar")),TYPE(NAME="REGEX_MATCH", PROPERTIES("operation"="insert","column"="user_id", "regex"='[1]'))), 
+t_order_item(TYPE(NAME="VALUE_MATCH", PROPERTIES("operation"="insert","column"="user_id", "value"=1))));
 
 DROP SHADOW RULE shadow_rule;
 
 DROP SHADOW ALGORITHM simple_hint_algorithm;
 
-CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=true, "foo"="bar"));
 
-ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="false", "foo"="bar");
+ALTER DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"=false, "foo"="bar"));
     
 SHOW DEFAULT SHADOW ALGORITHM;
 

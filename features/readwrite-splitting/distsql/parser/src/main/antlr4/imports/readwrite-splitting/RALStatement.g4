@@ -31,8 +31,8 @@ clearReadwriteSplittingHint
     : CLEAR READWRITE_SPLITTING HINT
     ;
 
-alterReadwriteSplittingRuleStatus
-    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) resourceName (FROM databaseName)?
+alterReadwriteSplittingStorageUnitStatus
+    : ALTER READWRITE_SPLITTING RULE (groupName)? (ENABLE | DISABLE) storageUnitName (FROM databaseName)?
     ;
 
 showStatusFromReadwriteSplittingRules

@@ -23,6 +23,14 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
 CREATE
     : C R E A T E
     ;
@@ -165,14 +173,6 @@ PORT
 
 ADD
     : A D D
-    ;
-
-RESOURCE
-    : R E S O U R C E
-    ;
-    
-RESOURCES
-    : R E S O U R C E S
     ;
 
 REGISTER
