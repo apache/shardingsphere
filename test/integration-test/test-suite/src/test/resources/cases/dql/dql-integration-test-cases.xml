@@ -685,6 +685,22 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order o CROSS JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m ON o.order_id = m.merchant_id WHERE m.country_id = 1 ORDER BY m.merchant_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o FULL JOIN t_merchant m ON o.order_id = m.merchant_id  where o.user_id = ? OR m.country_id = 1 ORDER BY o.order_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > ? ORDER BY p.product_id DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -693,6 +709,26 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = ? GROUP BY p.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p CROSS JOIN t_product_detail d WHERE p.product_id = ? ORDER BY d.product_id, 7 LIMIT 10, 10" db-types="openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p LEFT JOIN t_product_detail d ON d.product_id = p.product_id WHERE p.category_id = ? ORDER BY p.product_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p RIGHT JOIN t_product_detail d ON d.product_id = p.product_id WHERE d.detail_id = ? ORDER BY d.product_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p FULL JOIN t_product_detail d ON d.product_id = p.product_id WHERE d.detail_id = ? OR p.category_id = 10 ORDER BY d.product_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+    
     <test-case sql="SELECT o.order_id, o.user_id, o.status, o.merchant_id, (SELECT t.merchant_name FROM t_merchant t WHERE t.merchant_id = o.merchant_id) AS merchant_name FROM t_order o WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="1000:long" expected-data-source-name="read_dataset" />
     </test-case>
