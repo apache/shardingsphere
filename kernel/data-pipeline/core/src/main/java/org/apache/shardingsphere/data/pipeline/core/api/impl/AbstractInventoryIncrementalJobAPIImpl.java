@@ -121,11 +121,13 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        long startTimeMillis = Long.parseLong(jobConfigPOJO.getProps().getProperty("start_time_millis"));
         return IntStream.range(0, jobConfig.getJobShardingCount()).boxed().collect(LinkedHashMap::new, (map, each) -> {
             InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, each);
             if (null != jobItemProgress) {
                 jobItemProgress.setActive(!jobConfigPOJO.isDisabled());
                 jobItemProgress.setErrorMessage(getJobItemErrorMessage(jobId, each));
+                jobItemProgress.setStartTimeMillis(startTimeMillis);
             }
             map.put(each, jobItemProgress);
         }, LinkedHashMap::putAll);
