@@ -15,22 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop;
+package org.apache.shardingsphere.mode.repository.cluster.lock;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Drop default single table rule statement test case.
+ * Distributed lock creator factory.
  */
-@Getter
-@Setter
-public final class DropDefaultSingleTableRuleStatementTestCase extends SQLParserTestCase {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DistributedLockCreatorFactory {
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    static {
+        ShardingSphereServiceLoader.register(DistributedLockCreator.class);
+    }
     
+    /**
+     * Get  distributed lock.
+     * 
+     * @param type type
+     * @return distributed lock
+     */
+    @SuppressWarnings("rawtypes")
+    public static DistributedLockCreator newInstance(final String type) {
+        return TypedSPIRegistry.getRegisteredService(DistributedLockCreator.class, type);
+    }
 }
