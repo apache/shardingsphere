@@ -141,7 +141,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         executeWithLog(conn, "rollback;");
     }
     
-    private void fetch(final Connection conn, int expectedId) throws SQLException {
+    private void fetch(final Connection conn, final int expectedId) throws SQLException {
         ResultSet rs = executeQueryWithLog(conn, "fetch test;");
         while (rs.next()) {
             int id = rs.getInt("id");
