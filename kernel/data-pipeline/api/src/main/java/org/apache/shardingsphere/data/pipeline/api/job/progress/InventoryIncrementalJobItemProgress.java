@@ -46,5 +46,5 @@ public final class InventoryIncrementalJobItemProgress implements PipelineJobIte
     
     private String errorMessage;
     
-    private Long startTimeMillis;
+    private long startTimeMillis;
 }
