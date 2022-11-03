@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
+    <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
