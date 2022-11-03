@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptLikeCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -56,7 +58,7 @@ public final class EncryptConditionEngine {
     
     private static final Set<String> LOGICAL_OPERATOR = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
-    private static final Set<String> SUPPORTED_COMPARE_OPERATOR = new HashSet<>();
+    private static final Set<String> SUPPORTED_COMPARE_OPERATOR = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
     private final EncryptRule encryptRule;
     
@@ -75,6 +77,7 @@ public final class EncryptConditionEngine {
         SUPPORTED_COMPARE_OPERATOR.add(">=");
         SUPPORTED_COMPARE_OPERATOR.add("<=");
         SUPPORTED_COMPARE_OPERATOR.add("IS");
+        SUPPORTED_COMPARE_OPERATOR.add("LIKE");
     }
     
     /**
@@ -165,12 +168,21 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
-        if (!(expression.getLeft() instanceof ColumnSegment)) {
+        if (!(expression.getLeft() instanceof ColumnSegment) || (compareRightValue instanceof SubqueryExpressionSegment)) {
             return Optional.empty();
         }
-        return (compareRightValue instanceof SimpleExpressionSegment && !(compareRightValue instanceof SubqueryExpressionSegment))
-                ? Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue))
-                : Optional.empty();
+        if (compareRightValue instanceof SimpleExpressionSegment) {
+            return Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue));
+        }
+        if (compareRightValue instanceof ListExpression) {
+            return Optional.of(createEncryptLikeCondition(tableName, expression, ((ListExpression) compareRightValue).getItems().get(0)));
+        }
+        return Optional.empty();
+    }
+    
+    private EncryptLikeCondition createEncryptLikeCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
+        String columnName = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
+        return new EncryptLikeCondition(columnName, tableName, compareRightValue.getStartIndex(), expression.getStopIndex(), compareRightValue);
     }
     
     private EncryptEqualCondition createEncryptEqualCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
