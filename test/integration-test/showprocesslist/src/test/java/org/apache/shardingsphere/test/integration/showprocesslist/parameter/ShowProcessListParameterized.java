@@ -30,4 +30,6 @@ public final class ShowProcessListParameterized {
     private final DatabaseType databaseType;
     
     private final String scenario;
+    
+    private final String runMode;
 }

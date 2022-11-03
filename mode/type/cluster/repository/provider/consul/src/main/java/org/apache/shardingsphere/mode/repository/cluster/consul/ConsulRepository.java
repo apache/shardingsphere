@@ -29,11 +29,11 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.consul.lock.ConsulDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,7 +56,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private ConsulProperties consulProps;
     
-    private ConsulDistributedLockHolder consulDistributedLockHolder;
+    private DistributedLockHolder distributedLockHolder;
     
     private Map<String, Collection<String>> watchKeyMap;
     
@@ -65,7 +65,7 @@ public class ConsulRepository implements ClusterPersistRepository {
         ConsulRawClient rawClient = Strings.isNullOrEmpty(config.getServerLists()) ? new ConsulRawClient() : new ConsulRawClient(config.getServerLists());
         consulClient = new ShardingSphereConsulClient(rawClient);
         consulProps = new ConsulProperties(config.getProps());
-        consulDistributedLockHolder = new ConsulDistributedLockHolder(consulClient, consulProps);
+        distributedLockHolder = new DistributedLockHolder(getType(), consulClient, consulProps);
         watchKeyMap = new HashMap<>(6, 1);
     }
     
@@ -131,12 +131,12 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return consulDistributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        consulDistributedLockHolder.getDistributedLock(lockKey).unlock();
+        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

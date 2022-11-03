@@ -26,7 +26,6 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -87,7 +86,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+        AutoIncrementKeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
@@ -96,19 +95,18 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         log.info("init data end: {}", LocalDateTime.now());
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         startMigration("t_order_item", "t_order_item");
+        // TODO wait preparation done (binlog position got), else insert/update/delete might be consumed in inventory task
         startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), keyGenerateAlgorithm, 30));
         String orderJobId = getJobIdByTableName(getSourceTableOrderName());
         String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
         assertMigrationSuccessById(orderItemJobId, "CRC32_MATCH");
-        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            for (String each : listJobId()) {
-                commitMigrationByJobId(each);
-            }
-            List<String> lastJobIds = listJobId();
-            assertThat(lastJobIds.size(), is(0));
+        for (String each : listJobId()) {
+            commitMigrationByJobId(each);
         }
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, "");
     }
     

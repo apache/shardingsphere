@@ -54,8 +54,8 @@ import java.util.stream.Collectors;
 /**
  * Unicast resource show executor.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExecutor {
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();

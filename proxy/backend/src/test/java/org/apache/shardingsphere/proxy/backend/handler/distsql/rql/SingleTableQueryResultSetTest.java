@@ -71,13 +71,13 @@ public final class SingleTableQueryResultSetTest {
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
-        assertThat(rowData.next(), is("t_order_item"));
-        assertThat(rowData.next(), is("ds_2"));
+        assertThat(rowData.next(), is("t_order"));
+        assertThat(rowData.next(), is("ds_1"));
         resultSet.next();
         actual = resultSet.getRowData();
         rowData = actual.iterator();
-        assertThat(rowData.next(), is("t_order"));
-        assertThat(rowData.next(), is("ds_1"));
+        assertThat(rowData.next(), is("t_order_item"));
+        assertThat(rowData.next(), is("ds_2"));
     }
     
     @Test
@@ -91,23 +91,23 @@ public final class SingleTableQueryResultSetTest {
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
-        assertThat(rowData.next(), is("t_order_item"));
-        assertThat(rowData.next(), is("ds_2"));
-        resultSet.next();
-        actual = resultSet.getRowData();
-        rowData = actual.iterator();
         assertThat(rowData.next(), is("t_order"));
         assertThat(rowData.next(), is("ds_1"));
         resultSet.next();
         actual = resultSet.getRowData();
         rowData = actual.iterator();
-        assertThat(rowData.next(), is("t_order_multiple"));
-        assertThat(rowData.next(), is("ds_1_multiple"));
+        assertThat(rowData.next(), is("t_order_item"));
+        assertThat(rowData.next(), is("ds_2"));
         resultSet.next();
         actual = resultSet.getRowData();
         rowData = actual.iterator();
         assertThat(rowData.next(), is("t_order_item_multiple"));
         assertThat(rowData.next(), is("ds_2_multiple"));
+        resultSet.next();
+        actual = resultSet.getRowData();
+        rowData = actual.iterator();
+        assertThat(rowData.next(), is("t_order_multiple"));
+        assertThat(rowData.next(), is("ds_1_multiple"));
     }
     
     @Test
@@ -118,13 +118,13 @@ public final class SingleTableQueryResultSetTest {
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
-        assertThat(rowData.next(), is("t_order_item"));
-        assertThat(rowData.next(), is("ds_2"));
+        assertThat(rowData.next(), is("t_order"));
+        assertThat(rowData.next(), is("ds_1"));
         resultSet.next();
         actual = resultSet.getRowData();
         rowData = actual.iterator();
-        assertThat(rowData.next(), is("t_order"));
-        assertThat(rowData.next(), is("ds_1"));
+        assertThat(rowData.next(), is("t_order_item"));
+        assertThat(rowData.next(), is("ds_2"));
     }
     
     private SingleTableRule mockSingleTableRule(final Map<String, Collection<DataNode>> singleTableDataNodeMap) {

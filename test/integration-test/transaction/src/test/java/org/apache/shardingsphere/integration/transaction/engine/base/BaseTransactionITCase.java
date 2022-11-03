@@ -52,34 +52,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     private void initProxyConfig() throws SQLException {
         addResources();
-        assertTrue(waitShardingAlgorithmEffect());
-        initTableRules();
         createTables();
-    }
-    
-    private boolean waitShardingAlgorithmEffect() throws SQLException {
-        long maxWaitTimes = 15;
-        long startTime = System.currentTimeMillis();
-        int waitTimes = 0;
-        do {
-            int result = countWithLog("SHOW SHARDING ALGORITHMS");
-            if (result >= 5) {
-                log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
-                return true;
-            }
-            ThreadUtil.sleep(2, TimeUnit.SECONDS);
-            waitTimes++;
-        } while (waitTimes <= maxWaitTimes);
-        return false;
-    }
-    
-    private void initTableRules() throws SQLException {
-        Connection connection = getProxyConnection();
-        createOrderTableRule(connection);
-        createOrderItemTableRule(connection);
-        bindingShardingRule(connection);
-        createAccountTableRule(connection);
-        createAddressBroadcastTableRule(connection);
     }
     
     private void initJdbcConfig() throws SQLException {
@@ -92,26 +65,6 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         createOrderItemTable(conn);
         createAccountTable(conn);
         createAddressTable(conn);
-    }
-    
-    private void createOrderTableRule(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderTableRule());
-    }
-    
-    private void createOrderItemTableRule(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemTableRule());
-    }
-    
-    private void createAccountTableRule(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateAccountTableRule());
-    }
-    
-    private void createAddressBroadcastTableRule(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateAddressBroadcastTableRule());
-    }
-    
-    private void bindingShardingRule(final Connection connection) throws SQLException {
-        executeWithLog(connection, "CREATE SHARDING BINDING TABLE RULES (t_order, t_order_item)");
     }
     
     /**

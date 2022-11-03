@@ -21,8 +21,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -57,7 +57,7 @@ public final class ScalingCaseHelper {
      * @param insertRows insert rows
      * @return insert data list
      */
-    public static Pair<List<Object[]>, List<Object[]>> generateFullInsertData(final KeyGenerateAlgorithm orderIdGenerate, final DatabaseType databaseType, final int insertRows) {
+    public static Pair<List<Object[]>, List<Object[]>> generateFullInsertData(final AutoIncrementKeyGenerateAlgorithm orderIdGenerate, final DatabaseType databaseType, final int insertRows) {
         if (insertRows < 0) {
             return Pair.of(null, null);
         }
@@ -65,7 +65,7 @@ public final class ScalingCaseHelper {
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
             Comparable<?> orderId = orderIdGenerate.generateKey();
-            int userId = generateInt(0, 6);
+            int userId = orderIdGenerate.generateKey();
             LocalDateTime now = LocalDateTime.now();
             int randomInt = generateInt(-100, 100);
             int randomUnsignedInt = generateInt(0, 100);

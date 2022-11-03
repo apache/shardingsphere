@@ -11,7 +11,7 @@ weight = 4
 
 ```sql
 UnregisterStorageUnit ::=
-  'DROP' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
+  'UNREGISTER' 'STORAGE' 'UNIT' ( 'IF' 'EXISTS' )? storageUnitName  ( ',' storageUnitName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
 
 storageUnitName ::=
   identifier

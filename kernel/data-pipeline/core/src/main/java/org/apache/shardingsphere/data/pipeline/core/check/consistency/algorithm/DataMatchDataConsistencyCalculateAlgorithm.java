@@ -122,6 +122,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final SQLException ex) {
+            log.error("calculateChunk failed, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName(), ex);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
         }
     }

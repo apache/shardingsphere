@@ -25,9 +25,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorage
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.DropResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.RegisterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.UnregisterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
@@ -46,13 +46,13 @@ public final class RDLBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof RegisterStorageUnitStatement) {
-            return new AddResourceBackendHandler((RegisterStorageUnitStatement) sqlStatement, connectionSession);
+            return new RegisterStorageUnitBackendHandler((RegisterStorageUnitStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof AlterStorageUnitStatement) {
-            return new AlterResourceBackendHandler((AlterStorageUnitStatement) sqlStatement, connectionSession);
+            return new AlterStorageUnitBackendHandler((AlterStorageUnitStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof UnregisterStorageUnitStatement) {
-            return new DropResourceBackendHandler((UnregisterStorageUnitStatement) sqlStatement, connectionSession);
+            return new UnregisterStorageUnitBackendHandler((UnregisterStorageUnitStatement) sqlStatement, connectionSession);
         }
         return new RuleDefinitionBackendHandler<>((RuleDefinitionStatement) sqlStatement, connectionSession);
     }
