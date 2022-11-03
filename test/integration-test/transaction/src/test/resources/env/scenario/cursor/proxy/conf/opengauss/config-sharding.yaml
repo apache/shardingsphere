@@ -41,15 +41,6 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  db_2:
-    url: jdbc:opengauss://opengauss.cursor.host:5432/transaction_it_2
-    username: test_user
-    password: Test@123
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
-    minPoolSize: 2
 rules:
   - !SHARDING
     tables:

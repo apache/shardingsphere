@@ -54,6 +54,66 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     public void executeTest() throws SQLException {
         Connection conn = getDataSource().getConnection();
         broadcastTableCursorTest(conn);
+        broadcastTableCursorTest2(conn);
+        broadcastAndSingleTablesCursorTest(conn);
+        broadcastAndSingleTablesCursorTest2(conn);
+        viewCursorTest(conn);
+    }
+    
+    private void viewCursorTest(final Connection conn) throws SQLException {
+        executeWithLog(conn, "start transaction;");
+        executeWithLog(conn, cursorSQLCommand.getViewCursor());
+        executeWithLog(conn, "close test;");
+        executeWithLog(conn, cursorSQLCommand.getViewCursor());
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        executeWithLog(conn, "rollback;");
+    }
+    
+    private void broadcastAndSingleTablesCursorTest2(final Connection conn) throws SQLException {
+        executeWithLog(conn, "start transaction;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
+        executeWithLog(conn, "close test;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        executeWithLog(conn, "rollback;");
+    }
+    
+    private void broadcastAndSingleTablesCursorTest(final Connection conn) throws SQLException {
+        executeWithLog(conn, "start transaction;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
+        executeWithLog(conn, "close test;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        executeWithLog(conn, "rollback;");
+    }
+    
+    private void broadcastTableCursorTest2(final Connection conn) throws SQLException {
+        executeWithLog(conn, "start transaction;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
+        executeWithLog(conn, "close test;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        fetch(conn);
+        executeWithLog(conn, "rollback;");
     }
     
     private void broadcastTableCursorTest(final Connection conn) throws SQLException {

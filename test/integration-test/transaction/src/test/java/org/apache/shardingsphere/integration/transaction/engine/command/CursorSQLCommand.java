@@ -33,4 +33,19 @@ public final class CursorSQLCommand {
     
     @XmlElement(name = "broadcast-tables-cursor")
     private String broadcastTablesCursor;
+    
+    @XmlElement(name = "broadcast-tables-cursor2")
+    private String broadcastTablesCursor2;
+    
+    @XmlElement(name = "broadcast-and-sharding-tables-cursor")
+    private String broadcastAndShardingTablesCursor;
+    
+    @XmlElement(name = "broadcast-and-single-tables-cursor")
+    private String broadcastAndSingleTablesCursor;
+    
+    @XmlElement(name = "broadcast-and-single-tables-cursor2")
+    private String broadcastAndSingleTablesCursor2;
+    
+    @XmlElement(name = "view-cursor")
+    private String viewCursor;
 }
