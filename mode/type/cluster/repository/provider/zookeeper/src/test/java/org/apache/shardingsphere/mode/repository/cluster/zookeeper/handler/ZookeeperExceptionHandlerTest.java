@@ -25,15 +25,15 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
-public final class CuratorZookeeperExceptionHandlerTest {
+public final class ZookeeperExceptionHandlerTest {
     
     @Test
     public void assertHandleException() {
-        CuratorZookeeperExceptionHandler.handleException(null);
-        CuratorZookeeperExceptionHandler.handleException(new NoNodeException(""));
-        CuratorZookeeperExceptionHandler.handleException(new Exception(new NoNodeException("")));
+        ZookeeperExceptionHandler.handleException(null);
+        ZookeeperExceptionHandler.handleException(new NoNodeException(""));
+        ZookeeperExceptionHandler.handleException(new Exception(new NoNodeException("")));
         try {
-            CuratorZookeeperExceptionHandler.handleException(new Exception(""));
+            ZookeeperExceptionHandler.handleException(new Exception(""));
             fail("must be failed handle new Exception().");
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

@@ -39,7 +39,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -76,9 +76,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CuratorZookeeperRepositoryTest {
+public final class ZookeeperRepositoryTest {
     
-    private static final CuratorZookeeperRepository REPOSITORY = new CuratorZookeeperRepository();
+    private static final ZookeeperRepository REPOSITORY = new ZookeeperRepository();
     
     private static final String SERVER_LISTS = "127.0.0.1:2181";
     
@@ -126,7 +126,7 @@ public final class CuratorZookeeperRepositoryTest {
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
     private void mockClient() {
-        Field builderFiled = CuratorZookeeperRepository.class.getDeclaredField("builder");
+        Field builderFiled = ZookeeperRepository.class.getDeclaredField("builder");
         builderFiled.setAccessible(true);
         builderFiled.set(REPOSITORY, builder);
         when(builder.connectString(anyString())).thenReturn(builder);
@@ -142,12 +142,12 @@ public final class CuratorZookeeperRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void mockDistributedLockHolder() {
-        Field distributedLockHolderField = CuratorZookeeperRepository.class.getDeclaredField("distributedLockHolder");
+        Field distributedLockHolderField = ZookeeperRepository.class.getDeclaredField("distributedLockHolder");
         distributedLockHolderField.setAccessible(true);
         DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
         Field locksFiled = DistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));
+        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(ZookeeperDistributedLock.class)));
         distributedLockHolderField.set(REPOSITORY, distributedLockHolder);
     }
     
@@ -242,7 +242,7 @@ public final class CuratorZookeeperRepositoryTest {
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void mockCache(final String key) {
-        Field cachesFiled = CuratorZookeeperRepository.class.getDeclaredField("caches");
+        Field cachesFiled = ZookeeperRepository.class.getDeclaredField("caches");
         cachesFiled.setAccessible(true);
         Map<String, CuratorCache> caches = new HashMap<>();
         caches.put(key, curatorCache);

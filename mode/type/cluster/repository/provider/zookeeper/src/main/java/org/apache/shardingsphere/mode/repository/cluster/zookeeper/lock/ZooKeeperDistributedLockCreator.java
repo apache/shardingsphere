@@ -23,13 +23,13 @@ import org.apache.shardingsphere.mode.repository.cluster.lock.creator.Distribute
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 
 /**
- * Curator zooKeeper distributed lock creator.
+ * ZooKeeper distributed lock creator.
  */
-public final class CuratorZooKeeperDistributedLockCreator implements DistributedLockCreator<CuratorFramework, ZookeeperProperties> {
+public final class ZooKeeperDistributedLockCreator implements DistributedLockCreator<CuratorFramework, ZookeeperProperties> {
     
     @Override
     public DistributedLock create(final String lockKey, final CuratorFramework client, final ZookeeperProperties props) {
-        return new CuratorZookeeperDistributedLock(lockKey, client);
+        return new ZookeeperDistributedLock(lockKey, client);
     }
     
     @Override

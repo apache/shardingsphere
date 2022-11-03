@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Registry repository of ZooKeeper.
  */
-public final class CuratorZookeeperRepository implements ClusterPersistRepository, InstanceContextAware {
+public final class ZookeeperRepository implements ClusterPersistRepository, InstanceContextAware {
     
     private final Map<String, CuratorCache> caches = new ConcurrentHashMap<>();
     
@@ -122,7 +122,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
                 throw new OperationTimeoutException();
             }
         } catch (final InterruptedException | OperationTimeoutException ex) {
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     
@@ -135,7 +135,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
     }
@@ -151,7 +151,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     
@@ -162,7 +162,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     
@@ -173,7 +173,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
             return null;
         }
     }
@@ -185,7 +185,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
             return false;
         }
     }
@@ -200,7 +200,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     
@@ -214,7 +214,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             if (ex instanceof NodeExistsException) {
                 throw new ClusterPersistRepositoryException(ex);
             }
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     
@@ -227,7 +227,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     
@@ -256,7 +256,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
     

@@ -21,18 +21,18 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Curator ZooKeeper distributed lock.
+ * ZooKeeper distributed lock.
  */
-public final class CuratorZookeeperDistributedLock implements DistributedLock {
+public final class ZookeeperDistributedLock implements DistributedLock {
     
     private final InterProcessLock lock;
     
-    public CuratorZookeeperDistributedLock(final String lockKey, final CuratorFramework client) {
+    public ZookeeperDistributedLock(final String lockKey, final CuratorFramework client) {
         lock = new InterProcessMutex(client, lockKey);
     }
     
@@ -43,7 +43,7 @@ public final class CuratorZookeeperDistributedLock implements DistributedLock {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
         return false;
     }
@@ -55,7 +55,7 @@ public final class CuratorZookeeperDistributedLock implements DistributedLock {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
+            ZookeeperExceptionHandler.handleException(ex);
         }
     }
 }
