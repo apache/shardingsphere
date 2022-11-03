@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.migration;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -112,10 +111,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     }
     
     protected void createTargetOrderTableRule() throws SQLException {
-        for (String each : Splitter.on(";").trimResults().splitToList(migrationDistSQLCommand.getCreateTargetOrderTableRule()).stream()
-                .filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList())) {
-            proxyExecuteWithLog(each, 2);
-        }
+        proxyExecuteWithLog(migrationDistSQLCommand.getCreateTargetOrderTableRule(), 2);
     }
     
     protected void createTargetOrderTableEncryptRule() throws SQLException {
