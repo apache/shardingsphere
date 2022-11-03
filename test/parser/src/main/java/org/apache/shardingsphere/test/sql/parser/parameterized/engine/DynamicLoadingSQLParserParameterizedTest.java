@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
@@ -29,6 +31,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -46,29 +49,26 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) {
+    private static LinkedList<Map<String, Object>> getResponse(final String sqlCaseURL) throws IOException {
         String[] patches = sqlCaseURL.split("/", 8);
-        String sqlCasesOwner = patches[3];
-        String sqlCasesRepo = patches[4];
-        String sqlCasesDirectory = patches[7];
-        return new RestTemplate().getForObject(
-                "https://api.github.com/repos/{owner}/{repo}/contents/{directory}", LinkedList.class,
-                sqlCasesOwner, sqlCasesRepo, sqlCasesDirectory);
+        String url = "https://api.github.com/repos/" + patches[3] + "/" + patches[4] + "/contents/" + patches[7];
+        return new JsonMapper().readValue(new URL(url), new TypeReference<LinkedList<Map<String, Object>>>() {
+        });
     }
     
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException, URISyntaxException {
         Collection<Object[]> result = new LinkedList<>();
-        List<Map<String, String>> response = getResponse(sqlCaseURL);
-        for (Map<String, String> each : response) {
+        List<Map<String, Object>> response = getResponse(sqlCaseURL);
+        for (Map<String, Object> each : response) {
             result.addAll(getSqlCases(each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException, URISyntaxException {
+    private static Collection<Object[]> getSqlCases(final Map<String, Object> elements) throws IOException, URISyntaxException {
         Collection<Object[]> result = new LinkedList<>();
-        String sqlCaseFileName = elements.get("name");
-        String sqlCaseFileContent = IOUtils.toString(new URI(elements.get("download_url")), StandardCharsets.UTF_8);
+        String sqlCaseFileName = elements.get("name").toString();
+        String sqlCaseFileContent = IOUtils.toString(new URI(elements.get("download_url").toString()), StandardCharsets.UTF_8);
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
         for (String each : lines) {
