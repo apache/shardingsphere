@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.repository.cluster.consul.lock;
 import com.ecwid.consul.v1.ConsulClient;
 import org.apache.shardingsphere.mode.repository.cluster.consul.props.ConsulProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockCreator;
+import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
 
 /**
  * Consul distributed lock creator.
