@@ -25,7 +25,6 @@ import org.apache.shardingsphere.integration.transaction.engine.base.Transaction
 import org.apache.shardingsphere.integration.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -35,6 +34,8 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 
 /**
  * OpenGauss cursor transaction integration test.
@@ -145,7 +146,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         ResultSet rs = executeQueryWithLog(conn, "fetch test;");
         while (rs.next()) {
             int id = rs.getInt("id");
-            Assert.assertEquals(String.format("Expected fetch id is %s, actual is %s.", expectedId, id), expectedId, id);
+            assertThat(id, is(expectedId));
         }
     }
     
