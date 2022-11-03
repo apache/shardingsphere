@@ -487,7 +487,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Reload table meta data.
+     * Reload table metadata.
      *
      * @param databaseName to be reloaded database name
      */
@@ -511,7 +511,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Reload database meta data from governance center.
+     * Reload database metadata from governance center.
      *
      * @param databaseName to be reloaded database name
      */
