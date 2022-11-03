@@ -17,60 +17,60 @@
   -->
 
 <sql-parser-test-cases>
-    <add-resource sql-case-id="add-resource-simple-single-without-password">
+    <register-storage-unit sql-case-id="register-storage-unit-simple-single-without-password">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
-    </add-resource>
+    </register-storage-unit>
     
-    <add-resource sql-case-id="add-resource-simple-single-with-password">
+    <register-storage-unit sql-case-id="register-storage-unit-simple-single-with-password">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
-    </add-resource>
+    </register-storage-unit>
     
-    <add-resource sql-case-id="add-resource-simple-multiple">
+    <register-storage-unit sql-case-id="register-storage-unit-simple-multiple">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
-    </add-resource>
+    </register-storage-unit>
     
     <register-migration-source-storage-unit sql-case-id="single-register-migration-source-storage-unit">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" url="jdbc:mysql://127.0.0.1:3306/test0"/>
     </register-migration-source-storage-unit>
 
-    <add-resource sql-case-id="add-resource-with-quota">
+    <register-storage-unit sql-case-id="register-storage-unit-with-quota">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
-    </add-resource>
+    </register-storage-unit>
     
-    <add-resource sql-case-id="add-resource-url-single-without-password">
+    <register-storage-unit sql-case-id="register-storage-unit-url-single-without-password">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
-    </add-resource>
+    </register-storage-unit>
     
-    <add-resource sql-case-id="add-resource-url-single-with-password">
+    <register-storage-unit sql-case-id="register-storage-unit-url-single-with-password">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
-    </add-resource>
+    </register-storage-unit>
     
-    <add-resource sql-case-id="add-resource-url-multiple">
+    <register-storage-unit sql-case-id="register-storage-unit-url-multiple">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
         <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456" />
-    </add-resource>
+    </register-storage-unit>
 
-    <add-resource sql-case-id="add-resource-single-with-properties">
+    <register-storage-unit sql-case-id="register-storage-unit-single-with-properties">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
                 <property key="idleTimeout" value="30000" />
             </properties>
         </data-source>
-    </add-resource>
+    </register-storage-unit>
 
-    <add-resource sql-case-id="add-resource-url-single-with-empty-properties">
+    <register-storage-unit sql-case-id="register-storage-unit-url-single-with-empty-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
-    </add-resource>
+    </register-storage-unit>
 
-    <add-resource sql-case-id="add-resource-url-single-with-properties">
+    <register-storage-unit sql-case-id="register-storage-unit-url-single-with-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30"/>
             </properties>
         </data-source>
-    </add-resource>
+    </register-storage-unit>
     
     <create-sharding-auto-table-rule sql-case-id="create-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
@@ -488,7 +488,8 @@
         </shadow-algorithm>
     </create-default-shadow-algorithm>
     
-    <create-default-single-table sql-case-id="create-default-single-table" default-data-source="ds_0"/>
+    <set-default-single-table-storage-unit sql-case-id="set-default-single-table-storage-unit" default-storage-unit="ds_0"/>
+    <set-default-single-table-storage-unit-random sql-case-id="set-default-single-table-storage-unit-random"/>
     
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">

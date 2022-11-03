@@ -133,6 +133,10 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
     }
     
     private void assertLogin(final String inputPassword) {
+        MetaDataContexts metaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.init(contextManager);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(16, 128), StandardCharsets.UTF_8);
         payload.writeInt4(64);
         payload.writeInt4(196608);
@@ -155,10 +159,6 @@ public final class OpenGaussAuthenticationEngineTest extends ProxyContextRestore
         payload.writeInt1('p');
         payload.writeInt4(4 + clientDigest.length() + 1);
         payload.writeStringNul(clientDigest);
-        MetaDataContexts metaDataContexts = getMetaDataContexts(new ShardingSphereUser(username, password, ""));
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        ProxyContext.init(contextManager);
         actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }

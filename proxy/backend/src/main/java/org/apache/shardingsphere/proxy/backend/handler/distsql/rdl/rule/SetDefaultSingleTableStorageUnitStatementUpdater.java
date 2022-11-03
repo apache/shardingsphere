@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Create default single table rule statement updater.
+ * Set default single table storage unit statement updater.
  */
 public final class SetDefaultSingleTableStorageUnitStatementUpdater implements RuleDefinitionCreateUpdater<SetDefaultSingleTableStorageUnitStatement, SingleTableRuleConfiguration> {
     
@@ -39,17 +39,17 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdater implements R
     }
     
     private void checkResourceExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
-        if (StringUtils.isNotBlank(sqlStatement.getDefaultResource())) {
+        if (StringUtils.isNotBlank(sqlStatement.getDefaultStorageUnit())) {
             Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
-            ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultResource()),
-                    () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultResource())));
+            ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultStorageUnit()),
+                    () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultStorageUnit())));
         }
     }
     
     @Override
     public SingleTableRuleConfiguration buildToBeCreatedRuleConfiguration(final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         SingleTableRuleConfiguration result = new SingleTableRuleConfiguration();
-        result.setDefaultDataSource(sqlStatement.getDefaultResource());
+        result.setDefaultDataSource(sqlStatement.getDefaultStorageUnit());
         return result;
     }
     

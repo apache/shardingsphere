@@ -36,22 +36,23 @@ public final class ProxyClusterContainerConfigurationFactory {
     
     /**
      * Create instance of adaptor container configuration.
-     * 
+     *
+     * @param scenario scenario
      * @param databaseType database type
      * @return created instance
      */
-    public static AdaptorContainerConfiguration newInstance(final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(databaseType), AdapterContainerUtil.getAdapterContainerImage());
+    public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(scenario, databaseType), AdapterContainerUtil.getAdapterContainerImage());
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
         return (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
     }
     
-    private static Map<String, String> getMountedResource(final DatabaseType databaseType) {
+    private static Map<String, String> getMountedResource(final String scenario, final DatabaseType databaseType) {
         Map<String, String> result = new HashMap<>(2, 1);
         result.put(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "server.yaml");
-        result.put("/logback-test.xml", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER + "logback.xml");
+        result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }
 }

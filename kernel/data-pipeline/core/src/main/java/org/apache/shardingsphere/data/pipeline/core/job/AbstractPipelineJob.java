@@ -20,8 +20,13 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -36,26 +41,52 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Abstract pipeline job.
  */
-@Getter
+@Slf4j
 public abstract class AbstractPipelineJob implements PipelineJob {
     
-    @Setter
+    @Getter
     private volatile String jobId;
     
-    @Setter
+    @Getter(value = AccessLevel.PROTECTED)
+    private volatile PipelineJobAPI jobAPI;
+    
+    @Getter
     private volatile boolean stopping;
     
     @Setter
     private volatile JobBootstrap jobBootstrap;
     
-    @Getter(value = AccessLevel.PRIVATE)
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     private final PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance();
     
-    protected void runInBackground(final Runnable runnable) {
-        new Thread(runnable).start();
+    protected void setJobId(final String jobId) {
+        this.jobId = jobId;
+        jobAPI = PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobId));
     }
+    
+    protected void prepare(final PipelineJobItemContext jobItemContext) {
+        try {
+            long startTimeMillis = System.currentTimeMillis();
+            doPrepare(jobItemContext);
+            log.info("prepare cost {} ms", System.currentTimeMillis() - startTimeMillis);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            String jobId = jobItemContext.getJobId();
+            log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
+            jobItemContext.setStatus(JobStatus.PREPARING_FAILURE);
+            jobAPI.persistJobItemProgress(jobItemContext);
+            jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+            jobAPI.stop(jobId);
+            if (ex instanceof RuntimeException) {
+                throw (RuntimeException) ex;
+            }
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws Exception;
     
     @Override
     public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
@@ -67,22 +98,41 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         return new ArrayList<>(tasksRunnerMap.keySet());
     }
     
-    protected void addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
-        tasksRunnerMap.put(shardingItem, tasksRunner);
+    protected boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
+        if (null != tasksRunnerMap.putIfAbsent(shardingItem, tasksRunner)) {
+            log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
+            return false;
+        }
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
         distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        return true;
     }
     
-    protected boolean containsTasksRunner(final int shardingItem) {
-        return tasksRunnerMap.containsKey(shardingItem);
+    @Override
+    public void stop() {
+        try {
+            innerStop();
+        } finally {
+            innerClean();
+            doClean();
+        }
     }
     
-    protected void clearTasksRunner() {
+    private void innerStop() {
+        stopping = true;
+        if (null != jobBootstrap) {
+            jobBootstrap.shutdown();
+        }
+        log.info("stop tasks runner, jobId={}", getJobId());
+        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+            each.stop();
+        }
+    }
+    
+    private void innerClean() {
         tasksRunnerMap.clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
     
-    protected Collection<PipelineTasksRunner> getTasksRunners() {
-        return tasksRunnerMap.values();
-    }
+    protected abstract void doClean();
 }

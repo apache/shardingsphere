@@ -33,14 +33,14 @@ import static org.junit.Assert.assertNull;
  * Alter default shadow algorithm statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlterDefaultShadowAlgorithmStatementAssert {
+public final class AlterDefaultShadowAlgorithmStatementAssert {
     
     /**
-     * Assert create default shadow algorithm statement is correct with expected parser result.
+     * Assert alter default shadow algorithm statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create default shadow algorithm statement
-     * @param expected expected create default shadow algorithm statement test case
+     * @param actual actual alter default shadow algorithm statement
+     * @param expected expected alter default shadow algorithm statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterDefaultShadowAlgorithmStatement actual, final AlterDefaultShadowAlgorithmStatementTestCase expected) {
         if (null == expected) {

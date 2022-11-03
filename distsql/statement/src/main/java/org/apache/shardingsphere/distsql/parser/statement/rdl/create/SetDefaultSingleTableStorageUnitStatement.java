@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Create default single table rule statement.
+ * Set default single table storage unit statement.
  */
 @RequiredArgsConstructor
 @Getter
 public final class SetDefaultSingleTableStorageUnitStatement extends CreateRuleStatement {
     
-    private final String defaultResource;
+    private final String defaultStorageUnit;
 }

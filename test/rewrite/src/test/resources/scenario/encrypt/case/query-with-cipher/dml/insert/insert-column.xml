@@ -131,4 +131,9 @@
         <input sql="INSERT INTO t_order(ORDER_ID, USER_ID, CONTENT) VALUES (?, ?, ?);" parameters="1, 1, TEST" />
         <output sql="INSERT INTO t_order(ORDER_ID, USER_ID, CIPHER_CONTENT, PLAIN_CONTENT) VALUES (?, ?, ?, ?);" parameters="1, 1, encrypt_TEST_t_order, TEST" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="insert_values_with_null_encrypt_column_for_parameters" db-types="MySQL,PostgreSQL,openGauss">
+        <input sql="INSERT INTO t_account(account_id, certificate_number, password, amount, status) VALUES (?, ?, ?, ?, ?), (2, '222X', NULL, 2000, 'OK'), (?, ?, ?, ?, ?), (4, '444X', 'ddd', NULL, 'OK')" parameters="1, NULL, aaa, 1000, OK, 3, 333X, NULL, 3000, OK" />
+        <output sql="INSERT INTO t_account(account_id, cipher_certificate_number, assisted_query_certificate_number, cipher_password, assisted_query_password, cipher_amount, status) VALUES (?, ?, ?, ?, ?, ?, ?), (2, 'encrypt_222X', 'assisted_query_222X', NULL, NULL, 'encrypt_2000', 'OK'), (?, ?, ?, ?, ?, ?, ?), (4, 'encrypt_444X', 'assisted_query_444X', 'encrypt_ddd', 'assisted_query_ddd', NULL, 'OK')" parameters="1, NULL, NULL, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 3, encrypt_333X, assisted_query_333X, NULL, NULL, encrypt_3000, OK" />
+    </rewrite-assertion>
 </rewrite-assertions>

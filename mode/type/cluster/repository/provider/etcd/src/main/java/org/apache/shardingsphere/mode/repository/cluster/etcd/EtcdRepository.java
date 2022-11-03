@@ -35,7 +35,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -66,7 +65,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        distributedLockHolder = new EtcdDistributedLockHolder(client, etcdProps);
+        distributedLockHolder = new DistributedLockHolder(getType(), client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

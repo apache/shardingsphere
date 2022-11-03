@@ -65,13 +65,13 @@ TYPE(NAME="random")
 CREATE READWRITE_SPLITTING RULE ms_group_1 (
 AUTO_AWARE_RESOURCE=group_0,
 WRITE_DATA_SOURCE_QUERY_ENABLED=false,
-TYPE(NAME="random",PROPERTIES(write_ds=2,read_ds_0=2,read_ds_1=2,read_ds_2=1))
+TYPE(NAME="random",PROPERTIES('write_ds'=2,'ead_ds_0'=2,'ead_ds_1'=2,'ead_ds_2'=1))
 );
 
 ALTER READWRITE_SPLITTING RULE ms_group_1 (
 WRITE_STORAGE_UNIT=write_ds,
 READ_STORAGE_UNITS(read_ds_0,read_ds_1,read_ds_2),
-TYPE(NAME="random",PROPERTIES(write_ds=2,read_ds_0=2,read_ds_1=2,read_ds_2=1))
+TYPE(NAME="random",PROPERTIES('write_ds'=2,'read_ds_0'=2,'read_ds_1'=2,'read_ds_2'=1))
 );
 
 DROP READWRITE_SPLITTING RULE ms_group_1;

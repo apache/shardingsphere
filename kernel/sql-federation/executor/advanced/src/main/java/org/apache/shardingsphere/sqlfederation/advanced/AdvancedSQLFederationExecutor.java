@@ -83,7 +83,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     private ConfigurationProperties props;
     
-    private ShardingSphereData shardingSphereData;
+    private ShardingSphereData data;
     
     private JDBCExecutor jdbcExecutor;
     
@@ -92,14 +92,14 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     private ResultSet resultSet;
     
     @Override
-    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData shardingSphereData,
+    public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data,
                      final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
         this.globalRuleMetaData = metaData.getGlobalRuleMetaData();
         this.props = metaData.getProps();
-        this.shardingSphereData = shardingSphereData;
+        this.data = data;
         this.jdbcExecutor = jdbcExecutor;
         this.eventBusContext = eventBusContext;
     }
@@ -129,7 +129,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                                      final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         // TODO replace FilterableTableScanExecutor with TranslatableTableScanExecutor
-        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, shardingSphereData, eventBusContext);
+        TableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, data, eventBusContext);
         // TODO replace FilterableSchema with TranslatableSchema
         return new FilterableSchema(schemaName, schema, JAVA_TYPE_FACTORY, executor);
     }

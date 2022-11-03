@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show single table rules statement.
+ * Show default single table storage unit statement.
  */
 @Getter
 public final class ShowDefaultSingleTableStorageUnitStatement extends ShowRulesStatement {
