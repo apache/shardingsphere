@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.junit.Test;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +33,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.LinkedList;
 
 @RequiredArgsConstructor
 @SingletonSPI
@@ -46,19 +46,19 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    private static ArrayList<Map<String, String>> getResponse(final String sqlCaseURL) {
+    private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) {
         String[] patches = sqlCaseURL.split("/", 8);
         String sqlCasesOwner = patches[3];
         String sqlCasesRepo = patches[4];
         String sqlCasesDirectory = patches[7];
         return new RestTemplate().getForObject(
-                "https://api.github.com/repos/{owner}/{repo}/contents/{directory}", ArrayList.class,
+                "https://api.github.com/repos/{owner}/{repo}/contents/{directory}", LinkedList.class,
                 sqlCasesOwner, sqlCasesRepo, sqlCasesDirectory);
     }
     
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException, URISyntaxException {
-        Collection<Object[]> result = new ArrayList<>();
-        ArrayList<Map<String, String>> response = getResponse(sqlCaseURL);
+        Collection<Object[]> result = new LinkedList<>();
+        List<Map<String, String>> response = getResponse(sqlCaseURL);
         for (Map<String, String> each : response) {
             result.addAll(getSqlCases(each));
         }
@@ -66,7 +66,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     }
     
     private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException, URISyntaxException {
-        Collection<Object[]> result = new ArrayList<>();
+        Collection<Object[]> result = new LinkedList<>();
         String sqlCaseFileName = elements.get("name");
         String sqlCaseFileContent = IOUtils.toString(new URI(elements.get("download_url")), StandardCharsets.UTF_8);
         String[] lines = sqlCaseFileContent.split("\n");
