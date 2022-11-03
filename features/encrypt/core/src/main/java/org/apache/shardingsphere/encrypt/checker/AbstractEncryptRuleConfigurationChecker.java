@@ -46,6 +46,7 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
             for (EncryptColumnRuleConfiguration column : each.getColumns()) {
                 checkCipherColumnConfiguration(databaseName, encryptors, column);
                 checkAssistColumnConfiguration(databaseName, encryptors, column);
+                checkFuzzyColumnConfiguration(databaseName, encryptors, column);
             }
         }
     }
@@ -69,6 +70,18 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
                 "Assisted query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
         Preconditions.checkState(encryptors.contains(column.getAssistedQueryEncryptorName()),
                 "Can not find assisted query encryptor `%s` in database `%s`.", column.getAssistedQueryEncryptorName(), databaseName);
+    }
+    
+    private void checkFuzzyColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
+        if (Strings.isNullOrEmpty(column.getFuzzyQueryColumn()) && Strings.isNullOrEmpty(column.getFuzzyQueryEncryptorName())) {
+            return;
+        }
+        Preconditions.checkState(!Strings.isNullOrEmpty(column.getFuzzyQueryColumn()),
+                "Fuzzy query column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+        Preconditions.checkState(!Strings.isNullOrEmpty(column.getFuzzyQueryEncryptorName()),
+                "Fuzzy query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+        Preconditions.checkState(encryptors.contains(column.getFuzzyQueryEncryptorName()),
+                "Can not find fuzzy query encryptor `%s` in database `%s`.", column.getFuzzyQueryEncryptorName(), databaseName);
     }
     
     protected abstract Collection<String> getEncryptors(T config);
