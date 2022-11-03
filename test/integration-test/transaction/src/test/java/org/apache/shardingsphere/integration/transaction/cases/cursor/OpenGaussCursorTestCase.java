@@ -145,14 +145,14 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         ResultSet rs = executeQueryWithLog(conn, "fetch test;");
         while (rs.next()) {
             int id = rs.getInt("id");
-            Assert.assertEquals(String.format("Expected fetch id is %s, actual is %s", expectedId, id), expectedId, id);
+            Assert.assertEquals(String.format("Expected fetch id is %s, actual is %s.", expectedId, id), expectedId, id);
         }
     }
     
     private void fetchOver(final Connection conn) throws SQLException {
         ResultSet rs = executeQueryWithLog(conn, "fetch test;");
         while (rs.next()) {
-            fail("Expected fetch nothing");
+            fail("Expected fetch nothing.");
         }
     }
 }
