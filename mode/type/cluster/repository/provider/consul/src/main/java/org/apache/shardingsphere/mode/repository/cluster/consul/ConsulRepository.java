@@ -26,6 +26,7 @@ import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.model.NewSession;
 import com.ecwid.consul.v1.session.model.Session;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -48,7 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Registry repository of Consul.
  */
-public class ConsulRepository implements ClusterPersistRepository {
+public final class ConsulRepository implements ClusterPersistRepository {
     
     private static final ScheduledThreadPoolExecutor SESSION_FLUSH_EXECUTOR = new ScheduledThreadPoolExecutor(2);
     
@@ -56,6 +57,7 @@ public class ConsulRepository implements ClusterPersistRepository {
     
     private ConsulProperties consulProps;
     
+    @Getter
     private DistributedLockHolder distributedLockHolder;
     
     private Map<String, Collection<String>> watchKeyMap;
@@ -127,16 +129,6 @@ public class ConsulRepository implements ClusterPersistRepository {
     @Override
     public void persistExclusiveEphemeral(final String key, final String value) {
         persistEphemeral(key, value);
-    }
-    
-    @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
-    }
-    
-    @Override
-    public void unlock(final String lockKey) {
-        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override
