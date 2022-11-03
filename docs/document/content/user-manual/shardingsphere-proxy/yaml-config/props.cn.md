@@ -27,6 +27,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。本节�
 | proxy-mysql-default-version (?)     | String   | Proxy 通过配置文件指定 MySQL 的版本号,默认版本：5.7.22。                                                                                                 | 5.7.22   | 否      |
 | proxy-default-port (?)              | String   | Proxy 通过配置文件指定默认端口。                                                                                                                    | 3307     | 否      |
 | proxy-netty-backlog (?)             | int      | Proxy 通过配置文件指定默认netty back_log参数。                                                                                                      | 1024     | 否      |
+|proxy-frontend-database-protocol-type| String   | Proxy 前端协议类型，支持 MySQL, PostgreSQL, openGauss        |   ""    |    否    |
 
 属性配置可以通过 [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/) 修改。
 支持动态修改的属性可以立即生效，不支持动态修改的属性需要重启后生效。
