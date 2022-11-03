@@ -20,7 +20,7 @@ DROP VIEW IF EXISTS t_order_subquery_view;
 DROP VIEW IF EXISTS t_order_aggregation_view;
 DROP VIEW IF EXISTS t_order_union_view;
 
-CREATE VIEW t_order_item_join_view AS SELECT o.order_id, o.user_id, i.item_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 10 ORDER BY o.order_id;
+CREATE VIEW t_order_item_join_view AS SELECT o.order_id, o.user_id, i.item_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = 10 ORDER BY o.order_id, i.item_id;
 CREATE VIEW t_order_subquery_view AS SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = 10);
 CREATE VIEW t_order_aggregation_view AS SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > 10000 ORDER BY max_price;
 CREATE VIEW t_order_union_view AS SELECT * FROM t_order WHERE order_id > 2000 UNION SELECT * FROM t_order WHERE order_id > 1500;
