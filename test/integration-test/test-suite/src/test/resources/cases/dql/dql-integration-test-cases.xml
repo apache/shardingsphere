@@ -368,15 +368,15 @@
         <assertion parameters="10:int, 19:int, 1000:int, 1909:int, 1:int, 10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" db-types="MySQL,H2,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.order_id = ?" db-types="MySQL,H2,PostgreSQL" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT t_order_item.* FROM t_order JOIN t_order_item ON t_order.order_id = t_order_item.order_id WHERE t_order.order_id = ?" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -644,27 +644,28 @@
         <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <!-- FIXME: In MySQL, JOIN, CROSS JOIN, and INNER JOIN are syntactic equivalents -->
     <test-case sql="SELECT * FROM t_order o CROSS JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 10, 10" db-types="openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item i ON o.order_id = i.item_id WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item i ON o.order_id = i.item_id WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_order_item i ON o.order_id = i.item_id WHERE i.user_id = ? ORDER BY i.item_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_order_item i ON o.order_id = i.item_id WHERE i.user_id = ? ORDER BY i.item_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -672,112 +673,114 @@
         <assertion parameters="10:int, 10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), MIN(m.merchant_name) FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? GROUP BY m.merchant_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > ? ORDER BY p.product_id DESC" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > ? ORDER BY p.product_id DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > ? ORDER BY p.product_id DESC LIMIT 2, 5" db-types="openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id > ? ORDER BY p.product_id DESC LIMIT 2, 5" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.order_id, o.user_id, o.status, o.merchant_id, (SELECT t.merchant_name FROM t_merchant t WHERE t.merchant_id = o.merchant_id) AS merchant_name FROM t_order o WHERE o.order_id = ?" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT o.order_id, o.user_id, o.status, o.merchant_id, (SELECT t.merchant_name FROM t_merchant t WHERE t.merchant_id = o.merchant_id) AS merchant_name FROM t_order o WHERE o.order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="1000:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > ? ORDER BY item_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="1200:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM (SELECT o.* FROM t_order o WHERE o.user_id IN (10, 11, 12)) AS t, t_order_item i WHERE t.order_id = i.order_id AND t.order_id > ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="1200:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = ?) ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o WHERE o.order_id IN (SELECT i.order_id FROM t_order_item i INNER JOIN t_product p ON i.product_id = p.product_id WHERE p.product_id = ?) ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > ? ORDER BY max_price" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT MAX(p.price) AS max_price, MIN(p.price) AS min_price, SUM(p.price) AS sum_price, AVG(p.price) AS avg_price, COUNT(1) AS count FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id INNER JOIN t_product p ON i.product_id = p.product_id GROUP BY o.order_id HAVING SUM(p.price) > ? ORDER BY max_price" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10000:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order UNION ALL SELECT * FROM t_order ORDER BY order_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order UNION ALL SELECT * FROM t_order ORDER BY order_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order WHERE order_id > ? UNION SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2000:int, 1500:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT * FROM t_order WHERE order_id > ? UNION SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION ALL SELECT u.user_id FROM t_user u ORDER BY user_id LIMIT 5, 5" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? UNION SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <!-- TODO support MySQL INTERSECT clause -->
     <test-case sql="SELECT * FROM t_order INTERSECT ALL SELECT * FROM t_order ORDER BY order_id LIMIT 5, 5" db-types="openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT * FROM t_order WHERE order_id > ? INTERSECT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2000:int, 1500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? INTERSECT SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <!-- TODO support MySQL EXCEPT clause -->
     <test-case sql="SELECT * FROM t_order EXCEPT ALL SELECT * FROM t_order ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT * FROM t_order WHERE order_id > ? EXCEPT SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2000:int, 1500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? EXCEPT SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT * FROM t_order MINUS ALL SELECT * FROM t_order ORDER BY order_id" db-types="openGauss" scenario-types="db">
@@ -785,23 +788,23 @@
     </test-case>
 
     <test-case sql="SELECT * FROM t_order WHERE order_id > ? MINUS SELECT * FROM t_order WHERE order_id > ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2000:int, 1500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2000:long, 1500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? MINUS ALL SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.order_id, o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT i.order_id, i.user_id FROM t_order_item i WHERE i.order_id > ? ORDER BY order_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:int, 2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long, 2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS ALL SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
     <test-case sql="SELECT o.user_id FROM t_order o WHERE o.order_id > ? MINUS SELECT u.user_id FROM t_user u ORDER BY user_id" db-types="openGauss" scenario-types="db">
-        <assertion parameters="2500:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
     
 <!--    TODO FIX ME Expected: is "true" but was "1"-->
@@ -809,4 +812,52 @@
 <!--        <assertion parameters="1:int" expected-data-source-name="prod_dataset" />-->
 <!--        <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />-->
 <!--    </test-case>-->
+
+    <test-case sql="SELECT * FROM t_order_item_join_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_item_join_view WHERE order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="1000:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_item_join_view LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_subquery_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="1201:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_aggregation_view" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_aggregation_view WHERE max_price = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="8200:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_aggregation_view LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_union_view WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>

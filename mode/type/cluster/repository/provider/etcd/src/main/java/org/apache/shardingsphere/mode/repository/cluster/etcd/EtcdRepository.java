@@ -31,17 +31,17 @@ import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.support.Observers;
 import io.etcd.jetcd.support.Util;
 import io.etcd.jetcd.watch.WatchEvent;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdDistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -57,6 +57,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private EtcdProperties etcdProps;
     
+    @Getter
     private DistributedLockHolder distributedLockHolder;
     
     @Override
@@ -66,7 +67,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        distributedLockHolder = new EtcdDistributedLockHolder(client, etcdProps);
+        distributedLockHolder = new DistributedLockHolder(getType(), client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})
@@ -171,16 +172,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
             default:
                 return Type.IGNORED;
         }
-    }
-    
-    @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
-    }
-    
-    @Override
-    public void unlock(final String lockKey) {
-        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

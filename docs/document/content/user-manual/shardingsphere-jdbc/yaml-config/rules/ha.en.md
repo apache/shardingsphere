@@ -35,7 +35,7 @@ rules:
   # Database Discovery Configuration
   discoveryTypes:
     <discovery-type-name> (+): # Database discovery type name
-      type: # Database discovery type, such as: MySQL.MGR
+      type: # Database discovery type, such as: MySQL.MGR, MySQL.NORMAL_REPLICATION, openGauss.NORMAL_REPLICATION
       props (?):
         group-name: 92504d5b-6dec-11e8-91ea-246e9612aaf1 # Required parameters for database discovery types, such as MGR's group-name
 ```

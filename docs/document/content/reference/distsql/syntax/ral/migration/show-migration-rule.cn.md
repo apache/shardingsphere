@@ -23,7 +23,7 @@ ShowMigrationRule ::=
 |stream_channel |数据通道    |
 ### 示例
 
-- 查询 `SHARDING` 的 hint 设置
+- 查询数据迁移规则
 
 ```sql
 SHOW MIGRATION RULE;

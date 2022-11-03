@@ -72,8 +72,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         if (Strings.isNullOrEmpty(scenario)) {
             withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql", BindMode.READ_ONLY);
         } else {
-            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType) + "/01-actual-init.sql", "/docker-entrypoint-initdb.d/01-actual-init.sql",
+                    BindMode.READ_ONLY);
+            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType) + "/01-expected-init.sql",
+                    "/docker-entrypoint-initdb.d/01-expected-init.sql", BindMode.READ_ONLY);
         }
         withExposedPorts(getExposedPort());
         setWaitStrategy(new JdbcConnectionWaitStrategy(
