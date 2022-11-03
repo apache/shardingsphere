@@ -107,7 +107,7 @@ public abstract class BaseITCase {
         log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
     }
     
-    public BaseITCase(final TransactionParameterized parameterized) throws SQLException {
+    public BaseITCase(final TransactionParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         adapter = parameterized.getAdapter();
         containerComposer = initializeContainerComposer(parameterized);
