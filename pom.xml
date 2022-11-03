@@ -153,7 +153,7 @@
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
-        <caffeine.version>2.9.2</caffeine.version>
+        <caffeine.version>2.9.3</caffeine.version>
         <commons-io.version>2.11.0</commons-io.version>
     </properties>
     
@@ -688,11 +688,6 @@
                 <artifactId>spring-test</artifactId>
                 <version>${springframework.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
-                <version>${springframework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
