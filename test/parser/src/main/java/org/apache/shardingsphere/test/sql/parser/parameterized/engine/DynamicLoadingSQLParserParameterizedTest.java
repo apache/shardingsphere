@@ -40,21 +40,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @SingletonSPI
 public abstract class DynamicLoadingSQLParserParameterizedTest {
-    
+
     private final String sqlCaseId;
-    
+
     private final String sqlCaseValue;
-    
+
     private final String databaseType;
-    
+
     private static String[] getContentLines(final String url) throws IOException {
         InputStreamReader in = new InputStreamReader(new URL(url).openStream());
         String content = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
         return content.split("\n");
     }
-    
-    private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) throws IOException {
-        LinkedList<Map<String, String>> result = new LinkedList<>();
+
+    private static List<Map<String, String>> getResponse(final String sqlCaseURL) throws IOException {
+        List<Map<String, String>> result = new LinkedList<>();
         String[] patches = sqlCaseURL.split("/", 8);
         String sqlCasesOwner = patches[3];
         String sqlCasesRepo = patches[4];
@@ -77,7 +77,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-    
+
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         List<Map<String, String>> response = getResponse(sqlCaseURL);
@@ -86,7 +86,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-    
+
     private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         String sqlCaseFileName = elements.get("name");
@@ -106,7 +106,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-    
+
     @Test(expected = Exception.class)
     public final void assertDynamicLoadingSQL() {
         CacheOption cacheOption = new CacheOption(128, 1024L);
