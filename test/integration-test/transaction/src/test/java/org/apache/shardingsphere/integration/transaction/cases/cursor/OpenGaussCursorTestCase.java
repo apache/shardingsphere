@@ -25,12 +25,16 @@ import org.apache.shardingsphere.integration.transaction.engine.base.Transaction
 import org.apache.shardingsphere.integration.transaction.engine.command.CursorSQLCommand;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
+import org.junit.Assert;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
+
+import static org.junit.Assert.fail;
 
 /**
  * OpenGauss cursor transaction integration test.
@@ -51,6 +55,13 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     @Override
+    protected void beforeTest() throws SQLException {
+        super.beforeTest();
+        Connection conn = getDataSource().getConnection();
+        executeWithLog(conn, "CREATE OR REPLACE VIEW t_order_view AS SELECT * FROM t_order;");
+    }
+    
+    @Override
     public void executeTest() throws SQLException {
         Connection conn = getDataSource().getConnection();
         broadcastTableCursorTest(conn);
@@ -60,45 +71,17 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         viewCursorTest(conn);
     }
     
-    private void viewCursorTest(final Connection conn) throws SQLException {
+    private void broadcastTableCursorTest(final Connection conn) throws SQLException {
         executeWithLog(conn, "start transaction;");
-        executeWithLog(conn, cursorSQLCommand.getViewCursor());
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor());
         executeWithLog(conn, "close test;");
-        executeWithLog(conn, cursorSQLCommand.getViewCursor());
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        executeWithLog(conn, "rollback;");
-    }
-    
-    private void broadcastAndSingleTablesCursorTest2(final Connection conn) throws SQLException {
-        executeWithLog(conn, "start transaction;");
-        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
-        executeWithLog(conn, "close test;");
-        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        executeWithLog(conn, "rollback;");
-    }
-    
-    private void broadcastAndSingleTablesCursorTest(final Connection conn) throws SQLException {
-        executeWithLog(conn, "start transaction;");
-        executeWithLog(conn, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
-        executeWithLog(conn, "close test;");
-        executeWithLog(conn, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor());
+        fetch(conn, 10101);
+        fetch(conn, 10102);
+        fetch(conn, 10201);
+        fetch(conn, 10202);
+        fetchOver(conn);
+        fetchOver(conn);
         executeWithLog(conn, "rollback;");
     }
     
@@ -107,30 +90,69 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
         executeWithLog(conn, "close test;");
         executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
+        fetch(conn, 10101);
+        fetch(conn, 10102);
+        fetch(conn, 10201);
+        fetch(conn, 10202);
+        fetchOver(conn);
+        fetchOver(conn);
         executeWithLog(conn, "rollback;");
     }
     
-    private void broadcastTableCursorTest(final Connection conn) throws SQLException {
+    private void broadcastAndSingleTablesCursorTest(final Connection conn) throws SQLException {
         executeWithLog(conn, "start transaction;");
-        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor());
+        executeWithLog(conn, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
         executeWithLog(conn, "close test;");
-        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor());
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
-        fetch(conn);
+        executeWithLog(conn, cursorSQLCommand.getBroadcastAndSingleTablesCursor());
+        fetch(conn, 1);
+        fetch(conn, 2);
+        fetch(conn, 3);
+        fetch(conn, 4);
+        fetchOver(conn);
+        fetchOver(conn);
         executeWithLog(conn, "rollback;");
     }
     
-    private void fetch(final Connection conn) throws SQLException {
-        executeWithLog(conn, "fetch test;");
+    private void broadcastAndSingleTablesCursorTest2(final Connection conn) throws SQLException {
+        executeWithLog(conn, "start transaction;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
+        executeWithLog(conn, "close test;");
+        executeWithLog(conn, cursorSQLCommand.getBroadcastTablesCursor2());
+        fetch(conn, 10101);
+        fetch(conn, 10102);
+        fetch(conn, 10201);
+        fetch(conn, 10202);
+        fetchOver(conn);
+        fetchOver(conn);
+        executeWithLog(conn, "rollback;");
+    }
+    
+    private void viewCursorTest(final Connection conn) throws SQLException {
+        executeWithLog(conn, "start transaction;");
+        executeWithLog(conn, cursorSQLCommand.getViewCursor());
+        executeWithLog(conn, "close test;");
+        executeWithLog(conn, cursorSQLCommand.getViewCursor());
+        fetch(conn, 1);
+        fetch(conn, 2);
+        fetch(conn, 3);
+        fetch(conn, 4);
+        fetchOver(conn);
+        fetchOver(conn);
+        executeWithLog(conn, "rollback;");
+    }
+    
+    private void fetch(final Connection conn, int expectedId) throws SQLException {
+        ResultSet rs = executeQueryWithLog(conn, "fetch test;");
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            Assert.assertEquals(String.format("Expected fetch id is %s, actual is %s", expectedId, id), expectedId, id);
+        }
+    }
+    
+    private void fetchOver(final Connection conn) throws SQLException {
+        ResultSet rs = executeQueryWithLog(conn, "fetch test;");
+        while (rs.next()) {
+            fail("Expected fetch nothing");
+        }
     }
 }

@@ -18,44 +18,48 @@
 <command>
     <broadcast-tables-cursor>
         cursor test for
-        select t_province.province_id, t_province.province_name, t_city.city_id, t_city.city_name
+        select t_province.province_id, t_province.province_name, t_city.city_id as id, t_city.city_name
         from t_city, t_province
-        where t_province.province_id = t_city.province_id;
+        where t_province.province_id = t_city.province_id
+        order by id;
     </broadcast-tables-cursor>
     
     <broadcast-tables-cursor2>
         cursor test for
-        select b.province_id, b.province_name, a.city_id, a.city_name, c.country_id
+        select b.province_id, b.province_name, a.city_id as id, a.city_name, c.country_id
         from t_city a, t_province b, t_country c
         where b.province_id = a.province_id
         and a.country_id in (select country_id from t_country)
-        order by city_id desc;
+        order by id;
     </broadcast-tables-cursor2>
     
     <broadcast-and-sharding-tables-cursor>
         cursor test for
-        select a.address, b.city_name
+        select a.address_id as id, a.address, b.city_name
         from t_address a, t_city b
         where b.city_id = a.city_id
-        and a.address_id in (select address_id from t_order);
+        and a.address_id in (select address_id from t_order)
+        order by id;
     </broadcast-and-sharding-tables-cursor>
     
     <broadcast-and-single-tables-cursor>
         cursor test for
-        select a.address, b.city_name
+        select a.address_id as id, a.address, b.city_name
         from t_address a, t_city b
         where b.city_id = a.city_id
-        and a.address_id in (select address_id from t_product);
+        and a.address_id in (select address_id from t_product)
+        order by id;
     </broadcast-and-single-tables-cursor>
     
     <broadcast-and-single-tables-cursor2>
         cursor test for
-        select a.city_id, a.city_name, b.province_id, b.province_name
+        select a.city_id as id, a.city_name, b.province_id, b.province_name
         from t_city a, t_province b
         where a.province_id = b.province_id
-        and a.city_id in (select c.city_id from t_address c, t_product d where c.address_id = d.address_id);
+        and a.city_id in (select c.city_id from t_address c, t_product d where c.address_id = d.address_id)
+        order by id;
     </broadcast-and-single-tables-cursor2>
-        
+    
     <view-cursor>
         cursor test for select * from t_order_view;
     </view-cursor>
