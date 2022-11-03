@@ -655,7 +655,9 @@ public enum SQLVisitorRule {
     
     DROP_MATERIALIZED_VIEW_LOG("DropMaterializedViewLog", SQLStatementType.DDL),
     
-    DROP_MATERIALIZED_ZONEMAP("DropMaterializedZonemap", SQLStatementType.DDL);
+    DROP_MATERIALIZED_ZONEMAP("DropMaterializedZonemap", SQLStatementType.DDL),
+    
+    EMPTY_STATEMENT("EmptyStatement", SQLStatementType.DAL);
     
     private final String name;
     

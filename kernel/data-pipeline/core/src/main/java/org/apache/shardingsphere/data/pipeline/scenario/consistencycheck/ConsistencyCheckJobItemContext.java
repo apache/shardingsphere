@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -47,9 +48,9 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private volatile JobStatus status;
     
-    private Collection<String> tableNames;
+    private final Collection<String> tableNames = new CopyOnWriteArraySet<>();
     
-    private volatile Long recordsCount;
+    private volatile long recordsCount;
     
     private final AtomicLong checkedRecordsCount = new AtomicLong(0);
     

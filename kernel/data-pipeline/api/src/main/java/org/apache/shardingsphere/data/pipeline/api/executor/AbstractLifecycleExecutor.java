@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -63,13 +65,26 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
             return;
         }
         LocalDateTime startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeMillis), ZoneId.systemDefault());
-        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", super.toString(), startTime.format(DATE_TIME_FORMATTER), System.currentTimeMillis() - startTimeMillis);
-        doStop();
+        log.info("stop lifecycle executor {}, startTime={}, cost {} ms", this, startTime.format(DATE_TIME_FORMATTER), System.currentTimeMillis() - startTimeMillis);
+        try {
+            doStop();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("doStop failed", ex);
+        }
         running = false;
         stopped = true;
     }
     
-    protected abstract void doStop();
+    protected abstract void doStop() throws Exception;
+    
+    protected void cancelStatement(final Statement statement) throws SQLException {
+        if (null == statement || statement.isClosed()) {
+            return;
+        }
+        statement.cancel();
+    }
     
     @Override
     public final void run() {

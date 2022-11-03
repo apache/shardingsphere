@@ -108,7 +108,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private void tryDescribePreparedStatement(final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
-        if (preparedStatement.getSqlStatement() instanceof InsertStatement) {
+        if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof InsertStatement) {
             describeInsertStatementByDatabaseMetaData(preparedStatement);
         } else {
             tryDescribePreparedStatementByJDBC(preparedStatement);
@@ -120,7 +120,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             // TODO Consider the SQL `insert into table (col) values ($1) returning id`
             preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
         }
-        InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatement();
+        InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement();
         if (0 == insertStatement.getParameterCount()) {
             return;
         }
@@ -132,7 +132,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         String schemaName = insertStatement.getTable().getOwner().map(optional -> optional.getIdentifier()
-                .getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getResourceMetaData().getDatabaseType(), databaseName));
+                .getValue()).orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
         ShardingSphereTable table = database.getSchema(schemaName).getTable(logicTableName);
         Map<String, ShardingSphereColumn> columns = table.getColumns();
         Map<String, ShardingSphereColumn> caseInsensitiveColumns = null;
@@ -191,7 +191,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = connectionSession.getDatabaseName();
         SQLStatementContext<?> sqlStatementContext =
-                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), logicPreparedStatement.getSqlStatement(), databaseName);
+                SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), logicPreparedStatement.getSqlStatementContext().getSqlStatement(), databaseName);
         QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
@@ -206,12 +206,12 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private void populateParameterTypes(final PostgreSQLServerPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
-        if (0 == logicPreparedStatement.getSqlStatement().getParameterCount()
+        if (0 == logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()
                 || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == each)) {
             return;
         }
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
-        for (int i = 0; i < logicPreparedStatement.getSqlStatement().getParameterCount(); i++) {
+        for (int i = 0; i < logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
             if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
                 logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
             }

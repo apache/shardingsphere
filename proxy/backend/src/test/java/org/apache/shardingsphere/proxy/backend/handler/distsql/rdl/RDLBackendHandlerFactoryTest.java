@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterResourceBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.DropResourceBackendHandler;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.RegisterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterStorageUnitBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.UnregisterStorageUnitBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Test;
@@ -35,18 +35,18 @@ import static org.mockito.Mockito.mock;
 public final class RDLBackendHandlerFactoryTest {
     
     @Test
-    public void assertNewInstanceWithAddResourceStatement() {
-        assertThat(RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), mock(ConnectionSession.class)), instanceOf(AddResourceBackendHandler.class));
+    public void assertNewInstanceWithRegisterStorageUnitStatement() {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(RegisterStorageUnitBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithAlterResourceStatement() {
-        assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterResourceStatement.class), mock(ConnectionSession.class)), instanceOf(AlterResourceBackendHandler.class));
+    public void assertNewInstanceWithAlterStorageUnitStatement() {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(AlterStorageUnitBackendHandler.class));
     }
     
     @Test
-    public void assertNewInstanceWithDropResourceStatement() {
-        assertThat(RDLBackendHandlerFactory.newInstance(mock(DropResourceStatement.class), mock(ConnectionSession.class)), instanceOf(DropResourceBackendHandler.class));
+    public void assertNewInstanceWithUnregisterStorageUnitStatement() {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(UnregisterStorageUnitStatement.class), mock(ConnectionSession.class)), instanceOf(UnregisterStorageUnitBackendHandler.class));
     }
     
     @Test

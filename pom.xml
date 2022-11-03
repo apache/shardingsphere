@@ -67,6 +67,7 @@
         <antlr4.version>4.9.2</antlr4.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
+        <jackson.version>2.13.4</jackson.version>
         <groovy.version>4.0.6</groovy.version>
         
         <jaxb.version>2.3.0</jaxb.version>
@@ -83,7 +84,7 @@
         <curator.version>5.3.0</curator.version>
         <jetcd.version>0.7.3</jetcd.version>
         
-        <elasticjob.version>3.0.1</elasticjob.version>
+        <elasticjob.version>3.0.2</elasticjob.version>
         
         <springframework.version>[4.3.6.RELEASE,5.0.0.M1)</springframework.version>
         <spring-boot.version>[1.5.20.RELEASE,2.0.0.M1)</spring-boot.version>
@@ -112,7 +113,7 @@
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
         <commons-dbcp2.version>2.2.0</commons-dbcp2.version>
-
+        
         <junit5.version>5.9.1</junit5.version>
         <junit4.version>4.13.2</junit4.version>
         <hamcrest.version>1.3</hamcrest.version>
@@ -202,6 +203,26 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.groovy</groupId>

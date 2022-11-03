@@ -20,41 +20,36 @@ grammar KernelDistSQLStatement;
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 
 execute
-    : (addResource
-    | alterResource
-    | dropResource
-    | showResources
-    | showUnusedResources
-    | setVariable
-    | showVariable
-    | showAllVariables
+    : (registerStorageUnit
+    | alterStorageUnit
+    | unregisterStorageUnit
+    | showStorageUnits
+    | showRulesUsedStorageUnit
+    | setDistVariable
+    | showDistVariable
+    | showDistVariables
     | clearHint
-    | enableInstance
-    | disableInstance
-    | showInstanceList
-    | showInstanceInfo
-    | showModeInfo
-    | labelInstance
-    | unlabelInstance
+    | enableComputeNode
+    | disableComputeNode
+    | showComputeNodes
+    | showComputeNodeInfo
+    | showComputeNodeMode
+    | labelComputeNode
+    | unlabelComputeNode
     | countSingleTableRule
-    | alterInstance
+    | alterComputeNode
     | prepareDistSQL
     | applyDistSQL
     | discardDistSQL
     | showSingleTable
-    | showSingleTableRules
-    | createDefaultSingleTableRule
-    | alterDefaultSingleTableRule
-    | dropDefaultSingleTableRule
+    | showDefaultSingleTableStorageUnit
+    | setDefaultSingleTableStorageUnit
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration
-    | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
-    | showMigrationProcessConfiguration
-    | createMigrationProcessConfiguration
-    | alterMigrationProcessConfiguration
-    | dropMigrationProcessConfiguration
+    | showMigrationRule
+    | alterMigrationRule
     ) SEMI?
     ;

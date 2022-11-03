@@ -1,6 +1,6 @@
 +++
 title = "ALTER ENCRYPT RULE"
-weight = 2
+weight = 3
 +++
 
 ## Description
@@ -43,7 +43,7 @@ encryptAlgorithmType ::=
 
 ### Example
 
-#### Alter an encrypt rule
+- Alter an encrypt rule
 
 ```sql
 ALTER ENCRYPT RULE t_encrypt (

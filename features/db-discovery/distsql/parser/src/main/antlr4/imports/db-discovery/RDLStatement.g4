@@ -31,24 +31,8 @@ dropDatabaseDiscoveryRule
     : DROP DB_DISCOVERY RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
-createDatabaseDiscoveryType
-    : CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
-    ;
-
-alterDatabaseDiscoveryType
-    : ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition (COMMA databaseDiscoveryTypeDefinition)*
-    ;
-
 dropDatabaseDiscoveryType
     : DROP DB_DISCOVERY TYPE ifExists? discoveryTypeName (COMMA discoveryTypeName)*
-    ;
-
-createDatabaseDiscoveryHeartbeat
-    : CREATE DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
-    ;
-
-alterDatabaseDiscoveryHeartbeat
-    : ALTER DB_DISCOVERY HEARTBEAT heartbeatDefinition (COMMA heartbeatDefinition)*
     ;
 
 dropDatabaseDiscoveryHeartbeat
@@ -56,55 +40,23 @@ dropDatabaseDiscoveryHeartbeat
     ;
 
 databaseDiscoveryRule
-    : (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
-    ;
-
-databaseDiscoveryRuleDefinition
-    : ruleName LP resources COMMA typeDefinition COMMA discoveryHeartbeat RP
-    ;
-
-databaseDiscoveryRuleConstruction
-    : ruleName LP resources COMMA TYPE EQ discoveryTypeName COMMA HEARTBEAT EQ discoveryHeartbeatName RP
-    ;
-
-databaseDiscoveryTypeDefinition
-    : discoveryTypeName LP typeDefinition RP
-    ;
-
-heartbeatDefinition
-    : discoveryHeartbeatName LP PROPERTIES LP properties RP RP  
+    : ruleName LP storageUnits COMMA algorithmDefinition COMMA discoveryHeartbeat RP
     ;
 
 ruleName
     : IDENTIFIER
     ;
 
-resources
-    : RESOURCES LP resourceName (COMMA resourceName)* RP
+storageUnits
+    : STORAGE_UNITS LP storageUnitName (COMMA storageUnitName)* RP
     ;
 
-resourceName
+storageUnitName
     : IDENTIFIER
     ;
 
-typeDefinition
-    : TYPE LP NAME EQ discoveryType (COMMA PROPERTIES LP properties RP)? RP
-    ;
-
 discoveryHeartbeat
-    : HEARTBEAT LP PROPERTIES LP properties RP RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=(NUMBER | INT | STRING)
-    ;
-
-discoveryType
-    : STRING
+    : HEARTBEAT LP propertiesDefinition RP
     ;
 
 discoveryTypeName

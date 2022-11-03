@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -91,7 +91,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
         prop.setProperty("type", "value");
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", prop));
         CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
-                new ShadowRuleSegment("ruleName1", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
+                new ShadowRuleSegment("ruleName", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
@@ -105,11 +105,10 @@ public final class CreateShadowRuleStatementUpdaterTest {
         updater.checkSQLStatement(database, sqlStatement, null);
     }
     
-    @Test(expected = DuplicateRuleException.class)
-    public void assertExecuteDuplicateAlgorithmInMetaData() {
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertInvalidAlgorithmConfiguration() {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("algorithmName", new AlgorithmConfiguration("type", prop)));
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("type", prop));
         CreateShadowRuleStatement sqlStatement = createSQLStatement(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);

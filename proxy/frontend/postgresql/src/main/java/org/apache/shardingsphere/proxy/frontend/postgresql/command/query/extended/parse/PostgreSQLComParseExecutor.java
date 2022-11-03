@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,19 +58,18 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        ShardingSphereSQLParserEngine sqlParserEngine = null;
+        ShardingSphereSQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
         String sql = packet.getSql();
-        SQLStatement sqlStatement = sql.trim().isEmpty() ? new EmptyStatement() : (sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName())).parse(sql, true);
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         if (sqlStatement.getParameterCount() > 0) {
             sql = convertSQLToJDBCStyle(sqlStatement, sql);
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
-        SQLStatementContext<?> sqlStatementContext = !(sqlStatement instanceof DistSQLStatement || sqlStatement instanceof EmptyStatement)
-                ? SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
-                        sqlStatement, connectionSession.getDefaultDatabaseName())
-                : null;
-        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatement, sqlStatementContext, paddedColumnTypes);
+        SQLStatementContext<?> sqlStatementContext = sqlStatement instanceof DistSQLStatement ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
+                : SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
+                        sqlStatement, connectionSession.getDefaultDatabaseName());
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, paddedColumnTypes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
         return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
     }

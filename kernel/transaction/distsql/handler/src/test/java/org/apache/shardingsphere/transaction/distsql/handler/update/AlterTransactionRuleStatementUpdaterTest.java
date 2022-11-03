@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -79,7 +78,7 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     }
     
     private TransactionRule createTransactionRule(final Map<String, ShardingSphereDatabase> databases) {
-        return new TransactionRule(new TransactionRuleConfiguration("BASE", null, new Properties()), databases, mock(InstanceContext.class));
+        return new TransactionRule(new TransactionRuleConfiguration("BASE", null, new Properties()), databases);
     }
     
     private ShardingSphereDatabase mockDatabase() {

@@ -101,7 +101,7 @@ CREATE DATABASE sharding_db;
 
 USE sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_10?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -119,7 +119,7 @@ ADD RESOURCE ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -131,7 +131,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_0 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:mysql://127.0.0.1:3306/migration_ds_0?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
@@ -161,7 +161,7 @@ Result example:
 
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
-| id                                    | tables  | sharding_total_count | active | create_time         | stop_time |
+| id                                    | tables  | job_item_count       | active | create_time         | stop_time |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | j01016e501b498ed1bdb2c373a2e85e2529a6 | t_order | 1                    | true   | 2022-10-13 11:16:01 | NULL      |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -296,7 +296,7 @@ CREATE DATABASE sharding_db;
 
 \c sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:postgresql://127.0.0.1:5432/migration_ds_10",
     USER="postgres",
     PASSWORD="root",
@@ -314,7 +314,7 @@ ADD RESOURCE ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -326,7 +326,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_0 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:postgresql://127.0.0.1:5432/migration_ds_0",
     USER="postgres",
     PASSWORD="root",
@@ -362,7 +362,7 @@ Result example:
 
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
-| id                                    | tables  | sharding_total_count | active | create_time         | stop_time |
+| id                                    | tables  | job_item_count       | active | create_time         | stop_time |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | j01016e501b498ed1bdb2c373a2e85e2529a6 | t_order | 1                    | true   | 2022-10-13 11:16:01 | NULL      |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
@@ -479,7 +479,7 @@ CREATE DATABASE sharding_db;
 
 \c sharding_db
 
-ADD RESOURCE ds_2 (
+REGISTER STORAGE UNIT ds_2 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_10",
     USER="gaussdb",
     PASSWORD="Root@123",
@@ -497,7 +497,7 @@ ADD RESOURCE ds_2 (
 );
 
 CREATE SHARDING TABLE RULE t_order(
-RESOURCES(ds_2,ds_3,ds_4),
+STORAGE_UNITS(ds_2,ds_3,ds_4),
 SHARDING_COLUMN=order_id,
 TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6")),
 KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME="snowflake"))
@@ -509,7 +509,7 @@ If you are migrating to a heterogeneous database, you need to execute the table-
 2. Configure the source resources in proxy.
 
 ```sql
-ADD MIGRATION SOURCE RESOURCE ds_2 (
+REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
     URL="jdbc:opengauss://127.0.0.1:5432/migration_ds_0",
     USER="gaussdb",
     PASSWORD="Root@123",
@@ -545,7 +545,7 @@ Result example:
 
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
-| id                                    | tables  | sharding_total_count | active | create_time         | stop_time |
+| id                                    | tables  | job_item_count       | active | create_time         | stop_time |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | j01016e501b498ed1bdb2c373a2e85e2529a6 | t_order | 1                    | true   | 2022-10-13 11:16:01 | NULL      |
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+

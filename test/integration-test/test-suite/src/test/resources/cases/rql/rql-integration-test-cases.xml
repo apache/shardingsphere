@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SHOW DATABASE RESOURCES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="SHOW STORAGE UNITS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_resources.xml" />
     </test-case>
     
@@ -81,15 +81,15 @@
         <assertion expected-data-file="show_sharding_table_nodes.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING BINDING TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+    <test-case sql="SHOW SHARDING TABLE REFERENCE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
         <assertion expected-data-file="show_sharding_binging_table_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
-        <assertion expected-data-file="show_sharding_broadcast_rules.xml" />
+    <test-case sql="SHOW BROADCAST TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
+        <assertion expected-data-file="show_broadcast_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW SINGLE TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="SHOW DEFAULT SINGLE TABLE STORAGE UNIT" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="show_single_table_rules.xml" />
     </test-case>
     

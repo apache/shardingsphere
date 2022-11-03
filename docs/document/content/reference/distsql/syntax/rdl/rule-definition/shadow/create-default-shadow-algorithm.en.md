@@ -1,6 +1,6 @@
 +++
 title = "CREATE DEFAULT SHADOW ALGORITHM"
-weight = 4
+weight = 5
 +++
 
 ## Description
@@ -11,23 +11,30 @@ The `CREATE DEFAULT SHADOW ALGORITHM` syntax is used to create a default shadow 
 
 ```sql
 CreateDefaultShadowAlgorithm ::=
-  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' 'NAME' '=' algorithmName
+  'CREATE' 'DEFAULT' 'SHADOW' 'ALGORITHM' shadowAlgorithm 
+
+shadowAlgorithm ::=
+  'TYPE' '(' 'NAME' '=' shadowAlgorithmType ',' 'PROPERTIES' '(' ( 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ) ')' ')'
     
-algorithmName ::=
-  identifier
+shadowAlgorithmType ::=
+  string
 ```
+
+### Supplement
+
+- `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`.
 
 ### Example
 
-#### Create a shadow algorithm
+- Create default shadow algorithm
 
 ```sql
-CREATE DEFAULT SHADOW ALGORITHM NAME = simple_hint_algorithm;
+CREATE DEFAULT SHADOW ALGORITHM TYPE(NAME="SIMPLE_HINT", PROPERTIES("shadow"="true", "foo"="bar");
 ```
 
 ### Reserved word
 
-`CREATE`, `DEFAULT`, `SHADOW`, `ALGORITHM`, `NAME`
+`CREATE`, `DEFAULT`, `SHADOW`, `ALGORITHM`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
 

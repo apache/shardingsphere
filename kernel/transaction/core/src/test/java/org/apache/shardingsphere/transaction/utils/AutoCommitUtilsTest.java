@@ -21,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -49,6 +49,6 @@ public final class AutoCommitUtilsTest {
     
     @Test
     public void assertNeedOpenTransactionForOtherStatement() {
-        assertFalse(AutoCommitUtils.needOpenTransaction(new AddResourceStatement(new LinkedList<>())));
+        assertFalse(AutoCommitUtils.needOpenTransaction(new RegisterStorageUnitStatement(new LinkedList<>())));
     }
 }

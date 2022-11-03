@@ -3087,3 +3087,7 @@ LOGICAL_READS_PER_SESSION
 PRIVATE_SGA
     : P R I V A T E UL_ S G A
     ;
+
+LISTAGG
+    : L I S T A G G
+    ;

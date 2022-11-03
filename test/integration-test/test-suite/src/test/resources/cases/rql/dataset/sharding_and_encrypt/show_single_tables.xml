@@ -20,9 +20,9 @@
         <column name="table_name"/>
         <column name="resource_name"/>
     </metadata>
-    <row values="t_single_table| encrypt_ds_0"/>
-    <row values="t_order_item_federate| encrypt_ds_1"/>
     <row values="t_order_federate| encrypt_ds_0"/>
+    <row values="t_order_item_federate| encrypt_ds_1"/>
+    <row values="t_single_table| encrypt_ds_0"/>
     <row values="t_user_encrypt_federate| encrypt_ds_1"/>
     <row values="t_user_info| encrypt_ds_1"/>
 </dataset>

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -77,11 +78,12 @@ public final class JDBCExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeFactory.getInstance("MySQL"), mock(SelectStatement.class), true,
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
+        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(databaseType, Collections.singletonMap("ds", databaseType), mock(SelectStatement.class), true,
                 new EventBusContext()) {
             
             @Override
-            protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+            protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
             
@@ -102,38 +104,40 @@ public final class JDBCExecutorCallbackTest {
     @Test
     public void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
-        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"),
-                mock(SelectStatement.class), true, new EventBusContext()) {
-            
-            @Override
-            protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                throw new SQLException();
-            }
-            
-            @Override
-            protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-                return Optional.of(saneResult);
-            }
-        };
+        JDBCExecutorCallback<Object> callback =
+                new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonMap("ds", DatabaseTypeFactory.getInstance("PostgreSQL")),
+                        mock(SelectStatement.class), true, new EventBusContext()) {
+                    
+                    @Override
+                    protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+                        throw new SQLException();
+                    }
+                    
+                    @Override
+                    protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+                        return Optional.of(saneResult);
+                    }
+                };
         assertThat(callback.execute(units, true, Collections.emptyMap()), is(Collections.singletonList(saneResult)));
         assertThat(callback.execute(units, false, Collections.emptyMap()), is(Collections.emptyList()));
     }
     
     @Test(expected = SQLException.class)
     public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
-        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"),
-                mock(SelectStatement.class), true, new EventBusContext()) {
-            
-            @Override
-            protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
-                throw new SQLException();
-            }
-            
-            @Override
-            protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
-                return Optional.empty();
-            }
-        };
+        JDBCExecutorCallback<Object> callback =
+                new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonMap("ds", DatabaseTypeFactory.getInstance("PostgreSQL")),
+                        mock(SelectStatement.class), true, new EventBusContext()) {
+                    
+                    @Override
+                    protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+                        throw new SQLException();
+                    }
+                    
+                    @Override
+                    protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+                        return Optional.empty();
+                    }
+                };
         callback.execute(units, true, Collections.emptyMap());
     }
 }

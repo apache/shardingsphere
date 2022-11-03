@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
-import org.apache.shardingsphere.transaction.xa.narayana.manager.fixture.ReflectiveUtil;
+import org.apache.shardingsphere.infra.util.reflect.ReflectiveUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +70,7 @@ public final class DataSourceXAResourceRecoveryHelperTest {
     
     @Test
     public void assertGetXAResourcesWithoutConnecting() throws SQLException {
-        ReflectiveUtil.setProperty(recoveryHelper, "delegate", xaResource);
+        ReflectiveUtil.setField(recoveryHelper, "delegate", xaResource);
         recoveryHelper.getXAResources();
         XAResource[] xaResources = recoveryHelper.getXAResources();
         assertThat(xaResources.length, is(1));

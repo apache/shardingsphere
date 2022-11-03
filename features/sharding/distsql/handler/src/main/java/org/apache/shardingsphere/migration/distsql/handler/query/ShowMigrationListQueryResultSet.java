@@ -49,7 +49,7 @@ public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLRes
                     PipelineJobMetaData jobMetaData = each.getJobMetaData();
                     result.add(jobMetaData.getJobId());
                     result.add(((TableBasedPipelineJobInfo) each).getTable());
-                    result.add(jobMetaData.getShardingTotalCount());
+                    result.add(jobMetaData.getJobItemCount());
                     result.add(jobMetaData.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
                     result.add(jobMetaData.getCreateTime());
                     result.add(jobMetaData.getStopTime());
@@ -59,7 +59,7 @@ public final class ShowMigrationListQueryResultSet implements DatabaseDistSQLRes
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("id", "tables", "sharding_total_count", "active", "create_time", "stop_time");
+        return Arrays.asList("id", "tables", "job_item_count", "active", "create_time", "stop_time");
     }
     
     @Override

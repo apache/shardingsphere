@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,7 +82,7 @@ public final class DefaultImporterTest {
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new DefaultImporter(mockImporterConfiguration(), dataSourceManager, channel, new FixturePipelineJobProgressListener());
+        jdbcImporter = new DefaultImporter(mockImporterConfiguration(), dataSourceManager, channel, new FixtureInventoryIncrementalJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }

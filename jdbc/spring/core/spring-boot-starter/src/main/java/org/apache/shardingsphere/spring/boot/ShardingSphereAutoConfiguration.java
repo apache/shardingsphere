@@ -22,9 +22,9 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
+import org.apache.shardingsphere.spring.boot.condition.ShardingSphereSpringBootCondition;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
-import org.apache.shardingsphere.spring.boot.rule.LocalRulesCondition;
 import org.apache.shardingsphere.spring.boot.schema.DatabaseNameSetter;
 import org.apache.shardingsphere.spring.transaction.TransactionTypeScanner;
 import org.springframework.beans.factory.ObjectProvider;
@@ -84,7 +84,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      * @throws SQLException SQL exception
      */
     @Bean
-    @Conditional(LocalRulesCondition.class)
+    @Conditional(ShardingSphereSpringBootCondition.class)
     @Autowired(required = false)
     public DataSource shardingSphereDataSource(final ObjectProvider<List<RuleConfiguration>> rules, final ObjectProvider<ModeConfiguration> modeConfig) throws SQLException {
         Collection<RuleConfiguration> ruleConfigs = Optional.ofNullable(rules.getIfAvailable()).orElseGet(Collections::emptyList);

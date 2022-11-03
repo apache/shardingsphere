@@ -59,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatemen
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,16 +87,16 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
         preparedStatement.getLongData().forEach(parameters::set);
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
         QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
         connectionSession.setQueryContext(queryContext);
-        SQLStatement sqlStatement = preparedStatement.getSqlStatement();
+        SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         String databaseName = connectionSession.getDatabaseName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(), getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
+        SQLCheckEngine.check(sqlStatementContext, parameters, getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         // TODO Refactor the following branch
         if (sqlStatement instanceof TCLStatement) {

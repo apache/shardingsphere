@@ -14,22 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 CREATE DATABASE encrypt_db;
 USE encrypt_db;
-ADD RESOURCE ds_0 (
-URL="jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?serverTimezone=UTC&useSSL=false",
-USER="root",
-PASSWORD="12345678",
-PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="30000","maxLifetimeMilliseconds"="1800000","idleTimeoutMilliseconds"="60000","maxPoolSize"="50")
+
+REGISTER STORAGE UNIT ds_0 (
+URL='jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_0?serverTimezone=UTC&useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifetimeMilliseconds'='1800000', 'idleTimeoutMilliseconds'='60000', 'maxPoolSize'='50')
 ), ds_1 (
-URL="jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?serverTimezone=UTC&useSSL=false",
-USER="root",
-PASSWORD="12345678",
-PROPERTIES("minPoolSize"="1","connectionTimeoutMilliseconds"="30000","maxLifetimeMilliseconds"="1800000","idleTimeoutMilliseconds"="60000","maxPoolSize"="50")
+URL='jdbc:mysql://127.0.0.1:3306/demo_encrypt_ds_1?serverTimezone=UTC&useSSL=false',
+USER='root',
+PASSWORD='12345678',
+PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifetimeMilliseconds'='1800000', 'idleTimeoutMilliseconds'='60000', 'maxPoolSize'='50')
 );
+
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES', PROPERTIES("aes-key-value"="123456abc"))),
-(NAME=order_id,CIPHER=order_cipher,TYPE(NAME='MD5'))
+(NAME=user_id, PLAIN=user_plain, CIPHER=user_cipher, TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))),
+(NAME=order_id, CIPHER=order_cipher, TYPE(NAME='md5'))
 ),QUERY_WITH_CIPHER_COLUMN=true);

@@ -120,31 +120,33 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
-                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", prepareSelectStatement(), selectStatementContext));
+                .thenReturn(new MySQLServerPreparedStatement("select * from tbl where id = ?", selectStatementContext));
         UpdateStatementContext updateStatementContext = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
+        when(updateStatementContext.getSqlStatement()).thenReturn(prepareUpdateStatement());
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2))
-                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", prepareUpdateStatement(), updateStatementContext));
+                .thenReturn(new MySQLServerPreparedStatement("update tbl set col=1 where id = ?", updateStatementContext));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(3))
-                .thenReturn(new MySQLServerPreparedStatement("commit", new MySQLCommitStatement(), new CommonSQLStatementContext<>(new MySQLCommitStatement())));
+                .thenReturn(new MySQLServerPreparedStatement("commit", new CommonSQLStatementContext<>(new MySQLCommitStatement())));
     }
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        when(result.getResourceMetaData().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         when(result.getProtocolType()).thenReturn(new MySQLDatabaseType());
         return result;
-    }
-    
-    private MySQLSelectStatement prepareSelectStatement() {
-        MySQLSelectStatement sqlStatement = new MySQLSelectStatement();
-        sqlStatement.setProjections(new ProjectionsSegment(0, 0));
-        return sqlStatement;
     }
     
     private SQLStatementContext<?> prepareSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        when(result.getSqlStatement()).thenReturn(prepareSelectStatement());
+        return result;
+    }
+    
+    private MySQLSelectStatement prepareSelectStatement() {
+        MySQLSelectStatement result = new MySQLSelectStatement();
+        result.setProjections(new ProjectionsSegment(0, 0));
         return result;
     }
     

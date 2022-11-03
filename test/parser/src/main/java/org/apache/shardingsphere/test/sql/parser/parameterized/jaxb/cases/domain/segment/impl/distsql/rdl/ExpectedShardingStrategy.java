@@ -35,9 +35,6 @@ public final class ExpectedShardingStrategy extends AbstractExpectedIdentifierSQ
     @XmlAttribute(name = "sharding-column")
     private String shardingColumn;
     
-    @XmlAttribute(name = "sharding-algorithm-name")
-    private String shardingAlgorithmName;
-    
     @XmlElement(name = "algorithm-segment")
     private ExpectedAlgorithm algorithmSegment;
 }

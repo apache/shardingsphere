@@ -19,6 +19,9 @@ namespace
    ├     ├     ├     ├     ├──tables          # Table configuration
    ├     ├     ├     ├     ├     ├──${tableName} 
    ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├     ├──views          # View configuration
+   ├     ├     ├     ├     ├     ├──${viewName} 
+   ├     ├     ├     ├     ├     ├──...  
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # Metadata version list      
    ├     ├     ├     ├──${versionNumber}      # Metadata version

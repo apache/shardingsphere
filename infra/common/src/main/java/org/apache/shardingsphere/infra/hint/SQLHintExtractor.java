@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.hint;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -40,6 +42,12 @@ public final class SQLHintExtractor {
         sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
                 ? extract((AbstractSQLStatement) sqlStatement)
                 : DEFAULT_SQL_HINT_PROPERTIES;
+    }
+    
+    public SQLHintExtractor(final String sqlComment) {
+        sqlHintProperties = Strings.isNullOrEmpty(sqlComment)
+                ? DEFAULT_SQL_HINT_PROPERTIES
+                : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {
@@ -69,6 +77,15 @@ public final class SQLHintExtractor {
     }
     
     /**
+     * Judge whether is hint routed to shadow data source or not.
+     *
+     * @return whether is hint routed to shadow data source or not
+     */
+    public boolean isShadow() {
+        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHADOW_KEY);
+    }
+    
+    /**
      * Find hint disable audit names.
      *
      * @return disable audit names
@@ -88,12 +105,7 @@ public final class SQLHintExtractor {
         Object result = sqlHintProperties.getProps().containsKey(key)
                 ? sqlHintProperties.getProps().get(key)
                 : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
-        if (result instanceof Comparable) {
-            return (Comparable<?>) result;
-        }
-        return sqlHintProperties.getProps().containsKey(key)
-                ? sqlHintProperties.getProps().getProperty(key)
-                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY);
+        return result instanceof Comparable ? (Comparable<?>) result : Objects.toString(result);
     }
     
     /**
@@ -118,12 +130,7 @@ public final class SQLHintExtractor {
         Object result = sqlHintProperties.getProps().containsKey(key)
                 ? sqlHintProperties.getProps().get(key)
                 : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
-        if (result instanceof Comparable) {
-            return (Comparable<?>) result;
-        }
-        return sqlHintProperties.getProps().containsKey(key)
-                ? sqlHintProperties.getProps().getProperty(key)
-                : sqlHintProperties.getValue(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY);
+        return result instanceof Comparable ? (Comparable<?>) result : Objects.toString(result);
     }
     
     /**

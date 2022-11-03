@@ -12,35 +12,15 @@ ALTER DB_DISCOVERY RULE ruleDefinition [, ruleDefinition] ...
 
 DROP DB_DISCOVERY RULE ruleName [, ruleName] ...
 
-CREATE DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition [, databaseDiscoveryTypeDefinition] ...
-
-ALTER DB_DISCOVERY TYPE databaseDiscoveryTypeDefinition [, databaseDiscoveryTypeDefinition] ...
-
 DROP DB_DISCOVERY TYPE discoveryTypeName [, discoveryTypeName] ...
-
-CREATE DB_DISCOVERY HEARTBEAT databaseDiscoveryHeartbaetDefinition [, databaseDiscoveryHeartbaetDefinition] ...
-
-ALTER DB_DISCOVERY HEARTBEAT databaseDiscoveryHeartbaetDefinition [, databaseDiscoveryHeartbaetDefinition] ...
 
 DROP DB_DISCOVERY HEARTBEAT discoveryHeartbeatName [, discoveryHeartbeatName] ...
 
 ruleDefinition:
-    (databaseDiscoveryRuleDefinition | databaseDiscoveryRuleConstruction)
+    ruleName (storageUnits, typeDefinition, heartbeatDefinition)
 
-databaseDiscoveryRuleDefinition
-    ruleName (resources, typeDefinition, heartbeatDefinition)
-
-databaseDiscoveryRuleConstruction
-    ruleName (resources, TYPE = discoveryTypeName, HEARTBEAT = discoveryHeartbeatName)
-
-databaseDiscoveryTypeDefinition
-    discoveryTypeName (typeDefinition)
-
-databaseDiscoveryHeartbaetDefinition
-    discoveryHeartbeatName (PROPERTIES (properties)) 
-
-resources:
-    RESOURCES(resourceName [, resourceName] ...)
+storageUnits:
+    STORAGE_UNITS(storageUnitName [, storageUnitName] ...)
 
 typeDefinition:
     TYPE(NAME=typeName [, PROPERTIES([properties] )] )
@@ -56,13 +36,14 @@ property:
 ```
 
 ### 参数解释
-| 名称                     | 数据类型       | 说明                  |
-|:-----------------------|:-----------|:--------------------|
-| discoveryTypeName      | IDENTIFIER | 数据库发现类型名            |
-| ruleName               | IDENTIFIER | 规则名称                |
-| discoveryHeartbeatName | IDENTIFIER | 监听心跳名称              |
-| typeName               | STRING     | 数据库发现类型，如：MySQL.MGR |
-| resourceName           | IDENTIFIER | 资源名称                |
+
+| 名称                    | 数据类型    | 说明                          |
+|:-----------------------|:-----------|:-----------------------------|
+| discoveryTypeName      | IDENTIFIER | 数据库发现类型名                |
+| ruleName               | IDENTIFIER | 规则名称                       |
+| discoveryHeartbeatName | IDENTIFIER | 监听心跳名称                    |
+| typeName               | STRING     | 数据库发现类型，如：MySQL.MGR    |
+| storageUnitName        | IDENTIFIER | 资源名称                       |
 
 ### 注意事项
 
@@ -78,13 +59,13 @@ property:
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='246e9612-aaf1')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -94,43 +75,4 @@ DROP DB_DISCOVERY RULE db_discovery_group_0;
 DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 
 DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
-
-```
-
-### 使用已有的 `discoveryType` 和 `discoveryHeartbeat` 创建 `discoveryRule`
-
-```sql
-CREATE DB_DISCOVERY TYPE db_discovery_group_1_mgr(
-  TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec'))
-);
-
-CREATE DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
-  PROPERTIES('keep-alive-cron'='0/5 * * * * ?')
-);
-
-CREATE DB_DISCOVERY RULE db_discovery_group_1 (
-RESOURCES(ds_0, ds_1, ds_2),
-TYPE=db_discovery_group_1_mgr,
-HEARTBEAT=db_discovery_group_1_heartbeat
-);
-
-ALTER DB_DISCOVERY TYPE db_discovery_group_1_mgr(
-  TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='246e9612-aaf1'))
-);
-
-ALTER DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
-  PROPERTIES('keep-alive-cron'='0/10 * * * * ?')
-);
-
-ALTER DB_DISCOVERY RULE db_discovery_group_1 (
-RESOURCES(ds_0, ds_1),
-TYPE=db_discovery_group_1_mgr,
-HEARTBEAT=db_discovery_group_1_heartbeat
-);
-
-DROP DB_DISCOVERY RULE db_discovery_group_1;
-
-DROP DB_DISCOVERY TYPE db_discovery_group_1_mgr;
-
-DROP DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat;
 ```

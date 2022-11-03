@@ -77,10 +77,10 @@ public final class InsertValueContext {
     public Optional<Object> getLiteralValue(final int index) {
         ExpressionSegment valueExpression = valueExpressions.get(index);
         if (valueExpression instanceof ParameterMarkerExpressionSegment) {
-            return Optional.of(parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)));
+            return Optional.ofNullable(parameters.get(getParameterIndex((ParameterMarkerExpressionSegment) valueExpression)));
         }
         if (valueExpression instanceof LiteralExpressionSegment) {
-            return Optional.of(((LiteralExpressionSegment) valueExpression).getLiterals());
+            return Optional.ofNullable(((LiteralExpressionSegment) valueExpression).getLiterals());
         }
         return Optional.empty();
     }

@@ -18,8 +18,8 @@
 
 <sql-parser-test-cases>
     <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
-    <add-sharding-hint-database-value sql-case-id="add-sharding-hint-database-value" />
-    <add-sharding-hint-table-value sql-case-id="add-sharding-hint-table-value" />
+    <add-sharding-hint-database-value sql-case-id="add-sharding-hint-database-value" logic-table-name="T_ORDER" sharding-value="1"/>
+    <add-sharding-hint-table-value sql-case-id="add-sharding-hint-table-value" logic-table-name="T_ORDER" sharding-value="1"/>
     <set-sharding-hint-database-value sql-case-id="set-sharding-hint-database-value" />
     <clear-sharding-hint sql-case-id="clear-sharding-hint" />
     

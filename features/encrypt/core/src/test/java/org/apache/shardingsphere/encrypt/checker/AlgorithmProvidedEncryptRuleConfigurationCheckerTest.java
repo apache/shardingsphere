@@ -51,7 +51,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
     private AlgorithmProvidedEncryptRuleConfiguration createValidConfiguration() {
         AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.singletonMap("aes_encryptor", mock(EncryptAlgorithm.class)));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "aes_encryptor", false));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "aes_encryptor", false));
         when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
         return result;
     }
@@ -69,7 +69,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
     private AlgorithmProvidedEncryptRuleConfiguration createInvalidCipherColumnConfig() {
         AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "aes_encryptor", false));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "aes_encryptor", false));
         when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
         return result;
     }
@@ -88,7 +88,26 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
         AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
         Collection<EncryptColumnRuleConfiguration> columns =
-                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "user_plain", "aes_encryptor", "aes_assisted_encryptor", false));
+                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "", "user_plain", "aes_encryptor", "aes_assisted_encryptor", null, false));
+        when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test(expected = IllegalStateException.class)
+    public void assertCheckWhenConfigInvalidFuzzyColumn() {
+        AlgorithmProvidedEncryptRuleConfiguration config = createInvalidFuzzyColumnConfig();
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
+        assertTrue(checker.isPresent());
+        assertThat(checker.get(), instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
+    }
+    
+    private AlgorithmProvidedEncryptRuleConfiguration createInvalidFuzzyColumnConfig() {
+        AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
+        when(result.getEncryptors()).thenReturn(Collections.emptyMap());
+        Collection<EncryptColumnRuleConfiguration> columns =
+                Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "user_fuzzy", "user_plain", "aes_encryptor", null, "fuzzy_cn_encryptor", false));
         when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
         return result;
     }

@@ -88,7 +88,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
         assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
-        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_algorithm"));
         assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -113,7 +113,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
         assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
-        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_algorithm"));
         assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -138,7 +138,7 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
         assertThat(tableRule.getActualDataNodes(), is("ds_${0..1}.t_order${0..1}"));
         assertThat(tableRule.getTableShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(((StandardShardingStrategyConfiguration) tableRule.getTableShardingStrategy()).getShardingColumn(), is("product_id"));
-        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_algorithm"));
+        assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_item_table_algorithm"));
         assertThat(tableRule.getDatabaseShardingStrategy(), instanceOf(StandardShardingStrategyConfiguration.class));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_item_database_inline"));
         assertThat(currentRuleConfig.getTables().size(), is(1));
@@ -161,9 +161,9 @@ public final class AlterShardingTableRuleStatementUpdaterTest {
     
     private TableRuleSegment createCompleteTableRule(final String logicTableName) {
         TableRuleSegment result = new TableRuleSegment(logicTableName, Collections.singletonList("ds_${0..1}.t_order${0..1}"));
-        result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", "t_order_algorithm", null));
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "product_id", new AlgorithmSegment("algorithm", new Properties())));
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", createProperties("algorithm-expression", "ds_${user_id% 2}"));
-        result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", null, databaseAlgorithmSegment));
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("standard", "product_id", databaseAlgorithmSegment));
         result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         return result;
     }
