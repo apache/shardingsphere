@@ -30,7 +30,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>mixed-feature-example</module>
         <module>single-feature-example</module>
     </modules>
     
