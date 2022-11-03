@@ -36,10 +36,9 @@ import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersis
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.CuratorZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionListener;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -50,9 +49,9 @@ import org.apache.zookeeper.data.ACL;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Comparator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -67,7 +66,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     private CuratorFramework client;
     
-    private DistributedLockProvider distributedLockProvider;
+    private DistributedLockHolder distributedLockHolder;
     
     private InstanceMetaData instanceMetaData;
     
@@ -76,7 +75,7 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
         this.instanceMetaData = instanceMetaData;
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        distributedLockProvider = new CuratorZookeeperDistributedLockProvider(client);
+        distributedLockHolder = new DistributedLockHolder(getType(), client, zookeeperProps);
         initCuratorClient(zookeeperProps);
     }
     
@@ -276,12 +275,12 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return distributedLockProvider.getDistributedLock(lockKey).tryLock(timeoutMillis);
+        return distributedLockHolder.getDistributedLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override
     public void unlock(final String lockKey) {
-        distributedLockProvider.getDistributedLock(lockKey).unlock();
+        distributedLockHolder.getDistributedLock(lockKey).unlock();
     }
     
     @Override

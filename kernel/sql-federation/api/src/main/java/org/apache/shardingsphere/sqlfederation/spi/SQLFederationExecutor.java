@@ -42,11 +42,11 @@ public interface SQLFederationExecutor extends TypedSPI, RequiredSPI, AutoClosea
      * @param databaseName database name
      * @param schemaName schema name
      * @param metaData ShardingSphere meta data
-     * @param shardingSphereData ShardingSphere data
+     * @param data ShardingSphere data
      * @param jdbcExecutor jdbc executor
      * @param eventBusContext event bus context
      */
-    void init(String databaseName, String schemaName, ShardingSphereMetaData metaData, ShardingSphereData shardingSphereData, JDBCExecutor jdbcExecutor, EventBusContext eventBusContext);
+    void init(String databaseName, String schemaName, ShardingSphereMetaData metaData, ShardingSphereData data, JDBCExecutor jdbcExecutor, EventBusContext eventBusContext);
     
     /**
      * Execute query.

@@ -19,10 +19,9 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobItemAPI;
 
 /**
  * Consistency check job API.
  */
-public interface ConsistencyCheckJobAPI extends ConsistencyCheckJobPublicAPI, PipelineJobAPI, PipelineJobItemAPI {
+public interface ConsistencyCheckJobAPI extends ConsistencyCheckJobPublicAPI, PipelineJobAPI {
 }

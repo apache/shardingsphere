@@ -34,13 +34,13 @@ import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.CuratorZookeeperDistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.data.Stat;
@@ -70,6 +70,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -114,16 +115,13 @@ public final class CuratorZookeeperRepositoryTest {
     @Mock
     private Builder builder;
     
-    @Mock
-    private InterProcessLock interProcessLock;
-    
     @Before
     public void init() {
         mockClient();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
         REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
-        mockInternalLockHolder();
+        mockDistributedLockHolder();
     }
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
@@ -143,14 +141,14 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void mockInternalLockHolder() {
-        Field internalLockProviderFiled = CuratorZookeeperRepository.class.getDeclaredField("distributedLockProvider");
-        internalLockProviderFiled.setAccessible(true);
-        CuratorZookeeperDistributedLockProvider distributedLockProvider = new CuratorZookeeperDistributedLockProvider(client);
-        Field locksFiled = CuratorZookeeperDistributedLockProvider.class.getDeclaredField("locks");
+    private void mockDistributedLockHolder() {
+        Field distributedLockHolderField = CuratorZookeeperRepository.class.getDeclaredField("distributedLockHolder");
+        distributedLockHolderField.setAccessible(true);
+        DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
+        Field locksFiled = DistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(distributedLockProvider, Collections.singletonMap("/locks/glock", new CuratorZookeeperDistributedLock(interProcessLock)));
-        internalLockProviderFiled.set(REPOSITORY, distributedLockProvider);
+        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));
+        distributedLockHolderField.set(REPOSITORY, distributedLockHolder);
     }
     
     private void mockBuilder() {

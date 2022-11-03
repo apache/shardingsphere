@@ -29,6 +29,6 @@ public final class MissingRequiredResourcesException extends ResourceDefinitionV
     private static final long serialVersionUID = 1704331180489268L;
     
     public MissingRequiredResourcesException(final String databaseName, final Collection<String> resourceNames) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Resources `%s` do not exist in database `%s`.", resourceNames, databaseName);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Storage units `%s` do not exist in database `%s`.", resourceNames, databaseName);
     }
 }

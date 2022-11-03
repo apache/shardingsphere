@@ -35,13 +35,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.etcd.lock.EtcdDistributedLockProvider;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdProperties;
 import org.apache.shardingsphere.mode.repository.cluster.etcd.props.EtcdPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockProvider;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLockHolder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -57,7 +56,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
     
     private EtcdProperties etcdProps;
     
-    private DistributedLockProvider distributedLockHolder;
+    private DistributedLockHolder distributedLockHolder;
     
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
@@ -66,7 +65,7 @@ public final class EtcdRepository implements ClusterPersistRepository {
                 .namespace(ByteSequence.from(config.getNamespace(), StandardCharsets.UTF_8))
                 .maxInboundMessageSize((int) 32e9)
                 .build();
-        distributedLockHolder = new EtcdDistributedLockProvider(client, etcdProps);
+        distributedLockHolder = new DistributedLockHolder(getType(), client, etcdProps);
     }
     
     @SneakyThrows({InterruptedException.class, ExecutionException.class})

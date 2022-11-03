@@ -144,7 +144,7 @@ variableValues
     ;
 
 variableValue
-    : STRING | (MINUS)? INT | TRUE | FALSE
+    : literal
     ;
 
 instanceId

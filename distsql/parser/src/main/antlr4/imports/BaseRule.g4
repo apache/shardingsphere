@@ -19,6 +19,10 @@ grammar BaseRule;
 
 import Symbol, Keyword, Literals;
 
+literal
+    : STRING | (MINUS)? INT | TRUE | FALSE
+    ;
+
 algorithmDefinition
     : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
     ;
@@ -36,7 +40,7 @@ properties
     ;
 
 property
-    : key=STRING EQ value=STRING
+    : key=STRING EQ value=literal
     ;
 
 databaseName

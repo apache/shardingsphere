@@ -19,12 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,15 +35,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
-    
-    private final String resourceFilePath = "/conf/convert/config-resource.yaml";
+public final class ConvertYamlConfigurationHandlerTest {
     
     private final String shardingFilePath = "/conf/convert/config-sharding.yaml";
     
@@ -58,8 +52,6 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     
     private final String shadowFilePath = "/conf/convert/config-shadow.yaml";
     
-    private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
-    
     private final String shardingExpectedFilePath = "/expected/convert-create-sharding.yaml";
     
     private final String readWriteSplittingExpectedFilePath = "/expected/convert-readwrite-splitting.yaml";
@@ -69,8 +61,6 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     private final String encryptExpectedFilePath = "/expected/convert-create-encrypt.yaml";
     
     private final String shadowExpectedFilePath = "/expected/convert-create-shadow.yaml";
-    
-    private final String resource = "resource";
     
     private final String sharding = "sharding";
     
@@ -86,7 +76,6 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
     
     @Before
     public void setup() {
-        featureMap.put(resource, resourceFilePath);
         featureMap.put(sharding, shardingFilePath);
         featureMap.put(readWriteSplitting, readWriteSplittingFilePath);
         featureMap.put(databaseDiscovery, databaseDiscoveryFilePath);
@@ -94,39 +83,28 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
         featureMap.put(shadow, shadowFilePath);
     }
     
-    @Before
-    public void init() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ProxyContext.init(contextManager);
-    }
-    
     @Test
-    public void assertExecuteWithAddResource() throws SQLException {
-        assertExecute(resource, resourceExpectedFilePath);
-    }
-    
-    @Test
-    public void assertExecuteWithCreateSharding() throws SQLException {
+    public void assertExecuteWithSharding() throws SQLException {
         assertExecute(sharding, shardingExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateReadWriteSplitting() throws SQLException {
+    public void assertExecuteWithReadWriteSplitting() throws SQLException {
         assertExecute(readWriteSplitting, readWriteSplittingExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateDatabaseDiscovery() throws SQLException {
+    public void assertExecuteWithDatabaseDiscovery() throws SQLException {
         assertExecute(databaseDiscovery, databaseDiscoveryExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateEncrypt() throws SQLException {
+    public void assertExecuteWithEncrypt() throws SQLException {
         assertExecute(encrypt, encryptExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateShadow() throws SQLException {
+    public void assertExecuteWithShadow() throws SQLException {
         assertExecute(shadow, shadowExpectedFilePath);
     }
     
@@ -174,7 +152,7 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#") && !line.trim().isEmpty()) {
+                if (!line.startsWith("#")) {
                     result.append(line).append(System.lineSeparator());
                 }
             }

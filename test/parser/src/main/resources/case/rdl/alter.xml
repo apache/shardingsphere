@@ -17,51 +17,51 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-resource sql-case-id="alter-resource-simple-single-without-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-without-password">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-simple-single-with-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-with-password">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-simple-multiple">
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-multiple">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-without-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-without-password">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-with-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-password">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-multiple">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-multiple">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
         <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-single-with-properties">
+    <alter-storage-unit sql-case-id="alter-storage-unit-single-with-properties">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
             </properties>
         </data-source>
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-with-empty-properties">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-empty-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-with-properties">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
             </properties>
         </data-source>
-    </alter-resource>
+    </alter-storage-unit>
     
     <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
@@ -90,7 +90,7 @@
 
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}</data-source>
+            <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -111,7 +111,7 @@
 
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-complex">
         <rule name="t_order" key-generate-strategy-column="another_id">
-            <data-source>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-source>
+            <data-node>ms_group_${0..1}_${0..1}.t_order_${0..1}</data-node>
             <table-strategy type="standard" sharding-column="user_id">
                 <algorithm-segment algorithm-name="INLINE">
                     <properties>
@@ -261,8 +261,6 @@
         </sharding-auditor>
     </alter-sharding-auditor>
     
-    <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
-
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
             <algorithm-segment algorithm-name="INLINE">

@@ -40,15 +40,7 @@ dropDatabaseDiscoveryHeartbeat
     ;
 
 databaseDiscoveryRule
-    : ruleName LP storageUnits COMMA typeDefinition COMMA discoveryHeartbeat RP
-    ;
-
-databaseDiscoveryTypeDefinition
-    : discoveryTypeName LP typeDefinition RP
-    ;
-
-heartbeatDefinition
-    : discoveryHeartbeatName LP PROPERTIES LP properties RP RP  
+    : ruleName LP storageUnits COMMA algorithmDefinition COMMA discoveryHeartbeat RP
     ;
 
 ruleName
@@ -63,24 +55,8 @@ storageUnitName
     : IDENTIFIER
     ;
 
-typeDefinition
-    : TYPE LP NAME EQ discoveryType (COMMA PROPERTIES LP properties RP)? RP
-    ;
-
 discoveryHeartbeat
-    : HEARTBEAT LP PROPERTIES LP properties RP RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=(NUMBER | INT | STRING)
-    ;
-
-discoveryType
-    : STRING
+    : HEARTBEAT LP propertiesDefinition RP
     ;
 
 discoveryTypeName

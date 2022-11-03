@@ -44,7 +44,7 @@ resourceName
     ;
 
 encryptColumnDefinition
-    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? COMMA algorithmDefinition (COMMA algorithmDefinition)? RP
+    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? (COMMA fuzzyQueryColumnDefinition)? COMMA algorithmDefinition (COMMA algorithmDefinition)? (COMMA algorithmDefinition)? RP
     ;
 
 columnDefinition
@@ -83,20 +83,12 @@ assistedQueryColumnName
     : IDENTIFIER
     ;
 
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
+fuzzyQueryColumnDefinition
+    : FUZZY_QUERY_COLUMN EQ fuzzyQueryColumnName (COMMA FUZZY_QUERY_DATA_TYPE EQ dataType)?
     ;
 
-algorithmName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
+fuzzyQueryColumnName
+    : IDENTIFIER
     ;
     
 queryWithCipherColumn

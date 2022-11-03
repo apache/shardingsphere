@@ -70,7 +70,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private ConfigurationProperties props;
     
-    private ShardingSphereData shardingSphereData;
+    private ShardingSphereData data;
     
     private JDBCExecutor jdbcExecutor;
     
@@ -90,12 +90,12 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     @Override
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData,
-                     final ShardingSphereData shardingSphereData, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
+                     final ShardingSphereData data, final JDBCExecutor jdbcExecutor, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
         this.schemaName = schemaName;
         this.optimizerContext = OptimizerContextFactory.create(metaData.getDatabases(), metaData.getGlobalRuleMetaData());
         this.globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        this.shardingSphereData = shardingSphereData;
+        this.data = data;
         this.props = metaData.getProps();
         this.jdbcExecutor = jdbcExecutor;
         this.eventBusContext = eventBusContext;
@@ -122,7 +122,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         TableScanExecutorContext executorContext = new TableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData,
-                executorContext, shardingSphereData, eventBusContext);
+                executorContext, data, eventBusContext);
         FilterableDatabase database = new FilterableDatabase(federationContext.getDatabases().get(databaseName.toLowerCase()), JAVA_TYPE_FACTORY, executor);
         // TODO support database.schema.table query when switch to AdvancedFederationExecutor, calcite jdbc just support schema.table query now
         connection.getRootSchema().add(schemaName, database.getSubSchema(schemaName));
