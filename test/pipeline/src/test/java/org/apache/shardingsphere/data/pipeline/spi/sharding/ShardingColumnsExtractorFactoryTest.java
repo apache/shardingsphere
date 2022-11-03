@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.util;
+package org.apache.shardingsphere.data.pipeline.spi.sharding;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.data.pipeline.ShardingColumnsExtractorImpl;
+import org.junit.Test;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+public final class ShardingColumnsExtractorFactoryTest {
     
-    private final AtomicInteger idGen = new AtomicInteger(1);
-    
-    @Override
-    public Integer generateKey() {
-        return idGen.getAndIncrement();
-    }
-    
-    @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void init(final Properties props) {
+    @Test
+    public void assertGetInstance() {
+        assertThat(ShardingColumnsExtractorFactory.getInstance(), instanceOf(ShardingColumnsExtractorImpl.class));
     }
 }

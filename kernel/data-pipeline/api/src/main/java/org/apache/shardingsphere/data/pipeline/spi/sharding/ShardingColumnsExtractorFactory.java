@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.util;
+package org.apache.shardingsphere.data.pipeline.spi.sharding;
 
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
+/**
+ * Sharding columns extractor factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingColumnsExtractorFactory {
     
-    private final AtomicInteger idGen = new AtomicInteger(1);
-    
-    @Override
-    public Integer generateKey() {
-        return idGen.getAndIncrement();
+    static {
+        ShardingSphereServiceLoader.register(ShardingColumnsExtractor.class);
     }
     
-    @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void init(final Properties props) {
+    /**
+     * Get sharding columns extractor instance.
+     *
+     * @return sharding columns extractor
+     */
+    public static ShardingColumnsExtractor getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(ShardingColumnsExtractor.class);
     }
 }
