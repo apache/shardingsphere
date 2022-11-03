@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -147,7 +148,7 @@ public final class CuratorZookeeperRepositoryTest {
         DistributedLockHolder distributedLockHolder = new DistributedLockHolder("Zookeeper", client, new ZookeeperProperties(new Properties()));
         Field locksFiled = DistributedLockHolder.class.getDeclaredField("locks");
         locksFiled.setAccessible(true);
-        locksFiled.set(distributedLockHolder, Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class)));
+        locksFiled.set(distributedLockHolder, new ConcurrentHashMap<>(Collections.singletonMap("/locks/glock", mock(CuratorZookeeperDistributedLock.class))));
         distributedLockHolderField.set(REPOSITORY, distributedLockHolder);
     }
     
