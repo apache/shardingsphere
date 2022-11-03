@@ -80,7 +80,7 @@ public final class SchemaMetaDataLoaderEngine {
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
                 return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
-            } catch (final SQLException ex) {
+            } catch (final Exception ex) {
                 log.error("Dialect load schema meta data error.", ex);
             }
         }
