@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -48,31 +47,50 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    private static LinkedList<Map<String, Object>> getResponse(final String sqlCaseURL) throws IOException {
+    private static String[] getContentLines(final String url) throws IOException {
+        InputStreamReader in = new InputStreamReader(new URL(url).openStream());
+        String content = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
+        return content.split("\n");
+    }
+    
+    private static LinkedList<Map<String, String>> getResponse(final String sqlCaseURL) throws IOException {
+        LinkedList<Map<String, String>> result = new LinkedList<>();
         String[] patches = sqlCaseURL.split("/", 8);
         String sqlCasesOwner = patches[3];
         String sqlCasesRepo = patches[4];
         String sqlCasesDirectory = patches[7];
-        String url = "https://api.github.com/repos/" + sqlCasesOwner + "/" + sqlCasesRepo + "/contents/" + sqlCasesDirectory;
-        return new JsonMapper().readValue(new URL(url), new TypeReference<LinkedList<Map<String, Object>>>() {
-        });
+        String sqlCasesAPI = "https://api.github.com/repos/" + sqlCasesOwner + "/" + sqlCasesRepo + "/contents/" + sqlCasesDirectory;
+        String[] lines = getContentLines(sqlCasesAPI);
+        String nameItem = null;
+        String downloadURLItem = null;
+        for (String each : lines) {
+            if (each.contains("name")) {
+                nameItem = each.split("\"")[3];
+            } else if (each.contains("download_url")) {
+                downloadURLItem = each.split("\"")[3];
+            }
+            if (nameItem != null && downloadURLItem != null) {
+                result.add(ImmutableMap.of("name", nameItem, "download_url", downloadURLItem));
+                nameItem = null;
+                downloadURLItem = null;
+            }
+        }
+        return result;
     }
     
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
-        List<Map<String, Object>> response = getResponse(sqlCaseURL);
-        for (Map<String, Object> each : response) {
+        List<Map<String, String>> response = getResponse(sqlCaseURL);
+        for (Map<String, String> each : response) {
             result.addAll(getSqlCases(each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getSqlCases(final Map<String, Object> elements) throws IOException {
+    private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
-        String sqlCaseFileName = elements.get("name").toString();
-        InputStreamReader inputStreamReader = new InputStreamReader(new URL(elements.get("download_url").toString()).openStream());
-        String sqlCaseFileContent = new BufferedReader(inputStreamReader).lines().collect(Collectors.joining(System.lineSeparator()));
-        String[] lines = sqlCaseFileContent.split("\n");
+        String sqlCaseFileName = elements.get("name");
+        String[] lines = getContentLines(elements.get("download_url"));
         int sqlCaseEnum = 1;
         for (String each : lines) {
             if (each.isEmpty()) {
