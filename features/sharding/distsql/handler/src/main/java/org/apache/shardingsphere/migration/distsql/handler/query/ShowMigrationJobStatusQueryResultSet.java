@@ -19,7 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -45,35 +45,24 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = JOB_API.getJobProgress(((ShowMigrationStatusStatement) sqlStatement).getJobId());
-        data = jobProgress.entrySet().stream()
-                .map(entry -> {
-                    Collection<Object> result = new LinkedList<>();
-                    result.add(entry.getKey());
-                    if (null != entry.getValue()) {
-                        result.add(entry.getValue().getDataSourceName());
-                        result.add(entry.getValue().getStatus());
-                        result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                        result.add(entry.getValue().getProcessedRecordsCount());
-                        result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
-                        String incrementalIdleSeconds = "";
-                        if (entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
-                            long latestActiveTimeMillis = Math.max(entry.getValue().getStartTimeMillis(), entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis());
-                            incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
-                        }
-                        result.add(incrementalIdleSeconds);
-                        result.add(entry.getValue().getErrorMessage());
-                    } else {
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                        result.add("");
-                    }
-                    return result;
-                }).collect(Collectors.toList()).iterator();
+        List<InventoryIncrementalJobItemProgressInfo> jobProgress = JOB_API.getJobProgressInfos(((ShowMigrationStatusStatement) sqlStatement).getJobId());
+        data = jobProgress.stream().map(each -> {
+            Collection<Object> result = new LinkedList<>();
+            result.add(each.getShardingItem());
+            result.add(each.getDataSourceName());
+            result.add(each.getStatus());
+            result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+            result.add(each.getProcessedRecordsCount());
+            result.add(each.getInventoryFinishedPercentage());
+            String incrementalIdleSeconds = "";
+            if (each.getIncrementalLatestActiveTimeMillis() > 0) {
+                long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), each.getIncrementalLatestActiveTimeMillis());
+                incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+            }
+            result.add(incrementalIdleSeconds);
+            result.add(each.getErrorMessage());
+            return result;
+        }).collect(Collectors.toList()).iterator();
     }
     
     @Override
