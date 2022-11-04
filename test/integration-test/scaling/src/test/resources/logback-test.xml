@@ -27,6 +27,7 @@
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
     <logger name="com.github.dockerjava" level="WARN"/>
     <logger name="org.apache.zookeeper.ZooKeeper" level="OFF"/>
+    <logger name="org.apache.zookeeper.ClientCnxn" level="ERROR"/>
     
     <root level="INFO">
         <appender-ref ref="console" />

@@ -32,6 +32,7 @@
         <appender-ref ref="console" />
     </logger>
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
+    <logger name="org.apache.zookeeper.ZooKeeper" level="WARN"/>
     <root>
         <level value="WARN" />
         <appender-ref ref="console" />

@@ -46,11 +46,10 @@ public class ScalingWatcher extends TestWatcher {
     protected void failed(final Throwable e, final Description description) {
         if (containerComposer instanceof NativeContainerComposer) {
             super.failed(e, description);
-            return;
         }
-        outputZookeeperData();
     }
     
+    // TODO now the metadata mistake is not reproduce, but keep this method, it may be used again later
     private void outputZookeeperData() {
         DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
         DatabaseType databaseType = dockerContainerComposer.getStorageContainer().getDatabaseType();
