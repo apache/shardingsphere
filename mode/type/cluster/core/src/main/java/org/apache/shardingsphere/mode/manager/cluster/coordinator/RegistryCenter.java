@@ -70,7 +70,7 @@ public final class RegistryCenter {
         this.databaseConfigs = databaseConfigs;
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
-        lockPersistService = new ClusterLockPersistService(repository);
+        lockPersistService = new ClusterLockPersistService(repository.getDistributedLockHolder());
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
         createSubscribers(repository);
     }

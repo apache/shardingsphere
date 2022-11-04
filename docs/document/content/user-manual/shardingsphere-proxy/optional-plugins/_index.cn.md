@@ -20,7 +20,7 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 PostgresSQL 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`，用于 ShardingSphere-Proxy 解析与适配访问数据库的协议的 openGauss 实现
 - `org.apache.shardingsphere:shardingsphere-proxy-backend`，ShardingSphere Proxy 的后端
-- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper-curator`，集群模式配置信息持久化定义的 zookeeper 实现 
+- `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-zookeeper`，集群模式配置信息持久化定义的 zookeeper 实现 
 - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-etcd`，集群模式配置信息持久化定义的 etcd 实现
 - `org.apache.shardingsphere:shardingsphere-jdbc-core`
 
