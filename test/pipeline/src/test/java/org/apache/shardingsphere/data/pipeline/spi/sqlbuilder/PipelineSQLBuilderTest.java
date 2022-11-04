@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.sqlbuilder;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,24 +34,22 @@ public final class PipelineSQLBuilderTest {
     
     private final PipelineSQLBuilder pipelineSQLBuilder = new FixturePipelineSQLBuilder();
     
-    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder().put(new LogicTableName("t2"), Collections.singleton("sc")).build();
-    
     @Test
     public void assertBuildInsertSQL() {
-        String actual = pipelineSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"), shardingColumnsMap);
+        String actual = pipelineSQLBuilder.buildInsertSQL(null, mockDataRecord("t2"));
         assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?)"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithPrimaryKey() {
-        String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")), shardingColumnsMap);
+        String actual = pipelineSQLBuilder.buildUpdateSQL(null, mockDataRecord("t2"), RecordUtil.extractPrimaryColumns(mockDataRecord("t2")));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ?"));
     }
     
     @Test
     public void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
-        String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord), shardingColumnsMap);
+        String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
         assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? and sc = ?"));
     }
     

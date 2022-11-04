@@ -17,17 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,17 +32,15 @@ public final class MySQLPipelineSQLBuilderTest {
     
     private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
     
-    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder().put(new LogicTableName("t2"), Collections.singleton("sc")).build();
-    
     @Test
     public void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"), shardingColumnsMap);
-        assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE sc=VALUES(sc),c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
+        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"));
+        assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
     public void assertBuildInsertSQLHasShardingColumn() {
-        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t2"), shardingColumnsMap);
+        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t2"));
         assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
