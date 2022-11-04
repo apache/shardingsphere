@@ -23,8 +23,6 @@
 
 databaseName: sharding_db
 rules:
-  - !TRANSACTION
-    defaultType: LOCAL
   - !SHARDING
     tables:
       t_order:
@@ -94,6 +92,3 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
-
-props:
-  sql-show: false

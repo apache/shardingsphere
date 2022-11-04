@@ -17,31 +17,28 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
 
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * MySQL rows loader.
+ * Dialect query result data row loader.
  */
-public final class MySQLRowsLoader extends AbstractJDBCRowsLoader {
+@SingletonSPI
+public interface DialectQueryResultDataRowLoader extends TypedSPI, RequiredSPI {
     
-    private static final String YEAR_DATA_TYPE = "YEAR";
-    
-    @Override
-    protected Object getDate(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
-            Object result = resultSet.getObject(columnIndex);
-            return resultSet.wasNull() ? null : result;
-        }
-        return resultSet.getDate(columnIndex);
-    }
-    
-    private static boolean isYearDataType(final String columnDataTypeName) {
-        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
-    }
+    /**
+     * Load rows.
+     *
+     * @param columnCount column count
+     * @param resultSet result set of JDBC
+     * @return query result data rows
+     * @throws SQLException SQL exception
+     */
+    Collection<MemoryQueryResultDataRow> load(int columnCount, ResultSet resultSet) throws SQLException;
 }

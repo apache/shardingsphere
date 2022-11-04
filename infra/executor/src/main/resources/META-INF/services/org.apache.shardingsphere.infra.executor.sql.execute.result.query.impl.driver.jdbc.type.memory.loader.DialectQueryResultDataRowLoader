@@ -15,5 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.DefaultRowsLoader
-org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.MySQLRowsLoader
+org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.DefaultQueryResultDataRowLoader
+org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.MySQLQueryResultDataRowLoader
+org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.OpenGuassQueryResultDataRowLoader
+org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect.PostgreSQLQueryResultDataRowLoader

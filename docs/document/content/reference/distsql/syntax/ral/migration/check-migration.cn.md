@@ -23,9 +23,9 @@ migrationCheckAlgorithmType ::=
 
 ### 补充说明
 
-- `migrationJobId` 需要通过 `SHOW MIGRATION LIST` 语法查询获得
+- `migrationJobId` 需要通过 [SHOW MIGRATION LIST](/cn/reference/distsql/syntax/ral/migration/show-migration-list/) 语法查询获得
 
-- `migrationCheckAlgorithmType` 需要通过 `SHOW MIGRATION CHECK ALGORITHMS` 语法查询获得
+- `migrationCheckAlgorithmType` 需要通过 [SHOW MIGRATION CHECK ALGORITHMS](/cn/reference/distsql/syntax/ral/migration/show-migration-check-algorithm/) 语法查询获得
 
 ### 示例
 
@@ -42,3 +42,5 @@ CHECK MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6' BY TYPE (NAME='CRC32_MAT
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [SHOW MIGRATION LIST](/cn/reference/distsql/syntax/ral/migration/show-migration-list/)
+- [SHOW MIGRATION CHECK ALGORITHMS](/cn/reference/distsql/syntax/ral/migration/show-migration-check-algorithm/)

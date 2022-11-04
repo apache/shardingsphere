@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
+--
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+--
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+DROP DATABASE IF EXISTS transaction_it_0;
+CREATE DATABASE transaction_it_0;
 
-/**
- * Default rows loader.
- */
-public final class DefaultRowsLoader extends AbstractJDBCRowsLoader {
-    
-    @Override
-    protected Object getDate(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        return resultSet.getDate(columnIndex);
-    }
-    
-    @Override
-    public String getType() {
-        return "Default";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
-}
+DROP DATABASE IF EXISTS transaction_it_1;
+CREATE DATABASE transaction_it_1;
+
+DROP DATABASE IF EXISTS transaction_it_2;
+CREATE DATABASE transaction_it_2;

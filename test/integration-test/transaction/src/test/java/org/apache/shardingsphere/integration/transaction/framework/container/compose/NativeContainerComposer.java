@@ -28,6 +28,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
     private final DatabaseType databaseType;
     
     public NativeContainerComposer(final DatabaseType databaseType) {
+        super("");
         this.databaseType = databaseType;
     }
     

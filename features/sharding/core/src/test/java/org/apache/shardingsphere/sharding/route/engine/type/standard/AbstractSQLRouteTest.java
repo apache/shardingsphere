@@ -72,16 +72,16 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
     private Map<String, ShardingSphereSchema> buildSchemas() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
-        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true)), Collections.emptyList(), Collections.emptyList()));
-        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true),
-                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true),
-                new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false),
+                new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_other", new ShardingSphereTable("t_other", Collections.singletonList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true)), Collections.emptyList(), Collections.emptyList()));
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_category", new ShardingSphereTable("t_category", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereSchema(tables, Collections.emptyMap()));
     }
