@@ -26,7 +26,6 @@ import org.junit.Assert;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * PostgreSQL set read only transaction integration test.
