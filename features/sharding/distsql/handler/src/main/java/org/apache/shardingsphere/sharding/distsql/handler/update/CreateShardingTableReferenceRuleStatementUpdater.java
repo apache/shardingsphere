@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
 
@@ -45,6 +46,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeCreatedBindingTables(databaseName, sqlStatement, currentRuleConfig);
         checkToBeCreatedDuplicateBindingTables(databaseName, sqlStatement, currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkBindingTableConfiguration((buildToBeCreatedRuleConfiguration(sqlStatement)).getBindingTableGroups(), currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
