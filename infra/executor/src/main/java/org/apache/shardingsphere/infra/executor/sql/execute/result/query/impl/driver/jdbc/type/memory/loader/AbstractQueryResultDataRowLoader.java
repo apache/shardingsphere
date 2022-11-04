@@ -30,9 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Abstract JDBC rows loader.
+ * Abstract dialect query result data row loader.
  */
-public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
+public abstract class AbstractQueryResultDataRowLoader implements DialectQueryResultDataRowLoader {
     
     @Override
     public Collection<MemoryQueryResultDataRow> load(final int columnCount, final ResultSet resultSet) throws SQLException {
@@ -56,7 +56,7 @@ public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
                 return resultSet.getBoolean(columnIndex);
             case Types.TINYINT:
             case Types.SMALLINT:
-                return resultSet.getInt(columnIndex);
+                return getSmallintValue(resultSet, columnIndex);
             case Types.INTEGER:
                 if (metaData.isSigned(columnIndex)) {
                     return resultSet.getInt(columnIndex);
@@ -79,7 +79,7 @@ public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
             case Types.LONGVARCHAR:
                 return resultSet.getString(columnIndex);
             case Types.DATE:
-                return getDate(resultSet, columnIndex);
+                return getDateValue(resultSet, columnIndex);
             case Types.TIME:
                 return resultSet.getTime(columnIndex);
             case Types.TIMESTAMP:
@@ -100,12 +100,22 @@ public abstract class AbstractJDBCRowsLoader implements JDBCRowsLoader {
     }
     
     /**
-     * Get date from result set.
+     * Get smallint value from result set.
+     *
+     * @param resultSet result set
+     * @param columnIndex column index
+     * @return smallint value
+     * @throws SQLException sql exception
+     */
+    protected abstract Object getSmallintValue(ResultSet resultSet, int columnIndex) throws SQLException;
+    
+    /**
+     * Get date value from result set.
      * 
      * @param resultSet result set
      * @param columnIndex column index
-     * @return date
+     * @return date value
      * @throws SQLException sql exception
      */
-    protected abstract Object getDate(ResultSet resultSet, int columnIndex) throws SQLException;
+    protected abstract Object getDateValue(ResultSet resultSet, int columnIndex) throws SQLException;
 }

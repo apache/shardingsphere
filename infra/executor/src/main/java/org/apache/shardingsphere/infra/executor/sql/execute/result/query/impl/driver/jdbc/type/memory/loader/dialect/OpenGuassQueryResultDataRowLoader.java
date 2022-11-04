@@ -15,33 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader;
+package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.dialect;
+
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.loader.AbstractQueryResultDataRowLoader;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * MySQL rows loader.
+ * OpenGauss query result data row loader.
  */
-public final class MySQLRowsLoader extends AbstractJDBCRowsLoader {
-    
-    private static final String YEAR_DATA_TYPE = "YEAR";
+public final class OpenGuassQueryResultDataRowLoader extends AbstractQueryResultDataRowLoader {
     
     @Override
-    protected Object getDate(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        if (isYearDataType(resultSet.getMetaData().getColumnTypeName(columnIndex))) {
-            Object result = resultSet.getObject(columnIndex);
-            return resultSet.wasNull() ? null : result;
-        }
-        return resultSet.getDate(columnIndex);
+    protected Object getSmallintValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return resultSet.getShort(columnIndex);
     }
     
-    private static boolean isYearDataType(final String columnDataTypeName) {
-        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
+    @Override
+    protected Object getDateValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
+        return resultSet.getDate(columnIndex);
     }
     
     @Override
     public String getType() {
-        return "MySQL";
+        return "openGauss";
     }
 }
