@@ -84,8 +84,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
     }
     
     @Test
@@ -103,8 +103,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, false, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
     }
     
     @Test
@@ -122,8 +122,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, false, false, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, false, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
     }
     
     @Test
@@ -141,8 +141,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, true, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, true, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
     }
     
     @Test
@@ -160,8 +160,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, false, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
     }
     
     @Test
@@ -179,8 +179,8 @@ public final class OracleSchemaMetaDataLoaderTest {
         assertTableMetaDataMap(actual);
         TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
     }
     
     private DataSource mockDataSource() throws SQLException {

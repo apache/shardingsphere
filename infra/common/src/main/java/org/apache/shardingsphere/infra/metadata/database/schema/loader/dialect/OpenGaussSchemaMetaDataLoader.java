@@ -130,7 +130,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
         // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive, true);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive, true, false);
     }
     
     private String getColumnMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {

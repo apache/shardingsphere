@@ -14,24 +14,24 @@ AlterShardingTableRule ::=
   'ALTER' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
 
 tableDefinition ::= 
-   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ','  'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'TABLE_STRATEGY' '(' strategyDefinition ')' )? ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
-    tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+    tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ','  'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ','  'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
-  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' ( 'KEY_GENERATOR' '=' algorihtmName | algorithmDefinition ) ')' 
-
+  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
+    
 auditStrategyDefinition ::= 
   'AUDIT_STRATEGY' '(' 'AUDITORS' '=' '[' auditorName ',' auditorName ']' ',' 'ALLOW_HINT_DISABLE' '=' 'TRUE | FALSE' ')'
   |
   'AUDIT_STRATEGY' '(' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ',' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ')'
 
 algorithmDefinition ::=
-  ('SHARDING_ALGORITHM' '=' algorithmName | 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  )
+   'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'
 
 propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
@@ -44,7 +44,7 @@ storageUnitName ::=
 
 columnName ::=
   identifier
-
+    
 auditorName ::=
   identifier
 
@@ -89,90 +89,24 @@ strategyType ::=
 
 #### 1.Standard sharding table rule
 
-- ##### Alter standard sharding table rule to the specified sharding algorithms being altered
-
 ```SQL
--- alter sharding algorithms
-ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
-); 
-
--- alter a sharding rule to the specified sharding algorithms being altered
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}"),
-    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
-);
-```
-
-- ##### Use the altered default sharding database strategy, alter standard sharding table rule to the specified sharding algorithm being altered
-
-```sql
--- alter sharding algorithms
-ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
-); 
-
--- alter a default sharding database strategy
-ALTER DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
-);
-
--- alter a sharding table rule to the specified sharding algorithm being altered
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}"),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
-);
-```
-
-- ##### Use both the altered default sharding and the altered default sharding strategy, alter standard sharding table rule
-
-```SQL
--- alter sharding algorithms
-ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
-); 
-
--- alter a default sharding database strategy
-ALTER DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
-);
-
--- alter a default sharding table strategy
-ALTER DEFAULT SHARDING TABLE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
-);
-
--- alter a sharding table rule
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}")
-);
-```
-
-- ##### Alter standard sharding table rule and create sharding algorithms at the same time
-
-```sql
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
+ALTER SHARDING TABLE RULE t_order_item (
+DATANODES("ds_${0..3}.t_order_item${0..3}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 ```
 
 #### 2.Auto sharding table rule
 
-- ##### alter auto sharding table rule
-
 ```sql
 ALTER SHARDING TABLE RULE t_order (
-    STORAGE_UNITS(ds_0, ds_1),
-    SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
+STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 ```
 
@@ -183,5 +117,4 @@ ALTER SHARDING TABLE RULE t_order (
 ### Related links
 
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [ALTER SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/alter-sharding-algorithm/)
 - [ALTER DEFAULT_SHARDING STRATEGY](/en/reference/distsql/syntax/rdl/rule-definition/alter-default-sharding-strategy/)

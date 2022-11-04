@@ -67,13 +67,16 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
-            encryptRule.findEncryptor(tableName, columnName).ifPresent(optional -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, optional,
-                    encryptRule.findAssistedQueryEncryptor(tableName, columnName).orElse(null), encryptContext));
+            encryptRule.findEncryptor(tableName, columnName).ifPresent(
+                    optional -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, optional,
+                            encryptRule.findAssistedQueryEncryptor(tableName, columnName).orElse(null),
+                            encryptRule.findFuzzyQueryEncryptor(tableName, columnName).orElse(null), encryptContext));
         }
     }
     
     private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext,
-                                     final EncryptAlgorithm<?, ?> encryptAlgorithm, final EncryptAlgorithm<?, ?> assistEncryptAlgorithm, final EncryptContext encryptContext) {
+                                     final EncryptAlgorithm<?, ?> encryptAlgorithm, final EncryptAlgorithm<?, ?> assistEncryptAlgorithm,
+                                     final EncryptAlgorithm<?, ?> fuzzyEncryptAlgorithm, final EncryptContext encryptContext) {
         int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
@@ -84,7 +87,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     Object literalValue = insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
                             .orElse(null);
-                    encryptInsertValue(encryptAlgorithm, assistEncryptAlgorithm, parameterIndex, literalValue, standardParameterBuilder, encryptContext);
+                    encryptInsertValue(encryptAlgorithm, assistEncryptAlgorithm, fuzzyEncryptAlgorithm, parameterIndex, literalValue, standardParameterBuilder, encryptContext);
                 }
             }
             count++;
@@ -103,14 +106,20 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final EncryptAlgorithm assistEncryptor, final int parameterIndex,
-                                    final Object originalValue, final StandardParameterBuilder parameterBuilder, final EncryptContext encryptContext) {
+    private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final EncryptAlgorithm assistEncryptor, final EncryptAlgorithm fuzzyEncryptor,
+                                    final int parameterIndex, final Object originalValue, final StandardParameterBuilder parameterBuilder,
+                                    final EncryptContext encryptContext) {
         parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue, encryptContext));
         Collection<Object> addedParameters = new LinkedList<>();
         if (null != assistEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
             addedParameters.add(assistEncryptor.encrypt(originalValue, encryptContext));
+        }
+        if (null != fuzzyEncryptor) {
+            Optional<String> fuzzyColumnName = encryptRule.findFuzzyQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
+            Preconditions.checkArgument(fuzzyColumnName.isPresent(), "Can not find fuzzy query Column Name");
+            addedParameters.add(fuzzyEncryptor.encrypt(originalValue, encryptContext));
         }
         if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
             addedParameters.add(originalValue);

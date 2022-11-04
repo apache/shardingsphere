@@ -117,7 +117,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         // TODO need to support caseSensitive when version < 12.2.
         boolean caseSensitive = versionContainsCollation(databaseMetaData) && resultSet.getString("COLLATION").endsWith("_CS");
         boolean isVisible = "NO".equals(resultSet.getString("HIDDEN_COLUMN"));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
     }
     
     private String getOriginalDataType(final String dataType) {
