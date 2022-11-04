@@ -33,7 +33,7 @@ public final class DistributedLockCreatorFactory {
     }
     
     /**
-     * Get  distributed lock.
+     * Get distributed lock.
      * 
      * @param type type
      * @return distributed lock
