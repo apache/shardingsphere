@@ -28,6 +28,6 @@ public final class UnsupportedCRC32DataConsistencyCalculateAlgorithmException ex
     private static final long serialVersionUID = 580323508713524816L;
     
     public UnsupportedCRC32DataConsistencyCalculateAlgorithmException(final String databaseType) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, "Unsupported CRC32 data consistency calculate algorithm with database type `%s`.", databaseType);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 53, String.format("Unsupported CRC32 data consistency calculate algorithm with database type `%s`.", databaseType));
     }
 }

@@ -23,11 +23,12 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 /**
  * Pipeline job execution exception.
  */
+// TODO delete, not used
 public final class PipelineJobExecutionException extends PipelineSQLException {
     
     private static final long serialVersionUID = -8462847591661221914L;
     
-    public PipelineJobExecutionException(final String taskId, final Throwable cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 94, "Task `%s` execute failed.", taskId, cause.getMessage());
+    public PipelineJobExecutionException(final String taskId, final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 94, String.format("Task `%s` execute failed.", taskId), cause);
     }
 }
