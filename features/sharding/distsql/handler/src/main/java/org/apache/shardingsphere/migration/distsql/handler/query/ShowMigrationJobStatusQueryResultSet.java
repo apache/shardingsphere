@@ -19,6 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -49,17 +50,27 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
         data = jobProgress.stream().map(each -> {
             Collection<Object> result = new LinkedList<>();
             result.add(each.getShardingItem());
-            result.add(each.getDataSourceName());
-            result.add(each.getStatus());
-            result.add(each.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-            result.add(each.getProcessedRecordsCount());
-            result.add(each.getInventoryFinishedPercentage());
-            String incrementalIdleSeconds = "";
-            if (each.getIncrementalLatestActiveTimeMillis() > 0) {
-                long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), each.getIncrementalLatestActiveTimeMillis());
-                incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+            InventoryIncrementalJobItemProgress jobItemProgress = each.getJobItemProgress();
+            if (null == jobItemProgress) {
+                result.add("");
+                result.add("");
+                result.add("");
+                result.add("");
+                result.add("");
+                result.add("");
+            } else {
+                result.add(jobItemProgress.getDataSourceName());
+                result.add(jobItemProgress.getStatus());
+                result.add(jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
+                result.add(jobItemProgress.getProcessedRecordsCount());
+                result.add(jobItemProgress.getInventory().getInventoryFinishedPercentage());
+                String incrementalIdleSeconds = "";
+                if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+                    long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
+                    incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+                }
+                result.add(incrementalIdleSeconds);
             }
-            result.add(incrementalIdleSeconds);
             result.add(each.getErrorMessage());
             return result;
         }).collect(Collectors.toList()).iterator();

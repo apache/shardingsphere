@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 
+/**
+ * Inventory incremental job item progress info.
+ */
 @Getter
 public final class InventoryIncrementalJobItemProgressInfo {
     
@@ -30,34 +32,13 @@ public final class InventoryIncrementalJobItemProgressInfo {
     
     private final long startTimeMillis;
     
-    private final JobStatus status;
+    private final InventoryIncrementalJobItemProgress jobItemProgress;
     
-    private final String sourceDatabaseType;
-    
-    private final String dataSourceName;
-    
-    private final boolean active;
-    
-    private final int inventoryFinishedPercentage;
-    
-    private final long incrementalLatestActiveTimeMillis;
-    
-    private final long processedRecordsCount;
-    
-    private final long inventoryRecordsCount;
-    
-    public InventoryIncrementalJobItemProgressInfo(final int shardingItem, final String errorMessage, final long startTimeMills, 
-                                                   final InventoryIncrementalJobItemProgress progress) {
+    public InventoryIncrementalJobItemProgressInfo(final int shardingItem, final String errorMessage, final long startTimeMills,
+                                                   final InventoryIncrementalJobItemProgress jobItemProgress) {
         this.shardingItem = shardingItem;
         this.errorMessage = errorMessage;
         this.startTimeMillis = startTimeMills;
-        this.status = progress.getStatus();
-        this.sourceDatabaseType = progress.getSourceDatabaseType();
-        this.dataSourceName = progress.getDataSourceName();
-        this.active = progress.isActive();
-        this.inventoryFinishedPercentage = progress.getInventory().getInventoryFinishedPercentage();
-        this.incrementalLatestActiveTimeMillis = progress.getIncremental().getIncrementalLatestActiveTimeMillis();
-        this.processedRecordsCount = progress.getProcessedRecordsCount();
-        this.inventoryRecordsCount = progress.getInventoryRecordsCount();
+        this.jobItemProgress = jobItemProgress;
     }
 }
