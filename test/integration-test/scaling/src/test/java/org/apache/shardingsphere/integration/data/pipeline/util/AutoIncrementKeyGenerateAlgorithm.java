@@ -20,14 +20,14 @@ package org.apache.shardingsphere.integration.data.pipeline.util;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    private final AtomicLong idGen = new AtomicLong(1);
+    private final AtomicInteger idGen = new AtomicInteger(1);
     
     @Override
-    public Comparable<?> generateKey() {
+    public Integer generateKey() {
         return idGen.getAndIncrement();
     }
     

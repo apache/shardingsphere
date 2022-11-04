@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

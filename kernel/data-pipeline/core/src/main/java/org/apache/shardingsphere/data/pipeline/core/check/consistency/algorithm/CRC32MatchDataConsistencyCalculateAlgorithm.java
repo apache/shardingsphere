@@ -82,6 +82,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
             int recordsCount = resultSet.getInt(2);
             return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
+            log.error("calculateCRC32 failed, tableName={}", logicTableName, ex);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(logicTableName);
         }
     }

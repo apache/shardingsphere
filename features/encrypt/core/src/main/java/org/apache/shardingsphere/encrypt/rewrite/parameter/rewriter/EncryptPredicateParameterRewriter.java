@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptLikeCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -66,6 +67,10 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
+        if (encryptCondition instanceof EncryptLikeCondition && encryptRule.findFuzzyQueryColumn(tableName, columnName).isPresent()) {
+            return encryptRule.getEncryptFuzzyQueryValues(databaseName, schemaName, tableName, columnName, originalValues);
+        }
+        
         return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, originalValues)
                 : encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, originalValues);

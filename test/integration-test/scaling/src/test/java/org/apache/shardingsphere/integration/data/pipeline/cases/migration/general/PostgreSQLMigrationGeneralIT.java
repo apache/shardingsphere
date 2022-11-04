@@ -27,7 +27,6 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -50,7 +49,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @Slf4j
 public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase {
     
-    private static final KeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new AutoIncrementKeyGenerateAlgorithm();
+    private static final AutoIncrementKeyGenerateAlgorithm KEY_GENERATE_ALGORITHM = new AutoIncrementKeyGenerateAlgorithm();
     
     private final ScalingParameterized parameterized;
     
@@ -100,13 +99,11 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         log.info("init data end: {}", LocalDateTime.now());
         checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();
-        if (ENV.getItEnvType() == ITEnvTypeEnum.DOCKER) {
-            for (String each : listJobId()) {
-                commitMigrationByJobId(each);
-            }
-            List<String> lastJobIds = listJobId();
-            assertThat(lastJobIds.size(), is(0));
+        for (String each : listJobId()) {
+            commitMigrationByJobId(each);
         }
+        List<String> lastJobIds = listJobId();
+        assertThat(lastJobIds.size(), is(0));
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, SCHEMA_NAME);
     }
     
