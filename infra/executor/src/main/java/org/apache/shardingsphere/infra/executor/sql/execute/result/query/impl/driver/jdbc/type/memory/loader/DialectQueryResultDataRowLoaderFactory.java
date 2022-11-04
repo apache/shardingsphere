@@ -25,22 +25,23 @@ import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistr
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Dialect JDBC rows loader factory.
+ * Dialect query result data row loader factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DialectJDBCRowsLoaderFactory {
+public final class DialectQueryResultDataRowLoaderFactory {
     
     static {
-        ShardingSphereServiceLoader.register(JDBCRowsLoader.class);
+        ShardingSphereServiceLoader.register(DialectQueryResultDataRowLoader.class);
     }
     
     /**
-     * Find instance of dialect JDBC rows loader factory.
+     * Find instance of dialect query result data row loader factory.
      *
      * @param databaseType database type
      * @return found instance
      */
-    public static JDBCRowsLoader getInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(JDBCRowsLoader.class, databaseType.getType()).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(JDBCRowsLoader.class));
+    public static DialectQueryResultDataRowLoader getInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DialectQueryResultDataRowLoader.class, databaseType.getType())
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(DialectQueryResultDataRowLoader.class));
     }
 }
