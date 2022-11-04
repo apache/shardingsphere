@@ -35,19 +35,19 @@ tableName ::=
 
 ```sql
 -- 创建关联关系之前需要先创建分片表 t_order,t_order_item
-CREATE SHARDING TABLE REFERENCE RULES (t_order,t_order_item);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 ```
 
 #### 2.创建多个关联关系
 
 ```sql
 -- 创建关联关系之前需要先创建分片表 t_order,t_order_item,t_product,t_product_item
-CREATE SHARDING TABLE REFERENCE RULES (t_order,t_order_item),(t_product,t_product_item);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_product,t_product_item);
 ```
 
 ### 保留字
 
-`CREATE`、`SHARDING`、`TABLE`、`REFERENCE`、`RULES`
+`CREATE`、`SHARDING`、`TABLE`、`REFERENCE`、`RULE`
 
 ### 相关链接
 
