@@ -202,11 +202,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
                     Object thisResult = thisNextIterator.next();
                     Object thatResult = thatNextIterator.next();
-                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
-                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
-                    }
                     boolean matched;
-                    if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
                     } else if (thisResult instanceof Number && thatResult instanceof Number && thisResult.getClass() != thatResult.getClass()) {
                         // TODO some numeric types, Proxy and use jdbc to get different values, eg, PostgreSQL int2, MySQL unsigned mediumint
@@ -224,7 +223,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return true;
         }
-    
+        
         private boolean checkDifferentNumberTypeMatched(final Number thisResult, final Number thatResult) {
             if (thisResult instanceof Integer) {
                 return thisResult.intValue() == thatResult.intValue();
@@ -237,7 +236,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return Objects.equals(thisResult, thatResult);
         }
-    
+        
         @Override
         public int hashCode() {
             return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue()).append(getRecordsCount()).append(getRecords()).toHashCode();
