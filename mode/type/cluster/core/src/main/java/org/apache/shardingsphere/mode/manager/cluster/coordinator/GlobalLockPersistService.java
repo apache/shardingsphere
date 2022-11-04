@@ -23,10 +23,10 @@ import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 /**
- * Cluster lock persist service.
+ * Global lock persist service.
  */
 @RequiredArgsConstructor
-public final class ClusterLockPersistService implements LockPersistService<GlobalLockDefinition> {
+public final class GlobalLockPersistService implements LockPersistService<GlobalLockDefinition> {
     
     private final DistributedLockHolder distributedLockHolder;
     

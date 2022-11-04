@@ -23,20 +23,20 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 /**
- * Lock context of ShardingSphere.
+ * Global lock context.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereLockContext implements LockContext {
+public final class GlobalLockContext implements LockContext<GlobalLockDefinition> {
     
-    private final LockPersistService lockPersistService;
+    private final LockPersistService<GlobalLockDefinition> lockPersistService;
     
     @Override
-    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
+    public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
         return lockPersistService.tryLock(lockDefinition, timeoutMillis);
     }
     
     @Override
-    public void unlock(final LockDefinition lockDefinition) {
+    public void unlock(final GlobalLockDefinition lockDefinition) {
         lockPersistService.unlock(lockDefinition);
     }
     
