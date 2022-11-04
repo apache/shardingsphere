@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
-import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoadingSQLParserParameterizedTest;
-import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 
-@RunWith(ShardingSphereParallelTestParameterized.class)
+//@RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingMySQLParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
     
     public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
@@ -34,6 +33,7 @@ public final class DynamicLoadingMySQLParserParameterizedTest extends DynamicLoa
     
     @Parameters(name = "{0} (MySQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {
-        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
+        return Collections.emptyList();
+//        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
     }
 }
