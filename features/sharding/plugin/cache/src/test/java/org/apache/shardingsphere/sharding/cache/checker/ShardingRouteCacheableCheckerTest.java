@@ -150,19 +150,19 @@ public final class ShardingRouteCacheableCheckerTest {
     private ShardingSphereDatabase prepareDatabase(final ShardingRule shardingRule, final ShardingCacheRule shardingCacheRule) {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_broadcast_table", new ShardingSphereTable("t_broadcast_table", Arrays.asList(
-                new ShardingSphereColumn("broadcast_table_id", Types.INTEGER, true, false, false, true),
-                new ShardingSphereColumn("broadcast_table_col1", Types.VARCHAR, false, false, false, true)),
+                new ShardingSphereColumn("broadcast_table_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("broadcast_table_col1", Types.VARCHAR, false, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse",
-                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true)),
+                Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
         schema.getTables().put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
-                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true),
-                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true)),
+                new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false)),
                 Collections.emptyList(), Collections.emptyList()));
         return new ShardingSphereDatabase(DATABASE_NAME, DatabaseTypeFactory.getInstance("PostgreSQL"), new ShardingSphereResourceMetaData(DATABASE_NAME, Collections.emptyMap()),
                 new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule)), Collections.singletonMap(SCHEMA_NAME, schema));
