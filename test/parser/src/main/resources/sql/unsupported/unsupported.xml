@@ -17,556 +17,556 @@
   -->
 
 <sql-cases>
-    <sql-case id="assert_select_into_SQL" value="SELECT * INTO t_order_new FROM t_order" zdb-types="Oracle"/>
-    <sql-case id="assert_select_with_json_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" zdb-types="MySQL"/>
-    <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" zdb-types="MySQL"/>
-    <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" zdb-types="Oracle"/>
+    <sql-case id="assert_select_into_SQL" value="SELECT * INTO t_order_new FROM t_order" db-types="Oracle"/>
+    <sql-case id="assert_select_with_json_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt; ?" db-types="MySQL"/>
+    <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL"/>
+    <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle"/>
     <sql-case id="assert_dist_SQL_show_rule_parse_conflict" value="SHOW REPLICA_QUERY RULE FROM schema_name"/>
-    <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" zdb-types="MySQL"/>
-    <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" zdb-types="MySQL"/>
-    <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" zdb-types="MySQL"/>
-    <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" zdb-types="PostgreSQL"/>
-    <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" zdb-types="PostgreSQL"/>
-    <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" zdb-types="PostgreSQL"/>
-    <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" zdb-types="PostgreSQL"/>
-    <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" zdb-types="PostgreSQL"/>
-    <sql-case id="unsupported_select_case_for_opengauss_13" value="select count(*) from partition_list_tab01 partition for ('20');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_14" value="select count(*) from partition_list_tab partition for ('10');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_15" value="select count(*) from partition_list_tab partition for ('20');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_16" value="select count(*) from partition_list_tab partition for ('30');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_24" value="select case when date '2018-09-17' &gt; date '2018-09-16' then 'A' else 'B' end;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_25" value="select ''null''::jsonb;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_26" value="select ''null''::json;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_27" value="select &amp;quot;{&amp;quot;name&amp;quot;: [&amp;quot;john&amp;quot;, false],  &amp;quot;age&amp;quot;:    18,  &amp;quot;assress&amp;quot;:  {&amp;quot;country&amp;quot; :&amp;quot;china&amp;quot;, &amp;quot;zip-code&amp;quot;: &amp;quot;10000&amp;quot;},&amp;quot;true&amp;quot;:true}&amp;quot;::JSON;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_28" value="select {&amp;quot;name&amp;quot;: [&amp;quot;john&amp;quot;, false],  &amp;quot;age&amp;quot;:    18,  &amp;quot;assress&amp;quot;:  {&amp;quot;country&amp;quot; :&amp;quot;china&amp;quot;, &amp;quot;zip-code&amp;quot;: &amp;quot;10000&amp;quot;},true:true}::JSON;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_29" value="select &amp;quot;{&amp;quot;name&amp;quot;,&amp;quot;john&amp;quot;,  &amp;quot;age&amp;quot;}&amp;quot;::JSON;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_30" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::json -&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_31" value="select '[138,0.58,-369,1.25e+6]'::json -&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_32" value="select '\&amp;quot;$$\&amp;quot;'::json -&gt;192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_33" value="select [&amp;quot;www@13^&amp;quot;, 1, {&amp;quot;name&amp;quot;: &amp;quot;john&amp;quot;}, &amp;quot;2&amp;quot;, &amp;quot; &amp;quot;,true,&amp;quot;null&amp;quot;]::JSON;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_34" value="select '[&amp;quot;www@13^&amp;quot;, 1, {&amp;quot;name&amp;quot;: &amp;quot;john&amp;quot;}, '2',,true,&amp;quot;null&amp;quot;]'::JSON;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_35" value="select jsonb_ge('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_36" value="select jsonb_ge('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_37" value="select jsonb_ge('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_38" value="select jsonb_ge('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_39" value="select jsonb_extract_path_op ('[{&amp;quot;a&amp;quot;:&amp;quot;foo&amp;quot;},{&amp;quot;b&amp;quot;:&amp;quot;bar&amp;quot;},{&amp;quot;c&amp;quot;:&amp;quot;baz&amp;quot;}]',{2});" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_40" value="select jsonb_extract_path_op('null',‘{1)’;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_41" value="select jsonb_extract_path_text('null',);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_42" value="select jsonb_gt('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_43" value="select jsonb_gt('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_44" value="select jsonb_gt('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_45" value="select jsonb_gt('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_46" value="select jsonb_lt('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_47" value="select jsonb_lt('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_48" value="select jsonb_lt('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_49" value="select jsonb_lt('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_50" value="select jsonb_extract_path_text_op ('[{&amp;quot;a&amp;quot;:&amp;quot;foo&amp;quot;},{&amp;quot;b&amp;quot;:&amp;quot;bar&amp;quot;},{&amp;quot;c&amp;quot;:&amp;quot;baz&amp;quot;}]',{2});" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_51" value="select jsonb_extract_path_text_op('null',‘{1)’;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_52" value="select jsonb_le('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_53" value="select jsonb_le('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_54" value="select jsonb_le('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_55" value="select jsonb_le('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_56" value="select jsonb_exists_any('{&amp;quot;a&amp;quot;:1, &amp;quot;b&amp;quot;: [1,2,3],&amp;quot;c&amp;quot;:{&amp;quot;b&amp;quot;:&amp;quot;d&amp;quot;}}', array[{'c':'b'}]);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_57" value="select jsonb_exists_any('[&amp;quot;abcdefg&amp;quot;,138,&amp;quot;{\&amp;quot;db\&amp;quot;:\&amp;quot;test\&amp;quot;}&amp;quot;,null,&amp;quot;true&amp;quot;,false]',array{&amp;quot;db&amp;quot;:&amp;quot;test&amp;quot;});" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_58" value="select jsonb_exists_any('[&amp;quot;abcdefg&amp;quot;,138,&amp;quot;{\&amp;quot;db\&amp;quot;:\&amp;quot;test\&amp;quot;}&amp;quot;,null,&amp;quot;true&amp;quot;,false]',array[{'db':'test'}]);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_59" value="select jsonb_exists_all('{&amp;quot;a&amp;quot;:1, &amp;quot;b&amp;quot;: [1,2,3],&amp;quot;c&amp;quot;:{&amp;quot;b&amp;quot;:&amp;quot;d&amp;quot;}}','{'b','d'}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_60" value="select jsonb_exists_all('[null, false, 123,{&amp;quot;a&amp;quot;:true},&amp;quot;test&amp;quot;]',array'[123,'{a}']');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_61" value="select sum(score)fromtab136whereclass=2andcourse='数学';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_62" value="select max(score)fromtab136whereclass=2andcourse='数学';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_63" value="select min(score)fromtab136whereclass=2andcourse='数学';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_64" value="select avg(score)fromtab136whereclass=1andcourse='数学';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_65" value="select jsonb_cmp('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_66" value="select jsonb_cmp('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_67" value="select jsonb_cmp('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_68" value="select jsonb_cmp('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_69" value="select json_extract_path_text('null',);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_70" value="select jsonb_eq('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_71" value="select jsonb_eq('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_72" value="select jsonb_eq('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_73" value="select jsonb_eq('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_74" value="select jsonb_ne('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_75" value="select jsonb_ne('[{a:false},{a:true},123,'qwer','null']','123');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_76" value="select jsonb_ne('[{a:false},{a:true},123,'qwer','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_77" value="select jsonb_ne('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_78" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::jsonb -&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_79" value="select '[138,0.58,-369,1.25e+6]'::jsonb -&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_80" value="select '\&amp;quot;$$\&amp;quot;'::jsonb -&gt;192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_81" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::jsonb  -&gt;&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_82" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::jsonb -&gt;&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_83" value="select '\&amp;quot;$$\&amp;quot;'::jsonb -&gt;&gt;192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_84" value="select '[{&amp;quot;a&amp;quot;:true}, null] '::  jsonb @&gt; [null];" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_85" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::json  -&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_86" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::json -&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_87" value="select '{&amp;quot;a&amp;quot;:null, &amp;quot;bb&amp;quot;: 1, &amp;quot;bb&amp;quot;: &amp;quot;A&amp;quot;,   &amp;quot;cde&amp;quot;: [1,2,   &amp;quot;re&amp;quot;], &amp;quot;abc&amp;quot;: 1}':: -&gt; true;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_88" value="select '{&amp;quot;a&amp;quot;:null, &amp;quot;[1,2,\&amp;quot;re\&amp;quot;]&amp;quot;: 1, &amp;quot;bb&amp;quot;: &amp;quot;A&amp;quot;, &amp;quot;cde&amp;quot;: [1,2,   &amp;quot;re&amp;quot;], &amp;quot;abc&amp;quot;: 1}':: -&gt; null;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_89" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::json -&gt;&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_90" value="select '[138,0.58,-369,1.25e+6]'::json -&gt;&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_91" value="select '\&amp;quot;$$\&amp;quot;'::json -&gt;&gt;192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_92" value="select '[{&amp;quot;a&amp;quot;:true}, null] '::  jsonb &lt;@ [null];" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_93" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::jsonb  -&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_94" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::jsonb -&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_95" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::jsonb -&gt;&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_96" value="select '[138,0.58,-369,1.25e+6]'::jsonb -&gt;&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_97" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::json  -&gt;&gt; 2021-05-31 12:59:08;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_98" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::json -&gt;&gt; 192.168.100.128/25;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_99" value="select '52093.89'::money::numeric::float8;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_100" value="select 'fat:ab &amp; cat'::tsquery;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_101" value="select 'super:*'::tsquery;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_102" value="select 'fat &amp; rat'::tsquery;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_103" value="select 'fat &amp; (rat | cat)'::tsquery;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_104" value="select 'fat &amp; rat &amp; ! cat'::tsquery;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_105" value="select 'a fat cat sat on a mat and ate a fat rat'::tsvector;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_106" value="select $$the lexeme '    ' contains spaces$$::tsvector;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_107" value="select 'a:1 fat:2 cat:3 sat:4 on:5 a:6 mat:7 and:8 ate:9 a:10 fat:11 rat:12'::tsvector;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_108" value="select 'a:1A fat:2B,4C cat:5D'::tsvector;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_109" value="select ASCII(#);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_110" value="select ASCII(=);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_111" value="select char_length($$jjslf$$);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_112" value="select char_length($$jj' 'slf$$);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_113" value="select last(s_name) as name, last(s_id nulls last ) from last06;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_114" value="select NULLIF(,);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_115" value="select NULLIF();" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_116" value="select nullif(#,&amp;) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_117" value="select nullif(#,#) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_118" value="select nullif((,)) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_119" value="select nullif(@,@) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_120" value="select nullif(+,-) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_121" value="select nullif(!,~) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_127" value="select row_to_json(row(interval '3' day)) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_128" value="select row_to_json(row(inet('10.183.187.233'))) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_129" value="select row_to_json(row(B'101')) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_130" value="select row_to_json(row('The Fat Rats'::tsvector)) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_131" value="select row_to_json(row('52093.89'::money::numeric::float8)) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_132" value="select array_prepend(@,array[1,2]) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_133" value="select array_cat(array[[1,2,3],[2,5]], @) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_134" value="select array_append(array[1,2],@) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_135" value="select array_dims(array[[7,1,@], [1,3,6]]) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_136" value="select array_length(array[1,2,3], ) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_137" value="select array_upper(array[[1,8,3,7]], #) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_138" value="select array_upper(array[[1,8,3,7]], ) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_139" value="select array_lower([1,2,3], 1) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_140" value="select array_lower(array[1,2,3], @) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_141" value="select array_lower(array[1,2,3], ) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_142" value="select col1 / double precision '1.5' from test_date01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_143" value="select double precision '1.5' * col1  from test_date01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_144" value="select col1:: date + integer '7'  from test_date01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_145" value="select daterange('2000-05-06','2000-08-08','(]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_146" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','(]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_147" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','(]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_148" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','(]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_149" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','(]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_150" value="select daterange('2000-05-06','2000-08-08','()');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_151" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','()');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_152" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','()');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_153" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','()');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_154" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','()');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_155" value="select daterange('2000-05-06','2000-08-08','abc');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_156" value="select daterange('2001-05-06','2000-08-08');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_157" value="select daterange('2001-05-06','2001-05-06');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_158" value="select daterange('2000-05-06','2000-08-08','[)');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_159" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','[)');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_160" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','[)');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_161" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','[)');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_162" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','[)');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_163" value="select daterange('2000-05-06','2000-08-08','[]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_164" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','[]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_165" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','[]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_166" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','[]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_167" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','[]');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_168" value="select date '2019-1-6' -  col1  from test_date01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_169" value="select daterange('2001-02-16 20:38:40','2001-02-16 20:38:41');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_170" value="select daterange('2018-05-14 14:09:04.127444+08','2018-05-16 14:09:04.127444+08');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_171" value="select daterange('2000-05-06','2000-08-08');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_172" value="select col1:: date - integer '7'  from test_date01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_173" value="select ADD_MONTHS('2018-02-28',1) - date'2018-02-28'  from  sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_174" value="select bitand(6,) as result from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_175" value="select bitand(,6) as result from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_176" value="select first(s_name) as name, first(s_id nulls first ) from first06;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_177" value="select notlike(1, );" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_178" value="select sin(2  2) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_179" value="select sin(2)(2) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_180" value="select length(EXTRACT (MONTH FROM DATE '2018-10-04')) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_181" value="select acos(2  2) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_182" value="select acos(2)(2) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_183" value="select acos 1 as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_184" value="select count(none) from tbc;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_185" value="select reset_unique_sql('global','all',);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_186" value="select pg_stat_get_tuples_hot_updated(’87654345888765#￥%……&amp;*‘) from PG_CLASS a where a.relname = 'sales';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_187" value="select to_hex(@#￥);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_188" value="select array_replace(array[1.23,2.25,33,5.0],(select @ -5.0 as result),(select @ 8.0 as result));" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_189" value="select array_replace(array[1.23,2.25,33,5.0],(select substrb('string',2,3)),(select @ 8.0 as result));" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_190" value="select array_replace(array['string','str','st','ring'],(select @ -5.0 as result),(select repeat('ab', 3)));" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_191" value="select asin(2  2) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_192" value="select asin(2)(2) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_193" value="select asin 1 as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_194" value="select int4range(1,3) + int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_195" value="select tsrange('[2021-01-01,2021-03-01)') + '[3,4]'::int4range  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_196" value="select numrange(8.1,10.2,'[]') &gt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_197" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_198" value="select tsrange('[2021-01-01,2028-03-01)') &gt; ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_199" value="select int4range(1,5) &gt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_200" value="select int4range(10,10) &gt; '(10,15)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_201" value="select int8range(15,25) &gt; int8range(15,26) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_202" value="select int4range(1,5) &lt;= '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_203" value="select int4range(10,18) &lt;= '(10,15)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_204" value="select int8range(15,26) &lt;= int8range(15,26) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_205" value="select numrange(8.1,10.2,'[]') &lt;= numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_206" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &lt;= ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_207" value="select tsrange('[2021-01-01,2028-03-01)') &lt;= ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_208" value="select int4range(1,5) * '[3,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_209" value="select int8range(16,30) *int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_210" value="select tsrange('[2021-01-01,2021-03-01)') *('[2021-03-01,2021-10-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_211" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') *('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_212" value="select tsrange('[2021-01-01,2021-03-01)') * ('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_213" value="select numrange(1.1,9.9,'[]') * numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_214" value="select int4range(10,16) * '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_215" value="select int8range(16,25) *int8range(15,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_216" value="select numrange(1.1,2.2,'[]') &lt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_217" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &lt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_218" value="select tsrange('[2021-01-01,2021-03-01)') &lt; ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_219" value="select int4range(1,5) &lt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_220" value="select int4range(10,10) &lt; '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_221" value="select int8range(15,25) &lt; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_222" value="select int4range(1,3) + '[3,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_223" value="select int8range(16,25) +int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_224" value="select tsrange('[2021-01-01,2021-03-01)') +('[2021-03-01,2021-10-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_225" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') +('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_226" value="select tsrange('[2021-01-01,2021-03-01)') + ('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_227" value="select numrange(1.1,9.9,'[]') + numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_228" value="select int4range(10,16) + '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_229" value="select int8range(16,25) +int8range(15,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_230" value="select lower_inc(int4range(10,10)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_231" value="select lower_inc(int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_232" value="select lower_inc(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_233" value="select lower_inc(tsrange('[2021-01-01,2021-03-01)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_234" value="select lower_inc(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_235" value="select isempty(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_236" value="select isempty(bugstatus (create, closed)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_237" value="select int4range(1,3) -|- '[3,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_238" value="select int8range(16,25) -|-int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_239" value="select tsrange('[2021-01-01,2021-03-01)') -|-('[2021-03-01,2021-10-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_240" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') -|-('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_241" value="select numrange(1.1,9.9,'[]') -|- numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_242" value="select int4range(10,16) -|- '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_243" value="select int8range(16,25) -|-int8range(15,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_244" value="select numrange(1.1,2.2,'[]') &lt;&gt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_245" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &lt;&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_246" value="select int4range(1,5) &lt;&gt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_247" value="select int4range(10,10) &lt;&gt; '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_248" value="select int8range(15,25) &lt;&gt; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_249" value="select tsrange('[2021-01-01,2021-03-01)') &lt;&gt; ('[2021-01-01,2021-03-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_250" value="select elem_contained_by_range('abc', int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_251" value="select elem_contained_by_range(2, numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_252" value="select int4range(1,5) &gt;= '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_253" value="select int8range(15,26) &gt;= int8range(15,26) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_254" value="select numrange(8.1,10.2,'[]') &gt;= numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_255" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &gt;= ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_256" value="select tsrange('[2021-01-01,2028-03-01)') &gt;= ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_257" value="select int4range(10,18) &gt;= '(10,15)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_258" value="select numrange(1.1,2.2,'[]') &lt;&lt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_259" value="select tsrange('[2010-5-11 pst,2011-03-01 pst)') &lt;&lt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_260" value="select tsrange('[1999-01-01,2000-05-01)') &lt;&lt; ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_261" value="select int4range(1,5) &lt;&lt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_262" value="select int4range(10,10) &lt;&lt; '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_263" value="select int8range(15,25) &lt;&lt; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_264" value="select int4range(5,10) &gt;&gt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_265" value="select int4range(20,25) &gt;&gt; '(10,20)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_266" value="select int8range(25,50) &gt;&gt; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_267" value="select numrange(1.1,2.2,'[]') &gt;&gt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_268" value="select tsrange('[2010-5-11 pst,2011-03-01 pst)') &gt;&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_269" value="select tsrange('[1999-01-01,2000-05-01)') &gt;&gt; ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_270" value="select int4range(1,5) @&gt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_271" value="select int8range(15,26) @&gt; int8range(15,26) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_272" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') @&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_273" value="select tsrange('[2021-01-01,2028-03-01)') @&gt; ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_274" value="select int4range(10,12) @&gt; '(10,15)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_275" value="select numrange(8.1,10.2,'[]') @&gt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_276" value="select int4range(1,5) = '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_277" value="select int4range(10,10) = '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_278" value="select int8range(15,25) = int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_279" value="select tsrange('[2021-01-01,2021-03-01)') = ('[2021-01-01,2021-03-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_280" value="select numrange(1.1,2.2,'[]') = numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_281" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') = ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_282" value="select int4range(1,5) &amp;&gt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_283" value="select int8range(16,25) &amp;&gt; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_284" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&gt; ('[2021-01-01,2021-03-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_285" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_286" value="select numrange(1.1,9.9,'[]') &amp;&gt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_287" value="select int4range(10,16) &amp;&gt; '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_288" value="select int4range(1,5) &lt;@ '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_289" value="select int8range(15,26) &lt;@ int8range(15,26) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_290" value="select int4range(10,12) &lt;@ '(10,15)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_291" value="select numrange(8.1,10.2,'[]') &lt;@ numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_292" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &lt;@ ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_293" value="select tsrange('[2021-01-01,2028-03-01)') &lt;@ ('[2021-01-01,2021-05-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_294" value="select int4range(1,5) @&gt; 4 as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_295" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') @&gt; '2014-12-11 pst'::timestamp  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_296" value="select tsrange('[2021-01-01,2028-03-01)') @&gt; '2026-09-09'::timestamp as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_297" value="select int4range(10,12) @&gt; 9 as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_298" value="select numrange(8.1,10.2,'[]') @&gt; 6.1::numeric as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_299" value="select int4range(1,5) &amp;&lt; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_300" value="select int8range(15,25) &amp;&lt; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_301" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&lt; ('[2021-01-01,2021-03-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_302" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&lt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_303" value="select numrange(1.1,9.9,'[]') &amp;&lt; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_304" value="select int4range(10,16) &amp;&lt; '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_305" value="select int4range(1,3) - int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_306" value="select tsrange('[2021-01-01,2021-03-01)') - '[3,4]'::int4range  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_307" value="select elem_contained_by_range('2', numrange(1.1,2.2));" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_308" value="select elem_contained_by_range('10', int4range(10,80)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_309" value="select elem_contained_by_range('20', int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_310" value="select elem_contained_by_range('2021-02-05', tsrange('[2021-01-01,2021-03-01)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_311" value="select elem_contained_by_range('2025-12-11 pst', tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_312" value="select lower(int4range(10,80)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_313" value="select lower(int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_314" value="select lower(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_315" value="select lower(tsrange('[2021-01-01,2021-03-01)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_316" value="select lower(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_317" value="select numrange(1.1,'a','[]') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_318" value="select numrange('abc','111','[]') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_319" value="select numrange(2.3,111.5,'1') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_320" value="select lower_inf(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_321" value="select lower_inf(bugstatus (create, closed)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_322" value="select  4 &lt;@ int4range(1,5)  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_323" value="select 17::int8 &lt;@ int8range(15,26)  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_324" value="select '2014-12-11 pst'::timestamp &lt;@ tsrange('[2013-12-11 pst,2025-03-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_325" value="select '2026-09-09'::timestamp &lt;@ tsrange('[2021-01-01,2028-03-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_326" value="select 9 &lt;@ int4range(10,12)   as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_327" value="select 6.1::numeric &lt;@ numrange(8.1,10.2,'[]')  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_328" value="select int4range(1,5) &amp;&amp; '[1,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_329" value="select int8range(15,25) &amp;&amp; int8range(15,25) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_330" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&amp; ('[2021-01-01,2021-03-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_331" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&amp; ('[2013-12-11 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_332" value="select numrange(1.1,2.2,'[]') &amp;&amp; numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_333" value="select int4range(10,10) &amp;&amp; '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_334" value="select upper_inf('(,)'::daterange) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_335" value="select upper_inf(int4range'(,10)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_336" value="select upper_inf('(15,)'::int8range) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_337" value="select upper_inf(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_338" value="select upper_inf(tsrange('(2021-01-01,]')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_339" value="select upper_inf(tsrange('[,2021-03-01 pst]')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_340" value="select numrange(1.1,2.2,'[]') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_341" value="select numrange(5.1,6.7,'()') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_342" value="select numrange(5.1,6.7,'(]') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_343" value="select numrange(7.7,8.7,'[)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_344" value="select numrange(1.1,'123','[]') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_345" value="select int4range(1,5) - '[3,4]'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_346" value="select int8range(16,30) -int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_347" value="select tsrange('[2021-01-01,2021-03-01)') -('[2021-03-01,2021-10-01)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_348" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') -('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_349" value="select tsrange('[2021-01-01,2021-03-01)') - ('[2021-3-01 pst,2021-05-01 pst)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_350" value="select int4range(10,16) - '(10,11)'::int4range as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_351" value="select int8range(16,25) -int8range(15,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_352" value="select upper(int4range(10,80)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_353" value="select upper(int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_354" value="select upper(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_355" value="select upper(tsrange('[2021-01-01,2021-03-01)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_356" value="select upper(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_357" value="select upper_inc(int4range(10,10)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_358" value="select upper_inc(int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_359" value="select upper_inc(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_360" value="select upper_inc(tsrange('(2021-01-01,2021-03-01]')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_361" value="select upper_inc(tsrange('[2013-12-11 pst,2021-03-01 pst]')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_362" value="select lower_inc(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_363" value="select lower_inc(bugstatus (create, closed)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_364" value="select lower(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_365" value="select lower(bugstatus (create, closed)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_366" value="select int4range(1,3) * int8range(25,35) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_367" value="select tsrange('[2021-01-01,2021-03-01)') * '[3,4]'::int4range  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_368" value="select upper_inc(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_369" value="select upper_inc(bugstatus (create, closed)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_370" value="select upper(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_371" value="select upper(bugstatus (create, closed)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_372" value="select isempty(int4range(10,10)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_373" value="select isempty(int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_374" value="select isempty(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_375" value="select isempty(tsrange('[2021-01-01,2021-03-01)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_376" value="select isempty(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_377" value="select lower_inf('(,)'::daterange) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_378" value="select lower_inf(int4range'(,10)') as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_379" value="select lower_inf(int8range(15,25)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_380" value="select lower_inf(numrange(1.1,2.2)) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_381" value="select lower_inf(tsrange('(2021-01-01,2021-03-01]')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_382" value="select lower_inf(tsrange('[,2021-03-01 pst]')) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_383" value="select hll_hash_boolean(@,10);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_384" value="select hll_hash_boolean(true, @#);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_385" value="select hll_hash_boolean(@);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_386" value="select hll_hash_bytea(@##$);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_387" value="select hll_hash_any('08:00:2b:01:02:03'::macaddr);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_388" value="select hll_hash_any ('[2010-01-01 14:30, 2010-01-01 15:30)'::tsrange);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_389" value="select hll_hash_any ('a fat cat sat on a mat and ate a fat rat'::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_390" value="select hll_hash_any('08:00:2b:01:02:03'::macaddr, 2147483647);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_391" value="select hll_hash_any ('[2010-01-01 14:30, 2010-01-01 15:30)'::tsrange, 10);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_392" value="select hll_hash_any ('a fat cat sat on a mat and ate a fat rat'::tsvector, 30);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_393" value="select hll_hash_text(`天天开心`);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_394" value="select trim('2' '298082');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_395" value="select trim(leading '1','2' from '1uoiusf8','2iouf899');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_396" value="select trim(both '1','2' from '1uoiusf8','2iouf899');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_397" value="select trim(trailing '1','2' from '1009-02-01');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_398" value="select trim(both '2' from );" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_399" value="select trim(leading'2' from );" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_400" value="select trim(trailing '2' from );" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_401" value="select substring(from 4 for 4) as text1;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_403" value="select ||/ clo1 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_404" value="select  clo1! from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_405" value="select  clo2! from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_406" value="select @clo1, @clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_407" value="select @ clo1, @clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_408" value="select ||/ clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_410" value="select @ clo1, @ clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_411" value="select  ||/clo1 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_412" value="select  ||/clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_415" value="select ||/clo1,||/clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_416" value="select @clo1 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_417" value="select cos(2*pi(),2*pi()));" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_418" value="select ||/ clo1,||/clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_420" value="select |/clo1 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_423" value="select |/clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_424" value="select |/clo1,|/clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_425" value="select  |/clo1 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_426" value="select  |/clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_427" value="select  !!clo1 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_428" value="select  !!clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_430" value="select ~ clo1 , ~ clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_431" value="select ~ (clo1+clo2) from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_432" value="select ~clo1, ~clo2 from data_01;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_433" value="select atan2(,) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_434" value="select atan2('11+11',) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_435" value="select atan2(11 11) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_436" value="select atan2(22,) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_437" value="select B'11110' | B'0000';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_438" value="select B'101' | as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_439" value="select B'101' # as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_440" value="select B'11110' # B'0000';" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_441" value="select extract(epoch from timestamp with time zone '2001-02-16 20:38:40.12-08') from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_442" value="select timestamp with time zone 'epoch' + 982384720.12 * interval '1 second' as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_443" value="select extract(quarter from timestamp '2001-02-16 20:38:40') from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_444" value="select extract(week from timestamp '2001-02-16 20:38:40') from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_445" value="select extract(isoyear from date '2006-01-01') from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_446" value="select extract(isoyear from date '2006-01-02') from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_447" value="select atan(11 11) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_448" value="select atan(,) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_449" value="select to_tsvector('fat cats ate fat rats') @@ 'fa:*'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_450" value="select to_tsvector('fat cats ate rats') @@(!!'rat'::tsquery) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_451" value="select $$the lexeme '    '  , contains spaces$$::tsvector@@ ','::tsquery  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_452" value="select setweight(body :: tsvector, 'a') from ts_zhparser;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_453" value="select to_tsvector('english', 'the fat rats')@@ 'the'::tsquery  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_454" value="select to_tsvector('fat cats ate rats') @@(!!'ratt'::tsquery) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_455" value="select 'fat cats ate'::tsvector || 'a b c'::tsvector;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_456" value="select 'fat | rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_457" value="select to_tsvector('fat cats ate rats') @@('rat'::tsquery &amp;&amp; 'cat'::tsquery) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_458" value="select 'a:1 b:2'::tsvector || 'c:1 d:2 b:3'::tsvector as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_459" value="select 'a b'::tsvector || 'c:1 d:2 b:3'::tsvector as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_460" value="select setweight('fat:2,4 cat:3 rat:5b'::tsvector, 1);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_461" value="select setweight('fat:2,4 cat:3 rat:5b'::tsvector, '');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_462" value="select $$the lexeme '    '  , contains spaces$$::tsvector || 'c:1 d:2 b:3'::tsvector as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_463" value="select numnode('(fat &amp; rat) | cat'::tsquery);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_464" value="select length(1::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_465" value="select strip(body :: tsvector) from ts_zhparser;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_466" value="select length('a b c'::tsvector  || 'd e f'::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_467" value="select length('fat:2,4 cat:3 rat:5a'::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_468" value="select length($$the lexeme '    ' contains spaces$$::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_469" value="select length('fat:2,4 cat:3'::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_470" value="select numnode(body :: tsquery) from ts_zhparser;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_471" value="select 'fat'::tsquery  = 'fat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_472" value="select length('fat rat'::tsvector);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_473" value="select numnode(bodyy :: tsquery) from ts_zhparser;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_474" value="select 'cat &amp; rat'::tsquery &lt;@ 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_475" value="select 'fat'::tsquery  = 'fatt'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_476" value="select 'cat'::tsquery &lt;@ 'cat &amp; rat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_477" value="select 'cat &amp; rat'::tsquery &lt;@ 'cat&amp; rat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_478" value="select 'cat'::tsquery @&gt; 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_479" value="select 'cat&amp;fat'::tsquery @&gt; 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_480" value="select 'fat'::tsquery  &gt; 'fat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_481" value="select 'fat'::tsquery  &gt; 'fat &amp; rat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_482" value="select 'fat &amp; rat'::tsquery  &gt; 'fat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_483" value="select 'cat'::tsquery @&gt; 'cat &amp; rat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_484" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery  &amp;&amp; 'ate'::tsquery)  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_485" value="select 'fat &amp; rat'::tsquery || 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_486" value="select to_tsvector('fat cats ate rats') @@('rat'::tsquery || 'cat'::tsquery) as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_487" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery  &amp;&amp; 'ateee'::tsquery)  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_488" value="select 'fat | rat'::tsquery || 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_489" value="select 'fat:ab'::tsquery  &amp;&amp; 'fa:ab'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_490" value="select 'fat &amp; rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_491" value="select  to_tsvector('fat cats ate ate' )|| 'a b c'::tsvector  || 'd e f'::tsvector as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_492" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery ||  'ateee'::tsquery)  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_493" value="select  'a:1a '::tsvector|| 'b:1a '::tsvector as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_494" value="select 'fat cats ate fat rats'::tsvector @@ to_tsquery('fat &amp; rat')as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_495" value="select 'a:1 fat:2 cat:3 sat:4 on:5'::tsvector @@ 'fat'::tsquery  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_496" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_497" value="select 'fat cats ate fat rats'::tsvector @@ ('fat11'::tsquery ||  'ateee'::tsquery)  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_498" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery &amp;&amp; '' ::tsquery  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_499" value="select !! 'cat'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_500" value="select 'fat:ab'::tsquery  || 'fa:ab'::tsquery as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_501" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery &amp;&amp; ',' ::tsquery  as result;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_502" value="select cast(date 'epoch' as nchar(37));" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_503" value="select to_char(interval '2' year ,'yyyy','yyyy');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_504" value="select to_char(interval 2 year);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_505" value="select to_char(current_timestamp, 0x5d);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_506" value="select to_char(pg_systimestamp(), #%&amp;^);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_507" value="select to_char(-1239.456::numeric(7,3),''汉字'');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_508" value="select to_char(date 'epoch', 'hh12:mi:ss yyyy-month-dd');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_509" value="select to_char(timestamp with time zone '2010-09-13 12:32:03+08', 'hh12:mi:ss');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_510" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367 pst', 'hh12:mi:ss');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_511" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367 america/new_york', 'hh12:mi:ss');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_512" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367+08', 'hh12:mi:ss');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_513" value="select to_char(timestamp without time zone '2010-09-13 12:32:03+08');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_514" value="select to_char(interval '2' year ,'yyyy');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_515" value="select to_char(interval '3' day ,'ddd');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_516" value="select to_char(interval '3' day ,'dd');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_517" value="select to_char(interval '3' day ,'天');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_518" value="select to_char(interval '2' year ,'dd');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_519" value="select numtoday(2f);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_520" value="select numtoday(@#$);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_521" value="select to_char(156*&amp;%$%^x);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_522" value="select to_number( , '99g999d9s');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_523" value="select to_number(&lt;1*8+9/3-9%3+9/2&gt;, '999999d99');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_524" value="select to_timestamp(-#&amp;%#^5);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_525" value="select to_char(date 'allballs', 'hh24:mi:ss ms');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_526" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367 america/new_yorkkk', 'hh12:mi:ss');" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_527" value="select coalesce(,1,null,2);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_528" value="select coalesce();" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_529" value="select localtimestamp('skdfhhgh跳或者购买功能') from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_531" value="select '0.0999'::money &lt;= '0.1000'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_532" value="select '52093.89'::money &lt;= '52093.891'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_533" value="select '52093.891'::money &lt;= '52093.897'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_534" value="select '0.001'::money &lt;= '0.0'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_535" value="select '0.099'::money &lt;= '0.1'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_536" value="select '0.0999'::money != '0.1000'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_537" value="select '52093.89'::money != '52093.891'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_538" value="select '52093.891'::money != '52093.897'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_539" value="select '0.001'::money != '0.0'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_540" value="select '0.099'::money != '0.1'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_542" value="select '521'::money != '520'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_543" value="select '520'::money != '521'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_546" value="select '0.0999'::money = '0.1000'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_547" value="select '52093.89'::money = '52093.891'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_548" value="select '52093.891'::money = '52093.897'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_549" value="select '0.001'::money = '0.0'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_550" value="select '0.099'::money = '0.1'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_551" value="select '521'::money = '520'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_552" value="select '520'::money = '521'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_557" value="select '521'::money &gt;= '520'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_558" value="select '520'::money &gt;= '521'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_559" value="select '521'::money &lt;= '520'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_560" value="select '520'::money &lt;= '521'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_562" value="select '521'::money &lt;&gt; '520'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_563" value="select '520'::money &lt;&gt; '521'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_564" value="select '0.0999'::money &lt;&gt; '0.1000'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_565" value="select '52093.89'::money &lt;&gt; '52093.891'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_566" value="select '52093.891'::money &lt;&gt; '52093.897'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_567" value="select '0.001'::money &lt;&gt; '0.0'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_568" value="select '0.099'::money &lt;&gt; '0.1'::money;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_570" value="select sign(~);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_571" value="select tan(11 11) from tan_T1;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_572" value="select tan(,) from tan_T1;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_573" value="select mod(154414,,44) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_574" value="select mod(,) from sys_dummy;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_575" value="select median(days) from (values(interval '4' day), (interval '5' day), (interval '6' day), (interval '7' day)) as test(days);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_576" value="select every(array[1.1,2.1,3.1]::int[] =[1,2,3]);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_577" value="select bool_and(array[1.1,2.1,3.1]::int[] =[1,2,3]);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_578" value="select string_agg(name, #) from table_test;" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_579" value="select bool_or(array[1.1,2.1,3.1]::int[] =[1,2,3]);" zdb-types="openGauss"/>
-    <sql-case id="unsupported_select_case_for_opengauss_580" value="select bool_or(@);" zdb-types="openGauss"/>
-    <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW READWRITE_SPLITTING RULE FROM schema_name" zdb-types="PostgreSQL,openGauss"/>
+    <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL"/>
+    <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL"/>
+    <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" db-types="MySQL"/>
+    <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL"/>
+    <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL"/>
+    <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL"/>
+    <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL"/>
+    <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL"/>
+    <sql-case id="unsupported_select_case_for_opengauss_13" value="select count(*) from partition_list_tab01 partition for ('20');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_14" value="select count(*) from partition_list_tab partition for ('10');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_15" value="select count(*) from partition_list_tab partition for ('20');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_16" value="select count(*) from partition_list_tab partition for ('30');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_24" value="select case when date '2018-09-17' &gt; date '2018-09-16' then 'A' else 'B' end;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_25" value="select ''null''::jsonb;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_26" value="select ''null''::json;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_27" value="select &amp;quot;{&amp;quot;name&amp;quot;: [&amp;quot;john&amp;quot;, false],  &amp;quot;age&amp;quot;:    18,  &amp;quot;assress&amp;quot;:  {&amp;quot;country&amp;quot; :&amp;quot;china&amp;quot;, &amp;quot;zip-code&amp;quot;: &amp;quot;10000&amp;quot;},&amp;quot;true&amp;quot;:true}&amp;quot;::JSON;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_28" value="select {&amp;quot;name&amp;quot;: [&amp;quot;john&amp;quot;, false],  &amp;quot;age&amp;quot;:    18,  &amp;quot;assress&amp;quot;:  {&amp;quot;country&amp;quot; :&amp;quot;china&amp;quot;, &amp;quot;zip-code&amp;quot;: &amp;quot;10000&amp;quot;},true:true}::JSON;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_29" value="select &amp;quot;{&amp;quot;name&amp;quot;,&amp;quot;john&amp;quot;,  &amp;quot;age&amp;quot;}&amp;quot;::JSON;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_30" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::json -&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_31" value="select '[138,0.58,-369,1.25e+6]'::json -&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_32" value="select '\&amp;quot;$$\&amp;quot;'::json -&gt;192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_33" value="select [&amp;quot;www@13^&amp;quot;, 1, {&amp;quot;name&amp;quot;: &amp;quot;john&amp;quot;}, &amp;quot;2&amp;quot;, &amp;quot; &amp;quot;,true,&amp;quot;null&amp;quot;]::JSON;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_34" value="select '[&amp;quot;www@13^&amp;quot;, 1, {&amp;quot;name&amp;quot;: &amp;quot;john&amp;quot;}, '2',,true,&amp;quot;null&amp;quot;]'::JSON;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_35" value="select jsonb_ge('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_36" value="select jsonb_ge('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_37" value="select jsonb_ge('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_38" value="select jsonb_ge('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_39" value="select jsonb_extract_path_op ('[{&amp;quot;a&amp;quot;:&amp;quot;foo&amp;quot;},{&amp;quot;b&amp;quot;:&amp;quot;bar&amp;quot;},{&amp;quot;c&amp;quot;:&amp;quot;baz&amp;quot;}]',{2});" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_40" value="select jsonb_extract_path_op('null',‘{1)’;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_41" value="select jsonb_extract_path_text('null',);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_42" value="select jsonb_gt('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_43" value="select jsonb_gt('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_44" value="select jsonb_gt('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_45" value="select jsonb_gt('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_46" value="select jsonb_lt('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_47" value="select jsonb_lt('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_48" value="select jsonb_lt('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_49" value="select jsonb_lt('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_50" value="select jsonb_extract_path_text_op ('[{&amp;quot;a&amp;quot;:&amp;quot;foo&amp;quot;},{&amp;quot;b&amp;quot;:&amp;quot;bar&amp;quot;},{&amp;quot;c&amp;quot;:&amp;quot;baz&amp;quot;}]',{2});" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_51" value="select jsonb_extract_path_text_op('null',‘{1)’;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_52" value="select jsonb_le('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_53" value="select jsonb_le('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_54" value="select jsonb_le('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_55" value="select jsonb_le('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_56" value="select jsonb_exists_any('{&amp;quot;a&amp;quot;:1, &amp;quot;b&amp;quot;: [1,2,3],&amp;quot;c&amp;quot;:{&amp;quot;b&amp;quot;:&amp;quot;d&amp;quot;}}', array[{'c':'b'}]);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_57" value="select jsonb_exists_any('[&amp;quot;abcdefg&amp;quot;,138,&amp;quot;{\&amp;quot;db\&amp;quot;:\&amp;quot;test\&amp;quot;}&amp;quot;,null,&amp;quot;true&amp;quot;,false]',array{&amp;quot;db&amp;quot;:&amp;quot;test&amp;quot;});" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_58" value="select jsonb_exists_any('[&amp;quot;abcdefg&amp;quot;,138,&amp;quot;{\&amp;quot;db\&amp;quot;:\&amp;quot;test\&amp;quot;}&amp;quot;,null,&amp;quot;true&amp;quot;,false]',array[{'db':'test'}]);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_59" value="select jsonb_exists_all('{&amp;quot;a&amp;quot;:1, &amp;quot;b&amp;quot;: [1,2,3],&amp;quot;c&amp;quot;:{&amp;quot;b&amp;quot;:&amp;quot;d&amp;quot;}}','{'b','d'}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_60" value="select jsonb_exists_all('[null, false, 123,{&amp;quot;a&amp;quot;:true},&amp;quot;test&amp;quot;]',array'[123,'{a}']');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_61" value="select sum(score)fromtab136whereclass=2andcourse='数学';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_62" value="select max(score)fromtab136whereclass=2andcourse='数学';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_63" value="select min(score)fromtab136whereclass=2andcourse='数学';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_64" value="select avg(score)fromtab136whereclass=1andcourse='数学';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_65" value="select jsonb_cmp('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_66" value="select jsonb_cmp('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_67" value="select jsonb_cmp('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_68" value="select jsonb_cmp('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_69" value="select json_extract_path_text('null',);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_70" value="select jsonb_eq('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_71" value="select jsonb_eq('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_72" value="select jsonb_eq('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_73" value="select jsonb_eq('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_74" value="select jsonb_ne('[{a:false},{a:true},123,'qwer','null']','{&amp;quot;a&amp;quot;:false}');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_75" value="select jsonb_ne('[{a:false},{a:true},123,'qwer','null']','123');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_76" value="select jsonb_ne('[{a:false},{a:true},123,'qwer','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_77" value="select jsonb_ne('[{a:false},{a:true},123,'&amp;quot;qwer&amp;quot;','null']','qwer');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_78" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::jsonb -&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_79" value="select '[138,0.58,-369,1.25e+6]'::jsonb -&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_80" value="select '\&amp;quot;$$\&amp;quot;'::jsonb -&gt;192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_81" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::jsonb  -&gt;&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_82" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::jsonb -&gt;&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_83" value="select '\&amp;quot;$$\&amp;quot;'::jsonb -&gt;&gt;192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_84" value="select '[{&amp;quot;a&amp;quot;:true}, null] '::  jsonb @&gt; [null];" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_85" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::json  -&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_86" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::json -&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_87" value="select '{&amp;quot;a&amp;quot;:null, &amp;quot;bb&amp;quot;: 1, &amp;quot;bb&amp;quot;: &amp;quot;A&amp;quot;,   &amp;quot;cde&amp;quot;: [1,2,   &amp;quot;re&amp;quot;], &amp;quot;abc&amp;quot;: 1}':: -&gt; true;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_88" value="select '{&amp;quot;a&amp;quot;:null, &amp;quot;[1,2,\&amp;quot;re\&amp;quot;]&amp;quot;: 1, &amp;quot;bb&amp;quot;: &amp;quot;A&amp;quot;, &amp;quot;cde&amp;quot;: [1,2,   &amp;quot;re&amp;quot;], &amp;quot;abc&amp;quot;: 1}':: -&gt; null;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_89" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::json -&gt;&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_90" value="select '[138,0.58,-369,1.25e+6]'::json -&gt;&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_91" value="select '\&amp;quot;$$\&amp;quot;'::json -&gt;&gt;192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_92" value="select '[{&amp;quot;a&amp;quot;:true}, null] '::  jsonb &lt;@ [null];" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_93" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::jsonb  -&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_94" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::jsonb -&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_95" value="select '[null,true,false,&amp;quot;null&amp;quot;,&amp;quot;true&amp;quot;,&amp;quot;false&amp;quot;]'::jsonb -&gt;&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_96" value="select '[138,0.58,-369,1.25e+6]'::jsonb -&gt;&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_97" value="select '{&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: {&amp;quot;a&amp;quot;: 2, &amp;quot;b&amp;quot;: null}}'::json  -&gt;&gt; 2021-05-31 12:59:08;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_98" value="select '{&amp;quot;foo&amp;quot;: [true, &amp;quot;bar&amp;quot;], &amp;quot;tags&amp;quot;: {&amp;quot;a&amp;quot;: 1, &amp;quot;b&amp;quot;: null}}'::json -&gt;&gt; 192.168.100.128/25;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_99" value="select '52093.89'::money::numeric::float8;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_100" value="select 'fat:ab &amp; cat'::tsquery;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_101" value="select 'super:*'::tsquery;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_102" value="select 'fat &amp; rat'::tsquery;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_103" value="select 'fat &amp; (rat | cat)'::tsquery;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_104" value="select 'fat &amp; rat &amp; ! cat'::tsquery;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_105" value="select 'a fat cat sat on a mat and ate a fat rat'::tsvector;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_106" value="select $$the lexeme '    ' contains spaces$$::tsvector;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_107" value="select 'a:1 fat:2 cat:3 sat:4 on:5 a:6 mat:7 and:8 ate:9 a:10 fat:11 rat:12'::tsvector;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_108" value="select 'a:1A fat:2B,4C cat:5D'::tsvector;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_109" value="select ASCII(#);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_110" value="select ASCII(=);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_111" value="select char_length($$jjslf$$);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_112" value="select char_length($$jj' 'slf$$);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_113" value="select last(s_name) as name, last(s_id nulls last ) from last06;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_114" value="select NULLIF(,);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_115" value="select NULLIF();" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_116" value="select nullif(#,&amp;) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_117" value="select nullif(#,#) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_118" value="select nullif((,)) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_119" value="select nullif(@,@) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_120" value="select nullif(+,-) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_121" value="select nullif(!,~) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_127" value="select row_to_json(row(interval '3' day)) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_128" value="select row_to_json(row(inet('10.183.187.233'))) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_129" value="select row_to_json(row(B'101')) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_130" value="select row_to_json(row('The Fat Rats'::tsvector)) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_131" value="select row_to_json(row('52093.89'::money::numeric::float8)) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_132" value="select array_prepend(@,array[1,2]) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_133" value="select array_cat(array[[1,2,3],[2,5]], @) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_134" value="select array_append(array[1,2],@) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_135" value="select array_dims(array[[7,1,@], [1,3,6]]) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_136" value="select array_length(array[1,2,3], ) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_137" value="select array_upper(array[[1,8,3,7]], #) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_138" value="select array_upper(array[[1,8,3,7]], ) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_139" value="select array_lower([1,2,3], 1) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_140" value="select array_lower(array[1,2,3], @) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_141" value="select array_lower(array[1,2,3], ) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_142" value="select col1 / double precision '1.5' from test_date01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_143" value="select double precision '1.5' * col1  from test_date01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_144" value="select col1:: date + integer '7'  from test_date01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_145" value="select daterange('2000-05-06','2000-08-08','(]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_146" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','(]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_147" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','(]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_148" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','(]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_149" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','(]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_150" value="select daterange('2000-05-06','2000-08-08','()');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_151" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','()');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_152" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','()');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_153" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','()');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_154" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','()');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_155" value="select daterange('2000-05-06','2000-08-08','abc');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_156" value="select daterange('2001-05-06','2000-08-08');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_157" value="select daterange('2001-05-06','2001-05-06');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_158" value="select daterange('2000-05-06','2000-08-08','[)');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_159" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','[)');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_160" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','[)');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_161" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','[)');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_162" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','[)');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_163" value="select daterange('2000-05-06','2000-08-08','[]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_164" value="select daterange('2000-05-06 00:01:09','2000-08-08 19:59:00','[]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_165" value="select daterange('2000-05-06 12:01:09','2000-08-08 19:59:00','[]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_166" value="select daterange('2000-05-06 00:01:09','2000-08-08 09:59:00','[]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_167" value="select daterange('2000-05-06 17:01:09','2000-08-08 09:59:00','[]');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_168" value="select date '2019-1-6' -  col1  from test_date01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_169" value="select daterange('2001-02-16 20:38:40','2001-02-16 20:38:41');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_170" value="select daterange('2018-05-14 14:09:04.127444+08','2018-05-16 14:09:04.127444+08');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_171" value="select daterange('2000-05-06','2000-08-08');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_172" value="select col1:: date - integer '7'  from test_date01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_173" value="select ADD_MONTHS('2018-02-28',1) - date'2018-02-28'  from  sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_174" value="select bitand(6,) as result from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_175" value="select bitand(,6) as result from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_176" value="select first(s_name) as name, first(s_id nulls first ) from first06;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_177" value="select notlike(1, );" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_178" value="select sin(2  2) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_179" value="select sin(2)(2) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_180" value="select length(EXTRACT (MONTH FROM DATE '2018-10-04')) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_181" value="select acos(2  2) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_182" value="select acos(2)(2) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_183" value="select acos 1 as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_184" value="select count(none) from tbc;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_185" value="select reset_unique_sql('global','all',);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_186" value="select pg_stat_get_tuples_hot_updated(’87654345888765#￥%……&amp;*‘) from PG_CLASS a where a.relname = 'sales';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_187" value="select to_hex(@#￥);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_188" value="select array_replace(array[1.23,2.25,33,5.0],(select @ -5.0 as result),(select @ 8.0 as result));" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_189" value="select array_replace(array[1.23,2.25,33,5.0],(select substrb('string',2,3)),(select @ 8.0 as result));" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_190" value="select array_replace(array['string','str','st','ring'],(select @ -5.0 as result),(select repeat('ab', 3)));" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_191" value="select asin(2  2) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_192" value="select asin(2)(2) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_193" value="select asin 1 as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_194" value="select int4range(1,3) + int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_195" value="select tsrange('[2021-01-01,2021-03-01)') + '[3,4]'::int4range  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_196" value="select numrange(8.1,10.2,'[]') &gt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_197" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_198" value="select tsrange('[2021-01-01,2028-03-01)') &gt; ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_199" value="select int4range(1,5) &gt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_200" value="select int4range(10,10) &gt; '(10,15)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_201" value="select int8range(15,25) &gt; int8range(15,26) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_202" value="select int4range(1,5) &lt;= '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_203" value="select int4range(10,18) &lt;= '(10,15)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_204" value="select int8range(15,26) &lt;= int8range(15,26) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_205" value="select numrange(8.1,10.2,'[]') &lt;= numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_206" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &lt;= ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_207" value="select tsrange('[2021-01-01,2028-03-01)') &lt;= ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_208" value="select int4range(1,5) * '[3,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_209" value="select int8range(16,30) *int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_210" value="select tsrange('[2021-01-01,2021-03-01)') *('[2021-03-01,2021-10-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_211" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') *('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_212" value="select tsrange('[2021-01-01,2021-03-01)') * ('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_213" value="select numrange(1.1,9.9,'[]') * numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_214" value="select int4range(10,16) * '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_215" value="select int8range(16,25) *int8range(15,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_216" value="select numrange(1.1,2.2,'[]') &lt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_217" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &lt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_218" value="select tsrange('[2021-01-01,2021-03-01)') &lt; ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_219" value="select int4range(1,5) &lt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_220" value="select int4range(10,10) &lt; '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_221" value="select int8range(15,25) &lt; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_222" value="select int4range(1,3) + '[3,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_223" value="select int8range(16,25) +int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_224" value="select tsrange('[2021-01-01,2021-03-01)') +('[2021-03-01,2021-10-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_225" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') +('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_226" value="select tsrange('[2021-01-01,2021-03-01)') + ('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_227" value="select numrange(1.1,9.9,'[]') + numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_228" value="select int4range(10,16) + '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_229" value="select int8range(16,25) +int8range(15,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_230" value="select lower_inc(int4range(10,10)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_231" value="select lower_inc(int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_232" value="select lower_inc(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_233" value="select lower_inc(tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_234" value="select lower_inc(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_235" value="select isempty(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_236" value="select isempty(bugstatus (create, closed)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_237" value="select int4range(1,3) -|- '[3,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_238" value="select int8range(16,25) -|-int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_239" value="select tsrange('[2021-01-01,2021-03-01)') -|-('[2021-03-01,2021-10-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_240" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') -|-('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_241" value="select numrange(1.1,9.9,'[]') -|- numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_242" value="select int4range(10,16) -|- '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_243" value="select int8range(16,25) -|-int8range(15,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_244" value="select numrange(1.1,2.2,'[]') &lt;&gt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_245" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &lt;&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_246" value="select int4range(1,5) &lt;&gt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_247" value="select int4range(10,10) &lt;&gt; '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_248" value="select int8range(15,25) &lt;&gt; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_249" value="select tsrange('[2021-01-01,2021-03-01)') &lt;&gt; ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_250" value="select elem_contained_by_range('abc', int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_251" value="select elem_contained_by_range(2, numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_252" value="select int4range(1,5) &gt;= '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_253" value="select int8range(15,26) &gt;= int8range(15,26) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_254" value="select numrange(8.1,10.2,'[]') &gt;= numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_255" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &gt;= ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_256" value="select tsrange('[2021-01-01,2028-03-01)') &gt;= ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_257" value="select int4range(10,18) &gt;= '(10,15)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_258" value="select numrange(1.1,2.2,'[]') &lt;&lt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_259" value="select tsrange('[2010-5-11 pst,2011-03-01 pst)') &lt;&lt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_260" value="select tsrange('[1999-01-01,2000-05-01)') &lt;&lt; ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_261" value="select int4range(1,5) &lt;&lt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_262" value="select int4range(10,10) &lt;&lt; '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_263" value="select int8range(15,25) &lt;&lt; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_264" value="select int4range(5,10) &gt;&gt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_265" value="select int4range(20,25) &gt;&gt; '(10,20)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_266" value="select int8range(25,50) &gt;&gt; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_267" value="select numrange(1.1,2.2,'[]') &gt;&gt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_268" value="select tsrange('[2010-5-11 pst,2011-03-01 pst)') &gt;&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_269" value="select tsrange('[1999-01-01,2000-05-01)') &gt;&gt; ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_270" value="select int4range(1,5) @&gt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_271" value="select int8range(15,26) @&gt; int8range(15,26) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_272" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') @&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_273" value="select tsrange('[2021-01-01,2028-03-01)') @&gt; ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_274" value="select int4range(10,12) @&gt; '(10,15)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_275" value="select numrange(8.1,10.2,'[]') @&gt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_276" value="select int4range(1,5) = '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_277" value="select int4range(10,10) = '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_278" value="select int8range(15,25) = int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_279" value="select tsrange('[2021-01-01,2021-03-01)') = ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_280" value="select numrange(1.1,2.2,'[]') = numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_281" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') = ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_282" value="select int4range(1,5) &amp;&gt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_283" value="select int8range(16,25) &amp;&gt; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_284" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&gt; ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_285" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&gt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_286" value="select numrange(1.1,9.9,'[]') &amp;&gt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_287" value="select int4range(10,16) &amp;&gt; '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_288" value="select int4range(1,5) &lt;@ '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_289" value="select int8range(15,26) &lt;@ int8range(15,26) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_290" value="select int4range(10,12) &lt;@ '(10,15)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_291" value="select numrange(8.1,10.2,'[]') &lt;@ numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_292" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') &lt;@ ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_293" value="select tsrange('[2021-01-01,2028-03-01)') &lt;@ ('[2021-01-01,2021-05-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_294" value="select int4range(1,5) @&gt; 4 as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_295" value="select tsrange('[2013-12-11 pst,2025-03-01 pst)') @&gt; '2014-12-11 pst'::timestamp  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_296" value="select tsrange('[2021-01-01,2028-03-01)') @&gt; '2026-09-09'::timestamp as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_297" value="select int4range(10,12) @&gt; 9 as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_298" value="select numrange(8.1,10.2,'[]') @&gt; 6.1::numeric as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_299" value="select int4range(1,5) &amp;&lt; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_300" value="select int8range(15,25) &amp;&lt; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_301" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&lt; ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_302" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&lt; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_303" value="select numrange(1.1,9.9,'[]') &amp;&lt; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_304" value="select int4range(10,16) &amp;&lt; '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_305" value="select int4range(1,3) - int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_306" value="select tsrange('[2021-01-01,2021-03-01)') - '[3,4]'::int4range  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_307" value="select elem_contained_by_range('2', numrange(1.1,2.2));" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_308" value="select elem_contained_by_range('10', int4range(10,80)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_309" value="select elem_contained_by_range('20', int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_310" value="select elem_contained_by_range('2021-02-05', tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_311" value="select elem_contained_by_range('2025-12-11 pst', tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_312" value="select lower(int4range(10,80)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_313" value="select lower(int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_314" value="select lower(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_315" value="select lower(tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_316" value="select lower(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_317" value="select numrange(1.1,'a','[]') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_318" value="select numrange('abc','111','[]') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_319" value="select numrange(2.3,111.5,'1') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_320" value="select lower_inf(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_321" value="select lower_inf(bugstatus (create, closed)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_322" value="select  4 &lt;@ int4range(1,5)  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_323" value="select 17::int8 &lt;@ int8range(15,26)  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_324" value="select '2014-12-11 pst'::timestamp &lt;@ tsrange('[2013-12-11 pst,2025-03-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_325" value="select '2026-09-09'::timestamp &lt;@ tsrange('[2021-01-01,2028-03-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_326" value="select 9 &lt;@ int4range(10,12)   as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_327" value="select 6.1::numeric &lt;@ numrange(8.1,10.2,'[]')  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_328" value="select int4range(1,5) &amp;&amp; '[1,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_329" value="select int8range(15,25) &amp;&amp; int8range(15,25) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_330" value="select tsrange('[2021-01-01,2021-03-01)') &amp;&amp; ('[2021-01-01,2021-03-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_331" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') &amp;&amp; ('[2013-12-11 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_332" value="select numrange(1.1,2.2,'[]') &amp;&amp; numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_333" value="select int4range(10,10) &amp;&amp; '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_334" value="select upper_inf('(,)'::daterange) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_335" value="select upper_inf(int4range'(,10)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_336" value="select upper_inf('(15,)'::int8range) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_337" value="select upper_inf(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_338" value="select upper_inf(tsrange('(2021-01-01,]')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_339" value="select upper_inf(tsrange('[,2021-03-01 pst]')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_340" value="select numrange(1.1,2.2,'[]') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_341" value="select numrange(5.1,6.7,'()') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_342" value="select numrange(5.1,6.7,'(]') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_343" value="select numrange(7.7,8.7,'[)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_344" value="select numrange(1.1,'123','[]') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_345" value="select int4range(1,5) - '[3,4]'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_346" value="select int8range(16,30) -int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_347" value="select tsrange('[2021-01-01,2021-03-01)') -('[2021-03-01,2021-10-01)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_348" value="select tsrange('[2013-12-11 pst,2021-03-01 pst)') -('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_349" value="select tsrange('[2021-01-01,2021-03-01)') - ('[2021-3-01 pst,2021-05-01 pst)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_350" value="select int4range(10,16) - '(10,11)'::int4range as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_351" value="select int8range(16,25) -int8range(15,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_352" value="select upper(int4range(10,80)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_353" value="select upper(int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_354" value="select upper(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_355" value="select upper(tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_356" value="select upper(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_357" value="select upper_inc(int4range(10,10)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_358" value="select upper_inc(int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_359" value="select upper_inc(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_360" value="select upper_inc(tsrange('(2021-01-01,2021-03-01]')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_361" value="select upper_inc(tsrange('[2013-12-11 pst,2021-03-01 pst]')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_362" value="select lower_inc(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_363" value="select lower_inc(bugstatus (create, closed)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_364" value="select lower(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_365" value="select lower(bugstatus (create, closed)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_366" value="select int4range(1,3) * int8range(25,35) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_367" value="select tsrange('[2021-01-01,2021-03-01)') * '[3,4]'::int4range  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_368" value="select upper_inc(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_369" value="select upper_inc(bugstatus (create, closed)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_370" value="select upper(macaddr('08:00:2b:01:02:03'::macaddr ,'08:00:2b:01:02:03'::macaddr)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_371" value="select upper(bugstatus (create, closed)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_372" value="select isempty(int4range(10,10)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_373" value="select isempty(int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_374" value="select isempty(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_375" value="select isempty(tsrange('[2021-01-01,2021-03-01)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_376" value="select isempty(tsrange('[2013-12-11 pst,2021-03-01 pst)')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_377" value="select lower_inf('(,)'::daterange) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_378" value="select lower_inf(int4range'(,10)') as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_379" value="select lower_inf(int8range(15,25)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_380" value="select lower_inf(numrange(1.1,2.2)) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_381" value="select lower_inf(tsrange('(2021-01-01,2021-03-01]')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_382" value="select lower_inf(tsrange('[,2021-03-01 pst]')) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_383" value="select hll_hash_boolean(@,10);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_384" value="select hll_hash_boolean(true, @#);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_385" value="select hll_hash_boolean(@);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_386" value="select hll_hash_bytea(@##$);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_387" value="select hll_hash_any('08:00:2b:01:02:03'::macaddr);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_388" value="select hll_hash_any ('[2010-01-01 14:30, 2010-01-01 15:30)'::tsrange);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_389" value="select hll_hash_any ('a fat cat sat on a mat and ate a fat rat'::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_390" value="select hll_hash_any('08:00:2b:01:02:03'::macaddr, 2147483647);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_391" value="select hll_hash_any ('[2010-01-01 14:30, 2010-01-01 15:30)'::tsrange, 10);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_392" value="select hll_hash_any ('a fat cat sat on a mat and ate a fat rat'::tsvector, 30);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_393" value="select hll_hash_text(`天天开心`);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_394" value="select trim('2' '298082');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_395" value="select trim(leading '1','2' from '1uoiusf8','2iouf899');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_396" value="select trim(both '1','2' from '1uoiusf8','2iouf899');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_397" value="select trim(trailing '1','2' from '1009-02-01');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_398" value="select trim(both '2' from );" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_399" value="select trim(leading'2' from );" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_400" value="select trim(trailing '2' from );" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_401" value="select substring(from 4 for 4) as text1;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_403" value="select ||/ clo1 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_404" value="select  clo1! from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_405" value="select  clo2! from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_406" value="select @clo1, @clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_407" value="select @ clo1, @clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_408" value="select ||/ clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_410" value="select @ clo1, @ clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_411" value="select  ||/clo1 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_412" value="select  ||/clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_415" value="select ||/clo1,||/clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_416" value="select @clo1 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_417" value="select cos(2*pi(),2*pi()));" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_418" value="select ||/ clo1,||/clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_420" value="select |/clo1 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_423" value="select |/clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_424" value="select |/clo1,|/clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_425" value="select  |/clo1 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_426" value="select  |/clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_427" value="select  !!clo1 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_428" value="select  !!clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_430" value="select ~ clo1 , ~ clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_431" value="select ~ (clo1+clo2) from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_432" value="select ~clo1, ~clo2 from data_01;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_433" value="select atan2(,) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_434" value="select atan2('11+11',) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_435" value="select atan2(11 11) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_436" value="select atan2(22,) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_437" value="select B'11110' | B'0000';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_438" value="select B'101' | as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_439" value="select B'101' # as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_440" value="select B'11110' # B'0000';" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_441" value="select extract(epoch from timestamp with time zone '2001-02-16 20:38:40.12-08') from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_442" value="select timestamp with time zone 'epoch' + 982384720.12 * interval '1 second' as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_443" value="select extract(quarter from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_444" value="select extract(week from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_445" value="select extract(isoyear from date '2006-01-01') from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_446" value="select extract(isoyear from date '2006-01-02') from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_447" value="select atan(11 11) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_448" value="select atan(,) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_449" value="select to_tsvector('fat cats ate fat rats') @@ 'fa:*'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_450" value="select to_tsvector('fat cats ate rats') @@(!!'rat'::tsquery) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_451" value="select $$the lexeme '    '  , contains spaces$$::tsvector@@ ','::tsquery  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_452" value="select setweight(body :: tsvector, 'a') from ts_zhparser;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_453" value="select to_tsvector('english', 'the fat rats')@@ 'the'::tsquery  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_454" value="select to_tsvector('fat cats ate rats') @@(!!'ratt'::tsquery) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_455" value="select 'fat cats ate'::tsvector || 'a b c'::tsvector;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_456" value="select 'fat | rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_457" value="select to_tsvector('fat cats ate rats') @@('rat'::tsquery &amp;&amp; 'cat'::tsquery) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_458" value="select 'a:1 b:2'::tsvector || 'c:1 d:2 b:3'::tsvector as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_459" value="select 'a b'::tsvector || 'c:1 d:2 b:3'::tsvector as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_460" value="select setweight('fat:2,4 cat:3 rat:5b'::tsvector, 1);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_461" value="select setweight('fat:2,4 cat:3 rat:5b'::tsvector, '');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_462" value="select $$the lexeme '    '  , contains spaces$$::tsvector || 'c:1 d:2 b:3'::tsvector as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_463" value="select numnode('(fat &amp; rat) | cat'::tsquery);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_464" value="select length(1::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_465" value="select strip(body :: tsvector) from ts_zhparser;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_466" value="select length('a b c'::tsvector  || 'd e f'::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_467" value="select length('fat:2,4 cat:3 rat:5a'::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_468" value="select length($$the lexeme '    ' contains spaces$$::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_469" value="select length('fat:2,4 cat:3'::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_470" value="select numnode(body :: tsquery) from ts_zhparser;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_471" value="select 'fat'::tsquery  = 'fat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_472" value="select length('fat rat'::tsvector);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_473" value="select numnode(bodyy :: tsquery) from ts_zhparser;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_474" value="select 'cat &amp; rat'::tsquery &lt;@ 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_475" value="select 'fat'::tsquery  = 'fatt'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_476" value="select 'cat'::tsquery &lt;@ 'cat &amp; rat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_477" value="select 'cat &amp; rat'::tsquery &lt;@ 'cat&amp; rat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_478" value="select 'cat'::tsquery @&gt; 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_479" value="select 'cat&amp;fat'::tsquery @&gt; 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_480" value="select 'fat'::tsquery  &gt; 'fat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_481" value="select 'fat'::tsquery  &gt; 'fat &amp; rat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_482" value="select 'fat &amp; rat'::tsquery  &gt; 'fat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_483" value="select 'cat'::tsquery @&gt; 'cat &amp; rat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_484" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery  &amp;&amp; 'ate'::tsquery)  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_485" value="select 'fat &amp; rat'::tsquery || 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_486" value="select to_tsvector('fat cats ate rats') @@('rat'::tsquery || 'cat'::tsquery) as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_487" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery  &amp;&amp; 'ateee'::tsquery)  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_488" value="select 'fat | rat'::tsquery || 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_489" value="select 'fat:ab'::tsquery  &amp;&amp; 'fa:ab'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_490" value="select 'fat &amp; rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_491" value="select  to_tsvector('fat cats ate ate' )|| 'a b c'::tsvector  || 'd e f'::tsvector as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_492" value="select 'fat cats ate fat rats'::tsvector @@ ('fat'::tsquery ||  'ateee'::tsquery)  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_493" value="select  'a:1a '::tsvector|| 'b:1a '::tsvector as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_494" value="select 'fat cats ate fat rats'::tsvector @@ to_tsquery('fat &amp; rat')as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_495" value="select 'a:1 fat:2 cat:3 sat:4 on:5'::tsvector @@ 'fat'::tsquery  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_496" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_497" value="select 'fat cats ate fat rats'::tsvector @@ ('fat11'::tsquery ||  'ateee'::tsquery)  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_498" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery &amp;&amp; '' ::tsquery  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_499" value="select !! 'cat'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_500" value="select 'fat:ab'::tsquery  || 'fa:ab'::tsquery as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_501" value="select 'rat'::tsquery &amp;&amp; 'cat'::tsquery &amp;&amp; ',' ::tsquery  as result;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_502" value="select cast(date 'epoch' as nchar(37));" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_503" value="select to_char(interval '2' year ,'yyyy','yyyy');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_504" value="select to_char(interval 2 year);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_505" value="select to_char(current_timestamp, 0x5d);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_506" value="select to_char(pg_systimestamp(), #%&amp;^);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_507" value="select to_char(-1239.456::numeric(7,3),''汉字'');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_508" value="select to_char(date 'epoch', 'hh12:mi:ss yyyy-month-dd');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_509" value="select to_char(timestamp with time zone '2010-09-13 12:32:03+08', 'hh12:mi:ss');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_510" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367 pst', 'hh12:mi:ss');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_511" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367 america/new_york', 'hh12:mi:ss');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_512" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367+08', 'hh12:mi:ss');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_513" value="select to_char(timestamp without time zone '2010-09-13 12:32:03+08');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_514" value="select to_char(interval '2' year ,'yyyy');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_515" value="select to_char(interval '3' day ,'ddd');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_516" value="select to_char(interval '3' day ,'dd');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_517" value="select to_char(interval '3' day ,'天');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_518" value="select to_char(interval '2' year ,'dd');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_519" value="select numtoday(2f);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_520" value="select numtoday(@#$);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_521" value="select to_char(156*&amp;%$%^x);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_522" value="select to_number( , '99g999d9s');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_523" value="select to_number(&lt;1*8+9/3-9%3+9/2&gt;, '999999d99');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_524" value="select to_timestamp(-#&amp;%#^5);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_525" value="select to_char(date 'allballs', 'hh24:mi:ss ms');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_526" value="select to_char(timestamp with time zone '2015-10-14 11:21:28.317367 america/new_yorkkk', 'hh12:mi:ss');" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_527" value="select coalesce(,1,null,2);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_528" value="select coalesce();" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_529" value="select localtimestamp('skdfhhgh跳或者购买功能') from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_531" value="select '0.0999'::money &lt;= '0.1000'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_532" value="select '52093.89'::money &lt;= '52093.891'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_533" value="select '52093.891'::money &lt;= '52093.897'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_534" value="select '0.001'::money &lt;= '0.0'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_535" value="select '0.099'::money &lt;= '0.1'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_536" value="select '0.0999'::money != '0.1000'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_537" value="select '52093.89'::money != '52093.891'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_538" value="select '52093.891'::money != '52093.897'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_539" value="select '0.001'::money != '0.0'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_540" value="select '0.099'::money != '0.1'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_542" value="select '521'::money != '520'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_543" value="select '520'::money != '521'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_546" value="select '0.0999'::money = '0.1000'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_547" value="select '52093.89'::money = '52093.891'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_548" value="select '52093.891'::money = '52093.897'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_549" value="select '0.001'::money = '0.0'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_550" value="select '0.099'::money = '0.1'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_551" value="select '521'::money = '520'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_552" value="select '520'::money = '521'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_557" value="select '521'::money &gt;= '520'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_558" value="select '520'::money &gt;= '521'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_559" value="select '521'::money &lt;= '520'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_560" value="select '520'::money &lt;= '521'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_562" value="select '521'::money &lt;&gt; '520'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_563" value="select '520'::money &lt;&gt; '521'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_564" value="select '0.0999'::money &lt;&gt; '0.1000'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_565" value="select '52093.89'::money &lt;&gt; '52093.891'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_566" value="select '52093.891'::money &lt;&gt; '52093.897'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_567" value="select '0.001'::money &lt;&gt; '0.0'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_568" value="select '0.099'::money &lt;&gt; '0.1'::money;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_570" value="select sign(~);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_571" value="select tan(11 11) from tan_T1;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_572" value="select tan(,) from tan_T1;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_573" value="select mod(154414,,44) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_574" value="select mod(,) from sys_dummy;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_575" value="select median(days) from (values(interval '4' day), (interval '5' day), (interval '6' day), (interval '7' day)) as test(days);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_576" value="select every(array[1.1,2.1,3.1]::int[] =[1,2,3]);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_577" value="select bool_and(array[1.1,2.1,3.1]::int[] =[1,2,3]);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_578" value="select string_agg(name, #) from table_test;" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_579" value="select bool_or(array[1.1,2.1,3.1]::int[] =[1,2,3]);" db-types="openGauss"/>
+    <sql-case id="unsupported_select_case_for_opengauss_580" value="select bool_or(@);" db-types="openGauss"/>
+    <sql-case id="assertDistSQLShowRuleParseConflict" value="SHOW READWRITE_SPLITTING RULE FROM schema_name" db-types="PostgreSQL,openGauss"/>
 </sql-cases>
