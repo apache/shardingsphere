@@ -32,10 +32,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.List;
-import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -43,23 +42,26 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String sqlCaseId;
     
-    private final String sqlCaseValue;
+    private final String sql;
     
     private final String databaseType;
     
-    private static String getContent(final String url) throws IOException {
-        InputStreamReader in = new InputStreamReader(new URL(url).openStream());
-        return new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
+        Collection<Object[]> result = new LinkedList<>();
+        for (Map<String, String> each : getResponse(sqlCaseURL)) {
+            result.addAll(getSQLCases(each));
+        }
+        return result;
     }
     
-    private static List<Map<String, String>> getResponse(final String sqlCaseURL) throws IOException {
-        List<Map<String, String>> result = new LinkedList<>();
+    private static Collection<Map<String, String>> getResponse(final String sqlCaseURL) throws IOException {
+        Collection<Map<String, String>> result = new LinkedList<>();
         String[] patches = sqlCaseURL.split("/", 8);
-        String sqlCasesOwner = patches[3];
-        String sqlCasesRepo = patches[4];
-        String sqlCasesDirectory = patches[7];
-        String sqlCasesAPI = "https://api.github.com/repos/" + sqlCasesOwner + "/" + sqlCasesRepo + "/contents/" + sqlCasesDirectory;
-        String[] lines = getContent(sqlCasesAPI).split("\\,");
+        String casesOwner = patches[3];
+        String casesRepo = patches[4];
+        String casesDirectory = patches[7];
+        String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
+        String[] lines = getContent(casesGitHubApiURL).split("\\,");
         String nameItem = null;
         for (String each : lines) {
             if (each.contains("name")) {
@@ -72,16 +74,12 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
-        Collection<Object[]> result = new LinkedList<>();
-        List<Map<String, String>> response = getResponse(sqlCaseURL);
-        for (Map<String, String> each : response) {
-            result.addAll(getSqlCases(each));
-        }
-        return result;
+    private static String getContent(final String url) throws IOException {
+        InputStreamReader in = new InputStreamReader(new URL(url).openStream());
+        return new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
     }
     
-    private static Collection<Object[]> getSqlCases(final Map<String, String> elements) throws IOException {
+    private static Collection<Object[]> getSQLCases(final Map<String, String> elements) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         String sqlCaseFileName = elements.get("name");
         String[] lines = getContent(elements.get("download_url")).split("\n");
@@ -92,9 +90,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
             }
             if (Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
-                result.add(new Object[]{
-                        sqlCaseId, each,
-                });
+                result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
             }
         }
@@ -102,14 +98,12 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     }
     
     @Test
-    public final void assertDynamicLoadingSQL() {
+    public final void assertParseSQL() {
         try {
-            CacheOption cacheOption = new CacheOption(128, 1024L);
-            ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sqlCaseValue, false);
-            new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseContext);
-        } catch (SQLParsingException | ClassCastException | NullPointerException
-                | SQLASTVisitorException | NumberFormatException | StringIndexOutOfBoundsException ignore) {
-            System.out.println("ParserError: " + sqlCaseId + " value: " + sqlCaseValue + " db-type: " + databaseType);
+            ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
+            new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
+        } catch (final SQLParsingException | ClassCastException | NullPointerException | SQLASTVisitorException | NumberFormatException | StringIndexOutOfBoundsException ignore) {
+            System.out.println("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
     }
 }
