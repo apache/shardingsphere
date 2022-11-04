@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql;
 
-import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoadingSQLParserParameterizedTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
-@RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingPostgreSQLParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
+//@RunWith(ShardingSphereParallelTestParameterized.class)
+public final class DynamicLoadingPostgreSQLParserParameterizedTest {
     
-    public DynamicLoadingPostgreSQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "PostgreSQL");
-    }
+    // public DynamicLoadingPostgreSQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
+    // super(sqlCaseId, sqlCaseValue, "PostgreSQL");
+    // }
     
-    @Parameters(name = "{0} (PostgreSQL) -> {1}")
+    /**
+     * Get test parameters.
+     *
+     * @return Test cases from github.
+     * @throws IOException IOException
+     **/
+    // @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {
         return Collections.emptyList();
-//        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
+        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
 }
