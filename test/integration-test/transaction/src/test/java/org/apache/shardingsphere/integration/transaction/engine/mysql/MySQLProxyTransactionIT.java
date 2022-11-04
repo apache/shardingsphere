@@ -39,7 +39,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public MySQLProxyTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public MySQLProxyTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);
