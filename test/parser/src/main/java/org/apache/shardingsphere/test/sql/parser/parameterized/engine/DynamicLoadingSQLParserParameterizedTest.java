@@ -48,7 +48,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
-
+    
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         for (Map<String, String> each : getResponse(sqlCaseURL)) {
@@ -67,9 +67,8 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesGitHubApoContent = getContent(casesGitHubApiURL);
         List<String> casesName = JsonPath.parse(casesGitHubApoContent).read("$..name");
         List<String> casesDownloadURL = JsonPath.parse(casesGitHubApoContent).read("$..download_url");
-        IntStream.range(0, JsonPath.parse(casesGitHubApoContent).read("$.length()")).forEach(each ->
-            result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each)))
-        );
+        IntStream.range(0, JsonPath.parse(casesGitHubApoContent).read("$.length()"))
+                .forEach(each -> result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each))));
         return result;
     }
     
@@ -84,10 +83,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String[] lines = getContent(elements.get("download_url")).split("\n");
         int sqlCaseEnum = 1;
         for (String each : lines) {
-            if (each.isEmpty()) {
-                continue;
-            }
-            if (Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
+            if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
                 result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
