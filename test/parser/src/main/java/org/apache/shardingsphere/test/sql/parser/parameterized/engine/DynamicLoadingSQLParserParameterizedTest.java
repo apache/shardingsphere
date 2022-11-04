@@ -32,6 +32,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -81,12 +85,14 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         Collection<Object[]> result = new LinkedList<>();
         String sqlCaseFileName = elements.get("name");
         String[] lines = getContent(elements.get("download_url")).split("\n");
+        Path path = Paths.get(DynamicLoadingSQLParserParameterizedTest.class.getClassLoader().getResource("sql/unsupported").getPath(), "dynamic.txt");
         int sqlCaseEnum = 1;
         for (String each : lines) {
             if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
                 result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
+                Files.write(path, each.getBytes(), StandardOpenOption.APPEND);
             }
         }
         return result;
