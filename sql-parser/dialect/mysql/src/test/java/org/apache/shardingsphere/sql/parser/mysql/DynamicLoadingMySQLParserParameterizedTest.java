@@ -34,6 +34,6 @@ public final class DynamicLoadingMySQLParserParameterizedTest extends DynamicLoa
     @Parameters(name = "{0} (MySQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {
         return Collections.emptyList();
-//        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
+        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
     }
 }

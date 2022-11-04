@@ -36,6 +36,6 @@ public final class DynamicLoadingPostgreSQLParserParameterizedTest extends Dynam
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {
         return Collections.emptyList();
-//        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
+        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
 }
