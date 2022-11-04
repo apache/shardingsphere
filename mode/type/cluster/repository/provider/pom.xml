@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>zookeeper-curator</module>
+        <module>zookeeper</module>
         <module>etcd</module>
         <module>nacos</module>
         <module>consul</module>

@@ -125,7 +125,7 @@
     </create-order-item-table>
     
     <create-address-table>
-        CREATE TABLE IF NOT EXISTS t_address 
+        CREATE TABLE t_address 
         (
         id BIGINT NOT NULL,
         code VARCHAR(36) DEFAULT NULL,

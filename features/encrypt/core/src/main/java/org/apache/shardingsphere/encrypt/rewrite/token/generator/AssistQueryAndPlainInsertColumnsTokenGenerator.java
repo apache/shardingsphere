@@ -63,6 +63,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
     private List<String> getColumns(final EncryptTable encryptTable, final ColumnSegment columnSegment) {
         List<String> result = new LinkedList<>();
         encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
+        encryptTable.findFuzzyQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         return result;
     }

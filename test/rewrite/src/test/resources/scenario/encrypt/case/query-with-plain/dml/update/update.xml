@@ -18,13 +18,13 @@
 
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-plain.yaml">
     <rewrite-assertion id="update_plain_for_parameters" db-types="MySQL">
-        <input sql="UPDATE t_account_bak SET account_id = ?, password = ?, amount = ?, status = ? WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK, 1, aaa, 1000, OK" />
-        <output sql="UPDATE t_account_bak SET account_id = ?, cipher_password = ?, assisted_query_password = ?, plain_password = ?, cipher_amount = ?, plain_amount = ?, status = ? WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, aaa, encrypt_1000, 1000, OK, 1, aaa, 1000, OK" />
+        <input sql="UPDATE t_account_bak SET account_id = ?, password = ?, amount = ?, status = ? WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK, 1, aaa, aaa, 1000, OK" />
+        <output sql="UPDATE t_account_bak SET account_id = ?, cipher_password = ?, assisted_query_password = ?, fuzzy_query_password = ?, plain_password = ?, cipher_amount = ?, plain_amount = ?, status = ? WHERE account_id = ? AND plain_password = ? AND plain_password like ? AND plain_amount = ? AND status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, fuzzy_query_aaa, aaa, encrypt_1000, 1000, OK, 1, aaa, aaa, 1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="update_plain_for_literals" db-types="MySQL">
-        <input sql="UPDATE t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
+        <input sql="UPDATE t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', fuzzy_query_password = 'fuzzy_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND plain_password = 'aaa' AND plain_password like 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
     
 <!--    TODO FIX ME-->
@@ -34,8 +34,8 @@
 <!--    </rewrite-assertion>-->
     
     <rewrite-assertion id="update_for_literals" db-types="MySQL">
-        <input sql="UPDATE t_account SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <input sql="UPDATE t_account SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="UPDATE t_account SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', fuzzy_query_certificate_number = 'fuzzy_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', fuzzy_query_password = 'fuzzy_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND fuzzy_query_password like 'fuzzy_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'"/>
     </rewrite-assertion>
     
 <!--    TODO FIX ME-->
@@ -45,7 +45,7 @@
 <!--    </rewrite-assertion>-->
     
     <rewrite-assertion id="update_plain_for_literals" db-types="MySQL">
-        <input sql="UPDATE t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', plain_certificate_number = '111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND plain_certificate_number = '111X' AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
+        <input sql="UPDATE t_account_bak SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="UPDATE t_account_bak SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', fuzzy_query_certificate_number = 'fuzzy_query_111X', plain_certificate_number = '111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', fuzzy_query_password = 'fuzzy_query_aaa', plain_password = 'aaa', cipher_amount = 'encrypt_1000', plain_amount = 1000, status = 'OK' WHERE account_id = 1 AND plain_certificate_number = '111X' AND plain_password = 'aaa' AND plain_password like 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
 </rewrite-assertions>
