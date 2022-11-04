@@ -154,6 +154,7 @@
         <freemarker.version>2.3.31</freemarker.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <caffeine.version>2.9.3</caffeine.version>
+        <json-path.version>2.4.0</json-path.version>
     </properties>
     
     <dependencyManagement>
@@ -725,6 +726,12 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${json-path.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
