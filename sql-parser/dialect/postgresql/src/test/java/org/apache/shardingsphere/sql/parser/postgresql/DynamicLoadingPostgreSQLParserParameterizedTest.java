@@ -24,6 +24,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingPostgreSQLParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
@@ -34,6 +35,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedTest extends Dynam
     
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {
-        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
+        return Collections.emptyList();
+//        return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
 }
