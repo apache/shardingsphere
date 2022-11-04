@@ -136,8 +136,13 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 Object originalValue = insertValueContext.getLiteralValue(columnIndex).orElse(null);
                 EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
                 addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue);
+                int indexDelta = 1;
                 if (encryptRule.findAssistedQueryEncryptor(tableName, columnName).isPresent()) {
                     addAssistedQueryColumn(insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue);
+                    indexDelta = indexDelta + 1;
+                }
+                if (encryptRule.findFuzzyQueryEncryptor(tableName, columnName).isPresent()) {
+                    addFuzzyQueryColumn(insertValueToken, encryptRule.findFuzzyQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
                 }
                 setCipherColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }
@@ -162,6 +167,17 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                     ? new DerivedLiteralExpressionSegment(encryptAlgorithm.encrypt(originalValue, encryptContext))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
             insertValueToken.getValues().add(columnIndex + 1, derivedExpressionSegment);
+        }
+    }
+    
+    private void addFuzzyQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
+                                     final EncryptContext encryptContext, final InsertValueContext insertValueContext,
+                                     final Object originalValue, final int indexDelta) {
+        if (encryptRule.findFuzzyQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
+            DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
+                    ? new DerivedLiteralExpressionSegment(encryptAlgorithm.encrypt(originalValue, encryptContext))
+                    : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
+            insertValueToken.getValues().add(columnIndex + indexDelta, derivedExpressionSegment);
         }
     }
     

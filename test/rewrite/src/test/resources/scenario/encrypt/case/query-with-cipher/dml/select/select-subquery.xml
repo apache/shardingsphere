@@ -18,8 +18,8 @@
 
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_not_nested_subquery_in_projection" db-types="MySQL">
-        <input sql="SELECT u.certificate_number, u.password, (SELECT o.amount FROM t_account_bak o WHERE o.certificate_number=u.certificate_number) amount FROM t_account u, t_account_bak c WHERE u.certificate_number = c.certificate_number and u.password=?" parameters="1" />
-        <output sql="SELECT u.cipher_certificate_number AS certificate_number, u.cipher_password AS password, (SELECT o.cipher_amount AS amount FROM t_account_bak o WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number) amount FROM t_account u, t_account_bak c WHERE u.assisted_query_certificate_number = c.assisted_query_certificate_number and u.assisted_query_password=?" parameters="assisted_query_1" />
+        <input sql="SELECT u.certificate_number, u.password, (SELECT o.amount FROM t_account_bak o WHERE o.certificate_number=u.certificate_number) amount FROM t_account u, t_account_bak c WHERE u.certificate_number = c.certificate_number and u.password=? and u.password like ?" parameters="1, 1" />
+        <output sql="SELECT u.cipher_certificate_number AS certificate_number, u.cipher_password AS password, (SELECT o.cipher_amount AS amount FROM t_account_bak o WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number) amount FROM t_account u, t_account_bak c WHERE u.assisted_query_certificate_number = c.assisted_query_certificate_number and u.assisted_query_password=? and u.fuzzy_query_password like ?" parameters="assisted_query_1, fuzzy_query_1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment" db-types="MySQL">
