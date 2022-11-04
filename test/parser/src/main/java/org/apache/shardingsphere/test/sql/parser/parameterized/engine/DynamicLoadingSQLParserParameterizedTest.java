@@ -64,10 +64,10 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
         String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
-        String casesGitHubApoContent = getContent(casesGitHubApiURL);
-        List<String> casesName = JsonPath.parse(casesGitHubApoContent).read("$..name");
-        List<String> casesDownloadURL = JsonPath.parse(casesGitHubApoContent).read("$..download_url");
-        IntStream.range(0, JsonPath.parse(casesGitHubApoContent).read("$.length()"))
+        String casesGitHubApiContent = getContent(casesGitHubApiURL);
+        List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
+        List<String> casesDownloadURL = JsonPath.parse(casesGitHubApiContent).read("$..download_url");
+        IntStream.range(0, JsonPath.parse(casesGitHubApiContent).read("$.length()"))
                 .forEach(each -> result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each))));
         return result;
     }
