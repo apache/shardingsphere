@@ -42,3 +42,5 @@ CHECK MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6' BY TYPE (NAME='CRC32_MAT
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [SHOW MIGRATION LIST](/cn/reference/distsql/syntax/ral/migration/show-migration-list/)
+- [SHOW MIGRATION CHECK ALGORITHMS](/cn/reference/distsql/syntax/ral/migration/show-migration-check-algorithm/)
