@@ -46,7 +46,7 @@ public final class CreateShardingTableReferenceRuleStatementUpdater implements R
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeCreatedBindingTables(databaseName, sqlStatement, currentRuleConfig);
         checkToBeCreatedDuplicateBindingTables(databaseName, sqlStatement, currentRuleConfig);
-        ShardingTableRuleStatementChecker.checkBindingTableConfiguration((buildToBeCreatedRuleConfiguration(sqlStatement)).getBindingTableGroups(), currentRuleConfig);
+        ShardingTableRuleStatementChecker.checkBindingTableConfiguration(buildToBeCreatedRuleConfiguration(sqlStatement).getBindingTableGroups(), currentRuleConfig);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
