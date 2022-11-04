@@ -22,9 +22,9 @@ migrationCheckAlgorithmType ::=
 
 ### Supplement
 
-- `migrationJobId` needs to be obtained through `SHOW MIGRATION LIST` syntax query
+- `migrationJobId` needs to be obtained through [SHOW MIGRATION LIST](/en/reference/distsql/syntax/ral/migration/show-migration-list/) syntax query
 
-- `migrationCheckAlgorithmType` needs to be obtained through `SHOW MIGRATION CHECK ALGORITHMS` syntax query
+- `migrationCheckAlgorithmType` needs to be obtained through [SHOW MIGRATION CHECK ALGORITHMS](/en/reference/distsql/syntax/ral/migration/show-migration-check-algorithm/) syntax query
 
 ### Example
 
