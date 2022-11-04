@@ -15,25 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql;
-
-import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoadingSQLParserParameterizedTest;
-import org.junit.runners.Parameterized.Parameters;
+package org.apache.shardingsphere.sql.parser.postgresql;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
 //@RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingMySQLParserParameterizedTest extends DynamicLoadingSQLParserParameterizedTest {
+public final class DynamicLoadingPostgreSQLParserParameterizedTest {
     
-    public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL");
-    }
+    // public DynamicLoadingPostgreSQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
+    // super(sqlCaseId, sqlCaseValue, "PostgreSQL");
+    // }
     
-    @Parameters(name = "{0} (MySQL) -> {1}")
+    /**
+     * Get test parameters.
+     *
+     * @return Test cases from github.
+     * @throws IOException IOException
+     **/
+    // @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {
         return Collections.emptyList();
-        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
+        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
     }
 }
