@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.jsonpath.JsonPath;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -35,7 +36,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public abstract class DynamicLoadingSQLParserParameterizedTest {
@@ -45,7 +48,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
-    
+
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) throws IOException {
         Collection<Object[]> result = new LinkedList<>();
         for (Map<String, String> each : getResponse(sqlCaseURL)) {
@@ -61,16 +64,12 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
         String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
-        String[] lines = getContent(casesGitHubApiURL).split("\\,");
-        String nameItem = null;
-        for (String each : lines) {
-            if (each.contains("name")) {
-                nameItem = each.split("\"")[3];
-            } else if (each.contains("download_url")) {
-                String downloadURLItem = each.split("\"")[3];
-                result.add(ImmutableMap.of("name", nameItem, "download_url", downloadURLItem));
-            }
-        }
+        String casesGitHubApoContent = getContent(casesGitHubApiURL);
+        List<String> casesName = JsonPath.parse(casesGitHubApoContent).read("$..name");
+        List<String> casesDownloadURL = JsonPath.parse(casesGitHubApoContent).read("$..download_url");
+        IntStream.range(0, JsonPath.parse(casesGitHubApoContent).read("$.length()")).forEach(each ->
+            result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each)))
+        );
         return result;
     }
     
