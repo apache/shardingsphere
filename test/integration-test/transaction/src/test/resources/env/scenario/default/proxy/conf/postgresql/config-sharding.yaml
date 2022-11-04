@@ -22,9 +22,26 @@
 ######################################################################################################
 
 databaseName: sharding_db
+dataSources:
+  ds_0:
+    url: jdbc:postgresql://postgresql.default.host:5432/transaction_it_0
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  ds_1:
+    url: jdbc:postgresql://postgresql.default.host:5432/transaction_it_1
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
 rules:
-  - !TRANSACTION
-    defaultType: LOCAL
   - !SHARDING
     tables:
       t_order:
@@ -94,6 +111,3 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
-
-props:
-  sql-show: false

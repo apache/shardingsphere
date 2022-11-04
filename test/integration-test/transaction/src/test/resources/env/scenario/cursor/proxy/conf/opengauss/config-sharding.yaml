@@ -22,13 +22,34 @@
 ######################################################################################################
 
 databaseName: sharding_db
+dataSources:
+  ds_0:
+    url: jdbc:opengauss://opengauss.cursor.host:5432/transaction_it_0
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  ds_1:
+    url: jdbc:opengauss://opengauss.cursor.host:5432/transaction_it_1
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
 rules:
-  - !TRANSACTION
-    defaultType: LOCAL
   - !SHARDING
     tables:
       t_order:
         actualDataNodes: ds_${0..1}.t_order_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: database_inline
         tableStrategy:
           standard:
             shardingColumn: order_id
@@ -36,8 +57,22 @@ rules:
         keyGenerateStrategy:
           column: order_id
           keyGeneratorName: snowflake
+      t_order_view:
+        actualDataNodes: ds_${0..1}.t_order_view_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: database_inline
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: t_order_view_inline
       t_order_item:
         actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: database_inline
         tableStrategy:
           standard:
             shardingColumn: order_id
@@ -59,13 +94,11 @@ rules:
           column: id
           keyGeneratorName: snowflake
     bindingTables:
-      - t_order,t_order_item
+      - t_order,t_order_item,t_order_view
     broadcastTables:
-      - t_address
+      - t_address,t_country,t_province,t_city
     defaultDatabaseStrategy:
-      standard:
-        shardingColumn: user_id
-        shardingAlgorithmName: database_inline
+      none:
     defaultTableStrategy:
       none:
     
@@ -82,6 +115,10 @@ rules:
         type: INLINE
         props:
           algorithm-expression: t_order_${order_id % 2}
+      t_order_view_inline:
+        type: INLINE
+        props:
+          algorithm-expression: t_order_view_${order_id % 2}
       t_order_item_inline:
         type: INLINE
         props:
@@ -94,6 +131,3 @@ rules:
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
-
-props:
-  sql-show: false
