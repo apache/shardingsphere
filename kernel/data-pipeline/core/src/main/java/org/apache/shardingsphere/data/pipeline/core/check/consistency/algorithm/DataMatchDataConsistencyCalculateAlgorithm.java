@@ -108,8 +108,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
                 while (resultSet.next()) {
                     if (isCanceling()) {
-                        log.info("canceling, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName());
-                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName());
                     }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
@@ -123,8 +122,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final SQLException ex) {
-            log.error("calculateChunk failed, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName(), ex);
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName(), ex);
         }
     }
     

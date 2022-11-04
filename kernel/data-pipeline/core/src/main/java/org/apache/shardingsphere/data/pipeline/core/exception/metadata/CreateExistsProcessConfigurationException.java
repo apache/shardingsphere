@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 /**
  * Create exists process configuration exception.
  */
+// TODO delete, not used
 public final class CreateExistsProcessConfigurationException extends PipelineSQLException {
     
     private static final long serialVersionUID = 8134085267509955091L;
