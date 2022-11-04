@@ -101,6 +101,10 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
             Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
             addedParameters.add(assistedQueryValue);
         }
+        if (encryptRule.findFuzzyQueryColumn(tableName, columnName).isPresent()) {
+            Object fuzzyValue = encryptRule.getEncryptFuzzyQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+            addedParameters.add(fuzzyValue);
+        }
         if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
             addedParameters.add(originalValue);
         }
