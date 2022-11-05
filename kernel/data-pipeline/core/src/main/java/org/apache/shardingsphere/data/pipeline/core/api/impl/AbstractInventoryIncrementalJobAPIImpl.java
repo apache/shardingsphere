@@ -138,7 +138,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
-            InventoryIncrementalJobItemProgressInfo progressInfo = new InventoryIncrementalJobItemProgressInfo(shardingItem, errorMessage, startTimeMillis, entry.getValue());
+            InventoryIncrementalJobItemProgressInfo progressInfo = new InventoryIncrementalJobItemProgressInfo(shardingItem, entry.getValue(), startTimeMillis, errorMessage);
             if (null == entry.getValue()) {
                 continue;
             }
