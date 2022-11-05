@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,12 +39,12 @@ public final class DataTypeLoaderTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getString("TYPE_NAME")).thenReturn("int", "varchar");
-        when(resultSet.getInt("DATA_TYPE")).thenReturn(4, 12);
+        when(resultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
         Map<String, Integer> actual = DataTypeLoaderFactory.getInstance(new InfraDatabaseTypeFixture()).load(databaseMetaData);
         assertThat(actual.size(), is(2));
-        assertThat(actual.get("INT"), is(4));
-        assertThat(actual.get("VARCHAR"), is(12));
+        assertThat(actual.get("INT"), is(Types.INTEGER));
+        assertThat(actual.get("VARCHAR"), is(Types.VARCHAR));
     }
 }

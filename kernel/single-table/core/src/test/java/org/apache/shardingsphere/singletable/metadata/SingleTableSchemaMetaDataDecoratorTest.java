@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,9 +51,9 @@ public final class SingleTableSchemaMetaDataDecoratorTest {
         Map<String, SchemaMetaData> schemaMetaDataMap = mockSchemaMetaDataMap();
         TableMetaData tableMetaData = builder.decorate(schemaMetaDataMap, singleTableRule, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();
         Iterator<ColumnMetaData> columnsIterator = tableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, true, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", -1, false, false, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false)));
         assertThat(tableMetaData.getIndexes().size(), is(2));
         Iterator<IndexMetaData> indexesIterator = tableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
@@ -60,9 +61,9 @@ public final class SingleTableSchemaMetaDataDecoratorTest {
     }
     
     private Map<String, SchemaMetaData> mockSchemaMetaDataMap() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 4, true, false, false, true, false),
-                new ColumnMetaData("name", 12, false, false, false, true, false),
-                new ColumnMetaData("doc", -1, false, false, false, true, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, false, false, true, false),
+                new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false),
+                new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false));
         Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList()));

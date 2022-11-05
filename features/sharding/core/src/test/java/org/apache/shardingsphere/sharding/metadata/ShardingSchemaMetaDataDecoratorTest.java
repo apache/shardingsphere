@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,10 +67,10 @@ public final class ShardingSchemaMetaDataDecoratorTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true, true, false),
-                new ColumnMetaData("pwd_cipher", 2, false, false, true, true, false),
-                new ColumnMetaData("pwd_plain", 2, false, false, true, true, false),
-                new ColumnMetaData("product_id", 2, false, false, true, true, false));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
+                new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
+                new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
 }
