@@ -23,7 +23,7 @@ import java.util.Collections;
 //@RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingOpenGaussParserParameterizedTest {
     
-    // public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
+    // public DynamicLoadingOpenGaussParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
     // super(sqlCaseId, sqlCaseValue, "openGauss");
     // }
     
