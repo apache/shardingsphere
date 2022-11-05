@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql;
+package org.apache.shardingsphere.sql.parser.opengauss;
 
 import java.util.Collection;
 import java.util.Collections;
 
 //@RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingMySQLParserParameterizedTest {
+public final class DynamicLoadingOpenGaussParserParameterizedTest {
     
-    // public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
-    // super(sqlCaseId, sqlCaseValue, "MySQL");
+    // public DynamicLoadingOpenGaussParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
+    // super(sqlCaseId, sqlCaseValue, "openGauss");
     // }
     
     /**
@@ -32,9 +32,9 @@ public final class DynamicLoadingMySQLParserParameterizedTest {
      *
      * @return Test cases from github.
      */
-    // @Parameters(name = "{0} (MySQL) -> {1}")
+    // @Parameters(name = "{0} (openGauss) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return Collections.emptyList();
-        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
+        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/opengauss-mirror/Yat/tree/master/openGaussBase/testcase");
     }
 }
