@@ -17,18 +17,22 @@
 
 name: Nightly - IT Example Generator
 
-on:
-  schedule:
-    - cron: '0 19 */1 * *'  # once a day. UTC time
+#on:
+#  schedule:
+#    - cron: '0 19 */1 * *'  # once a day. UTC time
 
+on:
+  pull_request:
+    branches: [ master ]
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true
 
 jobs:
   example-generator:
-    if: github.repository == 'apache/shardingsphere'
+    # if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -65,8 +69,8 @@ jobs:
             shardingsphere-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Build with Maven
-        run: ./mvnw -B -ntp clean install -DskipITs -DskipTests
+#      - name: Build with Maven
+#        run: ./mvnw -B -ntp clean install -DskipITs -DskipTests
       - name: Prepare environments
         run: sh .github/workflows/resources/sql/nightly-generator-init.sh
       - name: Generate examples
