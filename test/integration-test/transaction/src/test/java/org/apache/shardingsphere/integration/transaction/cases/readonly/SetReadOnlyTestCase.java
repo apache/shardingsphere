@@ -42,7 +42,7 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
         Connection conn = getDataSource().getConnection();
         assertQueryBalance(conn);
         executeUpdateWithLog(conn, "update account set balance = 101 where id = 2;");
-        ResultSet resultSet = executeQueryWithLog(conn, "select * from account where id = 2"); 
+        ResultSet resultSet = executeQueryWithLog(conn, "select * from account where id = 2");
         if (!resultSet.next()) {
             fail("Should have a result.");
         }
