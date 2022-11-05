@@ -39,7 +39,7 @@ public final class OpenGaussProxyTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public OpenGaussProxyTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public OpenGaussProxyTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);
