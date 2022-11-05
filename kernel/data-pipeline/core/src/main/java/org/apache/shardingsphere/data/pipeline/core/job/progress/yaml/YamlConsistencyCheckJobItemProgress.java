@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Yaml data consistency check job progress.
+ * Yaml data consistency check job item progress.
  */
 @Getter
 @Setter
-public final class YamlConsistencyCheckJobProgress implements YamlConfiguration {
+public final class YamlConsistencyCheckJobItemProgress implements YamlConfiguration {
     
     private String status;
     

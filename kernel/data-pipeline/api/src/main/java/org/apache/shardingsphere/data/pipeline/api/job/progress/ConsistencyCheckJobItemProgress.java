@@ -23,12 +23,13 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Data consistency check job progress.
+ * Data consistency check job item progress.
  */
+// TODO use final for fields
 @Getter
 @Setter
 @ToString
-public final class ConsistencyCheckJobProgress implements PipelineJobItemProgress {
+public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;
     

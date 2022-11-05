@@ -24,6 +24,7 @@ import lombok.Setter;
  * Consistency check job item info.
  */
 // TODO use final for fields
+// TODO embed ConsistencyCheckJobItemProgress to reduce fields
 @Getter
 @Setter
 public final class ConsistencyCheckJobItemInfo {

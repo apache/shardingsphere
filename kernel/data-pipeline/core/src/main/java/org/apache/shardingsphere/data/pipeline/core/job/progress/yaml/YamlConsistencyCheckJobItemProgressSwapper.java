@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * YAML data check job progress swapper.
+ * YAML data check job item progress swapper.
  */
-public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobProgress, ConsistencyCheckJobProgress> {
+public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlConfigurationSwapper<YamlConsistencyCheckJobItemProgress, ConsistencyCheckJobItemProgress> {
     
     @Override
-    public YamlConsistencyCheckJobProgress swapToYamlConfiguration(final ConsistencyCheckJobProgress data) {
-        YamlConsistencyCheckJobProgress result = new YamlConsistencyCheckJobProgress();
+    public YamlConsistencyCheckJobItemProgress swapToYamlConfiguration(final ConsistencyCheckJobItemProgress data) {
+        YamlConsistencyCheckJobItemProgress result = new YamlConsistencyCheckJobItemProgress();
         result.setStatus(data.getStatus().name());
         result.setRecordsCount(data.getRecordsCount());
         result.setCheckedRecordsCount(data.getCheckedRecordsCount());
@@ -39,8 +39,8 @@ public final class YamlConsistencyCheckJobProgressSwapper implements YamlConfigu
     }
     
     @Override
-    public ConsistencyCheckJobProgress swapToObject(final YamlConsistencyCheckJobProgress yamlConfig) {
-        ConsistencyCheckJobProgress result = new ConsistencyCheckJobProgress();
+    public ConsistencyCheckJobItemProgress swapToObject(final YamlConsistencyCheckJobItemProgress yamlConfig) {
+        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress();
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
         result.setRecordsCount(yamlConfig.getRecordsCount());
         result.setCheckedRecordsCount(yamlConfig.getCheckedRecordsCount());
