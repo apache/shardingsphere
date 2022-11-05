@@ -15,12 +15,12 @@
 -- limitations under the License.
 --
 
-DROP TABLE IF EXISTS t_user;
-DROP TABLE IF EXISTS t_product;
-DROP TABLE IF EXISTS t_order_federate;
-DROP TABLE IF EXISTS t_order_federate_sharding;
-DROP TABLE IF EXISTS t_order_item_federate_sharding;
-DROP TABLE IF EXISTS t_single_table;
+DROP TABLE IF EXISTS t_user CASCADE;
+DROP TABLE IF EXISTS t_product CASCADE;
+DROP TABLE IF EXISTS t_order_federate CASCADE;
+DROP TABLE IF EXISTS t_order_federate_sharding CASCADE;
+DROP TABLE IF EXISTS t_order_item_federate_sharding CASCADE;
+DROP TABLE IF EXISTS t_single_table CASCADE;
 
 CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name VARCHAR(50) NOT NULL, password VARCHAR(50) NOT NULL, email VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);

@@ -15,11 +15,11 @@
 -- limitations under the License.
 --
 
-DROP TABLE IF EXISTS t_merchant;
-DROP TABLE IF EXISTS t_product_detail;
-DROP TABLE IF EXISTS t_order_item_federate;
-DROP TABLE IF EXISTS t_order_federate_sharding;
-DROP TABLE IF EXISTS t_order_item_federate_sharding;
+DROP TABLE IF EXISTS t_merchant CASCADE;
+DROP TABLE IF EXISTS t_product_detail CASCADE;
+DROP TABLE IF EXISTS t_order_item_federate CASCADE;
+DROP TABLE IF EXISTS t_order_federate_sharding CASCADE;
+DROP TABLE IF EXISTS t_order_item_federate_sharding CASCADE;
 
 CREATE TABLE t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
