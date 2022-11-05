@@ -25,7 +25,7 @@ env:
 
 jobs:
   ci:
-    if: github.repository == 'apache/shardingsphere'
+#    if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
