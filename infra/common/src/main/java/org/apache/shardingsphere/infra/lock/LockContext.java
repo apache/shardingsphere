@@ -39,12 +39,4 @@ public interface LockContext<T extends LockDefinition> {
      * @param lockDefinition lock definition
      */
     void unlock(T lockDefinition);
-    
-    /**
-     *  Is locked.
-     *
-     * @param lockDefinition lock definition
-     * @return is locked or not
-     */
-    boolean isLocked(LockDefinition lockDefinition);
 }
