@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.exception.metadata;
+package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Create exists process configuration exception.
+ * Can not find consistency check job exception.
  */
-// TODO delete, not used
-public final class CreateExistsProcessConfigurationException extends PipelineSQLException {
+public final class ConsistencyCheckJobNotFoundException extends PipelineSQLException {
     
-    private static final long serialVersionUID = 8134085267509955091L;
+    private static final long serialVersionUID = 6881217592831423520L;
     
-    public CreateExistsProcessConfigurationException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 1, "Created process configuration already existed.");
+    public ConsistencyCheckJobNotFoundException(final String jobId) {
+        super(XOpenSQLState.GENERAL_ERROR, 95, String.format("Can not find consistency check job of `%s`.", jobId));
     }
 }
