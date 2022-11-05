@@ -87,4 +87,37 @@ public final class SQLHintUtils {
     public static Collection<String> getSplitterSQLHintValue(final String value) {
         return value.isEmpty() ? Collections.emptySet() : new HashSet<>(Splitter.on(SQLHintUtils.SQL_HINT_VALUE_COLLECTION_SPLIT).omitEmptyStrings().trimResults().splitToList(value));
     }
+    
+    /**
+     * Get splitter SQL hint Value.
+     *
+     * @param sql SQL hint value
+     * @return Splitter SQL hint value
+     */
+    public static HintValueContext extractHint(final String sql) {
+        HintValueContext result = new HintValueContext();
+        // TODO handle more
+        if (sql.startsWith("/* SHARDINGSPHERE_HINT:")) {
+            String hintText = sql.substring(0, sql.indexOf("*/") + 2);
+            Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
+            if (hintProperties.containsKey("SHARDING_DATABASE_VALUE")) {
+                result.setWriteRouteOnly(true);
+                // result.getDatabaseShardingValues().putAll(hintProperties.getProperty("SHARDING_DATABASE_VALUE"));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get splitter SQL hint Value.
+     *
+     * @param originSQL SQL hint value
+     * @return Splitter SQL hint value
+     */
+    public static String removeHint(final String originSQL) {
+        if (originSQL.startsWith("/* SHARDINGSPHERE_HINT:")) {
+            return originSQL.substring(originSQL.indexOf("*/") + 2);
+        }
+        return originSQL;
+    }
 }

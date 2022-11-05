@@ -22,6 +22,8 @@ import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 /**
  * COM_QUERY command packet for MySQL.
@@ -34,14 +36,19 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket {
     
     private final String sql;
     
-    public MySQLComQueryPacket(final String sql) {
+    private final HintValueContext hintValueContext;
+    
+    public MySQLComQueryPacket(final String sql, final boolean sqlCommentParseEnabled) {
         super(MySQLCommandPacketType.COM_QUERY);
-        this.sql = sql;
+        hintValueContext = sqlCommentParseEnabled ? SQLHintUtils.extractHint(sql) : null;
+        this.sql = sqlCommentParseEnabled ? SQLHintUtils.removeHint(sql) : sql;
     }
     
-    public MySQLComQueryPacket(final MySQLPacketPayload payload) {
+    public MySQLComQueryPacket(final MySQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
         super(MySQLCommandPacketType.COM_QUERY);
-        sql = payload.readStringEOF();
+        String originSQL = payload.readStringEOF();
+        hintValueContext = sqlCommentParseEnabled ? SQLHintUtils.extractHint(originSQL) : null;
+        sql = sqlCommentParseEnabled ? SQLHintUtils.removeHint(originSQL) : originSQL;
     }
     
     @Override
