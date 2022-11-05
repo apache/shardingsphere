@@ -69,7 +69,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
         String casesGitHubApiContent = getContent(casesGitHubApiURL);
         if (casesGitHubApiContent.isEmpty()) {
-            result.add(ImmutableMap.of("name", "null" , "download_url", "null"));
+            result.add(ImmutableMap.of("name", "null", "download_url", "null"));
             return result;
         }
         List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
