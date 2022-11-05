@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mode.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 /**
  * Global lock context.
@@ -28,20 +26,15 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 @RequiredArgsConstructor
 public final class GlobalLockContext implements LockContext<GlobalLockDefinition> {
     
-    private final LockPersistService<GlobalLockDefinition> lockPersistService;
+    private final LockPersistService<GlobalLockDefinition> globalLockPersistService;
     
     @Override
     public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
-        return lockPersistService.tryLock(lockDefinition, timeoutMillis);
+        return globalLockPersistService.tryLock(lockDefinition, timeoutMillis);
     }
     
     @Override
     public void unlock(final GlobalLockDefinition lockDefinition) {
-        lockPersistService.unlock(lockDefinition);
-    }
-    
-    @Override
-    public boolean isLocked(final LockDefinition lockDefinition) {
-        throw new UnsupportedSQLOperationException("isLocked");
+        globalLockPersistService.unlock(lockDefinition);
     }
 }
