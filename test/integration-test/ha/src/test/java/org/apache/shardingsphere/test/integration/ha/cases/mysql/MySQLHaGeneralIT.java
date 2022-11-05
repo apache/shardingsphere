@@ -36,11 +36,11 @@ import java.util.List;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLHAGeneralIT extends BaseITCase {
+public final class MySQLHaGeneralIT extends BaseITCase {
     
     private final HAParameterized haParameterized;
     
-    public MySQLHAGeneralIT(final HAParameterized haParameterized) {
+    public MySQLHaGeneralIT(final HAParameterized haParameterized) {
         super(haParameterized);
         this.haParameterized = haParameterized;
     }
