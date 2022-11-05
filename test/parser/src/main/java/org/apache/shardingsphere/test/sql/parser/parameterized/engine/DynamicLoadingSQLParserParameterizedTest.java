@@ -45,13 +45,13 @@ import java.util.stream.IntStream;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class DynamicLoadingSQLParserParameterizedTest {
-
+    
     private final String sqlCaseId;
-
+    
     private final String sql;
-
+    
     private final String databaseType;
-
+    
     protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) {
         Collection<Object[]> result = new LinkedList<>();
         for (Map<String, String> each : getResponse(sqlCaseURL)) {
@@ -59,7 +59,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-
+    
     private static Collection<Map<String, String>> getResponse(final String sqlCaseURL) {
         Collection<Map<String, String>> result = new LinkedList<>();
         String[] patches = sqlCaseURL.split("/", 8);
@@ -69,7 +69,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
         String casesGitHubApiContent = getContent(casesGitHubApiURL);
         if (casesGitHubApiContent.isEmpty()) {
-            result.add(ImmutableMap.of("name", "null" , "download_url", "null"));
+            result.add(ImmutableMap.of("name", "null", "download_url", "null"));
             return result;
         }
         List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
@@ -86,7 +86,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
                 });
         return result;
     }
-
+    
     private static String getContent(final String url) {
         String result = "";
         try {
@@ -97,7 +97,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-
+    
     private static Collection<Object[]> getSQLCases(final Map<String, String> elements) {
         Collection<Object[]> result = new LinkedList<>();
         String sqlCaseFileName = elements.get("name");
@@ -112,7 +112,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-
+    
     @Ignore
     @Test
     public final void assertParseSQL() {

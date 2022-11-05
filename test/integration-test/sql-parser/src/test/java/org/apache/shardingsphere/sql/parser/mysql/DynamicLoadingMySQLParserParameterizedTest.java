@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -32,10 +31,9 @@ public final class DynamicLoadingMySQLParserParameterizedTest {
      * Get test parameters.
      *
      * @return Test cases from github.
-     * @throws IOException IOException
      */
     // @Parameters(name = "{0} (MySQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() throws IOException {
+    public static Collection<Object[]> getTestParameters() {
         return Collections.emptyList();
         // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
     }
