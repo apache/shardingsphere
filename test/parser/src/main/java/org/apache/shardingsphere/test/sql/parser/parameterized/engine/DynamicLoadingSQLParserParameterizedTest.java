@@ -68,6 +68,10 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesDirectory = patches[7];
         String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
         String casesGitHubApiContent = getContent(casesGitHubApiURL);
+        if (casesGitHubApiContent.isEmpty()) {
+            result.add(ImmutableMap.of("name", "null" , "download_url", "null"));
+            return result;
+        }
         List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
         List<String> casesDownloadURL = JsonPath.parse(casesGitHubApiContent).read("$..download_url");
         List<String> casesHtmlURL = JsonPath.parse(casesGitHubApiContent).read("$..html_url");
@@ -90,7 +94,6 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
             result = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (IOException ingore) {
             log.warn("Error: GitHub API rate limit exceeded");
-            System.exit(0);
         }
         return result;
     }
