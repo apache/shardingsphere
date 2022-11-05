@@ -21,11 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Consistency check job progress info.
+ * Consistency check job item info.
  */
+// TODO use final for fields
 @Getter
 @Setter
-public final class ConsistencyCheckJobProgressInfo {
+public final class ConsistencyCheckJobItemInfo {
     
     private String tableNames;
     

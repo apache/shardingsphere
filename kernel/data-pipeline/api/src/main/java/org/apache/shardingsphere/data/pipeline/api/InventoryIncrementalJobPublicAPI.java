@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -77,12 +77,12 @@ public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, 
     void commit(String jobId);
     
     /**
-     * Get job progress info list.
+     * Get job infos.
      *
      * @param jobId job id
-     * @return all sharding item progress infos
+     * @return job item infos
      */
-    List<InventoryIncrementalJobItemProgressInfo> getJobProgressInfos(String jobId);
+    List<InventoryIncrementalJobItemInfo> getJobItemInfos(String jobId);
     
     /**
      * List all data consistency check algorithms from SPI.

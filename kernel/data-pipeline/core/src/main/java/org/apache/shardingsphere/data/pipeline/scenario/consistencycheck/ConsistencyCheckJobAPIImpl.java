@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
@@ -169,12 +169,12 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     }
     
     @Override
-    public ConsistencyCheckJobProgressInfo getJobProgressInfo(final String parentJobId) {
+    public ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
         Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
         ShardingSpherePreconditions.checkState(checkLatestJobId.isPresent(), () -> new PipelineJobNotFoundException(parentJobId));
         String checkJobId = checkLatestJobId.get();
         ConsistencyCheckJobProgress jobItemProgress = getJobItemProgress(checkJobId, 0);
-        ConsistencyCheckJobProgressInfo result = new ConsistencyCheckJobProgressInfo();
+        ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
         if (null == jobItemProgress) {
             return result;
         }

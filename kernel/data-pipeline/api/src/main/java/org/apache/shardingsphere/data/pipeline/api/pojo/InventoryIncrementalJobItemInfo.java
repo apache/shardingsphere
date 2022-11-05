@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 
 /**
- * Inventory incremental job item progress info.
+ * Inventory incremental job item info.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InventoryIncrementalJobItemProgressInfo {
+public final class InventoryIncrementalJobItemInfo {
     
     private final int shardingItem;
     

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -129,16 +129,16 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
-    public List<InventoryIncrementalJobItemProgressInfo> getJobProgressInfos(final String jobId) {
+    public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         PipelineJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
-        List<InventoryIncrementalJobItemProgressInfo> result = new ArrayList<>(jobProgress.size());
+        List<InventoryIncrementalJobItemInfo> result = new ArrayList<>(jobProgress.size());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
-            InventoryIncrementalJobItemProgressInfo progressInfo = new InventoryIncrementalJobItemProgressInfo(shardingItem, entry.getValue(), startTimeMillis, errorMessage);
+            InventoryIncrementalJobItemInfo progressInfo = new InventoryIncrementalJobItemInfo(shardingItem, entry.getValue(), startTimeMillis, errorMessage);
             if (null == entry.getValue()) {
                 continue;
             }
