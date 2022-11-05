@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.jsonpath.JsonPath;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -36,7 +37,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public abstract class DynamicLoadingSQLParserParameterizedTest {
@@ -62,16 +65,11 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
         String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
-        String[] lines = getContent(casesGitHubApiURL).split("\\,");
-        String nameItem = null;
-        for (String each : lines) {
-            if (each.contains("name")) {
-                nameItem = each.split("\"")[3];
-            } else if (each.contains("download_url")) {
-                String downloadURLItem = each.split("\"")[3];
-                result.add(ImmutableMap.of("name", nameItem, "download_url", downloadURLItem));
-            }
-        }
+        String casesGitHubApiContent = getContent(casesGitHubApiURL);
+        List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
+        List<String> casesDownloadURL = JsonPath.parse(casesGitHubApiContent).read("$..download_url");
+        IntStream.range(0, JsonPath.parse(casesGitHubApiContent).read("$.length()"))
+                .forEach(each -> result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each))));
         return result;
     }
     
@@ -86,10 +84,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         String[] lines = getContent(elements.get("download_url")).split("\n");
         int sqlCaseEnum = 1;
         for (String each : lines) {
-            if (each.isEmpty()) {
-                continue;
-            }
-            if (Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
+            if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
                 result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
