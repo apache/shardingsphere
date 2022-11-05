@@ -27,7 +27,8 @@ public final class PipelineJobNotFoundException extends PipelineSQLException {
     
     private static final long serialVersionUID = -903289953649758722L;
     
+    // TODO it's misused sometimes
     public PipelineJobNotFoundException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 80, "Can not find pipeline job `%s`.", jobId);
+        super(XOpenSQLState.GENERAL_ERROR, 80, String.format("Can not find pipeline job `%s`.", jobId));
     }
 }

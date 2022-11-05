@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -92,6 +93,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
+    @Ignore
     @Test
     public final void assertParseSQL() {
         try {

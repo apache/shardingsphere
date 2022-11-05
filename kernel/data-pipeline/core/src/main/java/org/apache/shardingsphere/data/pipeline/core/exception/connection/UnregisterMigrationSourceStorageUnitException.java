@@ -30,6 +30,6 @@ public final class UnregisterMigrationSourceStorageUnitException extends Pipelin
     private static final long serialVersionUID = -7133815271017274299L;
     
     public UnregisterMigrationSourceStorageUnitException(final Collection<String> resourceNames) {
-        super(XOpenSQLState.NOT_FOUND, 31, "Storage units `%s` do not exist.", resourceNames);
+        super(XOpenSQLState.NOT_FOUND, 31, String.format("Storage units `%s` do not exist.", resourceNames));
     }
 }

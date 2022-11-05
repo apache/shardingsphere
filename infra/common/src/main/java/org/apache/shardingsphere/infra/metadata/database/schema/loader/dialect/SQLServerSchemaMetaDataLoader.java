@@ -103,7 +103,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         boolean generated = "1".equals(resultSet.getString("IS_IDENTITY"));
         boolean caseSensitive = null != collationName && collationName.indexOf("_CS") > 0;
         boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData databaseMetaData) throws SQLException {

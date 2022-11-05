@@ -102,7 +102,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private Map<String, ShardingSphereColumn> createColumnMetaDataMap() {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true));
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
         result.put("amount", mock(ShardingSphereColumn.class));
         result.put("status", mock(ShardingSphereColumn.class));
         return result;

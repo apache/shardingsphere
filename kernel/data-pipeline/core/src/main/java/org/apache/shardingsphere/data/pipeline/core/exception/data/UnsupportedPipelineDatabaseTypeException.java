@@ -29,6 +29,6 @@ public final class UnsupportedPipelineDatabaseTypeException extends PipelineSQLE
     private static final long serialVersionUID = -4100671584682823997L;
     
     public UnsupportedPipelineDatabaseTypeException(final DatabaseType databaseType) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 52, "Unsupported pipeline database type `%s`.", databaseType.getType());
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 52, String.format("Unsupported pipeline database type `%s`.", databaseType.getType()));
     }
 }

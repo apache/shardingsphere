@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -52,11 +53,14 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -112,12 +116,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
-    public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final String jobId) {
-        checkModeConfig();
-        return getJobProgress(getJobConfiguration(jobId));
-    }
-    
-    @Override
     public Map<Integer, InventoryIncrementalJobItemProgress> getJobProgress(final PipelineJobConfiguration jobConfig) {
         String jobId = jobConfig.getJobId();
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
@@ -125,10 +123,28 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, each);
             if (null != jobItemProgress) {
                 jobItemProgress.setActive(!jobConfigPOJO.isDisabled());
-                jobItemProgress.setErrorMessage(getJobItemErrorMessage(jobId, each));
             }
             map.put(each, jobItemProgress);
         }, LinkedHashMap::putAll);
+    }
+    
+    @Override
+    public List<InventoryIncrementalJobItemProgressInfo> getJobProgressInfos(final String jobId) {
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        PipelineJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
+        long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
+        List<InventoryIncrementalJobItemProgressInfo> result = new ArrayList<>(jobProgress.size());
+        for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
+            int shardingItem = entry.getKey();
+            String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
+            InventoryIncrementalJobItemProgressInfo progressInfo = new InventoryIncrementalJobItemProgressInfo(shardingItem, errorMessage, startTimeMillis, entry.getValue());
+            if (null == entry.getValue()) {
+                continue;
+            }
+            result.add(progressInfo);
+        }
+        return result;
     }
     
     @Override

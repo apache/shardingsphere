@@ -28,7 +28,7 @@ public final class PipelineJobHasAlreadyFinishedException extends PipelineSQLExc
     
     private static final long serialVersionUID = 6881217592831423520L;
     
-    public PipelineJobHasAlreadyFinishedException(final String jobId) {
-        super(XOpenSQLState.GENERAL_ERROR, 95, "Data consistency check job has already finished.", jobId);
+    public PipelineJobHasAlreadyFinishedException() {
+        super(XOpenSQLState.GENERAL_ERROR, 95, "Data consistency check job has already finished.");
     }
 }

@@ -19,8 +19,10 @@ package org.apache.shardingsphere.infra.lock;
 
 /**
  * Lock context.
+ * 
+ * @param <T> type of lock definition
  */
-public interface LockContext {
+public interface LockContext<T extends LockDefinition> {
     
     /**
      * Try Lock.
@@ -29,20 +31,12 @@ public interface LockContext {
      * @param timeoutMillis timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
+    boolean tryLock(T lockDefinition, long timeoutMillis);
     
     /**
      * Unlock.
      *
      * @param lockDefinition lock definition
      */
-    void unlock(LockDefinition lockDefinition);
-    
-    /**
-     *  Is locked.
-     *
-     * @param lockDefinition lock definition
-     * @return is locked or not
-     */
-    boolean isLocked(LockDefinition lockDefinition);
+    void unlock(T lockDefinition);
 }

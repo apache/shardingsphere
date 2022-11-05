@@ -138,9 +138,10 @@ public final class MigrationJobAPIImplTest {
     
     @Test
     public void assertGetProgress() {
-        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = jobAPI.getJobProgress(jobId.get());
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = jobAPI.getJobProgress(jobConfig);
         assertThat(jobProgressMap.size(), is(1));
     }
     
@@ -206,7 +207,7 @@ public final class MigrationJobAPIImplTest {
         MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
-        Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobId.get());
+        Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobConfig);
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
             assertSame(entry.getValue().getStatus(), JobStatus.EXECUTE_INVENTORY_TASK);
         }

@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,14 +31,11 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     
     private final PostgreSQLPipelineSQLBuilder sqlBuilder = new PostgreSQLPipelineSQLBuilder();
     
-    private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder()
-            .put(new LogicTableName("t_order"), new HashSet<>(Arrays.asList("order_id", "user_id"))).build();
-    
     @Test
     public void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL("schema1", mockDataRecord(), shardingColumnsMap);
+        String actual = sqlBuilder.buildInsertSQL("schema1", mockDataRecord());
         assertThat(actual, is("INSERT INTO schema1.t_order(order_id,user_id,status) VALUES(?,?,?) ON CONFLICT (order_id)"
-                + " DO UPDATE SET status=EXCLUDED.status"));
+                + " DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
     }
     
     private DataRecord mockDataRecord() {

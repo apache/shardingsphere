@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 /**
- * Lock context of ShardingSphere.
+ * Global lock persist service.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereLockContext implements LockContext {
+public final class GlobalLockPersistService implements LockPersistService<GlobalLockDefinition> {
     
-    private final LockPersistService lockPersistService;
+    private final DistributedLockHolder distributedLockHolder;
     
     @Override
-    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return lockPersistService.tryLock(lockDefinition, timeoutMillis);
+    public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
+        return distributedLockHolder.getDistributedLock(lockDefinition.getLockKey()).tryLock(timeoutMillis);
     }
     
     @Override
-    public void unlock(final LockDefinition lockDefinition) {
-        lockPersistService.unlock(lockDefinition);
-    }
-    
-    @Override
-    public boolean isLocked(final LockDefinition lockDefinition) {
-        throw new UnsupportedSQLOperationException("isLocked");
+    public void unlock(final GlobalLockDefinition lockDefinition) {
+        distributedLockHolder.getDistributedLock(lockDefinition.getLockKey()).unlock();
     }
 }

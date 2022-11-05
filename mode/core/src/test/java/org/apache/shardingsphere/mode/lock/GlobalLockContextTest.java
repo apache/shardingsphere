@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.lock;
 
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,18 +28,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShardingSphereLockContextTest {
+public final class GlobalLockContextTest {
     
-    private final LockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
+    private final GlobalLockDefinition lockDefinition = new GlobalLockDefinition("foo_lock");
     
     @Mock
-    private LockPersistService lockPersistService;
+    private LockPersistService<GlobalLockDefinition> lockPersistService;
     
-    private ShardingSphereLockContext lockContext;
+    private GlobalLockContext lockContext;
     
     @Before
     public void init() {
-        lockContext = new ShardingSphereLockContext(lockPersistService);
+        lockContext = new GlobalLockContext(lockPersistService);
     }
     
     @Test
@@ -54,10 +52,5 @@ public final class ShardingSphereLockContextTest {
     public void assertUnlock() {
         lockContext.unlock(lockDefinition);
         verify(lockPersistService).unlock(lockDefinition);
-    }
-    
-    @Test(expected = UnsupportedSQLOperationException.class)
-    public void assertIsLocked() {
-        lockContext.isLocked(lockDefinition);
     }
 }

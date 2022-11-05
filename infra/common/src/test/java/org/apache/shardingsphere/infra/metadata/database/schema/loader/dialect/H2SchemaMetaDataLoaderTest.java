@@ -156,8 +156,8 @@ public final class H2SchemaMetaDataLoaderTest {
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, false, false, true, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false, false, false)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
