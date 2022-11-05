@@ -71,7 +71,6 @@ public final class StandardPipelineDataSourceConfiguration implements PipelineDa
         for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
             yamlConfig.put(each, "1");
         }
-        // TODO jdbcUrl not find now, can be deleted after confirmation
         if (yamlConfig.containsKey("jdbcUrl")) {
             yamlConfig.put("url", yamlConfig.get("jdbcUrl"));
             yamlConfig.remove("jdbcUrl");

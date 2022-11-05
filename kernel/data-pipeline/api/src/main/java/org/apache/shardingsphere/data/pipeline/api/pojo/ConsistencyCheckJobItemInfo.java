@@ -15,28 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Yaml data consistency check job progress.
+ * Consistency check job item info.
  */
+// TODO use final for fields
+// TODO embed ConsistencyCheckJobItemProgress to reduce fields
 @Getter
 @Setter
-public final class YamlConsistencyCheckJobProgress implements YamlConfiguration {
-    
-    private String status;
+public final class ConsistencyCheckJobItemInfo {
     
     private String tableNames;
     
-    private Long checkedRecordsCount;
+    private Boolean checkSuccess;
     
-    private Long recordsCount;
+    private int finishedPercentage;
     
-    private Long checkBeginTimeMillis;
+    private Long remainingSeconds;
     
-    private Long checkEndTimeMillis;
+    private String checkBeginTime;
+    
+    private String checkEndTime;
+    
+    private Long durationSeconds;
+    
+    private String errorMessage;
 }

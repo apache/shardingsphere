@@ -20,7 +20,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 import org.apache.shardingsphere.data.pipeline.api.MigrationJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
@@ -46,19 +46,12 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
-        List<InventoryIncrementalJobItemProgressInfo> jobProgress = JOB_API.getJobProgressInfos(((ShowMigrationStatusStatement) sqlStatement).getJobId());
-        data = jobProgress.stream().map(each -> {
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = JOB_API.getJobItemInfos(((ShowMigrationStatusStatement) sqlStatement).getJobId());
+        data = jobItemInfos.stream().map(each -> {
             Collection<Object> result = new LinkedList<>();
             result.add(each.getShardingItem());
             InventoryIncrementalJobItemProgress jobItemProgress = each.getJobItemProgress();
-            if (null == jobItemProgress) {
-                result.add("");
-                result.add("");
-                result.add("");
-                result.add("");
-                result.add("");
-                result.add("");
-            } else {
+            if (null != jobItemProgress) {
                 result.add(jobItemProgress.getDataSourceName());
                 result.add(jobItemProgress.getStatus());
                 result.add(jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
@@ -70,6 +63,13 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
                     incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
                 }
                 result.add(incrementalIdleSeconds);
+            } else {
+                result.add("");
+                result.add("");
+                result.add("");
+                result.add("");
+                result.add("");
+                result.add("");
             }
             result.add(each.getErrorMessage());
             return result;

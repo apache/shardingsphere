@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.pojo;
+package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Consistency check job progress info.
+ * Data consistency check job item progress.
  */
+// TODO use final for fields
 @Getter
 @Setter
-public final class ConsistencyCheckJobProgressInfo {
+@ToString
+public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
+    
+    private JobStatus status = JobStatus.RUNNING;
     
     private String tableNames;
     
-    private Boolean checkSuccess;
+    private Long checkedRecordsCount;
     
-    private int finishedPercentage;
+    private Long recordsCount;
     
-    private Long remainingSeconds;
+    private Long checkBeginTimeMillis;
     
-    private String checkBeginTime;
-    
-    private String checkEndTime;
-    
-    private Long durationSeconds;
-    
-    private String errorMessage;
+    private Long checkEndTimeMillis;
 }

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
-import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -129,16 +129,16 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     @Override
-    public List<InventoryIncrementalJobItemProgressInfo> getJobProgressInfos(final String jobId) {
+    public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         PipelineJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
-        List<InventoryIncrementalJobItemProgressInfo> result = new ArrayList<>(jobProgress.size());
+        List<InventoryIncrementalJobItemInfo> result = new ArrayList<>(jobProgress.size());
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
             String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
-            InventoryIncrementalJobItemProgressInfo progressInfo = new InventoryIncrementalJobItemProgressInfo(shardingItem, errorMessage, startTimeMillis, entry.getValue());
+            InventoryIncrementalJobItemInfo progressInfo = new InventoryIncrementalJobItemInfo(shardingItem, entry.getValue(), startTimeMillis, errorMessage);
             if (null == entry.getValue()) {
                 continue;
             }
@@ -151,15 +151,15 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         InventoryIncrementalJobItemContext context = (InventoryIncrementalJobItemContext) jobItemContext;
         InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
-        jobItemProgress.setStatus(jobItemContext.getStatus());
-        jobItemProgress.setSourceDatabaseType(jobItemContext.getJobConfig().getSourceDatabaseType());
-        jobItemProgress.setDataSourceName(jobItemContext.getDataSourceName());
+        jobItemProgress.setStatus(context.getStatus());
+        jobItemProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType());
+        jobItemProgress.setDataSourceName(context.getDataSourceName());
         jobItemProgress.setIncremental(getIncrementalTasksProgress(context.getIncrementalTasks()));
         jobItemProgress.setInventory(getInventoryTasksProgress(context.getInventoryTasks()));
         jobItemProgress.setProcessedRecordsCount(context.getProcessedRecordsCount());
         jobItemProgress.setInventoryRecordsCount(context.getInventoryRecordsCount());
         String value = YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(context.getJobId(), context.getShardingItem(), value);
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<IncrementalTask> incrementalTasks) {

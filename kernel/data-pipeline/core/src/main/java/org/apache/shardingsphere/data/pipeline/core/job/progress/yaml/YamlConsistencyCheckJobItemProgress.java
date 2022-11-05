@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Data consistency check job progress.
+ * Yaml data consistency check job item progress.
  */
 @Getter
 @Setter
-@ToString
-public final class ConsistencyCheckJobProgress implements PipelineJobItemProgress {
+public final class YamlConsistencyCheckJobItemProgress implements YamlConfiguration {
     
-    private JobStatus status = JobStatus.RUNNING;
+    private String status;
     
     private String tableNames;
     
