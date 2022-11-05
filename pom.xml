@@ -726,7 +726,6 @@
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
     
