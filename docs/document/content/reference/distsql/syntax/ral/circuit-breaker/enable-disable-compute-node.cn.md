@@ -19,7 +19,7 @@ instanceId ::=
 
 ### 补充说明
 
-- `instanceId` 需要通过 `SHOW COMPUTE NODES` 语法查询得到
+- `instanceId` 需要通过 [SHOW COMPUTE NODES](/cn/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) 语法查询得到
 
 - 不可禁用当前正在使用的 proxy 实例
 
@@ -44,3 +44,4 @@ ENABLE COMPUTE NODE '734bb086-b15d-4af0-be87-2372d8b6a0cd';
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [SHOW COMPUTE NODES](/cn/reference/distsql/syntax/ral/circuit-breaker/show-compute-nodes/)

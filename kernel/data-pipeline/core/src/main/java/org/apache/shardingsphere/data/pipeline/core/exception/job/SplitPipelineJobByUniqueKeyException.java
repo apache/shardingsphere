@@ -30,6 +30,6 @@ public final class SplitPipelineJobByUniqueKeyException extends PipelineSQLExcep
     private static final long serialVersionUID = -7804078676439253443L;
     
     public SplitPipelineJobByUniqueKeyException(final String tableName, final String uniqueKey, final SQLException cause) {
-        super(XOpenSQLState.GENERAL_ERROR, 84, "Can not split by unique key `%s` for table `%s`, reason is: %s", uniqueKey, tableName, cause.getMessage());
+        super(XOpenSQLState.GENERAL_ERROR, 84, String.format("Can not split by unique key `%s` for table `%s`, reason is: %s", uniqueKey, tableName, cause.getMessage()), cause);
     }
 }

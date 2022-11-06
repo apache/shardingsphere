@@ -30,6 +30,6 @@ public final class RegisterMigrationSourceStorageUnitException extends PipelineS
     private static final long serialVersionUID = -3952313247315105684L;
     
     public RegisterMigrationSourceStorageUnitException(final Collection<String> duplicateDataSourceNames) {
-        super(XOpenSQLState.DUPLICATE, 30, "Duplicate storage unit names `%s`.", duplicateDataSourceNames);
+        super(XOpenSQLState.DUPLICATE, 30, String.format("Duplicate storage unit names `%s`.", duplicateDataSourceNames));
     }
 }

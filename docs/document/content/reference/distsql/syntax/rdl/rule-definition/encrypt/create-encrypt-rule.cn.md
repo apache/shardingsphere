@@ -38,7 +38,7 @@ encryptAlgorithmType ::=
 ### 补充说明
 
 - `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列；
-- `encryptAlgorithmType` 指定加密算法类型，请参考 加密算法；
+- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
 - 重复的 `tableName` 将无法被创建；
 - queryWithCipherColumn 支持大写或小写的 `true` 或 `false`。
 
@@ -66,3 +66,4 @@ COLUMNS(
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)

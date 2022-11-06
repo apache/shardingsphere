@@ -19,10 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Oracle pipeline SQL builder.
@@ -45,8 +41,8 @@ public final class OraclePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap);
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
+        return super.buildInsertSQL(schemaName, dataRecord);
         // TODO buildInsertSQL and buildConflictSQL, need 2 round parameters set
         // TODO refactor PipelineSQLBuilder to combine SQL building and parameters set
     }

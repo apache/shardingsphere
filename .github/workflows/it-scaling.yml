@@ -23,6 +23,7 @@ on:
     paths:
       - '.github/workflows/it-scaling.yml'
       - 'infra/common/src/main/**'
+      - 'infra/executor/src/main/**'
       - 'mode/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'
@@ -42,6 +43,7 @@ on:
     paths:
       - '.github/workflows/it-scaling.yml'
       - 'infra/common/src/main/**'
+      - 'infra/executor/src/main/**'
       - 'mode/**/src/main/**'
       - 'proxy/**/src/main/**'
       - 'jdbc/core/src/main/**'

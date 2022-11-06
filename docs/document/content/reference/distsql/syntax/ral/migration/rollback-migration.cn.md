@@ -19,7 +19,7 @@ migrationJobId ::=
 
 ### 补充说明
 
-- `migrationJobId` 需要通过 `SHOW MIGRATION LIST` 语法查询获得
+- `migrationJobId` 需要通过 [SHOW MIGRATION LIST](/cn/reference/distsql/syntax/ral/migration/show-migration-list/) 语法查询获得
 
 - 该语句执行后会清理目标端
 
@@ -38,3 +38,4 @@ ROLLBACK MIGRATION 'j010180026753ef0e25d3932d94d1673ba551';
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
+- [SHOW MIGRATION LIST](/cn/reference/distsql/syntax/ral/migration/show-migration-list/)
