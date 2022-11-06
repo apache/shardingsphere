@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.adapter.MetaDataLoaderConnectionAdapter;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -74,7 +75,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = new MetaDataLoaderConnectionAdapter(DatabaseTypeFactory.getInstance("Oracle"), dataSource.getConnection())) {
             for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
                 indexMetaDataMap.putAll(loadIndexMetaData(connection, each));
