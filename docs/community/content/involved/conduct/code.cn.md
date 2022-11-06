@@ -59,6 +59,7 @@ chapter = true
  - 条件运算符（<表达式1> ? <表达式2> : <表达式3>）禁止 `嵌套使用`。
  - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
+ - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
 
 ## 单元测试规范
 
