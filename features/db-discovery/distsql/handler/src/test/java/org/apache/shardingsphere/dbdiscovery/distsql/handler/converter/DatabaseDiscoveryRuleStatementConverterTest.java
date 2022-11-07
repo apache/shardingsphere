@@ -39,13 +39,13 @@ public final class DatabaseDiscoveryRuleStatementConverterTest {
     @Test
     public void assertConvert() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
-        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_MySQL_MGR"));
+        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_mysql_mgr"));
         assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("definition_heartbeat"));
         Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = iterator.next();
         assertThat(dataSourceRuleConfig.getDataSourceNames(), is(Arrays.asList("resource0", "resource1")));
         assertThat(dataSourceRuleConfig.getGroupName(), is("definition"));
-        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("definition_MySQL_MGR"));
+        assertThat(dataSourceRuleConfig.getDiscoveryTypeName(), is("definition_mysql_mgr"));
         assertThat(dataSourceRuleConfig.getDiscoveryHeartbeatName(), is("definition_heartbeat"));
     }
     
