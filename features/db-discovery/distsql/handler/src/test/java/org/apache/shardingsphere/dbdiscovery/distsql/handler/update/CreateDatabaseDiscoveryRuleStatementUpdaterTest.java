@@ -98,7 +98,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         assertThat(ruleConfig.getDataSources().size(), is(1));
         assertTrue(ruleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
-        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("readwrite_ds_1_MySQL.MGR"));
+        assertTrue(ruleConfig.getDiscoveryTypes().containsKey("readwrite_ds_1_mysql_mgr"));
         assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("readwrite_ds_1_heartbeat"));
     }
     
@@ -113,7 +113,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
         assertThat(currentConfig.getDataSources().size(), is(1));
         assertTrue(currentConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName)
                 .collect(Collectors.toList()).removeAll(Collections.singletonList("readwrite_ds_1")));
-        assertTrue(currentConfig.getDiscoveryTypes().containsKey("readwrite_ds_1_MySQL.MGR"));
+        assertTrue(currentConfig.getDiscoveryTypes().containsKey("readwrite_ds_1_mysql_mgr"));
         assertTrue(currentConfig.getDiscoveryHeartbeats().containsKey("readwrite_ds_1_heartbeat"));
     }
 }

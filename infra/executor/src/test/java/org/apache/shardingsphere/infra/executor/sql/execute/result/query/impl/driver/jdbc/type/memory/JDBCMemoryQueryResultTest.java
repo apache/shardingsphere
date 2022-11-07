@@ -356,12 +356,27 @@ public final class JDBCMemoryQueryResultTest {
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
-        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSet(), databaseType);
+    public void assertWasNullTrue() throws SQLException {
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSetForWasNull(true), databaseType);
         queryResult.next();
-        assertFalse(queryResult.wasNull());
-        queryResult.next();
+        queryResult.getValue(1, int.class);
         assertTrue(queryResult.wasNull());
+    }
+    
+    @Test
+    public void assertWasNullFalse() throws SQLException {
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSetForWasNull(false), databaseType);
+        queryResult.next();
+        queryResult.getValue(1, int.class);
+        assertFalse(queryResult.wasNull());
+    }
+    
+    private ResultSet mockResultSetForWasNull(final boolean wasNull) throws SQLException {
+        ResultSet result = getMockedResultSet(Types.INTEGER);
+        when(result.getInt(1)).thenReturn(0);
+        when(result.getMetaData().isSigned(1)).thenReturn(true);
+        when(result.wasNull()).thenReturn(wasNull);
+        return result;
     }
     
     @Test
