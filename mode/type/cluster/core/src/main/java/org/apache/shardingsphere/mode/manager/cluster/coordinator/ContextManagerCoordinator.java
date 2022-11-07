@@ -35,18 +35,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.TableMetaDataChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.schema.ViewMetaDataChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.TableDataChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessListIdEvent;
@@ -91,69 +85,8 @@ public final class ContextManagerCoordinator {
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
+        new ResourceMetaDataCoordinator(contextManager);
         disableDataSources();
-    }
-    
-    /**
-     * Renew to persist meta data.
-     *
-     * @param event database added event
-     */
-    @Subscribe
-    public synchronized void renew(final DatabaseAddedEvent event) {
-        contextManager.addDatabase(event.getDatabaseName());
-    }
-    
-    /**
-     * Renew to delete database.
-     *
-     * @param event database delete event
-     */
-    @Subscribe
-    public synchronized void renew(final DatabaseDeletedEvent event) {
-        contextManager.dropDatabase(event.getDatabaseName());
-    }
-    
-    /**
-     * Renew to added schema.
-     *
-     * @param event schema added event
-     */
-    @Subscribe
-    public synchronized void renew(final SchemaAddedEvent event) {
-        contextManager.addSchema(event.getDatabaseName(), event.getSchemaName());
-    }
-    
-    /**
-     * Renew to delete schema.
-     *
-     * @param event schema delete event
-     */
-    @Subscribe
-    public synchronized void renew(final SchemaDeletedEvent event) {
-        contextManager.dropSchema(event.getDatabaseName(), event.getSchemaName());
-    }
-    
-    /**
-     * Renew meta data of the table.
-     *
-     * @param event table meta data changed event
-     */
-    @Subscribe
-    public synchronized void renew(final TableMetaDataChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), null);
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable(), null);
-    }
-    
-    /**
-     * Renew meta data of the view.
-     *
-     * @param event view meta data changed event
-     */
-    @Subscribe
-    public synchronized void renew(final ViewMetaDataChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getChangedViewMetaData());
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), null, event.getDeletedView());
     }
     
     /**
