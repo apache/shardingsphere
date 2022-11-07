@@ -329,9 +329,6 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             return;
         }
         result.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
-        // appendStaticReadWriteSplittingRule(ruleConfig, result);
-        // TODO Dynamic READ-WRITE-SPLITTING RULES
-        
         Iterator<ReadwriteSplittingDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = iterator.next();
