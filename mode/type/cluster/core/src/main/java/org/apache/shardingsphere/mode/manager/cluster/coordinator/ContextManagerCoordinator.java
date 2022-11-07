@@ -75,10 +75,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Cluster context manager coordinator.
+ * Context manager coordinator.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ClusterContextManagerCoordinator {
+public final class ContextManagerCoordinator {
     
     private final MetaDataPersistService persistService;
     
@@ -86,7 +86,7 @@ public final class ClusterContextManagerCoordinator {
     
     private final ContextManager contextManager;
     
-    public ClusterContextManagerCoordinator(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
+    public ContextManagerCoordinator(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.persistService = persistService;
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
