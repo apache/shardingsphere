@@ -57,7 +57,7 @@ public class ScalingWatcher extends TestWatcher {
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
                 dockerContainerComposer.getGovernanceContainer().getServerLists(), new Properties());
         ClusterPersistRepository zookeeperRepository = new ZookeeperRepository();
-        zookeeperRepository.init(config, new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307));
+        zookeeperRepository.init(config);
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");
         for (String each : childrenKeys) {
             if (!"scaling".equals(each)) {
