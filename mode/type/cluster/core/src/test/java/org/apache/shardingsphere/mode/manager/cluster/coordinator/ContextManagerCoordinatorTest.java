@@ -115,9 +115,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ClusterContextManagerCoordinatorTest {
+public final class ContextManagerCoordinatorTest {
     
-    private ClusterContextManagerCoordinator coordinator;
+    private ContextManagerCoordinator coordinator;
     
     private ContextManager contextManager;
     
@@ -135,7 +135,7 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
+        coordinator = new ContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
     
@@ -161,7 +161,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertRenewForDatabaseAdded() throws SQLException {
+    public void assertRenewForDatabaseAdded() {
         when(persistService.getDataSourceService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
         coordinator.renew(new DatabaseAddedEvent("db_added"));
