@@ -27,22 +27,15 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -53,23 +46,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.util.ReflectionUtil;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.mode.process.ShowProcessListManager;
-import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -79,7 +57,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
-import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -90,26 +67,20 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ContextManagerSubscriberTest {
+public final class ConfigurationChangedSubscriberTest {
     
-    private ContextManagerSubscriber coordinator;
+    private ConfigurationChangedSubscriber subscriber;
     
     private ContextManager contextManager;
     
@@ -127,7 +98,7 @@ public final class ContextManagerSubscriberTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        coordinator = new ContextManagerSubscriber(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
+        subscriber = new ConfigurationChangedSubscriber(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
     
@@ -156,25 +127,14 @@ public final class ContextManagerSubscriberTest {
     public void assertRenewForRuleConfigurationsChanged() {
         when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), is(database));
-        coordinator.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
+        subscriber.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), not(database));
-    }
-    
-    @Test
-    public void assertRenewForDisableStateChanged() {
-        StaticDataSourceContainedRule staticDataSourceRule = mock(StaticDataSourceContainedRule.class);
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(staticDataSourceRule));
-        StorageNodeChangedEvent event = new StorageNodeChangedEvent(new QualifiedDatabase("db.readwrite_ds.ds_0"), new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED));
-        coordinator.renew(event);
-        verify(staticDataSourceRule).updateStatus(argThat(
-                (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedDatabase(), argumentEvent.getQualifiedDatabase())
-                        && Objects.equals(event.getDataSource(), argumentEvent.getDataSource())));
     }
     
     @Test
     public void assertRenewForDataSourceChanged() {
         when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
-        coordinator.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
+        subscriber.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
     }
     
@@ -190,7 +150,7 @@ public final class ContextManagerSubscriberTest {
     @Test
     public void assertRenewForGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
-        coordinator.renew(event);
+        subscriber.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), not(globalRuleMetaData));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().size(), is(3));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
@@ -211,50 +171,11 @@ public final class ContextManagerSubscriberTest {
     }
     
     @Test
-    public void assertRenewPrimaryDataSourceName() {
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        DynamicDataSourceContainedRule dynamicDataSourceRule = mock(DynamicDataSourceContainedRule.class);
-        rules.add(dynamicDataSourceRule);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
-        PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedDatabase("db.readwrite_ds.test_ds"));
-        coordinator.renew(mockPrimaryStateChangedEvent);
-        verify(dynamicDataSourceRule).restartHeartBeatJob(any());
-    }
-    
-    @Test
-    public void assertRenewInstanceStatus() {
-        Collection<String> testStates = new LinkedList<>();
-        testStates.add(StateType.OK.name());
-        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), testStates);
-        coordinator.renew(mockStateEvent);
-        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
-        testStates.add(StateType.CIRCUIT_BREAK.name());
-        coordinator.renew(mockStateEvent);
-        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.CIRCUIT_BREAK));
-    }
-    
-    @Test
-    public void assertRenewInstanceLabels() {
-        Collection<String> labels = Collections.singleton("test");
-        coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), labels));
-        assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
-    }
-    
-    @Test
-    public void assertRenewInstanceOfflineEvent() {
-        coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getMetaData()));
-        assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
-    }
-    
-    @Test
     public void assertRenewDatabaseVersionChangedEvent() {
         when(persistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db", "1")).thenReturn(Collections.emptyList());
         Map<String, DataSource> dataSourceMap = initContextManager();
-        coordinator.renew(new DatabaseVersionChangedEvent("db", "1"));
+        subscriber.renew(new DatabaseVersionChangedEvent("db", "1"));
         assertThat(contextManager.getDataSourceMap("db").get("ds_0"), is(dataSourceMap.get("ds_0")));
         assertNotNull(contextManager.getDataSourceMap("db").get("ds_1"));
         assertThat(DataSourcePropertiesCreator.create(getChangedDataSource()), is(DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("db").get("ds_1"))));
@@ -263,70 +184,11 @@ public final class ContextManagerSubscriberTest {
     }
     
     @Test
-    public void assertRenewInstanceOnlineEvent() {
-        InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
-        InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
-        coordinator.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(1));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(0).getMetaData(), is(instanceMetaData1));
-        InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
-        InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
-        coordinator.renew(instanceOnlineEvent2);
-        assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData2));
-        coordinator.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData1));
-    }
-    
-    @Test
     public void assertRenewProperties() {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        coordinator.renew(new PropertiesChangedEvent(props));
+        subscriber.renew(new PropertiesChangedEvent(props));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
-    }
-    
-    @Test
-    public void assertCompleteUnitShowProcessList() {
-        String processListId = "foo_process_id";
-        ShowProcessListSimpleLock lock = new ShowProcessListSimpleLock();
-        ShowProcessListManager.getInstance().getLocks().put(processListId, lock);
-        long startTime = System.currentTimeMillis();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> {
-            try {
-                Thread.sleep(50L);
-            } catch (final InterruptedException ignored) {
-            }
-            coordinator.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(processListId));
-        });
-        lockAndAwaitDefaultTime(lock);
-        long currentTime = System.currentTimeMillis();
-        assertTrue(currentTime >= startTime + 50L);
-        assertTrue(currentTime <= startTime + 5000L);
-        ShowProcessListManager.getInstance().getLocks().remove(processListId);
-    }
-    
-    @Test
-    public void assertTriggerShowProcessList() throws NoSuchFieldException, IllegalAccessException {
-        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
-        ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", mock(ExecuteProcessContext.class));
-        String processListId = "foo_process_id";
-        coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processListId));
-        ClusterPersistRepository repository = ReflectionUtil.getFieldValue(coordinator, "registryCenter", RegistryCenter.class).getRepository();
-        verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
-                "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
-        verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
-    }
-    
-    private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
-        lock.lock();
-        try {
-            lock.awaitDefaultTime();
-        } finally {
-            lock.unlock();
-        }
     }
     
     private Map<String, DataSource> initContextManager() {

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mode.lock.GlobalLockContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ContextManagerSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.ContextManagerSubscriberFacade;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -87,7 +87,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                                 final ContextManagerBuilderParameter parameter, final ContextManager contextManager) {
         contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        new ContextManagerSubscriber(persistService, registryCenter, contextManager);
+        new ContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
     }
     

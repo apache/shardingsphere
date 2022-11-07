@@ -27,14 +27,14 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 
 /**
- * Resource meta data subscriber.
+ * Resource meta data changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ResourceMetaDataSubscriber {
+public final class ResourceMetaDataChangedSubscriber {
     
     private final ContextManager contextManager;
     
-    public ResourceMetaDataSubscriber(final ContextManager contextManager) {
+    public ResourceMetaDataChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
     }
