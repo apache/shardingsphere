@@ -29,11 +29,19 @@ import lombok.Setter;
 @Setter
 public final class HintValueContext {
     
-    private final Multimap<String, Comparable<?>> databaseShardingValues = ArrayListMultimap.create();
+    private final Multimap<String, Comparable<?>> shardingDatabaseValues = ArrayListMultimap.create();
     
-    private final Multimap<String, Comparable<?>> tableShardingValues = ArrayListMultimap.create();
+    private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
     
     private boolean databaseShardingOnly;
     
     private boolean writeRouteOnly;
+    
+    private boolean useTraffic;
+    
+    private boolean skipEncryptRewrite;
+    
+    private String disableAuditNames;
+    
+    private boolean shadow;
 }

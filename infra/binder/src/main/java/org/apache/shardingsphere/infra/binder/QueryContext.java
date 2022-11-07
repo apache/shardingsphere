@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.binder;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +40,12 @@ public final class QueryContext {
     
     private String sqlStatementDatabaseName;
     
+    private HintValueContext hintValueContext;
+    
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
+        this.hintValueContext = SQLHintUtils.extractHint(sql);
         this.parameters = parameters;
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);

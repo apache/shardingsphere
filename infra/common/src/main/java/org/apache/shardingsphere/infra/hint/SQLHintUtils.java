@@ -89,35 +89,47 @@ public final class SQLHintUtils {
     }
     
     /**
-     * Get splitter SQL hint Value.
+     * Extract SQL hint.
      *
-     * @param sql SQL hint value
-     * @return Splitter SQL hint value
+     * @param sql SQL
+     * @return Hint value context
      */
     public static HintValueContext extractHint(final String sql) {
         HintValueContext result = new HintValueContext();
-        // TODO handle more
-        if (sql.startsWith("/* SHARDINGSPHERE_HINT:")) {
-            String hintText = sql.substring(0, sql.indexOf("*/") + 2);
-            Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
-            if (hintProperties.containsKey("SHARDING_DATABASE_VALUE")) {
-                result.setWriteRouteOnly(true);
-                // result.getDatabaseShardingValues().putAll(hintProperties.getProperty("SHARDING_DATABASE_VALUE"));
-            }
+        if (!sql.startsWith("/* SHARDINGSPHERE_HINT:")) {
+            return result;
         }
+        String hintText = sql.substring(0, sql.indexOf("*/") + 2);
+        Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
+        if (hintProperties.containsKey(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())) {
+            result.setWriteRouteOnly(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())));
+        }
+        if (hintProperties.containsKey(SQLHintPropertiesKey.USE_TRAFFIC_KEY.getKey())) {
+            result.setUseTraffic(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.USE_TRAFFIC_KEY.getKey())));
+        }
+        if (hintProperties.containsKey(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY.getKey())) {
+            result.setSkipEncryptRewrite(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY.getKey())));
+        }
+        if (hintProperties.containsKey(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY.getKey())) {
+            result.setDisableAuditNames(hintProperties.getProperty(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY.getKey()));
+        }
+        if (hintProperties.containsKey(SQLHintPropertiesKey.SHADOW_KEY.getKey())) {
+            result.setShadow(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.SHADOW_KEY.getKey())));
+        }
+        
         return result;
     }
     
     /**
-     * Get splitter SQL hint Value.
+     * Remove SQL hint.
      *
-     * @param originSQL SQL hint value
-     * @return Splitter SQL hint value
+     * @param sql SQL
+     * @return SQL after remove hint
      */
-    public static String removeHint(final String originSQL) {
-        if (originSQL.startsWith("/* SHARDINGSPHERE_HINT:")) {
-            return originSQL.substring(originSQL.indexOf("*/") + 2);
+    public static String removeHint(final String sql) {
+        if (sql.startsWith("/* SHARDINGSPHERE_HINT:")) {
+            return sql.substring(sql.indexOf("*/") + 2);
         }
-        return originSQL;
+        return sql;
     }
 }
