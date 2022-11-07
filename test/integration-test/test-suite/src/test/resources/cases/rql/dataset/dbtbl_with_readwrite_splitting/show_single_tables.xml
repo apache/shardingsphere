@@ -20,11 +20,11 @@
         <column name="table_name" />
         <column name="resource_name" />
     </metadata>
+    <row values="t_merchant| readwrite_ds_1" />
+    <row values="t_order_federate| readwrite_ds_0" />
+    <row values="t_order_item_federate| readwrite_ds_1" />
+    <row values="t_product| readwrite_ds_0" />
     <row values="t_product_detail| readwrite_ds_1" />
     <row values="t_single_table| readwrite_ds_0" />
     <row values="t_user| readwrite_ds_0" />
-    <row values="t_order_item_federate| readwrite_ds_1" />
-    <row values="t_order_federate| readwrite_ds_0" />
-    <row values="t_product| readwrite_ds_0" />
-    <row values="t_merchant| readwrite_ds_1" />
 </dataset>

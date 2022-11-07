@@ -38,7 +38,7 @@ public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public MySQLJdbcTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public MySQLJdbcTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);

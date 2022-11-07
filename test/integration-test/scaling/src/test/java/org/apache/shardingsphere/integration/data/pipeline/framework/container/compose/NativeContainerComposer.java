@@ -79,6 +79,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
                 try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
                     dropTableWithSchema(connection, "public");
                     dropTableWithSchema(connection, "test");
+                    connection.createStatement().execute("DROP SCHEMA IF EXISTS test;");
                 }
                 break;
             default:

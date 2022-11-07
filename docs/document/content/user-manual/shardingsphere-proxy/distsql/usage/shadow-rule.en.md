@@ -3,7 +3,7 @@ title = "Shadow"
 weight = 5
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
@@ -54,7 +54,7 @@ t_order_item(TYPE(NAME="SIMPLE_HINT", PROPERTIES("foo"="bar"))));
 DROP SHADOW RULE group_0;
 ```
 
-- Drop resource
+- Unregister storage unit
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;

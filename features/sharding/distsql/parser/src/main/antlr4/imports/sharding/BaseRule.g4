@@ -14,10 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 grammar BaseRule;
 
 import Symbol, Keyword, Literals;
+
+literal
+    : STRING | (MINUS)? INT | TRUE | FALSE
+    ;
+
+algorithmDefinition
+    : TYPE LP NAME EQ algorithmTypeName (COMMA propertiesDefinition)? RP
+    ;
+
+algorithmTypeName
+    : STRING
+    ;
+
+propertiesDefinition
+    : PROPERTIES LP properties? RP
+    ;
+
+properties
+    : property (COMMA property)*
+    ;
+
+property
+    : key=STRING EQ value=literal
+    ;
 
 tableName
     : IDENTIFIER

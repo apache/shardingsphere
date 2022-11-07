@@ -18,18 +18,26 @@
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
 
 import lombok.Getter;
+import org.apache.calcite.adapter.java.JavaTypeFactory;
+import org.apache.calcite.rel.type.RelDataType;
+import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.schema.impl.ViewTable;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Filterable schema.
+ * Translatable schema.
  */
 @Getter
 public final class TranslatableSchema extends AbstractSchema {
@@ -38,17 +46,27 @@ public final class TranslatableSchema extends AbstractSchema {
     
     private final Map<String, Table> tableMap;
     
-    public TranslatableSchema(final String schemaName, final ShardingSphereSchema schema, final TableScanExecutor executor) {
+    public TranslatableSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         name = schemaName;
-        tableMap = createTableMap(schema, executor);
+        tableMap = createTableMap(schema, protocolType, javaTypeFactory, executor);
     }
     
-    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final TableScanExecutor executor) {
+    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
         Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
         for (ShardingSphereTable each : schema.getTables().values()) {
-            // TODO implement table statistic logic after using custom operators
-            result.put(each.getName(), new FederationTranslatableTable(each, executor, new FederationStatistic()));
+            if (schema.containsView(each.getName())) {
+                result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
+            } else {
+                // TODO implement table statistic logic after using custom operators
+                result.put(each.getName(), new FederationTranslatableTable(each, executor, new FederationStatistic(), protocolType));
+            }
         }
         return result;
+    }
+    
+    private static ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
+        RelDataType relDataType = SQLFederationDataTypeUtil.createRelDataType(table, protocolType, javaTypeFactory);
+        ShardingSphereView view = schema.getView(table.getName());
+        return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
     }
 }

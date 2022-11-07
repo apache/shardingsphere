@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Collections;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +41,7 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(Collections.emptyList());
         encryptInsertValuesTokenGenerator.setDatabaseName("db_schema");
-        assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
+        assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
     }
     
     @Test
@@ -50,6 +51,6 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
         encryptInsertValuesTokenGenerator.setDatabaseName("db_schema");
-        assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
+        assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
     }
 }

@@ -29,6 +29,7 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <json-path.version>2.4.0</json-path.version>
     </properties>
     
     <dependencies>
@@ -116,6 +117,11 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-common</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${json-path.version}</version>
         </dependency>
     </dependencies>
 </project>

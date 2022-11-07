@@ -39,7 +39,7 @@ public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public PostgreSQLProxyTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public PostgreSQLProxyTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);

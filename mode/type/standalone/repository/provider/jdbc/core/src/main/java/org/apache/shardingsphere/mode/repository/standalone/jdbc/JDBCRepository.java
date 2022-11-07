@@ -75,12 +75,6 @@ public final class JDBCRepository implements StandalonePersistRepository {
     }
     
     @Override
-    public String get(final String key) {
-        // TODO
-        return null;
-    }
-    
-    @Override
     public String getDirectly(final String key) {
         try (
                 Connection connection = hikariDataSource.getConnection();

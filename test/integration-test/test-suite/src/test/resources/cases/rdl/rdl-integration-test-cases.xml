@@ -147,12 +147,12 @@
             <assertion-sql sql="SHOW TABLES;" />
         </assertion>
     </test-case>
-    <test-case sql="CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_RESOURCE=ds_0,READ_RESOURCES(ds_1),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
+    <test-case sql="CREATE READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=ds_0,READ_STORAGE_UNITS(ds_1),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_readwrite_splitting_rules.xml">
             <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
         </assertion>
     </test-case>
-    <test-case sql="ALTER READWRITE_SPLITTING RULE readwrite_ds (WRITE_RESOURCE=ds_0,READ_RESOURCES(ds_0),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
+    <test-case sql="ALTER READWRITE_SPLITTING RULE readwrite_ds (WRITE_STORAGE_UNIT=ds_0,READ_STORAGE_UNITS(ds_0),TYPE(NAME='RANDOM'));" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="alter_readwrite_splitting_rules.xml">
             <assertion-sql sql="SHOW READWRITE_SPLITTING RULES;" />
         </assertion>

@@ -76,15 +76,15 @@ unlabelComputeNode
     ;
 
 exportDatabaseConfiguration
-    : EXPORT DATABASE (CONFIGURATION | CONFIG) (FROM databaseName)? (COMMA? FILE EQ filePath)?
+    : EXPORT DATABASE CONFIGURATION (FROM databaseName)? (TO FILE filePath)?
     ;
 
 importDatabaseConfiguration
-    : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
+    : IMPORT DATABASE CONFIGURATION FROM FILE filePath
     ;
 
 convertYamlConfiguration
-    : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
+    : CONVERT YAML CONFIGURATION FROM FILE filePath
     ;
 
 showMigrationRule
@@ -144,7 +144,7 @@ variableValues
     ;
 
 variableValue
-    : STRING | (MINUS)? INT | TRUE | FALSE
+    : literal
     ;
 
 instanceId

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
+import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -34,10 +35,14 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     
     private static final String CLIENT_ENCODING_KEY = "client_encoding";
     
+    @Getter
+    private final int version;
+    
     private final Map<String, String> parametersMap = new HashMap<>();
     
     public PostgreSQLComStartupPacket(final PostgreSQLPacketPayload payload) {
-        payload.skipReserved(8);
+        payload.skipReserved(4);
+        version = payload.readInt4();
         while (payload.bytesBeforeZero() > 0) {
             parametersMap.put(payload.readStringNul(), payload.readStringNul());
         }

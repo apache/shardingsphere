@@ -98,4 +98,16 @@ public final class SQLHintExtractorTest {
         when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: t_order.SHARDING_TABLE_VALUE=a */", 0, 0)));
         assertThat(new SQLHintExtractor(statement).getHintShardingTableValue("t_order"), is("a"));
     }
+    
+    @Test
+    public void assertSQLHintShadow() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* SHARDINGSPHERE_HINT: SHADOW=true */", 0, 0)));
+        assertTrue(new SQLHintExtractor(statement).isShadow());
+    }
+    
+    @Test
+    public void assertSQLHintShadowWithCommentString() {
+        assertTrue(new SQLHintExtractor("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */").isHintWriteRouteOnly());
+    }
 }

@@ -3,7 +3,7 @@ title = "数据加密"
 weight = 3
 +++
 
-## 资源操作
+## 存储单元操作
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
@@ -53,7 +53,7 @@ ALTER ENCRYPT RULE t_encrypt (
 DROP ENCRYPT RULE t_encrypt;
 ```
 
-- 删除数据源
+- 移除数据源
 
 ```sql
 UNREGISTER STORAGE UNIT ds_0;

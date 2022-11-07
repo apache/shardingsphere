@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -107,8 +108,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
                 while (resultSet.next()) {
                     if (isCanceling()) {
-                        log.info("canceling, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName());
-                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName());
                     }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
@@ -122,7 +122,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName(), ex);
         }
     }
     
@@ -200,16 +200,14 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
                     Object thisResult = thisNextIterator.next();
                     Object thatResult = thatNextIterator.next();
-                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
-                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
-                    }
-                    // TODO The standard MySQL JDBC will convert unsigned mediumint to Integer, but proxy convert it to Long
-                    if (thisResult instanceof Integer && thatResult instanceof Long) {
-                        return ((Integer) thisResult).longValue() == (Long) thatResult;
-                    }
                     boolean matched;
-                    if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
+                    } else if (thisResult instanceof Number && thatResult instanceof Number && thisResult.getClass() != thatResult.getClass()) {
+                        // TODO some numeric types, Proxy and use jdbc to get different values, eg, PostgreSQL int2, MySQL unsigned mediumint
+                        matched = checkDifferentNumberTypeMatched((Number) thisResult, (Number) thatResult);
                     } else {
                         matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
                     }
@@ -222,6 +220,19 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
             }
             return true;
+        }
+        
+        private boolean checkDifferentNumberTypeMatched(final Number thisResult, final Number thatResult) {
+            if (thisResult instanceof Integer) {
+                return thisResult.intValue() == thatResult.intValue();
+            }
+            if (thisResult instanceof Long) {
+                return thisResult.longValue() == thatResult.longValue();
+            }
+            if (thisResult instanceof Short) {
+                return thisResult.longValue() == thatResult.longValue();
+            }
+            return Objects.equals(thisResult, thatResult);
         }
         
         @Override

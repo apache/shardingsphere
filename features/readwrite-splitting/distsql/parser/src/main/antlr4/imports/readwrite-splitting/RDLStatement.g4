@@ -36,7 +36,7 @@ readwriteSplittingRuleDefinition
     ;
 
 staticReadwriteSplittingRuleDefinition
-    : WRITE_RESOURCE EQ writeResourceName COMMA READ_RESOURCES LP readResourceNames RP
+    : WRITE_STORAGE_UNIT EQ writeStorageUnitName COMMA READ_STORAGE_UNITS LP readStorageUnitsNames RP
     ;
 
 dynamicReadwriteSplittingRuleDefinition
@@ -47,28 +47,12 @@ ruleName
     : IDENTIFIER
     ;
 
-writeResourceName
-    : resourceName
+writeStorageUnitName
+    : storageUnitName
     ;
 
-readResourceNames
-    : resourceName (COMMA resourceName)*
-    ;
-
-algorithmDefinition
-    : TYPE LP NAME EQ algorithmName (COMMA PROPERTIES LP algorithmProperties? RP)? RP
-    ;
-
-algorithmName
-    : STRING
-    ;
-
-algorithmProperties
-    : algorithmProperty (COMMA algorithmProperty)*
-    ;
-
-algorithmProperty
-    : key=STRING EQ value=(NUMBER | INT | STRING)
+readStorageUnitsNames
+    : storageUnitName (COMMA storageUnitName)*
     ;
 
 ifExists

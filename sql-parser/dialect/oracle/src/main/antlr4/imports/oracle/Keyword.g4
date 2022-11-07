@@ -359,6 +359,11 @@ DOUBLE
     : D O U B L E
     ;
 
+BYTE
+    :
+    B Y T E
+    ;
+
 CHAR
     : C H A R
     ;

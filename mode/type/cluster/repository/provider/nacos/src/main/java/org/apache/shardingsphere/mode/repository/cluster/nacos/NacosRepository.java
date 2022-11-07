@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.KeyValue;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceController;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMetadata;
@@ -52,7 +53,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,32 +73,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         nacosProps = new NacosProperties(config.getProps());
         client = createClient(config);
         initServiceMetadata();
-    }
-    
-    @Override
-    public int getNumChildren(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public void addCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public void evictCacheData(final String cachePath) {
-        // TODO
-    }
-    
-    @Override
-    public Object getRawCache(final String cachePath) {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public void updateInTransaction(final String key, final String value) {
-        // TODO
     }
     
     private NamingService createClient(final ClusterPersistRepositoryConfiguration config) {
@@ -152,18 +126,13 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+    public DistributedLockHolder getDistributedLockHolder() {
         // TODO
-        return false;
+        throw new UnsupportedOperationException("Can not support distributed lock on Nacos yet.");
     }
     
     @Override
-    public void unlock(final String lockKey) {
-        // TODO
-    }
-    
-    @Override
-    public void watch(final String key, final DataChangedEventListener listener, final Executor executor) {
+    public void watch(final String key, final DataChangedEventListener listener) {
         try {
             for (ServiceMetadata each : serviceController.getAllServices()) {
                 NamingEventListener eventListener = each.getListener();
@@ -179,12 +148,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         } catch (final NacosException ex) {
             throw new ClusterPersistRepositoryException(ex);
         }
-    }
-    
-    @Override
-    public String get(final String key) {
-        // TODO
-        return null;
     }
     
     @Override
@@ -339,16 +302,6 @@ public final class NacosRepository implements ClusterPersistRepository {
         } catch (final NacosException ex) {
             throw new ClusterPersistRepositoryException(ex);
         }
-    }
-    
-    @Override
-    public long getRegistryCenterTime(final String key) {
-        return 0;
-    }
-    
-    @Override
-    public Object getRawClient() {
-        return client;
     }
     
     private Collection<Instance> findExistedInstance(final String key, final boolean ephemeral) throws NacosException {

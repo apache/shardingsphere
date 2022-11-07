@@ -43,52 +43,52 @@ property:
 - Confirm that the storage unit to be added or altered can be connected, otherwise the operation will not be successful;
 - Duplicate `storageUnitName` is not allowed;
 - `PROPERTIES` is used to customize connection pool parameters, `key` and `value` are both STRING types;
-- `ALTER RESOURCE` is not allowed to change the real data source associated with this storage unit;
-- `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
-- `DROP RESOURCE` will only delete logical storage unit, not real data sources;
+- `ALTER STORAGE UNIT` is not allowed to change the real data source associated with this storage unit;
+- `ALTER STORAGE UNIT` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
+- `UNREGISTER STORAGE UNIT` will only delete logical storage unit, not real data sources;
 - Storage unit referenced by rules cannot be deleted;
 - If the storage unit is only referenced by `single table rule`, and the user confirms that the restriction can be ignored, the optional parameter `ignore single tables` can be added to perform forced deletion.
 
 ## Example
 
 ```sql
-REGISTER STORAGE UNIT su_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),su_1 (
+),ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db1",
     USER="root"
-),su_2 (
+),ds_2 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db2",
     USER="root",
     PROPERTIES("maximumPoolSize"="10")
-),su_3 (
+),ds_3 (
     URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-ALTER STORAGE UNIT su_0 (
+ALTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3309,
     DB="db0",
     USER="root",
     PASSWORD="root"
-),su_1 (
+),ds_1 (
     URL="jdbc:mysql://127.0.0.1:3309/db1?serverTimezone=UTC&useSSL=false",
     USER="root",
     PASSWORD="root",
     PROPERTIES("maximumPoolSize"="10","idleTimeout"="30000")
 );
 
-UNREGISTER STORAGE UNIT su_0, su_1;
-UNREGISTER STORAGE UNIT su_2, su_3 ignore single tables;
+UNREGISTER STORAGE UNIT ds_0, ds_1;
+UNREGISTER STORAGE UNIT ds_2, ds_3 ignore single tables;
 ```

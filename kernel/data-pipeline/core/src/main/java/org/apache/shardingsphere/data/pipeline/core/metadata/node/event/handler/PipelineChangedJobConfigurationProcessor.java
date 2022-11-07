@@ -32,5 +32,6 @@ public interface PipelineChangedJobConfigurationProcessor extends TypedSPI {
      * @param eventType event type
      * @param jobConfigPOJO job configuration pojo
      */
+    // TODO replace JobConfigurationPOJO to JobConfiguration
     void process(DataChangedEvent.Type eventType, JobConfigurationPOJO jobConfigPOJO);
 }

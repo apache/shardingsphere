@@ -39,6 +39,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -115,7 +116,7 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TYPE_NAME")).thenReturn("INTEGER", "VARCHAR");
-        when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
+        when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
         return result;
     }
 }

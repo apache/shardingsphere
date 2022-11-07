@@ -51,7 +51,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
     private AlgorithmProvidedEncryptRuleConfiguration createValidConfiguration() {
         AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.singletonMap("aes_encryptor", mock(EncryptAlgorithm.class)));
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "aes_encryptor", false));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "aes_encryptor", false));
         when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
         return result;
     }
@@ -69,7 +69,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
     private AlgorithmProvidedEncryptRuleConfiguration createInvalidCipherColumnConfig() {
         AlgorithmProvidedEncryptRuleConfiguration result = mock(AlgorithmProvidedEncryptRuleConfiguration.class);
         when(result.getEncryptors()).thenReturn(Collections.emptyMap());
-        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, "user_plain", "aes_encryptor", false));
+        Collection<EncryptColumnRuleConfiguration> columns = Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_cipher", null, null, "user_plain", "aes_encryptor", false));
         when(result.getTables()).thenReturn(Collections.singletonList(new EncryptTableRuleConfiguration("t_encrypt", columns, false)));
         return result;
     }

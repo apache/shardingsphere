@@ -40,47 +40,23 @@ dropDatabaseDiscoveryHeartbeat
     ;
 
 databaseDiscoveryRule
-    : ruleName LP resources COMMA typeDefinition COMMA discoveryHeartbeat RP
-    ;
-
-databaseDiscoveryTypeDefinition
-    : discoveryTypeName LP typeDefinition RP
-    ;
-
-heartbeatDefinition
-    : discoveryHeartbeatName LP PROPERTIES LP properties RP RP  
+    : ruleName LP storageUnits COMMA algorithmDefinition COMMA discoveryHeartbeat RP
     ;
 
 ruleName
     : IDENTIFIER
     ;
 
-resources
-    : RESOURCES LP resourceName (COMMA resourceName)* RP
+storageUnits
+    : STORAGE_UNITS LP storageUnitName (COMMA storageUnitName)* RP
     ;
 
-resourceName
+storageUnitName
     : IDENTIFIER
     ;
 
-typeDefinition
-    : TYPE LP NAME EQ discoveryType (COMMA PROPERTIES LP properties RP)? RP
-    ;
-
 discoveryHeartbeat
-    : HEARTBEAT LP PROPERTIES LP properties RP RP
-    ;
-
-properties
-    : property (COMMA property)*
-    ;
-
-property
-    : key=STRING EQ value=(NUMBER | INT | STRING)
-    ;
-
-discoveryType
-    : STRING
+    : HEARTBEAT LP propertiesDefinition RP
     ;
 
 discoveryTypeName

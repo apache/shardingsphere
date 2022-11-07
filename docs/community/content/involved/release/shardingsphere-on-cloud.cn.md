@@ -166,9 +166,9 @@ git push origin ${RELEASE.VERSION}-release
 在发布分支上更新 `Chart.yaml` 文件中的版本：
 
 ```
-~/shardingsphere-on-cloud/charts/shardingsphere-operator/Chart.yaml
-~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster/Chart.yaml
-~/shardingsphere-on-cloud/charts/shardingsphere-proxy/Chart.yaml
+~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts/Chart.yaml
+~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts/Chart.yaml
+~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/Chart.yaml
 ```
 
 将 `version` 修改为 `${RELEASE.VERSION}`，`appVersion` 修改为对应的应用版本，并提交 PR 到发布分支。
@@ -187,22 +187,22 @@ git push origin --tags
 打包 charts 之前需要通过 `helm dependency build` 命令下载依赖的包，然后再对 charts 进行打包，具体操作步骤如下：
 
 ```shell
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-operator-cluster
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-operator-cluster-charts
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy/charts/governance
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts/charts/governance
 helm dependency build
 
-cd ~/shardingsphere-on-cloud/charts/shardingsphere-proxy
+cd ~/shardingsphere-on-cloud/charts/apache-shardingsphere-proxy-charts
 helm dependency build
 
 cd ~/shardingsphere-on-cloud/charts
-helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shardingsphere-operator
-helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shardingsphere-operator-cluster
-helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shardingsphere-proxy
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-charts
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-operator-cluster-charts
+helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg apache-shardingsphere-proxy-charts
 ```
 
 ### 5. 更新下载页面
@@ -211,62 +211,6 @@ helm package --sign --key '${GPG 用户名}' --keyring ~/.gnupg/secring.gpg shar
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
 * <https://shardingsphere.apache.org/document/current/cn/downloads/>
 
-GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
-
-## 发布 Apache SVN 仓库
-
-### 1. 检出 ShardingSphere 发布目录
-
-如无本地工作目录，则先创建本地工作目录。
-
-```shell
-mkdir -p ~/ss_svn/dev/
-cd ~/ss_svn/dev/
-```
-
-创建完毕后，从 Apache SVN 检出 ShardingSphere 发布目录。
-
-```shell
-svn --username=${APACHE LDAP 用户名} co https://dist.apache.org/repos/dist/dev/shardingsphere
-cd ~/ss_svn/dev/shardingsphere
-```
-
-### 2. 添加 gpg 公钥
-
-仅第一次部署的账号需要添加，只要 `KEYS` 中包含已经部署过的账户的公钥即可。
-
-```shell
-gpg -a --export ${GPG用户名} >> KEYS
-```
-
-### 3. 将待发布的内容添加至 SVN 目录
-
-创建版本号目录。
-
-```shell
-mkdir -p ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
-cd ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
-```
-
-将 charts 包添加至 SVN 工作目录。
-
-```shell
-cp -f ~/shardingsphere-on-cloud/charts/*.tgz* ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
-```
-
-生成 `index.yaml`。 
-
-```shell
-cd ~/ss_svn/dev/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION}
-helm repo index --url https://archive.apache.org/dist/shardingsphere/shardingsphere-on-cloud-${RELEASE.VERSION} .
-```
-
-### 4. 提交 Apache SVN
-
-```shell
-svn add * --parents
-svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
-```
 
 ## 检查发布结果
 
@@ -295,7 +239,7 @@ Your decision? 5
   > save
 ```
 
-然后进行 gpg 签名检查。
+下载所有 prov 文件和 tgz 文件，然后进行 gpg 签名检查。
 
 Bash 可以使用以下命令检查签名：
 
@@ -314,20 +258,39 @@ helm verify apache-shardingsphere-proxy-${RELEASE.VERSION}.tgz
 ### 2. 检查发布文件内容
 
 解压缩
+- `apache-shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
+- `apache-shardingsphere-operator-cluster-charts-${RELEASE.VERSION}.tgz`
 - `apache-shardingsphere-proxy-charts-${RELEASE.VERSION}.tgz`
-- `apache-shardingsphere-cluster-charts-${RELEASE.VERSION}.tgz`
-- `shardingsphere-operator-charts-${RELEASE.VERSION}.tgz`
 
 进行如下检查:
 
 - 存在 `LICENSE` 和 `NOTICE` 文件；
 - `NOTICE` 文件中的年份正确；
-- 所有文本文件开头都有 ASF 许可证；
+- 所有文本文件开头都有 ASF 许可证，以下文件除外：
+  - 所有 Chart.yaml
+  - 所有 Chart.lock
 - 检查第三方依赖许可证：
   - 第三方依赖的许可证兼容；
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
   - 依赖许可证的完整版全部在 `license` 目录；
   - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
+### 3. 检查仓库制品
+
+添加仓库
+```shell
+helm repo remove apache
+helm repo add apache  https://apache.github.io/shardingsphere-on-cloud
+helm search repo apache
+```
+
+可以查询到三个制品即为发布成功,`helm repo add` 和 `helm search repo` 会根据 index.yaml 中的校验值进行校验 
+
+```shell
+NAME                                              	CHART VERSION	           APP VERSION	DESCRIPTION
+apache/apache-shardingsphere-operator-charts     	${RELEASE.VERSION}       	xxx     	A Helm chart for ShardingSphere-Operator
+apache/apache-shardingsphere-operator-cluster-...	${RELEASE.VERSION}        	xxx      	A Helm chart for ShardingSphere-Operator-Cluster
+apache/apache-shardingsphere-proxy-charts        	${RELEASE.VERSION}        	xxx         A Helm chart for ShardingSphere-Proxy-Cluster
+```
 
 ## 发起投票
 
@@ -358,6 +321,8 @@ This is a call for vote to release Apache ShardingSphere on Cloud version ${RELE
 Release notes:
 https://github.com/apache/shardingsphere-on-cloud/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 
+The release candidates:
+https://github.com/apache/shardingsphere-on-cloud/releases/tag/${RELEASE.VERSION}
 
 Git tag for the release:
 https://github.com/apache/shardingsphere-on-cloud/tree/${RELEASE.VERSION}/
@@ -369,7 +334,7 @@ Keys to verify the Release Candidate:
 https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS
 
 Look at here for how to verify this release candidate:
-https://shardingsphere.apache.org/community/en/involved/release/shardingsphere/
+https://shardingsphere.apache.org/community/en/involved/release/shardingsphere-on-cloud/
 
 GPG user ID:
 ${YOUR.GPG.USER.ID}
@@ -388,13 +353,11 @@ PMC vote is +1 binding, all others is +1 non-binding.
 
 Checklist for reference:
 
-[ ] Download links are valid.
-
 [ ] Checksums and PGP signatures are valid.
 
 [ ] Source code distributions have correct names matching the current release.
 
-[ ] LICENSE and NOTICE files are correct for each ShardingSphere repo.
+[ ] LICENSE and NOTICE files are correct for each ShardingSphere on Cloud repo.
 
 [ ] All files have license headers if necessary.
 
@@ -406,7 +369,7 @@ Checklist for reference:
 标题：
 
 ```
-[RESULT][VOTE] Release Apache ShardingSphere ${RELEASE.VERSION}
+[RESULT][VOTE] Release Apache ShardingSphere on Cloud ${RELEASE.VERSION}
 ```
 
 正文：
@@ -426,7 +389,6 @@ I will process to publish the release and send ANNOUNCE.
 
 3. 邮件通知版本发布完成
 
-````
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
 通知邮件模板：
@@ -434,7 +396,7 @@ I will process to publish the release and send ANNOUNCE.
 标题：
 
 ```
-[ANNOUNCE] Apache ShardingSphere On-Cloud-${RELEASE.VERSION} available
+[ANNOUNCE] Apache ShardingSphere on Cloud ${RELEASE.VERSION} available
 ```
 
 正文：
@@ -442,18 +404,24 @@ I will process to publish the release and send ANNOUNCE.
 ```
 Hi all,
 
-Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere On-Cloud-${RELEASE.VERSION}.
+Apache ShardingSphere Team is glad to announce the new release of Apache ShardingSphere on Cloud ${RELEASE.VERSION}.
 
 The shardingsphere-on-cloud project, including ShardingSphere Operator, Helm Charts, and other cloud solutions, aims at enhancing the deployment and management capabilities of Apache ShardingSphere Proxy on the cloud. 
 ShardingSphere Operator is a Kubernetes software extension written with the Operator extension pattern of Kubernetes. ShardingSphere Operator can be used to quickly deploy an Apache ShardingSphere Proxy cluster in the Kubernetes environment and manage the entire cluster life cycle.
 
+Download Links: https://github.com/apache/shardingsphere-on-cloud/releases/tag/${RELEASE.VERSION}
 
 Release Notes: https://github.com/apache/shardingsphere-on-cloud/blob/master/RELEASE-NOTES.md
 
+Website: https://shardingsphere.apache.org/
+
+ShardingSphere on Cloud Resources:
+- Issue: https://github.com/apache/shardingsphere-on-cloud/issues/
+- Mailing list: dev@shardingsphere.apache.org
+- Documents: https://shardingsphere.apache.org/document/current/
 
 
 
 - Apache ShardingSphere Team
 
 ```
-````

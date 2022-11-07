@@ -63,7 +63,6 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -114,7 +113,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final TableScanExecutorContext executorContext;
     
-    private final ShardingSphereData shardingSphereData;
+    private final ShardingSphereData data;
     
     private final EventBusContext eventBusContext;
     
@@ -171,10 +170,9 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     }
     
     private Enumerable<Object[]> executeByShardingSphereData(final String databaseName, final String schemaName, final ShardingSphereTable table) {
-        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(shardingSphereData.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
+        Optional<ShardingSphereTableData> tableData = Optional.ofNullable(data.getDatabaseData().get(databaseName)).map(optional -> optional.getSchemaData().get(schemaName))
                 .map(ShardingSphereSchemaData::getTableData).map(shardingSphereData -> shardingSphereData.get(table.getName()));
         return tableData.map(this::createMemoryEnumerator).orElseGet(this::createEmptyEnumerable);
-        
     }
     
     private Enumerable<Object[]> createMemoryEnumerator(final ShardingSphereTableData tableData) {
@@ -224,10 +222,10 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
-        ShardingSphereSchema schema = executorContext.getFederationContext().getDatabases().get(databaseName).getSchema(schemaName);
+        ShardingSphereDatabase database = executorContext.getFederationContext().getDatabases().get(databaseName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
-                new FilterableSchema(schemaName, schema, JAVA_TYPE_FACTORY, null), new JavaTypeFactoryImpl(), connectionConfig);
-        RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(new JavaTypeFactoryImpl()));
+                new FilterableSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
+        RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName()).filter(scanContext.getFilterValues());
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));
