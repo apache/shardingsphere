@@ -38,10 +38,10 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 0);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1,1,1);");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
         final Savepoint savepoint = connection.setSavepoint("point1");
         assertAccountRowCount(connection, 1);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2,2,2);");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
         assertAccountRowCount(connection, 2);
         connection.rollback(savepoint);
         assertAccountRowCount(connection, 1);
@@ -53,10 +53,10 @@ public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
         Connection connection = getDataSource().getConnection();
         connection.setAutoCommit(false);
         assertAccountRowCount(connection, 1);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2,2,2);");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
         final Savepoint savepoint = connection.setSavepoint("point2");
         assertAccountRowCount(connection, 2);
-        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(3,3,3);");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(3, 3, 3);");
         assertAccountRowCount(connection, 3);
         connection.releaseSavepoint(savepoint);
         assertAccountRowCount(connection, 3);

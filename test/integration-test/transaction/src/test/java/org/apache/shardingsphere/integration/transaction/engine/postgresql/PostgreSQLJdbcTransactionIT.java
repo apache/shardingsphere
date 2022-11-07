@@ -39,7 +39,7 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public PostgreSQLJdbcTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public PostgreSQLJdbcTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);

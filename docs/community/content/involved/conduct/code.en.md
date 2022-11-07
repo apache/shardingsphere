@@ -56,6 +56,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - conditional operator(<expression1> ? <expression2> : <expression3>) `nested use` is forbidden.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
  - Use forward semantics in priority for better understanding code logic in conditional expressions. For example: `if (null == param) {} else {}`.
+ - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
 
 ## Contributor Covenant Unit Test of Conduct
 

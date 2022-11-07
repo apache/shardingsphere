@@ -107,7 +107,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         jobConfigPOJO.setJobName(jobConfig.getJobId());
         jobConfigPOJO.setShardingTotalCount(jobConfig.getJobShardingCount());
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(swapToYamlJobConfiguration(jobConfig)));
-        jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
+        String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
+        jobConfigPOJO.getProps().setProperty("create_time", createTimeFormat);
+        jobConfigPOJO.getProps().setProperty("start_time_millis", System.currentTimeMillis() + "");
         return YamlEngine.marshal(jobConfigPOJO);
     }
     
@@ -122,6 +124,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         ShardingSpherePreconditions.checkState(jobConfigPOJO.isDisabled(), () -> new PipelineJobHasAlreadyStartedException(jobId));
         jobConfigPOJO.setDisabled(false);
+        jobConfigPOJO.getProps().setProperty("start_time_millis", System.currentTimeMillis() + "");
         jobConfigPOJO.getProps().remove("stop_time");
         jobConfigPOJO.getProps().remove("stop_time_millis");
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);

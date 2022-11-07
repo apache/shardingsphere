@@ -19,7 +19,7 @@ package org.apache.shardingsphere.migration.distsql.handler.query;
 
 import org.apache.shardingsphere.data.pipeline.api.ConsistencyCheckJobPublicAPI;
 import org.apache.shardingsphere.data.pipeline.api.PipelineJobPublicAPIFactory;
-import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
@@ -27,9 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -44,15 +43,13 @@ public final class ShowMigrationCheckStatusQueryResultSet implements DatabaseDis
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowMigrationCheckStatusStatement checkMigrationStatement = (ShowMigrationCheckStatusStatement) sqlStatement;
-        ConsistencyCheckJobProgressInfo progressInfo = JOB_API.getJobProgressInfo(checkMigrationStatement.getJobId());
-        List<Collection<Object>> result = new LinkedList<>();
-        String checkResult = null == progressInfo.getCheckSuccess() ? "" : progressInfo.getCheckSuccess().toString();
-        result.add(Arrays.asList(Optional.ofNullable(progressInfo.getTableNames()).orElse(""), checkResult, String.valueOf(progressInfo.getFinishedPercentage()),
-                progressInfo.getRemainingSeconds(),
-                Optional.ofNullable(progressInfo.getCheckBeginTime()).orElse(""),
-                Optional.ofNullable(progressInfo.getCheckEndTime()).orElse(""),
-                progressInfo.getDurationSeconds(), Optional.ofNullable(progressInfo.getErrorMessage()).orElse("")));
-        data = result.iterator();
+        ConsistencyCheckJobItemInfo info = JOB_API.getJobItemInfo(checkMigrationStatement.getJobId());
+        String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
+        Collection<Object> result = Arrays.asList(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult,
+                String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),
+                Optional.ofNullable(info.getCheckBeginTime()).orElse(""), Optional.ofNullable(info.getCheckEndTime()).orElse(""),
+                info.getDurationSeconds(), Optional.ofNullable(info.getErrorMessage()).orElse(""));
+        data = Collections.singletonList(result).iterator();
     }
     
     @Override

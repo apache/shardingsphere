@@ -14,7 +14,7 @@ CreateShardingTableRule ::=
   'CREATE' 'SHARDING' 'TABLE' 'RULE' ( tableDefinition | autoTableDefinition ) ( ',' ( tableDefinition | autoTableDefinition ) )*
 
 tableDefinition ::= 
-   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')' ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )? ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
+   tableName '(' 'DATANODES' '(' dataNode ( ',' dataNode )* ')'  ( ',' 'DATABASE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'TABLE_STRATEGY' '(' strategyDefinition ')' )?  ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
 
 autoTableDefinition ::=
     tableName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )*  ')' ',' 'SHARDING_COLUMN' '=' columnName ',' algorithmDefinition ( ',' 'KEY_GENERATE_STRATEGY' '(' keyGenerateStrategyDefinition ')' )? ( ',' 'AUDIT_STRATEGY' '(' auditStrategyDefinition ')' )? ')'
@@ -23,10 +23,15 @@ strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
-  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' ( 'KEY_GENERATOR' '=' algorihtmName | algorithmDefinition ) ')' 
+  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ','  algorithmDefinition  ')' 
+
+auditStrategyDefinition ::= 
+  'AUDIT_STRATEGY' '(' 'AUDITORS' '=' '[' auditorName ',' auditorName ']' ',' 'ALLOW_HINT_DISABLE' '=' 'TRUE | FALSE' ')'
+  |
+  'AUDIT_STRATEGY' '(' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ',' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ')'
 
 algorithmDefinition ::=
-  ('SHARDING_ALGORITHM' '=' algorithmName | 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  )
+  'SHARDING_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')' ')'
 
 propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
@@ -84,90 +89,24 @@ algorithmType ::=
 
 #### 1.Standard sharding table rule
 
-- ##### Create standard sharding table rule by specifying sharding algorithms
-
-```SQL
--- create sharding algorithms
-CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
-); 
-
--- create a sharding rule by specifying sharding algorithms
-CREATE SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
-);
-```
-
-- ##### Use the default sharding database strategy, create standard sharding table rule by specifying a sharding algorithm
-
 ```sql
--- create sharding algorithms
-CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
-); 
-
--- create a default sharding database strategy
-CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
-);
-
--- create a sharding table rule by specifying a sharding algorithm
-CREATE SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..1}.t_order_${0..1}"),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
-);
-```
-
-- ##### Use both the default sharding and the default sharding strategy, create standard sharding table rule
-
-```SQL
--- create sharding algorithms
-CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 2}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
-); 
-
--- create a default sharding database strategy
-CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
-);
-
--- create a default sharding table strategy
-CREATE DEFAULT SHARDING TABLE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
-);
-
--- create a sharding table rule 
-CREATE SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..1}.t_order_${0..1}")
-);
-```
-
-- ##### Create standard sharding table rule and sharding algorithms at the same time
-
-```sql
-CREATE SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..1}.t_order_${0..1}"),
-    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
+CREATE SHARDING TABLE RULE t_order_item (
+DATANODES("ds_${0..1}.t_order_item_${0..1}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 ```
 
 #### 2.Auto sharding table rule
 
-- ##### create auto sharding table rule
-
 ```sql
 CREATE SHARDING TABLE RULE t_order (
-    STORAGE_UNITS(ds_0, ds_1),
-    SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
+STORAGE_UNITS(ds_0,ds_1),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 ```
 
@@ -178,5 +117,4 @@ CREATE SHARDING TABLE RULE t_order (
 ### Related links
 
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
 - [CREATE DEFAULT_SHARDING STRATEGY](/en/reference/distsql/syntax/rdl/rule-definition/create-default-sharding-strategy/)

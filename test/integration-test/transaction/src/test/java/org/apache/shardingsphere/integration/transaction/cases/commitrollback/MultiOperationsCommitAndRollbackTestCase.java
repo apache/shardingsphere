@@ -54,7 +54,7 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        executeUpdateWithLog(conn, "update account set balance=3, transaction_id=3 where id=2;");
+        executeUpdateWithLog(conn, "update account set balance = 3, transaction_id = 3 where id = 2;");
         assertQueryAccount(conn, 1, 3);
         conn.rollback();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
@@ -67,7 +67,7 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        executeUpdateWithLog(conn, "update account set balance=3, transaction_id=3 where id=2;");
+        executeUpdateWithLog(conn, "update account set balance = 3, transaction_id = 3 where id = 2;");
         assertQueryAccount(conn, 1, 3);
         conn.commit();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 2);

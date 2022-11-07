@@ -97,7 +97,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private Map<String, ShardingSphereColumn> createColumns() {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(4, 1);
-        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true));
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
         result.put("password", mock(ShardingSphereColumn.class));
         result.put("amount", mock(ShardingSphereColumn.class));
         result.put("status", mock(ShardingSphereColumn.class));
