@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceCon
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
@@ -69,10 +70,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Context manager coordinator.
+ * Context manager subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ContextManagerCoordinator {
+public final class ContextManagerSubscriber {
     
     private final MetaDataPersistService persistService;
     
@@ -80,12 +81,12 @@ public final class ContextManagerCoordinator {
     
     private final ContextManager contextManager;
     
-    public ContextManagerCoordinator(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
+    public ContextManagerSubscriber(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.persistService = persistService;
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
-        new ResourceMetaDataCoordinator(contextManager);
+        new ResourceMetaDataSubscriber(contextManager);
         disableDataSources();
     }
     
