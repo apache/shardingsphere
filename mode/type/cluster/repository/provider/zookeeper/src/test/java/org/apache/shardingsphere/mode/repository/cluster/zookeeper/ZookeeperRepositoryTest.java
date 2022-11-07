@@ -34,7 +34,6 @@ import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -120,7 +119,7 @@ public final class ZookeeperRepositoryTest {
         mockClient();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
-        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
+        REPOSITORY.init(config);
         mockDistributedLockHolder();
     }
     
@@ -262,7 +261,7 @@ public final class ZookeeperRepositoryTest {
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
+        REPOSITORY.init(config);
     }
     
     @Test
@@ -270,7 +269,7 @@ public final class ZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
+        REPOSITORY.init(config);
     }
     
     @Test
@@ -278,7 +277,7 @@ public final class ZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
+        REPOSITORY.init(config);
     }
     
     @Test
@@ -286,7 +285,7 @@ public final class ZookeeperRepositoryTest {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, props);
-        REPOSITORY.init(config, new ProxyInstanceMetaData("foo_id", 3307));
+        REPOSITORY.init(config);
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     
