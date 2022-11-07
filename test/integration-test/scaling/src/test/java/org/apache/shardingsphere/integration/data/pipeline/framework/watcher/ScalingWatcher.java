@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.watcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeContainerComposer;
@@ -34,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
