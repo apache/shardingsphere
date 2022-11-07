@@ -37,19 +37,12 @@ import java.util.Optional;
 public final class ShorthandProjection implements Projection {
     
     private final String owner;
-    
-    private final Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
 
     private final Map<String, Projection> resultSetColumns = new LinkedHashMap<>();
 
     public ShorthandProjection(final String owner, final Collection<Projection> projections) {
         this.owner = owner;
-        for (Projection projection : projections) {
-            if (projection instanceof ColumnProjection) {
-                actualColumns.put(projection.getExpression().toLowerCase(), (ColumnProjection) projection);
-            }
-            resultSetColumns.put(projection.getExpression().toLowerCase(), projection);
-        }
+        projections.forEach(each -> resultSetColumns.put(each.getExpression().toLowerCase(), each));
     }
     
     @Override
@@ -74,5 +67,15 @@ public final class ShorthandProjection implements Projection {
      */
     public Optional<String> getOwner() {
         return Optional.ofNullable(owner);
+    }
+
+    public Map<String, ColumnProjection> getActualColumns() {
+        Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
+        for (Map.Entry<String, Projection> entry : resultSetColumns.entrySet()) {
+            if (entry.getValue() instanceof ColumnProjection) {
+                actualColumns.put(entry.getKey(), (ColumnProjection) entry.getValue());
+            }
+        }
+        return actualColumns;
     }
 }
