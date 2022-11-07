@@ -38,7 +38,6 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.metadata.AlterNotExistProcessConfigurationException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -46,8 +45,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -71,8 +68,6 @@ import java.util.stream.IntStream;
 @Slf4j
 public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPipelineJobAPIImpl implements InventoryIncrementalJobAPI, InventoryIncrementalJobPublicAPI {
     
-    private final YamlPipelineProcessConfigurationSwapper processConfigSwapper = new YamlPipelineProcessConfigurationSwapper();
-    
     private final PipelineProcessConfigurationPersistService processConfigPersistService = new PipelineProcessConfigurationPersistService();
     
     private final YamlInventoryIncrementalJobItemProgressSwapper jobItemProgressSwapper = new YamlInventoryIncrementalJobItemProgressSwapper();
@@ -83,29 +78,9 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public abstract InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
-    public void createProcessConfiguration(final PipelineProcessConfiguration processConfig) {
-        processConfigPersistService.persist(getJobType(), processConfig);
-    }
-    
-    @Override
     public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
         // TODO check rateLimiter type match or not
         processConfigPersistService.persist(getJobType(), processConfig);
-    }
-    
-    private YamlPipelineProcessConfiguration getTargetYamlProcessConfiguration() {
-        PipelineProcessConfiguration existingProcessConfig = processConfigPersistService.load(getJobType());
-        ShardingSpherePreconditions.checkNotNull(existingProcessConfig, AlterNotExistProcessConfigurationException::new);
-        return processConfigSwapper.swapToYamlConfiguration(existingProcessConfig);
-    }
-    
-    @Override
-    public void dropProcessConfiguration(final String confPath) {
-        String finalConfPath = confPath.trim();
-        PipelineProcessConfigurationUtil.verifyConfPath(confPath);
-        YamlPipelineProcessConfiguration targetYamlProcessConfig = getTargetYamlProcessConfiguration();
-        PipelineProcessConfigurationUtil.setFieldsNullByConfPath(targetYamlProcessConfig, finalConfPath);
-        processConfigPersistService.persist(getJobType(), processConfigSwapper.swapToObject(targetYamlProcessConfig));
     }
     
     @Override

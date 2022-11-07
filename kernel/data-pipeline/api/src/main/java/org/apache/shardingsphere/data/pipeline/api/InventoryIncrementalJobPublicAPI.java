@@ -34,25 +34,11 @@ import java.util.List;
 public interface InventoryIncrementalJobPublicAPI extends PipelineJobPublicAPI, TypedSPI {
     
     /**
-     * Create process configuration.
-     *
-     * @param processConfig process configuration
-     */
-    void createProcessConfiguration(PipelineProcessConfiguration processConfig);
-    
-    /**
      * Alter process configuration.
      *
      * @param processConfig process configuration
      */
     void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
-    
-    /**
-     * Drop process configuration.
-     *
-     * @param confPath configuration path. e.g. <code>/</code>, <code>/READ</code>, <code>/READ/RATE_LIMITER</code>
-     */
-    void dropProcessConfiguration(String confPath);
     
     /**
      * Show process configuration.
