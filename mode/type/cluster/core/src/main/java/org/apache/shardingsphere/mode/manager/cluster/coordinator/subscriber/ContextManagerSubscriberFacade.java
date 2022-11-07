@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 public final class ContextManagerSubscriberFacade {
     
     public ContextManagerSubscriberFacade(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
-        contextManager.getInstanceContext().getEventBusContext().register(this);
         new ConfigurationChangedSubscriber(persistService, registryCenter, contextManager);
         new ResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);
