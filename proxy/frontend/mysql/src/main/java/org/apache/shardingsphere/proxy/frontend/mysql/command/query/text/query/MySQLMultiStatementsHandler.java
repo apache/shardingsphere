@@ -111,8 +111,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()));
+        return sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(DatabaseTypeFactory.getInstance("MySQL")));
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {
