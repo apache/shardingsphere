@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoa
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 
