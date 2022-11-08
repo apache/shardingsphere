@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
+package org.apache.shardingsphere.sql.parser.base;
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.junit.Ignore;
+import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -36,9 +36,9 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -51,6 +51,9 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
+    
+    // TODO this will refactor as an abstract
+    private final CSVResultGenerator resultGenerator;
     
     protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
@@ -104,7 +107,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         try {
             InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
             result = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
-        } catch (IOException ingore) {
+        } catch (IOException ignore) {
             log.warn("Error: GitHub API rate limit exceeded");
         }
         return result;
@@ -123,14 +126,16 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    @Ignore
     @Test
     public final void assertParseSQL() {
+        String result = "success";
         try {
             ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
             new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
         } catch (final SQLParsingException | ClassCastException | NullPointerException | SQLASTVisitorException | NumberFormatException | StringIndexOutOfBoundsException ignore) {
+            result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
+        resultGenerator.processResult(sqlCaseId, databaseType, result, sql);
     }
 }
