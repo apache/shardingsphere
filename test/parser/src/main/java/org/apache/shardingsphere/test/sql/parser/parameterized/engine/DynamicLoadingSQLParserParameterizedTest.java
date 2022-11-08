@@ -122,7 +122,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-
+    
     @Test
     public final void assertParseSQL() {
         try {

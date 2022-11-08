@@ -30,8 +30,8 @@ import java.util.Collections;
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
-    public DynamicLoadingMySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL");
+    public DynamicLoadingMySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue, final String databaseType) {
+        super(sqlCaseId, sqlCaseValue, databaseType);
     }
     
     /**

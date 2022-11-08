@@ -30,8 +30,8 @@ import java.util.Collections;
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
-    public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "PostgreSQL");
+    public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue, final String databaseType) {
+        super(sqlCaseId, sqlCaseValue, databaseType);
     }
     
     /**
@@ -42,7 +42,8 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         if (IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
-            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"), "PostgreSQL");
+            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"),
+                    "PostgreSQL");
         }
         return Collections.emptyList();
     }

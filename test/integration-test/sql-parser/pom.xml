@@ -39,7 +39,13 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser</artifactId>
+            <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
