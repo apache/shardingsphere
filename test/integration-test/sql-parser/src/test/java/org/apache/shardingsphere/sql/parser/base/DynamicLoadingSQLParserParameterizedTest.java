@@ -134,8 +134,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         try {
             ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
             new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
-        } catch (final SQLParsingException | ClassCastException | NullPointerException | SQLASTVisitorException
-                | NumberFormatException | StringIndexOutOfBoundsException | ServiceProviderNotFoundServerException ignore) {
+        } catch (final Exception ignore) {
             result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
