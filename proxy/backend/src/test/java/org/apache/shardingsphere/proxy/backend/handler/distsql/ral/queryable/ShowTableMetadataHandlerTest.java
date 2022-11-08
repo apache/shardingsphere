@@ -78,7 +78,7 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
     
     private Map<String, ShardingSphereTable> createTableMap() {
         Map<String, ShardingSphereTable> result = new HashMap<>();
-        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false, true));
+        Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("order_id", 0, false, false, false, true, false));
         Collection<ShardingSphereIndex> indexes = Collections.singletonList(new ShardingSphereIndex("primary"));
         result.put("t_order", new ShardingSphereTable("t_order", columns, indexes, Collections.emptyList()));
         return result;

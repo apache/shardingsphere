@@ -22,8 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -33,7 +31,7 @@ public final class OpenGaussPipelineSQLBuilderTest {
     
     @Test
     public void assertBuildInsertSQL() {
-        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"), Collections.emptyMap());
+        String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"));
         assertThat(actual, is("INSERT INTO t1(id,c0,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c0=EXCLUDED.c0,c1=EXCLUDED.c1,c2=EXCLUDED.c2,c3=EXCLUDED.c3"));
     }
     

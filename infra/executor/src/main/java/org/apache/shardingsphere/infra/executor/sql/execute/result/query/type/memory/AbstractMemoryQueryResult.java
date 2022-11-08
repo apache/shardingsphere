@@ -47,6 +47,8 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     @Getter
     private long rowCount;
     
+    private boolean wasNull;
+    
     protected AbstractMemoryQueryResult(final QueryResultMetaData metaData, final Collection<MemoryQueryResultDataRow> rows) {
         this.metaData = metaData;
         this.rows = rows.iterator();
@@ -66,17 +68,23 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) {
-        return currentRow.getValue().get(columnIndex - 1);
+        Object result = currentRow.getValue().get(columnIndex - 1);
+        wasNull = null == result;
+        return result;
     }
     
     @Override
     public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) {
-        return currentRow.getValue().get(columnIndex - 1);
+        Object result = currentRow.getValue().get(columnIndex - 1);
+        wasNull = null == result;
+        return result;
     }
     
     @Override
     public final InputStream getInputStream(final int columnIndex, final String type) {
-        return getInputStream(currentRow.getValue().get(columnIndex - 1));
+        Object value = currentRow.getValue().get(columnIndex - 1);
+        wasNull = null == value;
+        return getInputStream(value);
     }
     
     @SneakyThrows(IOException.class)
@@ -91,7 +99,7 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     @Override
     public final boolean wasNull() {
-        return null == currentRow;
+        return wasNull;
     }
     
     @Override

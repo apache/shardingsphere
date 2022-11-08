@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,9 +71,9 @@ public final class EncryptSchemaMetaDataDecoratorTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true, true),
-                new ColumnMetaData("pwd_cipher", 2, false, false, true, true),
-                new ColumnMetaData("pwd_plain", 2, false, false, true, true));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
+                new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
+                new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
     

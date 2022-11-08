@@ -23,7 +23,7 @@ strategyDefinition ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' | 'SHARDING_COLUMNS' ) '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
-  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' ( 'KEY_GENERATOR' '=' algorihtmName | algorithmDefinition ) ')' 
+  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
     
 auditStrategyDefinition ::= 
   'AUDIT_STRATEGY' '(' 'AUDITORS' '=' '[' auditorName ',' auditorName ']' ',' 'ALLOW_HINT_DISABLE' '=' 'TRUE | FALSE' ')'
@@ -31,7 +31,7 @@ auditStrategyDefinition ::=
   'AUDIT_STRATEGY' '(' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ',' '[' 'NAME' '=' auditorName ',' algorithmDefinition ']' ')'
 
 algorithmDefinition ::=
-  ('SHARDING_ALGORITHM' '=' algorithmName | 'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  )
+   'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'
 
 propertyDefinition ::=
   ( key  '=' value ) ( ',' key  '=' value )* 
@@ -79,90 +79,24 @@ strategyType ::=
 
 #### 1.标准分片规则
 
-- ##### 修改分片算法并修改标准分片规则为指定分片算法
-
 ```sql
--- 修改分片算法
-ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
-); 
-
--- 修改分片规则为指定分片算法
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}"),
-    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
-);
-```
-
-- ##### 修改默认分库策略并修改标准分片规则为指定分片算法
-
-```sql
--- 修改分片算法
-ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
-); 
-
--- 修改默认分库策略
-ALTER DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
-);
-
--- 修改分片规则为指定分片算法
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}"),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline)
-);
-```
-
-- ##### 修改默认分库分表策略并修改标准分片规则为指定分片算法
-
-```sql
--- 修改分片算法
-ALTER SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${user_id % 4}"))
-), table_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 4}"))
-); 
-
--- 修改默认分库策略
-ALTER DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=database_inline
-);
-
--- 修改默认分表策略
-ALTER DEFAULT SHARDING TABLE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=table_inline
-);
-
--- 修改分片规则
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}")
-);
-```
-
-- ##### 修改标准分片规则的同时创建分片算法
-
-```sql
-ALTER SHARDING TABLE RULE t_order (
-    DATANODES("ds_${0..3}.t_order_item${0..3}"),
-    DATABASE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))),
-    TABLE_STRATEGY(TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME="inline", PROPERTIES("algorithm-expression"="ds_${order_id % 2}"))))
+ALTER SHARDING TABLE RULE t_order_item (
+DATANODES("ds_${0..3}.t_order_item${0..3}"),
+DATABASE_STRATEGY(TYPE="standard",SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="ds_${user_id % 4}")))),
+TABLE_STRATEGY(TYPE="standard",SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME="inline",PROPERTIES("algorithm-expression"="t_order_item_${order_id % 4}")))),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 ```
 
 #### 2.自动分片规则
 
-- ##### 修改自动分片规则
-
 ```sql
 ALTER SHARDING TABLE RULE t_order (
-    STORAGE_UNITS(ds_0, ds_1),
-    SHARDING_COLUMN=order_id, TYPE(NAME="MOD", PROPERTIES("sharding-count"="4"))
+STORAGE_UNITS(ds_0,ds_1,ds_2,ds_3),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="16")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,TYPE(NAME="snowflake")),
+AUDIT_STRATEGY(AUDITORS=[auditor1,auditor2],ALLOW_HINT_DISABLE=true)
 );
 ```
 
@@ -173,5 +107,4 @@ ALTER SHARDING TABLE RULE t_order (
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
-- [ALTER SHARDING ALGORITHM](/cn/reference/distsql/syntax/rdl/rule-definition/alter-sharding-algorithm/)
 - [ALTER DEFAULT_SHARDING STRATEGY](/cn/reference/distsql/syntax/rdl/rule-definition/alter-default-sharding-strategy/)

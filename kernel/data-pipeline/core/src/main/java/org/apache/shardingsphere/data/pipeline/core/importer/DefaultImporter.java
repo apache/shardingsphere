@@ -190,7 +190,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        String insertSql = pipelineSqlBuilder.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord, importerConfig.getShardingColumnsMap());
+        String insertSql = pipelineSqlBuilder.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord);
         try (PreparedStatement ps = connection.prepareStatement(insertSql)) {
             batchInsertStatement = ps;
             ps.setQueryTimeout(30);
@@ -222,8 +222,8 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             log.error("executeUpdate, could not get shardingColumns, tableName={}, logicTableNames={}", record.getTableName(), importerConfig.getLogicTableNames());
         }
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
-        List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record, importerConfig.getShardingColumnsMap());
-        String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns, importerConfig.getShardingColumnsMap());
+        List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record);
+        String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns);
         try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
             updateStatement = ps;
             for (int i = 0; i < updatedColumns.size(); i++) {

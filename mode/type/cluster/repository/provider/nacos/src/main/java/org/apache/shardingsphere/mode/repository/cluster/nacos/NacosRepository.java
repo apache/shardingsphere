@@ -27,7 +27,6 @@ import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -69,7 +68,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     private ServiceController serviceController;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         nacosProps = new NacosProperties(config.getProps());
         client = createClient(config);
         initServiceMetadata();
