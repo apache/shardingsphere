@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.result;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -26,38 +25,34 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- *  CSV format result generator.
+ *  CSV result generator.
  */
-@Slf4j
-public class CSVResultGenerator {
+public final class CSVResultGenerator {
     
     private final CSVPrinter printer;
     
     public CSVResultGenerator(final String databaseType) {
-        CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-                .setHeader("SQLCaseId", "DatabaseType", "Result", "SQL").setSkipHeaderRecord(false).build();
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader("SQLCaseId", "DatabaseType", "Result", "SQL").setSkipHeaderRecord(false).build();
         try {
             Writer out = new FileWriter(databaseType + "-result.csv", true);
             printer = new CSVPrinter(out, csvFormat);
-        } catch (IOException e) {
-            log.error("create sql parser csv file failed");
-            throw new RuntimeException("create sql parser csv file failed", e);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Create CSV file failed.", ex);
         }
     }
     
     /**
      * Process the result.
      *
-     * @param param the content for a row of CSV record
+     * @param params the content for a row of CSV record
      */
-    public void processResult(final Object... param) {
+    public void processResult(final Object... params) {
         try {
-            printer.printRecord(param);
+            printer.printRecord(params);
             // TODO this may be optimized in next step.
             printer.flush();
-        } catch (IOException e) {
-            log.error("write sql parser csv file failed");
-            throw new RuntimeException("write sql parser csv file failed", e);
+        } catch (final IOException ex) {
+            throw new RuntimeException("Write CSV file failed.", ex);
         }
     }
 }

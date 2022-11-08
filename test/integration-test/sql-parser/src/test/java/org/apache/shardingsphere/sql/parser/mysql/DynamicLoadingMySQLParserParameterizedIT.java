@@ -42,9 +42,8 @@ public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadi
      */
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        if (IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
-            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"), "MySQL");
-        }
-        return Collections.emptyList();
+        return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
+                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"), "MySQL")
+                : Collections.emptyList();
     }
 }
