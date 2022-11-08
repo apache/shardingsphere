@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.BasicColumnValueReader;
 import org.postgresql.util.PGobject;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -41,14 +42,15 @@ public final class PostgreSQLColumnValueReader extends BasicColumnValueReader {
     @Override
     public Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
         if (isPgMoneyType(resultSetMetaData, columnIndex)) {
-            return resultSet.getBigDecimal(columnIndex);
+            BigDecimal result = resultSet.getBigDecimal(columnIndex);
+            return resultSet.wasNull() ? null : result;
         }
         if (isPgBitType(resultSetMetaData, columnIndex)) {
             PGobject result = new PGobject();
             result.setType("bit");
-            Object resultSetObject = resultSet.getObject(columnIndex);
-            result.setValue(null == resultSetObject ? null : (Boolean) resultSetObject ? "1" : "0");
-            return result;
+            Object bitValue = resultSet.getObject(columnIndex);
+            result.setValue(null == bitValue ? null : (Boolean) bitValue ? "1" : "0");
+            return resultSet.wasNull() ? null : result;
         }
         return super.readValue(resultSet, resultSetMetaData, columnIndex);
     }
