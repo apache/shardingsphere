@@ -33,7 +33,8 @@ public final class CSVResultGenerator {
     
     public CSVResultGenerator(final String databaseType) {
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader("SQLCaseId", "DatabaseType", "Result", "SQL").setSkipHeaderRecord(false).build();
-        try (Writer out = new FileWriter(databaseType + "-result.csv", true)) {
+        try {
+            Writer out = new FileWriter(databaseType + "-result.csv", true);
             printer = new CSVPrinter(out, csvFormat);
         } catch (final IOException ex) {
             throw new RuntimeException("Create CSV file failed.", ex);
