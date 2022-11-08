@@ -61,6 +61,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -222,6 +223,16 @@ public abstract class BaseITCase {
             connection.createStatement().execute(sql);
         }
         ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
+    }
+    
+    protected void waitJobPrepareSuccess(final String distSQL) {
+        for (int i = 0; i < 5; i++) {
+            List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
+            Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
+            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name()) || statusSet.contains(JobStatus.PREPARE_SUCCESS.name())) {
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            }
+        }
     }
     
     protected void connectionExecuteWithLog(final Connection connection, final String sql) throws SQLException {

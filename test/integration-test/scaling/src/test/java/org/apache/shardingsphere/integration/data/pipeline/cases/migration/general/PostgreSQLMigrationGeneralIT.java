@@ -26,7 +26,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQL
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -89,15 +89,13 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         addMigrationTargetResource();
         createTargetOrderTableRule();
         createTargetOrderItemTableRule();
-        AutoIncrementKeyGenerateAlgorithm orderKeyGenerate = new AutoIncrementKeyGenerateAlgorithm();
-        AutoIncrementKeyGenerateAlgorithm orderItemKeyGenerate = new AutoIncrementKeyGenerateAlgorithm();
-        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(orderKeyGenerate, orderItemKeyGenerate, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
         log.info("init data begin: {}", LocalDateTime.now());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
-        checkOrderMigration(jdbcTemplate, orderKeyGenerate);
+        checkOrderMigration(jdbcTemplate);
         checkOrderItemMigration();
         for (String each : listJobId()) {
             commitMigrationByJobId(each);
@@ -107,13 +105,13 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         assertGreaterThanOrderTableInitRows(TABLE_INIT_ROW_COUNT, SCHEMA_NAME);
     }
     
-    private void checkOrderMigration(final JdbcTemplate jdbcTemplate, final AutoIncrementKeyGenerateAlgorithm keyGenerateAlgorithm) throws SQLException, InterruptedException {
+    private void checkOrderMigration(final JdbcTemplate jdbcTemplate) throws SQLException, InterruptedException {
         startMigrationWithSchema(getSourceTableOrderName(), "t_order");
         startIncrementTask(new PostgreSQLIncrementTask(jdbcTemplate, SCHEMA_NAME, getSourceTableOrderName(), 20));
         String jobId = getJobIdByTableName(getSourceTableOrderName());
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         stopMigrationByJobId(jobId);
-        int recordId = keyGenerateAlgorithm.generateKey();
+        long recordId = new SnowflakeKeyGenerateAlgorithm().generateKey();
         sourceExecuteWithLog(String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", String.join(".", SCHEMA_NAME, getSourceTableOrderName()), recordId, 1, "afterStop"));
         startMigrationByJobId(jobId);
         // must refresh firstly, otherwise proxy can't get schema and table info
