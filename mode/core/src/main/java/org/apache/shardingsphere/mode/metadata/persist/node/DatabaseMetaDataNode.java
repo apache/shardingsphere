@@ -258,7 +258,7 @@ public final class DatabaseMetaDataNode {
      * @return version
      */
     public static Optional<String> getVersionByDataSourcesPath(final String dataSourceNodeFullPath) {
-        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/dataSources", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getMetaDataNodePath() + "/([\\w\\-]+)/versions/([\\w\\-]+)/data_sources", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(matcher.group(2)) : Optional.empty();
     }
