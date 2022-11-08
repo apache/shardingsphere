@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -52,15 +51,15 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI, final String databaseType) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseApi.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI).split("\n")));
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
         } else {
             for (Map<String, String> each : getResponse(sqlCaseApi, sqlCaseURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
-                String[] sqlCaseFileContent = getContent(URI.create(each.get("download_url"))).split("\n");
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+                String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent, databaseType));
             }
         }
         if (result.isEmpty()) {
@@ -110,20 +109,20 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String[] sqlCaseFileContent) {
+    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
         Collection<Object[]> result = new LinkedList<>();
+        String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
-        for (String each : sqlCaseFileContent) {
+        for (String each : lines) {
             if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, each});
+                result.add(new Object[]{sqlCaseId, each, databaseType});
                 sqlCaseEnum++;
             }
         }
         return result;
     }
-    
-    @Ignore
+
     @Test
     public final void assertParseSQL() {
         try {
