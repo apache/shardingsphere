@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -51,16 +50,21 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
+<<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
 
     protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
+=======
+    
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI, final String databaseType) {
+>>>>>>> 9af11ad0949 (feat: Add databaseType param & restructure getSQLCases):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseApi.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI).split("\n")));
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
         } else {
             for (Map<String, String> each : getResponse(sqlCaseApi, sqlCaseURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
-                String[] sqlCaseFileContent = getContent(URI.create(each.get("download_url"))).split("\n");
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+                String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent, databaseType));
             }
         }
         if (result.isEmpty()) {
@@ -110,19 +114,24 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String[] sqlCaseFileContent) {
+    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
         Collection<Object[]> result = new LinkedList<>();
+        String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
-        for (String each : sqlCaseFileContent) {
+        for (String each : lines) {
             if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, each});
+                result.add(new Object[]{sqlCaseId, each, databaseType});
                 sqlCaseEnum++;
             }
         }
         return result;
     }
+<<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
     
+=======
+
+>>>>>>> 9af11ad0949 (feat: Add databaseType param & restructure getSQLCases):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
     @Test
     public final void assertParseSQL() {
         String result = "success";
