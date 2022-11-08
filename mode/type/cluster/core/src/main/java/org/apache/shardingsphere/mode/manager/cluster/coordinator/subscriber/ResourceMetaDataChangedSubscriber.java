@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -27,14 +27,14 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 
 /**
- * Resource meta data coordinator.
+ * Resource meta data changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ResourceMetaDataCoordinator {
+public final class ResourceMetaDataChangedSubscriber {
     
     private final ContextManager contextManager;
     
-    public ResourceMetaDataCoordinator(final ContextManager contextManager) {
+    public ResourceMetaDataChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
     }

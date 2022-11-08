@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -66,9 +66,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ResourceMetaDataCoordinatorTest {
+public final class ResourceMetaDataChangedSubscriberTest {
     
-    private ResourceMetaDataCoordinator coordinator;
+    private ResourceMetaDataChangedSubscriber subscriber;
     
     private ContextManager contextManager;
     
@@ -83,7 +83,7 @@ public final class ResourceMetaDataCoordinatorTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        coordinator = new ResourceMetaDataCoordinator(contextManager);
+        subscriber = new ResourceMetaDataChangedSubscriber(contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -111,7 +111,7 @@ public final class ResourceMetaDataCoordinatorTest {
     public void assertRenewForDatabaseAdded() {
         when(persistService.getDataSourceService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db_added")).thenReturn(Collections.emptyList());
-        coordinator.renew(new DatabaseAddedEvent("db_added"));
+        subscriber.renew(new DatabaseAddedEvent("db_added"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db_added").getResourceMetaData().getDataSources());
     }
     
@@ -126,20 +126,20 @@ public final class ResourceMetaDataCoordinatorTest {
     
     @Test
     public void assertRenewForDatabaseDeleted() {
-        coordinator.renew(new DatabaseDeletedEvent("db"));
+        subscriber.renew(new DatabaseDeletedEvent("db"));
         assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"));
     }
     
     @Test
     public void assertRenewForSchemaAdded() {
-        coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
+        subscriber.renew(new SchemaAddedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertRenewForSchemaDeleted() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
-        coordinator.renew(new SchemaDeletedEvent("db", "foo_schema"));
+        subscriber.renew(new SchemaDeletedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).removeSchema("foo_schema");
     }
     
@@ -148,7 +148,7 @@ public final class ResourceMetaDataCoordinatorTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
         ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         TableMetaDataChangedEvent event = new TableMetaDataChangedEvent("db", "db", changedTableMetaData, null);
-        coordinator.renew(event);
+        subscriber.renew(event);
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putTable("t_order", event.getChangedTableMetaData());
     }
     
@@ -157,7 +157,7 @@ public final class ResourceMetaDataCoordinatorTest {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("db")).thenReturn(true);
         ShardingSphereView changedViewMetaData = new ShardingSphereView("t_order_view", "");
         ViewMetaDataChangedEvent event = new ViewMetaDataChangedEvent("db", "db", changedViewMetaData, null);
-        coordinator.renew(event);
+        subscriber.renew(event);
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).putView("t_order_view", event.getChangedViewMetaData());
     }
 }
