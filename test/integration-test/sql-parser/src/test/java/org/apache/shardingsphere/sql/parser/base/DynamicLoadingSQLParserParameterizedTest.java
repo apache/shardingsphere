@@ -50,13 +50,8 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
-<<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
 
     protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
-=======
-    
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI, final String databaseType) {
->>>>>>> 9af11ad0949 (feat: Add databaseType param & restructure getSQLCases):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseApi.isEmpty()) {
             result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
@@ -128,10 +123,14 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
 <<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
+<<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
     
 =======
 
 >>>>>>> 9af11ad0949 (feat: Add databaseType param & restructure getSQLCases):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
+=======
+    
+>>>>>>> dcaf164b9a8 (fix: modify):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
     @Test
     public final void assertParseSQL() {
         String result = "success";
