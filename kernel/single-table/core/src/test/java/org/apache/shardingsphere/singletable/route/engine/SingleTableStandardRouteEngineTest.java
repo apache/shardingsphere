@@ -138,7 +138,7 @@ public final class SingleTableStandardRouteEngineTest {
         engine.route(new RouteContext(), mockSingleTableRule());
     }
     
-    private SQLStatement mockStatement(boolean ifNotExists) {
+    private SQLStatement mockStatement(final boolean ifNotExists) {
         MySQLCreateTableStatement result = new MySQLCreateTableStatement(ifNotExists);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;
