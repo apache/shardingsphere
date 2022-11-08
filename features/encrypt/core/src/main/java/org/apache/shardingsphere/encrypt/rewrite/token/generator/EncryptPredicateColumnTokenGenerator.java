@@ -126,9 +126,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     
     private boolean isLikeColumnSegment(final AndPredicate andPredicate, final ColumnSegment targetColumnSegment) {
         for (ExpressionSegment each : andPredicate.getPredicates()) {
-            if (each instanceof BinaryOperationExpression) {
-                BinaryOperationExpression binaryOperationExpression = (BinaryOperationExpression) each;
-                return binaryOperationExpression.getOperator().equalsIgnoreCase("LIKE") && isSameColumnSegment(binaryOperationExpression.getLeft(), targetColumnSegment);
+            if (each instanceof BinaryOperationExpression && ((BinaryOperationExpression) each).getOperator().equalsIgnoreCase("LIKE")
+                    && isSameColumnSegment(((BinaryOperationExpression) each).getLeft(), targetColumnSegment)) {
+                return true;
             }
         }
         return false;
