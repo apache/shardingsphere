@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql;
 
+import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoadingSQLParserParameterizedTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -31,7 +32,7 @@ import java.util.Collections;
 public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
     public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "PostgreSQL");
+        super(sqlCaseId, sqlCaseValue, "PostgreSQL", new CSVResultGenerator("PostgreSQL"));
     }
     
     /**
