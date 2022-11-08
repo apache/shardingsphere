@@ -83,17 +83,18 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
         if (sqlStatement instanceof CreateTableStatement) {
             String dataSourceName = rule.assignNewDataSourceName();
             QualifiedTable table = singleTableNames.iterator().next();
-            if (!CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement) && isTableExists(table, rule)) {
+            Optional<DataNode> dataNodeOptional = rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName());
+            if (!dataNodeOptional.isPresent()) {
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
+            } else if (CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement)) {
+                dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
+            } else {
                 throw new TableExistsException(table.getTableName());
             }
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));
         }
-    }
-    
-    private boolean isTableExists(final QualifiedTable table, final SingleTableRule rule) {
-        return rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName()).isPresent();
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {
