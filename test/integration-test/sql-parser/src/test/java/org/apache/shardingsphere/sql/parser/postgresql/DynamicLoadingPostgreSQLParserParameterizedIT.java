@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoa
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -40,9 +40,9 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
      * @return Test cases from GitHub.
      **/
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() throws IOException {
+    public static Collection<Object[]> getTestParameters() {
         if (IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
-            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
+            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"));
         }
         return Collections.emptyList();
     }
