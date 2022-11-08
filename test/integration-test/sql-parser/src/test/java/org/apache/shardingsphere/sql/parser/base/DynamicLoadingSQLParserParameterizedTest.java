@@ -42,8 +42,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String sqlCaseId;
@@ -55,12 +55,12 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     // TODO this will refactor as an abstract
     private final CSVResultGenerator resultGenerator;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI, final String databaseType) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI, final String databaseType) {
         Collection<Object[]> result = new LinkedList<>();
-        if (sqlCaseApi.isEmpty()) {
+        if (sqlCaseAPI.isEmpty()) {
             result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
         } else {
-            for (Map<String, String> each : getResponse(sqlCaseApi, sqlCaseURI)) {
+            for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
                 String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
                 result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent, databaseType));
