@@ -40,19 +40,19 @@ tableName ::=
 
 ```sql
 -- Before creating a reference table rule, you need to create sharding table rules t_order, t_order_item
-CREATE SHARDING TABLE REFERENCE RULES (t_order,t_order_item);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
 ```
 
 #### 2.Create multiple reference table rules
 
 ```sql
 -- Before creating reference table rules, you need to create sharding table rules t_order, t_order_item, t_product, t_product_item
-CREATE SHARDING TABLE REFERENCE RULES (t_order,t_order_item),(t_product,t_product_item);
+CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_product,t_product_item);
 ```
 
 ### Reserved word
 
-`CREATE`, `SHARDING`, `TABLE`, `REFERENCE`, `RULES`
+`CREATE`, `SHARDING`, `TABLE`, `REFERENCE`, `RULE`
 
 ### Related links
 

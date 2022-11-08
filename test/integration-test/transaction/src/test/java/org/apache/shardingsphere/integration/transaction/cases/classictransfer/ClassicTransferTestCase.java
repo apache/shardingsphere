@@ -93,10 +93,10 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
             try (Connection connection = dataSource.getConnection()) {
                 connection.setAutoCommit(false);
                 Statement statement1 = connection.createStatement();
-                statement1.execute("update account set balance=balance-1 where transaction_id=2;");
+                statement1.execute("update account set balance = balance - 1 where transaction_id = 2;");
                 Statement statement2 = connection.createStatement();
                 Thread.sleep(1000);
-                statement2.execute("update account set balance=balance+1 where transaction_id=1;");
+                statement2.execute("update account set balance = balance + 1 where transaction_id = 1;");
                 connection.commit();
             } catch (SQLException | InterruptedException ignored) {
             }

@@ -28,6 +28,6 @@ public final class UnsupportedPipelineJobUniqueKeyDataTypeException extends Pipe
     private static final long serialVersionUID = -1605633809724671592L;
     
     public UnsupportedPipelineJobUniqueKeyDataTypeException(final int uniqueKeyDataType) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 32, "Unsupported data type `%s` of unique key for pipeline job.", uniqueKeyDataType);
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 32, String.format("Unsupported data type `%s` of unique key for pipeline job.", uniqueKeyDataType));
     }
 }

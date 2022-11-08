@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobProgressInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateConsistencyCheckJobParameter;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
@@ -62,10 +62,10 @@ public interface ConsistencyCheckJobPublicAPI extends PipelineJobPublicAPI, Requ
     void stopByParentJobId(String parentJobId);
     
     /**
-     * Get consistency job progress info.
+     * Get consistency job item info.
      *
      * @param parentJobId parent job id
-     * @return consistency job progress info
+     * @return consistency job item info
      */
-    ConsistencyCheckJobProgressInfo getJobProgressInfo(String parentJobId);
+    ConsistencyCheckJobItemInfo getJobItemInfo(String parentJobId);
 }

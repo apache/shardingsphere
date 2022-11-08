@@ -15,11 +15,11 @@
 -- limitations under the License.
 --
 
-DROP TABLE IF EXISTS t_order;
-DROP TABLE IF EXISTS t_order_item;
-DROP TABLE IF EXISTS t_product_category;
-DROP TABLE IF EXISTS t_country;
-DROP TABLE IF EXISTS t_broadcast_table;
+DROP TABLE IF EXISTS t_order CASCADE;
+DROP TABLE IF EXISTS t_order_item CASCADE;
+DROP TABLE IF EXISTS t_product_category CASCADE;
+DROP TABLE IF EXISTS t_country CASCADE;
+DROP TABLE IF EXISTS t_broadcast_table CASCADE;
 
 CREATE TABLE t_order (order_id BIGINT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item (item_id BIGINT PRIMARY KEY, order_id BIGINT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);

@@ -23,8 +23,13 @@ import org.apache.calcite.avatica.SqlType;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactory.Builder;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+
+import java.math.BigInteger;
+import java.sql.Types;
 
 /**
  * SQL federation data type util.
@@ -34,22 +39,38 @@ public final class SQLFederationDataTypeUtil {
     
     /**
      * Create rel data type.
-     * 
+     *
      * @param table ShardingSphere table
+     * @param protocolType protocol type
      * @param typeFactory type factory
      * @return rel data type
      */
-    public static RelDataType createRelDataType(final ShardingSphereTable table, final RelDataTypeFactory typeFactory) {
+    public static RelDataType createRelDataType(final ShardingSphereTable table, final DatabaseType protocolType, final RelDataTypeFactory typeFactory) {
         Builder fieldInfoBuilder = typeFactory.builder();
         for (ShardingSphereColumn each : table.getColumns().values()) {
-            fieldInfoBuilder.add(each.getName(), getRelDataType(each, typeFactory));
+            fieldInfoBuilder.add(each.getName(), getRelDataType(protocolType, each, typeFactory));
         }
         return fieldInfoBuilder.build();
     }
     
-    private static RelDataType getRelDataType(final ShardingSphereColumn column, final RelDataTypeFactory typeFactory) {
-        Class<?> sqlTypeClass = SqlType.valueOf(column.getDataType()).clazz;
+    private static RelDataType getRelDataType(final DatabaseType protocolType, final ShardingSphereColumn column, final RelDataTypeFactory typeFactory) {
+        Class<?> sqlTypeClass = getSqlTypeClass(protocolType, column);
         RelDataType javaType = typeFactory.createJavaType(sqlTypeClass);
         return typeFactory.createTypeWithNullability(javaType, true);
+    }
+    
+    private static Class<?> getSqlTypeClass(final DatabaseType protocolType, final ShardingSphereColumn column) {
+        if (protocolType instanceof MySQLDatabaseType) {
+            if (Types.TINYINT == column.getDataType() || Types.SMALLINT == column.getDataType()) {
+                return Integer.class;
+            }
+            if (Types.INTEGER == column.getDataType()) {
+                return column.isUnsigned() ? Long.class : Integer.class;
+            }
+            if (Types.BIGINT == column.getDataType()) {
+                return column.isUnsigned() ? BigInteger.class : Long.class;
+            }
+        }
+        return SqlType.valueOf(column.getDataType()).clazz;
     }
 }

@@ -39,7 +39,7 @@ public final class OpenGaussJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public OpenGaussJdbcTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public OpenGaussJdbcTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);

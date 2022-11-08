@@ -41,30 +41,8 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseTransactionITCase extends BaseITCase {
     
-    public BaseTransactionITCase(final TransactionParameterized parameterized) throws SQLException {
+    public BaseTransactionITCase(final TransactionParameterized parameterized) {
         super(parameterized);
-        if (isProxyAdapter(parameterized)) {
-            initProxyConfig();
-        } else {
-            initJdbcConfig();
-        }
-    }
-    
-    private void initProxyConfig() throws SQLException {
-        addResources();
-        createTables();
-    }
-    
-    private void initJdbcConfig() throws SQLException {
-        createTables();
-    }
-    
-    private void createTables() throws SQLException {
-        Connection conn = getProxyConnection();
-        createOrderTable(conn);
-        createOrderItemTable(conn);
-        createAccountTable(conn);
-        createAddressTable(conn);
     }
     
     /**
@@ -85,18 +63,6 @@ public abstract class BaseTransactionITCase extends BaseITCase {
      */
     public void dropAccountTable(final Connection connection) throws SQLException {
         executeWithLog(connection, "drop table if exists account;");
-    }
-    
-    private void createOrderItemTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemTable());
-    }
-    
-    private void createAddressTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateAddressTable());
-    }
-    
-    private void createOrderTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, getCommonSQLCommand().getCreateOrderTable());
     }
     
     private void alterLocalTransactionRule() throws SQLException {

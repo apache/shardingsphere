@@ -34,6 +34,7 @@ import org.apache.calcite.schema.Schemas;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.TranslatableTable;
 import org.apache.calcite.schema.impl.AbstractTable;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
@@ -55,9 +56,11 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     
     private final FederationStatistic statistic;
     
+    private final DatabaseType protocolType;
+    
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return SQLFederationDataTypeUtil.createRelDataType(table, typeFactory);
+        return SQLFederationDataTypeUtil.createRelDataType(table, protocolType, typeFactory);
     }
     
     /**

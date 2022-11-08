@@ -107,8 +107,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
                 while (resultSet.next()) {
                     if (isCanceling()) {
-                        log.info("canceling, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName());
-                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName());
                     }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
@@ -122,8 +121,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final SQLException ex) {
-            log.error("calculateChunk failed, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName(), ex);
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName(), ex);
         }
     }
     
@@ -198,24 +196,21 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
                 Iterator<Object> thatNextIterator = thatNext.iterator();
+                int columnIndex = 0;
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
+                    ++columnIndex;
                     Object thisResult = thisNextIterator.next();
                     Object thatResult = thatNextIterator.next();
-                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
-                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
-                    }
-                    // TODO The standard MySQL JDBC will convert unsigned mediumint to Integer, but proxy convert it to Long
-                    if (thisResult instanceof Integer && thatResult instanceof Long) {
-                        return ((Integer) thisResult).longValue() == (Long) thatResult;
-                    }
                     boolean matched;
-                    if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
                     } else {
                         matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
                     }
                     if (!matched) {
-                        log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
+                        log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
                                 null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
                                 thisNext, thatNext);
                         return false;
