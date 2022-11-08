@@ -40,10 +40,11 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
      *
      * @return Test cases from GitHub.
      **/
-    @Parameters(name = "{0} (PostgreSQL) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         if (IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
-            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"));
+            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"),
+                    "PostgreSQL");
         }
         return Collections.emptyList();
     }
