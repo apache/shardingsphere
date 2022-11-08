@@ -52,11 +52,10 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
     // TODO this will refactor as an abstract
     private final CSVResultGenerator resultGenerator;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseApi.isEmpty()) {
             result.addAll(getSQLCases("localFile", getContent(sqlCaseURI).split("\n")));
@@ -108,7 +107,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         try {
             InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
             result = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
-        } catch (IOException ingore) {
+        } catch (IOException ignore) {
             log.warn("Error: GitHub API rate limit exceeded");
         }
         return result;
