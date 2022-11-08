@@ -37,12 +37,12 @@ public final class PipelineMetaDataNodeTest {
     
     @Test
     public void assertGetMetaDataDataSourcesPath() {
-        assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/dataSources"));
+        assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/data_sources"));
     }
     
     @Test
     public void assertGetMetaDataProcessConfigPath() {
-        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/processConfig"));
+        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(JobType.MIGRATION), is(migrationMetaDataRootPath + "/process_config"));
     }
     
     @Test

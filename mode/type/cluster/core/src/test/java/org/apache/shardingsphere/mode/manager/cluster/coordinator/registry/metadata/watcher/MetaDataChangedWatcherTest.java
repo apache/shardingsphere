@@ -60,7 +60,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertEmptyValue() {
-        String key = "/metadata/sharding_db/dataSources";
+        String key = "/metadata/sharding_db/data_sources";
         Optional<GovernanceEvent> actual = createEvent(key, null, Type.UPDATED);
         assertFalse(actual.isPresent());
     }
@@ -75,7 +75,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateDataSourceChangedEvent() {
-        String key = "/metadata/sharding_db/versions/0/dataSources";
+        String key = "/metadata/sharding_db/versions/0/data_sources";
         String value = "{}";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.UPDATED);
         assertTrue(actual.isPresent());
@@ -83,7 +83,7 @@ public final class MetaDataChangedWatcherTest {
     
     @Test
     public void assertCreateDataSourceChangedEventWithAddEvent() {
-        String key = "/metadata/sharding_db/versions/0/dataSources";
+        String key = "/metadata/sharding_db/versions/0/data_sources";
         String value = "{}";
         Optional<GovernanceEvent> actual = createEvent(key, value, Type.ADDED);
         assertTrue(actual.isPresent());
