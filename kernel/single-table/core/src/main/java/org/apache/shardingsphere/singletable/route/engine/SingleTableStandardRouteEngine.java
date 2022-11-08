@@ -81,13 +81,13 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
-            String dataSourceName = rule.assignNewDataSourceName();
             QualifiedTable table = singleTableNames.iterator().next();
             Optional<DataNode> dataNodeOptional = rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName());
             if (!dataNodeOptional.isPresent()) {
+                String dataSourceName = rule.assignNewDataSourceName();
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
             } else if (CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement)) {
-                dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
+                String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
             } else {
                 throw new TableExistsException(table.getTableName());
