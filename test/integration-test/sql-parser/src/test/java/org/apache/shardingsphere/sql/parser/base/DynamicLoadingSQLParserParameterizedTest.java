@@ -51,10 +51,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
-    
-    // TODO this will refactor as an abstract
-    private final CSVResultGenerator resultGenerator;
-    
+
     protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseApi.isEmpty()) {
