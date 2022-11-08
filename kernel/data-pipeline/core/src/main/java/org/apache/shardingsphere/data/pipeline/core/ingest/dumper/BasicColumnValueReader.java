@@ -53,6 +53,7 @@ public class BasicColumnValueReader implements ColumnValueReader {
                 return resultSet.getBigDecimal(columnIndex);
             case Types.REAL:
             case Types.FLOAT:
+                return resultSet.getFloat(columnIndex);
             case Types.DOUBLE:
                 return resultSet.getDouble(columnIndex);
             case Types.TIME:
