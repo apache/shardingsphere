@@ -52,7 +52,7 @@ public final class DataSourcePersistServiceTest {
     @Test
     public void assertLoad() {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
-        when(repository.getDirectly("/metadata/foo_db/versions/0/dataSources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
+        when(repository.getDirectly("/metadata/foo_db/versions/0/data_sources")).thenReturn(readDataSourceYaml("yaml/persist/data-source.yaml"));
         Map<String, DataSourceProperties> actual = new DataSourcePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(2));
         assertDataSourceProperties(actual.get("ds_0"), DataSourcePropertiesCreator.create(createDataSource("ds_0")));
@@ -85,7 +85,7 @@ public final class DataSourcePersistServiceTest {
         when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
         new DataSourcePersistService(repository).append("foo_db", Collections.singletonMap("foo_ds", DataSourcePropertiesCreator.create(createDataSource("foo_ds"))));
         String expected = readDataSourceYaml("yaml/persist/data-source-foo.yaml");
-        verify(repository).persist("/metadata/foo_db/versions/0/dataSources", expected);
+        verify(repository).persist("/metadata/foo_db/versions/0/data_sources", expected);
     }
     
     private DataSource createDataSource(final String name) {

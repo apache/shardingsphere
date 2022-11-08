@@ -34,7 +34,7 @@ public final class DatabaseMetaDataNode {
     
     private static final String SCHEMAS_NODE = "schemas";
     
-    private static final String DATA_SOURCE_NODE = "dataSources";
+    private static final String DATA_SOURCE_NODE = "data_sources";
     
     private static final String RULE_NODE = "rules";
     
