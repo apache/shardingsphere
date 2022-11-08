@@ -33,7 +33,7 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -52,45 +52,57 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Map<String, String> each : getResponse(sqlCaseURL)) {
-            result.addAll(getSQLCases(each));
+        if (sqlCaseApi.isEmpty()) {
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI).split("\n")));
+        } else {
+            for (Map<String, String> each : getResponse(sqlCaseApi, sqlCaseURI)) {
+                String sqlCaseFileName = each.get("name").split("\\.")[0];
+                String[] sqlCaseFileContent = getContent(URI.create(each.get("download_url"))).split("\n");
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+            }
+        }
+        if (result.isEmpty()) {
+            result.add(new Object[]{null, null});
         }
         return result;
     }
     
-    private static Collection<Map<String, String>> getResponse(final String sqlCaseURL) {
+    private static Collection<Map<String, String>> getResponse(final String sqlCaseApi, final URI sqlCaseURI) {
         Collection<Map<String, String>> result = new LinkedList<>();
-        String[] patches = sqlCaseURL.split("/", 8);
-        String casesOwner = patches[3];
-        String casesRepo = patches[4];
-        String casesDirectory = patches[7];
-        String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
-        String casesGitHubApiContent = getContent(casesGitHubApiURL);
-        if (casesGitHubApiContent.isEmpty()) {
-            result.add(ImmutableMap.of("name", "null", "download_url", "null"));
+        URI casesURI = getApiURL(sqlCaseApi, sqlCaseURI);
+        String caseContent = getContent(casesURI);
+        if (caseContent.isEmpty()) {
             return result;
         }
-        List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
-        List<String> casesDownloadURL = JsonPath.parse(casesGitHubApiContent).read("$..download_url");
-        List<String> casesHtmlURL = JsonPath.parse(casesGitHubApiContent).read("$..html_url");
-        IntStream.range(0, JsonPath.parse(casesGitHubApiContent).read("$.length()"))
+        List<String> casesName = JsonPath.parse(caseContent).read("$..name");
+        List<String> casesDownloadURL = JsonPath.parse(caseContent).read("$..download_url");
+        List<String> casesHtmlURL = JsonPath.parse(caseContent).read("$..html_url");
+        IntStream.range(0, JsonPath.parse(caseContent).read("$.length()"))
                 .forEach(each -> {
                     String eachName = casesName.get(each);
                     if (eachName.endsWith(".sql") || eachName.endsWith(".test")) {
                         result.add(ImmutableMap.of("name", eachName, "download_url", casesDownloadURL.get(each)));
                     } else if (!eachName.contains(".")) {
-                        result.addAll(getResponse(casesHtmlURL.get(each)));
+                        result.addAll(getResponse(sqlCaseApi, URI.create(casesHtmlURL.get(each))));
                     }
                 });
         return result;
     }
     
-    private static String getContent(final String url) {
+    private static URI getApiURL(final String sqlCaseApi, final URI sqlCaseURI) {
+        String[] patches = sqlCaseURI.toString().split("/", 8);
+        String casesOwner = patches[3];
+        String casesRepo = patches[4];
+        String casesDirectory = patches[7];
+        return URI.create(sqlCaseApi + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
+    }
+    
+    private static String getContent(final URI casesURI) {
         String result = "";
         try {
-            InputStreamReader in = new InputStreamReader(new URL(url).openStream());
+            InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
             result = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (IOException ingore) {
             log.warn("Error: GitHub API rate limit exceeded");
@@ -98,14 +110,12 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final Map<String, String> elements) {
+    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String[] sqlCaseFileContent) {
         Collection<Object[]> result = new LinkedList<>();
-        String sqlCaseFileName = elements.get("name");
-        String[] lines = getContent(elements.get("download_url")).split("\n");
         int sqlCaseEnum = 1;
-        for (String each : lines) {
+        for (String each : sqlCaseFileContent) {
             if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
-                String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
+                String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
                 result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
             }
