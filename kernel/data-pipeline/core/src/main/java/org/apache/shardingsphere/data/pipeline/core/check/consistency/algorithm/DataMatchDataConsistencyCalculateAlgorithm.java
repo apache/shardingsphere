@@ -46,7 +46,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -197,7 +196,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
                 Iterator<Object> thatNextIterator = thatNext.iterator();
+                int columnIndex = 0;
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
+                    ++columnIndex;
                     Object thisResult = thisNextIterator.next();
                     Object thatResult = thatNextIterator.next();
                     boolean matched;
@@ -205,14 +206,11 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
-                    } else if (thisResult instanceof Number && thatResult instanceof Number && thisResult.getClass() != thatResult.getClass()) {
-                        // TODO some numeric types, Proxy and use jdbc to get different values, eg, PostgreSQL int2, MySQL unsigned mediumint
-                        matched = checkDifferentNumberTypeMatched((Number) thisResult, (Number) thatResult);
                     } else {
                         matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
                     }
                     if (!matched) {
-                        log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
+                        log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
                                 null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
                                 thisNext, thatNext);
                         return false;
@@ -220,19 +218,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
             }
             return true;
-        }
-        
-        private boolean checkDifferentNumberTypeMatched(final Number thisResult, final Number thatResult) {
-            if (thisResult instanceof Integer) {
-                return thisResult.intValue() == thatResult.intValue();
-            }
-            if (thisResult instanceof Long) {
-                return thisResult.longValue() == thatResult.longValue();
-            }
-            if (thisResult instanceof Short) {
-                return thisResult.longValue() == thatResult.longValue();
-            }
-            return Objects.equals(thisResult, thatResult);
         }
         
         @Override
