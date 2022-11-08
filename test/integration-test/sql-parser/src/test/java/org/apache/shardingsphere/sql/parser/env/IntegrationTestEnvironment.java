@@ -34,8 +34,8 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        String sqlParserITEnabledStr = null == System.getProperty("sql.parser.it.enabled") ? System.getProperty("sql.parser.it.enabled") : props.get("sql.parser.it.enabled").toString();
-        sqlParserITEnabled = null != sqlParserITEnabledStr && Boolean.getBoolean(sqlParserITEnabledStr);
+        String sqlParserITEnabledStr = null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled");
+        sqlParserITEnabled = null == sqlParserITEnabledStr ? false : Boolean.parseBoolean(sqlParserITEnabledStr);
     }
     
     /**
