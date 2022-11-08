@@ -69,6 +69,10 @@ public final class ShorthandProjection implements Projection {
         return Optional.ofNullable(owner);
     }
 
+    /**
+     * get actualColumns, exclude ExpressionProjection
+     * @return actualColumns
+     */
     public Map<String, ColumnProjection> getActualColumns() {
         Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
         for (Map.Entry<String, Projection> entry : resultSetColumns.entrySet()) {
