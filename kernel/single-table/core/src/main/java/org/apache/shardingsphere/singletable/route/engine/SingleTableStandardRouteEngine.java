@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -82,8 +83,13 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
         if (sqlStatement instanceof CreateTableStatement) {
             String dataSourceName = rule.assignNewDataSourceName();
             QualifiedTable table = singleTableNames.iterator().next();
-            if (isTableExists(table, rule)) {
+            boolean tableExists = isTableExists(table, rule);
+            boolean ifNotExists = CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement);
+            if (tableExists && !ifNotExists) {
                 throw new TableExistsException(table.getTableName());
+            }
+            if (tableExists) {
+                return;
             }
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
