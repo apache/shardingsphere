@@ -128,12 +128,18 @@ public final class SingleTableStandardRouteEngineTest {
     
     @Test(expected = TableExistsException.class)
     public void assertRouteDuplicateSingleTable() {
-        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement());
+        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(false));
         engine.route(new RouteContext(), mockSingleTableRule());
     }
     
-    private SQLStatement mockStatement() {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement(false);
+    @Test
+    public void assertRouteIfNotExistsDuplicateSingleTable() {
+        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true));
+        engine.route(new RouteContext(), mockSingleTableRule());
+    }
+    
+    private SQLStatement mockStatement(boolean ifNotExists) {
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement(ifNotExists);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;
     }
