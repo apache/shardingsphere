@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -51,7 +52,10 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
 
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI) {
+    // TODO this will refactor as an abstract
+    private final CSVResultGenerator resultGenerator;
+    
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseApi, final URI sqlCaseURI, final String databaseType) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseApi.isEmpty()) {
             result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
@@ -122,15 +126,6 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
-<<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
-<<<<<<< HEAD:test/integration-test/sql-parser/src/test/java/org/apache/shardingsphere/sql/parser/base/DynamicLoadingSQLParserParameterizedTest.java
-    
-=======
-
->>>>>>> 9af11ad0949 (feat: Add databaseType param & restructure getSQLCases):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
-=======
-    
->>>>>>> dcaf164b9a8 (fix: modify):test/parser/src/main/java/org/apache/shardingsphere/test/sql/parser/parameterized/engine/DynamicLoadingSQLParserParameterizedTest.java
     @Test
     public final void assertParseSQL() {
         String result = "success";
