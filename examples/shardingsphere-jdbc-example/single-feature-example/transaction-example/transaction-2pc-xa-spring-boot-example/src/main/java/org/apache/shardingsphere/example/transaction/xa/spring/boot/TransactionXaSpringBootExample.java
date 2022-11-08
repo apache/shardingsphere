@@ -38,6 +38,7 @@ public class TransactionXaSpringBootExample {
     @PostConstruct
     public void executeOrderService() {
         orderService.init();
+        orderService.insert(10);
         orderService.selectAll();
         orderService.cleanup();
     }
