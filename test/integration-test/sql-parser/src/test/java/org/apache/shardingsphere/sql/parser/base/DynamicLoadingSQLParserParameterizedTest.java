@@ -51,7 +51,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
-
+    
     // TODO this will refactor as an abstract
     private final CSVResultGenerator resultGenerator;
     
@@ -126,6 +126,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         }
         return result;
     }
+    
     @Test
     public final void assertParseSQL() {
         String result = "success";

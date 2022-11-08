@@ -30,7 +30,7 @@ import java.util.Collections;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
-
+    
     public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
         super(sqlCaseId, sqlCaseValue, "PostgreSQL", new CSVResultGenerator("PostgreSQL"));
     }
