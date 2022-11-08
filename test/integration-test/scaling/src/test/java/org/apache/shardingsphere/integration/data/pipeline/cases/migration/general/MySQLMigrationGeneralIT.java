@@ -19,6 +19,8 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.migration.gene
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.migration.AbstractMigrationITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
@@ -38,6 +40,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -86,20 +91,27 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        AutoIncrementKeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+        AutoIncrementKeyGenerateAlgorithm orderKeyGenerate = new AutoIncrementKeyGenerateAlgorithm();
+        AutoIncrementKeyGenerateAlgorithm orderItemKeyGenerate = new AutoIncrementKeyGenerateAlgorithm();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
-        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(orderKeyGenerate, orderItemKeyGenerate, parameterized.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         startMigration("t_order_item", "t_order_item");
-        // TODO wait preparation done (binlog position got), else insert/update/delete might be consumed in inventory task
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), keyGenerateAlgorithm, 30));
         String orderJobId = getJobIdByTableName(getSourceTableOrderName());
-        String orderItemJobId = getJobIdByTableName("t_order_item");
+        for (int i = 0; i < 5; i++) {
+            List<Map<String, Object>> jobStatus = waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
+            Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
+            if (statusSet.contains(JobStatus.PREPARING.name())) {
+                ThreadUtil.sleep(2, TimeUnit.SECONDS);
+            }
+        }
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), orderKeyGenerate, 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
+        String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
         assertMigrationSuccessById(orderItemJobId, "CRC32_MATCH");
         for (String each : listJobId()) {

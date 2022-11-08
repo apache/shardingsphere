@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -272,19 +271,20 @@ public abstract class BaseITCase {
         if (null != getIncreaseTaskThread()) {
             TimeUnit.SECONDS.timedJoin(getIncreaseTaskThread(), 60);
         }
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);
             Set<String> actualStatus = new HashSet<>();
             List<Integer> incrementalIdleSecondsList = new ArrayList<>();
             for (Map<String, Object> each : listJobStatus) {
-                assertTrue(Strings.isNullOrEmpty(each.get("error_message").toString()));
+                assertTrue("error_message is not null", Strings.isNullOrEmpty(each.get("error_message").toString()));
                 actualStatus.add(each.get("status").toString());
                 String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
                 incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
-            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
-                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            assertFalse("status is JobStatus.PREPARING_FAILURE", actualStatus.contains(JobStatus.PREPARING_FAILURE.name()));
+            assertFalse("status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
+            assertFalse("status is JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
             if (Collections.min(incrementalIdleSecondsList) <= 5) {
                 ThreadUtil.sleep(3, TimeUnit.SECONDS);
                 continue;
@@ -292,10 +292,6 @@ public abstract class BaseITCase {
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 return listJobStatus;
             }
-            if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
-                log.warn("one of the shardingItem was not started correctly");
-            }
-            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         return Collections.emptyList();
     }
