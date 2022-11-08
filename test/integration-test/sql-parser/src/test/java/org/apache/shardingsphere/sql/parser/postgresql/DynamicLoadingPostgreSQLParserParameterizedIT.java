@@ -37,8 +37,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
     /**
      * Get test parameters.
      *
-     * @return Test cases from github.
-     * @throws IOException IOException
+     * @return Test cases from GitHub.
      **/
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() throws IOException {

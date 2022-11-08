@@ -37,8 +37,7 @@ public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadi
     /**
      * Get test parameters.
      *
-     * @return Test cases from github.
-     * @throws IOException IOException
+     * @return Test cases from GitHub.
      */
     @Parameters(name = "{0} (MySQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
