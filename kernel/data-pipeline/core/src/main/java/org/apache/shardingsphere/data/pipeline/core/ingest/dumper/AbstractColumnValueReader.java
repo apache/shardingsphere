@@ -25,17 +25,19 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * Basic column value reader.
+ * Abstract column value reader.
  */
-public class BasicColumnValueReader implements ColumnValueReader {
+public abstract class AbstractColumnValueReader implements ColumnValueReader {
     
     @Override
-    public Object readValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        Object result = readValue0(resultSet, metaData, columnIndex);
+    public final Object readValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        Object result = doReadValue(resultSet, metaData, columnIndex);
         return resultSet.wasNull() ? null : result;
     }
     
-    private Object readValue0(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+    protected abstract Object doReadValue(ResultSet resultSet, ResultSetMetaData metaData, int columnIndex) throws SQLException;
+    
+    protected final Object defaultDoReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
         int columnType = metaData.getColumnType(columnIndex);
         switch (columnType) {
             case Types.BOOLEAN:

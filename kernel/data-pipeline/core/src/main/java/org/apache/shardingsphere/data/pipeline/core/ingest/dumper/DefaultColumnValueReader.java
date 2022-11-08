@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest;
-
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractColumnValueReader;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
- * Column value reader for MySQL.
+ * Default column value reader.
  */
-public final class MySQLColumnValueReader extends AbstractColumnValueReader {
-    
-    private static final String YEAR_DATA_TYPE = "YEAR";
+public final class DefaultColumnValueReader extends AbstractColumnValueReader {
     
     @Override
     protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        if (isYearDataType(metaData.getColumnTypeName(columnIndex))) {
-            return resultSet.getObject(columnIndex);
-        }
         return super.defaultDoReadValue(resultSet, metaData, columnIndex);
     }
     
-    private boolean isYearDataType(final String columnDataTypeName) {
-        return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
-    }
-    
     @Override
-    public String getType() {
-        return "MySQL";
+    public boolean isDefault() {
+        return true;
     }
 }
