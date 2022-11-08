@@ -74,9 +74,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(
-                                                                       final Collection<ColumnSegment> columnSegments,
-                                                                       final Map<String, String> columnExpressionTableNames,
+    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames,
                                                                        final Collection<WhereSegment> whereSegments) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         for (ColumnSegment each : columnSegments) {
@@ -95,19 +93,16 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
                     continue;
                 }
             }
-            BinaryOperationExpression boe = findBinaryOperationExpression(whereSegments, each);
-            if (boe != null && boe.getOperator().equalsIgnoreCase("LIKE")) {
-                Optional<String> fuzzyQueryColumn = encryptTable.get()
-                        .findFuzzyQueryColumn(each.getIdentifier().getValue());
-                if (!fuzzyQueryColumn.isPresent()) {
-                    throw new UnsupportedEncryptSQLException("LIKE");
-                } else {
-                    result.add(new SubstitutableColumnNameToken(startIndex,
-                            stopIndex, createColumnProjections(fuzzyQueryColumn.get())));
+            // TODO remove foreach loop to improve performance
+            if (isColumnSegmentIncludedInLikeExpression(whereSegments, each)) {
+                Optional<String> fuzzyQueryColumn = encryptTable.get().findFuzzyQueryColumn(each.getIdentifier().getValue());
+                if (fuzzyQueryColumn.isPresent()) {
+                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(fuzzyQueryColumn.get())));
                     continue;
+                } else {
+                    throw new UnsupportedEncryptSQLException("LIKE");
                 }
             }
-            
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(each.getIdentifier().getValue());
             SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(columnName)))
                     .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(each.getIdentifier().getValue()))));
@@ -116,34 +111,31 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return result;
     }
     
-    private BinaryOperationExpression findBinaryOperationExpression(
-                                                                    final Collection<WhereSegment> whereSegments,
-                                                                    final ColumnSegment columnSegment) {
-        for (WhereSegment whereSegment : whereSegments) {
-            Collection<AndPredicate> andPredicates =
-                    ExpressionExtractUtil.getAndPredicates(whereSegment.getExpr());
+    private boolean isColumnSegmentIncludedInLikeExpression(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
+        for (WhereSegment each : whereSegments) {
+            Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
             for (AndPredicate andPredicate : andPredicates) {
-                for (ExpressionSegment predicate : andPredicate.getPredicates()) {
-                    if (predicate instanceof BinaryOperationExpression) {
-                        BinaryOperationExpression boe = (BinaryOperationExpression) predicate;
-                        if (columnMatch(columnSegment, boe.getLeft())) {
-                            return boe;
-                        }
-                    }
+                boolean likeColumnSegment = isLikeColumnSegment(andPredicate, targetColumnSegment);
+                if (likeColumnSegment) {
+                    return true;
                 }
             }
         }
-        return null;
+        return false;
     }
     
-    private boolean columnMatch(final ColumnSegment columnSegment, final ExpressionSegment left) {
-        if (left instanceof ColumnSegment) {
-            ColumnSegment leftCol = (ColumnSegment) left;
-            if (leftCol.getStartIndex() == columnSegment.getStartIndex() && left.getStopIndex() == columnSegment.getStopIndex()) {
-                return true;
+    private boolean isLikeColumnSegment(final AndPredicate andPredicate, final ColumnSegment targetColumnSegment) {
+        for (ExpressionSegment each : andPredicate.getPredicates()) {
+            if (each instanceof BinaryOperationExpression) {
+                BinaryOperationExpression binaryOperationExpression = (BinaryOperationExpression) each;
+                return binaryOperationExpression.getOperator().equalsIgnoreCase("LIKE") && isSameColumnSegment(binaryOperationExpression.getLeft(), targetColumnSegment);
             }
         }
         return false;
+    }
+    
+    private boolean isSameColumnSegment(final ExpressionSegment columnSegment, final ColumnSegment targetColumnSegment) {
+        return columnSegment instanceof ColumnSegment && columnSegment.getStartIndex() == targetColumnSegment.getStartIndex() && columnSegment.getStopIndex() == targetColumnSegment.getStopIndex();
     }
     
     private Collection<ColumnProjection> createColumnProjections(final String columnName) {
