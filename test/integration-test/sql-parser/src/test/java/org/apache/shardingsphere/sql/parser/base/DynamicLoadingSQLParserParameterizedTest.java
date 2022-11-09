@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
+import org.apache.shardingsphere.sql.parser.result.SQLParserResultProcessor;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -52,7 +52,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String databaseType;
     
     // TODO this will refactor as an abstract
-    private final CSVResultGenerator resultGenerator;
+    private final SQLParserResultProcessor resultGenerator;
     
     protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
