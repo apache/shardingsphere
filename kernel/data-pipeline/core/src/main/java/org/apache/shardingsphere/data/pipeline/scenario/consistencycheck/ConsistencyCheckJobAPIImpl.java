@@ -113,13 +113,9 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         ConsistencyCheckJobItemContext context = (ConsistencyCheckJobItemContext) jobItemContext;
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress();
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(String.join(",", context.getTableNames()),
+                context.getCheckedRecordsCount().get(), context.getRecordsCount(), context.getCheckBeginTimeMillis(), context.getCheckEndTimeMillis(), context.getTableCheckPositions());
         jobItemProgress.setStatus(context.getStatus());
-        jobItemProgress.setCheckedRecordsCount(context.getCheckedRecordsCount().get());
-        jobItemProgress.setRecordsCount(context.getRecordsCount());
-        jobItemProgress.setCheckBeginTimeMillis(context.getCheckBeginTimeMillis());
-        jobItemProgress.setCheckEndTimeMillis(context.getCheckEndTimeMillis());
-        jobItemProgress.setTableNames(String.join(",", context.getTableNames()));
         YamlConsistencyCheckJobItemProgress yamlJobProgress = swapper.swapToYamlConfiguration(jobItemProgress);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(context.getJobId(), context.getShardingItem(), YamlEngine.marshal(yamlJobProgress));
     }

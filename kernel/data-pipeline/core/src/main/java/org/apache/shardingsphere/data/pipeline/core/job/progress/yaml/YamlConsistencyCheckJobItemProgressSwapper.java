@@ -21,6 +21,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * YAML data check job item progress swapper.
  */
@@ -30,23 +33,24 @@ public final class YamlConsistencyCheckJobItemProgressSwapper implements YamlCon
     public YamlConsistencyCheckJobItemProgress swapToYamlConfiguration(final ConsistencyCheckJobItemProgress data) {
         YamlConsistencyCheckJobItemProgress result = new YamlConsistencyCheckJobItemProgress();
         result.setStatus(data.getStatus().name());
-        result.setRecordsCount(data.getRecordsCount());
+        result.setTableNames(data.getTableNames());
         result.setCheckedRecordsCount(data.getCheckedRecordsCount());
+        result.setRecordsCount(data.getRecordsCount());
         result.setCheckBeginTimeMillis(data.getCheckBeginTimeMillis());
         result.setCheckEndTimeMillis(data.getCheckEndTimeMillis());
-        result.setTableNames(data.getTableNames());
+        result.setTableCheckPositions(data.getTableCheckPositions());
         return result;
     }
     
     @Override
     public ConsistencyCheckJobItemProgress swapToObject(final YamlConsistencyCheckJobItemProgress yamlConfig) {
-        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress();
+        Map<String, Object> tableCheckPositions = new LinkedHashMap<>();
+        if (null != yamlConfig.getTableCheckPositions()) {
+            tableCheckPositions.putAll(yamlConfig.getTableCheckPositions());
+        }
+        ConsistencyCheckJobItemProgress result = new ConsistencyCheckJobItemProgress(yamlConfig.getTableNames(), yamlConfig.getCheckedRecordsCount(),
+                yamlConfig.getRecordsCount(), yamlConfig.getCheckBeginTimeMillis(), yamlConfig.getCheckEndTimeMillis(), tableCheckPositions);
         result.setStatus(JobStatus.valueOf(yamlConfig.getStatus()));
-        result.setRecordsCount(yamlConfig.getRecordsCount());
-        result.setCheckedRecordsCount(yamlConfig.getCheckedRecordsCount());
-        result.setCheckBeginTimeMillis(yamlConfig.getCheckBeginTimeMillis());
-        result.setCheckEndTimeMillis(yamlConfig.getCheckEndTimeMillis());
-        result.setTableNames(yamlConfig.getTableNames());
         return result;
     }
 }

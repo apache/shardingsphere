@@ -141,5 +141,11 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
             result = 31 * result + columnsCrc32.hashCode();
             return result;
         }
+        
+        // TODO not support now
+        @Override
+        public Object getMaxUniqueKeyValue() {
+            return null;
+        }
     }
 }

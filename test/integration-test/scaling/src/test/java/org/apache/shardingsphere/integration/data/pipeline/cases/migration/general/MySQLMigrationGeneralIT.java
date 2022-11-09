@@ -114,6 +114,9 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
         }
-        assertCheckMigrationSuccess(jobId, algorithmType);
+        proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 2);
+        proxyExecuteWithLog(String.format("STOP MIGRATION CHECK '%s'", jobId), 2);
+        proxyExecuteWithLog(String.format("START MIGRATION CHECK '%s'", jobId), 0);
+        assertMigrationCheckSuccess(jobId);
     }
 }

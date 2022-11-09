@@ -73,4 +73,9 @@ public final class DataConsistencyCalculateParameter {
      * Previous calculated result will be transferred to next call.
      */
     private volatile Object previousCalculatedResult;
+    
+    /**
+     * The position value of data check.
+     */
+    private final Object dataCheckPositionValue;
 }

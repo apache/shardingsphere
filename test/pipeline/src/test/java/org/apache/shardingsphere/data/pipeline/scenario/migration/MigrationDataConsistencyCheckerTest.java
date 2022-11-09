@@ -37,6 +37,7 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -67,7 +68,7 @@ public final class MigrationDataConsistencyCheckerTest {
     
     private ConsistencyCheckJobItemContext createConsistencyCheckJobItemConfig() {
         ConsistencyCheckJobConfiguration jobConfig = new ConsistencyCheckJobConfiguration("", "", "", new Properties());
-        return new ConsistencyCheckJobItemContext(jobConfig, 0, JobStatus.RUNNING);
+        return new ConsistencyCheckJobItemContext(jobConfig, 0, JobStatus.RUNNING, Collections.emptyMap());
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {

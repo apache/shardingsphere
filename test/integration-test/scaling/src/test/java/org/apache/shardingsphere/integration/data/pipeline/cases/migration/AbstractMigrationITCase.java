@@ -163,8 +163,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
         return jobList.stream().filter(a -> a.get("tables").toString().equals(tableName)).findFirst().orElseThrow(() -> new RuntimeException("not find " + tableName + " table")).get("id").toString();
     }
     
-    protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) throws SQLException {
-        proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
+    protected void assertMigrationCheckSuccess(final String jobId) {
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
             resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));

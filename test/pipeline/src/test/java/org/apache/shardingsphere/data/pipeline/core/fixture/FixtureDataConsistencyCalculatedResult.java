@@ -28,4 +28,9 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 public final class FixtureDataConsistencyCalculatedResult implements DataConsistencyCalculatedResult {
     
     private final int recordsCount;
+    
+    @Override
+    public Object getMaxUniqueKeyValue() {
+        return null;
+    }
 }

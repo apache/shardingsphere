@@ -96,8 +96,14 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
             preparedStatement.setFetchSize(chunkSize);
+            Object tableCheckPosition = parameter.getDataCheckPositionValue();
             if (null == previousCalculatedResult) {
-                preparedStatement.setInt(1, chunkSize);
+                if (null == tableCheckPosition) {
+                    preparedStatement.setInt(1, chunkSize);
+                } else {
+                    preparedStatement.setObject(1, tableCheckPosition);
+                    preparedStatement.setInt(2, chunkSize);
+                }
             } else {
                 preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue());
                 preparedStatement.setInt(2, chunkSize);
@@ -134,7 +140,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String cacheKey = parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
-        if (null == parameter.getPreviousCalculatedResult()) {
+        if (null == parameter.getPreviousCalculatedResult() && null == parameter.getDataCheckPositionValue()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         }
         return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));

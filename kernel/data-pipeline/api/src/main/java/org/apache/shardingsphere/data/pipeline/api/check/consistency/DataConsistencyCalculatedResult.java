@@ -28,4 +28,11 @@ public interface DataConsistencyCalculatedResult {
      * @return records count
      */
     int getRecordsCount();
+    
+    /**
+     * Get max unique value.
+     *
+     * @return max unique value
+     */
+    Object getMaxUniqueKeyValue();
 }
