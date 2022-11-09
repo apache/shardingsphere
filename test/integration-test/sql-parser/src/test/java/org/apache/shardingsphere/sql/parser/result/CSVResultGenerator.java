@@ -19,10 +19,11 @@ package org.apache.shardingsphere.sql.parser.result;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 /**
  *  CSV result generator.
@@ -32,12 +33,23 @@ public final class CSVResultGenerator {
     private final CSVPrinter printer;
     
     public CSVResultGenerator(final String databaseType) {
-        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader("SQLCaseId", "DatabaseType", "Result", "SQL").setSkipHeaderRecord(false).build();
         try {
-            Writer out = new FileWriter(databaseType + "-result.csv", true);
-            printer = new CSVPrinter(out, csvFormat);
+            File csvFile = new File(IntegrationTestEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
+            createHeader(csvFile);
+            printer = new CSVPrinter(new FileWriter(csvFile, true), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
         } catch (final IOException ex) {
             throw new RuntimeException("Create CSV file failed.", ex);
+        }
+    }
+    
+    private synchronized void createHeader(File csvFile) {
+        if (!csvFile.exists()) {
+            try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
+                printer.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
+                printer.flush();
+            } catch (final IOException ex) {
+                throw new RuntimeException("Create CSV file header failed.", ex);
+            }
         }
     }
     
@@ -49,7 +61,6 @@ public final class CSVResultGenerator {
     public void processResult(final Object... params) {
         try {
             printer.printRecord(params);
-            // TODO this may be optimized in next step.
             printer.flush();
         } catch (final IOException ex) {
             throw new RuntimeException("Write CSV file failed.", ex);
