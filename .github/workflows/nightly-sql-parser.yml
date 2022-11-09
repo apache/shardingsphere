@@ -18,14 +18,15 @@
 name: Nightly - SQL Parser
 
 on:
-  schedule:
-    - cron: '0 18 */1 * *'  # once a day. UTC time
+  push:
+    ## TODO revert the schedule code
+    branches: [ dev ]
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true
 
 jobs:
-  ci:
+  sql-parse:
 #    if: github.repository == 'apache/shardingsphere'
     name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -52,3 +53,7 @@ jobs:
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL parser
         run: ./mvnw -nsu -B install -f test/integration-test/sql-parser/pom.xml -Dsql.parser.it.enabled=true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: sql-report
+          path: /tmp/*.csv
