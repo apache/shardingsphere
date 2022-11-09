@@ -74,6 +74,6 @@ jobs:
       - name: Prepare environments
         run: sh .github/workflows/resources/sql/nightly-generator-init.sh
       - name: Generate examples
-        run: ./mvnw -B test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+        run: ./mvnw -B clean test -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
       - name: Test examples
         run : ./mvnw -B test -f examples/shardingsphere-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false 
