@@ -71,10 +71,10 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Map<String, String>> getResponse(final String sqlCaseApi, final URI sqlCaseURI) {
+    protected static Collection<Map<String, String>> getResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Map<String, String>> result = new LinkedList<>();
-        URI casesURI = getApiURL(sqlCaseApi, sqlCaseURI);
-        String caseContent = getContent(casesURI);
+        URI casesAPI = getAPI(sqlCaseAPI, sqlCaseURI);
+        String caseContent = getContent(casesAPI);
         if (caseContent.isEmpty()) {
             return result;
         }
@@ -87,21 +87,21 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
                     if (eachName.endsWith(".sql") || eachName.endsWith(".test")) {
                         result.add(ImmutableMap.of("name", eachName, "download_url", casesDownloadURL.get(each)));
                     } else if (!eachName.contains(".")) {
-                        result.addAll(getResponse(sqlCaseApi, URI.create(casesHtmlURL.get(each))));
+                        result.addAll(getResponse(sqlCaseAPI, URI.create(casesHtmlURL.get(each))));
                     }
                 });
         return result;
     }
     
-    private static URI getApiURL(final String sqlCaseApi, final URI sqlCaseURI) {
+    private static URI getAPI(final String sqlCaseAPI, final URI sqlCaseURI) {
         String[] patches = sqlCaseURI.toString().split("/", 8);
         String casesOwner = patches[3];
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
-        return URI.create(sqlCaseApi + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
+        return URI.create(sqlCaseAPI + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
     }
     
-    private static String getContent(final URI casesURI) {
+    protected static String getContent(final URI casesURI) {
         String result = "";
         try {
             InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
@@ -112,7 +112,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
+    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
         Collection<Object[]> result = new LinkedList<>();
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
