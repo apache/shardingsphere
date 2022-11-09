@@ -67,7 +67,7 @@ import java.util.Optional;
 /**
  * Proxy SQL Executor.
  */
-public final class ProxySQLExecutor {
+public final class ProxySQLExecutor implements IProxySQLExecutor {
     
     private final String type;
     
