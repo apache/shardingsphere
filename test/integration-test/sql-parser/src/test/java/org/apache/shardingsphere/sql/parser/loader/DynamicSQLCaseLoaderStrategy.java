@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.datetime.database.exception;
+package org.apache.shardingsphere.sql.parser.loader;
 
-import org.apache.shardingsphere.infra.exception.DataSQLException;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import java.net.URI;
+import java.util.Collection;
 
-/**
- * Datetime configuration file not found exception.
- */
-public final class DatetimeConfigurationFileNotFoundException extends DataSQLException {
+public interface DynamicSQLCaseLoaderStrategy {
     
-    private static final long serialVersionUID = 4820838154441059833L;
-    
-    public DatetimeConfigurationFileNotFoundException(final String configurationFile) {
-        super(XOpenSQLState.GENERAL_ERROR, 2, "Can not find `%s` file for datetime initialize.", configurationFile);
-    }
+    /**
+     * Get test parameters.
+     *
+     * @param sqlCaseURI the URI of sql case
+     *
+     * @return Test cases from with strategy
+     */
+    Collection<Object[]> getTestParameters(URI sqlCaseURI);
 }

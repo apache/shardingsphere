@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
+import org.apache.shardingsphere.data.pipeline.spi.datasource.creator.PipelineDataSourceCreator;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 

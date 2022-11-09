@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.env;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -32,10 +33,13 @@ public final class IntegrationTestEnvironment {
     
     private final boolean sqlParserITEnabled;
     
+    private final String resultPath;
+    
     private IntegrationTestEnvironment() {
         props = loadProperties();
         String sqlParserITEnabledStr = null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled");
         sqlParserITEnabled = null == sqlParserITEnabledStr ? false : Boolean.parseBoolean(sqlParserITEnabledStr);
+        resultPath = props.get("sql.parser.it.report.path").toString();
     }
     
     /**

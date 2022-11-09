@@ -21,12 +21,11 @@ import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import org.junit.Test;
 
@@ -55,15 +54,15 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     // TODO this will refactor as an abstract
     private final CSVResultGenerator resultGenerator;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI, final String databaseType) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseAPI.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
         } else {
             for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
                 String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent, databaseType));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
             }
         }
         if (result.isEmpty()) {
@@ -72,10 +71,10 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Map<String, String>> getResponse(final String sqlCaseApi, final URI sqlCaseURI) {
+    protected static Collection<Map<String, String>> getResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Map<String, String>> result = new LinkedList<>();
-        URI casesURI = getApiURL(sqlCaseApi, sqlCaseURI);
-        String caseContent = getContent(casesURI);
+        URI casesAPI = getAPI(sqlCaseAPI, sqlCaseURI);
+        String caseContent = getContent(casesAPI);
         if (caseContent.isEmpty()) {
             return result;
         }
@@ -88,21 +87,21 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
                     if (eachName.endsWith(".sql") || eachName.endsWith(".test")) {
                         result.add(ImmutableMap.of("name", eachName, "download_url", casesDownloadURL.get(each)));
                     } else if (!eachName.contains(".")) {
-                        result.addAll(getResponse(sqlCaseApi, URI.create(casesHtmlURL.get(each))));
+                        result.addAll(getResponse(sqlCaseAPI, URI.create(casesHtmlURL.get(each))));
                     }
                 });
         return result;
     }
     
-    private static URI getApiURL(final String sqlCaseApi, final URI sqlCaseURI) {
+    private static URI getAPI(final String sqlCaseAPI, final URI sqlCaseURI) {
         String[] patches = sqlCaseURI.toString().split("/", 8);
         String casesOwner = patches[3];
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
-        return URI.create(sqlCaseApi + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
+        return URI.create(sqlCaseAPI + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
     }
     
-    private static String getContent(final URI casesURI) {
+    protected static String getContent(final URI casesURI) {
         String result = "";
         try {
             InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
@@ -113,18 +112,22 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
+    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent) {
         Collection<Object[]> result = new LinkedList<>();
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
-        for (String each : lines) {
-            if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
+        for (int i = 0; i < lines.length; i++) {
+            if (isStatement(lines[i]) && (i + 1 == lines.length || !lines[i + 1].contains("ERROR"))) {
                 String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, each, databaseType});
+                result.add(new Object[]{sqlCaseId, lines[i]});
                 sqlCaseEnum++;
             }
         }
         return result;
+    }
+    
+    private static boolean isStatement(final String statement) {
+        return !statement.isEmpty() && Character.isLetter(statement.charAt(0)) && statement.charAt(statement.length() - 1) == ';';
     }
     
     @Test
@@ -133,7 +136,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         try {
             ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
             new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
-        } catch (final SQLParsingException | ClassCastException | NullPointerException | SQLASTVisitorException | NumberFormatException | StringIndexOutOfBoundsException ignore) {
+        } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
             result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }

@@ -15,35 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql;
+package org.apache.shardingsphere.sql.parser.loader;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
-import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
-import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Map;
 
-@RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
+public class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     
-    public DynamicLoadingMySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL", new CSVResultGenerator("MySQL"));
+    public DynamicSQLCaseGitHubLoader() {
+        super("", "", "", new CSVResultGenerator(""));
     }
     
     /**
      * Get test parameters.
      *
+     * @param sqlCaseURI the URI of sql case
+     *
      * @return Test cases from GitHub.
-     */
-    @Parameters(name = "{0} (MySQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
-        return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
-                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"))
-                : Collections.emptyList();
+     **/
+    public Collection<Object[]> getTestParameters(final URI sqlCaseURI) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (Map<String, String> each : getResponse("https://api.github.com/repos/", sqlCaseURI)) {
+            String sqlCaseFileName = each.get("name").split("\\.")[0];
+            String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
+            result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+        }
+        if (result.isEmpty()) {
+            result.add(new Object[]{"", ""});
+        }
+        return result;
     }
 }

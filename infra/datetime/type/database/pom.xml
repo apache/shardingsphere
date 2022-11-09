@@ -32,6 +32,7 @@
             <artifactId>shardingsphere-infra-datetime-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- TODO seems it's not necessary -->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sharding-core</artifactId>
@@ -48,6 +49,11 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

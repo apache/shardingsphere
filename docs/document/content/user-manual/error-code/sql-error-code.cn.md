@@ -28,9 +28,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 ### 数据
 
 | SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| --------- |-------------| ------ |
 | HY004     | 11000       | Invalid value \`%s\`. |
 | HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
+| HY000     | 11002       | Can not find \`%s\` file for datetime initialize. |
 | HY004     | 11010       | Unsupported conversion stream charset \`%s\`. |
 
 ### 语法
@@ -83,7 +84,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | HY000     | 17000       | Work ID assigned failed, which can not exceed 1024. |
-| HY000     | 17001       | Can not find \`%s\` file for datetime initialize. |
 | HY000     | 17002       | File access failed, reason is: %s |
 | HY000     | 17010       | Cluster persist repository error, reason is: %s |
 

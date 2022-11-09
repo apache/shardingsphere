@@ -25,5 +25,5 @@
         <column name="worker_id" />
         <column name="labels" />
     </metadata>
-    <row values=" | | 3307 | OK | Cluster | -1 | " />
+    <row values=" | | 3307 | OK | Cluster | 0 | " />
 </dataset>

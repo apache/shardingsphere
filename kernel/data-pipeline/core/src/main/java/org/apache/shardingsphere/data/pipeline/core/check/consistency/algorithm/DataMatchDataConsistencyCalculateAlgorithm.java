@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -156,7 +157,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @RequiredArgsConstructor
     @Getter
-    private static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    static final class CalculatedResult implements DataConsistencyCalculatedResult {
         
         @NonNull
         private final Object maxUniqueKeyValue;
@@ -179,15 +180,16 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;
-            boolean equalsFirst = new EqualsBuilder().append(getRecordsCount(), that.getRecordsCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
-            if (!equalsFirst) {
+            if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
                 log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
-                        getRecordsCount(), that.getRecordsCount(), getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue());
+                        recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
                 return false;
             }
+            EqualsBuilder equalsBuilder = new EqualsBuilder();
             Iterator<Collection<Object>> thisIterator = this.records.iterator();
             Iterator<Collection<Object>> thatIterator = that.records.iterator();
             while (thisIterator.hasNext() && thatIterator.hasNext()) {
+                equalsBuilder.reset();
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
@@ -207,7 +209,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                     } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
                     } else {
-                        matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
+                        matched = equalsBuilder.append(thisResult, thatResult).isEquals();
                     }
                     if (!matched) {
                         log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
