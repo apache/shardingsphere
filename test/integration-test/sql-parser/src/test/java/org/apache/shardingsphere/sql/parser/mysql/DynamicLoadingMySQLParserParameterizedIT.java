@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.mysql;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
+import org.apache.shardingsphere.sql.parser.result.SQLParserResultProcessorManager;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -32,7 +32,7 @@ import java.util.Collections;
 public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
     public DynamicLoadingMySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL", new CSVResultGenerator("MySQL"));
+        super(sqlCaseId, sqlCaseValue, "MySQL", SQLParserResultProcessorManager.getProcessor("MySQL"));
     }
     
     /**

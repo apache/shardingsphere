@@ -35,11 +35,14 @@ public final class IntegrationTestEnvironment {
     
     private final String resultPath;
     
+    private final String resultProcessorType;
+    
     private IntegrationTestEnvironment() {
         props = loadProperties();
         String sqlParserITEnabledStr = null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled");
         sqlParserITEnabled = null == sqlParserITEnabledStr ? false : Boolean.parseBoolean(sqlParserITEnabledStr);
-        resultPath = props.get("sql.parser.it.report.path").toString();
+        resultPath = props.getOrDefault("sql.parser.it.report.path", "/tmp/").toString();
+        resultProcessorType = props.getOrDefault("sql.parser.it.report.type", "LOG").toString();
     }
     
     /**
