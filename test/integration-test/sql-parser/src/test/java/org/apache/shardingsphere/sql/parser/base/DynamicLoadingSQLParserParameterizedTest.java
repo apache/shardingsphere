@@ -54,19 +54,19 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     // TODO this will refactor as an abstract
     private final CSVResultGenerator resultGenerator;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI, final String databaseType) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseAPI.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
         } else {
             for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
                 String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent, databaseType));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
             }
         }
         if (result.isEmpty()) {
-            result.add(new Object[]{null, null, null});
+            result.add(new Object[]{null, null});
         }
         return result;
     }
@@ -112,14 +112,14 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
+    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent) {
         Collection<Object[]> result = new LinkedList<>();
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
         for (String each : lines) {
             if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
                 String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, each, databaseType});
+                result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
             }
         }
