@@ -41,15 +41,13 @@ public final class ProxySQLExecutorFactory {
     public static IProxySQLExecutor newInstance(final ExecutionContext executionContext, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         TransactionStatus transactionStatus = databaseCommunicationEngine.getBackendConnection().getConnectionSession().getTransactionStatus();
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        IProxySQLExecutor proxySQLExecutor;
+        IProxySQLExecutor result;
         if (needAutoTransaction(executionContext, transactionStatus, sqlStatement)) {
-            proxySQLExecutor =
-                    new ProxySQLExecutorWrapper(databaseCommunicationEngine.getDriverType(), (JDBCBackendConnection) databaseCommunicationEngine.getBackendConnection(), databaseCommunicationEngine);
+            result = new ProxySQLExecutorWrapper(databaseCommunicationEngine.getDriverType(), (JDBCBackendConnection) databaseCommunicationEngine.getBackendConnection(), databaseCommunicationEngine);
         } else {
-            proxySQLExecutor =
-                    new ProxySQLExecutor(databaseCommunicationEngine.getDriverType(), (JDBCBackendConnection) databaseCommunicationEngine.getBackendConnection(), databaseCommunicationEngine);
+            result = new ProxySQLExecutor(databaseCommunicationEngine.getDriverType(), (JDBCBackendConnection) databaseCommunicationEngine.getBackendConnection(), databaseCommunicationEngine);
         }
-        return proxySQLExecutor;
+        return result;
     }
     
     private static boolean needAutoTransaction(final ExecutionContext executionContext, final TransactionStatus transactionStatus, final SQLStatement sqlStatement) {

@@ -31,9 +31,9 @@ import java.util.List;
  */
 public final class ProxySQLExecutorWrapper implements IProxySQLExecutor {
     
-    private final ProxySQLExecutor proxySQLExecutor;
-    
     private final JDBCBackendTransactionManager transactionManager;
+    
+    private final ProxySQLExecutor proxySQLExecutor;
     
     public ProxySQLExecutorWrapper(final String driverType, final JDBCBackendConnection backendConnection, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
         transactionManager = new JDBCBackendTransactionManager(backendConnection);
@@ -51,7 +51,7 @@ public final class ProxySQLExecutorWrapper implements IProxySQLExecutor {
     }
     
     /**
-     * Execute SQL.
+     * Execute SQL within a transaction.
      *
      * @param executionContext execution context
      * @return execute results
@@ -62,7 +62,9 @@ public final class ProxySQLExecutorWrapper implements IProxySQLExecutor {
         try {
             result = proxySQLExecutor.execute(executionContext);
             transactionManager.commit();
-        } catch (final SQLException ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             transactionManager.rollback();
             throw ex;
         }
