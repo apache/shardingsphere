@@ -229,7 +229,7 @@ public abstract class BaseITCase {
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> jobStatus = queryForListWithLog(distSQL);
             Set<String> statusSet = jobStatus.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toSet());
-            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name()) || statusSet.contains(JobStatus.PREPARE_SUCCESS.name())) {
+            if (statusSet.contains(JobStatus.PREPARING.name()) || statusSet.contains(JobStatus.RUNNING.name())) {
                 ThreadUtil.sleep(2, TimeUnit.SECONDS);
             }
         }
