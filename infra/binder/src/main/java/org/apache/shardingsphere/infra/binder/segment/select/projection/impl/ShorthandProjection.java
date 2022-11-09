@@ -70,7 +70,8 @@ public final class ShorthandProjection implements Projection {
     }
 
     /**
-     * get actualColumns, exclude ExpressionProjection
+     * get actualColumns, exclude ExpressionProjection.
+     *
      * @return actualColumns
      */
     public Map<String, ColumnProjection> getActualColumns() {
