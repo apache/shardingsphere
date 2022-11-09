@@ -26,11 +26,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class DynamicLoadingSQLCaseGitHubLoaderIT extends DynamicLoadingSQLParserParameterizedTest implements DynamicLoadingSQLCaseLoaderStrategyIT {
-
+    
     public DynamicLoadingSQLCaseGitHubLoaderIT() {
         super(null, null, null, new CSVResultGenerator(null));
     }
-
+    
     /**
      * Get test parameters.
      *

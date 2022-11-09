@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class DynamicLoadingSQLCaseLocalLoaderIT extends DynamicLoadingSQLParserParameterizedTest implements DynamicLoadingSQLCaseLoaderStrategyIT {
-
+    
     public DynamicLoadingSQLCaseLocalLoaderIT() {
         super(null, null, null, new CSVResultGenerator(null));
     }
-
+    
     /**
      * Get test parameters.
      *

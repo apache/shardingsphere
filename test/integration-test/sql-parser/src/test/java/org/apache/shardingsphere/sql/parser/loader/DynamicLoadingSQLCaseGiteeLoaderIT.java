@@ -26,11 +26,11 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class DynamicLoadingSQLCaseGiteeLoaderIT extends DynamicLoadingSQLParserParameterizedTest implements DynamicLoadingSQLCaseLoaderStrategyIT {
-
+    
     public DynamicLoadingSQLCaseGiteeLoaderIT() {
         super(null, null, null, new CSVResultGenerator(null));
     }
-
+    
     /**
      * Get test parameters.
      *

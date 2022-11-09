@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Collection;
 
 public interface DynamicLoadingSQLCaseLoaderStrategyIT {
-
+    
     /**
      * Get test parameters.
      *
