@@ -175,9 +175,9 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
             ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         log.info("check job results: {}", resultList);
-        for (Map<String, Object> entry : resultList) {
-            assertTrue(Boolean.parseBoolean(entry.get("result").toString()));
-            assertThat(entry.get("finished_percentage").toString(), is("100"));
+        for (Map<String, Object> each : resultList) {
+            assertTrue("check result is false", Boolean.parseBoolean(each.get("result").toString()));
+            assertThat("finished_percentage is not 100", each.get("finished_percentage").toString(), is("100"));
         }
     }
 }
