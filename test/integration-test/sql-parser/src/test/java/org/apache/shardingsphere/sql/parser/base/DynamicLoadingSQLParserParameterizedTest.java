@@ -116,14 +116,18 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         Collection<Object[]> result = new LinkedList<>();
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
-        for (String each : lines) {
-            if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
+        for (int i = 0; i < lines.length; i++) {
+            if (isStatement(lines[i]) && (i + 1 == lines.length || !lines[i + 1].contains("ERROR"))) {
                 String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, each});
+                result.add(new Object[]{sqlCaseId, lines[i]});
                 sqlCaseEnum++;
             }
         }
         return result;
+    }
+    
+    private static boolean isStatement(final String statement) {
+        return !statement.isEmpty() && Character.isLetter(statement.charAt(0)) && statement.charAt(statement.length() - 1) == ';';
     }
     
     @Test
