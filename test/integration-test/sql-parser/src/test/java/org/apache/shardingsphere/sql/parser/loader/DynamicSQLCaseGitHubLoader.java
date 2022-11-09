@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.loader;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
-import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
+import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 
 import java.net.URI;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import java.util.Map;
 public class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     
     public DynamicSQLCaseGitHubLoader() {
-        super("", "", "", new CSVResultGenerator(""));
+        super("", "", "", new SQLParserCSVResultProcessor(""));
     }
     
     /**

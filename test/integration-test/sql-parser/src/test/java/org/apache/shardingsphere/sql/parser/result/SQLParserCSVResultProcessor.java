@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.result;
 
+import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
@@ -28,11 +29,14 @@ import java.io.IOException;
 /**
  *  CSV result generator.
  */
-public final class CSVResultGenerator {
+public final class SQLParserCSVResultProcessor implements SQLParserResultProcessor {
     
     private final CSVPrinter printer;
     
-    public CSVResultGenerator(final String databaseType) {
+    @Getter
+    private final String type = "CSV";
+    
+    public SQLParserCSVResultProcessor(final String databaseType) {
         try {
             File csvFile = new File(IntegrationTestEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
             createHeader(csvFile);
@@ -58,6 +62,7 @@ public final class CSVResultGenerator {
      *
      * @param params the content for a row of CSV record
      */
+    @Override
     public void processResult(final Object... params) {
         try {
             printer.printRecord(params);
