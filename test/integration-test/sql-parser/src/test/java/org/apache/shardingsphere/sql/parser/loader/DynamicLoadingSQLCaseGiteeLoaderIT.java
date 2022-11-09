@@ -46,7 +46,7 @@ public class DynamicLoadingSQLCaseGiteeLoaderIT extends DynamicLoadingSQLParserP
             result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
         }
         if (result.isEmpty()) {
-            result.add(new Object[]{null, null});
+            result.add(new Object[]{"", ""});
         }
         return result;
     }

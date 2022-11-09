@@ -41,7 +41,7 @@ public class DynamicLoadingSQLCaseLocalLoaderIT extends DynamicLoadingSQLParserP
         Collection<Object[]> result = new LinkedList<>();
         result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
         if (result.isEmpty()) {
-            result.add(new Object[]{null, null});
+            result.add(new Object[]{"", ""});
         }
         return result;
     }
