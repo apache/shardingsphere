@@ -38,13 +38,13 @@ public class SQLParserResultProcessorManager {
                     Field typeField = clazz.getDeclaredField("type");
                     typeField.setAccessible(true);
                     Constructor<?> constructor = clazz.getConstructor(String.class);
-                    SQLParserResultProcessor instance = (SQLParserResultProcessor) constructor.newInstance(databaseType);
-                    if (type.equalsIgnoreCase(typeField.get(instance).toString())) {
-                        return instance;
+                    SQLParserResultProcessor result = (SQLParserResultProcessor) constructor.newInstance(databaseType);
+                    if (type.equalsIgnoreCase(typeField.get(result).toString())) {
+                        return result;
                     }
                 }
             }
-        } catch (ReflectiveOperationException ex) {
+        } catch (final ReflectiveOperationException ex) {
             log.error("encounter exception when get SQLParserResultProcessor by reflection", ex);
         }
         throw new IllegalArgumentException("The processor type does not supported : " + type);
