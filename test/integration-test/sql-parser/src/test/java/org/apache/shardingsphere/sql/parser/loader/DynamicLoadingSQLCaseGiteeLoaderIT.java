@@ -28,7 +28,7 @@ import java.util.Map;
 public class DynamicLoadingSQLCaseGiteeLoaderIT extends DynamicLoadingSQLParserParameterizedTest implements DynamicLoadingSQLCaseLoaderStrategyIT {
     
     public DynamicLoadingSQLCaseGiteeLoaderIT() {
-        super(null, null, null, new CSVResultGenerator(null));
+        super("", "", "", new CSVResultGenerator(""));
     }
     
     /**

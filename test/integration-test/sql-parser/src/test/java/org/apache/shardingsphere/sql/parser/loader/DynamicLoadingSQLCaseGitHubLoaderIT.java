@@ -28,7 +28,7 @@ import java.util.Map;
 public class DynamicLoadingSQLCaseGitHubLoaderIT extends DynamicLoadingSQLParserParameterizedTest implements DynamicLoadingSQLCaseLoaderStrategyIT {
     
     public DynamicLoadingSQLCaseGitHubLoaderIT() {
-        super(null, null, null, new CSVResultGenerator(null));
+        super("", "", "", new CSVResultGenerator(""));
     }
     
     /**
