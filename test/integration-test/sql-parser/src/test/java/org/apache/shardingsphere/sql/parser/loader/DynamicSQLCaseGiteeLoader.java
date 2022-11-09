@@ -23,10 +23,11 @@ import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
-public class DynamicLoadingSQLCaseLocalLoaderIT extends DynamicLoadingSQLParserParameterizedTest implements DynamicLoadingSQLCaseLoaderStrategyIT {
+public class DynamicSQLCaseGiteeLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     
-    public DynamicLoadingSQLCaseLocalLoaderIT() {
+    public DynamicSQLCaseGiteeLoader() {
         super("", "", "", new CSVResultGenerator(""));
     }
     
@@ -35,11 +36,15 @@ public class DynamicLoadingSQLCaseLocalLoaderIT extends DynamicLoadingSQLParserP
      *
      * @param sqlCaseURI the URI of sql case
      *
-     * @return Test cases from localhost.
+     * @return Test cases from Gitee.
      **/
     public Collection<Object[]> getTestParameters(final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
-        result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
+        for (Map<String, String> each : getResponse("https://gitee.com/api/v5/repos/", sqlCaseURI)) {
+            String sqlCaseFileName = each.get("name").split("\\.")[0];
+            String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
+            result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+        }
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});
         }

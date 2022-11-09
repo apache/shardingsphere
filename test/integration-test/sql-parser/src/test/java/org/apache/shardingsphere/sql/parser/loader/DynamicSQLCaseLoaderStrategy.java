@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.loader;
 import java.net.URI;
 import java.util.Collection;
 
-public interface DynamicLoadingSQLCaseLoaderStrategyIT {
+public interface DynamicSQLCaseLoaderStrategy {
     
     /**
      * Get test parameters.
