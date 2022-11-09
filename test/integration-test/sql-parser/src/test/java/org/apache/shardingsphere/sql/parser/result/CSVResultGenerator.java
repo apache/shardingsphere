@@ -42,7 +42,7 @@ public final class CSVResultGenerator {
         }
     }
     
-    private synchronized void createHeader(File csvFile) {
+    private synchronized void createHeader(final File csvFile) {
         if (!csvFile.exists()) {
             try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
                 printer.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
