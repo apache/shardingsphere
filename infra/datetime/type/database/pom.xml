@@ -32,12 +32,6 @@
             <artifactId>shardingsphere-infra-datetime-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TODO seems it's not necessary -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
