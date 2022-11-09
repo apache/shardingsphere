@@ -15,35 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.engine;
+package org.apache.shardingsphere.sql.parser.base;
 
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.exception.SQLASTVisitorException;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.junit.Ignore;
+import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
 import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String sqlCaseId;
@@ -52,60 +51,74 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     private final String databaseType;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseURL) {
+    // TODO this will refactor as an abstract
+    private final CSVResultGenerator resultGenerator;
+    
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Map<String, String> each : getResponse(sqlCaseURL)) {
-            result.addAll(getSQLCases(each));
+        if (sqlCaseAPI.isEmpty()) {
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
+        } else {
+            for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
+                String sqlCaseFileName = each.get("name").split("\\.")[0];
+                String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+            }
+        }
+        if (result.isEmpty()) {
+            result.add(new Object[]{null, null});
         }
         return result;
     }
     
-    private static Collection<Map<String, String>> getResponse(final String sqlCaseURL) {
+    protected static Collection<Map<String, String>> getResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Map<String, String>> result = new LinkedList<>();
-        String[] patches = sqlCaseURL.split("/", 8);
-        String casesOwner = patches[3];
-        String casesRepo = patches[4];
-        String casesDirectory = patches[7];
-        String casesGitHubApiURL = "https://api.github.com/repos/" + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory;
-        String casesGitHubApiContent = getContent(casesGitHubApiURL);
-        if (casesGitHubApiContent.isEmpty()) {
-            result.add(ImmutableMap.of("name", "null", "download_url", "null"));
+        URI casesAPI = getAPI(sqlCaseAPI, sqlCaseURI);
+        String caseContent = getContent(casesAPI);
+        if (caseContent.isEmpty()) {
             return result;
         }
-        List<String> casesName = JsonPath.parse(casesGitHubApiContent).read("$..name");
-        List<String> casesDownloadURL = JsonPath.parse(casesGitHubApiContent).read("$..download_url");
-        List<String> casesHtmlURL = JsonPath.parse(casesGitHubApiContent).read("$..html_url");
-        IntStream.range(0, JsonPath.parse(casesGitHubApiContent).read("$.length()"))
+        List<String> casesName = JsonPath.parse(caseContent).read("$..name");
+        List<String> casesDownloadURL = JsonPath.parse(caseContent).read("$..download_url");
+        List<String> casesHtmlURL = JsonPath.parse(caseContent).read("$..html_url");
+        IntStream.range(0, JsonPath.parse(caseContent).read("$.length()"))
                 .forEach(each -> {
                     String eachName = casesName.get(each);
                     if (eachName.endsWith(".sql") || eachName.endsWith(".test")) {
                         result.add(ImmutableMap.of("name", eachName, "download_url", casesDownloadURL.get(each)));
                     } else if (!eachName.contains(".")) {
-                        result.addAll(getResponse(casesHtmlURL.get(each)));
+                        result.addAll(getResponse(sqlCaseAPI, URI.create(casesHtmlURL.get(each))));
                     }
                 });
         return result;
     }
     
-    private static String getContent(final String url) {
+    private static URI getAPI(final String sqlCaseAPI, final URI sqlCaseURI) {
+        String[] patches = sqlCaseURI.toString().split("/", 8);
+        String casesOwner = patches[3];
+        String casesRepo = patches[4];
+        String casesDirectory = patches[7];
+        return URI.create(sqlCaseAPI + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
+    }
+    
+    protected static String getContent(final URI casesURI) {
         String result = "";
         try {
-            InputStreamReader in = new InputStreamReader(new URL(url).openStream());
+            InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
             result = new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
-        } catch (IOException ingore) {
+        } catch (IOException ignore) {
             log.warn("Error: GitHub API rate limit exceeded");
         }
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final Map<String, String> elements) {
+    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent) {
         Collection<Object[]> result = new LinkedList<>();
-        String sqlCaseFileName = elements.get("name");
-        String[] lines = getContent(elements.get("download_url")).split("\n");
+        String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
         for (String each : lines) {
             if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
-                String sqlCaseId = sqlCaseFileName.split("\\.")[0] + sqlCaseEnum;
+                String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
                 result.add(new Object[]{sqlCaseId, each});
                 sqlCaseEnum++;
             }
@@ -113,14 +126,16 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    @Ignore
     @Test
     public final void assertParseSQL() {
+        String result = "success";
         try {
             ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
             new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
-        } catch (final SQLParsingException | ClassCastException | NullPointerException | SQLASTVisitorException | NumberFormatException | StringIndexOutOfBoundsException ignore) {
+        } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
+            result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
+        resultGenerator.processResult(sqlCaseId, databaseType, result, sql);
     }
 }

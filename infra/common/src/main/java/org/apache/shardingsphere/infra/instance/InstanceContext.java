@@ -76,6 +76,19 @@ public final class InstanceContext {
     }
     
     /**
+     * Update instance worker id.
+     *
+     * @param instanceId instance id
+     * @param workerId worker id
+     */
+    public void updateWorkerId(final String instanceId, final Long workerId) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
+            instance.setWorkerId(workerId);
+        }
+        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setWorkerId(workerId));
+    }
+    
+    /**
      * Update instance label.
      * 
      * @param instanceId instance id

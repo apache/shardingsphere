@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql;
+package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
-//@RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingMySQLParserParameterizedTest {
+/**
+ * Default column value reader.
+ */
+public final class DefaultColumnValueReader extends AbstractColumnValueReader {
     
-    // public DynamicLoadingMySQLParserParameterizedTest(final String sqlCaseId, final String sqlCaseValue) {
-    // super(sqlCaseId, sqlCaseValue, "MySQL");
-    // }
+    @Override
+    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
+    }
     
-    /**
-     * Get test parameters.
-     *
-     * @return Test cases from github.
-     */
-    // @Parameters(name = "{0} (MySQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
-        return Collections.emptyList();
-        // return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

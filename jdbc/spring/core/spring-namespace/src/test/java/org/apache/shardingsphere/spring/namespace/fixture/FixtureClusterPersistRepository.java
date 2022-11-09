@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.spring.namespace.fixture;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -34,7 +33,7 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     private final Map<String, String> registryData = new LinkedHashMap<>();
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         registryData.put("/metadata", DefaultDatabase.LOGIC_NAME);
     }
     

@@ -51,6 +51,7 @@
             <xsd:attribute name="plain-column" type="xsd:string" />
             <xsd:attribute name="encrypt-algorithm-ref" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-encrypt-algorithm-ref" type="xsd:string" />
+            <xsd:attribute name="fuzzy-query-encrypt-algorithm-ref" type="xsd:string" />
             <xsd:attribute name="query-with-cipher-column" type="xsd:boolean" />
         </xsd:complexType>
     </xsd:element>

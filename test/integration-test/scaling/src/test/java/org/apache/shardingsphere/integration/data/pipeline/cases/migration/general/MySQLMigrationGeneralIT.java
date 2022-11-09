@@ -25,7 +25,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncre
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -86,20 +86,19 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         createTargetOrderTableRule();
         createTargetOrderTableEncryptRule();
         createTargetOrderItemTableRule();
-        AutoIncrementKeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(getSourceDataSource());
-        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(parameterized.getDatabaseType(), 3000);
         log.info("init data begin: {}", LocalDateTime.now());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrder(getSourceTableOrderName()), dataPair.getLeft());
         jdbcTemplate.batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         log.info("init data end: {}", LocalDateTime.now());
         startMigration(getSourceTableOrderName(), getTargetTableOrderName());
         startMigration("t_order_item", "t_order_item");
-        // TODO wait preparation done (binlog position got), else insert/update/delete might be consumed in inventory task
-        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), keyGenerateAlgorithm, 30));
         String orderJobId = getJobIdByTableName(getSourceTableOrderName());
-        String orderItemJobId = getJobIdByTableName("t_order_item");
+        waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", orderJobId));
+        startIncrementTask(new MySQLIncrementTask(jdbcTemplate, getSourceTableOrderName(), new SnowflakeKeyGenerateAlgorithm(), 30));
         assertMigrationSuccessById(orderJobId, "DATA_MATCH");
+        String orderItemJobId = getJobIdByTableName("t_order_item");
         assertMigrationSuccessById(orderItemJobId, "DATA_MATCH");
         assertMigrationSuccessById(orderItemJobId, "CRC32_MATCH");
         for (String each : listJobId()) {
