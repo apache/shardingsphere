@@ -33,6 +33,8 @@ public final class IntegrationTestEnvironment {
     
     private final boolean sqlParserITEnabled;
     
+    private final LoaderType sqlParserITLoader;
+    
     private final String resultPath;
     
     private IntegrationTestEnvironment() {
@@ -40,6 +42,7 @@ public final class IntegrationTestEnvironment {
         String sqlParserITEnabledStr = null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled");
         sqlParserITEnabled = null == sqlParserITEnabledStr ? false : Boolean.parseBoolean(sqlParserITEnabledStr);
         resultPath = props.get("sql.parser.it.report.path").toString();
+        sqlParserITLoader = LoaderType.valueOf(props.getProperty("sql.parser.it.loader", LoaderType.GITHUB.name()).toUpperCase());
     }
     
     /**
