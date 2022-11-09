@@ -441,6 +441,7 @@ expr
     | PRIOR expr
     | LP_ expr RP_
     | booleanPrimary
+    | aggregationFunction
     ;
 
 andOperator
@@ -509,11 +510,11 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? exprs) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK
     ;
 
 listaggOverflowClause

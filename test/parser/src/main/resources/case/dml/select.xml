@@ -4445,4 +4445,13 @@
             <simple-table name="t_product_category" start-index="108" stop-index="127" alias="c" />
         </from>
     </select>
+
+    <select sql-case-id="select_percent_rank">
+        <projections start-index="7" stop-index="92">
+            <expression-projection text="PERCENT_RANK(15000, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Percent-Rank" start-index="7" stop-index="92" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="99" stop-index="107" />
+        </from>
+    </select>
 </sql-parser-test-cases>
