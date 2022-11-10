@@ -53,24 +53,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     
     // TODO this will refactor as an abstract
     private final SQLParserResultProcessor resultGenerator;
-    
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
-        Collection<Object[]> result = new LinkedList<>();
-        if (sqlCaseAPI.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
-        } else {
-            for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
-                String sqlCaseFileName = each.get("name").split("\\.")[0];
-                String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
-            }
-        }
-        if (result.isEmpty()) {
-            result.add(new Object[]{null, null});
-        }
-        return result;
-    }
-    
+
     protected static Collection<Map<String, String>> getResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Map<String, String>> result = new LinkedList<>();
         URI casesAPI = getAPI(sqlCaseAPI, sqlCaseURI);
