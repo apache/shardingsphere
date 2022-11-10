@@ -84,9 +84,9 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         List<String> casesType = JsonPath.parse(caseContent).read("$..type");
         IntStream.range(0, JsonPath.parse(caseContent).read("$.length()"))
                 .forEach(each -> {
-                    if (casesType.get(each).equals("file")) {
+                    if ("file".equals(casesType.get(each))) {
                         result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each)));
-                    } else if (casesType.get(each).equals("dir")) {
+                    } else if ("dir".equals(casesType.get(each))) {
                         result.addAll(getResponse(sqlCaseAPI, URI.create(casesHtmlURL.get(each))));
                     }
                 });
