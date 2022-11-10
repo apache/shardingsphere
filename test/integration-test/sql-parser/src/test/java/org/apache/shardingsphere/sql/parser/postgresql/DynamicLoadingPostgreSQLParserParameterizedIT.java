@@ -44,7 +44,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
     public static Collection<Object[]> getTestParameters() {
         return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
                 ? DynamicLoadingSQLParserParameterizedTest.getTestParameters(
-                        "https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"))
+                        "https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"))
                 : Collections.emptyList();
     }
 }
