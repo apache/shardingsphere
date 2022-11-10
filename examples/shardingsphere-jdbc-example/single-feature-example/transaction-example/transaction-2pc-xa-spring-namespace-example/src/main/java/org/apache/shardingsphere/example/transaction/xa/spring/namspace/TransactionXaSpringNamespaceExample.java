@@ -27,7 +27,7 @@ public final class TransactionXaSpringNamespaceExample {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(TransactionXaSpringNamespaceExample.class);
         XAOrderService xaOrderService = applicationContext.getBean("XAOrderService", XAOrderService.class);
         xaOrderService.init();
-        xaOrderService.init();
+        xaOrderService.insert(10);
         xaOrderService.selectAll();
         xaOrderService.cleanup();
     }
