@@ -44,7 +44,7 @@ public class SQLParserResultProcessorManager {
     public static SQLParserResultProcessor getProcessor(final String databaseType) {
         String type = IntegrationTestEnvironment.getInstance().getResultProcessorType();
         try {
-            Class<?> interfaceClazz = Class.forName(SQLParserResultProcessor.class.getPackage().getName());
+            Class<?> interfaceClazz = Class.forName(SQLParserResultProcessor.class.getPackage().getName() + "." + SQLParserResultProcessor.class.getSimpleName());
             String packageName = interfaceClazz.getPackage().getName();
             URL packagePath = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
             File[] classFiles = new File(Objects.requireNonNull(packagePath).getFile()).listFiles((dir, name) -> name.endsWith(".class"));
