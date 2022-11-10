@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
+public class GiteeCaseLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     
-    public DynamicSQLCaseGitHubLoader() {
+    public GiteeCaseLoader() {
         super("", "", "", new SQLParserCSVResultProcessor(""));
     }
     
@@ -36,11 +36,11 @@ public class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameter
      *
      * @param sqlCaseURI the URI of sql case
      *
-     * @return Test cases from GitHub.
+     * @return Test cases from Gitee.
      **/
     public Collection<Object[]> getTestParameters(final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Map<String, String> each : getResponse("https://api.github.com/repos/", sqlCaseURI)) {
+        for (Map<String, String> each : getResponse("https://gitee.com/api/v5/repos/", sqlCaseURI)) {
             String sqlCaseFileName = each.get("name").split("\\.")[0];
             String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
             result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
