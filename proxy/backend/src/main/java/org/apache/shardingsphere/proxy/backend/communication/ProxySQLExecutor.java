@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -69,6 +70,7 @@ import java.util.Optional;
 /**
  * Proxy SQL Executor.
  */
+@RequiredArgsConstructor
 public final class ProxySQLExecutor {
     
     private final String type;
@@ -76,12 +78,6 @@ public final class ProxySQLExecutor {
     private final JDBCBackendConnection backendConnection;
     
     private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
-    
-    public ProxySQLExecutor(final String type, final JDBCBackendConnection backendConnection, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
-        this.type = type;
-        this.backendConnection = backendConnection;
-        this.databaseCommunicationEngine = databaseCommunicationEngine;
-    }
     
     /**
      * Check execute prerequisites.
@@ -150,7 +146,7 @@ public final class ProxySQLExecutor {
     
     private List<ExecuteResult> doExecuteWithinTransaction(final ExecutionContext executionContext) throws SQLException {
         List<ExecuteResult> result;
-        JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);;
+        JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         try {
             transactionManager.begin();
             result = doExecute(executionContext);
