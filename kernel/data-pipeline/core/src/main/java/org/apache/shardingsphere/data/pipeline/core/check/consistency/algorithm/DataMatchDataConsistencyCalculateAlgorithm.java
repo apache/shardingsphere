@@ -164,18 +164,18 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     @RequiredArgsConstructor
     @Getter
     static final class CalculatedResult implements DataConsistencyCalculatedResult {
-    
+        
         @NonNull
         private final Object maxUniqueKeyValue;
-    
+        
         private final int recordsCount;
-    
+        
         private final Collection<Collection<Object>> records;
-    
+        
         public Optional<Object> getMaxUniqueKeyValue() {
             return Optional.of(maxUniqueKeyValue);
         }
-    
+        
         @SneakyThrows(SQLException.class)
         @Override
         public boolean equals(final Object o) {
@@ -231,7 +231,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             }
             return true;
         }
-    
+        
         @Override
         public int hashCode() {
             return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue().orElse(null)).append(getRecordsCount()).append(getRecords()).toHashCode();

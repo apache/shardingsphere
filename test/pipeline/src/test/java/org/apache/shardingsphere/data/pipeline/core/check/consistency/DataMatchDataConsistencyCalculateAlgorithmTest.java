@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -80,37 +82,43 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    public void assertCalculateFromBegin() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCalculateFromBegin() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         ReflectionUtil.setFieldValue(calculateAlgorithm, "chunkSize", 5);
         DataConsistencyCalculateParameter sourceParameter = generateParameter(source, "t_order_copy", null);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParameter);
+        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = (Optional<DataConsistencyCalculatedResult>) ReflectionUtil.invokeMethod(calculateAlgorithm, "calculateChunk",
+                new Class[]{DataConsistencyCalculateParameter.class}, new Object[]{sourceParameter});
         DataConsistencyCalculateParameter targetParameter = generateParameter(target, "t_order", null);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParameter);
+        Optional<DataConsistencyCalculatedResult> targetCalculateResult = (Optional<DataConsistencyCalculatedResult>) ReflectionUtil.invokeMethod(calculateAlgorithm, "calculateChunk",
+                new Class[]{DataConsistencyCalculateParameter.class}, new Object[]{targetParameter});
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());
         assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
         assertTrue(targetCalculateResult.get().getMaxUniqueKeyValue().isPresent());
         assertThat(sourceCalculateResult.get().getMaxUniqueKeyValue().get(), is(targetCalculateResult.get().getMaxUniqueKeyValue().get()));
-        assertTrue(((long) targetCalculateResult.get().getMaxUniqueKeyValue().get()) <= 5);
+        assertThat(targetCalculateResult.get().getMaxUniqueKeyValue().get(), is(5L));
         assertEquals(sourceCalculateResult.get(), targetCalculateResult.get());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    public void assertCalculateFromMiddle() throws NoSuchFieldException, IllegalAccessException {
+    public void assertCalculateFromMiddle() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         ReflectionUtil.setFieldValue(calculateAlgorithm, "chunkSize", 5);
         DataConsistencyCalculateParameter sourceParameter = generateParameter(source, "t_order_copy", 5);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParameter);
+        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = (Optional<DataConsistencyCalculatedResult>) ReflectionUtil.invokeMethod(calculateAlgorithm, "calculateChunk",
+                new Class[]{DataConsistencyCalculateParameter.class}, new Object[]{sourceParameter});
         DataConsistencyCalculateParameter targetParameter = generateParameter(target, "t_order", 5);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParameter);
+        Optional<DataConsistencyCalculatedResult> targetCalculateResult = (Optional<DataConsistencyCalculatedResult>) ReflectionUtil.invokeMethod(calculateAlgorithm, "calculateChunk",
+                new Class[]{DataConsistencyCalculateParameter.class}, new Object[]{targetParameter});
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());
         assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
         assertTrue(targetCalculateResult.get().getMaxUniqueKeyValue().isPresent());
         assertThat(sourceCalculateResult.get().getMaxUniqueKeyValue().get(), is(targetCalculateResult.get().getMaxUniqueKeyValue().get()));
-        assertTrue(((long) targetCalculateResult.get().getMaxUniqueKeyValue().get()) > 5);
+        assertThat(targetCalculateResult.get().getMaxUniqueKeyValue().get(), is(10L));
         assertEquals(sourceCalculateResult.get(), targetCalculateResult.get());
     }
     

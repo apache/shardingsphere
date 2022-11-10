@@ -16,4 +16,3 @@
 #
 
 org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.fixture.FixturePipelineSQLBuilder
-org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.fixture.MySQLFixturePipelineSQLBuilder
