@@ -123,7 +123,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         }
         Collection<String> duplicateRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(duplicateRuleNames.isEmpty(), () -> new InvalidRuleConfigurationException("Readwrite splitting", duplicateRuleNames,
-                Collections.singleton(String.format("%s already exists in resource", duplicateRuleNames))));
+                Collections.singleton(String.format("%s already exists in storage unit", duplicateRuleNames))));
     }
     
     private static void checkDuplicateRuleNamesWithRuleConfiguration(final String databaseName, final Collection<ReadwriteSplittingRuleSegment> segments,
