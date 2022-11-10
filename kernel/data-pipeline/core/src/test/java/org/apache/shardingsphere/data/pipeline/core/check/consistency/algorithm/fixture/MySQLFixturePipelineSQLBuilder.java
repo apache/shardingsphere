@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.check.consistency;
+package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.fixture;
+
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
 import java.util.Optional;
 
 /**
- * Data consistency calculated result.
+ * Only for unit test.
  */
-public interface DataConsistencyCalculatedResult {
+public final class MySQLFixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
-    /**
-     * Get records count.
-     *
-     * @return records count
-     */
-    int getRecordsCount();
+    @Override
+    public Optional<String> buildCRC32SQL(final String schemaName, final String tableName, final String column) {
+        return Optional.of(String.format("SELECT CRC32(%s) FROM %s", column, tableName));
+    }
     
-    /**
-     * Get max unique value.
-     *
-     * @return max unique value
-     */
-    Optional<Object> getMaxUniqueKeyValue();
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
 }

@@ -75,7 +75,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
-    private final ConsistencyCheckJobItemContext consistencyCheckJobItemContext;
+    private final ConsistencyCheckJobItemContext jobItemContext;
     
     /**
      * Data consistency check.
@@ -102,7 +102,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, sourceTableName);
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(schemaName, sourceTableName));
         Collection<String> columnNames = tableMetaData.getColumnNames();
-        Map<String, Object> tableCheckPositions = consistencyCheckJobItemContext.getTableCheckPositions();
+        Map<String, Object> tableCheckPositions = jobItemContext.getTableCheckPositions();
         DataConsistencyCalculateParameter sourceParameter = buildParameter(
                 sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey,
                 tableCheckPositions.get(sourceTableName));
@@ -130,13 +130,13 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 log.info("content matched false, jobId={}, sourceTable={}, targetTable={}, uniqueKey={}", jobId, sourceTable, targetTable, uniqueKey);
                 break;
             }
-            if (null != sourceCalculatedResult.getMaxUniqueKeyValue()) {
-                consistencyCheckJobItemContext.getTableCheckPositions().put(sourceTableName, sourceCalculatedResult.getMaxUniqueKeyValue());
+            if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
+                jobItemContext.getTableCheckPositions().put(sourceTableName, sourceCalculatedResult.getMaxUniqueKeyValue().get());
             }
-            if (null != targetCalculatedResult.getMaxUniqueKeyValue()) {
-                consistencyCheckJobItemContext.getTableCheckPositions().put(targetTableName, targetCalculatedResult.getMaxUniqueKeyValue());
+            if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
+                jobItemContext.getTableCheckPositions().put(targetTableName, targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
-            consistencyCheckJobItemContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
+            jobItemContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }
         return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(contentMatched));
     }

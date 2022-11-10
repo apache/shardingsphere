@@ -74,8 +74,5 @@ public final class DataConsistencyCalculateParameter {
      */
     private volatile Object previousCalculatedResult;
     
-    /**
-     * The position value of data check.
-     */
-    private final Object dataCheckPositionValue;
+    private final Object tableCheckPosition;
 }

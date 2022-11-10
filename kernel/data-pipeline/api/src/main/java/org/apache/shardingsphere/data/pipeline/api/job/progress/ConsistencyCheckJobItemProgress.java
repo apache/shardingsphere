@@ -28,7 +28,6 @@ import java.util.Map;
 /**
  * Data consistency check job item progress.
  */
-// TODO use final for fields
 @Getter
 @RequiredArgsConstructor
 @ToString

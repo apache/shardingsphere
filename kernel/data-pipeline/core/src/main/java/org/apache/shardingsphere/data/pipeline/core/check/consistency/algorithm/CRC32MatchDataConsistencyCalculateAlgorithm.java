@@ -144,8 +144,8 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         
         // TODO not support now
         @Override
-        public Object getMaxUniqueKeyValue() {
-            return null;
+        public Optional<Object> getMaxUniqueKeyValue() {
+            return Optional.empty();
         }
     }
 }

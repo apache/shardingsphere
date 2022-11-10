@@ -117,15 +117,13 @@ public final class PostgreSQLMigrationGeneralIT extends AbstractMigrationITCase 
         // must refresh firstly, otherwise proxy can't get schema and table info
         proxyExecuteWithLog("REFRESH TABLE METADATA;", 2);
         assertProxyOrderRecordExist(recordId, String.join(".", SCHEMA_NAME, getTargetTableOrderName()));
-        proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, "DATA_MATCH"), 2);
-        assertMigrationCheckSuccess(jobId);
+        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
     
     private void checkOrderItemMigration() throws SQLException, InterruptedException {
         startMigrationWithSchema("t_order_item", "t_order_item");
         String jobId = getJobIdByTableName("t_order_item");
         waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, "DATA_MATCH"), 2);
-        assertMigrationCheckSuccess(jobId);
+        assertCheckMigrationSuccess(jobId, "DATA_MATCH");
     }
 }

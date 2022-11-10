@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @Getter
@@ -30,7 +32,7 @@ public final class FixtureDataConsistencyCalculatedResult implements DataConsist
     private final int recordsCount;
     
     @Override
-    public Object getMaxUniqueKeyValue() {
-        return null;
+    public Optional<Object> getMaxUniqueKeyValue() {
+        return Optional.empty();
     }
 }
