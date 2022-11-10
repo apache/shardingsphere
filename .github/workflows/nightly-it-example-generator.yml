@@ -26,7 +26,7 @@ env:
 
 jobs:
   example-generator:
-    # if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
