@@ -3088,6 +3088,10 @@ PRIVATE_SGA
     : P R I V A T E UL_ S G A
     ;
 
+PERCENT_RANK
+    : P E R C E N T UL_ R A N K
+    ;
+
 LISTAGG
     : L I S T A G G
     ;
