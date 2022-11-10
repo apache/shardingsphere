@@ -20,6 +20,7 @@
         <column name="type" />
         <column name="name" />
     </metadata>
+    <row values="table| t_order_item" />
     <row values="table| t_user_item" />
     <row values="table| t_user" />
 </dataset>
