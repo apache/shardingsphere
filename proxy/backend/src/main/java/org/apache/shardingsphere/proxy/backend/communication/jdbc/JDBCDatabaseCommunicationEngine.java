@@ -36,8 +36,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.communication.IProxySQLExecutor;
-import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallbackFactory;
@@ -72,6 +71,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunicationEngine {
     
+    private final ProxySQLExecutor proxySQLExecutor;
+    
     private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
     
     private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
@@ -82,6 +83,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     
     public JDBCDatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final QueryContext queryContext, final JDBCBackendConnection backendConnection) {
         super(driverType, database, queryContext, backendConnection);
+        proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
         this.backendConnection = backendConnection;
     }
     
@@ -125,7 +127,6 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
-        IProxySQLExecutor proxySQLExecutor = ProxySQLExecutorFactory.newInstance(executionContext, this);
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         List result = proxySQLExecutor.execute(executionContext);
         refreshMetaData(executionContext);
