@@ -50,8 +50,7 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String sql;
     
     private final String databaseType;
-    
-    // TODO this will refactor as an abstract
+
     private final SQLParserResultProcessor resultGenerator;
 
     protected static Collection<Map<String, String>> getResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
