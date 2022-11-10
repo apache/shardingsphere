@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
@@ -60,31 +61,38 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     @Getter
     private final RuleConfiguration configuration;
     
-    private final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
-    
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
     public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
-        ruleConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ReadQueryLoadBalanceAlgorithmFactory.newInstance(value)));
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            dataSourceRules.putAll(createReadwriteSplittingDataSourceRules(each, builtRules));
+            dataSourceRules.putAll(createReadwriteSplittingDataSourceRules(each, ruleConfig.getLoadBalancers(), builtRules));
         }
     }
     
     public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
-        loadBalancers.putAll(ruleConfig.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            dataSourceRules.putAll(createReadwriteSplittingDataSourceRules(each, builtRules));
+            dataSourceRules.putAll(createReadwriteSplittingDataSourceRules0(each, ruleConfig.getLoadBalanceAlgorithms(), builtRules));
         }
     }
     
     private Map<String, ReadwriteSplittingDataSourceRule> createReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                                                                                  final Map<String, AlgorithmConfiguration> algorithmConfigs,
                                                                                                   final Collection<ShardingSphereRule> builtRules) {
-        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(config.getLoadBalancerName(), ReadQueryLoadBalanceAlgorithmFactory.newInstance());
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = null == algorithmConfigs.get(config.getLoadBalancerName()) ? ReadQueryLoadBalanceAlgorithmFactory.newInstance()
+                : ReadQueryLoadBalanceAlgorithmFactory.newInstance(algorithmConfigs.get(config.getLoadBalancerName()));
+        return null == config.getStaticStrategy()
+                ? createDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm)
+                : createStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);
+    }
+    
+    private Map<String, ReadwriteSplittingDataSourceRule> createReadwriteSplittingDataSourceRules0(final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                                                                                   final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalanceAlgorithms,
+                                                                                                   final Collection<ShardingSphereRule> builtRules) {
+        ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalanceAlgorithms.getOrDefault(config.getLoadBalancerName(), ReadQueryLoadBalanceAlgorithmFactory.newInstance());
         return null == config.getStaticStrategy()
                 ? createDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm)
                 : createStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);
