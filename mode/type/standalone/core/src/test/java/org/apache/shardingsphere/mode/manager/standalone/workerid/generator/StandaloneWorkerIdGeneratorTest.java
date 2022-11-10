@@ -41,7 +41,7 @@ public final class StandaloneWorkerIdGeneratorTest {
     public void assertGenerateWithProperties() {
         Properties props = new Properties();
         props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1");
-        assertThat(new StandaloneWorkerIdGenerator().generate(props), is(1L));
+        assertThat(new StandaloneWorkerIdGenerator().generate(props), is(1));
     }
     
     @Test(expected = IllegalStateException.class)

@@ -27,7 +27,7 @@ public class SQLParserLogResultProcessor implements SQLParserResultProcessor {
     private final String type = "LOG";
     
     public SQLParserLogResultProcessor(final String databaseType) {
-    
+        
     }
     
     @Override
