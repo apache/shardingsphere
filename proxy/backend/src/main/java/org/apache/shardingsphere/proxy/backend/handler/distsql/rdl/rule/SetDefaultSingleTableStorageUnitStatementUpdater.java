@@ -35,13 +35,13 @@ public final class SetDefaultSingleTableStorageUnitStatementUpdater implements R
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) {
-        checkResourceExist(database, sqlStatement);
+        checkStorageUnitExist(database, sqlStatement);
     }
     
-    private void checkResourceExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
+    private void checkStorageUnitExist(final ShardingSphereDatabase database, final SetDefaultSingleTableStorageUnitStatement sqlStatement) {
         if (StringUtils.isNotBlank(sqlStatement.getDefaultStorageUnit())) {
-            Collection<String> resourceNames = database.getResourceMetaData().getDataSources().keySet();
-            ShardingSpherePreconditions.checkState(resourceNames.contains(sqlStatement.getDefaultStorageUnit()),
+            Collection<String> storageUnitNames = database.getResourceMetaData().getDataSources().keySet();
+            ShardingSpherePreconditions.checkState(storageUnitNames.contains(sqlStatement.getDefaultStorageUnit()),
                     () -> new MissingRequiredResourcesException(database.getName(), Collections.singleton(sqlStatement.getDefaultStorageUnit())));
         }
     }
