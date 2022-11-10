@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
-
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
+package org.apache.shardingsphere.sql.parser.result;
 
 /**
- * Pipeline data source creator.
+ * SQL parser result processor.
  */
-@SingletonSPI
-public interface PipelineDataSourceCreator extends TypedSPI {
+public interface SQLParserResultProcessor {
     
     /**
-     * Create pipeline data source.
+     * Process the result.
      *
-     * @param pipelineDataSourceConfig pipeline data source configuration
-     * @return pipeline data source
-     * @throws SQLException if create data source failed
+     * @param params the content for a row of CSV record
      */
-    DataSource createPipelineDataSource(Object pipelineDataSourceConfig) throws SQLException;
+    void processResult(Object... params);
+    
+    /**
+     * Get the generator type.
+     *
+     * @return type
+     */
+    String getType();
 }

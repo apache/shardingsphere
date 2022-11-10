@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
+import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.sql.parser.result.SQLParserResultProcessorManager;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoadingSQLParserParameterizedTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -30,7 +32,7 @@ import java.util.Collections;
 public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
     public DynamicLoadingMySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL");
+        super(sqlCaseId, sqlCaseValue, "MySQL", SQLParserResultProcessorManager.getProcessor("MySQL"));
     }
     
     /**
@@ -40,9 +42,8 @@ public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadi
      */
     @Parameters(name = "{0} (MySQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        if (IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
-            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t");
-        }
-        return Collections.emptyList();
+        return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
+                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"))
+                : Collections.emptyList();
     }
 }

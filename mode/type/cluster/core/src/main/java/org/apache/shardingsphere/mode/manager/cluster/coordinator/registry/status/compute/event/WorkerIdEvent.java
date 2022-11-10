@@ -15,28 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
-import org.apache.shardingsphere.mode.lock.LockPersistService;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Global lock persist service.
+ * Worker id event.
  */
 @RequiredArgsConstructor
-public final class GlobalLockPersistService implements LockPersistService<GlobalLockDefinition> {
+@Getter
+public final class WorkerIdEvent implements GovernanceEvent {
     
-    private final DistributedLockHolder distributedLockHolder;
+    private final String instanceId;
     
-    @Override
-    public boolean tryLock(final GlobalLockDefinition lockDefinition, final long timeoutMillis) {
-        return distributedLockHolder.getDistributedLock(lockDefinition.getLockKey()).tryLock(timeoutMillis);
-    }
-    
-    @Override
-    public void unlock(final GlobalLockDefinition lockDefinition) {
-        distributedLockHolder.getDistributedLock(lockDefinition.getLockKey()).unlock();
-    }
+    private final Long workerId;
 }

@@ -62,7 +62,7 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
         try {
             ProxyContext.getInstance().getContextManager().dropResources(databaseName, toBeDroppedResourceNames);
         } catch (final SQLException | ShardingSphereServerException ex) {
-            log.error("Drop resource failed", ex);
+            log.error("Unregister storage unit failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }
         return new UpdateResponseHeader(sqlStatement);

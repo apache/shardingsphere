@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql;
 
+import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.parameterized.engine.DynamicLoadingSQLParserParameterizedTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -31,7 +32,7 @@ import java.util.Collections;
 public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
     public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "PostgreSQL");
+        super(sqlCaseId, sqlCaseValue, "PostgreSQL", new SQLParserCSVResultProcessor("PostgreSQL"));
     }
     
     /**
@@ -40,10 +41,10 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
      * @return Test cases from GitHub.
      **/
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() throws IOException {
-        if (IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
-            return DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://github.com/postgres/postgres/tree/master/src/test/regress/sql");
-        }
-        return Collections.emptyList();
+    public static Collection<Object[]> getTestParameters() {
+        return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
+                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters(
+                        "https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"))
+                : Collections.emptyList();
     }
 }

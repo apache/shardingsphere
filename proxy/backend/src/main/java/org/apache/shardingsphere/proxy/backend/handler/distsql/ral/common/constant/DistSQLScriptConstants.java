@@ -121,11 +121,21 @@ public final class DistSQLScriptConstants {
     
     public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
     
-    public static final String READWRITE_SPLITTING = " %s ("
+    public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("
             + System.lineSeparator()
             + "WRITE_STORAGE_UNIT=%s,"
             + System.lineSeparator()
-            + "READ_STORAGE_UNITS(%s)%s)";
+            + "READ_STORAGE_UNITS(%s)%s"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String READWRITE_SPLITTING_FOR_DYNAMIC = " %s ("
+            + System.lineSeparator()
+            + "AUTO_AWARE_RESOURCE=%s,"
+            + System.lineSeparator()
+            + "WRITE_DATA_SOURCE_QUERY_ENABLED=%s%s"
+            + System.lineSeparator()
+            + ")";
     
     public static final String READ_RESOURCE = "%s";
     

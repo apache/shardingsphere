@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableS
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -80,19 +81,20 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
     
     private void route0(final RouteContext routeContext, final SingleTableRule rule) {
         if (sqlStatement instanceof CreateTableStatement) {
-            String dataSourceName = rule.assignNewDataSourceName();
             QualifiedTable table = singleTableNames.iterator().next();
-            if (isTableExists(table, rule)) {
+            Optional<DataNode> dataNodeOptional = rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName());
+            if (!dataNodeOptional.isPresent()) {
+                String dataSourceName = rule.assignNewDataSourceName();
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
+            } else if (CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement)) {
+                String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
+            } else {
                 throw new TableExistsException(table.getTableName());
             }
-            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));
         }
-    }
-    
-    private boolean isTableExists(final QualifiedTable table, final SingleTableRule rule) {
-        return rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName()).isPresent();
     }
     
     private void fillRouteContext(final SingleTableRule singleTableRule, final RouteContext routeContext, final Collection<QualifiedTable> logicTables) {

@@ -157,7 +157,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @RequiredArgsConstructor
     @Getter
-    private static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    static final class CalculatedResult implements DataConsistencyCalculatedResult {
         
         @NonNull
         private final Object maxUniqueKeyValue;
@@ -180,15 +180,16 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;
-            boolean equalsFirst = new EqualsBuilder().append(getRecordsCount(), that.getRecordsCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
-            if (!equalsFirst) {
+            if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
                 log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
-                        getRecordsCount(), that.getRecordsCount(), getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue());
+                        recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
                 return false;
             }
+            EqualsBuilder equalsBuilder = new EqualsBuilder();
             Iterator<Collection<Object>> thisIterator = this.records.iterator();
             Iterator<Collection<Object>> thatIterator = that.records.iterator();
             while (thisIterator.hasNext() && thatIterator.hasNext()) {
+                equalsBuilder.reset();
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
@@ -197,7 +198,9 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
                 Iterator<Object> thatNextIterator = thatNext.iterator();
+                int columnIndex = 0;
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
+                    ++columnIndex;
                     Object thisResult = thisNextIterator.next();
                     Object thatResult = thatNextIterator.next();
                     boolean matched;
@@ -205,14 +208,11 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
-                    } else if (thisResult instanceof Number && thatResult instanceof Number && thisResult.getClass() != thatResult.getClass()) {
-                        // TODO some numeric types, Proxy and use jdbc to get different values, eg, PostgreSQL int2, MySQL unsigned mediumint
-                        matched = checkDifferentNumberTypeMatched((Number) thisResult, (Number) thatResult);
                     } else {
-                        matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
+                        matched = equalsBuilder.append(thisResult, thatResult).isEquals();
                     }
                     if (!matched) {
-                        log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
+                        log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
                                 null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
                                 thisNext, thatNext);
                         return false;
@@ -220,19 +220,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
             }
             return true;
-        }
-        
-        private boolean checkDifferentNumberTypeMatched(final Number thisResult, final Number thatResult) {
-            if (thisResult instanceof Integer) {
-                return thisResult.intValue() == thatResult.intValue();
-            }
-            if (thisResult instanceof Long) {
-                return thisResult.longValue() == thatResult.longValue();
-            }
-            if (thisResult instanceof Short) {
-                return thisResult.longValue() == thatResult.longValue();
-            }
-            return Objects.equals(thisResult, thatResult);
         }
         
         @Override

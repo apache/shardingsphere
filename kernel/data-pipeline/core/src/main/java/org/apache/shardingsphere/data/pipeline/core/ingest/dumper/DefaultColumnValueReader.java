@@ -17,30 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
 
 /**
- * Basic column value reader.
+ * Default column value reader.
  */
-public class BasicColumnValueReader implements ColumnValueReader {
+public final class DefaultColumnValueReader extends AbstractColumnValueReader {
     
     @Override
-    public Object readValue(final ResultSet resultSet, final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
-        int columnType = resultSet.getMetaData().getColumnType(columnIndex);
-        switch (columnType) {
-            case Types.TIME:
-                return resultSet.getTime(columnIndex);
-            case Types.DATE:
-                return resultSet.getDate(columnIndex);
-            case Types.TIMESTAMP:
-                return resultSet.getTimestamp(columnIndex);
-            default:
-                return resultSet.getObject(columnIndex);
-        }
+    protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
+        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
