@@ -17,7 +17,7 @@ shardingStrategy ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  
+  'TYPE' '(' 'NAME' '=' algorithmType ',' 'PROPERTIES'  '(' propertyDefinition ')' ')'  
 
 columnNames ::=
   columnName (',' columnName)+
@@ -29,7 +29,7 @@ algorithmName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### 补充说明
@@ -39,24 +39,9 @@ algorithmType ::=
 
 ### 示例
 
-#### 1.通过已有的分片算法创建默认分库策略
+- 创建默认分表策略
 
 ```sql
--- 创建分片算法
-CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
-);
-
--- 创建默认分库策略
-CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
-);
-```
-
-#### 2.同时创建分片算法和默认分表策略
-
-```sql
--- 创建默认分表策略
 CREATE DEFAULT SHARDING TABLE STRATEGY (
     TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="t_order_${user_id % 2}")))
 );
@@ -69,4 +54,3 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 ### 相关链接
 
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
-- [CREATE SHARDING ALGORITHM](/cn/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)

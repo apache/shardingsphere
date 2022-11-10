@@ -8,6 +8,12 @@ chapter = true
 
 ShardingSphere-JDBC 提供官方的 Spring Boot Starter，使开发者可以非常便捷的整合 ShardingSphere-JDBC 和 Spring Boot。
 
+兼容 SpringBoot 版本支持列表如下 : 
+
+1. SpringBoot 1.x
+2. SpringBoot 2.x 
+3. SpringBoot 3.x (实验中)
+
 ## 使用步骤
 
 ### 引入 Maven 依赖

@@ -28,14 +28,13 @@
 #    props:
 #      namespace: governance_ds
 #      server-lists: localhost:2181
-#  overwrite: false
 
-rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-    provider:
-      type: ALL_PERMITTED
+authority:
+  users:
+    - user: root
+      password: root
+  privilege:
+    type: ALL_PERMITTED
 
 props:
   max-connections-size-per-query: 1

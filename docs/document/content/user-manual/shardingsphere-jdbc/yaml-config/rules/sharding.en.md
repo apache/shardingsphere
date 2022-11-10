@@ -29,6 +29,11 @@ rules:
       keyGenerateStrategy: # Key generator strategy
         column: # Column name of key generator
         keyGeneratorName: # Key generator name
+      auditStrategy: # Sharding audit strategy
+        auditorNames: # Sharding auditor name
+          - <auditor-name>
+          - <auditor-name>
+        allowHintDisable: true # Enable or disable sharding audit hint
   autoTables: # Auto Sharding table configuration
     t_order_auto: # Logic table name
       actualDataSources (?): # Data source names
@@ -59,6 +64,13 @@ rules:
     <key-generate-algorithm-name> (+): # Key generate algorithm name
       type: # Key generate algorithm type
       props: # Key generate algorithm properties
+      # ...
+  
+  # Sharding audit algorithm configuration
+  auditors:
+    <sharding-audit-algorithm-name> (+): # Sharding audit algorithm name
+      type: # Sharding audit algorithm type
+      props: # Sharding audit algorithm properties
       # ...
 ```
 
@@ -98,6 +110,10 @@ rules:
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
+      auditStrategy:
+        auditorNames:
+          - sharding_key_required_auditor
+        allowHintDisable: true
     t_order_item:
       actualDataNodes: ds_${0..1}.t_order_item_${0..1}
       tableStrategy:
@@ -147,6 +163,9 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
 
 props:
   sql-show: false

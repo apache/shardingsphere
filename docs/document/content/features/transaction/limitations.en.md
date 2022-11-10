@@ -27,7 +27,8 @@ Apache ShardingSphere wants to give the user choice of distributed transaction t
 * Support cross-database transactions after sharding;
 * Operation atomicity and high data consistency in 2PC transactions;
 * When service is down and restarted, commit and rollback transactions can be recovered automatically;
-* Support use XA and non-XA connection pool together.
+* Support use XA and non-XA connection pool together;
+* Support transactions across multiple logical databases.
 
 ### Unsupported
 
@@ -39,14 +40,9 @@ Apache ShardingSphere wants to give the user choice of distributed transaction t
 ### Supported
 
 * Support cross-database transactions after sharding;
-* Support RC isolation level;
 * Rollback transaction according to undo log;
 * Support recovery committing transaction automatically after the service is down.
 
 ### Unsupported
 
-* Do not support other isolation level except RC.
-
-### To Be Optimized
-
-* SQL parsed twice by Apache ShardingSphere and SEATA.
+* Do not support isolation level.

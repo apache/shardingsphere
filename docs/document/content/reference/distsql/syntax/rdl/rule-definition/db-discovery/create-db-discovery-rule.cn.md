@@ -11,18 +11,15 @@ weight = 2
 
 ```sql
 CreateDatabaseDiscoveryRule ::=
-  'CREATE' 'DB_DISCOVERY' 'RULE' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) ( ',' ( databaseDiscoveryDefinition | databaseDiscoveryConstruction ) )*
+  'CREATE' 'DB_DISCOVERY' 'RULE' databaseDiscoveryDefinition ( ',' databaseDiscoveryDefinition)*
 
 databaseDiscoveryDefinition ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
-    
-databaseDiscoveryConstruction ::=
-    ruleName '(' 'RESOURCES' '(' resourceName ( ',' resourceName )* ')' ',' 'TYPE' '=' discoveryTypeName ',' 'HEARTBEAT' '=' discoveryHeartbeatName ')'
-    
+    ruleName '(' 'STORAGE_UNITS' '(' storageUnitName ( ',' storageUnitName )* ')' ',' 'TYPE' '(' 'NAME' '=' typeName ( ',' 'PROPERTIES' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* )? ',' 'HEARTBEAT' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' ')' 
+        
 ruleName ::=
   identifier
 
-resourceName ::=
+storageUnitName ::=
   identifier
 
 typeName ::=
@@ -35,35 +32,23 @@ discoveryHeartbeatName ::=
 ### 补充说明
 
 - `discoveryType` 指定数据库发现服务类型，`ShardingSphere` 内置支持 `MySQL.MGR`；
-- 重复的 `ruleName` 将无法被创建；
-- 正在被使用的 `discoveryType` 和 `discoveryHeartbeat` 无法被删除；
-- 带有 `-` 的命名在改动时需要使用 `" "`。
+- 重复的 `ruleName` 将无法被创建。
 
 ### 示例
 
-#### 创建 `discoveryRule` 时同时创建 `discoveryType` 和 `discoveryHeartbeat`
+- 创建数据库发现规则
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-    RESOURCES(ds_0, ds_1, ds_2),
+    STORAGE_UNITS(su_0, su_1, su_2),
     TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
     HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 ```
 
-#### 使用已有的 `discoveryType` 和 `discoveryHeartbeat` 创建 `discoveryRule`
-
-```sql
-CREATE DB_DISCOVERY RULE db_discovery_group_1 (
-    RESOURCES(ds_0, ds_1, ds_2),
-    TYPE=db_discovery_group_1_mgr,
-    HEARTBEAT=db_discovery_group_1_heartbeat
-);
-```
-
 ### 保留字
 
-`CREATE`、`DB_DISCOVERY`、`RULE`、`RESOURCES`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
+`CREATE`、`DB_DISCOVERY`、`RULE`、`STORAGE_UNITS`、`TYPE`、`NAME`、`PROPERTIES`、`HEARTBEAT`
 
 ### 相关链接
 

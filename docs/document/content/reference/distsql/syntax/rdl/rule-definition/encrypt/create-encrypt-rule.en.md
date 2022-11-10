@@ -14,15 +14,12 @@ CreateEncryptRule ::=
   'CREATE' 'ENCRYPT' 'RULE' encryptDefinition ( ',' encryptDefinition )*
 
 encryptDefinition ::=
-  tableName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ',' 'QUERY_WITH_CIPHER_COLUMN' '=' queryWithCipherColumn ')'
+  tableName '(' 'COLUMNS' '(' columnDefinition ( ',' columnDefinition )*  ')' ',' 'QUERY_WITH_CIPHER_COLUMN' '=' ( 'TRUE' | 'FALSE' ) ')'
 
 columnDefinition ::=
     'NAME' '=' columnName ',' ( 'PLAIN' '=' plainColumnName )? 'CIPHER' '=' cipherColumnName ','  'TYPE' '(' 'NAME' '=' encryptAlgorithmType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
-
+    
 tableName ::=
-  identifier
-
-queryWithCipherColumn ::=
   identifier
 
 columnName ::=
@@ -35,13 +32,13 @@ cipherColumnName ::=
   identifier
 
 encryptAlgorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement
 
 - `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column 
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to Encryption Algorithm 
+- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/) 
 - Duplicate `tableName` will not be created 
 - `queryWithCipherColumn` support uppercase or lowercase true or false
 
@@ -69,3 +66,4 @@ COLUMNS(
 ### Related links
 
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/)

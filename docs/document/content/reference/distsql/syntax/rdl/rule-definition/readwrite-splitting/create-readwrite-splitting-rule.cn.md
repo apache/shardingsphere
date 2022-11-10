@@ -5,7 +5,7 @@ weight = 2
 
 ## 描述
 
-`CREATE DEFAULT SINGLE TABLE RULE` 语法用于创建读写分离规则
+`CREATE READWRITE_SPLITTING RULE` 语法用于创建读写分离规则
 
 ### 语法定义
 
@@ -14,7 +14,7 @@ CreateReadwriteSplittingRule ::=
   'CREATE' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition ( ',' readwriteSplittingDefinition )*
 
 readwriteSplittingDefinition ::=
-  ruleName '(' ( staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition ) ( ',' loadBanlancerDefinition )? ')'
+  ruleName '(' ( staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition ) ( ',' loadBalancerDefinition )? ')'
 
 staticReadwriteSplittingDefinition ::=
     'WRITE_RESOURCE' '=' writeResourceName ',' 'READ_RESOURCES' '(' ruleName (',' ruleName)* ')'
@@ -22,8 +22,8 @@ staticReadwriteSplittingDefinition ::=
 dynamicReadwriteSplittingDefinition ::=
     'AUTO_AWARE_RESOURCE' '=' resourceName ( ',' 'WRITE_DATA_SOURCE_QUERY_ENABLED' '=' ('TRUE' | 'FALSE') )?
 
-loadBanlancerDefinition ::=
-    'TYPE' '(' 'NAME' '=' loadBanlancerType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
+loadBalancerDefinition ::=
+    'TYPE' '(' 'NAME' '=' loadBalancerType ( ',' 'PROPERTIES' '(' 'key' '=' 'value' ( ',' 'key' '=' 'value' )* ')' )? ')'
 
 ruleName ::=
   identifier
@@ -33,13 +33,16 @@ writeResourceName ::=
 
 resourceName ::=
   identifier
+    
+loadBalancerType ::=
+  string
 ```
 
 ### 补充说明
 
 - 支持创建静态读写分离规则和动态读写分离规则；
 - 动态读写分离规则依赖于数据库发现规则；
-- `loadBanlancerType` 指定负载均衡算法类型，请参考负载均衡算法；
+- `loadBalancerType` 指定负载均衡算法类型，请参考负载均衡算法；
 - 重复的 `ruleName` 将无法被创建。
 
 ### 示例

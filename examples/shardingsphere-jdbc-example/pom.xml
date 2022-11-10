@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>shardingsphere-example</artifactId>
+        <artifactId>shardingsphere-examples</artifactId>
         <version>${revision}</version>
     </parent>
     <artifactId>shardingsphere-jdbc-example</artifactId>
@@ -30,10 +30,9 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>mixed-feature-example</module>
         <module>single-feature-example</module>
     </modules>
-
+    
     <build>
         <pluginManagement>
             <plugins>
@@ -54,7 +53,7 @@
                                     </goals>
                                 </pluginExecutionFilter>
                                 <action>
-                                    <ignore></ignore>
+                                    <ignore />
                                 </action>
                             </pluginExecution>
                         </pluginExecutions>
@@ -63,5 +62,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>

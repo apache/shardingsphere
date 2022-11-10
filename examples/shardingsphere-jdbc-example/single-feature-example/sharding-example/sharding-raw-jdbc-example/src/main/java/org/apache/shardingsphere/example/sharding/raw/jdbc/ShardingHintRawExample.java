@@ -77,11 +77,11 @@ public final class ShardingHintRawExample {
     private static void setHintValue(final HintManager hintManager) {
         switch (TYPE) {
             case SHARDING_HINT_DATABASES_ONLY:
-                hintManager.addDatabaseShardingValue("t_order", 2L);
-                hintManager.addTableShardingValue("t_order", 1L);
+                hintManager.setDatabaseShardingValue(1L);
                 return;
             case SHARDING_HINT_DATABASES_TABLES:
-                hintManager.setDatabaseShardingValue(1L);
+                hintManager.addDatabaseShardingValue("t_order", 2L);
+                hintManager.addTableShardingValue("t_order", 1L);
                 return;
             default:
                 throw new UnsupportedOperationException("unsupported type");

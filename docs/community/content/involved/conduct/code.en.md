@@ -32,7 +32,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Abbreviation composed less than 3 characters should be uppercase, more than 3 characters must use camel case naming rule.
    - Example for abbreviation composed less than 3 characters: DBDiscoveryExampleScenario, SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
    - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
-   - A variable composed of abbreviation should be lowercase: dbName, mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
+   - A variable composed of abbreviation should use lower camel case: dbName, mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
  - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
@@ -55,6 +55,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
  - conditional operator(<expression1> ? <expression2> : <expression3>) `nested use` is forbidden.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
+ - Use forward semantics in priority for better understanding code logic in conditional expressions. For example: `if (null == param) {} else {}`.
+ - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
 
 ## Contributor Covenant Unit Test of Conduct
 
@@ -72,7 +74,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Test cases should be fully covered expect simply `getter /setter` methods, and declared static codes of SPI, such as: `getType / getOrder`.
  - Every test case need precised assertion.
  - Environment preparation codes should be separate from test codes.
- - Only those that relate to junit `Assert`, hamcrest `CoreMatchers` and `Mockito` can use static import.
+ - Only those that relate to `Mockito`, junit `Assert`, hamcrest `CoreMatchers` and `MatcherAssert` can use static import.
  - For single parameter asserts, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull` should be used.
  - For multiple parameter asserts, `assertThat` should be used.
  - For accurate asserts, try not to use `not`, `containsString` to make assertions.

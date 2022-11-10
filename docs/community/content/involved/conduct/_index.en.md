@@ -1,6 +1,6 @@
 +++
 title = "Contribution Conduct"
-weight = 8
+weight = 3
 chapter = true
 +++
 

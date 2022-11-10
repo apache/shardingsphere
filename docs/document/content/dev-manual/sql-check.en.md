@@ -9,7 +9,7 @@ chapter = true
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.infra.executor.check.SQLChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-executor/src/main/java/org/apache/shardingsphere/infra/executor/check/SQLChecker.java)
+[`org.apache.shardingsphere.infra.executor.check.SQLChecker`](https://github.com/apache/shardingsphere/blob/master/infra/executor/src/main/java/org/apache/shardingsphere/infra/executor/check/SQLChecker.java)
 
 ### Definition
 
@@ -19,5 +19,5 @@ SQL checker class definition
 
 | *Configuration Type* | *Description*          | *Fully-qualified class name* |
 | -------------------- | ---------------------- | ---------------------------- |
-| AuthorityRule.class  | Authority checker      | [`org.apache.shardingsphere.authority.checker.AuthorityChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-authority/shardingsphere-authority-core/src/main/java/org/apache/shardingsphere/authority/checker/AuthorityChecker.java) |
-| ShardingRule.class   | Sharding audit checker | [`org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/checker/audit/ShardingAuditChecker.java) |
+| AuthorityRule.class  | Authority checker      | [`org.apache.shardingsphere.authority.checker.AuthorityChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/authority/core/src/main/java/org/apache/shardingsphere/authority/checker/AuthorityChecker.java) |
+| ShardingRule.class   | Sharding audit checker | [`org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker`](https://github.com/apache/shardingsphere/blob/master/features/sharding/core/src/main/java/org/apache/shardingsphere/sharding/checker/audit/ShardingAuditChecker.java) |

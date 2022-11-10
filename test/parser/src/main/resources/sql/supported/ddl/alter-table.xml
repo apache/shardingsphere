@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_table" value="ALTER TABLE t_log ADD name varchar(10)" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="alter_table_oracle" value="ALTER TABLE t_log ADD (name varchar(10))" db-types="Oracle" />
+    <sql-case id="alter_table_not_null" value="alter table t1 add c2 real  not null" db-types="MySQL" />
+    <sql-case id="alter_table_not_null_first" value="alter table t1 add c2 real  not null first" db-types="MySQL" />
+    <sql-case id="alter_table_not_null_after" value="alter table t1 add c4 real  not null after c2" db-types="MySQL" />
+    <sql-case id="alter_table_change_unsigned_not_null" value="alter table t1 change c1 c2 real unsigned not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_unsigned_not_null" value="alter table t1 modify c1 real unsigned not null" db-types="MySQL" />
+    <sql-case id="alter_table_modify_unsigned_zerofill_not_null" value="alter table t1 modify c1 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_change_unsigned_zerofill_not_null" value="alter table t1 change c1 c2 real unsigned zerofill not null" db-types="MySQL" />
+    <sql-case id="alter_table_add_partition" value="alter table t1 add partition partitions 10" db-types="MySQL" />
+    <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
+    <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
+    <sql-case id="alter_table_with_space" value="    ALTER TABLE
+        t_order" db-types="MySQL,Oracle" />
+    <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
+    <sql-case id="alter_table_add_column" value="ALTER TABLE t_order ADD column4 VARCHAR(10)" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10)" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_integer_type_mysql" value="ALTER TABLE t_order ADD column4 INTEGER, ADD column5 TINYINT, ADD column6 MEDIUMINT" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_integer_type_oracle" value="ALTER TABLE t_order ADD (column4 INTEGER, column5 INT, column6 SMALLINT)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_fixed_point_type" value="ALTER TABLE t_order ADD column4 decimal(10,2), ADD column5 NUMERIC" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_float_point_type_mysql" value="ALTER TABLE t_order ADD column4 FLOAT(10,2), ADD column5 DOUBLE(10,2)" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_float_point_type_oracle" value="ALTER TABLE t_order ADD (column4 FLOAT(10), column5 double precision)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_bit_type" value="ALTER TABLE t_order ADD column4 bit" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_add_columns_date_type_mysql" value="ALTER TABLE t_order ADD column4 YEAR" db-types="MySQL,PostgreSQL" />
+    <sql-case id="alter_table_add_columns_date_type_oracle" value="ALTER TABLE t_order ADD (column4 DATE, column5 DATETIME, column6 TIMESTAMP, column7 TIMESTAMP WITH TIME ZONE)" db-types="Oracle" />
+    <sql-case id="alter_table_add_columns_date_type" value="ALTER TABLE t_order ADD column4 DATE, ADD column5 DATETIME, ADD column6 TIMESTAMP, ADD column7 TIME" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_string_type" value="ALTER TABLE t_order ADD column4 CHAR, ADD column5 VARCHAR(32), ADD column6 TEXT" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_add_columns_string_type_mysql" value="ALTER TABLE t_order ADD column4 BINARY, ADD column5 VARBINARY(10), ADD column6 TINYBLOB, ADD column7 TINYTEXT, ADD column8 BLOB, ADD column9 MEDIUMBLOB, ADD column10 MEDIUMTEXT, ADD column11 LONGBLOB, ADD column12 LONGTEXT, ADD column13 ENUM('1','2'), ADD column14 SET('1')" db-types="MySQL" />
+    <sql-case id="alter_table_add_columns_integer_type" value="ALTER TABLE t_order ADD column4 INT, ADD column5 SMALLINT, ADD column6 BIGINT" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_add_columns_float_point_type_postgresql" value="ALTER TABLE t_order ADD column4 FLOAT, ADD column5 double precision, ADD column6 REAL, ADD column7 SMALLSERIAL, ADD column8 SERIAL, ADD column9 BIGSERIAL, ADD column10 float4" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_columns_string_type_postgresql" value="ALTER TABLE t_order ADD column4 CHARACTER, ADD column5 NAME" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_column_with_first" value="ALTER TABLE t_order ADD column3 VARCHAR(10) FIRST" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_after" value="ALTER TABLE t_order ADD column4 VARCHAR(10) AFTER order_id" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_first_after" value="ALTER TABLE t_order ADD column5 VARCHAR(10) FIRST, ADD column6 VARCHAR(10) FIRST, ADD column7 VARCHAR(10) AFTER column5, ADD column8 VARCHAR(10) AFTER column6" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20)" db-types="MySQL,Oracle" />
+    <sql-case id="alter_table_modify_columns" value="ALTER TABLE t_order MODIFY column4 VARCHAR(20), MODIFY column5 VARCHAR(20), MODIFY column6 VARCHAR(20)" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_first" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) AFTER order_id" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_first_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST, MODIFY user_id INT AFTER status" db-types="MySQL" />
+    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL"/>
+    <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL" />
+    <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />
+    <sql-case id="alter_table_add_composite_primary_key" value="ALTER TABLE t_order ADD status int,ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="MySQL,PostgreSQL,openGauss" />
+<!--    TODO support PostgreSQL,openGauss-->
+    <sql-case id="alter_table_add_unique_key" value="ALTER TABLE t_order ADD CONSTRAINT uk_order_id UNIQUE (order_id)" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="alter_table_add_foreign_key" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss" />
+<!--    TODO support PostgreSQL,openGauss-->
+    <sql-case id="alter_table_add_constraints" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id),ADD UNIQUE (order_id), ADD FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="MySQL" />
+    <sql-case id="alter_table_drop_primary_key" value="ALTER TABLE t_order DROP PRIMARY KEY" db-types="MySQL,Oracle" />
+    <sql-case id="alter_table_drop_foreign_key" value="ALTER TABLE t_order DROP FOREIGN KEY fk_order_id" db-types="MySQL" />
+    <sql-case id="alter_table_drop_constraints" value="ALTER TABLE t_order DROP PRIMARY KEY, DROP FOREIGN KEY fk_order_id" db-types="MySQL" />
+    <sql-case id="alter_table_add_index" value="ALTER TABLE t_order ADD INDEX order_index (order_id)" db-types="MySQL" />
+    <sql-case id="alter_table_add_fulltext_index" value="ALTER TABLE t_order ADD FULLTEXT INDEX idx_column1 (column1)" db-types="MySQL" />
+    <sql-case id="alter_table_add_composite_index" value="ALTER TABLE t_order ADD INDEX order_index (order_id, user_id, status)" db-types="MySQL" />
+    <sql-case id="alter_table_add_indexes" value="ALTER TABLE t_order ADD INDEX idx_column1 (column1), ADD INDEX idx_column2 (column2), ADD INDEX idx_column3 (column3)" db-types="MySQL" />
+    <sql-case id="alter_table_drop_index" value="ALTER TABLE t_order DROP INDEX order_index" db-types="MySQL" />
+    <sql-case id="alter_table_drop_indexes" value="ALTER TABLE t_order DROP INDEX idx_column1, DROP INDEX idx_column2, DROP INDEX idx_column3" db-types="MySQL" />
+    <sql-case id="alter_table_rename_index" value="ALTER TABLE t_order RENAME INDEX idx_column1_bak TO idx_column1" db-types="MySQL" />
+    <sql-case id="alter_table_composite_operate_columns" value="ALTER TABLE t_order ADD column4 VARCHAR(10), ADD column5 VARCHAR(10), ADD column6 VARCHAR(10),MODIFY user_id bigint, drop column status" db-types="MySQL" />
+    <sql-case id="alter_table_with_quota" value="ALTER TABLE &quot;t_order&quot; PARALLEL" db-types="Oracle" />
+<!--    TODO support PostgreSQL,openGauss-->
+    <sql-case id="alter_table_add_check" value="ALTER TABLE t_order ADD CONSTRAINT chk_order_id CHECK (order_id > 0)" db-types="Oracle,SQLServer" />
+    <sql-case id="alter_table_add_columns_oracle" value="ALTER TABLE t_order ADD (column4 VARCHAR2(10), column5 VARCHAR2(10), column6 VARCHAR2(10))" db-types="Oracle" />
+    <sql-case id="alter_table_modify_columns_oracle" value="ALTER TABLE t_order MODIFY column4 VARCHAR2(20) MODIFY column5 VARCHAR2(20) MODIFY column6 VARCHAR2(20)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_columns_oracle" value="ALTER TABLE t_order DROP COLUMN user_id DROP COLUMN column5" db-types="Oracle" />
+    <sql-case id="alter_table_add_primary_foreign_key" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id) UNIQUE (order_id) CHECK (order_id > 0) FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON DELETE CASCADE CHECK (order_id > 0)" db-types="Oracle" />
+    <sql-case id="alter_table_add_composite_primary_key_oracle" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_unique_key" value="ALTER TABLE t_order DROP UNIQUE (order_id)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT order_index" db-types="MySQL,Oracle,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="alter_table_drop_primary_key_unique_key" value="ALTER TABLE t_order DROP PRIMARY KEY DROP UNIQUE (order_id) DROP CONSTRAINT order_index" db-types="Oracle" />
+    <sql-case id="alter_table_rename_constraint" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="Oracle" />
+    <sql-case id="alter_table_with_row_level" value="ALTER TABLE t_order FORCE ROW LEVEL SECURITY" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_double_quota" value="ALTER TABLE &quot;t_order&quot; FORCE ROW LEVEL SECURITY" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_alter_columns" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20), ALTER column5 TYPE VARCHAR(20), ALTER column6 TYPE VARCHAR(20)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_add_foreign_key_with_cascade" value="ALTER TABLE t_order_item ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_drop_constraints_postgresql" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME TO t_order1" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="alter_table_rename_multi_tables" value="ALTER TABLE t_order RENAME TO t_order1, RENAME TO t_order2" db-types="MySQL" />
+    <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to user_id1" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX order_index" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_bracket" value="ALTER TABLE [t_order] REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_table_add_columns_sqlserver" value="ALTER TABLE t_order ADD column4 VARCHAR(10), column5 VARCHAR(10), column6 VARCHAR(10)" db-types="SQLServer" />
+    <sql-case id="alter_table_drop_columns_sqlserver" value="ALTER TABLE t_order DROP COLUMN user_id, column5" db-types="SQLServer" />
+    <sql-case id="alter_table_add_composite_primary_key_sqlserver" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="SQLServer" />
+    <sql-case id="alter_table_add_constraints_sqlserver" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id), UNIQUE (order_id), CHECK (order_id > 0), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="SQLServer" />
+    <sql-case id="alter_table_drop_constraints_sqlserver" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" db-types="SQLServer" />
+    <sql-case id="alter_table_alter_column_for_postgresql" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
+    <sql-case id="alter_table_set_schema" value="ALTER TABLE t_order SET SCHEMA yourschema" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order DETACH PARTITION measurement_y2016m07" db-types="PostgreSQL" />
+    <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_table_with_optimize_memory_read" value="ALTER TABLE t_log MEMOPTIMIZE FOR READ ADD (name VARCHAR(10))" db-types="Oracle" />
+    <sql-case id="alter_table_with_no_optimize_memory_write" value="ALTER TABLE t_log NO MEMOPTIMIZE FOR WRITE ADD (name VARCHAR(10))" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_validate" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE VALIDATE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_primary_key" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_index_clause" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE PRIMARY KEY USING INDEX t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_exception_clause" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY EXCEPTIONS INTO t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_cascade" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_with_keep_index" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE PRIMARY KEY KEEP INDEX" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_table_lock" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE TABLE LOCK" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_all_triggers" value="ALTER TABLE t_log ADD (name VARCHAR(10)) ENABLE ALL TRIGGERS" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_container_map" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE CONTAINER_MAP" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_containers_default" value="ALTER TABLE t_log ADD (name VARCHAR(10)) DISABLE CONTAINERS_DEFAULT" db-types="Oracle" />
+    <sql-case id="alter_table_add_range_partition" value="ALTER TABLE t_order ADD PARTITION range_p_order VALUES LESS THAN(100)" db-types="Oracle" />
+    <sql-case id="alter_table_add_list_partition" value="ALTER TABLE t_order ADD PARTITION list_p_order VALUES(100, 200, 300)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_global_index" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (PARTITION))" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_subpartition" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES (order_index (SUBPARTITION))" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_global_index_parallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE GLOBAL INDEXES PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition_update_all_index_noparallel" value="ALTER TABLE t_order DROP PARTITION list_p_order UPDATE INDEXES NOPARALLEL" db-types="Oracle" />
+    <sql-case id="alter_table_add_hash_partition1" value="ALTER TABLE t_order ADD PARTITION hash_partition TABLESPACE spaceName" db-types="Oracle" />
+    <sql-case id="alter_table_add_hash_partition2" value="ALTER TABLE t_order ADD PARTITION hash_partition OVERFLOW TABLESPACE spaceName" db-types="Oracle" />
+    <sql-case id="alter_table_modify_hash_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition READ ONLY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_list_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition INDEXING ON" db-types="Oracle" />
+    <sql-case id="alter_table_modify_range_partition" value="ALTER TABLE t_order MODIFY PARTITION hash_partition ADD SUBPARTITION P1 VALUES('COMPLETE');" db-types="Oracle" />
+    <sql-case id="alter_table_move_partition" value="ALTER TABLE t_order MOVE PARTITION p0 TABLESPACE space0" db-types="Oracle" />
+    <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
+    <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_visible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_invisible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_visible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_invisible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column_set_visible" value="ALTER TABLE t_order ALTER COLUMN status SET VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column_set_invisible" value="ALTER TABLE t_order ALTER COLUMN status SET INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_set_statistics" value="ALTER TABLE t_order ALTER COLUMN status SET STATISTICS -1" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_compression" value="ALTER TABLE t_order ALTER COLUMN f1 SET COMPRESSION lz4;" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set" value="ALTER TABLE t_order SET (fillfactor = 10)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_reset" value="ALTER TABLE t_order RESET (fillfactor = 12)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_set_access_method" value="ALTER TABLE t_order SET ACCESS METHOD heap, SET ACCESS METHOD heap2" db-types="PostgreSQL" />
+    <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
+</sql-cases>

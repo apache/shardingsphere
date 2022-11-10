@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <distsql-case id="unregister-storage-unit" value="UNREGISTER STORAGE UNIT ds_0,ds_1" />
+    <distsql-case id="unregister-storage-unit-if-exists" value="UNREGISTER STORAGE UNIT IF EXISTS ds_0,ds_1" />
+    <distsql-case id="unregister-storage-unit-ignore-single-tables" value="UNREGISTER STORAGE UNIT ds_0,ds_1 ignore single tables;" />
+    <distsql-case id="drop-sharding-table-rule" value="DROP SHARDING TABLE RULE t_order,t_order_item" />
+    <distsql-case id="drop-sharding-table-rule-if-exists" value="DROP SHARDING TABLE RULE IF EXISTS t_order,t_order_item" />
+    <distsql-case id="drop-sharding-table-reference-rule" value="DROP SHARDING TABLE REFERENCE RULE (t_1,t_2)" />
+    <distsql-case id="drop-sharding-table-reference-rule-if-exists" value="DROP SHARDING TABLE REFERENCE RULE IF EXISTS (t_1,t_2)" />
+    <distsql-case id="drop-broadcast-table-rule" value="DROP BROADCAST TABLE RULE t_1" />
+    <distsql-case id="drop-multiple-broadcast-table-rules" value="DROP BROADCAST TABLE RULE t_1,t_2" />
+    <distsql-case id="drop-broadcast-table-rule-if-exists" value="DROP BROADCAST TABLE RULE IF EXISTS t_1" />
+    <distsql-case id="drop-readwrite-splitting-rule" value="DROP READWRITE_SPLITTING RULE ms_group_0,ms_group_1" />
+    <distsql-case id="drop-readwrite-splitting-rule-if-exists" value="DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_0,ms_group_1" />
+    <distsql-case id="drop-database-discovery-rule" value="DROP DB_DISCOVERY RULE ha_group_0,ha_group_1" />
+    <distsql-case id="drop-database-discovery-rule-if-exists" value="DROP DB_DISCOVERY RULE IF EXISTS ha_group_0,ha_group_1" />
+    <distsql-case id="drop-database-discovery-type" value="DROP DB_DISCOVERY TYPE type_name_0,type_name_1" />
+    <distsql-case id="drop-database-discovery-type-if-exists" value="DROP DB_DISCOVERY TYPE IF EXISTS type_name_0,type_name_1" />
+    <distsql-case id="drop-database-discovery-heartbeat" value="DROP DB_DISCOVERY HEARTBEAT heartbeat_name_0,heartbeat_name_1" />
+    <distsql-case id="drop-database-discovery-heartbeat-if-exists" value="DROP DB_DISCOVERY HEARTBEAT IF EXISTS heartbeat_name_0,heartbeat_name_1" />
+    <distsql-case id="drop-encrypt-rule" value="DROP ENCRYPT RULE t_encrypt,t_encrypt_order" />
+    <distsql-case id="drop-encrypt-rule-if-exists" value="DROP ENCRYPT RULE IF EXISTS t_encrypt,t_encrypt_order" />
+    <distsql-case id="drop-shadow-rule" value="DROP SHADOW RULE shadow_rule_1,shadow_rule_2" />
+    <distsql-case id="drop-shadow-rule-if-exists" value="DROP SHADOW RULE IF EXISTS shadow_rule_1,shadow_rule_2" />
+    <distsql-case id="drop-shadow-algorithm" value="DROP SHADOW algorithm shadow_algorithm_1,shadow_algorithm_2" />
+    <distsql-case id="drop-default-shadow-algorithm-if-exists" value="DROP DEFAULT SHADOW ALGORITHM IF EXISTS" />
+    <distsql-case id="drop-shadow-algorithm-if-exists" value="DROP SHADOW ALGORITHM IF EXISTS shadow_algorithm_1,shadow_algorithm_2" />
+    <distsql-case id="drop-sharding-key-generator" value="DROP SHARDING KEY GENERATOR uuid_key_generator" />
+    <distsql-case id="drop-sharding-key-generator-if-exists" value="DROP SHARDING KEY GENERATOR IF EXISTS uuid_key_generator" />
+    <distsql-case id="drop-sharding-auditor" value="DROP SHARDING AUDITOR sharding_key_required_auditor" />
+    <distsql-case id="drop-sharding-auditor-if-exists" value="DROP SHARDING AUDITOR IF EXISTS sharding_key_required_auditor" />
+    <distsql-case id="drop-default-sharding-strategy" value="DROP DEFAULT SHARDING TABLE STRATEGY" />
+    <distsql-case id="drop-default-sharding-strategy-if-exists" value="DROP DEFAULT SHARDING TABLE STRATEGY IF EXISTS" />
+    <distsql-case id="drop-sharding-algorithm" value="DROP SHARDING ALGORITHM IF EXISTS t_order_hash_mod" />
+</sql-cases>

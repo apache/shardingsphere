@@ -1,6 +1,6 @@
 +++
 title = "ShardingSphere Release Guide"
-weight = 8
+weight = 1
 chapter = true
 +++
 
@@ -165,7 +165,7 @@ Update the following file in release branch, and submit a PR to release branch:
 https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 ```
 
-Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
+Update the POM of the module `examples`, changing the version from ${DEVELOPMENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
 
 ### 3. Update the download page
 
@@ -199,7 +199,7 @@ Specifying version of xsd instead of using `sharding.xsd`, is to make legacy doc
 
 ### 5. Update README files
 
-Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
+Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md.
 
 ## Apache Maven Central Repository Release
 
@@ -311,16 +311,16 @@ cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/src/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/agent/distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### 4. Commit to Apache SVN
 
 ```shell
-svn add *
+svn add * --parents
 svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 ```
 
@@ -440,7 +440,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION}/
@@ -489,6 +489,8 @@ Checklist for reference:
 
 [ ] No compiled archives bundled in source archive.
 ```
+
+> To be noticed: `Release Commit ID` uses the commit id corresponding to `prepare release ${RELEASE.VERSION}` log on release branch.
 
 2. Announce the vote result:
 
@@ -549,7 +551,7 @@ docker login
 
 ```shell
 git checkout ${RELEASE.VERSION}
-./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
+./mvnw -pl distribution/proxy -B -Prelease,docker.buildx.push clean package
 ```
 
 3.4 Confirm the successful release
@@ -602,6 +604,10 @@ The list of files to be uploaded is as follows:
 - shadow-${RELEASE.VERSION}.xsd
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
+- sql-parser.xsd
+- sql-parser-${RELEASE.VERSION}.xsd
+- sql-translator.xsd
+- sql-translator-${RELEASE.VERSION}.xsd
 
 ### 7. Add entrance of documents of the new release into home page
 
@@ -609,12 +615,16 @@ Refer to:
 - [English home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [Chinese home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 8. Merge release branch to `master` and delete release branch on GitHub
+### 8. Update Example Version
+
+Update the POM of the module examples, changing the version from ${RELEASE.VERSION} to ${NEXT.DEVELOPMENT.VERSION}, and submit a PR to release branch.
+
+### 9. Merge release branch to `master` and delete release branch on GitHub
 
 After confirmed that download links of new release in download pages are available, create a Pull Request on GitHub to merge `${RELEASE.VERSION}-release` into `master.
 If code conflicted, you may merge `master` into `${RELEASE.VERSION}-release` before merging Pull Request.
 
-### 9. Announce release completed by email
+### 10. Announce release completed by email
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 

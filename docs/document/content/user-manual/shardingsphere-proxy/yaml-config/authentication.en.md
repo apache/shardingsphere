@@ -7,60 +7,62 @@ Authorization configuration provided for users who can connect to ShardingSphere
 
 ## Background
 
-ShardingSphere-Proxy uses the global rule, Authority Rule (identified as !AUTHORITY), to configure user and authorization information.
+ShardingSphere-Proxy uses `authority` to configure user and authorization information.
 
-Thanks to ShardingSphere's pluggable architecture, Proxy provides two levels of authority providers, namely: 
+Thanks to ShardingSphere's pluggable architecture, Proxy provides two levels of privilege providers, namely: 
 
 - `ALL_PERMITTED`: grant all authorities by default without authentication.
 - `DATABASE_PERMITTED`: grant users the authority to specify a logical database, mapped through `user-database-mappings`.
 
-The administrator can choose which authority provider to use as needed when configuring the Authority Rule. 
+The administrator can choose which privilege provider to use as needed when configuring `authority`. 
 
 ## Parameter
 
 ```yaml
-rules:
-  - !AUTHORITY
-    users:
-      - # Specify the username, authorized host, and password for logging in to the compute node. Format: <username>@<hostname>:<password>. When the hostname is % or an empty string, it indicates that the authorized host is not limited.
-    provider:
-      type: # The authority provider type for storage node. The default value is ALL_PERMITTED.
+authority:
+  users:
+    - user: # Specify the username, and authorized host for logging in to the compute node. Format: <username>@<hostname>. When the hostname is % or an empty string, it indicates that the authorized host is not limited.
+      password: # Password
+  privilege:
+    type: # Privilege provider type. The default value is ALL_PERMITTED.
 ```
 
 ## Sample
 
 ### ALL_PERMITTED
 ```yaml
-rules:
-  - !AUTHORITY
-    users:
-      - root@localhost:root
-      - my_user@:pwd
-    provider:
-      type: ALL_PERMITTED
+authority:
+  users:
+    - user: root@localhost
+      password: root
+    - user: my_user
+      password: pwd
+  privilege:
+    type: ALL_PERMITTED
 ```
 
 The above configuration indicates: 
-- The user `root` can connect to Proxy only through [localhost](http://localhost), and the password is `root`.
+- The user `root` can connect to Proxy only through `localhost`, and the password is `root`.
 - The user `my_user` can connect to Proxy through any host, and the password is `pwd`.
-- The `provider` type is `ALL_PERMITTED`, which indicates that users are granted all authorities by default without authentication.
+- The `privilege` type is `ALL_PERMITTED`, which indicates that users are granted all authorities by default without authentication.
 
 ### DATABASE_PERMITTED
 ```yaml
-rules:
-  - !AUTHORITY
-    users:
-      - root@localhost:root
-      - my_user@:pwd
-    provider:
-      type: DATABASE_PERMITTED
-      props:
-        user-database-mappings: root@localhost=sharding_db, root@localhost=test_db, my_user@=sharding_db
+authority:
+  users:
+    - user: root@localhost
+      password: root
+    - user: my_user
+      password: pwd
+  privilege:
+    type: DATABASE_PERMITTED
+    props:
+      user-database-mappings: root@localhost=sharding_db, root@localhost=test_db, my_user@=sharding_db
 ```
 
 The above configuration indicates: 
-- The `provider` type is `DATABASE_PERMITTED`, which indicates that users are granted database-level authority and configuration is needed.
-- The user `root` can connect to Proxy only through [localhost](http://localhost) and can access `sharding_db` and `test_db`.
+- The `privilege` type is `DATABASE_PERMITTED`, which indicates that users are granted database-level authority and configuration is needed.
+- The user `root` can connect to Proxy only through `localhost` and can access `sharding_db` and `test_db`.
 - The user `my_user` can connect to Proxy through any host and can access `sharding_db`.
 
 ## Related References

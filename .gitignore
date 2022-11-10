@@ -50,5 +50,3 @@ Thumbs.db
 gen/
 *.tokens
 
-# agent build ignore
-/agent/

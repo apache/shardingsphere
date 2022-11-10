@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
+    <rewrite-assertion id="select_not_nested_subquery_in_projection" db-types="MySQL">
+        <input sql="SELECT u.certificate_number, u.password, (SELECT o.amount FROM t_account_bak o WHERE o.certificate_number=u.certificate_number) amount FROM t_account u, t_account_bak c WHERE u.certificate_number = c.certificate_number and u.password=? and u.password like ?" parameters="1, 1" />
+        <output sql="SELECT u.cipher_certificate_number AS certificate_number, u.cipher_password AS password, (SELECT o.cipher_amount AS amount FROM t_account_bak o WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number) amount FROM t_account u, t_account_bak c WHERE u.assisted_query_certificate_number = c.assisted_query_certificate_number and u.assisted_query_password=? and u.fuzzy_query_password like ?" parameters="assisted_query_1, fuzzy_query_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT certificate_number FROM t_account) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.cipher_certificate_number AS certificate_number FROM (SELECT cipher_certificate_number, assisted_query_certificate_number FROM t_account) o, t_account u WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment_refed" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT certificate_number FROM t_account_bak) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.cipher_certificate_number AS certificate_number FROM (SELECT cipher_certificate_number, assisted_query_certificate_number, plain_certificate_number FROM t_account_bak) o, t_account u WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment_alias" db-types="MySQL">
+        <input sql="SELECT o.certificate_number FROM (SELECT a.certificate_number FROM t_account a) o" />
+        <output sql="SELECT o.cipher_certificate_number AS certificate_number FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number FROM t_account a) o" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT a.* FROM t_account a) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.cipher_certificate_number AS certificate_number FROM (SELECT `a`.`account_id`, `a`.`cipher_certificate_number`, `a`.`assisted_query_certificate_number`, `a`.`cipher_password`, `a`.`assisted_query_password`, `a`.`cipher_amount` FROM t_account a) o, t_account u WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT * FROM t_account) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, o.cipher_certificate_number AS certificate_number FROM (SELECT `t_account`.`account_id`, `t_account`.`cipher_certificate_number`, `t_account`.`assisted_query_certificate_number`, `t_account`.`cipher_password`, `t_account`.`assisted_query_password`, `t_account`.`cipher_amount` FROM t_account) o, t_account u WHERE o.assisted_query_certificate_number=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_right_equal_condition" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE u.certificate_number=(SELECT certificate_number FROM t_account WHERE password=?) AND u.password=?" parameters="1, 2" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE u.assisted_query_certificate_number=(SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?) AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_left_equal_condition" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE (SELECT certificate_number FROM t_account WHERE password=?)=u.certificate_number AND u.password=?" parameters="1, 2" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?)=u.assisted_query_certificate_number AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_table_with_alias" db-types="MySQL">
+        <input sql="SELECT count(*) as cnt FROM (SELECT ab.certificate_number FROM t_account ab) X" />
+        <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_certificate_number, ab.assisted_query_certificate_number FROM t_account ab) X" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_left_and_right_equal_condition" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE (SELECT certificate_number FROM t_account WHERE password=?)=(SELECT certificate_number FROM t_account_bak WHERE password=?) AND u.password=?" parameters="1, 2, 3" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?)=(SELECT assisted_query_certificate_number FROM t_account_bak WHERE assisted_query_password=?) AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2, assisted_query_3" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_exists" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u WHERE EXISTS(SELECT b.certificate_number from t_account b where b.certificate_number=u.certificate_number)" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u WHERE EXISTS(SELECT b.cipher_certificate_number from t_account b where b.assisted_query_certificate_number=u.assisted_query_certificate_number)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_not_exists" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u WHERE NOT EXISTS(SELECT b.certificate_number from t_account b where b.certificate_number=u.certificate_number)" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u WHERE NOT EXISTS(SELECT b.cipher_certificate_number from t_account b where b.assisted_query_certificate_number=u.assisted_query_certificate_number)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_predicate_in_condition" db-types="MySQL">
+        <input sql="SELECT u.amount, u.password, u.certificate_number FROM t_account_bak u, t_account c WHERE u.certificate_number IN (SELECT certificate_number FROM t_account WHERE password=?) AND u.password=?" parameters="1, 2" />
+        <output sql="SELECT u.cipher_amount AS amount, u.cipher_password AS password, u.cipher_certificate_number AS certificate_number FROM t_account_bak u, t_account c WHERE u.assisted_query_certificate_number IN (SELECT assisted_query_certificate_number FROM t_account WHERE assisted_query_password=?) AND u.assisted_query_password=?" parameters="assisted_query_1, assisted_query_2" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_from_alias" db-types="MySQL">
+        <input sql="SELECT b.certificate_number, b.amount FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
+        <output sql="SELECT b.cipher_certificate_number AS certificate_number, b.cipher_amount AS amount FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_ref_shorthand" db-types="MySQL">
+        <input sql="SELECT b.* FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
+        <output sql="SELECT `b`.`cipher_certificate_number` AS `certificate_number`, `b`.`cipher_amount` AS `amount` FROM (SELECT a.cipher_certificate_number, a.assisted_query_certificate_number, a.cipher_amount FROM t_account a WHERE a.cipher_amount = 'encrypt_1373') b" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_exists_sub_query" db-types="MySQL">
+        <input sql="SELECT out_table.amount FROM t_account out_table WHERE EXISTS (SELECT inner_table.amount FROM t_account inner_table)" />
+        <output sql="SELECT out_table.cipher_amount AS amount FROM t_account out_table WHERE EXISTS (SELECT inner_table.cipher_amount FROM t_account inner_table)" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_sub_query_with_order_by" db-types="MySQL">
+        <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a ORDER BY a.amount DESC ) AS tmp" />
+        <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount FROM t_account a ORDER BY a.cipher_amount DESC ) AS tmp" />
+    </rewrite-assertion>
+</rewrite-assertions>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
+    <rewrite-assertion id="create_table_for_cipher" db-types="MySQL">
+        <input sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
+        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', fuzzy_query_password VARCHAR(255) NOT NULL DEFAULT '', plain_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="create_table_with_index_for_cipher" db-types="MySQL">
+        <input sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`amount`))" />
+        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', fuzzy_query_password VARCHAR(255) NOT NULL DEFAULT '', plain_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`cipher_amount`))" />
+    </rewrite-assertion>
+</rewrite-assertions>

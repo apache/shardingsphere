@@ -15,32 +15,40 @@
 # limitations under the License.
 #
 
-name: Transaction Integration Test
+name: IT - Transaction
 
 on:
   push:
     branches: [ master, dev ]
     paths:
       - '.github/workflows/it-transaction.yml'
-      - 'shardingsphere-kernel/shardingsphere-transaction/**/src/main/**'
-      - 'shardingsphere-kernel/shardingsphere-transaction/**/pom.xml'
-      - '!shardingsphere-test/**'
-      - 'shardingsphere-test/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/**'
+      - 'infra/common/src/main/**'
+      - 'mode/**/src/main/**'
+      - 'proxy/**/src/main/**'
+      - 'jdbc/core/src/main/**'
+      - 'kernel/transaction/**/src/main/**'
+      - 'kernel/transaction/**/pom.xml'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/transaction/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
     paths:
       - '.github/workflows/it-transaction.yml'
-      - 'shardingsphere-kernel/shardingsphere-transaction/**/src/main/**'
-      - 'shardingsphere-kernel/shardingsphere-transaction/**/pom.xml'
-      - '!shardingsphere-test/**'
-      - 'shardingsphere-test/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
-      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/**'
+      - 'infra/common/src/main/**'
+      - 'mode/**/src/main/**'
+      - 'proxy/**/src/main/**'
+      - 'jdbc/core/src/main/**'
+      - 'kernel/transaction/**/src/main/**'
+      - 'kernel/transaction/**/pom.xml'
+      - '!test/**'
+      - 'test/pom.xml'
+      - 'test/integration-test/fixture/**'
+      - 'test/integration-test/env/**'
+      - 'test/integration-test/transaction/**'
       - '!*.md'
 
 concurrency:
@@ -48,7 +56,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
   transaction-it-test:
@@ -58,38 +66,27 @@ jobs:
       postgresql_version: postgres:12-alpine
       opengauss_version: enmotech/opengauss:2.1.0
       mysql_version: 5.7
-    timeout-minutes: 80
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-it-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-it-cache${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-maven-
+            shardingsphere-maven-third-party-it-cache
+            shardingsphere-maven-third-party-
       - name: Set up JDK 8
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 8
       - name: Build Transaction IT image
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction -Pit.env.docker -DskipTests
-      - name: Run MySQL Local Transaction Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run Transaction MySQL Integration Test With Atomikos
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run Transaction MySQL Integration Test With Narayana
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
-      - name: Run PostgreSQL Local Transaction Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run Transaction PostgreSQL Integration Test With Atomikos
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run Transaction PostgreSQL Integration Test With Narayana
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
-      - name: Run OpenGauss Local Transaction Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
-      - name: Run Transaction OpenGauss Integration Test With Atomikos
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Atomikos -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
-      - name: Run Transaction OpenGauss Integration Test With Narayana
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=XA -Dtransaction.it.env.xa.providers=Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -B clean install -am -pl test/integration-test/transaction -Pit.env.docker -DskipTests
+      - name: Run MySQL Transaction Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
+      - name: Run PostgreSQL Transaction Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run OpenGauss Transaction Integration Test
+        run: ./mvnw -nsu -B install -f test/integration-test/transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.env.transtypes=LOCAL,XA -Dtransaction.it.env.xa.providers=Atomikos,Narayana -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}

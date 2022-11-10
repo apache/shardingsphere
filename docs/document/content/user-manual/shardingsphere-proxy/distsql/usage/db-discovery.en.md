@@ -3,10 +3,10 @@ title = "DB Discovery"
 weight = 5
 +++
 
-## Resource Operation
+## Storage unit Operation
 
 ```sql
-ADD RESOURCE ds_0 (
+REGISTER STORAGE UNIT ds_0 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_0",
@@ -33,7 +33,7 @@ ADD RESOURCE ds_0 (
 
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1),
+STORAGE_UNITS(ds_0, ds_1),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -43,7 +43,7 @@ HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 
 ```sql
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
-RESOURCES(ds_0, ds_1, ds_2),
+STORAGE_UNITS(ds_0, ds_1, ds_2),
 TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
@@ -67,10 +67,10 @@ DROP DB_DISCOVERY TYPE db_discovery_group_0_mgr;
 DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 ```
 
-- Drop resource
+- Unregister storage unit
 
 ```sql
-DROP RESOURCE ds_0,ds_1,ds_2;
+UNREGISTER STORAGE UNIT ds_0,ds_1,ds_2;
 ```
 
 - Drop distributed database

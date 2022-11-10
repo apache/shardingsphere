@@ -163,7 +163,7 @@ git push origin ${RELEASE.VERSION}-release
 https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 ```
 
-更新 `examples` 模块的 pom，将版本由 `${CURRENT.VERSION}` 替换为 `${RELEASE.VERSION}`，并提交 PR 到发布分支。
+更新 `examples` 模块的 pom，将版本由 `${DEVELOPMENT.VERSION}` 替换为 `${RELEASE.VERSION}`，并提交 PR 到发布分支。
 
 ### 3. 更新下载页面
 
@@ -197,7 +197,7 @@ grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEA
 
 ### 5. 修改 README 文件
 
-将 `README.md` 和 `README_ZH.md` 里的 `${PREVIOUS.RELEASE.VERSION}` 修改为 `${RELEASE.VERSION}`。
+更新 `README.md` 和 `README_ZH.md` 里的 `${RELEASE.VERSION}` 和 `${NEXT.RELEASE.VERSION}`。
 
 ## 发布 Apache Maven 中央仓库
 
@@ -307,16 +307,16 @@ cd ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 将源码包、二进制包和 ShardingSphere-Proxy 可执行二进制包添加至 SVN 工作目录。
 
 ```shell
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distribution/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
-cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/src/target/*.zip* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/agent/distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### 4. 提交 Apache SVN
 
 ```shell
-svn add *
+svn add * --parents
 svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 ```
 
@@ -434,7 +434,7 @@ Hello ShardingSphere Community,
 This is a call for vote to release Apache ShardingSphere version ${RELEASE.VERSION}
 
 Release notes:
-https://github.com/apache/shardingsphere/blob/master/RELEASE-NOTES.md
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
 
 The release candidates:
 https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION}/
@@ -483,6 +483,8 @@ Checklist for reference:
 
 [ ] No compiled archives bundled in source archive.
 ```
+
+> 注意：`Release Commit ID` 使用发布分支上与 `prepare release ${RELEASE.VERSION}` 日志对应的 commit id。 
 
 2. 宣布投票结果模板：
 
@@ -542,7 +544,7 @@ docker login
 
 ```shell
 git checkout ${RELEASE.VERSION}
-./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
+./mvnw -pl distribution/proxy -B -Prelease,docker.buildx.push clean package
 ```
 
 3.4 确认发布成功
@@ -592,6 +594,10 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 - shadow-${RELEASE.VERSION}.xsd  
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
+- sql-parser.xsd
+- sql-parser-${RELEASE.VERSION}.xsd
+- sql-translator.xsd
+- sql-translator-${RELEASE.VERSION}.xsd
 
 ### 7. 官网首页增加发布版本文档入口
 
@@ -599,12 +605,16 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 - [英文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [中文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 8. 合并 GitHub 的 release 分支到 `master`，合并完成后删除 release 分支
+### 8. 更新示例版本
+
+更新 examples 模块的 pom，将版本由 ${RELEASE.VERSION} 替换为 ${NEXT.DEVELOPMENT.VERSION}，并提交 PR 到发布分支。
+
+### 9. 合并 GitHub 的 release 分支到 `master`，合并完成后删除 release 分支
 
 确认下载页面中的新发布版本的链接可用后，在 GitHub 页面创建 Pull Request 将分支 `${RELEASE.VERSION}-release` 合并到 `master`。
 如果代码存在冲突，可以先把 master 分支合并到 `${RELEASE.VERSION}-release`。
 
-### 9. 邮件通知版本发布完成
+### 10. 邮件通知版本发布完成
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 

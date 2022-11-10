@@ -1,0 +1,274 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{
+  "groups": [
+    {
+      "name": "spring.shardingsphere.rules.sharding",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.spring.boot.rule.YamlShardingRuleSpringBootConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.tables",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.auto-tables",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.standard",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.complex",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.hint",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.none",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.standard",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.complex",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.hint",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.none",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-key-generate-strategy",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-audit-strategy",
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.sharding-algorithms",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.key-generators",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.auditors",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.shardingsphere.rules.sharding.binding-tables",
+      "type": "java.util.Collections<java.lang.String>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.broadcast-tables",
+      "type": "java.util.Collections<java.lang.String>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-sharding-column",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-key-generate-strategy.column",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-key-generate-strategy.key-generator-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-audit-strategy.auditor-names",
+      "type": "java.util.Collection<java.lang.String>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-audit-strategy.allow-hint-disable",
+      "type": "java.lang.Boolean",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.hint.sharding-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.standard.sharding-column",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.standard.sharding-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.complex.sharding-columns",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-table-strategy.complex.sharding-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.hint.sharding-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.complex.sharding-columns",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.default-database-strategy.complex.sharding-algorithm-name",
+      "type": "java.lang.String",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlComplexShardingStrategyConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.tables",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.auto-tables",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.sharding-algorithms",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.key-generators",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.auditors",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
+      "sourceType": "org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.shardingsphere.rules.sharding.tables.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.auto-tables.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.sharding-algorithms.values",
+      "values": [
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.shardingsphere.rules.sharding.key-generators.values",
+      "values": [],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
+          }
+        }
+      ]
+    }
+  ]
+}

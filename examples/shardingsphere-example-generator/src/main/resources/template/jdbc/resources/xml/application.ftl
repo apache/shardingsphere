@@ -84,25 +84,27 @@
     -->
     
     <bean id="ds_0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_0?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_0?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
-    
+<#if feature!="encrypt">
     <bean id="ds_1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_1?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_1?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
-    
+    <#if feature!="shadow">
     <bean id="ds_2" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_2?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://${host}:${port}/demo_ds_2?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
         <property name="username" value="${username}"/>
         <property name="password" value="${(password)?string}"/>
     </bean>
+    </#if>
+</#if>
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
 </#list>
@@ -134,7 +136,17 @@
         <#assign ruleRefs += ", " />
     </#if>
 </#list>
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0, ds_1, ds_2" rule-refs="${ruleRefs}">
+<#if feature?contains("shadow")>
+    <#assign ruleRefs += ", sqlParseRule" />
+</#if>
+<#assign datasourceStr="ds_0">
+<#if feature!="encrypt">
+    <#assign datasourceStr += ",ds_1" />
+    <#if feature!="shadow">
+        <#assign datasourceStr += ",ds_2" />
+    </#if>
+</#if>
+    <shardingsphere:data-source id="dataSource" data-source-names="${datasourceStr}" rule-refs="${ruleRefs}">
         <#if mode?contains("cluster")>
             <#include "../mode/spring-namespace/cluster.ftl" />
         <#elseif mode?contains("standalone")>

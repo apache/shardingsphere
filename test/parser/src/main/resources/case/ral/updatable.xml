@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <set-dist-variable sql-case-id="set-dist-variable" />
+    
+    <refresh-table-metadata sql-case-id="refresh-table-metadata" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-table-name" table-name="t_order" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-resource" table-name="t_order" storage-unit-name="ds_0" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-with-schema" storage-unit-name="ds_0" schema-name="public" />
+    <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" storage-unit-name="ds_0" schema-name="public" />
+    
+    <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
+        <sql-parser sqlCommentParseEnabled="false">
+            <parse-tree-cache initial-capacity="10" maximum-size="11" />
+            <sql-statement-cache initial-capacity="11" maximum-size="11" />
+        </sql-parser>
+    </alter-sql-parser-rule>
+    <alter-local-transaction-rule sql-case-id="alter-local-transaction-rule" />
+    <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
+   
+    <create-traffic-rule sql-case-id="create-traffic-rule">
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <properties>
+                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+                </properties>
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <properties>
+                    <property key="key" value="value" />
+                </properties>
+            </load-balancer>
+        </rule>
+    </create-traffic-rule>
+    <alter-traffic-rule sql-case-id="alter-traffic-rule">
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <properties>
+                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+                </properties>
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <properties>
+                    <property key="key" value="value" />
+                </properties>
+            </load-balancer>
+        </rule>
+    </alter-traffic-rule>
+    <drop-traffic-rule sql-case-id="drop-traffic-rule">
+        <rule-name>rule_name</rule-name>
+    </drop-traffic-rule>
+    
+    <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
+    <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
+    
+    <label-compute-node sql-case-id="label-compute-node" instance-id="instance_label" overwrite="false">
+        <label>OLAP_1</label>
+        <label>OLAP_2</label>
+    </label-compute-node>
+    <label-compute-node sql-case-id="relabel-compute-node" instance-id="instance_relabel" overwrite="true">
+        <label>OLAP_1</label>
+        <label>OLAP_2</label>
+    </label-compute-node>
+    <unlabel-compute-node sql-case-id="unlabel-compute-node" instance-id="instance_unlabel">
+        <label>OLAP_1</label>
+    </unlabel-compute-node>
+    <unlabel-compute-node sql-case-id="unlabel-compute-node-without-label" instance-id="instance_unlabel_2">
+    </unlabel-compute-node>
+    
+    <prepare-distsql sql-case-id="prepare-distsql" />
+    <apply-distsql sql-case-id="apply-distsql" />
+    <discard-distsql sql-case-id="discard-distsql" />
+    
+    <import-database-config sql-case-id="import-database-config">
+        <file-path>/yaml/config-sharding.yaml</file-path>
+    </import-database-config>
+    
+    <alter-readwrite-splitting-storage-unit-status-enable sql-case-id="alter-readwrite-splitting-storage-unit-status-enable" group-name="group_1" storage-unit-name="read_ds_0" status="ENABLE">
+        <database name="read_write" start-index="61" stop-index="70"/>
+    </alter-readwrite-splitting-storage-unit-status-enable>
+    
+    <alter-readwrite-splitting-storage-unit-status-disable sql-case-id="alter-readwrite-splitting-storage-unit-status-disable" group-name="group_1" storage-unit-name="read_ds_0" status="DISABLE">
+        <database name="read_write" start-index="62" stop-index="71"/>
+    </alter-readwrite-splitting-storage-unit-status-disable>
+</sql-parser-test-cases>

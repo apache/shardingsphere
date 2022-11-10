@@ -17,7 +17,7 @@ shardingStrategy ::=
   'TYPE' '=' strategyType ',' ( 'SHARDING_COLUMN' '=' columnName  | 'SHARDING_COLUMNS' '=' columnNames ) ',' ( 'SHARDING_ALGORITHM' '=' algorithmName | algorithmDefinition )
 
 algorithmDefinition ::=
-  'TYPE' '(' 'NAME' '=' algorithmType ( ',' 'PROPERTIES'  '(' propertyDefinition  ')' )?')'  
+  'TYPE' '(' 'NAME' '=' algorithmType ',' 'PROPERTIES'  '(' propertyDefinition ')' ')'  
 
 columnNames ::=
   columnName (',' columnName)+
@@ -29,7 +29,7 @@ algorithmName ::=
   identifier
   
 algorithmType ::=
-  identifier
+  string
 ```
 
 ### Supplement
@@ -40,21 +40,7 @@ algorithmType ::=
 
 ### Example
 
-#### 1.Create a default sharding strategy by using an existing sharding algorithm
-
-```sql
--- create a sharding algorithm
-CREATE SHARDING ALGORITHM database_inline (
-    TYPE(NAME="inline", PROPERTIES("algorithm-expression"="t_order_${order_id % 2}"))
-);
-
--- create a default sharding database strategy
-CREATE DEFAULT SHARDING DATABASE STRATEGY (
-    TYPE="standard", SHARDING_COLUMN=user_id, SHARDING_ALGORITHM=database_inline
-);
-```
-
-#### 2.Create sharding algorithm and default sharding table strategy at the same time
+- create a default sharding table strategy
 
 ```sql
 -- create a default sharding table strategy
@@ -70,4 +56,3 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 ### Related links
 
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
-- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
