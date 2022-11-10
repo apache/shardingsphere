@@ -193,7 +193,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
             if (!Strings.isNullOrEmpty(each.getWriteDataSource())) {
                 String writeDataSource = each.getWriteDataSource();
                 ShardingSpherePreconditions.checkState(writeDataSourceNames.add(writeDataSource), () -> new InvalidRuleConfigurationException("Readwrite splitting", each.getName(),
-                        String.format("Can not config duplicate write resource `%s` in database `%s`", writeDataSource, databaseName)));
+                        String.format("Can not config duplicate write storage unit `%s` in database `%s`", writeDataSource, databaseName)));
             }
         }
     }
@@ -204,7 +204,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
             if (null != each.getReadDataSources()) {
                 for (String readDataSource : each.getReadDataSources()) {
                     ShardingSpherePreconditions.checkState(readDataSourceNames.add(readDataSource), () -> new InvalidRuleConfigurationException("Readwrite splitting", each.getName(),
-                            String.format("Can not config duplicate read resource `%s` in database `%s`", readDataSource, databaseName)));
+                            String.format("Can not config duplicate read storage unit `%s` in database `%s`", readDataSource, databaseName)));
                 }
             }
         }
