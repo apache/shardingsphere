@@ -32,9 +32,9 @@ public interface DataConsistencyCalculatedResult {
     int getRecordsCount();
     
     /**
-     * Get max unique value.
+     * Get max unique key value.
      *
-     * @return max unique value
+     * @return max unique key value
      */
     Optional<Object> getMaxUniqueKeyValue();
 }
