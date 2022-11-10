@@ -4446,12 +4446,33 @@
         </from>
     </select>
 
-    <select sql-case-id="select_percent_rank">
+    <select sql-case-id="select_aggregate_percent_rank">
         <projections start-index="7" stop-index="92">
             <expression-projection text="PERCENT_RANK(15000, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Percent-Rank" start-index="7" stop-index="92" />
         </projections>
         <from>
             <simple-table name="employees" start-index="99" stop-index="107" />
         </from>
+    </select>
+
+    <select sql-case-id="select_analytic_percent_rank">
+        <projections start-index="7" stop-index="115">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <column-projection name="last_name" start-index="22" stop-index="30" />
+            <column-projection name="salary" start-index="33" stop-index="38" />
+            <expression-projection text="PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)" start-index="41" stop-index="115" alias="pr">
+                <expr>
+                    <function function-name="PERCENT_RANK" start-index="41" stop-index="109" text="PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="122" stop-index="130" />
+        </from>
+        <order-by>
+            <column-item name="pr" start-index="141" stop-index="142" />
+            <column-item name="salary" start-index="145" stop-index="150" />
+            <column-item name="last_name" start-index="153" stop-index="161" />
+        </order-by>
     </select>
 </sql-parser-test-cases>

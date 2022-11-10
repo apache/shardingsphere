@@ -162,7 +162,7 @@ unreservedWord
     | ENFORCED | TRUSTED | ID | SYNCHRONOUS | ASYNCHRONOUS | REPEAT | FEATURE | STATEMENT | CLAUSE | UNPLUG
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
-    | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA
+    | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK
     ;
 
 schemaName
@@ -442,6 +442,7 @@ expr
     | LP_ expr RP_
     | booleanPrimary
     | aggregationFunction
+    | analyticFunction
     ;
 
 andOperator
@@ -510,7 +511,7 @@ functionCall
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? exprs) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
     ;
 
 aggregationFunctionName
