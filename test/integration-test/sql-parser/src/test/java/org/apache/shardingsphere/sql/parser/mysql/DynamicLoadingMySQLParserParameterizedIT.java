@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sql.parser.mysql;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
+import org.apache.shardingsphere.sql.parser.env.IntegrationTestContext;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.sql.parser.env.LoaderType;
 import org.apache.shardingsphere.sql.parser.result.SQLParserResultProcessorManager;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
@@ -43,7 +45,7 @@ public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadi
     @Parameters(name = "{0} (MySQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
-                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters("https://api.github.com/repos/", URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r"))
+                ? new IntegrationTestContext(LoaderType.GITHUB).getTestParameters(URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r"))
                 : Collections.emptyList();
     }
 }

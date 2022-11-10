@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sql.parser.postgresql;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
+import org.apache.shardingsphere.sql.parser.env.IntegrationTestContext;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.sql.parser.env.LoaderType;
 import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
@@ -43,8 +45,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
-                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters(
-                        "https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"))
+                ? new IntegrationTestContext(LoaderType.GITHUB).getTestParameters(URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"))
                 : Collections.emptyList();
     }
 }
