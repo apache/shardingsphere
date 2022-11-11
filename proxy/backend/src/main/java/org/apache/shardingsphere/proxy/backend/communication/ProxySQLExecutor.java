@@ -140,7 +140,7 @@ public final class ProxySQLExecutor {
     private boolean needAutoTransaction(final ExecutionContext executionContext) {
         TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        return TransactionType.XA == transactionStatus.getTransactionType() && !transactionStatus.isInTransaction() && sqlStatement instanceof DMLStatement
+        return TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) && !transactionStatus.isInTransaction() && sqlStatement instanceof DMLStatement
                 && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
     }
     
