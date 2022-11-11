@@ -148,7 +148,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         String schemaName = getQueryContext().getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
         federationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()),
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.getConnectionSession().getConnectionContext()),
                 ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
     }
     
