@@ -4540,4 +4540,37 @@
             <simple-table name="employees" start-index="76" stop-index="84" />
         </from>
     </select>
+
+    <select sql-case-id="select_rowid">
+        <projections start-index="7" stop-index="11">
+            <column-projection name="ROWID" start-index="7" stop-index="11" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="18" stop-index="26" />
+        </from>
+        <where start-index="28" stop-index="65">
+            <expr>
+                <binary-operation-expression start-index="34" stop-index="65">
+                    <left>
+                        <function function-name="ROWIDTOCHAR" start-index="34" stop-index="51" text="ROWIDTOCHAR(ROWID)">
+                            <parameter>
+                                <column name="ROWID" start-index="46" stop-index="50" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="58" stop-index="65">
+                            <items>
+                                <literal-expression value="%JAAB%" start-index="58" stop-index="65" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="ROWID" start-index="76" stop-index="80" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

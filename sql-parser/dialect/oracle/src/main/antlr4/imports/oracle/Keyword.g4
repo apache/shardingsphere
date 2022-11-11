@@ -599,3 +599,7 @@ PARTITION
 RANK
     : R A N K
     ;
+
+ROWID
+    : R O W I D
+    ;
