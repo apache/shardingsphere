@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
 import org.apache.calcite.plan.RelOptPlanner;
@@ -33,6 +34,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class SQLOptimizeEngine {
     
+    @Getter
     private final SqlToRelConverter converter;
     
     private final RelOptPlanner hepPlanner;

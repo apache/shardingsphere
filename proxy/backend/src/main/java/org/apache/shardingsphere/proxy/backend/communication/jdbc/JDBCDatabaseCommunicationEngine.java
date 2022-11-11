@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
+import org.apache.shardingsphere.sqlfederation.advanced.AdvancedSQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutor;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationExecutorContext;
@@ -129,7 +131,9 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
         List result = proxySQLExecutor.execute(executionContext);
-        refreshMetaData(executionContext);
+        Optional<MetaDataRefreshedEvent> event = refreshMetaData(executionContext);
+        prepareFederationExecutor();
+        refreshCache(federationExecutor, event);
         Object executeResultSample = result.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
@@ -182,6 +186,13 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         }
         setMergedResult(new IteratorStreamMergedResult(Collections.singletonList(new JDBCStreamQueryResult(resultSet))));
         return new QueryResponseHeader(getQueryHeaders());
+    }
+    
+    private void refreshCache(final SQLFederationExecutor federationExecutor, final Optional<MetaDataRefreshedEvent> event) {
+        if (federationExecutor instanceof AdvancedSQLFederationExecutor && event.isPresent()) {
+            AdvancedSQLFederationExecutor advancedSQLFederationExecutor = (AdvancedSQLFederationExecutor) federationExecutor;
+            advancedSQLFederationExecutor.refreshCache(event);
+        }
     }
     
     /**

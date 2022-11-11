@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.rel.type.RelDataType;
@@ -37,10 +39,13 @@ import java.util.List;
 /**
  * Filterable table.
  */
-@RequiredArgsConstructor
+
+@AllArgsConstructor
 public final class FilterableTable extends AbstractTable implements ProjectableFilterableTable {
     
-    private final ShardingSphereTable table;
+    @Getter
+    @Setter
+    private ShardingSphereTable table;
     
     private final TableScanExecutor executor;
     

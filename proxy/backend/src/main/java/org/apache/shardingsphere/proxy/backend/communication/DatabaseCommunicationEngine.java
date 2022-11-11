@@ -128,11 +128,16 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         }
     }
     
-    protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
+    protected Optional<MetaDataRefreshedEvent> refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
             ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(event.get());
+            return event;
         }
+        if (event.isPresent()) {
+            return event;
+        }
+        return Optional.empty();
     }
     
     protected QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
