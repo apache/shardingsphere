@@ -579,3 +579,7 @@ GLOBAL_NAME
 ROWTYPE
     : R O W T Y P E
     ;
+
+PERCENTILE_CONT
+    : P E R C E N T I L E UL_ C O N T
+    ;
