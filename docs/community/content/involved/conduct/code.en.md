@@ -15,7 +15,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 
 ## Contributor Covenant Submitting of Conduct
 
- - Make sure Maven build process success. Run `mvn -T 1C clean install` or `./mvnw -T 1C clean install` command in shell to start Maven build process. On which directory to run Maven build process, there are 2 alternatives, we could select one of them: 1) if we're not familiar with Apache ShardingSphere, then we could run it on project root directory, 2) if we know which modules will be affected by the changes, then we could run it on these modules to save build time.
+ - Make sure Maven build process success. Run `mvn -T 1C clean install` command in shell to start Maven build process. On which directory to run Maven build process, there are 2 alternatives, we could select one of them: 1) if we're not familiar with Apache ShardingSphere, then we could run it on project root directory, 2) if we know which modules will be affected by the changes, then we could run it on these modules to save build time.
  - Make sure the test coverage rate is not lower than the master branch.
  - Careful consideration for each `pull request`; Small and frequent `pull request` with complete unit function is welcomed.
  - Conform to `Contributor Covenant Code of Conduct` below.
@@ -27,13 +27,16 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Use linux line separators.
  - No meaningless blank lines. Please extract private methods to instead of blank lines if too long method body or different logic code fragments.
  - Use meaningful class, method and variable names, class and method name avoid to use abbreviation. Some variables could use abbreviation.
+   - Variable `arguments` could abbreviate to `args`;
+   - Variable `parameters` could abbreviate to `params`;
+   - Variable `environment` could abbreviate to `env`;
    - Variable `properties` could abbreviate to `props`;
    - Variable `configuration` could abbreviate to `config`.
  - Abbreviation composed less than 3 characters should be uppercase, more than 3 characters must use camel case naming rule.
    - Example for abbreviation composed less than 3 characters: DBDiscoveryExampleScenario, SQL92Lexer, XMLTransfer, MySQLAdminExecutorCreator;
    - Example for abbreviation composed more than 3 characters: JdbcUrlAppender, YamlAgentConfigurationSwapper;
    - A variable composed of abbreviation should use lower camel case: dbName, mysqlAuthenticationMethod, sqlStatement, mysqlConfig.
- - Return values are named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
+ - Except return parameter as result, returning variable should be named with `result`; Variables in the loop structure are named with `each`; Replace `each` with `entry` in map.
  - Exceptions when catch are named with `ex`; Exceptions when catch but do nothing are named with `ignored`.
  - Name property files with `Spinal Case`(a variant of `Snake Case` which uses hyphens `-` to separate words). 
  - Split codes that need to add notes with it into small methods, which are explained with method names.
