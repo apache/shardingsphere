@@ -65,9 +65,9 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         long secondActualKey = (Long) algorithm.generateKey();
         SnowflakeIdState firstActualState = snowflakeIdStateParser.parse(firstActualKey);
         SnowflakeIdState secondActualState = snowflakeIdStateParser.parse(secondActualKey);
-        assertThat(firstActualState.getMachineId(), is(FIXTURE_WORKER_ID));
+        assertThat(firstActualState.getMachineId(), is((long) FIXTURE_WORKER_ID));
         assertThat(firstActualState.getSequence(), is(1L));
-        assertThat(secondActualState.getMachineId(), is(FIXTURE_WORKER_ID));
+        assertThat(secondActualState.getMachineId(), is((long) FIXTURE_WORKER_ID));
         long expectedSecondSequence = 2L;
         assertThat(secondActualState.getSequence(), is(expectedSecondSequence));
     }
@@ -128,7 +128,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         assertThat(actualStringKey.length(), is(Radix62IdConverter.MAX_CHAR_SIZE));
         long actualLongKey = Radix62IdConverter.PAD_START.asLong(actualStringKey);
         SnowflakeIdState actualState = snowflakeIdStateParser.parse(actualLongKey);
-        assertThat(actualState.getMachineId(), is(FIXTURE_WORKER_ID));
+        assertThat(actualState.getMachineId(), is((long) FIXTURE_WORKER_ID));
         assertThat(actualState.getSequence(), is(1L));
     }
     
