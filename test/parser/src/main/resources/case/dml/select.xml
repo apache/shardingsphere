@@ -4522,4 +4522,13 @@
             <column-item name="department_id" start-index="225" stop-index="237" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_aggregate_cume_dist">
+        <projections start-index="7" stop-index="95">
+            <expression-projection text="CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Cume-Dist of 15500" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="102" stop-index="110" />
+        </from>
+    </select>
 </sql-parser-test-cases>
