@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
+import java.util.Optional;
+
 /**
  * Data consistency calculated result.
  */
@@ -28,4 +30,11 @@ public interface DataConsistencyCalculatedResult {
      * @return records count
      */
     int getRecordsCount();
+    
+    /**
+     * Get max unique key value.
+     *
+     * @return max unique key value
+     */
+    Optional<Object> getMaxUniqueKeyValue();
 }

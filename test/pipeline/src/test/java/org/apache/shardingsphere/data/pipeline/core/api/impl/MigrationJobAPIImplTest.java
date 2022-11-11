@@ -154,7 +154,7 @@ public final class MigrationJobAPIImplTest {
         DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(jobConfig, "FIXTURE", null);
         ConsistencyCheckJobConfiguration checkJobConfig = mock(ConsistencyCheckJobConfiguration.class);
         when(checkJobConfig.getJobId()).thenReturn(jobConfig.getJobId() + "1");
-        ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(checkJobConfig, 0, JobStatus.RUNNING);
+        ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(checkJobConfig, 0, JobStatus.RUNNING, null);
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, calculateAlgorithm, checkJobItemContext);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());

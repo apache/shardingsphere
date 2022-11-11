@@ -96,10 +96,16 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 Connection connection = parameter.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
             preparedStatement.setFetchSize(chunkSize);
+            Object tableCheckPosition = parameter.getTableCheckPosition();
             if (null == previousCalculatedResult) {
-                preparedStatement.setInt(1, chunkSize);
+                if (null == tableCheckPosition) {
+                    preparedStatement.setInt(1, chunkSize);
+                } else {
+                    preparedStatement.setObject(1, tableCheckPosition);
+                    preparedStatement.setInt(2, chunkSize);
+                }
             } else {
-                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue());
+                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue().orElse(null));
                 preparedStatement.setInt(2, chunkSize);
             }
             Collection<Collection<Object>> records = new LinkedList<>();
@@ -134,7 +140,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         String cacheKey = parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
-        if (null == parameter.getPreviousCalculatedResult()) {
+        if (null == parameter.getPreviousCalculatedResult() && null == parameter.getTableCheckPosition()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         }
         return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));
@@ -165,6 +171,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         private final int recordsCount;
         
         private final Collection<Collection<Object>> records;
+        
+        public Optional<Object> getMaxUniqueKeyValue() {
+            return Optional.of(maxUniqueKeyValue);
+        }
         
         @SneakyThrows(SQLException.class)
         @Override
@@ -224,7 +234,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue()).append(getRecordsCount()).append(getRecords()).toHashCode();
+            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue().orElse(null)).append(getRecordsCount()).append(getRecords()).toHashCode();
         }
     }
 }

@@ -92,4 +92,33 @@ public final class ReflectionUtil {
         method.setAccessible(true);
         return method.invoke(target, parameterValues);
     }
+    
+    /**
+     * Invoke method in parent class.
+     *
+     * @param target target object
+     * @param methodName method name
+     * @param parameterTypes parameter types
+     * @param parameterValues parameter values
+     * @return invoke method result.
+     * @throws NoSuchMethodException no such field exception
+     * @throws InvocationTargetException invocation target exception
+     * @throws IllegalAccessException illegal access exception
+     */
+    public static Object invokeMethodInParentClass(final Object target, final String methodName, final Class<?>[] parameterTypes,
+                                                   final Object[] parameterValues) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = null;
+        for (Class<?> clazz = target.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+            try {
+                method = clazz.getDeclaredMethod(methodName, parameterTypes);
+                method.setAccessible(true);
+                break;
+            } catch (final NoSuchMethodException ignored) {
+            }
+        }
+        if (null == method) {
+            throw new NoSuchMethodException("not find the method ");
+        }
+        return method.invoke(target, parameterValues);
+    }
 }
