@@ -72,7 +72,7 @@ public final class TrafficRule implements GlobalRule {
             if (null == trafficAlgorithms.get(each.getAlgorithmName())) {
                 break;
             }
-            result.put(each.getName() + "_" + each.getAlgorithmName(), TrafficAlgorithmFactory.newInstance(trafficAlgorithms.get(each.getAlgorithmName())));
+            result.put(each.getName() + "." + each.getAlgorithmName(), TrafficAlgorithmFactory.newInstance(trafficAlgorithms.get(each.getAlgorithmName())));
         }
         return result;
     }
@@ -83,7 +83,7 @@ public final class TrafficRule implements GlobalRule {
             if (null == loadBalancers.get(each.getLoadBalancerName())) {
                 break;
             }
-            result.put(each.getName() + "_" + each.getLoadBalancerName(), TrafficLoadBalanceAlgorithmFactory.newInstance(loadBalancers.get(each.getLoadBalancerName())));
+            result.put(each.getName() + "." + each.getLoadBalancerName(), TrafficLoadBalanceAlgorithmFactory.newInstance(loadBalancers.get(each.getLoadBalancerName())));
         }
         return result;
     }
@@ -138,7 +138,7 @@ public final class TrafficRule implements GlobalRule {
     }
     
     private TrafficAlgorithm getTrafficAlgorithm(final TrafficStrategyConfiguration strategyConfig, final Map<String, TrafficAlgorithm> trafficAlgorithms) {
-        TrafficAlgorithm result = trafficAlgorithms.get(strategyConfig.getName() + "_" + strategyConfig.getAlgorithmName());
+        TrafficAlgorithm result = trafficAlgorithms.get(strategyConfig.getName() + "." + strategyConfig.getAlgorithmName());
         Preconditions.checkState(null != result, "Traffic algorithm can not be null.");
         return result;
     }
@@ -177,7 +177,7 @@ public final class TrafficRule implements GlobalRule {
     }
     
     private TrafficLoadBalanceAlgorithm getLoadBalancer(final TrafficStrategyConfiguration strategyConfig, final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers) {
-        TrafficLoadBalanceAlgorithm result = loadBalancers.get(strategyConfig.getName() + "_" + strategyConfig.getLoadBalancerName());
+        TrafficLoadBalanceAlgorithm result = loadBalancers.get(strategyConfig.getName() + "." + strategyConfig.getLoadBalancerName());
         Preconditions.checkState(null != result, "Traffic load balance algorithm can not be null.");
         return result;
     }
