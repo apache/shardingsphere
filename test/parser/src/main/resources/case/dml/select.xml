@@ -4531,4 +4531,13 @@
             <simple-table name="employees" start-index="102" stop-index="110" />
         </from>
     </select>
+
+    <select sql-case-id="select_aggregate_rank">
+        <projections start-index="7" stop-index="69">
+            <expression-projection text="RANK(15500) WITHIN GROUP (ORDER BY salary DESC)" alias="Rank of 15500" start-index="7" stop-index="69" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="76" stop-index="84" />
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -139,4 +139,5 @@
     <sql-case id="select_aggregate_percentile_cont" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont' FROM employees;" db-types="Oracle" />
     <sql-case id="select_aggregate_percentile_disc" value="SELECT department_id, last_name, salary, PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) OVER (PARTITION BY department_id) 'Percentile_Disc' FROM employees WHERE department_id in (30, 60) ORDER BY last_name, salary, department_id;" db-types="Oracle" />
     <sql-case id="select_aggregate_cume_dist" value="SELECT CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct) 'Cume-Dist of 15500' FROM employees;" db-types="Oracle" />
+    <sql-case id="select_aggregate_rank" value="SELECT RANK(15500) WITHIN GROUP (ORDER BY salary DESC) 'Rank of 15500' FROM employees;" db-types="Oracle" />
 </sql-cases>
