@@ -155,8 +155,8 @@ public final class StateChangedSubscriberTest {
     
     @Test
     public void assertRenewInstanceWorkerIdEvent() {
-        subscriber.renew(new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), 0L));
-        assertThat(contextManager.getInstanceContext().getInstance().getWorkerId(), is(0L));
+        subscriber.renew(new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), 0));
+        assertThat(contextManager.getInstanceContext().getInstance().getWorkerId(), is(0));
     }
     
     @Test

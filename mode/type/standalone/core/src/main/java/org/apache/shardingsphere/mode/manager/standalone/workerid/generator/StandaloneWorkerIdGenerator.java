@@ -28,7 +28,7 @@ import java.util.Properties;
 public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
-    public long generate(final Properties props) {
+    public int generate(final Properties props) {
         if (null == props) {
             return DEFAULT_WORKER_ID;
         }
@@ -36,7 +36,7 @@ public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
         if (null == workerId) {
             return DEFAULT_WORKER_ID;
         }
-        long result = Long.parseLong(workerId.toString());
+        int result = Integer.parseInt(workerId.toString());
         Preconditions.checkState(result <= MAX_WORKER_ID, "%s can not exceed %s", WORKER_ID_KEY, MAX_WORKER_ID);
         return result;
     }

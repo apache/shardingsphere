@@ -202,6 +202,33 @@ dataSources:
 rules:
 - !SHARDING
   tables:
+    t_order:
+      actualDataNodes: readwrite_ds_${0..9}.t_order_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: it_standard_fixture
+    t_order_item:
+      actualDataNodes: readwrite_ds_${0..9}.t_order_item_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: it_standard_fixture
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: it_standard_fixture
+      keyGenerateStrategy:
+        column: item_id
+        keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
     t_user_item:
       actualDataNodes: readwrite_ds_${0..9}.t_user_item_${0..9}
       databaseStrategy:
@@ -266,6 +293,10 @@ rules:
           shardingAlgorithmName: table_inline_user_id
   bindingTables:
     - t_user,t_user_item,t_user_details
+    - t_order,t_order_item
+  broadcastTables:
+    - t_product_category
+    - t_country
 
   shardingAlgorithms:
     it_standard_fixture:

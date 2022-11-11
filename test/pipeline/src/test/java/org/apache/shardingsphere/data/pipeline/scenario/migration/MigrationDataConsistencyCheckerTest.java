@@ -67,7 +67,7 @@ public final class MigrationDataConsistencyCheckerTest {
     
     private ConsistencyCheckJobItemContext createConsistencyCheckJobItemConfig() {
         ConsistencyCheckJobConfiguration jobConfig = new ConsistencyCheckJobConfiguration("", "", "", new Properties());
-        return new ConsistencyCheckJobItemContext(jobConfig, 0, JobStatus.RUNNING);
+        return new ConsistencyCheckJobItemContext(jobConfig, 0, JobStatus.RUNNING, null);
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {

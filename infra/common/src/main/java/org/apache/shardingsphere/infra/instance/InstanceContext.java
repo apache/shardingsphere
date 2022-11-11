@@ -81,7 +81,7 @@ public final class InstanceContext {
      * @param instanceId instance id
      * @param workerId worker id
      */
-    public void updateWorkerId(final String instanceId, final Long workerId) {
+    public void updateWorkerId(final String instanceId, final Integer workerId) {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setWorkerId(workerId);
         }
@@ -106,7 +106,7 @@ public final class InstanceContext {
      *
      * @return worker id
      */
-    public long getWorkerId() {
+    public int getWorkerId() {
         return instance.getWorkerId();
     }
     
@@ -116,8 +116,8 @@ public final class InstanceContext {
      * @param props properties
      * @return worker id
      */
-    public long generateWorkerId(final Properties props) {
-        long result = workerIdGenerator.generate(props);
+    public int generateWorkerId(final Properties props) {
+        int result = workerIdGenerator.generate(props);
         instance.setWorkerId(result);
         return result;
     }

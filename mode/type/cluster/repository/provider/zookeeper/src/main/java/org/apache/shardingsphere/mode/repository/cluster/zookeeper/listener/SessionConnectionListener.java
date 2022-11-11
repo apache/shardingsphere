@@ -74,7 +74,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     }
     
     private boolean isNeedGenerateWorkerId() {
-        return -1L != instanceContext.getInstance().getWorkerId();
+        return -1 != instanceContext.getInstance().getWorkerId();
     }
     
     @SneakyThrows(InterruptedException.class)

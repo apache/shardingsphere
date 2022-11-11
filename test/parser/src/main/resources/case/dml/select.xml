@@ -4475,4 +4475,14 @@
             <column-item name="last_name" start-index="153" stop-index="161" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_aggregate_percentile_cont">
+        <projections start-index="7" stop-index="91">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <expression-projection text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC)" alias="Median cont" start-index="22" stop-index="91" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="98" stop-index="106" />
+        </from>
+    </select>
 </sql-parser-test-cases>

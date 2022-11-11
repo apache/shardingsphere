@@ -18,28 +18,33 @@
 package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
+import java.util.Map;
+
 /**
  * Data consistency check job item progress.
  */
-// TODO use final for fields
 @Getter
-@Setter
+@RequiredArgsConstructor
 @ToString
 public final class ConsistencyCheckJobItemProgress implements PipelineJobItemProgress {
     
+    @Setter
     private JobStatus status = JobStatus.RUNNING;
     
-    private String tableNames;
+    private final String tableNames;
     
-    private Long checkedRecordsCount;
+    private final Long checkedRecordsCount;
     
-    private Long recordsCount;
+    private final Long recordsCount;
     
-    private Long checkBeginTimeMillis;
+    private final Long checkBeginTimeMillis;
     
-    private Long checkEndTimeMillis;
+    private final Long checkEndTimeMillis;
+    
+    private final Map<String, Object> tableCheckPositions;
 }

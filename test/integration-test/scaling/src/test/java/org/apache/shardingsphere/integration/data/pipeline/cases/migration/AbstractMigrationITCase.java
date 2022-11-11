@@ -165,6 +165,7 @@ public abstract class AbstractMigrationITCase extends BaseITCase {
     
     protected void assertCheckMigrationSuccess(final String jobId, final String algorithmType) throws SQLException {
         proxyExecuteWithLog(String.format("CHECK MIGRATION '%s' BY TYPE (NAME='%s')", jobId, algorithmType), 0);
+        // TODO Need to add after the stop then to start, can continue the consistency check from the previous progress
         List<Map<String, Object>> resultList = Collections.emptyList();
         for (int i = 0; i < 10; i++) {
             resultList = queryForListWithLog(String.format("SHOW MIGRATION CHECK STATUS '%s'", jobId));
