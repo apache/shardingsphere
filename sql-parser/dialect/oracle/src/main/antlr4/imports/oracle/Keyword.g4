@@ -583,3 +583,7 @@ ROWTYPE
 PERCENTILE_CONT
     : P E R C E N T I L E UL_ C O N T
     ;
+
+PERCENTILE_DISC
+    : P E R C E N T I L E UL_ D I S C
+    ;

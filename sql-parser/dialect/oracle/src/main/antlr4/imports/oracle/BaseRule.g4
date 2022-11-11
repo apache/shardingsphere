@@ -515,7 +515,7 @@ aggregationFunction
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC
     ;
 
 listaggOverflowClause
