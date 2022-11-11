@@ -591,3 +591,11 @@ PERCENTILE_DISC
 CUME_DIST
     : C U M E UL_ D I S T
     ;
+
+PARTITION
+    : P A R T I T I O N
+    ;
+
+RANK
+    : R A N K
+    ;
