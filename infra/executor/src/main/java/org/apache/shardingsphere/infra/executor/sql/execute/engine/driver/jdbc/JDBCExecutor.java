@@ -35,6 +35,7 @@ public final class JDBCExecutor {
     
     private final ExecutorEngine executorEngine;
     
+    // TODO add transaction type to ConnectionContext
     private final ConnectionContext connectionContext;
     
     /**
