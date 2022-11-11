@@ -28,6 +28,6 @@ public final class SplitPipelineJobByRangeException extends PipelineSQLException
     private static final long serialVersionUID = -8509592086832334026L;
     
     public SplitPipelineJobByRangeException(final String tableName, final String reason) {
-        super(XOpenSQLState.GENERAL_ERROR, 83, "Can not split by range for table `%s`, reason is: %s", tableName, reason);
+        super(XOpenSQLState.GENERAL_ERROR, 83, String.format("Can not split by range for table `%s`, reason is: %s", tableName, reason));
     }
 }

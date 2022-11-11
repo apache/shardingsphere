@@ -32,13 +32,13 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
@@ -48,6 +48,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALB
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
@@ -69,6 +70,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,20 +106,43 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
-        for (YamlRuleConfiguration each : yamlConfig.getRules()) {
-            if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                appendReadWriteSplittingDistSQL((YamlReadwriteSplittingRuleConfiguration) each, result);
-            } else if (each instanceof YamlShardingRuleConfiguration) {
-                appendShardingDistSQL((YamlShardingRuleConfiguration) each, result);
-            } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
-                appendDatabaseDiscoveryDistSQL((YamlDatabaseDiscoveryRuleConfiguration) each, result);
-            } else if (each instanceof YamlEncryptRuleConfiguration) {
-                appendEncryptDistSQL((YamlEncryptRuleConfiguration) each, result);
-            } else if (each instanceof YamlShadowRuleConfiguration) {
-                appendShadowDistSQL((YamlShadowRuleConfiguration) each, result);
+        swapToRuleConfigs(yamlConfig).values().forEach(each -> {
+            if (each instanceof ShardingRuleConfiguration) {
+                appendShardingDistSQL((ShardingRuleConfiguration) each, result);
+            } else if (each instanceof ReadwriteSplittingRuleConfiguration) {
+                appendReadWriteSplittingDistSQL((ReadwriteSplittingRuleConfiguration) each, result);
+            } else if (each instanceof DatabaseDiscoveryRuleConfiguration) {
+                appendDatabaseDiscoveryDistSQL((DatabaseDiscoveryRuleConfiguration) each, result);
+            } else if (each instanceof EncryptRuleConfiguration) {
+                appendEncryptDistSQL((EncryptRuleConfiguration) each, result);
+            } else if (each instanceof ShadowRuleConfiguration) {
+                appendShadowDistSQL((ShadowRuleConfiguration) each, result);
             }
-        }
+        });
         return result.toString();
+    }
+    
+    private Map<Integer, RuleConfiguration> swapToRuleConfigs(final YamlProxyDatabaseConfiguration yamlConfig) {
+        Map<Integer, RuleConfiguration> result = new TreeMap<>(Comparator.reverseOrder());
+        yamlConfig.getRules().forEach(each -> {
+            if (each instanceof YamlShardingRuleConfiguration) {
+                YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlShardingRuleConfiguration) each));
+            } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
+                YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each));
+            } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
+                YamlDatabaseDiscoveryRuleConfigurationSwapper swapper = new YamlDatabaseDiscoveryRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each));
+            } else if (each instanceof YamlEncryptRuleConfiguration) {
+                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlEncryptRuleConfiguration) each));
+            } else if (each instanceof YamlShadowRuleConfiguration) {
+                YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlShadowRuleConfiguration) each));
+            }
+        });
+        return result;
     }
     
     private void appendResourceDistSQL(final YamlProxyDatabaseConfiguration yamlConfig, final StringBuilder result) {
@@ -184,8 +209,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
     }
     
-    private void appendShardingDistSQL(final YamlShardingRuleConfiguration yamlRuleConfig, final StringBuilder result) {
-        ShardingRuleConfiguration ruleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
+    private void appendShardingDistSQL(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
         appendShardingAlgorithms(ruleConfig, result);
         appendKeyGenerators(ruleConfig, result);
         appendShardingTableRules(ruleConfig, result);
@@ -297,39 +321,53 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             return;
         }
         result.append(String.format(DistSQLScriptConstants.BROADCAST_TABLE_RULE, String.join(",", ruleConfig.getBroadcastTables())));
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
-    private void appendReadWriteSplittingDistSQL(final YamlReadwriteSplittingRuleConfiguration yamlRuleConfig, final StringBuilder result) {
-        ReadwriteSplittingRuleConfiguration ruleConfig = new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
+    private void appendReadWriteSplittingDistSQL(final ReadwriteSplittingRuleConfiguration ruleConfig, final StringBuilder result) {
         if (ruleConfig.getDataSources().isEmpty()) {
             return;
         }
         result.append(DistSQLScriptConstants.CREATE_READWRITE_SPLITTING_RULE);
-        appendStaticReadWriteSplittingRule(ruleConfig, result);
-        // TODO Dynamic READ-WRITE-SPLITTING RULES
-    }
-    
-    private void appendStaticReadWriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final StringBuilder result) {
         Iterator<ReadwriteSplittingDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = iterator.next();
-            StaticReadwriteSplittingStrategyConfiguration staticStrategy = dataSourceRuleConfig.getStaticStrategy();
-            String readDataSourceNames = getReadDataSourceNames(staticStrategy.getReadDataSourceNames());
-            String loadBalancerType = getLoadBalancerType(ruleConfig.getLoadBalancers().get(dataSourceRuleConfig.getLoadBalancerName()));
-            result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING, dataSourceRuleConfig.getName(), staticStrategy.getWriteDataSourceName(), readDataSourceNames, loadBalancerType));
+            appendStaticReadWriteSplittingRule(dataSourceRuleConfig.getStaticStrategy(), ruleConfig.getLoadBalancers(), dataSourceRuleConfig, result);
+            appendDynamicReadWriteSplittingRule(dataSourceRuleConfig.getDynamicStrategy(), ruleConfig.getLoadBalancers(), dataSourceRuleConfig, result);
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+    }
+    
+    private void appendDynamicReadWriteSplittingRule(final DynamicReadwriteSplittingStrategyConfiguration dynamicConfig, final Map<String, AlgorithmConfiguration> loadBalancers,
+                                                     final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final StringBuilder result) {
+        if (null == dynamicConfig) {
+            return;
+        }
+        String loadBalancerType = getLoadBalancerType(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
+        boolean allowWriteDataSourceQuery = Strings.isNullOrEmpty(dynamicConfig.getWriteDataSourceQueryEnabled()) ? Boolean.TRUE : Boolean.parseBoolean(dynamicConfig.getWriteDataSourceQueryEnabled());
+        result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_FOR_DYNAMIC,
+                dataSourceRuleConfig.getName(), dynamicConfig.getAutoAwareDataSourceName(), allowWriteDataSourceQuery, loadBalancerType));
+    }
+    
+    private void appendStaticReadWriteSplittingRule(final StaticReadwriteSplittingStrategyConfiguration staticConfig, final Map<String, AlgorithmConfiguration> loadBalancers,
+                                                    final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final StringBuilder result) {
+        if (null == staticConfig) {
+            return;
+        }
+        String readDataSourceNames = getReadDataSourceNames(staticConfig.getReadDataSourceNames());
+        String loadBalancerType = getLoadBalancerType(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
+        result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_FOR_STATIC,
+                dataSourceRuleConfig.getName(), staticConfig.getWriteDataSourceName(), readDataSourceNames, loadBalancerType));
     }
     
     private String getLoadBalancerType(final AlgorithmConfiguration algorithmConfig) {
         StringBuilder result = new StringBuilder();
         String loadBalancerType = getAlgorithmType(algorithmConfig);
         if (!Strings.isNullOrEmpty(loadBalancerType)) {
-            result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType).append(System.lineSeparator());
+            result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator()).append(loadBalancerType);
         }
         return result.toString();
     }
@@ -346,8 +384,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendDatabaseDiscoveryDistSQL(final YamlDatabaseDiscoveryRuleConfiguration yamlRuleConfig, final StringBuilder result) {
-        DatabaseDiscoveryRuleConfiguration ruleConfig = new YamlDatabaseDiscoveryRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
+    private void appendDatabaseDiscoveryDistSQL(final DatabaseDiscoveryRuleConfiguration ruleConfig, final StringBuilder result) {
         if (ruleConfig.getDataSources().isEmpty()) {
             return;
         }
@@ -364,7 +401,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
     private String getDatabaseDiscoveryHeartbeat(final DatabaseDiscoveryHeartBeatConfiguration heartBeatConfig) {
@@ -376,8 +413,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendEncryptDistSQL(final YamlEncryptRuleConfiguration yamlRuleConfig, final StringBuilder result) {
-        EncryptRuleConfiguration ruleConfig = new YamlEncryptRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
+    private void appendEncryptDistSQL(final EncryptRuleConfiguration ruleConfig, final StringBuilder result) {
         if (ruleConfig.getTables().isEmpty()) {
             return;
         }
@@ -393,7 +429,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
             }
         }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
     private String getEncryptColumns(final Collection<EncryptColumnRuleConfiguration> ruleConfigs, final Map<String, AlgorithmConfiguration> encryptors) {
@@ -426,8 +462,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendShadowDistSQL(final YamlShadowRuleConfiguration yamlRuleConfig, final StringBuilder result) {
-        ShadowRuleConfiguration ruleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject(yamlRuleConfig);
+    private void appendShadowDistSQL(final ShadowRuleConfiguration ruleConfig, final StringBuilder result) {
         if (ruleConfig.getDataSources().isEmpty()) {
             return;
         }
@@ -444,7 +479,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 result.append(DistSQLScriptConstants.COMMA);
             }
         }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
     private String getShadowTables(final String shadowRuleName, final Map<String, ShadowTableConfiguration> ruleConfig, final Map<String, AlgorithmConfiguration> algorithmConfigs) {

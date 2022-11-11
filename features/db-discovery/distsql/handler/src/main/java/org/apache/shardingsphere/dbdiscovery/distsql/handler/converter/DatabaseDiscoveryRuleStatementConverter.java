@@ -69,7 +69,7 @@ public final class DatabaseDiscoveryRuleStatementConverter {
     }
     
     private static String getName(final String ruleName, final String type) {
-        return String.format("%s_%s", ruleName, type);
+        return String.format("%s_%s", ruleName, type.replace(".", "_").toLowerCase());
     }
     
     /**

@@ -70,8 +70,8 @@ public final class ComputeNodeStatusServiceTest {
     public void assertPersistInstanceWorkerId() {
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         final String instanceId = instanceMetaData.getId();
-        new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100L);
-        verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100L));
+        new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100);
+        verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100));
     }
     
     @Test

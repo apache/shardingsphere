@@ -43,7 +43,7 @@ public final class PipelineMetaDataNode {
      * @return data sources path
      */
     public static String getMetaDataDataSourcesPath(final JobType jobType) {
-        return String.join("/", getMetaDataRootPath(jobType), "dataSources");
+        return String.join("/", getMetaDataRootPath(jobType), "data_sources");
     }
     
     private static String getMetaDataRootPath(final JobType jobType) {
@@ -59,7 +59,7 @@ public final class PipelineMetaDataNode {
      * @return data sources path
      */
     public static String getMetaDataProcessConfigPath(final JobType jobType) {
-        return String.join("/", getMetaDataRootPath(jobType), "processConfig");
+        return String.join("/", getMetaDataRootPath(jobType), "process_config");
     }
     
     /**

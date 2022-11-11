@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseTransactionITCase extends BaseITCase {
     
-    public BaseTransactionITCase(final TransactionParameterized parameterized) throws SQLException {
+    public BaseTransactionITCase(final TransactionParameterized parameterized) {
         super(parameterized);
     }
     

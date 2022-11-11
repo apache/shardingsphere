@@ -31,6 +31,6 @@ public final class SQLWrapperException extends ShardingSphereSQLException {
     private static final int TYPE_OFFSET = 0;
     
     public SQLWrapperException(final SQLException cause) {
-        super(cause.getSQLState(), TYPE_OFFSET, cause.getErrorCode(), cause.getMessage());
+        super(cause.getMessage(), cause, cause.getSQLState(), TYPE_OFFSET, cause.getErrorCode());
     }
 }

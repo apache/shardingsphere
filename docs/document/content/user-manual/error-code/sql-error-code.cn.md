@@ -28,9 +28,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 ### 数据
 
 | SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| --------- |-------------| ------ |
 | HY004     | 11000       | Invalid value \`%s\`. |
 | HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
+| HY000     | 11002       | Can not find \`%s\` file for datetime initialize. |
 | HY004     | 11010       | Unsupported conversion stream charset \`%s\`. |
 
 ### 语法
@@ -83,7 +84,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
 | HY000     | 17000       | Work ID assigned failed, which can not exceed 1024. |
-| HY000     | 17001       | Can not find \`%s\` file for datetime initialize. |
 | HY000     | 17002       | File access failed, reason is: %s |
 | HY000     | 17010       | Cluster persist repository error, reason is: %s |
 
@@ -91,7 +91,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 | SQL State | Vendor Code | 错误信息 |
 | --------- | ----------- | ------ |
-| 44000     | 18001       | Created process configuration already existed. |
 | 44000     | 18002       | Altered process configuration does not exist. |
 | HY000     | 18020       | Failed to get DDL for table \`%s\`. |
 | 42S01     | 18030       | Duplicate resource names \`%s\`. |
@@ -115,8 +114,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | HY000     | 18091       | Importer job write data failed. |
 | 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s |
 | HY000     | 18093       | Can not poll event because of binlog sync channel already closed. |
-| HY000     | 18094       | Task \`%s\` execute failed. |
-| HY000     | 18095       | Job has already finished, please run \`CHECK MIGRATION %s\` to start a new data consistency check job. |
+| HY000     | 18095       | Can not find consistency check job of \`%s\`. |
 | HY000     | 18096       | Uncompleted consistency check job \`%s\` exists. |
 
 ### DistSQL

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
 import lombok.Getter;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
@@ -38,15 +39,15 @@ public final class TranslatableDatabase extends AbstractSchema {
     
     private final Map<String, Schema> subSchemaMap;
     
-    public TranslatableDatabase(final ShardingSphereDatabase database, final TableScanExecutor executor) {
+    public TranslatableDatabase(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
         name = database.getName();
-        subSchemaMap = createSubSchemaMap(database, executor);
+        subSchemaMap = createSubSchemaMap(database, protocolType, executor);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final TableScanExecutor executor) {
+    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType, final TableScanExecutor executor) {
         Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
-            result.put(entry.getKey(), new TranslatableSchema(entry.getKey(), entry.getValue(), null, executor));
+            result.put(entry.getKey(), new TranslatableSchema(entry.getKey(), entry.getValue(), protocolType, null, executor));
         }
         return result;
     }
