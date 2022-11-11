@@ -17,20 +17,17 @@
 
 name: Nightly - IT Example Generator
 
-#on:
-#  schedule:
-#    - cron: '0 19 */1 * *'  # once a day. UTC time
 on:
-  pull_request:
-    branches: [ master ]
+  schedule:
+    - cron: '0 19 */1 * *'  # once a day. UTC time
     
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true
 
 jobs:
   build-project:
-    #if: github.repository == 'apache/shardingsphere'
-    name: Build With Maven
+    if: github.repository == 'apache/shardingsphere'
+    name: Build Project
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -46,10 +43,10 @@ jobs:
           restore-keys: |
             shardingsphere-maven-third-party-cache-
             shardingsphere-maven-third-party-
-      - name: Build prod with Maven
+      - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
   example-generator:
-    # if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
