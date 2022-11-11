@@ -211,6 +211,28 @@ dataSources:
 rules:
 - !SHARDING
   autoTables:
+    t_order:
+      actualDataNodes: write_ds_${0..9}
+      shardingStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: mod
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: constant
+      auditStrategy:
+        auditorNames:
+          - auditor_constant
+        allowHintDisable: true
+    t_order_item:
+      actualDataNodes: write_ds_${0..9}
+      shardingStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: mod
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: constant
     t_user:
       actualDataSources: write_ds_${0..9}
       shardingStrategy:
