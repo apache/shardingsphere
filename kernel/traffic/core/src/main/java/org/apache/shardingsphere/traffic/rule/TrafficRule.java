@@ -46,7 +46,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -69,16 +68,22 @@ public final class TrafficRule implements GlobalRule {
     
     private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, AlgorithmConfiguration> trafficAlgorithms) {
         Map<String, TrafficAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, AlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
-            result.put(entry.getKey(), TrafficAlgorithmFactory.newInstance(entry.getValue()));
+        for (TrafficStrategyConfiguration each : configuration.getTrafficStrategies()) {
+            if (null == trafficAlgorithms.get(each.getAlgorithmName())) {
+                break;
+            }
+            result.put(each.getName() + "_" + each.getAlgorithmName(), TrafficAlgorithmFactory.newInstance(trafficAlgorithms.get(each.getAlgorithmName())));
         }
         return result;
     }
     
     private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, AlgorithmConfiguration> loadBalancers) {
         Map<String, TrafficLoadBalanceAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, AlgorithmConfiguration> entry : loadBalancers.entrySet()) {
-            result.put(entry.getKey(), TrafficLoadBalanceAlgorithmFactory.newInstance(entry.getValue()));
+        for (TrafficStrategyConfiguration each : configuration.getTrafficStrategies()) {
+            if (null == loadBalancers.get(each.getLoadBalancerName())) {
+                break;
+            }
+            result.put(each.getName() + "_" + each.getLoadBalancerName(), TrafficLoadBalanceAlgorithmFactory.newInstance(loadBalancers.get(each.getLoadBalancerName())));
         }
         return result;
     }
@@ -88,7 +93,7 @@ public final class TrafficRule implements GlobalRule {
         Collection<TrafficStrategyRule> noneTransactionStrategyRules = new LinkedList<>();
         Collection<TrafficStrategyRule> result = new LinkedList<>();
         for (TrafficStrategyConfiguration each : trafficStrategies) {
-            TrafficAlgorithm trafficAlgorithm = getTrafficAlgorithm(trafficAlgorithms, each.getAlgorithmName());
+            TrafficAlgorithm trafficAlgorithm = getTrafficAlgorithm(each, trafficAlgorithms);
             TrafficStrategyRule trafficStrategyRule = createTrafficStrategyRule(each, trafficAlgorithm, loadBalancers);
             if (isTransactionStrategyRule(trafficAlgorithm)) {
                 result.add(trafficStrategyRule);
@@ -106,7 +111,7 @@ public final class TrafficRule implements GlobalRule {
         if (trafficAlgorithm instanceof SimplifiedTrafficAlgorithm) {
             result = new TrafficStrategyRule(strategyConfig.getName(), Collections.emptyList(), trafficAlgorithm, null);
         } else {
-            TrafficLoadBalanceAlgorithm loadBalancer = getLoadBalancer(loadBalancers, strategyConfig.getLoadBalancerName());
+            TrafficLoadBalanceAlgorithm loadBalancer = getLoadBalancer(strategyConfig, loadBalancers);
             result = new TrafficStrategyRule(strategyConfig.getName(), new LinkedHashSet<>(strategyConfig.getLabels()), trafficAlgorithm, loadBalancer);
         }
         return result;
@@ -132,8 +137,8 @@ public final class TrafficRule implements GlobalRule {
         return Optional.empty();
     }
     
-    private TrafficAlgorithm getTrafficAlgorithm(final Map<String, TrafficAlgorithm> trafficAlgorithms, final String algorithmName) {
-        TrafficAlgorithm result = trafficAlgorithms.get(algorithmName);
+    private TrafficAlgorithm getTrafficAlgorithm(final TrafficStrategyConfiguration strategyConfig, final Map<String, TrafficAlgorithm> trafficAlgorithms) {
+        TrafficAlgorithm result = trafficAlgorithms.get(strategyConfig.getName() + "_" + strategyConfig.getAlgorithmName());
         Preconditions.checkState(null != result, "Traffic algorithm can not be null.");
         return result;
     }
@@ -171,8 +176,8 @@ public final class TrafficRule implements GlobalRule {
         return trafficAlgorithm.match(transactionTrafficValue);
     }
     
-    private TrafficLoadBalanceAlgorithm getLoadBalancer(final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers, final String loadBalancerName) {
-        TrafficLoadBalanceAlgorithm result = loadBalancers.get(loadBalancerName);
+    private TrafficLoadBalanceAlgorithm getLoadBalancer(final TrafficStrategyConfiguration strategyConfig, final Map<String, TrafficLoadBalanceAlgorithm> loadBalancers) {
+        TrafficLoadBalanceAlgorithm result = loadBalancers.get(strategyConfig.getName() + "_" + strategyConfig.getLoadBalancerName());
         Preconditions.checkState(null != result, "Traffic load balance algorithm can not be null.");
         return result;
     }
