@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.mysql;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
@@ -31,15 +30,15 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * MySQL general transaction test case with proxy container, includes multiple cases.
+ * MySQL general transaction test case with JDBC container, includes multiple cases.
  */
-@Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
+@Slf4j
+public final class MysqlJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public MySQLProxyTransactionIT(final TransactionParameterized parameterized) {
+    public MysqlJdbcTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);
@@ -47,12 +46,11 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(MySQLProxyTransactionIT.class);
+        return getTransactionParameterizedList(MysqlJdbcTransactionIT.class);
     }
     
     @After
-    @SneakyThrows(SQLException.class)
-    public void after() {
+    public void after() throws SQLException {
         getDataSource().close();
         getContainerComposer().close();
     }

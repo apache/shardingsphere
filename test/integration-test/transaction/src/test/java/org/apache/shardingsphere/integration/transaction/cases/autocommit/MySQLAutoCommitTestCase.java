@@ -47,20 +47,20 @@ public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     }
     
     private void assertAutoCommit() throws SQLException {
-        Connection conn1 = getDataSource().getConnection();
-        Connection conn2 = getDataSource().getConnection();
-        executeWithLog(conn1, "set session transaction isolation level read committed;");
-        executeWithLog(conn2, "set session transaction isolation level read committed;");
-        executeWithLog(conn1, "set autocommit=0;");
-        executeWithLog(conn2, "begin;");
-        executeWithLog(conn1, "insert into account(id, balance, transaction_id) values(1, 100, 1)");
-        ResultSet emptyResultSet = executeQueryWithLog(conn2, "select * from account;");
+        Connection connection1 = getDataSource().getConnection();
+        Connection connection2 = getDataSource().getConnection();
+        executeWithLog(connection1, "set session transaction isolation level read committed;");
+        executeWithLog(connection2, "set session transaction isolation level read committed;");
+        executeWithLog(connection1, "set autocommit=0;");
+        executeWithLog(connection2, "begin;");
+        executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1)");
+        ResultSet emptyResultSet = executeQueryWithLog(connection2, "select * from account;");
         if (emptyResultSet.next()) {
             fail("There should not be result.");
         }
-        executeWithLog(conn1, "commit;");
+        executeWithLog(connection1, "commit;");
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        ResultSet notEmptyResultSet = executeQueryWithLog(conn2, "select * from account");
+        ResultSet notEmptyResultSet = executeQueryWithLog(connection2, "select * from account");
         if (!notEmptyResultSet.next()) {
             fail("There should be result.");
         }

@@ -35,11 +35,11 @@ import java.util.Collection;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
+public final class PostgresqlJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public PostgreSQLJdbcTransactionIT(final TransactionParameterized parameterized) {
+    public PostgresqlJdbcTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);
@@ -47,7 +47,7 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(PostgreSQLJdbcTransactionIT.class);
+        return getTransactionParameterizedList(PostgresqlJdbcTransactionIT.class);
     }
     
     @After

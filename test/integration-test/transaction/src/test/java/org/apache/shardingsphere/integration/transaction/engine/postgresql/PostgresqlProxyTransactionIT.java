@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.engine.mysql;
+package org.apache.shardingsphere.integration.transaction.engine.postgresql;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
@@ -30,15 +31,15 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 /**
- * MySQL general transaction test case with JDBC container, includes multiple cases.
+ * PostgreSQL general transaction test case with proxy container, includes multiple cases.
  */
-@RunWith(Parameterized.class)
 @Slf4j
-public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
+@RunWith(Parameterized.class)
+public final class PostgresqlProxyTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public MySQLJdbcTransactionIT(final TransactionParameterized parameterized) {
+    public PostgresqlProxyTransactionIT(final TransactionParameterized parameterized) {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);
@@ -46,11 +47,12 @@ public final class MySQLJdbcTransactionIT extends BaseTransactionITCase {
     
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(MySQLJdbcTransactionIT.class);
+        return getTransactionParameterizedList(PostgresqlProxyTransactionIT.class);
     }
     
     @After
-    public void after() throws SQLException {
+    @SneakyThrows(SQLException.class)
+    public void after() {
         getDataSource().close();
         getContainerComposer().close();
     }

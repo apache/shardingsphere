@@ -46,13 +46,13 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     private void assertSetReadOnly() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeUpdateWithLog(connection, "insert into account(id, balance) values (1, 0), (2, 100);");
-        Connection conn = getDataSource().getConnection();
-        conn.setReadOnly(true);
-        assertQueryBalance(conn);
+        Connection connection1 = getDataSource().getConnection();
+        executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
+        Connection connection2 = getDataSource().getConnection();
+        connection2.setReadOnly(true);
+        assertQueryBalance(connection2);
         try {
-            executeWithLog(conn, "update account set balance = 100 where id = 2;");
+            executeWithLog(connection2, "update account set balance = 100 where id = 2;");
             fail("Update ran successfully, should failed.");
         } catch (SQLException e) {
             log.info("Update failed for expect.");
