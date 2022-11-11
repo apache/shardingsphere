@@ -94,7 +94,7 @@ public final class ReflectionUtil {
     }
     
     /**
-     * invoke method in parent class.
+     * Invoke method in parent class.
      *
      * @param target target object
      * @param methodName method name
@@ -117,7 +117,7 @@ public final class ReflectionUtil {
             }
         }
         if (null == method) {
-            throw new NoSuchMethodException("not find method ");
+            throw new NoSuchMethodException("not find the method ");
         }
         return method.invoke(target, parameterValues);
     }
