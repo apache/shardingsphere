@@ -908,7 +908,7 @@ rollbackSegment
     ;
 
 queryName
-    : ((owner DOT_)? name)
+    : (owner DOT_)? name
     ;
 
 cycleValue
