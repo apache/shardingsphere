@@ -53,6 +53,7 @@ jobs:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    needs: build-project
     strategy:
       fail-fast: false
       matrix:
