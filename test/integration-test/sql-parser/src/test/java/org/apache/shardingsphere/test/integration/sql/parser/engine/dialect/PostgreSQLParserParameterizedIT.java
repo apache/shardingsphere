@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.sql.parser.engine.dialect;
 import org.apache.shardingsphere.test.integration.sql.parser.engine.SQLParserParameterizedIT;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserCSVResultProcessor;
+import org.apache.shardingsphere.test.integration.sql.parser.result.impl.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;

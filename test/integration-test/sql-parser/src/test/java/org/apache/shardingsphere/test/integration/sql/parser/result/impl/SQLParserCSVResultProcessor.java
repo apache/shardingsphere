@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.result;
+package org.apache.shardingsphere.test.integration.sql.parser.result.impl;
 
 import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessor;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.result;
+package org.apache.shardingsphere.test.integration.sql.parser.result.impl;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessor;
 
 @Slf4j
 public class SQLParserLogResultProcessor implements SQLParserResultProcessor {
