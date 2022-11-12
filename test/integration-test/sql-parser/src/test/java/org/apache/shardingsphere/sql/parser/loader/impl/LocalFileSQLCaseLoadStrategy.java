@@ -15,43 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.loader;
+package org.apache.shardingsphere.sql.parser.loader.impl;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
+import org.apache.shardingsphere.sql.parser.loader.SQLCaseLoadStrategy;
 import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
- * Dynamic SQL case loader with GitHub.
+ * Dynamic SQL case loader with local file.
  */
-public final class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
+public final class LocalFileSQLCaseLoadStrategy extends DynamicLoadingSQLParserParameterizedTest implements SQLCaseLoadStrategy {
     
-    public DynamicSQLCaseGitHubLoader() {
+    public LocalFileSQLCaseLoadStrategy() {
         super("", "", "", new SQLParserCSVResultProcessor(""));
     }
     
-    /**
-     * Get test parameters.
-     *
-     * @param sqlCaseTestURI the URI of sql test case
-     *
-     * @param sqlCaseResultURI the URI of sql result case
-     *
-     * @return Test cases from GitHub.
-     **/
+    @Override
     public Collection<Object[]> getTestParameters(final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
-        Collection<Object[]> result = new LinkedList<>();
-        Map<String, String> resultResponse = getResultResponse("https://api.github.com/repos/", sqlCaseResultURI);
-        for (Map<String, String> each : getResponse("https://api.github.com/repos/", sqlCaseTestURI)) {
-            String sqlCaseFileName = each.get("name").split("\\.")[0];
-            String sqlCaseTestFileContent = getContent(URI.create(each.get("download_url")));
-            String sqlCaseResultFileContent = getContent(URI.create(resultResponse.get(each.get("name"))));
-            result.addAll(getSQLCases(sqlCaseFileName, sqlCaseTestFileContent, sqlCaseResultFileContent));
-        }
+        Collection<Object[]> result = new LinkedList<>(getSQLCases("localFile", getContent(sqlCaseTestURI), getContent(sqlCaseResultURI)));
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});
         }

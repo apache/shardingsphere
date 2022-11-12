@@ -17,21 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.loader;
 
-import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
-import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
-
 import java.net.URI;
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Dynamic SQL case loader with local file.
+ * SQL case load strategy.
  */
-public final class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
-    
-    public DynamicSQLCaseLocalLoader() {
-        super("", "", "", new SQLParserCSVResultProcessor(""));
-    }
+public interface SQLCaseLoadStrategy {
     
     /**
      * Get test parameters.
@@ -40,13 +32,7 @@ public final class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserPara
      *
      * @param sqlCaseResultURI the URI of sql result case
      *
-     * @return Test cases from localhost.
-     **/
-    public Collection<Object[]> getTestParameters(final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
-        Collection<Object[]> result = new LinkedList<>(getSQLCases("localFile", getContent(sqlCaseTestURI), getContent(sqlCaseResultURI)));
-        if (result.isEmpty()) {
-            result.add(new Object[]{"", ""});
-        }
-        return result;
-    }
+     * @return Test cases from with strategy
+     */
+    Collection<Object[]> getTestParameters(URI sqlCaseTestURI, URI sqlCaseResultURI);
 }
