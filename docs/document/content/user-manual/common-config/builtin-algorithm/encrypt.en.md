@@ -56,9 +56,9 @@ Attributes:
 | sm4-iv        | String     | SM4 IV (should be specified on CBC, 16 bytes long)|
 | sm4-padding   | String     | SM4 PADDING (should be PKCS5Padding or PKCS7Padding, NoPadding excepted)|
 
-### CharDigestFuzzy Encrypt Algorithm
+### CharDigestLike Encrypt Algorithm
 
-Type：CHAR_DIGEST_FUZZY
+Type：CHAR_DIGEST_LIKE
 
 Attributes：
 
@@ -84,11 +84,11 @@ rules:
           plainColumn: username_plain
           cipherColumn: username
           encryptorName: name-encryptor
-          fuzzyQueryColumn: name_fuzzy
-          fuzzyQueryEncryptorName: fuzzy-encryptor
+          likeQueryColumn: name_like
+          likeQueryEncryptorName: like-encryptor
   encryptors:
-    fuzzy-encryptor:
-      type: CHAR_DIGEST_FUZZY
+    like-encryptor:
+      type: CHAR_DIGEST_LIKE
     name-encryptor:
       type: AES
       props:

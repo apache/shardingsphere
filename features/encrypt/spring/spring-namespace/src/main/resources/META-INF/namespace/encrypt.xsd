@@ -47,11 +47,11 @@
             <xsd:attribute name="logic-column" type="xsd:string" use="required" />
             <xsd:attribute name="cipher-column" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-column" type="xsd:string" />
-            <xsd:attribute name="fuzzy-query-column" type="xsd:string" />
+            <xsd:attribute name="like-query-column" type="xsd:string" />
             <xsd:attribute name="plain-column" type="xsd:string" />
             <xsd:attribute name="encrypt-algorithm-ref" type="xsd:string" use="required" />
             <xsd:attribute name="assisted-query-encrypt-algorithm-ref" type="xsd:string" />
-            <xsd:attribute name="fuzzy-query-encrypt-algorithm-ref" type="xsd:string" />
+            <xsd:attribute name="like-query-encrypt-algorithm-ref" type="xsd:string" />
             <xsd:attribute name="query-with-cipher-column" type="xsd:boolean" />
         </xsd:complexType>
     </xsd:element>

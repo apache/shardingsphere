@@ -39,7 +39,7 @@ public final class EncryptTableTest {
     @Before
     public void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "fuzzyQueryColumn", "plainColumn", "myEncryptor", null)), null));
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor", null)), null));
     }
     
     @Test
@@ -105,10 +105,10 @@ public final class EncryptTableTest {
     }
     
     @Test
-    public void assertFindFuzzyQueryColumn() {
-        Optional<String> actual = encryptTable.findFuzzyQueryColumn("logicColumn");
+    public void assertFindLikeQueryColumn() {
+        Optional<String> actual = encryptTable.findLikeQueryColumn("logicColumn");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("fuzzyQueryColumn"));
+        assertThat(actual.get(), is("likeQueryColumn"));
     }
     
     @Test
@@ -117,8 +117,8 @@ public final class EncryptTableTest {
     }
     
     @Test
-    public void assertNotFindFuzzyQueryColumn() {
-        assertFalse(encryptTable.findAssistedQueryColumn("notExistFuzzyQueryColumn").isPresent());
+    public void assertNotFindLikeQueryColumn() {
+        assertFalse(encryptTable.findAssistedQueryColumn("notExistLikeQueryColumn").isPresent());
     }
     
     @Test
@@ -149,13 +149,13 @@ public final class EncryptTableTest {
         assertFalse(actual.isPresent());
         
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "fuzzyQueryColumn", "plainColumn", "myEncryptor", null)), true));
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor", null)), true));
         actual = encryptTable.getQueryWithCipherColumn("logicColumn");
         assertTrue(actual.isPresent());
         assertTrue(actual.get());
         
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "fuzzyQueryColumn", "plainColumn", "myEncryptor", false)), true));
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor", false)), true));
         actual = encryptTable.getQueryWithCipherColumn("logicColumn");
         assertTrue(actual.isPresent());
         assertFalse(actual.get());

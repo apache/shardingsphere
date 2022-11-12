@@ -59,7 +59,7 @@ weight = 5
 
 ### 单字符摘要模糊算法
 
-类型：CHAR_DIGEST_FUZZY
+类型：CHAR_DIGEST_LIKE
 
 可配置属性：
 
@@ -85,11 +85,11 @@ rules:
           plainColumn: username_plain
           cipherColumn: username
           encryptorName: name-encryptor
-          fuzzyQueryColumn: name_fuzzy
-          fuzzyQueryEncryptorName: fuzzy-encryptor
+          likeQueryColumn: name_like
+          likeQueryEncryptorName: like-encryptor
   encryptors:
-    fuzzy-encryptor:
-      type: CHAR_DIGEST_FUZZY
+    like-encryptor:
+      type: CHAR_DIGEST_LIKE
     name-encryptor:
       type: AES
       props:

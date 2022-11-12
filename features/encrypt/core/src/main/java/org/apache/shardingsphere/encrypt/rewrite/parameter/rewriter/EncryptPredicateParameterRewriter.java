@@ -67,8 +67,8 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         String tableName = encryptCondition.getTableName();
         String columnName = encryptCondition.getColumnName();
-        if (encryptCondition instanceof EncryptLikeCondition && encryptRule.findFuzzyQueryColumn(tableName, columnName).isPresent()) {
-            return encryptRule.getEncryptFuzzyQueryValues(databaseName, schemaName, tableName, columnName, originalValues);
+        if (encryptCondition instanceof EncryptLikeCondition && encryptRule.findLikeQueryColumn(tableName, columnName).isPresent()) {
+            return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, originalValues);
         }
         
         return encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()

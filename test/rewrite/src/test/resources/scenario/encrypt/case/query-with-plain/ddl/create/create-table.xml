@@ -19,11 +19,11 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-plain.yaml">
     <rewrite-assertion id="create_table_for_plain" db-types="MySQL">
         <input sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
-        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', fuzzy_query_password VARCHAR(255) NOT NULL DEFAULT '', plain_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
+        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', like_query_password VARCHAR(255) NOT NULL DEFAULT '', plain_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`))" />
     </rewrite-assertion>
 
     <rewrite-assertion id="create_table_with_index_for_plain" db-types="MySQL">
         <input sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`amount`))" />
-        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', fuzzy_query_password VARCHAR(255) NOT NULL DEFAULT '', plain_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`plain_amount`))" />
+        <output sql="CREATE TABLE t_account_bak (id INT NOT NULL, name VARCHAR(100) NOT NULL DEFAULT '', cipher_password VARCHAR(255) NOT NULL DEFAULT '', assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', like_query_password VARCHAR(255) NOT NULL DEFAULT '', plain_password VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`id`), KEY `t_account_bak_amount_idx` (`plain_amount`))" />
     </rewrite-assertion>
 </rewrite-assertions>
