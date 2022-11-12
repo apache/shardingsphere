@@ -17,7 +17,7 @@
 
 lexer grammar Keyword;
 
-import Alphabet;
+import Alphabet, Number;
 
 WS
     : [ \t\r\n] + ->skip
@@ -602,4 +602,40 @@ RANK
 
 ROWID
     : R O W I D
+    ;
+
+REGR_SLOPE
+    : R E G R UL_ S L O P E
+    ;
+
+REGR_INTERCEPT
+    : R E G R UL_ I N T E R C E P T
+    ;
+
+REGR_COUNT
+    : R E G R UL_ C O U N T
+    ;
+
+REGR_R2
+    : R E G R UL_ R TWO_
+    ;
+
+REGR_AVGX
+    : R E G R UL_ A V G X
+    ;
+
+REGR_AVGY
+    : R E G R UL_ A V G Y
+    ;
+
+REGR_SXX
+    : R E G R UL_ S X X
+    ;
+
+REGR_SYY
+    : R E G R UL_ S Y Y
+    ;
+
+REGR_SXY
+    : R E G R UL_ S X Y
     ;
