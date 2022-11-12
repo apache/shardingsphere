@@ -143,12 +143,13 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     
     @SuppressWarnings("unchecked")
     private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
-        if (null == planManagement) {
-            initializePlanManagement(sqlFederationSchema);
-        }
+        // if (null == planManagement) {
+        // initializePlanManagement(sqlFederationSchema);
+        // }
+        initializePlanManagement(sqlFederationSchema);
         SqlNode sqlNode = SQLNodeConverterEngine.convert(selectStatementContext.getSqlStatement());
         // TODO Replace "false" by variable in future, after statement and prepared statement are split.
-        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode, parameters, selectStatementContext.getTablesContext().getTableNames(), true);
+        SQLOptimizeContext optimizeContext = planManagement.get(sqlNode, parameters, selectStatementContext.getTablesContext().getTableNames(), false);
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
         Enumerator<Object> enumerator = executablePlan
                 .bind(new SQLFederationDataContext(planManagement.getOptimizer().getConverter().validator, planManagement.getOptimizer().getConverter(), parameters)).enumerator();
@@ -163,20 +164,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator,
                 SQLFederationPlannerUtil.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext.getSqlParserRule(), parserContext.getDatabaseType(), true);
         SQLOptimizeEngine optimizer = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
-        planManagement = new OptimizedPlanManagement(optimizer, validator, converter);
-    }
-    
-    private void refreshPlanManagement(final AbstractSchema sqlFederationSchema) {
-        OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
-        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
-        SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, JAVA_TYPE_FACTORY, parserContext.getDatabaseType(), connectionConfig);
-        SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator,
-                SQLFederationPlannerUtil.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext.getSqlParserRule(), parserContext.getDatabaseType(), true);
-        SQLOptimizeEngine optimizer = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
-        // planManagement.setConverter(converter);
-        // planManagement.setValidator(validator);
-        // planManagement.setOptimizer(optimizer);
+        planManagement = new OptimizedPlanManagement(optimizer);
     }
     
     @Override

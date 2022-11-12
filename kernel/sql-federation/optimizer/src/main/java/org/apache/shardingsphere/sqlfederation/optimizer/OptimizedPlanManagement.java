@@ -25,9 +25,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableTable;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql.validate.SqlValidatorCatalogReader;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
@@ -53,16 +51,10 @@ public class OptimizedPlanManagement {
     private final Cache<SQLInfo, SQLOptimizeContext> cache;
     
     private final SQLOptimizeEngine optimizer;
-    //
-    // private final SqlValidator validator;
-    //
-    // private final SqlToRelConverter converter;
     
-    public OptimizedPlanManagement(final SQLOptimizeEngine optimizer, final SqlValidator validator, final SqlToRelConverter converter) {
+    public OptimizedPlanManagement(final SQLOptimizeEngine optimizer) {
         this.cache = buildCache();
         this.optimizer = optimizer;
-        // this.validator = validator;
-        // this.converter = converter;
     }
     
     private Cache<SQLInfo, SQLOptimizeContext> buildCache() {
