@@ -29,8 +29,8 @@ public final class ShardingAlgorithmProvidedBeanRegistry extends AbstractAlgorit
     
     private static final String SHARDING_ALGORITHMS = "spring.shardingsphere.rules.sharding.sharding-algorithms.";
     
-    public ShardingAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public ShardingAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

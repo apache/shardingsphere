@@ -50,8 +50,8 @@ public final class PropertyUtilTest {
     
     @Test
     public void assertContainPropertyPrefix() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline.type", "INLINE");
-        assertTrue(PropertyUtil.containPropertyPrefix(mockEnvironment, "spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline"));
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline.type", "INLINE");
+        assertTrue(PropertyUtil.containsPropertyPrefix(mockEnv, "spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline"));
     }
 }

@@ -69,11 +69,11 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
     /**
      * Database discovery algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return database discovery algorithm provided bean registry
      */
     @Bean
-    public static DatabaseDiscoveryAlgorithmProvidedBeanRegistry databaseDiscoveryAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new DatabaseDiscoveryAlgorithmProvidedBeanRegistry(environment);
+    public static DatabaseDiscoveryAlgorithmProvidedBeanRegistry databaseDiscoveryAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new DatabaseDiscoveryAlgorithmProvidedBeanRegistry(env);
     }
 }

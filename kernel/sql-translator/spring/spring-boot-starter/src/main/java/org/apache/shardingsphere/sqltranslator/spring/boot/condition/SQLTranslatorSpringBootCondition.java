@@ -32,7 +32,7 @@ public final class SQLTranslatorSpringBootCondition extends SpringBootCondition 
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SQL_TRANSLATOR_PREFIX)
+        return PropertyUtil.containsPropertyPrefix(conditionContext.getEnvironment(), SQL_TRANSLATOR_PREFIX)
                 ? ConditionOutcome.match()
                 : ConditionOutcome.noMatch("Can't find ShardingSphere sql-translator rule configuration in local file.");
     }

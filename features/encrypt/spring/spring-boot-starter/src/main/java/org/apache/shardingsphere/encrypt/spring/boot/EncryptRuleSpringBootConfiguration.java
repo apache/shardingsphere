@@ -69,11 +69,11 @@ public class EncryptRuleSpringBootConfiguration {
     /**
      * Encrypt algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return encrypt algorithm provided bean registry
      */
     @Bean
-    public static EncryptAlgorithmProvidedBeanRegistry encryptAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new EncryptAlgorithmProvidedBeanRegistry(environment);
+    public static EncryptAlgorithmProvidedBeanRegistry encryptAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new EncryptAlgorithmProvidedBeanRegistry(env);
     }
 }
