@@ -112,18 +112,18 @@ public final class SQLRewriteEngineTestParametersBuilder {
         return Arrays.asList("MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
     }
     
-    private static List<Object> createParameters(final String inputParameters) {
-        if (null == inputParameters) {
+    private static List<Object> createParameters(final String inputParams) {
+        if (null == inputParams) {
             return Collections.emptyList();
         }
-        return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(SQLRewriteEngineTestParametersBuilder::createInputParameter).collect(Collectors.toList());
+        return Splitter.on(",").trimResults().splitToList(inputParams).stream().map(SQLRewriteEngineTestParametersBuilder::createInputParameter).collect(Collectors.toList());
     }
     
-    private static Object createInputParameter(final String inputParameter) {
-        if (StringUtils.isNumeric(inputParameter)) {
-            return NumberUtils.createNumber(inputParameter);
+    private static Object createInputParameter(final String inputParam) {
+        if (StringUtils.isNumeric(inputParam)) {
+            return NumberUtils.createNumber(inputParam);
         }
-        return "NULL".equals(inputParameter) ? null : inputParameter;
+        return "NULL".equals(inputParam) ? null : inputParam;
     }
     
     private static List<String> createOutputSQLs(final List<RewriteOutputEntity> outputs) {

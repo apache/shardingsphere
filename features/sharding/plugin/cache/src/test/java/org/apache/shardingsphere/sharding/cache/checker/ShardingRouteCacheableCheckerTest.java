@@ -168,9 +168,9 @@ public final class ShardingRouteCacheableCheckerTest {
                 new ShardingSphereRuleMetaData(Arrays.asList(shardingRule, shardingCacheRule)), Collections.singletonMap(SCHEMA_NAME, schema));
     }
     
-    private QueryContext prepareQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> parameters) {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(Collections.singletonMap(DATABASE_NAME, database), parameters, parse(sql), DATABASE_NAME);
-        return new QueryContext(sqlStatementContext, sql, parameters);
+    private QueryContext prepareQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(Collections.singletonMap(DATABASE_NAME, database), params, parse(sql), DATABASE_NAME);
+        return new QueryContext(sqlStatementContext, sql, params);
     }
     
     private SQLStatement parse(final String sql) {

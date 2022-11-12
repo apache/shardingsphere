@@ -102,14 +102,14 @@ public final class PostgreSQLBatchedStatementsExecutor {
         prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext);
     }
     
-    private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), parameters, preparedStatement.getSqlStatementContext().getSqlStatement(),
+    private SQLStatementContext<?> createSQLStatementContext(final List<Object> params) {
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), params, preparedStatement.getSqlStatementContext().getSqlStatement(),
                 connectionSession.getDatabaseName());
     }
     
-    private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
-        while (parameterSetsIterator.hasNext()) {
-            List<Object> eachGroupOfParameter = parameterSetsIterator.next();
+    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
+        while (paramSetsIterator.hasNext()) {
+            List<Object> eachGroupOfParameter = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
                 ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParameter);
             }
@@ -120,8 +120,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
         }
     }
     
-    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
-        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+        return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext) {

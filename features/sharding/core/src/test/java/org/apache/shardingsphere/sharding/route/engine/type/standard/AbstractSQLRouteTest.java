@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
-    protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
+    protected final RouteContext assertRoute(final String sql, final List<Object> params) {
         ShardingRule shardingRule = createAllShardingRule();
         SingleTableRule singleTableRule = createSingleTableRule(Collections.singletonList(shardingRule));
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
@@ -65,8 +65,8 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), resourceMetaData, ruleMetaData, schemas);
         Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, parameters);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, params, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params);
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleTableRule), props).route(new ConnectionContext(), queryContext, database);
     }
     

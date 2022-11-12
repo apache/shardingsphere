@@ -50,18 +50,18 @@ public final class CachedShardingSQLRouter implements SQLRouter<ShardingCacheRul
         if (!cacheableCheckResult.isProbablyCacheable()) {
             return new RouteContext();
         }
-        List<Object> shardingConditionParameters = new ArrayList<>(cacheableCheckResult.getShardingConditionParameterMarkerIndexes().size());
+        List<Object> shardingConditionParams = new ArrayList<>(cacheableCheckResult.getShardingConditionParameterMarkerIndexes().size());
         for (int each : cacheableCheckResult.getShardingConditionParameterMarkerIndexes()) {
             if (each >= queryContext.getParameters().size()) {
                 return new RouteContext();
             }
-            shardingConditionParameters.add(queryContext.getParameters().get(each));
+            shardingConditionParams.add(queryContext.getParameters().get(each));
         }
-        Optional<RouteContext> cachedRouteContext = rule.getRouteCache().get(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParameters))
+        Optional<RouteContext> cachedRouteContext = rule.getRouteCache().get(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParams))
                 .flatMap(ShardingRouteCacheValue::getCachedRouteContext);
         RouteContext result = cachedRouteContext.orElseGet(() -> new ShardingSQLRouter().createRouteContext(queryContext, database, rule.getShardingRule(), props, connectionContext));
         if (!cachedRouteContext.isPresent() && hitOneShardOnly(result)) {
-            rule.getRouteCache().put(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParameters), new ShardingRouteCacheValue(result));
+            rule.getRouteCache().put(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParams), new ShardingRouteCacheValue(result));
         }
         return result;
     }

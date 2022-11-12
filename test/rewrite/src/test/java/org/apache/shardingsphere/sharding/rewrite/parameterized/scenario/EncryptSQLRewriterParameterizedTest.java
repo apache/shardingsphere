@@ -56,8 +56,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
     
     private static final String CASE_PATH = "scenario/encrypt/case";
     
-    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
-        super(testParameters);
+    public EncryptSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) {
+        super(testParams);
     }
     
     @Parameters(name = "{0}: {1} ({3}) -> {2}")

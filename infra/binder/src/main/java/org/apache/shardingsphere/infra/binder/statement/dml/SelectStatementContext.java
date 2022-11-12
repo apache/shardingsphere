@@ -104,25 +104,25 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private PaginationContext paginationContext;
     
-    public SelectStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultDatabaseName) {
+    public SelectStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> params, final SelectStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        subqueryContexts = createSubqueryContexts(databases, parameters, defaultDatabaseName);
+        subqueryContexts = createSubqueryContexts(databases, params, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(databases, databaseName), getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
-        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
+        paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, params, whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters, final String defaultDatabaseName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereDatabase> databases, final List<Object> params, final String defaultDatabaseName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(databases, parameters, each.getSelect(), defaultDatabaseName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(databases, params, each.getSelect(), defaultDatabaseName);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
@@ -331,7 +331,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     @Override
-    public void setUpParameters(final List<Object> parameters) {
-        paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, parameters, whereSegments);
+    public void setUpParameters(final List<Object> params) {
+        paginationContext = new PaginationContextEngine().createPaginationContext(getSqlStatement(), projectionsContext, params, whereSegments);
     }
 }

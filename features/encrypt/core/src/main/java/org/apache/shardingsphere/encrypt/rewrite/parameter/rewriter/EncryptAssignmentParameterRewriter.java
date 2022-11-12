@@ -67,7 +67,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
@@ -75,7 +75,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
                 StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) parameterBuilder
                         : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
-                encryptParameters(standardParameterBuilder, schemaName, tableName, each, parameters);
+                encryptParameters(standardParameterBuilder, schemaName, tableName, each, params);
             }
         }
     }
@@ -90,26 +90,26 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     }
     
     private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String schemaName,
-                                   final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+                                   final String tableName, final AssignmentSegment assignmentSegment, final List<Object> params) {
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
-        Object originalValue = parameters.get(parameterMarkerIndex);
+        Object originalValue = params.get(parameterMarkerIndex);
         Object cipherValue = encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
         parameterBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
-        Collection<Object> addedParameters = new LinkedList<>();
+        Collection<Object> addedParams = new LinkedList<>();
         if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
             Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-            addedParameters.add(assistedQueryValue);
+            addedParams.add(assistedQueryValue);
         }
         if (encryptRule.findFuzzyQueryColumn(tableName, columnName).isPresent()) {
             Object fuzzyValue = encryptRule.getEncryptFuzzyQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-            addedParameters.add(fuzzyValue);
+            addedParams.add(fuzzyValue);
         }
         if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-            addedParameters.add(originalValue);
+            addedParams.add(originalValue);
         }
-        if (!addedParameters.isEmpty()) {
-            parameterBuilder.addAddedParameters(parameterMarkerIndex, addedParameters);
+        if (!addedParams.isEmpty()) {
+            parameterBuilder.addAddedParameters(parameterMarkerIndex, addedParams);
         }
     }
 }

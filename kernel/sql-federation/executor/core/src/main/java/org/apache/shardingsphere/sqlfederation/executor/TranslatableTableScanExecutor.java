@@ -213,10 +213,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     @SneakyThrows(SQLException.class)
-    private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) {
-        for (int i = 0; i < parameters.size(); i++) {
-            Object parameter = parameters.get(i);
-            preparedStatement.setObject(i + 1, parameter);
+    private void setParameters(final PreparedStatement preparedStatement, final List<Object> params) {
+        for (int i = 0; i < params.size(); i++) {
+            preparedStatement.setObject(i + 1, params.get(i));
         }
     }
     
@@ -287,17 +286,17 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
-        List<Object> parameters = getParameters(sqlString.getDynamicParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatement, executorContext.getDatabaseName());
-        return new QueryContext(sqlStatementContext, sql, parameters);
+        List<Object> params = getParameters(sqlString.getDynamicParameters());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, params, sqlStatement, executorContext.getDatabaseName());
+        return new QueryContext(sqlStatementContext, sql, params);
     }
     
-    private List<Object> getParameters(final List<Integer> parameterIndexes) {
-        if (null == parameterIndexes) {
+    private List<Object> getParameters(final List<Integer> paramIndexes) {
+        if (null == paramIndexes) {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>();
-        for (Integer each : parameterIndexes) {
+        for (Integer each : paramIndexes) {
             result.add(executorContext.getFederationContext().getQueryContext().getParameters().get(each));
         }
         return result;

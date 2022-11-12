@@ -508,11 +508,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private QueryContext createQueryContext() {
-        List<Object> parameters = new ArrayList<>(getParameters());
+        List<Object> params = new ArrayList<>(getParameters());
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
+            ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
-        return new QueryContext(sqlStatementContext, sql, parameters);
+        return new QueryContext(sqlStatementContext, sql, params);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {
@@ -621,9 +621,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void setBatchParametersForStatements() throws SQLException {
         for (Statement each : batchPreparedStatementExecutor.getStatements()) {
-            List<List<Object>> parameterSet = batchPreparedStatementExecutor.getParameterSet(each);
-            for (List<Object> eachParameters : parameterSet) {
-                replaySetParameter((PreparedStatement) each, eachParameters);
+            List<List<Object>> paramSet = batchPreparedStatementExecutor.getParameterSet(each);
+            for (List<Object> eachParams : paramSet) {
+                replaySetParameter((PreparedStatement) each, eachParams);
                 ((PreparedStatement) each).addBatch();
             }
         }

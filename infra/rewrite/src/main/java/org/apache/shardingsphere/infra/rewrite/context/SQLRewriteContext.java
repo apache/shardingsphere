@@ -62,18 +62,18 @@ public final class SQLRewriteContext {
     private final ConnectionContext connectionContext;
     
     public SQLRewriteContext(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
-                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final ConnectionContext connectionContext) {
+                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final ConnectionContext connectionContext) {
         this.databaseName = databaseName;
         this.schemas = schemas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
-        this.parameters = parameters;
+        this.parameters = params;
         this.connectionContext = connectionContext;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))
                 ? new GroupedParameterBuilder(
                         ((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
-                : new StandardParameterBuilder(parameters);
+                : new StandardParameterBuilder(params);
     }
     
     /**

@@ -77,17 +77,17 @@ public final class RouteSQLRewriteEngine {
     
     private SQLRewriteUnit createSQLRewriteUnit(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext, final Collection<RouteUnit> routeUnits) {
         Collection<String> sql = new LinkedList<>();
-        List<Object> parameters = new LinkedList<>();
+        List<Object> params = new LinkedList<>();
         boolean containsDollarMarker = sqlRewriteContext.getSqlStatementContext() instanceof SelectStatementContext
                 && ((SelectStatementContext) (sqlRewriteContext.getSqlStatementContext())).isContainsDollarParameterMarker();
         for (RouteUnit each : routeUnits) {
             sql.add(SQLUtil.trimSemicolon(new RouteSQLBuilder(sqlRewriteContext, each).toSQL()));
-            if (containsDollarMarker && !parameters.isEmpty()) {
+            if (containsDollarMarker && !params.isEmpty()) {
                 continue;
             }
-            parameters.addAll(getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each));
+            params.addAll(getParameters(sqlRewriteContext.getParameterBuilder(), routeContext, each));
         }
-        return new SQLRewriteUnit(String.join(" UNION ALL ", sql), parameters);
+        return new SQLRewriteUnit(String.join(" UNION ALL ", sql), params);
     }
     
     private void addSQLRewriteUnits(final Map<RouteUnit, SQLRewriteUnit> sqlRewriteUnits, final SQLRewriteContext sqlRewriteContext,

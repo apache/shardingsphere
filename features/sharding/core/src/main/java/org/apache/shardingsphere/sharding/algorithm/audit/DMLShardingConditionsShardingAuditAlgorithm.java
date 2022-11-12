@@ -46,7 +46,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final ShardingSphereDatabase database) {
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
             if (rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())
@@ -54,7 +54,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
                 return new SQLCheckResult(true, "");
             }
             ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(sqlStatementContext, database, rule);
-            if (shardingConditionEngine.createShardingConditions(sqlStatementContext, parameters).isEmpty()) {
+            if (shardingConditionEngine.createShardingConditions(sqlStatementContext, params).isEmpty()) {
                 return new SQLCheckResult(false, "Not allow DML operation without sharding conditions");
             }
         }

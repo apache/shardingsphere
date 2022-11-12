@@ -46,11 +46,11 @@ public final class InsertValueContext {
     
     private final List<Object> parameters;
     
-    public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> parameters, final int parametersOffset) {
+    public InsertValueContext(final Collection<ExpressionSegment> assignments, final List<Object> params, final int parametersOffset) {
         valueExpressions = getValueExpressions(assignments);
         parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(assignments);
         parameterCount = parameterMarkerExpressions.size();
-        this.parameters = getParameters(parameters, parametersOffset);
+        this.parameters = getParameters(params, parametersOffset);
     }
     
     private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
@@ -59,12 +59,12 @@ public final class InsertValueContext {
         return result;
     }
     
-    private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (parameters.isEmpty() || 0 == parameterCount) {
+    private List<Object> getParameters(final List<Object> params, final int paramsOffset) {
+        if (params.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>(parameterCount);
-        result.addAll(parameters.subList(parametersOffset, parametersOffset + parameterCount));
+        result.addAll(params.subList(paramsOffset, paramsOffset + parameterCount));
         return result;
     }
     
@@ -85,8 +85,8 @@ public final class InsertValueContext {
         return Optional.empty();
     }
     
-    private int getParameterIndex(final ParameterMarkerExpressionSegment parameterMarkerExpression) {
-        int parameterIndex = parameterMarkerExpressions.indexOf(parameterMarkerExpression);
+    private int getParameterIndex(final ParameterMarkerExpressionSegment paramMarkerExpression) {
+        int parameterIndex = parameterMarkerExpressions.indexOf(paramMarkerExpression);
         Preconditions.checkArgument(parameterIndex >= 0, "Can not get parameter index.");
         return parameterIndex;
     }

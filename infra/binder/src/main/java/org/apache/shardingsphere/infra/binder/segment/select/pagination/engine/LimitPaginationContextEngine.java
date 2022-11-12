@@ -31,10 +31,10 @@ public final class LimitPaginationContextEngine {
      * Create pagination context.
      * 
      * @param limitSegment limit segment
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final LimitSegment limitSegment, final List<Object> parameters) {
-        return new PaginationContext(limitSegment.getOffset().orElse(null), limitSegment.getRowCount().orElse(null), parameters);
+    public PaginationContext createPaginationContext(final LimitSegment limitSegment, final List<Object> params) {
+        return new PaginationContext(limitSegment.getOffset().orElse(null), limitSegment.getRowCount().orElse(null), params);
     }
 }

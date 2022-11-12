@@ -72,10 +72,10 @@ public final class EncryptInCondition implements EncryptCondition {
     }
     
     @Override
-    public List<Object> getValues(final List<Object> parameters) {
+    public List<Object> getValues(final List<Object> params) {
         List<Object> result = new ArrayList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-            Object parameter = parameters.get(entry.getValue());
+            Object parameter = params.get(entry.getValue());
             if (entry.getKey() < result.size()) {
                 result.add(entry.getKey(), parameter);
             } else {
