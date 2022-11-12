@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Integration test environment.
+ */
 @Getter
 public final class IntegrationTestEnvironment {
     
@@ -39,8 +42,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        String sqlParserITEnabledStr = null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled");
-        sqlParserITEnabled = null == sqlParserITEnabledStr ? false : Boolean.parseBoolean(sqlParserITEnabledStr);
+        sqlParserITEnabled = Boolean.parseBoolean(null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled"));
         resultPath = props.getOrDefault("sql.parser.it.report.path", "/tmp/").toString();
         resultProcessorType = props.getOrDefault("sql.parser.it.report.type", "LOG").toString();
     }
