@@ -25,9 +25,9 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true
 
 jobs:
-  build-project:
+  build-cache:
     if: github.repository == 'apache/shardingsphere'
-    name: Build Project
+    name: Build Cache
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -50,7 +50,7 @@ jobs:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    needs: build-project
+    needs: build-cache
     strategy:
       fail-fast: false
       matrix:
