@@ -48,7 +48,7 @@ public final class SQLCaseLoader {
      *
      * @return Test cases from with strategy
      */
-    public Collection<Object[]> load(URI sqlCaseURI, URI sqlCaseResultURI) {
+    public Collection<Object[]> load(final URI sqlCaseURI, final URI sqlCaseResultURI) {
         if (!IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
