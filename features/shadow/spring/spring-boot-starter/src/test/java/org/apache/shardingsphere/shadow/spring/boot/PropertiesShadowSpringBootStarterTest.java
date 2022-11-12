@@ -83,11 +83,11 @@ public class PropertiesShadowSpringBootStarterTest {
     private void assertShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(2));
         Iterator<ShadowDataSourceConfiguration> iterator = dataSources.iterator();
+        ShadowDataSourceConfiguration shadowDataSourceConfiguration = iterator.next();
+        assertThat(shadowDataSourceConfiguration.getProductionDataSourceName(), is("ds"));
+        assertThat(shadowDataSourceConfiguration.getShadowDataSourceName(), is("ds-shadow"));
         ShadowDataSourceConfiguration shadowDataSourceConfiguration1 = iterator.next();
-        assertThat(shadowDataSourceConfiguration1.getProductionDataSourceName(), is("ds"));
-        assertThat(shadowDataSourceConfiguration1.getShadowDataSourceName(), is("ds-shadow"));
-        ShadowDataSourceConfiguration shadowDataSourceConfiguration2 = iterator.next();
-        assertThat(shadowDataSourceConfiguration2.getProductionDataSourceName(), is("ds1"));
-        assertThat(shadowDataSourceConfiguration2.getShadowDataSourceName(), is("ds1-shadow"));
+        assertThat(shadowDataSourceConfiguration1.getProductionDataSourceName(), is("ds1"));
+        assertThat(shadowDataSourceConfiguration1.getShadowDataSourceName(), is("ds1-shadow"));
     }
 }
