@@ -33,10 +33,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -99,7 +97,7 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
     
     private Collection<BeanDefinition> parseDataSourcesConfiguration(final Element element) {
         List<Element> dataSourcesElements = DomUtils.getChildElementsByTagName(element, ShadowRuleBeanDefinitionTag.DATA_SOURCE_TAG);
-        Collection<BeanDefinition> result = new ArrayList<>(dataSourcesElements.size());
+        Collection<BeanDefinition> result = new ManagedList<>(dataSourcesElements.size());
         for (Element each : dataSourcesElements) {
             result.add(parseDataSourceConfiguration(each));
         }

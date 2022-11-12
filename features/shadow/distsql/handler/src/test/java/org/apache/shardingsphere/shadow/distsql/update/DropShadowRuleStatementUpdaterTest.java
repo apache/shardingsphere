@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shadow.distsql.update;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
@@ -51,7 +52,7 @@ public final class DropShadowRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(null));
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("initRuleName", "ds", "ds_shadow")));
     }
     
     @Test(expected = MissingRequiredRuleException.class)
