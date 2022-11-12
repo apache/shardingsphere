@@ -59,9 +59,9 @@ public final class RefreshTableMetadataHandlerTest extends ProxyContextRestorer 
     @Before
     public void setup() {
         ProxyContext.init(contextManager);
-        ConfigurationProperties configurationProperties = new ConfigurationProperties(createProperties());
+        ConfigurationProperties configurationProps = new ConfigurationProperties(createProperties());
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(shardingSphereMetaData);
-        when(shardingSphereMetaData.getProps()).thenReturn(configurationProperties);
+        when(shardingSphereMetaData.getProps()).thenReturn(configurationProps);
         connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     }
     
