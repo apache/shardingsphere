@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -30,8 +29,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
@@ -144,7 +143,6 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     @Test
-    @Ignore
     public void assertSelectWithOr() throws SQLException {
         try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL_OR)) {
             preparedStatement.setObject(1, "plainValue");

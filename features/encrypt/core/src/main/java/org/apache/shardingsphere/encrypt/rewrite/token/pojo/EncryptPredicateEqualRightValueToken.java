@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Predicate equal right value token for encrypt.
  */
-@EqualsAndHashCode
 public final class EncryptPredicateEqualRightValueToken extends SQLToken implements Substitutable {
     
     @Getter
@@ -51,5 +50,17 @@ public final class EncryptPredicateEqualRightValueToken extends SQLToken impleme
             return indexValues.get(0) instanceof String ? "'" + indexValues.get(0) + "'" : indexValues.get(0).toString();
         }
         return "?";
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+        return obj instanceof EncryptPredicateEqualRightValueToken && ((EncryptPredicateEqualRightValueToken) obj).getStartIndex() == getStartIndex()
+                && ((EncryptPredicateEqualRightValueToken) obj).getStopIndex() == stopIndex && ((EncryptPredicateEqualRightValueToken) obj).indexValues.equals(indexValues)
+                && ((EncryptPredicateEqualRightValueToken) obj).paramMarkerIndexes.equals(paramMarkerIndexes);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(getStartIndex(), stopIndex, indexValues, paramMarkerIndexes);
     }
 }
