@@ -31,9 +31,9 @@ import java.util.Objects;
 /**
  * Get the corresponding result processor through config.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SQLParserResultProcessorManager {
+@Slf4j
+public final class SQLParserResultProcessorManager {
     
     /**
      * Get the SQL parser result processor.
@@ -64,6 +64,6 @@ public class SQLParserResultProcessorManager {
         } catch (final ReflectiveOperationException ex) {
             log.error("encounter exception when get SQLParserResultProcessor by reflection", ex);
         }
-        throw new IllegalArgumentException("The processor type does not supported : " + type);
+        throw new IllegalArgumentException("The processor type does not supported: " + type);
     }
 }
