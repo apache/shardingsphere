@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql;
 
-import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
+import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
+public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedIT {
     
     public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
         super(sqlCaseId, sqlCaseValue, "PostgreSQL", new SQLParserCSVResultProcessor("PostgreSQL"));
@@ -43,7 +43,7 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
-                ? DynamicLoadingSQLParserParameterizedTest.getTestParameters(
+                ? DynamicLoadingSQLParserParameterizedIT.getTestParameters(
                         "https://api.github.com/repos/",
                         URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"),
                         URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"))
