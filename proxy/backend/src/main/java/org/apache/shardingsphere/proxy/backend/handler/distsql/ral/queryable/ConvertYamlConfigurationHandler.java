@@ -488,19 +488,19 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         String type = algorithmConfig.getType().toLowerCase();
         if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPERTIES, type));
+            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
         } else {
             result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
         }
         return result.toString();
     }
     
-    private String getAlgorithmProperties(final Properties properties) {
+    private String getAlgorithmProperties(final Properties props) {
         StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = new TreeMap(properties).keySet().iterator();
+        Iterator<String> iterator = new TreeMap(props).keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
-            String value = properties.getProperty(key);
+            String value = props.getProperty(key);
             if (null == value) {
                 continue;
             }

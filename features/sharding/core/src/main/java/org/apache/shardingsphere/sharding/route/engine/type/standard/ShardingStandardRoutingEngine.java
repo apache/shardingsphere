@@ -63,7 +63,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final SQLStatementContext<?> sqlStatementContext;
     
-    private final ConfigurationProperties properties;
+    private final ConfigurationProperties props;
     
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
@@ -253,7 +253,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (databaseShardingValues.isEmpty()) {
             return tableRule.getActualDataSourceNames();
         }
-        Collection<String> result = databaseShardingStrategy.doSharding(tableRule.getActualDataSourceNames(), databaseShardingValues, tableRule.getDataSourceDataNode(), properties);
+        Collection<String> result = databaseShardingStrategy.doSharding(tableRule.getActualDataSourceNames(), databaseShardingValues, tableRule.getDataSourceDataNode(), props);
         Preconditions.checkState(!result.isEmpty(), "No database route info");
         Preconditions.checkState(tableRule.getActualDataSourceNames().containsAll(result),
                 "Some routed data sources do not belong to configured data sources. routed data sources: `%s`, configured data sources: `%s`", result, tableRule.getActualDataSourceNames());
@@ -265,7 +265,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
         Collection<String> routedTables = tableShardingValues.isEmpty()
                 ? availableTargetTables
-                : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(), properties);
+                : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(), props);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
             result.add(new DataNode(routedDataSource, each));

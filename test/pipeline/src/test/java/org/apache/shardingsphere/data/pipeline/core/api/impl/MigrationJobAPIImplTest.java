@@ -262,8 +262,8 @@ public final class MigrationJobAPIImplTest {
     
     private void initIntPrimaryEnvironment() throws SQLException {
         Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(JobType.MIGRATION);
-        DataSourceProperties dataSourceProperties = metaDataDataSource.get("ds_0");
-        DataSource dataSource = DataSourcePoolCreator.create(dataSourceProperties);
+        DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
+        DataSource dataSource = DataSourcePoolCreator.create(dataSourceProps);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

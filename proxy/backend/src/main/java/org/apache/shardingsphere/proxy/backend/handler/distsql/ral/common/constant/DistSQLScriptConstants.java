@@ -162,7 +162,7 @@ public final class DistSQLScriptConstants {
     
     public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
     
-    public static final String ALGORITHM_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME='%s')";
+    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
     
     public static final String CREATE_SHADOW = "CREATE SHADOW RULE";
     
