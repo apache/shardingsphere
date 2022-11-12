@@ -20,6 +20,9 @@ package org.apache.shardingsphere.sql.parser.loader;
 import java.net.URI;
 import java.util.Collection;
 
+/**
+ * Dynamic SQL case loader strategy.
+ */
 public interface DynamicSQLCaseLoaderStrategy {
     
     /**
