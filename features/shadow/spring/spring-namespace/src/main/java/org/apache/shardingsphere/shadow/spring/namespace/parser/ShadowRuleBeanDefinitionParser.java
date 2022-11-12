@@ -33,8 +33,10 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,17 +97,18 @@ public final class ShadowRuleBeanDefinitionParser extends AbstractBeanDefinition
         return result;
     }
     
-    private Map<String, BeanDefinition> parseDataSourcesConfiguration(final Element element) {
+    private Collection<BeanDefinition> parseDataSourcesConfiguration(final Element element) {
         List<Element> dataSourcesElements = DomUtils.getChildElementsByTagName(element, ShadowRuleBeanDefinitionTag.DATA_SOURCE_TAG);
-        Map<String, BeanDefinition> result = new ManagedMap<>(dataSourcesElements.size());
+        Collection<BeanDefinition> result = new ArrayList<>(dataSourcesElements.size());
         for (Element each : dataSourcesElements) {
-            result.put(each.getAttribute(ShadowRuleBeanDefinitionTag.DATA_SOURCE_ID_ATTRIBUTE), parseDataSourceConfiguration(each));
+            result.add(parseDataSourceConfiguration(each));
         }
         return result;
     }
     
     private BeanDefinition parseDataSourceConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(ShadowDataSourceConfiguration.class);
+        factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.DATA_SOURCE_ID_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.PRODUCTION_DATA_SOURCE_NAME_ATTRIBUTE));
         factory.addConstructorArgValue(element.getAttribute(ShadowRuleBeanDefinitionTag.SHADOW_DATA_SOURCE_NAME_ATTRIBUTE));
         return factory.getBeanDefinition();

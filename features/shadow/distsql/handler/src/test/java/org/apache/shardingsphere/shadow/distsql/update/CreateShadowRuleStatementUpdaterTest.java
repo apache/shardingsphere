@@ -61,7 +61,8 @@ public final class CreateShadowRuleStatementUpdaterTest {
     @Before
     public void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", new ShadowDataSourceConfiguration("initDs0", "initDs0Shadow")));
+        when(database.getName()).thenReturn("aa");
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("initRuleName", "initDs0", "initDs0Shadow")));
     }
     
     @Test(expected = DuplicateRuleException.class)
@@ -72,7 +73,7 @@ public final class CreateShadowRuleStatementUpdaterTest {
     
     @Test(expected = DuplicateRuleException.class)
     public void assertExecuteWithDuplicateRuleNameInMetaData() {
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("ruleName", null));
+        when(currentConfig.getDataSources()).thenReturn(Collections.emptyList());
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         updater.checkSQLStatement(database, createSQLStatement(ruleSegment), currentConfig);
     }

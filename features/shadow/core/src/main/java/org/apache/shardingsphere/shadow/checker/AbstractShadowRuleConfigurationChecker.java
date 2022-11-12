@@ -29,6 +29,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -99,5 +100,13 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     
     protected void shadowTableAlgorithmsReferencesCheck(final Map<String, ShadowTableConfiguration> shadowTables) {
         shadowTables.forEach((key, value) -> Preconditions.checkState(!value.getShadowAlgorithmNames().isEmpty(), "No available shadow Algorithm configuration in shadow table `%s`.", key));
+    }
+    
+    protected Map<String, ShadowDataSourceConfiguration> initShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSourceConfigurations) {
+        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
+        for (ShadowDataSourceConfiguration each : dataSourceConfigurations) {
+            result.put(each.getName(), each);
+        }
+        return result;
     }
 }

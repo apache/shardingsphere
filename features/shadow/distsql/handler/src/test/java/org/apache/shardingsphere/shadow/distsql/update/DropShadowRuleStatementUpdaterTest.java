@@ -51,7 +51,7 @@ public final class DropShadowRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonMap("initRuleName", null));
+        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(null));
     }
     
     @Test(expected = MissingRequiredRuleException.class)

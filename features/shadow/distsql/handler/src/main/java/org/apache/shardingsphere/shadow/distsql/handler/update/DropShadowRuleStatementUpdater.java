@@ -25,6 +25,7 @@ import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatem
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Drop shadow rule statement updater.
@@ -48,15 +49,21 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     }
     
     private void checkRuleNames(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> currentRuleNames = currentRuleConfig.getDataSources().keySet();
         if (!sqlStatement.isIfExists()) {
-            ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getRuleNames(), currentRuleNames, different -> new MissingRequiredRuleException(SHADOW, databaseName, different));
+            ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getRuleNames(), getDataSourceNames(currentRuleConfig),
+                    different -> new MissingRequiredRuleException(SHADOW, databaseName, different));
         }
+    }
+    
+    private Collection<String> getDataSourceNames(final ShadowRuleConfiguration shadowRuleConfiguration) {
+        Collection<String> result = new LinkedList<>();
+        shadowRuleConfiguration.getDataSources().forEach(each -> result.add(each.getName()));
+        return result;
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(sqlStatement.getRuleNames(), currentRuleConfig.getDataSources().keySet()).isEmpty();
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(sqlStatement.getRuleNames(), getDataSourceNames(currentRuleConfig)).isEmpty();
     }
     
     @Override
