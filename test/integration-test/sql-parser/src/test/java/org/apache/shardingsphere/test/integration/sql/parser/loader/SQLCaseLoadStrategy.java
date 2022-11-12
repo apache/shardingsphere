@@ -32,7 +32,7 @@ public interface SQLCaseLoadStrategy {
      * @param uri URL to be loaded
      * @return loaded SQL cases
      */
-    Collection<Map<String, String>> loadSQLCases(final URI uri);
+    Collection<Map<String, String>> loadSQLCases(URI uri);
     
     /**
      * Load SQL cases result.
@@ -40,5 +40,5 @@ public interface SQLCaseLoadStrategy {
      * @param uri URL to be loaded
      * @return loaded SQL case results
      */
-    Map<String, String> loadSQLCaseResults(final URI uri);
+    Map<String, String> loadSQLCaseResults(URI uri);
 }
