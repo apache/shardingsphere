@@ -135,9 +135,9 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             }
         }
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (Entry<String, SortedMap<Short, String>> each : orderedColumnsOfIndexes.entrySet()) {
-            Collection<String> columnNames = result.computeIfAbsent(each.getKey(), unused -> new LinkedList<>());
-            columnNames.addAll(each.getValue().values());
+        for (Entry<String, SortedMap<Short, String>> entry : orderedColumnsOfIndexes.entrySet()) {
+            Collection<String> columnNames = result.computeIfAbsent(entry.getKey(), unused -> new LinkedList<>());
+            columnNames.addAll(entry.getValue().values());
         }
         return result;
     }
