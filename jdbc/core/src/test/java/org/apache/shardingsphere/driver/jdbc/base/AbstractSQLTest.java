@@ -50,15 +50,15 @@ public abstract class AbstractSQLTest {
     }
     
     private static void initializeSchema(final String dataSourceName) throws SQLException {
-        try (Connection conn = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
+        try (Connection connection = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
             if ("encrypt".equals(dataSourceName)) {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
             } else if ("shadow_jdbc_0".equals(dataSourceName) || "shadow_jdbc_1".equals(dataSourceName)) {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
             } else if ("single_jdbc".equals(dataSourceName)) {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/single_jdbc_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/single_jdbc_init.sql"))));
             } else {
-                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
             }
         }
     }

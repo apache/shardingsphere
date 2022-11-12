@@ -74,9 +74,9 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         assertQueryAccount(connection, 1, 3);
     }
     
-    private void assertQueryAccount(final Connection conn, final int... expectedBalances) throws SQLException {
+    private void assertQueryAccount(final Connection connection, final int... expectedBalances) throws SQLException {
         Preconditions.checkArgument(2 == expectedBalances.length);
-        Statement queryStatement = conn.createStatement();
+        Statement queryStatement = connection.createStatement();
         ResultSet resultSet = queryStatement.executeQuery("select * from account;");
         while (resultSet.next()) {
             int id = resultSet.getInt("id");
