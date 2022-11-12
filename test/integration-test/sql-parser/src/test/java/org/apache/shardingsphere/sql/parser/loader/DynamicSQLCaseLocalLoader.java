@@ -24,7 +24,10 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
+/**
+ * Dynamic SQL case local loader.
+ */
+public final class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     
     public DynamicSQLCaseLocalLoader() {
         super("", "", "", new SQLParserCSVResultProcessor(""));
@@ -40,8 +43,7 @@ public class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserParameteri
      * @return Test cases from localhost.
      **/
     public Collection<Object[]> getTestParameters(final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
-        Collection<Object[]> result = new LinkedList<>();
-        result.addAll(getSQLCases("localFile", getContent(sqlCaseTestURI), getContent(sqlCaseResultURI)));
+        Collection<Object[]> result = new LinkedList<>(getSQLCases("localFile", getContent(sqlCaseTestURI), getContent(sqlCaseResultURI)));
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});
         }
