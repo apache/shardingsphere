@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.loader;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
+package org.apache.shardingsphere.test.integration.sql.parser.result;
 
 /**
- * SQL case load strategy.
+ * SQL parser result processor.
  */
-public interface SQLCaseLoadStrategy {
+public interface SQLParserResultProcessor {
     
-    Collection<Map<String, String>> loadSQLCaseFiles(final URI uri);
+    /**
+     * Process the result.
+     *
+     * @param params the content for a row of CSV record
+     */
+    void processResult(Object... params);
     
-    Map<String, String> loadSQLCaseResultFiles(final URI uri);
+    /**
+     * Get the generator type.
+     *
+     * @return type
+     */
+    String getType();
 }

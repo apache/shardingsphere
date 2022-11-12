@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql;
+package org.apache.shardingsphere.test.integration.sql.parser.mysql;
 
-import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
-import org.apache.shardingsphere.sql.parser.loader.SQLCaseLoader;
-import org.apache.shardingsphere.sql.parser.loader.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.sql.parser.result.SQLParserResultProcessorManager;
+import org.apache.shardingsphere.test.integration.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoader;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.impl.GitHubSQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessorManager;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -35,11 +35,6 @@ public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadi
         super(sqlCaseId, sqlCaseValue, "MySQL", SQLParserResultProcessorManager.getProcessor("MySQL"));
     }
     
-    /**
-     * Get test parameters.
-     *
-     * @return Test cases from GitHub.
-     */
     @Parameters(name = "{0} (MySQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.result;
+package org.apache.shardingsphere.test.integration.sql.parser.result;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
 
 import java.io.File;
 import java.lang.reflect.Constructor;

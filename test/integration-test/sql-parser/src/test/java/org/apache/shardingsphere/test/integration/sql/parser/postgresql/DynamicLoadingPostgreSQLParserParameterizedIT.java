@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql;
+package org.apache.shardingsphere.test.integration.sql.parser.postgresql;
 
-import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
-import org.apache.shardingsphere.sql.parser.loader.SQLCaseLoader;
-import org.apache.shardingsphere.sql.parser.loader.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
+import org.apache.shardingsphere.test.integration.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoader;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.impl.GitHubSQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -35,11 +35,6 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
         super(sqlCaseId, sqlCaseValue, "PostgreSQL", new SQLParserCSVResultProcessor("PostgreSQL"));
     }
     
-    /**
-     * Get test parameters.
-     *
-     * @return Test cases from GitHub.
-     **/
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(
