@@ -56,7 +56,6 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
         DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         if (!targetDatabaseType.isSchemaAvailable()) {
-            log.info("prepareTargetSchemas, target database does not support schema, ignore, targetDatabaseType={}", targetDatabaseType);
             return;
         }
         CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
@@ -74,7 +73,6 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
                 createdSchemaNames.add(targetSchemaName);
             }
         }
-        log.info("prepareTargetSchemas, createdSchemaNames={}, defaultSchema={}", createdSchemaNames, defaultSchema);
     }
     
     private void executeCreateSchema(final PipelineDataSourceManager dataSourceManager, final PipelineDataSourceConfiguration targetDataSourceConfig, final String sql) {

@@ -85,7 +85,6 @@ public final class PipelineDistributedBarrier {
      */
     public void persistEphemeralChildrenNode(final String barrierPath, final int shardingItem) {
         if (!getRepository().isExisted(barrierPath)) {
-            log.info("barrier path {} not exist, ignore", barrierPath);
             return;
         }
         String key = String.join("/", barrierPath, Integer.toString(shardingItem));
@@ -145,7 +144,6 @@ public final class PipelineDistributedBarrier {
             return;
         }
         List<String> childrenKeys = getRepository().getChildrenKeys(barrierPath);
-        log.info("children keys: {}, total count: {}", childrenKeys, holder.getTotalCount());
         if (childrenKeys.size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
         }

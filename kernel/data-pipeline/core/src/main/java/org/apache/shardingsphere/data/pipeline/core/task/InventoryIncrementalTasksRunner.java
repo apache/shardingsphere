@@ -59,7 +59,6 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     @Override
     public void stop() {
         jobItemContext.setStopping(true);
-        log.info("stop, jobId={}, shardingItem={}", jobItemContext.getJobId(), jobItemContext.getShardingItem());
         for (InventoryTask each : inventoryTasks) {
             each.stop();
             each.close();
@@ -73,13 +72,11 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
     @Override
     public void start() {
         if (jobItemContext.isStopping()) {
-            log.info("job stopping, ignore inventory task");
             return;
         }
         PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).persistJobItemProgress(jobItemContext);
         if (executeInventoryTask()) {
             if (jobItemContext.isStopping()) {
-                log.info("stopping, ignore incremental task");
                 return;
             }
             executeIncrementalTask();
@@ -91,7 +88,6 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             log.info("All inventory tasks finished.");
             return true;
         }
-        log.info("-------------- Start inventory task --------------");
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (InventoryTask each : inventoryTasks) {
@@ -136,7 +132,6 @@ public final class InventoryIncrementalTasksRunner implements PipelineTasksRunne
             log.info("job status already EXECUTE_INCREMENTAL_TASK, ignore");
             return;
         }
-        log.info("-------------- Start incremental task --------------");
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (IncrementalTask each : incrementalTasks) {

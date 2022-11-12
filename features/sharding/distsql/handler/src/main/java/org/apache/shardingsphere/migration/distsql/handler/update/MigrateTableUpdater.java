@@ -35,7 +35,6 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     
     @Override
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
-        log.info("start migrate job by {}", sqlStatement);
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? databaseName : sqlStatement.getTargetDatabaseName();
         Preconditions.checkNotNull(targetDatabaseName, "Target database name is null. You could define it in DistSQL or select a database.");
         JOB_API.createJobAndStart(new CreateMigrationJobParameter(

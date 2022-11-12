@@ -160,7 +160,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public void updateJobItemStatus(final String jobId, final int shardingItem, final JobStatus status) {
         InventoryIncrementalJobItemProgress jobItemProgress = getJobItemProgress(jobId, shardingItem);
         if (null == jobItemProgress) {
-            log.warn("updateJobItemStatus, jobItemProgress is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
         jobItemProgress.setStatus(status);

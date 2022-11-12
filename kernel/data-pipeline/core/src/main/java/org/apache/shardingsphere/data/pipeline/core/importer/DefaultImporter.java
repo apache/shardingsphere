@@ -91,34 +91,18 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void runBlocking() {
-        write();
-    }
-    
-    private void write() {
-        log.info("importer write");
-        int round = 1;
-        int rowCount = 0;
-        boolean finishedByBreak = false;
         int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(batchSize, 3);
             if (null != records && !records.isEmpty()) {
-                round++;
-                rowCount += records.size();
                 PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
                 jobProgressListener.onProgressUpdated(updatedParam);
-                if (0 == round % 50) {
-                    log.info("importer write, round={}, rowCount={}", round, rowCount);
-                }
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                    log.info("write, get FinishedRecord, break");
-                    finishedByBreak = true;
                     break;
                 }
             }
         }
-        log.info("importer write done, rowCount={}, finishedByBreak={}", rowCount, finishedByBreak);
     }
     
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
@@ -264,10 +248,8 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void doStop() throws SQLException {
-        final long startTimeMillis = System.currentTimeMillis();
         cancelStatement(batchInsertStatement);
         cancelStatement(updateStatement);
         cancelStatement(batchDeleteStatement);
-        log.info("doStop cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
 }
