@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.loader;
+package org.apache.shardingsphere.test.integration.sql.parser.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,13 +48,13 @@ public final class SQLCaseLoader {
      *
      * @return Test cases from with strategy
      */
-    public Collection<Object[]> load(URI sqlCaseURI, URI sqlCaseResultURI) {
+    public Collection<Object[]> load(final URI sqlCaseURI, final URI sqlCaseResultURI) {
         if (!IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
         Collection<Object[]> result = new LinkedList<>();
-        Collection<Map<String, String>> sqlCases = loadStrategy.loadSQLCaseFiles(sqlCaseURI);
-        Map<String, String> resultResponse = loadStrategy.loadSQLCaseResultFiles(sqlCaseResultURI);
+        Collection<Map<String, String>> sqlCases = loadStrategy.loadSQLCases(sqlCaseURI);
+        Map<String, String> resultResponse = loadStrategy.loadSQLCaseResults(sqlCaseResultURI);
         for (Map<String, String> each : sqlCases) {
             String sqlCaseFileName = each.get("name").split("\\.")[0];
             String sqlCaseTestFileContent = loadContent(URI.create(each.get("download_url")));

@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.result;
+package org.apache.shardingsphere.test.integration.sql.parser.loader.impl;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoadStrategy;
 
-@Slf4j
-public class SQLParserLogResultProcessor implements SQLParserResultProcessor {
+import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+/**
+ * SQL case loader with local file.
+ */
+public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
-    @Getter
-    private final String type = "LOG";
-    
-    public SQLParserLogResultProcessor(final String databaseType) {
-        
+    @Override
+    public Collection<Map<String, String>> loadSQLCases(final URI uri) {
+        // TODO
+        return Collections.emptyList();
     }
     
     @Override
-    public void processResult(final Object... params) {
-        // TODO set up the log format
-        log.info("Printing the SQL parser process result");
+    public Map<String, String> loadSQLCaseResults(final URI uri) {
+        // TODO
+        return Collections.emptyMap();
     }
 }

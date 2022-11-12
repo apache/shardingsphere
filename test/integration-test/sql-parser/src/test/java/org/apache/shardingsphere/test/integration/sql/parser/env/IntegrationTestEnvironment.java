@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.env;
+package org.apache.shardingsphere.test.integration.sql.parser.env;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
