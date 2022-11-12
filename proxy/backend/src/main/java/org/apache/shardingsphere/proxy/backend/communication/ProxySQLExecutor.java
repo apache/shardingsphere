@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -53,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
@@ -145,17 +148,17 @@ public final class ProxySQLExecutor {
      * @throws SQLException SQL exception
      */
     public List<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
-        return needAutoTransaction(executionContext) ? doExecuteWithinTransaction(executionContext) : doExecute(executionContext);
+        return isNeedImplicitCommitTransaction(executionContext) ? doExecuteWithImplicitCommitTransaction(executionContext) : doExecute(executionContext);
     }
     
-    private boolean needAutoTransaction(final ExecutionContext executionContext) {
+    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
         TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         return TransactionType.isDistributedTransaction(transactionStatus.getTransactionType()) && !transactionStatus.isInTransaction() && sqlStatement instanceof DMLStatement
                 && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
     }
     
-    private List<ExecuteResult> doExecuteWithinTransaction(final ExecutionContext executionContext) throws SQLException {
+    private List<ExecuteResult> doExecuteWithImplicitCommitTransaction(final ExecutionContext executionContext) throws SQLException {
         List<ExecuteResult> result;
         JDBCBackendTransactionManager transactionManager = new JDBCBackendTransactionManager(backendConnection);
         try {
