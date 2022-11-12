@@ -19,7 +19,7 @@
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
         EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("phone", "phone", "", "", "phone_plain", "phone_encryptor", null);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("status", "status", "assisted_query_status", "", "string_encryptor", "string_encryptor", null);
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("status", "status", "assisted_query_status", "", "", "string_encryptor", "string_encryptor", null, null);
         EncryptTableRuleConfiguration orderItemRule = new EncryptTableRuleConfiguration("t_order_item", Collections.singleton(columnConfigAes), true);
         EncryptTableRuleConfiguration orderRule = new EncryptTableRuleConfiguration("t_order", Collections.singleton(columnConfigTest), true);
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>();

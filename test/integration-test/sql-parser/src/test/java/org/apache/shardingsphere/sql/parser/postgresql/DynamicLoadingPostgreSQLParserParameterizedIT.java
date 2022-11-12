@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.postgresql;
 
 import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedTest;
 import org.apache.shardingsphere.sql.parser.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
+import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -31,8 +31,8 @@ import java.util.Collections;
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class DynamicLoadingPostgreSQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedTest {
     
-    public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue, final String databaseType) {
-        super(sqlCaseId, sqlCaseValue, databaseType, new CSVResultGenerator(databaseType));
+    public DynamicLoadingPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
+        super(sqlCaseId, sqlCaseValue, "PostgreSQL", new SQLParserCSVResultProcessor("PostgreSQL"));
     }
     
     /**
@@ -40,11 +40,11 @@ public final class DynamicLoadingPostgreSQLParserParameterizedIT extends Dynamic
      *
      * @return Test cases from GitHub.
      **/
-    @Parameters(name = "{0} ({2}) -> {1}")
+    @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()
                 ? DynamicLoadingSQLParserParameterizedTest.getTestParameters(
-                        "https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"), "PostgreSQL")
+                        "https://api.github.com/repos/", URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"))
                 : Collections.emptyList();
     }
 }

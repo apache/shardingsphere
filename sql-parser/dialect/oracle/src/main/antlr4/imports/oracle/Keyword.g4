@@ -579,3 +579,27 @@ GLOBAL_NAME
 ROWTYPE
     : R O W T Y P E
     ;
+
+PERCENTILE_CONT
+    : P E R C E N T I L E UL_ C O N T
+    ;
+
+PERCENTILE_DISC
+    : P E R C E N T I L E UL_ D I S C
+    ;
+
+CUME_DIST
+    : C U M E UL_ D I S T
+    ;
+
+PARTITION
+    : P A R T I T I O N
+    ;
+
+RANK
+    : R A N K
+    ;
+
+ROWID
+    : R O W I D
+    ;

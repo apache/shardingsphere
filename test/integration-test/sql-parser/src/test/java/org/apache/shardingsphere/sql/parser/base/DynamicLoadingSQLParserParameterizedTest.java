@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.result.CSVResultGenerator;
+import org.apache.shardingsphere.sql.parser.result.SQLParserResultProcessor;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -52,56 +52,56 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     private final String databaseType;
     
     // TODO this will refactor as an abstract
-    private final CSVResultGenerator resultGenerator;
+    private final SQLParserResultProcessor resultGenerator;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI, final String databaseType) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseAPI.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI), databaseType));
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
         } else {
             for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
                 String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent, databaseType));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
             }
         }
         if (result.isEmpty()) {
-            result.add(new Object[]{null, null, null});
+            result.add(new Object[]{null, null});
         }
         return result;
     }
     
-    private static Collection<Map<String, String>> getResponse(final String sqlCaseApi, final URI sqlCaseURI) {
+    protected static Collection<Map<String, String>> getResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
         Collection<Map<String, String>> result = new LinkedList<>();
-        URI casesURI = getApiURL(sqlCaseApi, sqlCaseURI);
-        String caseContent = getContent(casesURI);
+        URI casesAPI = getAPI(sqlCaseAPI, sqlCaseURI);
+        String caseContent = getContent(casesAPI);
         if (caseContent.isEmpty()) {
             return result;
         }
         List<String> casesName = JsonPath.parse(caseContent).read("$..name");
         List<String> casesDownloadURL = JsonPath.parse(caseContent).read("$..download_url");
         List<String> casesHtmlURL = JsonPath.parse(caseContent).read("$..html_url");
+        List<String> casesType = JsonPath.parse(caseContent).read("$..type");
         IntStream.range(0, JsonPath.parse(caseContent).read("$.length()"))
                 .forEach(each -> {
-                    String eachName = casesName.get(each);
-                    if (eachName.endsWith(".sql") || eachName.endsWith(".test")) {
-                        result.add(ImmutableMap.of("name", eachName, "download_url", casesDownloadURL.get(each)));
-                    } else if (!eachName.contains(".")) {
-                        result.addAll(getResponse(sqlCaseApi, URI.create(casesHtmlURL.get(each))));
+                    if ("file".equals(casesType.get(each))) {
+                        result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each)));
+                    } else if ("dir".equals(casesType.get(each))) {
+                        result.addAll(getResponse(sqlCaseAPI, URI.create(casesHtmlURL.get(each))));
                     }
                 });
         return result;
     }
     
-    private static URI getApiURL(final String sqlCaseApi, final URI sqlCaseURI) {
+    private static URI getAPI(final String sqlCaseAPI, final URI sqlCaseURI) {
         String[] patches = sqlCaseURI.toString().split("/", 8);
         String casesOwner = patches[3];
         String casesRepo = patches[4];
         String casesDirectory = patches[7];
-        return URI.create(sqlCaseApi + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
+        return URI.create(sqlCaseAPI + casesOwner + "/" + casesRepo + "/contents/" + casesDirectory);
     }
     
-    private static String getContent(final URI casesURI) {
+    protected static String getContent(final URI casesURI) {
         String result = "";
         try {
             InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
@@ -112,18 +112,22 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    private static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String databaseType) {
+    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent) {
         Collection<Object[]> result = new LinkedList<>();
         String[] lines = sqlCaseFileContent.split("\n");
         int sqlCaseEnum = 1;
-        for (String each : lines) {
-            if (!each.isEmpty() && Character.isLetter(each.charAt(0)) && each.charAt(each.length() - 1) == ';') {
+        for (int i = 0; i < lines.length; i++) {
+            if (isStatement(lines[i]) && (i + 1 == lines.length || !lines[i + 1].contains("ERROR"))) {
                 String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, each, databaseType});
+                result.add(new Object[]{sqlCaseId, lines[i]});
                 sqlCaseEnum++;
             }
         }
         return result;
+    }
+    
+    private static boolean isStatement(final String statement) {
+        return !statement.isEmpty() && Character.isLetter(statement.charAt(0)) && statement.charAt(statement.length() - 1) == ';';
     }
     
     @Test

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.ProxyJDBCExecutor;
@@ -52,8 +53,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
@@ -70,14 +69,26 @@ import java.util.Optional;
 /**
  * Proxy SQL Executor.
  */
-@RequiredArgsConstructor
 public final class ProxySQLExecutor {
     
     private final String type;
     
     private final JDBCBackendConnection backendConnection;
     
-    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
+    private final ProxyJDBCExecutor jdbcExecutor;
+    
+    private final RawExecutor rawExecutor;
+    
+    public ProxySQLExecutor(final String type, final JDBCBackendConnection backendConnection, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
+        this.type = type;
+        this.backendConnection = backendConnection;
+        ExecutorEngine executorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+        ConnectionContext connectionContext = backendConnection.getConnectionSession().getConnectionContext();
+        jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseCommunicationEngine, new JDBCExecutor(executorEngine, connectionContext));
+        rawExecutor = new RawExecutor(executorEngine, connectionContext, metaDataContexts.getMetaData().getProps(), ProxyContext.getInstance().getContextManager().getInstanceContext()
+                .getEventBusContext());
+    }
     
     /**
      * Check execute prerequisites.
@@ -192,9 +203,6 @@ public final class ProxySQLExecutor {
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
-        RawExecutor rawExecutor = new RawExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
-                ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         // TODO handle query header
         return rawExecutor.execute(executionGroupContext, executionContext.getQueryContext(), new RawSQLExecutorCallback(ProxyContext.getInstance().getContextManager().getInstanceContext()
                 .getEventBusContext()));
@@ -215,8 +223,6 @@ public final class ProxySQLExecutor {
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         executionGroupContext.setExecutionID(backendConnection.getConnectionSession().getExecutionId());
-        ProxyJDBCExecutor jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseCommunicationEngine,
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
         return jdbcExecutor.execute(executionContext.getQueryContext(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
     }
     

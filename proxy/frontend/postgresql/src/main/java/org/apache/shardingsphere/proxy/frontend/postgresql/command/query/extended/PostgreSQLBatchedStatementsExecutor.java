@@ -69,7 +69,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false);
+    private final JDBCExecutor jdbcExecutor;
     
     private final ConnectionSession connectionSession;
     
@@ -84,6 +84,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
     public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+        jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;

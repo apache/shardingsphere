@@ -70,7 +70,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
                 return Optional.of(new StateEvent(instanceId, status));
             }
             if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
-                return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Long.valueOf(event.getValue())));
+                return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue())));
             }
             if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));

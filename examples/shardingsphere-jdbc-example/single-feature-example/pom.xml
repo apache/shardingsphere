@@ -32,7 +32,6 @@
     <modules>
         <module>cluster-mode-example</module>
         <module>extension-example</module>
-        <module>shadow-example</module>
         <module>sharding-example</module>
         <module>transaction-example</module>
     </modules>

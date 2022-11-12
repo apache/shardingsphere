@@ -26,7 +26,7 @@ public final class MySQLProtocolException extends DatabaseProtocolException {
     
     private static final long serialVersionUID = -2955235917749217233L;
     
-    public MySQLProtocolException(final String reason, final Object... arguments) {
-        super(String.format(reason, arguments));
+    public MySQLProtocolException(final String reason, final Object... args) {
+        super(String.format(reason, args));
     }
 }

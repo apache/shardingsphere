@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -78,7 +77,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false);
+    private final JDBCExecutor jdbcExecutor;
     
     private final ConnectionSession connectionSession;
     
@@ -90,7 +89,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private ExecutionContext anyExecutionContext;
     
-    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) throws SQLException {
+    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) {
+        jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         connectionSession.getBackendConnection().handleAutoCommit();
         this.connectionSession = connectionSession;
         this.sqlStatementSample = sqlStatementSample;
@@ -111,8 +111,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     private ShardingSphereSQLParserEngine getSQLParserEngine() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return sqlParserRule.getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()));
+        return sqlParserRule.getSQLParserEngine(DatabaseTypeFactory.getInstance("MySQL").getType());
     }
     
     private List<String> extractMultiStatements(final Pattern pattern, final String sql) {

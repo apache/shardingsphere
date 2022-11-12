@@ -43,12 +43,6 @@
             <artifactId>shardingsphere-sharding-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TODO now depend on pipeline spi later -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

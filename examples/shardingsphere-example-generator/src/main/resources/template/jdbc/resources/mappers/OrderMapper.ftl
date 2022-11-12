@@ -41,15 +41,15 @@
  <#if feature?contains("shadow")>
     
     <update id="createTableIfNotExistsShadow">
-        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)); /*shadow:true,foo:bar*/
+        CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT AUTO_INCREMENT, order_type INT(11), user_id INT NOT NULL, address_id BIGINT NOT NULL, status VARCHAR(50), PRIMARY KEY (order_id)); /*SHARDINGSPHERE_HINT:shadow=true,foo=bar*/
     </update>
     
     <update id="truncateTableShadow">
-        TRUNCATE TABLE t_order; /*shadow:true,foo:bar*/
+        TRUNCATE TABLE t_order /*SHARDINGSPHERE_HINT:shadow=true,foo=bar*/;
     </update>
     
     <update id="dropTableShadow">
-        DROP TABLE IF EXISTS t_order; /*shadow:true,foo:bar*/
+        DROP TABLE IF EXISTS t_order /*SHARDINGSPHERE_HINT:shadow=true,foo=bar*/;
     </update>
 
      <select id="selectShadowOrder" resultMap="baseResultMap">

@@ -134,4 +134,11 @@
     <sql-case id="select_with_mysql_main_and_utc_data_and_so_on" value="SELECT MYSQL_MAIN,UTC_DATE,UTC_TIME,UTC_TIMESTAMP FROM test" db-types="MySQL" />
     <sql-case id="select_with_analytic_function" value="SELECT order_id, ROW_NUMBER () OVER (PARTITION BY user_id ORDER BY order_id DESC) AS row_number FROM t_order WHERE order_id = ?" db-types="Oracle" />
     <sql-case id="select_with_listagg_function_start_with_connect_by" value="SELECT LISTAGG(c.category_name, '/') WITHIN GROUP (ORDER BY LENGTH (c.&quot;level&quot;) DESC) AS category_level FROM t_product_category c START WITH c.category_id = 1 CONNECT BY PRIOR c.parent_id = c.category_id" db-types="Oracle" />
+    <sql-case id="select_aggregate_percent_rank" value="SELECT PERCENT_RANK(15000, .05) WITHIN GROUP (ORDER BY salary, commission_pct) 'Percent-Rank' FROM employees;" db-types="Oracle" />
+    <sql-case id="select_analytic_percent_rank" value="SELECT department_id, last_name, salary, PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC) AS pr FROM employees ORDER BY pr, salary, last_name;" db-types="Oracle" />
+    <sql-case id="select_aggregate_percentile_cont" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont' FROM employees;" db-types="Oracle" />
+    <sql-case id="select_aggregate_percentile_disc" value="SELECT department_id, last_name, salary, PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) OVER (PARTITION BY department_id) 'Percentile_Disc' FROM employees WHERE department_id in (30, 60) ORDER BY last_name, salary, department_id;" db-types="Oracle" />
+    <sql-case id="select_aggregate_cume_dist" value="SELECT CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct) 'Cume-Dist of 15500' FROM employees;" db-types="Oracle" />
+    <sql-case id="select_aggregate_rank" value="SELECT RANK(15500) WITHIN GROUP (ORDER BY salary DESC) 'Rank of 15500' FROM employees;" db-types="Oracle" />
+    <sql-case id="select_rowid" value="SELECT ROWID FROM employees WHERE ROWIDTOCHAR(ROWID) LIKE '%JAAB%' ORDER BY ROWID;" db-types="Oracle" />
 </sql-cases>

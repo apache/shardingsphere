@@ -29,7 +29,7 @@ public abstract class ClusterSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 7;
     
-    public ClusterSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
+    public ClusterSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

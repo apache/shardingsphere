@@ -32,6 +32,9 @@ import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHa
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
 import java.sql.SQLException;
@@ -40,6 +43,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Register storage unit backend handler.
@@ -65,7 +70,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
         try {
             ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
-            log.error("Add resource failed", ex);
+            log.error("Register storage unit failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }
         return new UpdateResponseHeader(sqlStatement);
@@ -81,5 +86,18 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
             dataSourceNames.add(each.getName());
         }
         ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new DuplicateResourceException(duplicateDataSourceNames));
+        checkDuplicateDataSourceNameWithReadwriteSplittingRule(databaseName, dataSourceNames);
+    }
+    
+    private void checkDuplicateDataSourceNameWithReadwriteSplittingRule(final String databaseName, final Collection<String> requiredDataSourceNames) {
+        Optional<ReadwriteSplittingRule> readwriteSplittingRule = ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        if (!readwriteSplittingRule.isPresent()) {
+            return;
+        }
+        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) readwriteSplittingRule.get().getConfiguration();
+        Collection<String> existRuleNames = config.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> duplicateDataSourceNames = requiredDataSourceNames.stream().filter(each -> existRuleNames.contains(each)).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(),
+                () -> new InvalidResourcesException(Collections.singleton(String.format("%s already exists in readwrite splitting", duplicateDataSourceNames))));
     }
 }

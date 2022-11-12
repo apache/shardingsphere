@@ -15,8 +15,10 @@
 -- limitations under the License.
 --
 
+DROP TABLE IF EXISTS t_product;
 DROP TABLE IF EXISTS t_order_federate;
 DROP TABLE IF EXISTS t_single_table;
 
+CREATE TABLE t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT NULL, category_id INT NOT NULL, price DECIMAL NOT NULL, status VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
