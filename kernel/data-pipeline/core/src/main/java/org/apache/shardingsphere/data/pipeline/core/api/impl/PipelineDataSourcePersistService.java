@@ -40,11 +40,11 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, DataSourceProperties> load(final JobType jobType) {
-        String dataSourcesProperties = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
-        if (Strings.isNullOrEmpty(dataSourcesProperties)) {
+        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
+        if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
         }
-        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProperties, Map.class);
+        Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProps, Map.class);
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size());
         yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourceProperties(value)));
         return result;
