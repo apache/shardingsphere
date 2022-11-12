@@ -54,17 +54,17 @@ public final class RowNumberPaginationContextEngine {
      * 
      * @param expressions expressions
      * @param projectionsContext projections context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final Collection<ExpressionSegment> expressions, final ProjectionsContext projectionsContext, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final Collection<ExpressionSegment> expressions, final ProjectionsContext projectionsContext, final List<Object> params) {
         Optional<String> rowNumberAlias = isRowNumberAlias(projectionsContext);
         if (!rowNumberAlias.isPresent()) {
-            return new PaginationContext(null, null, parameters);
+            return new PaginationContext(null, null, params);
         }
         Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractUtil.getAndPredicates(each).stream()).collect(Collectors.toList());
         Collection<BinaryOperationExpression> rowNumberPredicates = getRowNumberPredicates(andPredicates, rowNumberAlias.get());
-        return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, parameters) : createPaginationWithRowNumber(rowNumberPredicates, parameters);
+        return rowNumberPredicates.isEmpty() ? new PaginationContext(null, null, params) : createPaginationWithRowNumber(rowNumberPredicates, params);
     }
     
     private Collection<BinaryOperationExpression> getRowNumberPredicates(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {
@@ -109,7 +109,7 @@ public final class RowNumberPaginationContextEngine {
         return false;
     }
     
-    private PaginationContext createPaginationWithRowNumber(final Collection<BinaryOperationExpression> rowNumberPredicates, final List<Object> parameters) {
+    private PaginationContext createPaginationWithRowNumber(final Collection<BinaryOperationExpression> rowNumberPredicates, final List<Object> params) {
         RowNumberValueSegment offset = null;
         RowNumberValueSegment rowCount = null;
         for (BinaryOperationExpression each : rowNumberPredicates) {
@@ -131,7 +131,7 @@ public final class RowNumberPaginationContextEngine {
                     break;
             }
         }
-        return new PaginationContext(offset, rowCount, parameters);
+        return new PaginationContext(offset, rowCount, params);
     }
     
     private RowNumberValueSegment createRowNumberValueSegment(final ExpressionSegment expression, final boolean boundOpened) {

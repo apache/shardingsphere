@@ -58,9 +58,9 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) parameterBuilder;
+        GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) paramBuilder;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
@@ -75,27 +75,27 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 }
                 Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue, encryptContext);
                 groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
-                Collection<Object> addedParameters = new LinkedList<>();
+                Collection<Object> addedParams = new LinkedList<>();
                 Optional<EncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, encryptLogicColumnName);
                 if (assistedQueryEncryptor.isPresent()) {
                     Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(assistedQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
+                    addedParams.add(assistedQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
                 }
                 Optional<EncryptAlgorithm> fuzzyQueryEncryptor = encryptRule.findFuzzyQueryEncryptor(tableName, encryptLogicColumnName);
                 if (fuzzyQueryEncryptor.isPresent()) {
                     Optional<String> fuzzyColumnName = encryptRule.findFuzzyQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(fuzzyColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(fuzzyQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
+                    addedParams.add(fuzzyQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
                 }
                 if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
-                    addedParameters.add(plainColumnValue);
+                    addedParams.add(plainColumnValue);
                 }
-                if (!addedParameters.isEmpty()) {
+                if (!addedParams.isEmpty()) {
                     if (!groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(columnIndex)) {
                         groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(columnIndex, new LinkedList<>());
                     }
-                    groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex).addAll(addedParameters);
+                    groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex).addAll(addedParams);
                 }
             });
         }

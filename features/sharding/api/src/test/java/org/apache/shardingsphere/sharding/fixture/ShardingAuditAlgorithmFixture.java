@@ -38,7 +38,7 @@ public final class ShardingAuditAlgorithmFixture implements ShardingAuditAlgorit
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final ShardingSphereDatabase database) {
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
         return new SQLCheckResult(true, "");
     }
     

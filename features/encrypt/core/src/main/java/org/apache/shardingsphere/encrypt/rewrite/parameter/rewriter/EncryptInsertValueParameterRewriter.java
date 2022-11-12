@@ -60,7 +60,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
@@ -74,15 +74,15 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         }
     }
     
-    private void encryptInsertValues(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext,
+    private void encryptInsertValues(final GroupedParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext,
                                      final EncryptAlgorithm<?, ?> encryptAlgorithm, final EncryptAlgorithm<?, ?> assistEncryptAlgorithm,
                                      final EncryptAlgorithm<?, ?> fuzzyEncryptAlgorithm, final EncryptContext encryptContext) {
-        int columnIndex = getColumnIndex(parameterBuilder, insertStatementContext, encryptContext.getColumnName());
+        int columnIndex = getColumnIndex(paramBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
             int parameterIndex = insertStatementContext.getInsertValueContexts().get(count).getParameterIndex(columnIndex);
             if (!each.isEmpty()) {
-                StandardParameterBuilder standardParameterBuilder = parameterBuilder.getParameterBuilders().get(count);
+                StandardParameterBuilder standardParameterBuilder = paramBuilder.getParameterBuilders().get(count);
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     Object literalValue = insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
@@ -94,11 +94,11 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         }
     }
     
-    private int getColumnIndex(final GroupedParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final String encryptLogicColumnName) {
+    private int getColumnIndex(final GroupedParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final String encryptLogicColumnName) {
         List<String> columnNames;
-        if (parameterBuilder.getDerivedColumnName().isPresent()) {
+        if (paramBuilder.getDerivedColumnName().isPresent()) {
             columnNames = new ArrayList<>(insertStatementContext.getColumnNames());
-            columnNames.remove(parameterBuilder.getDerivedColumnName().get());
+            columnNames.remove(paramBuilder.getDerivedColumnName().get());
         } else {
             columnNames = insertStatementContext.getColumnNames();
         }
@@ -107,28 +107,28 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void encryptInsertValue(final EncryptAlgorithm encryptAlgorithm, final EncryptAlgorithm assistEncryptor, final EncryptAlgorithm fuzzyEncryptor,
-                                    final int parameterIndex, final Object originalValue, final StandardParameterBuilder parameterBuilder,
+                                    final int paramIndex, final Object originalValue, final StandardParameterBuilder paramBuilder,
                                     final EncryptContext encryptContext) {
-        parameterBuilder.addReplacedParameters(parameterIndex, encryptAlgorithm.encrypt(originalValue, encryptContext));
-        Collection<Object> addedParameters = new LinkedList<>();
+        paramBuilder.addReplacedParameters(paramIndex, encryptAlgorithm.encrypt(originalValue, encryptContext));
+        Collection<Object> addedParams = new LinkedList<>();
         if (null != assistEncryptor) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            addedParameters.add(assistEncryptor.encrypt(originalValue, encryptContext));
+            addedParams.add(assistEncryptor.encrypt(originalValue, encryptContext));
         }
         if (null != fuzzyEncryptor) {
             Optional<String> fuzzyColumnName = encryptRule.findFuzzyQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
             Preconditions.checkArgument(fuzzyColumnName.isPresent(), "Can not find fuzzy query Column Name");
-            addedParameters.add(fuzzyEncryptor.encrypt(originalValue, encryptContext));
+            addedParams.add(fuzzyEncryptor.encrypt(originalValue, encryptContext));
         }
         if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
-            addedParameters.add(originalValue);
+            addedParams.add(originalValue);
         }
-        if (!addedParameters.isEmpty()) {
-            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterIndex)) {
-                parameterBuilder.getAddedIndexAndParameters().put(parameterIndex, new LinkedList<>());
+        if (!addedParams.isEmpty()) {
+            if (!paramBuilder.getAddedIndexAndParameters().containsKey(paramIndex)) {
+                paramBuilder.getAddedIndexAndParameters().put(paramIndex, new LinkedList<>());
             }
-            parameterBuilder.getAddedIndexAndParameters().get(parameterIndex).addAll(addedParameters);
+            paramBuilder.getAddedIndexAndParameters().get(paramIndex).addAll(addedParams);
         }
     }
 }

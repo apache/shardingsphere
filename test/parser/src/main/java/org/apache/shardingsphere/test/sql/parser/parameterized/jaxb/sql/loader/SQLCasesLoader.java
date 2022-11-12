@@ -66,15 +66,15 @@ public final class SQLCasesLoader extends CasesLoader {
      *
      * @param sqlCaseId SQL case ID
      * @param sqlCaseType SQL case type
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param databaseType databaseType
      * @return SQL
      */
     @Override
-    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> parameters, final String databaseType) {
+    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> params, final String databaseType) {
         switch (sqlCaseType) {
             case Literal:
-                return getLiteralSQL(getSQLFromMap(sqlCaseId, super.getCases()), parameters);
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, super.getCases()), params);
             case Placeholder:
                 return getPlaceholderSQL(getSQLFromMap(sqlCaseId, super.getCases()));
             default:
@@ -107,11 +107,11 @@ public final class SQLCasesLoader extends CasesLoader {
         return sql;
     }
     
-    private String getLiteralSQL(final String sql, final List<?> parameters) {
-        if (null == parameters || parameters.isEmpty()) {
+    private String getLiteralSQL(final String sql, final List<?> params) {
+        if (null == params || params.isEmpty()) {
             return sql;
         }
-        return replace(sql, parameters.toArray());
+        return replace(sql, params.toArray());
     }
     
     private Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
@@ -126,11 +126,11 @@ public final class SQLCasesLoader extends CasesLoader {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each)) {
-                Object[] parameters = new Object[3];
-                parameters[0] = sqlCase.getId();
-                parameters[1] = each;
-                parameters[2] = sqlCaseType;
-                result.add(parameters);
+                Object[] params = new Object[3];
+                params[0] = sqlCase.getId();
+                params[1] = each;
+                params[2] = sqlCaseType;
+                result.add(params);
             }
         }
         return result;

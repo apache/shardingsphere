@@ -62,15 +62,15 @@ public final class SQLRewriteEntry {
      * Rewrite.
      * 
      * @param sql SQL
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param sqlStatementContext SQL statement context
      * @param routeContext route context
      * @param connectionContext connection context
      * @return route unit and SQL rewrite result map
      */
-    public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext,
+    public SQLRewriteResult rewrite(final String sql, final List<Object> params, final SQLStatementContext<?> sqlStatementContext,
                                     final RouteContext routeContext, final ConnectionContext connectionContext) {
-        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext, connectionContext);
+        SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, params, sqlStatementContext, routeContext, connectionContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
         DatabaseType protocolType = database.getProtocolType();
         Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
@@ -79,9 +79,9 @@ public final class SQLRewriteEntry {
                 : new RouteSQLRewriteEngine(rule, protocolType, storageTypes).rewrite(sqlRewriteContext, routeContext);
     }
     
-    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext,
+    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> params, final SQLStatementContext<?> sqlStatementContext,
                                                       final RouteContext routeContext, final ConnectionContext connectionContext) {
-        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters, connectionContext);
+        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, params, connectionContext);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

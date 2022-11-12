@@ -48,12 +48,12 @@ public final class OnDuplicateUpdateContext {
     
     private final List<ColumnSegment> columns;
     
-    public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> parameters, final int parametersOffset) {
+    public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> params, final int parametersOffset) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(AssignmentSegment::getValue).collect(Collectors.toList());
         valueExpressions = getValueExpressions(expressionSegments);
         parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(expressionSegments);
         parameterCount = parameterMarkerExpressions.size();
-        this.parameters = getParameters(parameters, parametersOffset);
+        this.parameters = getParameters(params, parametersOffset);
         columns = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());
     }
     
@@ -63,12 +63,12 @@ public final class OnDuplicateUpdateContext {
         return result;
     }
     
-    private List<Object> getParameters(final List<Object> parameters, final int parametersOffset) {
-        if (parameters.isEmpty() || 0 == parameterCount) {
+    private List<Object> getParameters(final List<Object> params, final int paramsOffset) {
+        if (params.isEmpty() || 0 == parameterCount) {
             return Collections.emptyList();
         }
         List<Object> result = new ArrayList<>(parameterCount);
-        result.addAll(parameters.subList(parametersOffset, parametersOffset + parameterCount));
+        result.addAll(params.subList(paramsOffset, paramsOffset + parameterCount));
         return result;
     }
     

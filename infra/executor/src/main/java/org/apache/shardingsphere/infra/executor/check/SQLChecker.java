@@ -49,14 +49,14 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * Check SQL.
      * 
      * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param grantee grantee
      * @param currentDatabase current database
      * @param databases databases
      * @param rule rule
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatementContext<?> sqlStatementContext, List<Object> parameters, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databases, T rule);
+    SQLCheckResult check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databases, T rule);
     
     /**
      * Check User.

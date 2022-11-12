@@ -114,15 +114,15 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
         ShardingSphereSchema schema = database.getSchema(schemaName);
         AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, database.getProtocolType(), schema, callback, federationContext);
-        Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
-        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, parameters);
+        Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
+        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, params);
         return resultSet;
     }
     
-    private Map<String, Object> createParameters(final List<Object> parameters) {
-        Map<String, Object> result = new HashMap<>(parameters.size(), 1);
+    private Map<String, Object> createParameters(final List<Object> params) {
+        Map<String, Object> result = new HashMap<>(params.size(), 1);
         int index = 0;
-        for (Object each : parameters) {
+        for (Object each : params) {
             result.put("?" + index++, each);
         }
         return result;
@@ -139,7 +139,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     }
     
     @SuppressWarnings("unchecked")
-    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
+    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> params) {
         OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
@@ -149,7 +149,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
         SQLOptimizeContext optimizeContext =
                 new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters)).enumerator();
+        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, params)).enumerator();
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
     }
     

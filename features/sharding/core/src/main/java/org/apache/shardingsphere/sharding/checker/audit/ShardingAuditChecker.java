@@ -45,7 +45,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
@@ -59,7 +59,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
                 if (auditStrategy.isAllowHintDisable() && disableAuditNames.contains(auditorName.toLowerCase())) {
                     continue;
                 }
-                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase.toLowerCase()));
+                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, params, grantee, databases.get(currentDatabase.toLowerCase()));
                 if (!result.isPassed()) {
                     return result;
                 }

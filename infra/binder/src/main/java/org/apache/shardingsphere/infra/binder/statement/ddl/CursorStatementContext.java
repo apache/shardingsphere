@@ -56,13 +56,13 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     
     private final SelectStatementContext selectStatementContext;
     
-    public CursorStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters,
+    public CursorStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> params,
                                   final OpenGaussCursorStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         tablesContext = new TablesContext(getSimpleTableSegments(), getDatabaseType());
         extractWhereSegments(whereSegments, sqlStatement.getSelect());
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        selectStatementContext = new SelectStatementContext(databases, parameters, sqlStatement.getSelect(), defaultDatabaseName);
+        selectStatementContext = new SelectStatementContext(databases, params, sqlStatement.getSelect(), defaultDatabaseName);
     }
     
     private Collection<SimpleTableSegment> getSimpleTableSegments() {

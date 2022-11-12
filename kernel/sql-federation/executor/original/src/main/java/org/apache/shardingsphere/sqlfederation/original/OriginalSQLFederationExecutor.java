@@ -129,9 +129,9 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
         connection.setSchema(schemaName);
     }
     
-    private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
+    private void setParameters(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         int count = 1;
-        for (Object each : parameters) {
+        for (Object each : params) {
             preparedStatement.setObject(count, each);
             count++;
         }

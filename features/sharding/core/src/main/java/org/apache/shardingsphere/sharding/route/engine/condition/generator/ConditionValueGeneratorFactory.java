@@ -49,18 +49,18 @@ public final class ConditionValueGeneratorFactory {
      *
      * @param predicate predicate right value
      * @param column column
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return route value
      */
-    public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final Column column, final List<Object> parameters) {
+    public static Optional<ShardingConditionValue> generate(final ExpressionSegment predicate, final Column column, final List<Object> params) {
         if (predicate instanceof BinaryOperationExpression) {
-            return COMPARE_OPERATOR_GENERATOR.generate((BinaryOperationExpression) predicate, column, parameters);
+            return COMPARE_OPERATOR_GENERATOR.generate((BinaryOperationExpression) predicate, column, params);
         }
         if (predicate instanceof InExpression) {
-            return IN_OPERATOR_GENERATOR.generate((InExpression) predicate, column, parameters);
+            return IN_OPERATOR_GENERATOR.generate((InExpression) predicate, column, params);
         }
         if (predicate instanceof BetweenExpression) {
-            return BETWEEN_OPERATOR_GENERATOR.generate((BetweenExpression) predicate, column, parameters);
+            return BETWEEN_OPERATOR_GENERATOR.generate((BetweenExpression) predicate, column, params);
         }
         return Optional.empty();
     }
