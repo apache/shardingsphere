@@ -171,7 +171,9 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSelectWithExecuteWithProperties() throws SQLException {
-        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+        try (
+                PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(
+                        SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             boolean result = preparedStatement.execute();
             assertTrue(result);
             assertThat(preparedStatement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));

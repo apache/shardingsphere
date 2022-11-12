@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Predicate equal right value token for encrypt.
  */
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 public final class EncryptPredicateEqualRightValueToken extends SQLToken implements Substitutable {
     
     @Getter
