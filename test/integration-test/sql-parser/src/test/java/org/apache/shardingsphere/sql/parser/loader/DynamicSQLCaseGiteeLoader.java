@@ -34,16 +34,20 @@ public class DynamicSQLCaseGiteeLoader extends DynamicLoadingSQLParserParameteri
     /**
      * Get test parameters.
      *
-     * @param sqlCaseURI the URI of sql case
+     * @param sqlCaseTestURI the URI of sql test case
+     *
+     * @param sqlCaseResultURI the URI of sql result case
      *
      * @return Test cases from Gitee.
      **/
-    public Collection<Object[]> getTestParameters(final URI sqlCaseURI) {
+    public Collection<Object[]> getTestParameters(final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Map<String, String> each : getResponse("https://gitee.com/api/v5/repos/", sqlCaseURI)) {
+        Map<String, String> resultResponse = getResultResponse("https://gitee.com/api/v5/repos/", sqlCaseResultURI);
+        for (Map<String, String> each : getResponse("https://gitee.com/api/v5/repos/", sqlCaseTestURI)) {
             String sqlCaseFileName = each.get("name").split("\\.")[0];
-            String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
-            result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+            String sqlCaseTestFileContent = getContent(URI.create(each.get("download_url")));
+            String sqlCaseResultFileContent = getContent(URI.create(resultResponse.get(each.get("name"))));
+            result.addAll(getSQLCases(sqlCaseFileName, sqlCaseTestFileContent, sqlCaseResultFileContent));
         }
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});

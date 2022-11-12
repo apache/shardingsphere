@@ -33,13 +33,15 @@ public class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserParameteri
     /**
      * Get test parameters.
      *
-     * @param sqlCaseURI the URI of sql case
+     * @param sqlCaseTestURI the URI of sql test case
+     *
+     * @param sqlCaseResultURI the URI of sql result case
      *
      * @return Test cases from localhost.
      **/
-    public Collection<Object[]> getTestParameters(final URI sqlCaseURI) {
+    public Collection<Object[]> getTestParameters(final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
         Collection<Object[]> result = new LinkedList<>();
-        result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
+        result.addAll(getSQLCases("localFile", getContent(sqlCaseTestURI), getContent(sqlCaseResultURI));
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});
         }
