@@ -22,7 +22,6 @@ import java.util.Collection;
 /**
  * SPI metadata aware. 
  */
-
 public interface SPIMetadataAware {
     
     /**
