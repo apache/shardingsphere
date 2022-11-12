@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPe
 import java.util.Optional;
 
 /**
- * Meta data contexts.
+ * Metadata contexts.
  */
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
