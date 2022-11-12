@@ -17,29 +17,27 @@
 
 package org.apache.shardingsphere.sql.parser.loader.impl;
 
-import org.apache.shardingsphere.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
 import org.apache.shardingsphere.sql.parser.loader.SQLCaseLoadStrategy;
-import org.apache.shardingsphere.sql.parser.result.SQLParserCSVResultProcessor;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Dynamic SQL case loader with local file.
+ * SQL case loader with local file.
  */
-public final class LocalFileSQLCaseLoadStrategy extends DynamicLoadingSQLParserParameterizedIT implements SQLCaseLoadStrategy {
+public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
-    public LocalFileSQLCaseLoadStrategy() {
-        super("", "", "", new SQLParserCSVResultProcessor(""));
+    @Override
+    public Collection<Map<String, String>> loadSQLCaseFiles(final URI uri) {
+        // TODO
+        return Collections.emptyList();
     }
     
     @Override
-    public Collection<Object[]> getTestParameters(final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
-        Collection<Object[]> result = new LinkedList<>(getSQLCases("localFile", getContent(sqlCaseTestURI), getContent(sqlCaseResultURI)));
-        if (result.isEmpty()) {
-            result.add(new Object[]{"", ""});
-        }
-        return result;
+    public Map<String, String> loadSQLCaseResultFiles(final URI uri) {
+        // TODO
+        return Collections.emptyMap();
     }
 }
