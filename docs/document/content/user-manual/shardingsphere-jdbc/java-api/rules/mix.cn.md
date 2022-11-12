@@ -75,12 +75,13 @@ private static Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscov
 public EncryptRuleConfiguration createEncryptRuleConfiguration() {
     Properties props = new Properties();
     props.setProperty("aes-key-value", "123456");
-    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "username_plain", "name_encryptor", null);
-    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor", null);
+    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "username_plain", "name_encryptor", null);
+    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "fuzzy_pwd", "", "pwd_encryptor", null);
     EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest), null);
     Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
     encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
     encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
+    encryptAlgorithmConfigs.put("fuzzy_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
     EncryptRuleConfiguration result = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
     return result;
 }
