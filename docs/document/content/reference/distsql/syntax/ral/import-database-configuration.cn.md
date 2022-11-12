@@ -11,7 +11,7 @@ weight = 10
 
 ```sql
 ExportDatabaseConfiguration ::=
-  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' filePath ('TO' databaseName)?
+  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath ('TO' databaseName)?
 
 databaseName ::=
   identifier
@@ -31,18 +31,18 @@ filePath ::=
 - 将 `YAML` 中的配置导入到指定逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM "/xxx/config_test1.yaml" TO test1;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml" TO test1;
 ```
 
 - 将 `YAML` 中的配置导入到当前逻辑库中
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM "/xxx/config_test1.yaml";
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml";
 ```
 
 ### 保留字
 
-`IMPORT`、`DATABASE`、`CONFIGURATION`、`FROM`、`TO`
+`IMPORT`、`DATABASE`、`CONFIGURATION`、`FROM`、`FILE`、`TO`
 
 ### 相关链接
 
