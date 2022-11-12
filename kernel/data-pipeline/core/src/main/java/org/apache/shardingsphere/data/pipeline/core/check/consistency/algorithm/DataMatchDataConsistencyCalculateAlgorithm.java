@@ -196,7 +196,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 return false;
             }
             EqualsBuilder equalsBuilder = new EqualsBuilder();
-            Iterator<Collection<Object>> thisIterator = this.records.iterator();
+            Iterator<Collection<Object>> thisIterator = records.iterator();
             Iterator<Collection<Object>> thatIterator = that.records.iterator();
             while (thisIterator.hasNext() && thatIterator.hasNext()) {
                 equalsBuilder.reset();

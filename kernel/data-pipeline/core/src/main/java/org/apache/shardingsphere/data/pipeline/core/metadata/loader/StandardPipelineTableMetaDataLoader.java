@@ -79,8 +79,6 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             long startMillis = System.currentTimeMillis();
             String schemaNameFinal = isSchemaAvailable() ? schemaName : null;
             Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, schemaNameFinal, tableNamePattern);
-            log.info("loadTableMetaData, schemaNameFinal={}, tableNamePattern={}, result={}, cost time={} ms",
-                    schemaNameFinal, tableNamePattern, tableMetaDataMap, System.currentTimeMillis() - startMillis);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
     }

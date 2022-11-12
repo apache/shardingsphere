@@ -67,9 +67,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {
         try {
-            long startTimeMillis = System.currentTimeMillis();
             doPrepare(jobItemContext);
-            log.info("prepare cost {} ms", System.currentTimeMillis() - startTimeMillis);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

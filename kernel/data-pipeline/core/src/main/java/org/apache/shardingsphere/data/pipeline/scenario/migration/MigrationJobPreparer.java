@@ -64,20 +64,17 @@ public final class MigrationJobPreparer {
     public void prepare(final MigrationJobItemContext jobItemContext) throws SQLException {
         PipelineJobPreparerUtils.checkSourceDataSource(jobItemContext.getJobConfig().getSourceDatabaseType(), Collections.singleton(jobItemContext.getSourceDataSource()));
         if (jobItemContext.isStopping()) {
-            log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
             PipelineJobCenter.stop(jobItemContext.getJobId());
             return;
         }
         prepareAndCheckTargetWithLock(jobItemContext);
         if (jobItemContext.isStopping()) {
-            log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
             PipelineJobCenter.stop(jobItemContext.getJobId());
             return;
         }
         if (PipelineJobPreparerUtils.isIncrementalSupported(jobItemContext.getJobConfig().getSourceDatabaseType())) {
             initIncrementalTasks(jobItemContext);
             if (jobItemContext.isStopping()) {
-                log.info("prepare, job is stopping, jobId={}", jobItemContext.getJobId());
                 PipelineJobCenter.stop(jobItemContext.getJobId());
                 return;
             }
@@ -103,7 +100,6 @@ public final class MigrationJobPreparer {
                 boolean prepareFlag = JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
                         || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
                 if (prepareFlag) {
-                    log.info("execute prepare, jobId={}, shardingItem={}, jobStatus={}", jobConfig.getJobId(), jobItemContext.getShardingItem(), jobItemProgress.getStatus());
                     jobItemContext.setStatus(JobStatus.PREPARING);
                     JOB_API.updateJobItemStatus(jobConfig.getJobId(), jobItemContext.getShardingItem(), JobStatus.PREPARING);
                     prepareAndCheckTarget(jobItemContext);
@@ -121,7 +117,6 @@ public final class MigrationJobPreparer {
     
     private void prepareAndCheckTarget(final MigrationJobItemContext jobItemContext) throws SQLException {
         if (jobItemContext.isSourceTargetDatabaseTheSame()) {
-            log.info("prepare target ...");
             prepareTarget(jobItemContext);
         }
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();

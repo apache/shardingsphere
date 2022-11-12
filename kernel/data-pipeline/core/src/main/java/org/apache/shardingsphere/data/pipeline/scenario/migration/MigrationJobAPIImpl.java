@@ -192,9 +192,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         Map<LogicTableName, Set<String>> shardingColumnsMap = ShardingColumnsExtractorFactory.getInstance().getShardingColumnsMap(
                 ((ShardingSpherePipelineDataSourceConfiguration) jobConfig.getTarget()).getRootConfig().getRules(), Collections.singleton(new LogicTableName(jobConfig.getTargetTableName())));
         ImporterConfiguration importerConfig = buildImporterConfiguration(jobConfig, pipelineProcessConfig, shardingColumnsMap, tableNameSchemaNameMapping);
-        MigrationTaskConfiguration result = new MigrationTaskConfiguration(jobConfig.getSourceResourceName(), createTableConfig, dumperConfig, importerConfig);
-        log.info("buildTaskConfiguration, sourceResourceName={}, result={}", jobConfig.getSourceResourceName(), result);
-        return result;
+        return new MigrationTaskConfiguration(jobConfig.getSourceResourceName(), createTableConfig, dumperConfig, importerConfig);
     }
     
     private CreateTableConfiguration buildCreateTableConfiguration(final MigrationJobConfiguration jobConfig) {
@@ -278,13 +276,12 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     
     @Override
     public void rollback(final String jobId) throws SQLException {
-        log.info("Rollback job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
         dropCheckJobs(jobId);
         stop(jobId);
         cleanTempTableOnRollback(jobId);
         dropJob(jobId);
-        log.info("Rollback cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
     }
     
     private void dropCheckJobs(final String jobId) {
@@ -292,8 +289,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         if (checkJobIds.isEmpty()) {
             return;
         }
-        log.info("dropCheckJobs start...");
-        long startTimeMillis = System.currentTimeMillis();
         for (String each : checkJobIds) {
             try {
                 dropJob(each);
@@ -303,7 +298,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
                 log.info("drop check job failed, check job id: {}, error: {}", each, ex.getMessage());
             }
         }
-        log.info("dropCheckJobs cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
@@ -336,7 +330,6 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     
     @Override
     public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        log.info("Add migration source resources {}", dataSourcePropsMap.keySet());
         Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {

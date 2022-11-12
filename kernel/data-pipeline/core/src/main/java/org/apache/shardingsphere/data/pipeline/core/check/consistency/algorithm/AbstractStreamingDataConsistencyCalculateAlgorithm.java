@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Streaming data consistency calculate algorithm.
@@ -67,8 +66,6 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         
         private final DataConsistencyCalculateParameter param;
         
-        private final AtomicInteger calculationCount = new AtomicInteger(0);
-        
         private volatile Optional<DataConsistencyCalculatedResult> nextResult;
         
         @Override
@@ -91,12 +88,6 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
                 return;
             }
             nextResult = calculateChunk(param);
-            if (!nextResult.isPresent()) {
-                log.info("nextResult not present, calculation done. calculationCount={}", calculationCount);
-            }
-            if (0 == calculationCount.incrementAndGet() % 100_0000) {
-                log.warn("possible infinite loop, calculationCount={}", calculationCount);
-            }
         }
     }
 }

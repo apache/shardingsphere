@@ -37,7 +37,7 @@ import java.util.Collections;
  * PostgreSQL Data source checker.
  */
 @Slf4j
-public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
+public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
     

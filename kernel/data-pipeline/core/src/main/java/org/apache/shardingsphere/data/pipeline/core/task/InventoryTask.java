@@ -92,7 +92,6 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onSuccess() {
-                log.info("dumper onSuccess, taskId={}", taskId);
             }
             
             @Override
@@ -106,7 +105,6 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onSuccess() {
-                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
