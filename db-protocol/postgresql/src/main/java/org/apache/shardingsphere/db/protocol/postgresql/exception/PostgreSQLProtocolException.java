@@ -26,7 +26,7 @@ public final class PostgreSQLProtocolException extends DatabaseProtocolException
     
     private static final long serialVersionUID = -2345109476596144026L;
     
-    public PostgreSQLProtocolException(final String reason, final Object... arguments) {
-        super(String.format(reason, arguments));
+    public PostgreSQLProtocolException(final String reason, final Object... args) {
+        super(String.format(reason, args));
     }
 }
