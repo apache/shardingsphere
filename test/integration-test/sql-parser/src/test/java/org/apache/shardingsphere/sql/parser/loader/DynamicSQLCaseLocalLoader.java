@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Dynamic SQL case local loader.
+ * Dynamic SQL case loader with local file.
  */
 public final class DynamicSQLCaseLocalLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     

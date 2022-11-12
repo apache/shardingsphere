@@ -25,7 +25,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
+/**
+ * Dynamic SQL case loader with GitHub.
+ */
+public final class DynamicSQLCaseGitHubLoader extends DynamicLoadingSQLParserParameterizedTest implements DynamicSQLCaseLoaderStrategy {
     
     public DynamicSQLCaseGitHubLoader() {
         super("", "", "", new SQLParserCSVResultProcessor(""));
