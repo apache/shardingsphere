@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.mysql;
+package org.apache.shardingsphere.test.integration.sql.parser.engine.dialect;
 
-import org.apache.shardingsphere.test.integration.sql.parser.base.DynamicLoadingSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.integration.sql.parser.engine.SQLParserParameterizedIT;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessorManager;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserCSVResultProcessor;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -29,15 +29,15 @@ import java.net.URI;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class DynamicLoadingMySQLParserParameterizedIT extends DynamicLoadingSQLParserParameterizedIT {
+public final class PostgreSQLParserParameterizedIT extends SQLParserParameterizedIT {
     
-    public DynamicLoadingMySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL", SQLParserResultProcessorManager.getProcessor("MySQL"));
+    public PostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
+        super(sqlCaseId, sqlCaseValue, "PostgreSQL", new SQLParserCSVResultProcessor("PostgreSQL"));
     }
     
-    @Parameters(name = "{0} (MySQL) -> {1}")
+    @Parameters(name = "{0} (PostgreSQL) -> {1}")
     public static Collection<Object[]> getTestParameters() {
         return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(
-                URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"), URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r"));
+                URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"), URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"));
     }
 }
