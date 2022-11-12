@@ -28,19 +28,19 @@ public final class DatabaseNameSetterTest {
     
     @Test
     public void assertGetDatabaseNameWhenConfigDatabaseName() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.database.name", "jdbc_db");
-        StandardEnvironment standardEnvironment = new StandardEnvironment();
-        standardEnvironment.merge(mockEnvironment);
-        assertThat(DatabaseNameSetter.getDatabaseName(standardEnvironment), is("jdbc_db"));
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.database.name", "jdbc_db");
+        StandardEnvironment standardEnv = new StandardEnvironment();
+        standardEnv.merge(mockEnv);
+        assertThat(DatabaseNameSetter.getDatabaseName(standardEnv), is("jdbc_db"));
     }
     
     @Test
     public void assertGetDatabaseNameWhenConfigSchemaName() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.schema.name", "jdbc_db");
-        StandardEnvironment standardEnvironment = new StandardEnvironment();
-        standardEnvironment.merge(mockEnvironment);
-        assertThat(DatabaseNameSetter.getDatabaseName(standardEnvironment), is("jdbc_db"));
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.schema.name", "jdbc_db");
+        StandardEnvironment standardEnv = new StandardEnvironment();
+        standardEnv.merge(mockEnv);
+        assertThat(DatabaseNameSetter.getDatabaseName(standardEnv), is("jdbc_db"));
     }
 }
