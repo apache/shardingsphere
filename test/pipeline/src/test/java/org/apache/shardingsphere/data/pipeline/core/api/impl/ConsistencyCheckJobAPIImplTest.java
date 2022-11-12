@@ -58,8 +58,7 @@ public final class ConsistencyCheckJobAPIImplTest {
     @Test
     public void assertCreateJobConfig() {
         String migrationJobId = "j0101test";
-        CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(migrationJobId, null, null);
-        String checkJobId = checkJobAPI.createJobAndStart(parameter);
+        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(migrationJobId, null, null));
         ConsistencyCheckJobConfiguration jobConfig = (ConsistencyCheckJobConfiguration) checkJobAPI.getJobConfiguration(checkJobId);
         int expectedSequence = ConsistencyCheckJobId.MIN_SEQUENCE;
         String expectCheckJobId = "j0201" + migrationJobId + expectedSequence;
@@ -73,8 +72,7 @@ public final class ConsistencyCheckJobAPIImplTest {
     public void assertGetLatestDataConsistencyCheckResult() {
         Optional<String> jobId = migrationJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
-        CreateConsistencyCheckJobParameter parameter = new CreateConsistencyCheckJobParameter(jobId.get(), null, null);
-        String checkJobId = checkJobAPI.createJobAndStart(parameter);
+        String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(jobId.get(), null, null));
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(jobId.get(), checkJobId);
         Map<String, DataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1),
                 new DataConsistencyContentCheckResult(true)));

@@ -222,7 +222,7 @@ public final class ShardingRouteCacheableChecker {
             this.database = database;
             this.sql = sql;
             this.sqlStatementContext = sqlStatementContext;
-            this.parameters = new ArrayList<>(params);
+            parameters = new ArrayList<>(params);
         }
     }
 }

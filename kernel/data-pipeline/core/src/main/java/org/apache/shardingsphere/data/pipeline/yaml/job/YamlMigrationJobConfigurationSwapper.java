@@ -67,10 +67,10 @@ public final class YamlMigrationJobConfigurationSwapper implements YamlConfigura
     /**
      * Swap to migration job configuration from YAML text.
      *
-     * @param jobParameter job parameter YAML text
+     * @param jobParam job parameter YAML text
      * @return migration job configuration
      */
-    public MigrationJobConfiguration swapToObject(final String jobParameter) {
-        return swapToObject(YamlEngine.unmarshal(jobParameter, YamlMigrationJobConfiguration.class, true));
+    public MigrationJobConfiguration swapToObject(final String jobParam) {
+        return swapToObject(YamlEngine.unmarshal(jobParam, YamlMigrationJobConfiguration.class, true));
     }
 }

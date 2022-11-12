@@ -53,13 +53,13 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-        DatabaseType targetDatabaseType = parameter.getTargetDatabaseType();
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
+        DatabaseType targetDatabaseType = param.getTargetDatabaseType();
         if (!targetDatabaseType.isSchemaAvailable()) {
             log.info("prepareTargetSchemas, target database does not support schema, ignore, targetDatabaseType={}", targetDatabaseType);
             return;
         }
-        CreateTableConfiguration createTableConfig = parameter.getCreateTableConfig();
+        CreateTableConfiguration createTableConfig = param.getCreateTableConfig();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType).orElse(null);
         PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
         Collection<String> createdSchemaNames = new HashSet<>();
@@ -70,7 +70,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             }
             Optional<String> sql = sqlBuilder.buildCreateSchemaSQL(targetSchemaName);
             if (sql.isPresent()) {
-                executeCreateSchema(parameter.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
+                executeCreateSchema(param.getDataSourceManager(), each.getTargetDataSourceConfig(), sql.get());
                 createdSchemaNames.add(targetSchemaName);
             }
         }

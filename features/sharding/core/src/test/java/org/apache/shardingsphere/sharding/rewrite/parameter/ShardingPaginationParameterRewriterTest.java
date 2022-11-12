@@ -53,37 +53,37 @@ public final class ShardingPaginationParameterRewriterTest {
     
     @Test
     public void assertIsNeedRewrite() {
-        ShardingPaginationParameterRewriter shardingPaginationParameterRewriter = new ShardingPaginationParameterRewriter();
+        ShardingPaginationParameterRewriter paramRewriter = new ShardingPaginationParameterRewriter();
         RouteContext routeContext = mock(RouteContext.class);
-        shardingPaginationParameterRewriter.setRouteContext(routeContext);
+        paramRewriter.setRouteContext(routeContext);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        assertFalse(shardingPaginationParameterRewriter.isNeedRewrite(insertStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(insertStatementContext));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getPaginationContext().isHasPagination()).thenReturn(Boolean.FALSE);
-        assertFalse(shardingPaginationParameterRewriter.isNeedRewrite(selectStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
         when(selectStatementContext.getPaginationContext().isHasPagination()).thenReturn(Boolean.TRUE);
         when(routeContext.isSingleRouting()).thenReturn(Boolean.TRUE);
-        assertFalse(shardingPaginationParameterRewriter.isNeedRewrite(selectStatementContext));
+        assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
         when(routeContext.isSingleRouting()).thenReturn(Boolean.FALSE);
-        assertTrue(shardingPaginationParameterRewriter.isNeedRewrite(selectStatementContext));
+        assertTrue(paramRewriter.isNeedRewrite(selectStatementContext));
     }
     
     @Test
     public void assertRewrite() {
         addOffsetParametersFlag = false;
         addRowCountParameterFlag = false;
-        StandardParameterBuilder standardParameterBuilder = mock(StandardParameterBuilder.class);
+        StandardParameterBuilder standardParamBuilder = mock(StandardParameterBuilder.class);
         doAnswer((Answer<Void>) invocation -> {
             int index = invocation.getArgument(0);
-            long parameter = invocation.getArgument(1);
-            if (index == TEST_OFFSET_PARAMETER_INDEX && parameter == TEST_REVISED_OFFSET) {
+            long param = invocation.getArgument(1);
+            if (index == TEST_OFFSET_PARAMETER_INDEX && param == TEST_REVISED_OFFSET) {
                 addOffsetParametersFlag = true;
             }
-            if (index == TEST_ROW_COUNT_PARAMETER_INDEX && parameter == TEST_REVISED_ROW_COUNT) {
+            if (index == TEST_ROW_COUNT_PARAMETER_INDEX && param == TEST_REVISED_ROW_COUNT) {
                 addRowCountParameterFlag = true;
             }
             return null;
-        }).when(standardParameterBuilder).addReplacedParameters(anyInt(), anyLong());
+        }).when(standardParamBuilder).addReplacedParameters(anyInt(), anyLong());
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         PaginationContext pagination = mock(PaginationContext.class);
         when(pagination.getOffsetParameterIndex()).thenReturn(Optional.of(TEST_OFFSET_PARAMETER_INDEX));
@@ -91,8 +91,7 @@ public final class ShardingPaginationParameterRewriterTest {
         when(pagination.getRevisedOffset()).thenReturn(TEST_REVISED_OFFSET);
         when(pagination.getRevisedRowCount(selectStatementContext)).thenReturn(TEST_REVISED_ROW_COUNT);
         when(selectStatementContext.getPaginationContext()).thenReturn(pagination);
-        ShardingPaginationParameterRewriter shardingPaginationParameterRewriter = new ShardingPaginationParameterRewriter();
-        shardingPaginationParameterRewriter.rewrite(standardParameterBuilder, selectStatementContext, null);
+        new ShardingPaginationParameterRewriter().rewrite(standardParamBuilder, selectStatementContext, null);
         assertTrue(addOffsetParametersFlag);
         assertTrue(addRowCountParameterFlag);
     }

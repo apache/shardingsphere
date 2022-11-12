@@ -50,7 +50,7 @@ public final class InsertValueContext {
         valueExpressions = getValueExpressions(assignments);
         parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(assignments);
         parameterCount = parameterMarkerExpressions.size();
-        this.parameters = getParameters(params, parametersOffset);
+        parameters = getParameters(params, parametersOffset);
     }
     
     private List<ExpressionSegment> getValueExpressions(final Collection<ExpressionSegment> assignments) {
@@ -86,9 +86,9 @@ public final class InsertValueContext {
     }
     
     private int getParameterIndex(final ParameterMarkerExpressionSegment paramMarkerExpression) {
-        int parameterIndex = parameterMarkerExpressions.indexOf(paramMarkerExpression);
-        Preconditions.checkArgument(parameterIndex >= 0, "Can not get parameter index.");
-        return parameterIndex;
+        int result = parameterMarkerExpressions.indexOf(paramMarkerExpression);
+        Preconditions.checkArgument(result >= 0, "Can not get parameter index.");
+        return result;
     }
     
     /**

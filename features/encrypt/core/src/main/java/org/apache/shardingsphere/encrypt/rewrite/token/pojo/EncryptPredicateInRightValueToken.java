@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Predicate in right value token for encrypt.
  */
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public final class EncryptPredicateInRightValueToken extends SQLToken implements Substitutable {
     
     @Getter
@@ -36,21 +36,21 @@ public final class EncryptPredicateInRightValueToken extends SQLToken implements
     
     private final Map<Integer, Object> indexValues;
     
-    private final Collection<Integer> parameterMarkerIndexes;
+    private final Collection<Integer> paramMarkerIndexes;
     
-    public EncryptPredicateInRightValueToken(final int startIndex, final int stopIndex, final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes) {
+    public EncryptPredicateInRightValueToken(final int startIndex, final int stopIndex, final Map<Integer, Object> indexValues, final Collection<Integer> paramMarkerIndexes) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.indexValues = indexValues;
-        this.parameterMarkerIndexes = parameterMarkerIndexes;
+        this.paramMarkerIndexes = paramMarkerIndexes;
     }
     
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("(");
-        for (int i = 0; i < indexValues.size() + parameterMarkerIndexes.size(); i++) {
-            if (parameterMarkerIndexes.contains(i)) {
+        for (int i = 0; i < indexValues.size() + paramMarkerIndexes.size(); i++) {
+            if (paramMarkerIndexes.contains(i)) {
                 result.append("?");
             } else {
                 if (indexValues.get(i) instanceof String) {

@@ -40,25 +40,25 @@ import java.sql.SQLException;
 public final class StandaloneContextManagerBuilder implements ContextManagerBuilder {
     
     @Override
-    public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfiguration().getRepository());
+    public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
+        StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(param.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        persistConfigurations(persistService, parameter);
-        InstanceContext instanceContext = buildInstanceContext(parameter);
+        persistConfigurations(persistService, param);
+        InstanceContext instanceContext = buildInstanceContext(param);
         new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
         return new ContextManager(metaDataContexts, instanceContext);
     }
     
-    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
-        if (!parameter.isEmpty()) {
-            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps());
+    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
+        if (!param.isEmpty()) {
+            persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
         }
     }
     
-    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
-        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()),
-                new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new GlobalLockContext(null), new EventBusContext());
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {
+        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()),
+                new StandaloneWorkerIdGenerator(), param.getModeConfiguration(), new GlobalLockContext(null), new EventBusContext());
     }
     
     @Override

@@ -67,7 +67,7 @@ public final class SQLRewriteContext {
         this.schemas = schemas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
-        this.parameters = params;
+        parameters = params;
         this.connectionContext = connectionContext;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))

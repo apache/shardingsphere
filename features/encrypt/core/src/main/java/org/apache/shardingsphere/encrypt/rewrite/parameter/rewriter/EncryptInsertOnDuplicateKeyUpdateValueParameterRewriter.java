@@ -60,7 +60,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        GroupedParameterBuilder groupedParameterBuilder = (GroupedParameterBuilder) paramBuilder;
+        GroupedParameterBuilder groupedParamBuilder = (GroupedParameterBuilder) paramBuilder;
         OnDuplicateUpdateContext onDuplicateKeyUpdateValueContext = insertStatementContext.getOnDuplicateKeyUpdateValueContext();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
@@ -74,7 +74,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                     return;
                 }
                 Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue, encryptContext);
-                groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
+                groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParams = new LinkedList<>();
                 Optional<EncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, encryptLogicColumnName);
                 if (assistedQueryEncryptor.isPresent()) {
@@ -92,10 +92,10 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                     addedParams.add(plainColumnValue);
                 }
                 if (!addedParams.isEmpty()) {
-                    if (!groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(columnIndex)) {
-                        groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(columnIndex, new LinkedList<>());
+                    if (!groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(columnIndex)) {
+                        groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(columnIndex, new LinkedList<>());
                     }
-                    groupedParameterBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex).addAll(addedParams);
+                    groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().get(columnIndex).addAll(addedParams);
                 }
             });
         }

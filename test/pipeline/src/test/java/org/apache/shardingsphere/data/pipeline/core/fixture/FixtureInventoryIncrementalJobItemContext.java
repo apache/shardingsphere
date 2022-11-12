@@ -33,7 +33,7 @@ import java.util.Collection;
 public final class FixtureInventoryIncrementalJobItemContext implements InventoryIncrementalJobItemContext {
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
     }
     
     @Override

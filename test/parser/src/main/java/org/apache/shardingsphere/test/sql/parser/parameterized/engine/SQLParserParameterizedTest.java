@@ -60,8 +60,8 @@ public abstract class SQLParserParameterizedTest {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {
-        return SQLCaseType.Placeholder == sqlTestParameter[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParameter[0].toString()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
+        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParam[0].toString()).getParameters().isEmpty();
     }
     
     @Test

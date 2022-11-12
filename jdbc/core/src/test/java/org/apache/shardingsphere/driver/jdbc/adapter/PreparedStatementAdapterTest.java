@@ -268,8 +268,8 @@ public final class PreparedStatementAdapterTest {
         assertParameter(shardingSpherePreparedStatement, 5, obj);
     }
     
-    private void assertParameter(final PreparedStatement actual, final int index, final Object parameter) {
-        assertThat(((ShardingSpherePreparedStatement) actual).getParameters().get(index - 1), is(parameter));
+    private void assertParameter(final PreparedStatement actual, final int index, final Object param) {
+        assertThat(((ShardingSpherePreparedStatement) actual).getParameters().get(index - 1), is(param));
     }
     
     @Test

@@ -41,7 +41,7 @@ public final class QueryContext {
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
-        this.parameters = params;
+        parameters = params;
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
         }

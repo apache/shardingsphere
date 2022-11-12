@@ -92,15 +92,15 @@ public final class PropertyUtil {
         Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
         Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
         Object resolverObject = resolverConstructor.newInstance(environment);
-        String prefixParameter = prefix.endsWith(".") ? prefix : prefix + ".";
+        String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
         Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
-        Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParameter);
+        Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
         Map<String, Object> result = new HashMap<>(dataSourceProps.size(), 1);
         for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (handlePlaceholder && value instanceof String && ((String) value).contains(PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
-                String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParameter + key);
+                String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
                 result.put(key, resolvedValue);
             } else {
                 result.put(key, value);
@@ -116,8 +116,8 @@ public final class PropertyUtil {
         Method getMethod = binderClass.getDeclaredMethod("get", Environment.class);
         Method bindMethod = binderClass.getDeclaredMethod("bind", String.class, Class.class);
         Object binderObject = getMethod.invoke(null, environment);
-        String prefixParameter = dashedPrefix.endsWith(".") ? dashedPrefix.substring(0, prefix.length() - 1) : dashedPrefix;
-        Object bindResultObject = bindMethod.invoke(binderObject, prefixParameter, targetClass);
+        String prefixParam = dashedPrefix.endsWith(".") ? dashedPrefix.substring(0, prefix.length() - 1) : dashedPrefix;
+        Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
         Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
         return resultGetMethod.invoke(bindResultObject);
     }

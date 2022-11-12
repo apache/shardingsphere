@@ -399,39 +399,39 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     }
     
     @Override
-    public String createJobAndStart(final CreateMigrationJobParameter parameter) {
+    public String createJobAndStart(final CreateMigrationJobParameter param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
-        Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(parameter.getSourceResourceName()));
+        Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(param.getSourceResourceName()));
         YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfig = createYamlPipelineDataSourceConfiguration(
                 StandardPipelineDataSourceConfiguration.TYPE, YamlEngine.marshal(sourceDataSourceProps));
         result.setSource(sourcePipelineDataSourceConfig);
-        result.setSourceResourceName(parameter.getSourceResourceName());
+        result.setSourceResourceName(param.getSourceResourceName());
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
         result.setSourceDatabaseType(sourceDatabaseType.getType());
-        String sourceSchemaName = null == parameter.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
+        String sourceSchemaName = null == param.getSourceSchemaName() && sourceDatabaseType.isSchemaAvailable()
                 ? PipelineSchemaUtil.getDefaultSchema(sourceDataSourceConfig)
-                : parameter.getSourceSchemaName();
+                : param.getSourceSchemaName();
         result.setSourceSchemaName(sourceSchemaName);
-        result.setSourceTableName(parameter.getSourceTableName());
+        result.setSourceTableName(param.getSourceTableName());
         Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
-        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
+        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getTargetDatabaseName());
         for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }
-        String targetDatabaseName = parameter.getTargetDatabaseName();
+        String targetDatabaseName = param.getTargetDatabaseName();
         YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(targetDatabaseName, targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
         PipelineDataSourceConfiguration targetPipelineDataSource = new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
         result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSource.getType(), YamlEngine.marshal(targetPipelineDataSource.getDataSourceConfiguration())));
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
         result.setTargetDatabaseName(targetDatabaseName);
-        result.setTargetTableName(parameter.getTargetTableName());
+        result.setTargetTableName(param.getTargetTableName());
         try (PipelineDataSourceWrapper dataSource = PipelineDataSourceFactory.newInstance(sourceDataSourceConfig)) {
             StandardPipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
             YamlPipelineColumnMetaData uniqueKeyColumn = new YamlPipelineColumnMetaDataSwapper().swapToYamlConfiguration(
-                    PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName, parameter.getSourceTableName(), metaDataLoader));
+                    PipelineTableMetaDataUtil.getUniqueKeyColumn(sourceSchemaName, param.getSourceTableName(), metaDataLoader));
             result.setUniqueKeyColumn(uniqueKeyColumn);
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
@@ -451,10 +451,10 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         return result;
     }
     
-    private YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final String type, final String parameter) {
+    private YamlPipelineDataSourceConfiguration createYamlPipelineDataSourceConfiguration(final String type, final String param) {
         YamlPipelineDataSourceConfiguration result = new YamlPipelineDataSourceConfiguration();
         result.setType(type);
-        result.setParameter(parameter);
+        result.setParameter(param);
         return result;
     }
     

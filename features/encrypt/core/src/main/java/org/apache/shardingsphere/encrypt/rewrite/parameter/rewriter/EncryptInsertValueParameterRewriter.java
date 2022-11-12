@@ -60,7 +60,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
@@ -68,7 +68,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             String columnName = descendingColumnNames.next();
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, columnName);
             encryptRule.findEncryptor(tableName, columnName).ifPresent(
-                    optional -> encryptInsertValues((GroupedParameterBuilder) parameterBuilder, insertStatementContext, optional,
+                    optional -> encryptInsertValues((GroupedParameterBuilder) paramBuilder, insertStatementContext, optional,
                             encryptRule.findAssistedQueryEncryptor(tableName, columnName).orElse(null),
                             encryptRule.findFuzzyQueryEncryptor(tableName, columnName).orElse(null), encryptContext));
         }
@@ -80,14 +80,14 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
         int columnIndex = getColumnIndex(paramBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
-            int parameterIndex = insertStatementContext.getInsertValueContexts().get(count).getParameterIndex(columnIndex);
+            int paramIndex = insertStatementContext.getInsertValueContexts().get(count).getParameterIndex(columnIndex);
             if (!each.isEmpty()) {
-                StandardParameterBuilder standardParameterBuilder = paramBuilder.getParameterBuilders().get(count);
+                StandardParameterBuilder standardParamBuilder = paramBuilder.getParameterBuilders().get(count);
                 ExpressionSegment expressionSegment = insertStatementContext.getInsertValueContexts().get(count).getValueExpressions().get(columnIndex);
                 if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
                     Object literalValue = insertStatementContext.getInsertValueContexts().get(count).getLiteralValue(columnIndex)
                             .orElse(null);
-                    encryptInsertValue(encryptAlgorithm, assistEncryptAlgorithm, fuzzyEncryptAlgorithm, parameterIndex, literalValue, standardParameterBuilder, encryptContext);
+                    encryptInsertValue(encryptAlgorithm, assistEncryptAlgorithm, fuzzyEncryptAlgorithm, paramIndex, literalValue, standardParamBuilder, encryptContext);
                 }
             }
             count++;
