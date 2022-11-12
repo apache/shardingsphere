@@ -562,8 +562,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (generatedKey.isPresent() && statementOption.isReturnGeneratedKeys() && !generatedValues.isEmpty()) {
             return new GeneratedKeysResultSet(generatedKey.get().getColumnName(), generatedValues.iterator(), this);
         }
-        for (PreparedStatement statement : statements) {
-            ResultSet resultSet = statement.getGeneratedKeys();
+        for (PreparedStatement each : statements) {
+            ResultSet resultSet = each.getGeneratedKeys();
             while (resultSet.next()) {
                 generatedValues.add((Comparable<?>) resultSet.getObject(1));
             }
