@@ -44,7 +44,7 @@ import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Slf4j
-public abstract class DynamicLoadingSQLParserParameterizedTest {
+public abstract class DynamicLoadingSQLParserParameterizedIT {
     
     private final String sqlCaseId;
     
