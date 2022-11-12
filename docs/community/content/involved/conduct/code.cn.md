@@ -18,7 +18,7 @@ chapter = true
 
 ## 代码提交行为规范
 
- - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`mvn -T 1C clean install` 或者 `./mvnw -T 1C clean install`。执行目录有 2 种选择，根据自己的熟悉程度做选择：1）对项目还不太熟悉，在项目根目录执行构建，所有模块都会执行构建，2）明确知道这次改动会影响到哪些模块，在这些模块执行构建，可以大大缩短构建时间。
+ - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`mvn -T 1C clean install`。执行目录有 2 种选择，根据自己的熟悉程度做选择：1）对项目还不太熟悉，在项目根目录执行构建，所有模块都会执行构建，2）明确知道这次改动会影响到哪些模块，在这些模块执行构建，可以大大缩短构建时间。
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
@@ -30,13 +30,16 @@ chapter = true
  - 使用 linux 换行符。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 类、方法和变量的命名要做到顾名思义，类、方法名避免使用缩写，部分变量名可以使用缩写。
+   - 变量名 `arguments` 缩写为 `args`；
+   - 变量名 `parameters` 缩写为 `params`；
+   - 变量名 `environment` 缩写为 `env`；
    - 变量名 `properties` 缩写为 `props`；
    - 变量名 `configuration` 缩写为 `config`。
  - 三位以内字符的专有名词缩写使用大写，超过三位字符的缩写采用驼峰形式。
    - 三位以内字符的类和方法名称缩写的示例：DBDiscoveryExampleScenario、SQL92Lexer、XMLTransfer、MySQLAdminExecutorCreator；
    - 三位以上字符的类和方法名称缩写的示例：JdbcUrlAppender、YamlAgentConfigurationSwapper；
    - 变量应使用小驼峰形式：dbName、mysqlAuthenticationMethod、sqlStatement、mysqlConfig。
- - 返回值变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
+ - 除了直接返回参数，返回变量使用 `result` 命名；循环中使用 `each` 命名循环变量；map 中使用 `entry` 代替 `each`。
  - 捕获的异常名称命名为 `ex` ；捕获异常且不做任何事情，异常名称命名为 `ignored`。
  - 配置文件使用 `Spinal Case` 命名（一种使用 `-` 分割单词的特殊 `Snake Case`）。
  - 需要注释解释的代码尽量提成小方法，用方法名称解释。
