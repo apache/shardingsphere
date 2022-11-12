@@ -63,8 +63,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -82,32 +82,27 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(
+                new HashMap<>(Collections.singletonMap("db", mock(ShardingSphereDatabase.class))), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn("db");
+        setContextManager(true);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabases() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
-        result.put("db", database);
-        return result;
+    @After
+    public void setDown() {
+        setContextManager(false);
     }
     
     @Test
     public void assertExecuteDataSourcesContext() throws SQLException {
-        setContextManager(true);
-        ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), connectionSession).execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), connectionSession).execute(), instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     public void assertExecuteShardingTableRuleContext() throws SQLException {
-        setContextManager(true);
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase("db");
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute();
@@ -116,7 +111,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteAddResourceContext() throws SQLException {
-        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(RegisterStorageUnitStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -130,7 +124,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteAlterShadowRuleContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(AlterShadowRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -138,7 +131,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteCreateShadowRuleContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShadowRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -146,7 +138,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteDropShadowRuleContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(DropShadowRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -154,7 +145,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteAlterDefaultShadowAlgorithm() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         Properties prop = new Properties();
         prop.setProperty("type", "value");
@@ -168,7 +158,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteShowShadowRulesContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowShadowRulesStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
@@ -176,7 +165,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteShowShadowTableRulesContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowShadowTableRulesStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
@@ -184,7 +172,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteShowShadowAlgorithmsContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowShadowAlgorithmsStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
@@ -192,7 +179,6 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteDropShadowAlgorithmContext() throws SQLException {
-        setContextManager(true);
         mockShardingSphereRuleMetaData();
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(DropShadowAlgorithmStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
@@ -200,44 +186,37 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     @Test
     public void assertExecuteDropResourceContext() throws SQLException {
-        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(UnregisterStorageUnitStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteDropReadwriteSplittingRuleContext() throws SQLException {
-        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(DropReadwriteSplittingRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     public void assertExecuteCreateReadwriteSplittingRuleContext() throws SQLException {
-        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateReadwriteSplittingRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertExecuteAlterReadwriteSplittingRuleContext() throws SQLException {
-        setContextManager(true);
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(AlterReadwriteSplittingRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
     
     @Test
     public void assertExecuteShowResourceContext() throws SQLException {
-        setContextManager(true);
         ResponseHeader response = RQLBackendHandlerFactory.newInstance(mock(ShowStorageUnitsStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
     private void setContextManager(final boolean isGovernance) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = isGovernance
-                ? mockMetaDataContexts()
-                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
+        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
@@ -260,21 +239,16 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         when(database.getName()).thenReturn("db");
         when(database.getResourceMetaData()).thenReturn(mock(ShardingSphereResourceMetaData.class));
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        ShadowRuleConfiguration shadowRuleConfiguration = mockShadowRuleConfiguration();
-        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(shadowRuleConfiguration));
+        ShadowRuleConfiguration ruleConfig = mockShadowRuleConfiguration();
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(ruleConfig));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
     }
     
     private ShadowRuleConfiguration mockShadowRuleConfiguration() {
-        ShadowRuleConfiguration shadowRuleConfiguration = mock(ShadowRuleConfiguration.class);
-        when(shadowRuleConfiguration.getShadowAlgorithms()).thenReturn(mock(LinkedHashMap.class));
-        when(shadowRuleConfiguration.getShadowAlgorithms().keySet()).thenReturn(Collections.singleton("default_shadow_algorithm"));
-        return shadowRuleConfiguration;
-    }
-    
-    @After
-    public void setDown() {
-        setContextManager(false);
+        ShadowRuleConfiguration result = mock(ShadowRuleConfiguration.class);
+        when(result.getShadowAlgorithms()).thenReturn(mock(LinkedHashMap.class));
+        when(result.getShadowAlgorithms().keySet()).thenReturn(Collections.singleton("default_shadow_algorithm"));
+        return result;
     }
 }

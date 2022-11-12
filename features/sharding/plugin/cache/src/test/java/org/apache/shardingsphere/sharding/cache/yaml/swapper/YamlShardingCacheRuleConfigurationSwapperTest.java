@@ -45,11 +45,11 @@ public final class YamlShardingCacheRuleConfigurationSwapperTest {
     public void assertSwapToObject() {
         YamlShardingCacheRuleConfiguration input = new YamlShardingCacheRuleConfiguration();
         input.setAllowedMaxSqlLength(200);
-        YamlShardingCacheOptionsConfiguration configuration = new YamlShardingCacheOptionsConfiguration();
-        configuration.setSoftValues(true);
-        configuration.setInitialCapacity(256);
-        configuration.setMaximumSize(4096);
-        input.setRouteCache(configuration);
+        YamlShardingCacheOptionsConfiguration yamlConfig = new YamlShardingCacheOptionsConfiguration();
+        yamlConfig.setSoftValues(true);
+        yamlConfig.setInitialCapacity(256);
+        yamlConfig.setMaximumSize(4096);
+        input.setRouteCache(yamlConfig);
         ShardingCacheRuleConfiguration actual = new YamlShardingCacheRuleConfigurationSwapper().swapToObject(input);
         assertThat(actual.getAllowedMaxSqlLength(), is(200));
         ShardingCacheOptions actualOptions = actual.getRouteCache();
