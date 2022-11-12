@@ -46,7 +46,7 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
     
     private static final int DEFAULT_START = 0x4e00;
     
-    private static final String DEFAULT_CHINESE_DICT = "谤杉巫夏辅俯鸵直菱梨滨头矾讯芯巡泥簇何逊谜颐男拴冰响贰哈雄赌密愚思戊叔苔肩"
+    private static final String DEFAULT_DICT = "谤杉巫夏辅俯鸵直菱梨滨头矾讯芯巡泥簇何逊谜颐男拴冰响贰哈雄赌密愚思戊叔苔肩"
             + "亏硕递意忻雷扫旋谭坎散拷廖余饮囤咖小娄藻唇妙枣豺料淡器谈赘托察湿莽算诽嘛越魁涤缮漱镣豁孔萝脾稻杠遮漏浪常滦呸层涪粪乐萄褐榜"
             + "程伙椭句蚤入概鹰惨闻舶封瘴创详筹边络乞洪咯丈眯弛娱狸锐俄痔向片壬二剧壳羌劳澳到箔慧醛俏硬读宁谨谋捶牧豆脱饰肛渠坞富揉赤帽能"
             + "巩雁题姬崔旁袄主蝇屏撼粗贡刃办肉穷态柳嚼鸥哨兔瓦籍谊唯指混丰肤值邹脸爪摄兑券浆薄漾盟磊牺筑锤匿碑萍拌醉焊扞韭群擦飞尺从咆蜘"
@@ -120,7 +120,7 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
     
     private int start;
     
-    private Map<Character, Integer> chineseCharIndexes;
+    private Map<Character, Integer> charIndexes;
     
     @Override
     public void init(final Properties props) {
@@ -128,7 +128,7 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
         delta = createDelta(props);
         mask = createMask(props);
         start = createStart(props);
-        chineseCharIndexes = createChineseCharIndexes(props);
+        charIndexes = createCharIndexes(props);
     }
     
     private int createDelta(final Properties props) {
@@ -167,44 +167,44 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
         return DEFAULT_START;
     }
     
-    private Map<Character, Integer> createChineseCharIndexes(final Properties props) {
-        String chineseDict = props.containsKey(DICT) && !Strings.isNullOrEmpty(props.getProperty(DICT)) ? props.getProperty(DICT) : DEFAULT_CHINESE_DICT;
-        Map<Character, Integer> result = new HashMap<>(chineseDict.length(), 1);
-        for (int index = 0; index < chineseDict.length(); index++) {
-            result.put(chineseDict.charAt(index), index);
+    private Map<Character, Integer> createCharIndexes(final Properties props) {
+        String dictContent = props.containsKey(DICT) && !Strings.isNullOrEmpty(props.getProperty(DICT)) ? props.getProperty(DICT) : DEFAULT_DICT;
+        Map<Character, Integer> result = new HashMap<>(dictContent.length(), 1);
+        for (int index = 0; index < dictContent.length(); index++) {
+            result.put(dictContent.charAt(index), index);
         }
         return result;
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        if (null == plainValue) {
-            return null;
-        }
-        return digest(String.valueOf(plainValue));
+        return null == plainValue ? null : digest(String.valueOf(plainValue));
     }
     
     private String digest(final String plainValue) {
         StringBuilder result = new StringBuilder(plainValue.length());
-        plainValue.chars().forEachOrdered(each -> {
-            if ('%' == each) {
-                result.append((char) each);
+        for (char each : plainValue.toCharArray()) {
+            char maskedChar = getMaskedChar(each);
+            if ('%' == maskedChar) {
+                result.append(each);
             } else {
-                int maskedChar;
-                if (each > MAX_NUMERIC_LETTER_CHAR) {
-                    Integer dictIndex = chineseCharIndexes.get((char) each);
-                    maskedChar = null == dictIndex ? ((each + delta) & mask) + start : ((dictIndex + delta) & mask) + start;
-                } else {
-                    maskedChar = (each + delta) & mask;
-                }
-                if ('%' == maskedChar) {
-                    result.append((char) each);
-                } else {
-                    result.append((char) maskedChar);
-                }
+                result.append(maskedChar);
             }
-        });
+        }
         return result.toString();
+    }
+    
+    private char getMaskedChar(final char originalChar) {
+        if ('%' == originalChar) {
+            return originalChar;
+        }
+        if (originalChar <= MAX_NUMERIC_LETTER_CHAR) {
+            return (char) ((originalChar + delta) & mask);
+        }
+        if (charIndexes.containsKey(originalChar)) {
+            return (char) (((charIndexes.get(originalChar) + delta) & mask) + start);
+        }
+        return (char) (((originalChar + delta) & mask) + start);
     }
     
     @Override

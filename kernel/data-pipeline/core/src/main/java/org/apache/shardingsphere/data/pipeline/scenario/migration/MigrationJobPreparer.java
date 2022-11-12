@@ -97,8 +97,9 @@ public final class MigrationJobPreparer {
             log.info("try lock success, jobId={}, shardingItem={}, cost {} ms", jobConfig.getJobId(), jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
             try {
                 InventoryIncrementalJobItemProgress jobItemProgress = JOB_API.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
-                boolean prepareFlag = JobStatus.PREPARING.equals(jobItemProgress.getStatus()) || JobStatus.RUNNING.equals(jobItemProgress.getStatus())
-                        || JobStatus.PREPARING_FAILURE.equals(jobItemProgress.getStatus());
+                JobStatus currentStatus = null != jobItemProgress ? jobItemProgress.getStatus() : null;
+                boolean prepareFlag = null == jobItemProgress || JobStatus.PREPARING.equals(currentStatus) || JobStatus.RUNNING.equals(currentStatus)
+                        || JobStatus.PREPARING_FAILURE.equals(currentStatus);
                 if (prepareFlag) {
                     jobItemContext.setStatus(JobStatus.PREPARING);
                     JOB_API.updateJobItemStatus(jobConfig.getJobId(), jobItemContext.getShardingItem(), JobStatus.PREPARING);
