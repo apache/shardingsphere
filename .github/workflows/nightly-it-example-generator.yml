@@ -45,7 +45,7 @@ jobs:
             shardingsphere-maven-third-party-
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
-  Generate-and-test-examples:
+  generate-and-test-examples:
     if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
