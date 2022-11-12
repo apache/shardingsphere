@@ -32,7 +32,7 @@ public final class EncryptSpringBootCondition extends SpringBootCondition {
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_PREFIX)
+        return PropertyUtil.containsPropertyPrefix(conditionContext.getEnvironment(), ENCRYPT_PREFIX)
                 ? ConditionOutcome.match()
                 : ConditionOutcome.noMatch("Can't find ShardingSphere encrypt rule configuration in local file.");
     }

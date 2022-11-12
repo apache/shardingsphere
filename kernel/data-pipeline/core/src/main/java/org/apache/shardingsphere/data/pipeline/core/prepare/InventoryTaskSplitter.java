@@ -163,19 +163,19 @@ public final class InventoryTaskSplitter {
         int shardingSize = jobItemContext.getJobProcessContext().getPipelineProcessConfig().getRead().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             // TODO query minimum value less than 0
             long beginId = 0;
             long recordsCount = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                ps.setLong(1, beginId);
-                ps.setLong(2, shardingSize);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
+                preparedStatement.setLong(1, beginId);
+                preparedStatement.setLong(2, shardingSize);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (!resultSet.next()) {
                         break;
                     }
-                    long endId = rs.getLong(1);
-                    recordsCount += rs.getLong(2);
+                    long endId = resultSet.getLong(1);
+                    recordsCount += resultSet.getLong(2);
                     if (0 == endId) {
                         break;
                     }
@@ -202,10 +202,10 @@ public final class InventoryTaskSplitter {
         String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType()).buildCountSQL(schemaName, actualTableName);
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement ps = connection.prepareStatement(sql)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                jobItemContext.updateInventoryRecordsCount(rs.getLong(1));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                jobItemContext.updateInventoryRecordsCount(resultSet.getLong(1));
             }
         } catch (final SQLException ex) {
             throw new SplitPipelineJobByUniqueKeyException(dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), ex);

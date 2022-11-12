@@ -29,8 +29,8 @@ public final class KeyGenerateAlgorithmProvidedBeanRegistry extends AbstractAlgo
     
     private static final String KEY_GENERATORS = "spring.shardingsphere.rules.sharding.key-generators.";
     
-    public KeyGenerateAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public KeyGenerateAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

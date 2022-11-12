@@ -48,8 +48,6 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final RuleConfiguration configuration;
     
-    private ShadowAlgorithm defaultShadowAlgorithm;
-    
     private final Collection<String> hintShadowAlgorithmNames = new LinkedList<>();
     
     private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings = new LinkedHashMap<>();
@@ -58,11 +56,16 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final Map<String, ShadowTableRule> shadowTableRules = new LinkedHashMap<>();
     
+    private final ShadowAlgorithm defaultShadowAlgorithm;
+    
     public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         initShadowDataSourceMappings(ruleConfig.getDataSources());
         initShadowAlgorithmConfigurations(ruleConfig.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName());
+        defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
+        if (defaultShadowAlgorithm instanceof HintShadowAlgorithm<?>) {
+            hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
+        }
         initShadowTableRules(ruleConfig.getTables());
     }
     
@@ -70,7 +73,10 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         configuration = ruleConfig;
         initShadowDataSourceMappings(ruleConfig.getDataSources());
         initShadowAlgorithms(ruleConfig.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName());
+        defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
+        if (defaultShadowAlgorithm instanceof HintShadowAlgorithm<?>) {
+            hintShadowAlgorithmNames.add(ruleConfig.getDefaultShadowAlgorithmName());
+        }
         initShadowTableRules(ruleConfig.getTables());
     }
     
@@ -95,14 +101,6 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
             }
             this.shadowAlgorithms.put(key, value);
         });
-    }
-    
-    private void initDefaultShadowAlgorithm(final String defaultShadowAlgorithmName) {
-        ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(defaultShadowAlgorithmName);
-        if (shadowAlgorithm instanceof HintShadowAlgorithm<?>) {
-            hintShadowAlgorithmNames.add(defaultShadowAlgorithmName);
-        }
-        defaultShadowAlgorithm = shadowAlgorithm;
     }
     
     private void initShadowTableRules(final Map<String, ShadowTableConfiguration> tables) {

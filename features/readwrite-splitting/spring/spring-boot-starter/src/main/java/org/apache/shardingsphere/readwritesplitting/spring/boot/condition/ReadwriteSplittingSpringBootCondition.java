@@ -32,7 +32,7 @@ public final class ReadwriteSplittingSpringBootCondition extends SpringBootCondi
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), PREFIX)
+        return PropertyUtil.containsPropertyPrefix(conditionContext.getEnvironment(), PREFIX)
                 ? ConditionOutcome.match()
                 : ConditionOutcome.noMatch("Can't find ShardingSphere readwrite-splitting rule configuration in local file.");
     }

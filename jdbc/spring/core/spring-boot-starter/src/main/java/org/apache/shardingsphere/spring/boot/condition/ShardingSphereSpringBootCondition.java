@@ -32,7 +32,7 @@ public final class ShardingSphereSpringBootCondition extends SpringBootCondition
     
     @Override
     public ConditionOutcome getMatchOutcome(final ConditionContext conditionContext, final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        return PropertyUtil.containPropertyPrefix(conditionContext.getEnvironment(), SHARDINGSPHERE_PREFIX)
+        return PropertyUtil.containsPropertyPrefix(conditionContext.getEnvironment(), SHARDINGSPHERE_PREFIX)
                 ? ConditionOutcome.match()
                 : ConditionOutcome.noMatch("Can't find ShardingSphere configuration in local file.");
     }

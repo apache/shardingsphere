@@ -81,33 +81,33 @@ public class ShardingRuleSpringBootConfiguration {
     /**
      * Create sharding algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return sharding algorithm provided bean registry
      */
     @Bean
-    public static ShardingAlgorithmProvidedBeanRegistry shardingAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new ShardingAlgorithmProvidedBeanRegistry(environment);
+    public static ShardingAlgorithmProvidedBeanRegistry shardingAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new ShardingAlgorithmProvidedBeanRegistry(env);
     }
     
     /**
      * Create key generator algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return key generator algorithm provided bean registry
      */
     @Bean
-    public static KeyGenerateAlgorithmProvidedBeanRegistry keyGenerateAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new KeyGenerateAlgorithmProvidedBeanRegistry(environment);
+    public static KeyGenerateAlgorithmProvidedBeanRegistry keyGenerateAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new KeyGenerateAlgorithmProvidedBeanRegistry(env);
     }
     
     /**
      * Create sharding auditor algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return sharding auditor algorithm provided bean registry
      */
     @Bean
-    public static ShardingAuditAlgorithmProvidedBeanRegistry shardingAuditAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new ShardingAuditAlgorithmProvidedBeanRegistry(environment);
+    public static ShardingAuditAlgorithmProvidedBeanRegistry shardingAuditAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new ShardingAuditAlgorithmProvidedBeanRegistry(env);
     }
 }
