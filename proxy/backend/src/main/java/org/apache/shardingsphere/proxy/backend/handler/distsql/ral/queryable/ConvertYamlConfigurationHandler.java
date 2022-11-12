@@ -195,8 +195,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendProperties(final Map<String, Object> properties, final StringBuilder result) {
-        Iterator<Entry<String, Object>> iterator = properties.entrySet().iterator();
+    private void appendProperties(final Map<String, Object> props, final StringBuilder result) {
+        Iterator<Entry<String, Object>> iterator = props.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, Object> entry = iterator.next();
             if (null == entry.getValue()) {
