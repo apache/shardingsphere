@@ -45,11 +45,11 @@ public final class ShardingSphereAgent {
     /**
      * Premain for instrumentation.
      *
-     * @param arguments arguments
+     * @param args arguments
      * @param instrumentation instrumentation
      * @throws IOException IO exception
      */
-    public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
+    public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfig = AgentConfigurationLoader.load();
         AgentConfigurationRegistry.INSTANCE.put(agentConfig);
         AgentPluginLoader loader = createPluginLoader();

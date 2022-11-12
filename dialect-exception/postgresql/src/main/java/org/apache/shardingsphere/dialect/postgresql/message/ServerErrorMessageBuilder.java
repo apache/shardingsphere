@@ -33,12 +33,12 @@ public final class ServerErrorMessageBuilder {
      *
      * @param severity severity
      * @param vendorError vendor error
-     * @param reasonArguments reason arguments
+     * @param reasonArgs reason arguments
      * @return server error message
      */
-    public static ServerErrorMessage build(final String severity, final VendorError vendorError, final Object... reasonArguments) {
+    public static ServerErrorMessage build(final String severity, final VendorError vendorError, final Object... reasonArgs) {
         return new ServerErrorMessage(
-                String.join("\0", buildSeverity(severity), buildNewSeverity(severity), buildSQLState(vendorError), buildReason(String.format(vendorError.getReason(), reasonArguments))));
+                String.join("\0", buildSeverity(severity), buildNewSeverity(severity), buildSQLState(vendorError), buildReason(String.format(vendorError.getReason(), reasonArgs))));
     }
     
     private static String buildSeverity(final String severity) {
