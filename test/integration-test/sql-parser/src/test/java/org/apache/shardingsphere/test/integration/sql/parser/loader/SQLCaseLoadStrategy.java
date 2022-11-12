@@ -26,7 +26,19 @@ import java.util.Map;
  */
 public interface SQLCaseLoadStrategy {
     
-    Collection<Map<String, String>> loadSQLCaseFiles(final URI uri);
+    /**
+     * Load SQL cases.
+     * 
+     * @param uri URL to be loaded
+     * @return loaded SQL cases
+     */
+    Collection<Map<String, String>> loadSQLCases(final URI uri);
     
-    Map<String, String> loadSQLCaseResultFiles(final URI uri);
+    /**
+     * Load SQL cases result.
+     * 
+     * @param uri URL to be loaded
+     * @return loaded SQL case results
+     */
+    Map<String, String> loadSQLCaseResults(final URI uri);
 }

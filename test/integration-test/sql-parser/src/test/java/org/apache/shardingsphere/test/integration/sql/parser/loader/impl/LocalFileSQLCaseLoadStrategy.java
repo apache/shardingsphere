@@ -30,13 +30,13 @@ import java.util.Map;
 public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
     @Override
-    public Collection<Map<String, String>> loadSQLCaseFiles(final URI uri) {
+    public Collection<Map<String, String>> loadSQLCases(final URI uri) {
         // TODO
         return Collections.emptyList();
     }
     
     @Override
-    public Map<String, String> loadSQLCaseResultFiles(final URI uri) {
+    public Map<String, String> loadSQLCaseResults(final URI uri) {
         // TODO
         return Collections.emptyMap();
     }

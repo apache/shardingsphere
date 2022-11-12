@@ -53,8 +53,8 @@ public final class SQLCaseLoader {
             return Collections.emptyList();
         }
         Collection<Object[]> result = new LinkedList<>();
-        Collection<Map<String, String>> sqlCases = loadStrategy.loadSQLCaseFiles(sqlCaseURI);
-        Map<String, String> resultResponse = loadStrategy.loadSQLCaseResultFiles(sqlCaseResultURI);
+        Collection<Map<String, String>> sqlCases = loadStrategy.loadSQLCases(sqlCaseURI);
+        Map<String, String> resultResponse = loadStrategy.loadSQLCaseResults(sqlCaseResultURI);
         for (Map<String, String> each : sqlCases) {
             String sqlCaseFileName = each.get("name").split("\\.")[0];
             String sqlCaseTestFileContent = loadContent(URI.create(each.get("download_url")));

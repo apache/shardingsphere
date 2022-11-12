@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
     @Override
-    public Collection<Map<String, String>> loadSQLCaseFiles(final URI uri) {
+    public Collection<Map<String, String>> loadSQLCases(final URI uri) {
         String caseContent = loadContent(getGitHubApiUri(uri));
         if (caseContent.isEmpty()) {
             return Collections.emptyList();
@@ -56,7 +56,7 @@ public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
             if ("file".equals(casesType.get(each))) {
                 result.add(ImmutableMap.of("name", casesName.get(each), "download_url", casesDownloadURL.get(each)));
             } else if ("dir".equals(casesType.get(each))) {
-                result.addAll(loadSQLCaseFiles(URI.create(casesHtmlURL.get(each))));
+                result.addAll(loadSQLCases(URI.create(casesHtmlURL.get(each))));
             }
         }
         return result;
@@ -81,9 +81,9 @@ public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     }
     
     @Override
-    public Map<String, String> loadSQLCaseResultFiles(final URI uri) {
+    public Map<String, String> loadSQLCaseResults(final URI uri) {
         Map<String, String> result = new HashMap<>();
-        for (Map<String, String> each : loadSQLCaseFiles(uri)) {
+        for (Map<String, String> each : loadSQLCases(uri)) {
             result.put(each.get("name").split("\\.")[0], each.get("download_url"));
         }
         return result;
