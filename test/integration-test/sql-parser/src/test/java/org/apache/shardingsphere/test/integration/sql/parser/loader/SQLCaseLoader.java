@@ -53,13 +53,13 @@ public final class SQLCaseLoader {
             return Collections.emptyList();
         }
         Collection<Object[]> result = new LinkedList<>();
-        Collection<Map<String, String>> sqlCases = loadStrategy.loadSQLCases(sqlCaseURI);
+        Collection<SQLCaseFileSummary> sqlCases = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
         Map<String, String> resultResponse = loadStrategy.loadSQLCaseResults(sqlCaseResultURI);
-        for (Map<String, String> each : sqlCases) {
-            String sqlCaseFileName = each.get("name").split("\\.")[0];
-            String sqlCaseTestFileContent = loadContent(URI.create(each.get("download_url")));
-            String sqlCaseResultFileContent = resultResponse.containsKey(sqlCaseFileName) ? loadContent(URI.create(resultResponse.get(sqlCaseFileName))) : "";
-            result.addAll(createSQLCases(sqlCaseFileName, sqlCaseTestFileContent, sqlCaseResultFileContent));
+        for (SQLCaseFileSummary each : sqlCases) {
+            String fileName = each.getFileName();
+            String sqlCaseTestFileContent = loadContent(URI.create(each.getAccessURL()));
+            String sqlCaseResultFileContent = resultResponse.containsKey(fileName) ? loadContent(URI.create(resultResponse.get(fileName))) : "";
+            result.addAll(createSQLCases(fileName, sqlCaseTestFileContent, sqlCaseResultFileContent));
         }
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});
