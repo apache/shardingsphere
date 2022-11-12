@@ -20,8 +20,9 @@ package org.apache.shardingsphere.infra.util.spi.aware;
 import java.util.Collection;
 
 /**
- * SPI metadata aware.
+ * SPI metadata aware. 
  */
+
 public interface SPIMetadataAware {
     
     /**
