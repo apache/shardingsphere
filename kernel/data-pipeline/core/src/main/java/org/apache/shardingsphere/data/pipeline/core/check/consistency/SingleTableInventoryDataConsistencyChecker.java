@@ -103,15 +103,15 @@ public final class SingleTableInventoryDataConsistencyChecker {
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(schemaName, sourceTableName));
         Collection<String> columnNames = tableMetaData.getColumnNames();
         Map<String, Object> tableCheckPositions = jobItemContext.getTableCheckPositions();
-        DataConsistencyCalculateParameter sourceParameter = buildParameter(
+        DataConsistencyCalculateParameter sourceParam = buildParameter(
                 sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey,
                 tableCheckPositions.get(sourceTableName));
         String targetTableName = targetTable.getTableName().getOriginal();
-        DataConsistencyCalculateParameter targetParameter = buildParameter(
+        DataConsistencyCalculateParameter targetParam = buildParameter(
                 targetDataSource, targetTable.getSchemaName().getOriginal(), targetTableName, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey,
                 tableCheckPositions.get(targetTableName));
-        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParameter).iterator();
-        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParameter).iterator();
+        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParam).iterator();
+        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParam).iterator();
         long sourceRecordsCount = 0;
         long targetRecordsCount = 0;
         boolean contentMatched = true;

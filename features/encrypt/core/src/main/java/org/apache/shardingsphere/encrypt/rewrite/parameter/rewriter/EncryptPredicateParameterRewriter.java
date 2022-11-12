@@ -54,12 +54,12 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (EncryptCondition each : encryptConditions) {
             boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(each.getTableName(), each.getColumnName());
             if (queryWithCipherColumn) {
-                encryptParameters(parameterBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, each.getValues(params)));
+                encryptParameters(paramBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, each.getValues(params)));
             }
         }
     }
@@ -76,10 +76,10 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
                 : encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, originalValues);
     }
     
-    private void encryptParameters(final ParameterBuilder parameterBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
+    private void encryptParameters(final ParameterBuilder paramBuilder, final Map<Integer, Integer> positionIndexes, final List<Object> encryptValues) {
         if (!positionIndexes.isEmpty()) {
             for (Entry<Integer, Integer> entry : positionIndexes.entrySet()) {
-                ((StandardParameterBuilder) parameterBuilder).addReplacedParameters(entry.getValue(), encryptValues.get(entry.getKey()));
+                ((StandardParameterBuilder) paramBuilder).addReplacedParameters(entry.getValue(), encryptValues.get(entry.getKey()));
             }
         }
     }

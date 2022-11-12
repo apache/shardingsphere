@@ -119,25 +119,25 @@ public final class RouteSQLRewriteEngine {
         return result;
     }
     
-    private List<Object> getParameters(final ParameterBuilder parameterBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
-        if (parameterBuilder instanceof StandardParameterBuilder) {
-            return parameterBuilder.getParameters();
+    private List<Object> getParameters(final ParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
+        if (paramBuilder instanceof StandardParameterBuilder) {
+            return paramBuilder.getParameters();
         }
         return routeContext.getOriginalDataNodes().isEmpty()
-                ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
-                : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
+                ? ((GroupedParameterBuilder) paramBuilder).getParameters()
+                : buildRouteParameters((GroupedParameterBuilder) paramBuilder, routeContext, routeUnit);
     }
     
-    private List<Object> buildRouteParameters(final GroupedParameterBuilder parameterBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
+    private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
         List<Object> result = new LinkedList<>();
         int count = 0;
         for (Collection<DataNode> each : routeContext.getOriginalDataNodes()) {
             if (isInSameDataNode(each, routeUnit)) {
-                result.addAll(parameterBuilder.getParameters(count));
+                result.addAll(paramBuilder.getParameters(count));
             }
             count++;
         }
-        result.addAll(parameterBuilder.getGenericParameterBuilder().getParameters());
+        result.addAll(paramBuilder.getGenericParameterBuilder().getParameters());
         return result;
     }
     

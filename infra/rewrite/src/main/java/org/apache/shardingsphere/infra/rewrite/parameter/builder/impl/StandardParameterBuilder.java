@@ -69,9 +69,9 @@ public final class StandardParameterBuilder implements ParameterBuilder {
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
             replacedParams.set(entry.getKey(), entry.getValue());
         }
-        int maxParameterIndex = getMaxParameterIndex();
+        int maxParamIndex = getMaxParameterIndex();
         List<Object> result = new LinkedList<>();
-        for (int index = 0; index <= maxParameterIndex; index++) {
+        for (int index = 0; index <= maxParamIndex; index++) {
             List<Object> currentIndexParams = new LinkedList<>();
             if (replacedParams.size() > index) {
                 currentIndexParams.add(replacedParams.get(index));

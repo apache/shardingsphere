@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 @ToString(callSuper = true)
 public final class OpenGaussResetParameterStatement extends ResetParameterStatement implements OpenGaussStatement {
     
-    public OpenGaussResetParameterStatement(final String configurationParameter) {
-        super(configurationParameter);
+    public OpenGaussResetParameterStatement(final String configurationParam) {
+        super(configurationParam);
     }
 }

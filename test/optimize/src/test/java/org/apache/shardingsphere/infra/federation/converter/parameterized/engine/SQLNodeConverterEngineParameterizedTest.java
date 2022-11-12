@@ -163,12 +163,12 @@ public final class SQLNodeConverterEngineParameterizedTest {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {
-        return SQLCaseType.Placeholder == sqlTestParameter[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParameter[0].toString()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
+        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParam[0].toString()).getParameters().isEmpty();
     }
     
-    private static boolean isSupportedSQLCase(final Object[] sqlTestParameter) {
-        String sqlCaseId = sqlTestParameter[0].toString();
+    private static boolean isSupportedSQLCase(final Object[] sqlTestParam) {
+        String sqlCaseId = sqlTestParam[0].toString();
         return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId);
     }
     

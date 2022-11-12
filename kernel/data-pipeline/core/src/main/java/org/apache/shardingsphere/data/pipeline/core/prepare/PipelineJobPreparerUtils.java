@@ -71,17 +71,17 @@ public final class PipelineJobPreparerUtils {
      * Prepare target schema.
      *
      * @param databaseType database type
-     * @param prepareTargetSchemasParameter prepare target schemas parameter
+     * @param prepareTargetSchemasParam prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParameter) throws SQLException {
+    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParam);
         log.info("prepareTargetSchema cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -101,17 +101,17 @@ public final class PipelineJobPreparerUtils {
      * Prepare target tables.
      *
      * @param databaseType database type
-     * @param prepareTargetTablesParameter prepare target tables parameter
+     * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParameter) throws SQLException {
+    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
+        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     

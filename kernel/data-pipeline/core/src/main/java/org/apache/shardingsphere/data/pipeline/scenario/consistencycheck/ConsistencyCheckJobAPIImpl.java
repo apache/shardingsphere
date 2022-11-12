@@ -76,9 +76,9 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     }
     
     @Override
-    public String createJobAndStart(final CreateConsistencyCheckJobParameter parameter) {
+    public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        String parentJobId = parameter.getJobId();
+        String parentJobId = param.getJobId();
         Optional<String> checkLatestJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
         if (checkLatestJobId.isPresent()) {
             PipelineJobItemProgress progress = getJobItemProgress(checkLatestJobId.get(), 0);
@@ -95,8 +95,8 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
         yamlConfig.setJobId(result);
         yamlConfig.setParentJobId(parentJobId);
-        yamlConfig.setAlgorithmTypeName(parameter.getAlgorithmTypeName());
-        yamlConfig.setAlgorithmProps(parameter.getAlgorithmProps());
+        yamlConfig.setAlgorithmTypeName(param.getAlgorithmTypeName());
+        yamlConfig.setAlgorithmProps(param.getAlgorithmProps());
         start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(yamlConfig));
         return result;
     }

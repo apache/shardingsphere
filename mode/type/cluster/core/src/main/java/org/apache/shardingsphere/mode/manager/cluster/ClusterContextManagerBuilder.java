@@ -45,32 +45,32 @@ import java.util.Map.Entry;
 public final class ClusterContextManagerBuilder implements ContextManagerBuilder {
     
     @Override
-    public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfiguration().getRepository());
+    public ContextManager build(final ContextManagerBuilderParameter param) throws SQLException {
+        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) param.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        persistConfigurations(persistService, parameter);
-        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), parameter.getInstanceMetaData(), parameter.getDatabaseConfigs());
-        InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
+        persistConfigurations(persistService, param);
+        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), param.getInstanceMetaData(), param.getDatabaseConfigs());
+        InstanceContext instanceContext = buildInstanceContext(registryCenter, param);
         ClusterPersistRepository persistRepository = registryCenter.getRepository();
         if (persistRepository instanceof InstanceContextAware) {
             ((InstanceContextAware) persistRepository).setInstanceContext(instanceContext);
         }
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        registerOnline(persistService, registryCenter, parameter, result);
+        registerOnline(persistService, registryCenter, param, result);
         return result;
     }
     
-    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
-        if (!parameter.isEmpty()) {
-            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps());
+    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
+        if (!param.isEmpty()) {
+            persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
         }
     }
     
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
-        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
-                parameter.getModeConfiguration(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), registryCenter.getEventBusContext());
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param) {
+        return new InstanceContext(new ComputeNodeInstance(param.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, param.getInstanceMetaData()),
+                param.getModeConfiguration(), new GlobalLockContext(registryCenter.getGlobalLockPersistService()), registryCenter.getEventBusContext());
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
@@ -82,9 +82,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
-                                final ContextManagerBuilderParameter parameter, final ContextManager contextManager) {
-        contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
+    private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+        contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());

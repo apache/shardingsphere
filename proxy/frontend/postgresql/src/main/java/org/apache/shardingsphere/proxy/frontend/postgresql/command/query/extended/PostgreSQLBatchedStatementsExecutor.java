@@ -77,7 +77,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private final PostgreSQLServerPreparedStatement preparedStatement;
     
-    private final Map<ExecutionUnit, List<List<Object>>> executionUnitParameters = new HashMap<>();
+    private final Map<ExecutionUnit, List<List<Object>>> executionUnitParams = new HashMap<>();
     
     private final ExecutionContext anyExecutionContext;
     
@@ -92,11 +92,11 @@ public final class PostgreSQLBatchedStatementsExecutor {
         SQLStatementContext<?> sqlStatementContext = null;
         ExecutionContext executionContext = null;
         if (parameterSetsIterator.hasNext()) {
-            List<Object> firstGroupOfParameter = parameterSetsIterator.next();
-            sqlStatementContext = createSQLStatementContext(firstGroupOfParameter);
-            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParameter));
+            List<Object> firstGroupOfParam = parameterSetsIterator.next();
+            sqlStatementContext = createSQLStatementContext(firstGroupOfParam);
+            executionContext = createExecutionContext(createQueryContext(sqlStatementContext, firstGroupOfParam));
             for (ExecutionUnit each : executionContext.getExecutionUnits()) {
-                executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
+                executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
         anyExecutionContext = executionContext;
@@ -110,13 +110,13 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
         while (paramSetsIterator.hasNext()) {
-            List<Object> eachGroupOfParameter = paramSetsIterator.next();
+            List<Object> eachGroupOfParam = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
-                ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParameter);
+                ((ParameterAware) sqlStatementContext).setUpParameters(eachGroupOfParam);
             }
-            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParameter));
+            ExecutionContext eachExecutionContext = createExecutionContext(createQueryContext(sqlStatementContext, eachGroupOfParam));
             for (ExecutionUnit each : eachExecutionContext.getExecutionUnits()) {
-                executionUnitParameters.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
+                executionUnitParams.computeIfAbsent(each, unused -> new LinkedList<>()).add(each.getSqlUnit().getParameters());
             }
         }
     }
@@ -151,7 +151,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
                 metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),
                 new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
-        executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParameters.keySet());
+        executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParams.keySet());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit each : eachGroup.getInputs()) {
                 prepareJDBCExecutionUnit(each);
@@ -161,15 +161,15 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private void prepareJDBCExecutionUnit(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
         PreparedStatement preparedStatement = (PreparedStatement) jdbcExecutionUnit.getStorageResource();
-        for (List<Object> eachGroupParameter : executionUnitParameters.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
-            ListIterator<Object> parametersIterator = eachGroupParameter.listIterator();
-            while (parametersIterator.hasNext()) {
-                int parameterIndex = parametersIterator.nextIndex() + 1;
-                Object value = parametersIterator.next();
+        for (List<Object> eachGroupParam : executionUnitParams.getOrDefault(jdbcExecutionUnit.getExecutionUnit(), Collections.emptyList())) {
+            ListIterator<Object> params = eachGroupParam.listIterator();
+            while (params.hasNext()) {
+                int paramIndex = params.nextIndex() + 1;
+                Object value = params.next();
                 if (value instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
                     value = value.toString();
                 }
-                preparedStatement.setObject(parameterIndex, value);
+                preparedStatement.setObject(paramIndex, value);
             }
             preparedStatement.addBatch();
         }

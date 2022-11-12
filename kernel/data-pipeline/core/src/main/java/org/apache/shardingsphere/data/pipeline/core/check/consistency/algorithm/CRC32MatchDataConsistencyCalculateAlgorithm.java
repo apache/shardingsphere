@@ -57,17 +57,17 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     }
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        List<CalculatedItem> calculatedItems = parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList());
+    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(param.getDatabaseType());
+        List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
-        Optional<String> sql = sqlBuilder.buildCRC32SQL(parameter.getSchemaName(), parameter.getLogicTableName(), columnName);
-        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(parameter.getDatabaseType()));
+    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter param, final String columnName) {
+        Optional<String> sql = sqlBuilder.buildCRC32SQL(param.getSchemaName(), param.getLogicTableName(), columnName);
+        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
         try (
-                Connection connection = parameter.getDataSource().getConnection();
+                Connection connection = param.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql.get()));
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
@@ -75,7 +75,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
             int recordsCount = resultSet.getInt(2);
             return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }
     

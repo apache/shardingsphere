@@ -39,24 +39,22 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && ((SelectStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !routeContext.isSingleRouting();
+        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getPaginationContext().isHasPagination() && !routeContext.isSingleRouting();
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SelectStatementContext selectStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SelectStatementContext selectStatementContext, final List<Object> params) {
         PaginationContext pagination = selectStatementContext.getPaginationContext();
-        pagination.getOffsetParameterIndex().ifPresent(optional -> rewriteOffset(pagination, optional, (StandardParameterBuilder) parameterBuilder));
+        pagination.getOffsetParameterIndex().ifPresent(optional -> rewriteOffset(pagination, optional, (StandardParameterBuilder) paramBuilder));
         pagination.getRowCountParameterIndex()
-                .ifPresent(optional -> rewriteRowCount(pagination, optional, (StandardParameterBuilder) parameterBuilder, selectStatementContext));
+                .ifPresent(optional -> rewriteRowCount(pagination, optional, (StandardParameterBuilder) paramBuilder, selectStatementContext));
     }
     
-    private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex, final StandardParameterBuilder parameterBuilder) {
-        parameterBuilder.addReplacedParameters(offsetParameterIndex, pagination.getRevisedOffset());
+    private void rewriteOffset(final PaginationContext pagination, final int offsetParamIndex, final StandardParameterBuilder paramBuilder) {
+        paramBuilder.addReplacedParameters(offsetParamIndex, pagination.getRevisedOffset());
     }
     
-    private void rewriteRowCount(final PaginationContext pagination,
-                                 final int rowCountParameterIndex, final StandardParameterBuilder parameterBuilder, final SQLStatementContext sqlStatementContext) {
-        parameterBuilder.addReplacedParameters(rowCountParameterIndex, pagination.getRevisedRowCount((SelectStatementContext) sqlStatementContext));
+    private void rewriteRowCount(final PaginationContext pagination, final int rowCountParamIndex, final StandardParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext) {
+        paramBuilder.addReplacedParameters(rowCountParamIndex, pagination.getRevisedRowCount((SelectStatementContext) sqlStatementContext));
     }
 }

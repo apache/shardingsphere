@@ -53,7 +53,7 @@ public final class OnDuplicateUpdateContext {
         valueExpressions = getValueExpressions(expressionSegments);
         parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(expressionSegments);
         parameterCount = parameterMarkerExpressions.size();
-        this.parameters = getParameters(params, parametersOffset);
+        parameters = getParameters(params, parametersOffset);
         columns = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());
     }
     
@@ -89,10 +89,10 @@ public final class OnDuplicateUpdateContext {
         return ((LiteralExpressionSegment) valueExpression).getLiterals();
     }
     
-    private int getParameterIndex(final ParameterMarkerExpressionSegment parameterMarkerExpression) {
-        int parameterIndex = parameterMarkerExpressions.indexOf(parameterMarkerExpression);
-        Preconditions.checkArgument(parameterIndex >= 0, "Can not get parameter index.");
-        return parameterIndex;
+    private int getParameterIndex(final ParameterMarkerExpressionSegment paramMarkerExpression) {
+        int result = parameterMarkerExpressions.indexOf(paramMarkerExpression);
+        Preconditions.checkArgument(result >= 0, "Can not get parameter index.");
+        return result;
     }
     
     /**

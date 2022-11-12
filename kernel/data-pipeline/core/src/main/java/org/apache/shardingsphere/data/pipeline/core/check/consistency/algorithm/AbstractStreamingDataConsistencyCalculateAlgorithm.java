@@ -36,17 +36,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
     @Override
-    public final Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
-        return new ResultIterable(parameter);
+    public final Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
+        return new ResultIterable(param);
     }
     
     /**
      * Calculate chunked records at one time.
      *
-     * @param parameter data consistency calculate parameter
+     * @param param data consistency calculate parameter
      * @return optional calculated result, empty means there's no more result
      */
-    protected abstract Optional<DataConsistencyCalculatedResult> calculateChunk(DataConsistencyCalculateParameter parameter);
+    protected abstract Optional<DataConsistencyCalculatedResult> calculateChunk(DataConsistencyCalculateParameter param);
     
     /**
      * It's not thread-safe, it should be executed in only one thread at the same time.
@@ -54,18 +54,18 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
     @RequiredArgsConstructor
     final class ResultIterable implements Iterable<DataConsistencyCalculatedResult> {
         
-        private final DataConsistencyCalculateParameter parameter;
+        private final DataConsistencyCalculateParameter param;
         
         @Override
         public Iterator<DataConsistencyCalculatedResult> iterator() {
-            return new ResultIterator(parameter);
+            return new ResultIterator(param);
         }
     }
     
     @RequiredArgsConstructor
     final class ResultIterator implements Iterator<DataConsistencyCalculatedResult> {
         
-        private final DataConsistencyCalculateParameter parameter;
+        private final DataConsistencyCalculateParameter param;
         
         private final AtomicInteger calculationCount = new AtomicInteger(0);
         
@@ -81,7 +81,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         public DataConsistencyCalculatedResult next() {
             calculateIfNecessary();
             Optional<DataConsistencyCalculatedResult> nextResult = this.nextResult;
-            parameter.setPreviousCalculatedResult(nextResult.orElse(null));
+            param.setPreviousCalculatedResult(nextResult.orElse(null));
             this.nextResult = null;
             return nextResult.orElse(null);
         }
@@ -90,7 +90,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
             if (null != nextResult) {
                 return;
             }
-            nextResult = calculateChunk(parameter);
+            nextResult = calculateChunk(param);
             if (!nextResult.isPresent()) {
                 log.info("nextResult not present, calculation done. calculationCount={}", calculationCount);
             }

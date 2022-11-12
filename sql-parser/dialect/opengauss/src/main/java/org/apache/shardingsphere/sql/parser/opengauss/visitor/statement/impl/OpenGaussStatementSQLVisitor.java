@@ -205,11 +205,11 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         if (null != ctx.DOLLAR_()) {
-            int parameterIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
-            if (parameterIndex > currentParameterIndex) {
-                currentParameterIndex = parameterIndex;
+            int paramIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
+            if (paramIndex > currentParameterIndex) {
+                currentParameterIndex = paramIndex;
             }
-            return new ParameterMarkerValue(parameterIndex - 1, ParameterMarkerType.DOLLAR);
+            return new ParameterMarkerValue(paramIndex - 1, ParameterMarkerType.DOLLAR);
         }
         return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
     }

@@ -24,10 +24,10 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTa
 public final class FixtureDataSourcePreparer implements DataSourcePreparer {
     
     @Override
-    public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
+    public void prepareTargetSchemas(final PrepareTargetSchemasParameter param) {
     }
     
     @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
+    public void prepareTargetTables(final PrepareTargetTablesParameter param) {
     }
 }

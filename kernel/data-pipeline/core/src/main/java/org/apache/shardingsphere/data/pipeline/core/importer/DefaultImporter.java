@@ -105,9 +105,9 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
             if (null != records && !records.isEmpty()) {
                 round++;
                 rowCount += records.size();
-                PipelineJobProgressUpdatedParameter updatedParameter = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
+                PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
-                jobProgressListener.onProgressUpdated(updatedParameter);
+                jobProgressListener.onProgressUpdated(updatedParam);
                 if (0 == round % 50) {
                     log.info("importer write, round={}, rowCount={}", round, rowCount);
                 }

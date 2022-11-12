@@ -84,16 +84,16 @@ public final class ContextManagerBuilderParameterTest {
     
     @Test
     public void assertGetDefaultModeConfiguration() {
-        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
-        assertThat(parameter.getModeConfiguration().getType(), is("Standalone"));
-        assertNull(parameter.getModeConfiguration().getRepository());
+        ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
+        assertThat(param.getModeConfiguration().getType(), is("Standalone"));
+        assertNull(param.getModeConfiguration().getRepository());
     }
     
     @Test
     public void assertGetModeConfiguration() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class));
-        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
-        assertThat(parameter.getModeConfiguration().getType(), is("Cluster"));
-        assertNotNull(parameter.getModeConfiguration().getRepository());
+        ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null, false);
+        assertThat(param.getModeConfiguration().getType(), is("Cluster"));
+        assertNotNull(param.getModeConfiguration().getRepository());
     }
 }

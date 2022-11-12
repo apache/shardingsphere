@@ -45,9 +45,9 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
         Preconditions.checkState(insertStatementContext.getGeneratedKeyContext().isPresent());
-        ((GroupedParameterBuilder) parameterBuilder).setDerivedColumnName(insertStatementContext.getGeneratedKeyContext().get().getColumnName());
+        ((GroupedParameterBuilder) paramBuilder).setDerivedColumnName(insertStatementContext.getGeneratedKeyContext().get().getColumnName());
         Iterator<Comparable<?>> generatedValues = insertStatementContext.getGeneratedKeyContext().get().getGeneratedValues().iterator();
         int count = 0;
         int parameterCount = 0;
@@ -55,7 +55,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
             parameterCount += insertStatementContext.getInsertValueContexts().get(count).getParameterCount();
             Comparable<?> generatedValue = generatedValues.next();
             if (!each.isEmpty()) {
-                ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, new ArrayList<>(Collections.singleton(generatedValue)));
+                ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(count).addAddedParameters(parameterCount, new ArrayList<>(Collections.singleton(generatedValue)));
             }
             count++;
         }

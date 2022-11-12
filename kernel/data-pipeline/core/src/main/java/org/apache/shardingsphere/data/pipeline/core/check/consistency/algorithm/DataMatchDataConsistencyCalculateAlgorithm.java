@@ -89,14 +89,14 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    protected Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter parameter) {
-        CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
-        String sql = getQuerySQL(parameter);
+    protected Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
+        CalculatedResult previousCalculatedResult = (CalculatedResult) param.getPreviousCalculatedResult();
+        String sql = getQuerySQL(param);
         try (
-                Connection connection = parameter.getDataSource().getConnection();
+                Connection connection = param.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
             preparedStatement.setFetchSize(chunkSize);
-            Object tableCheckPosition = parameter.getTableCheckPosition();
+            Object tableCheckPosition = param.getTableCheckPosition();
             if (null == previousCalculatedResult) {
                 if (null == tableCheckPosition) {
                     preparedStatement.setInt(1, chunkSize);
@@ -111,10 +111,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
+                ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(param.getDatabaseType());
                 while (resultSet.next()) {
                     if (isCanceling()) {
-                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName());
+                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
                     }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
@@ -123,24 +123,24 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
                     }
                     records.add(record);
-                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, parameter.getUniqueKey().getOrdinalPosition());
+                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getSchemaName(), parameter.getLogicTableName(), ex);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }
     
-    private String getQuerySQL(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        String logicTableName = parameter.getLogicTableName();
-        String schemaName = parameter.getSchemaName();
-        String uniqueKey = parameter.getUniqueKey().getName();
-        String cacheKey = parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
+    private String getQuerySQL(final DataConsistencyCalculateParameter param) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(param.getDatabaseType());
+        String logicTableName = param.getLogicTableName();
+        String schemaName = param.getSchemaName();
+        String uniqueKey = param.getUniqueKey().getName();
+        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(param.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
-        if (null == parameter.getPreviousCalculatedResult() && null == parameter.getTableCheckPosition()) {
+        if (null == param.getPreviousCalculatedResult() && null == param.getTableCheckPosition()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         }
         return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));

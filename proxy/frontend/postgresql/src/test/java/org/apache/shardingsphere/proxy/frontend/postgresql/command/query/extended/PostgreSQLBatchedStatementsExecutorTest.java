@@ -134,7 +134,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void prepareExecutionUnitParameters(final PostgreSQLBatchedStatementsExecutor target, final List<List<Object>> parameterSets) {
-        Field executionUnitParametersField = PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParameters");
+        Field executionUnitParametersField = PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams");
         executionUnitParametersField.setAccessible(true);
         Map<ExecutionUnit, List<List<Object>>> map = (Map<ExecutionUnit, List<List<Object>>>) executionUnitParametersField.get(target);
         map.replaceAll((k, v) -> parameterSets);

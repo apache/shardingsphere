@@ -68,8 +68,8 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     public void assertRewrite() {
         InsertStatementContext insertStatementContext = getInsertStatementContext();
         ParameterBuilder groupedParamBuilder = getParameterBuilder();
-        ShardingGeneratedKeyInsertValueParameterRewriter shardingGeneratedKeyInsertValueParameterRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
-        shardingGeneratedKeyInsertValueParameterRewriter.rewrite(groupedParamBuilder, insertStatementContext, null);
+        ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
+        paramRewriter.rewrite(groupedParamBuilder, insertStatementContext, null);
         assertThat(((GroupedParameterBuilder) groupedParamBuilder).getParameterBuilders().get(0).getAddedIndexAndParameters().get(TEST_PARAMETER_COUNT), hasItem(TEST_GENERATED_VALUE));
     }
     

@@ -76,11 +76,11 @@ public final class EncryptEqualCondition implements EncryptCondition {
     public List<Object> getValues(final List<Object> params) {
         List<Object> result = new ArrayList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-            Object parameter = params.get(entry.getValue());
+            Object param = params.get(entry.getValue());
             if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), parameter);
+                result.add(entry.getKey(), param);
             } else {
-                result.add(parameter);
+                result.add(param);
             }
         }
         return result;
