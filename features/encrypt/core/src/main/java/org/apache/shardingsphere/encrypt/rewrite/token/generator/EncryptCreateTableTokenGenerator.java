@@ -75,7 +75,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         result.add(new RemoveToken(column.getStartIndex(), columnStopIndex));
         result.add(getCipherColumnToken(tableName, columnName, column, columnStopIndex));
         getAssistedQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
-        getFuzzyQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
+        getLikeQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
         getPlainColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
         return result;
     }
@@ -90,10 +90,10 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
-    private Optional<? extends SQLToken> getFuzzyQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
-                                                                  final int stopIndex, final boolean lastColumn) {
-        Optional<String> fuzzyQueryColumn = encryptRule.findFuzzyQueryColumn(tableName, columnName);
-        return fuzzyQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
+    private Optional<? extends SQLToken> getLikeQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
+                                                                 final int stopIndex, final boolean lastColumn) {
+        Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(tableName, columnName);
+        return likeQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
     private Optional<? extends SQLToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,

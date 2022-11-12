@@ -27,17 +27,17 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          fuzzyQueryColumn: fuzzy_query_certificate_number
+          likeQueryColumn: like_query_certificate_number
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          fuzzyQueryColumn: fuzzy_query_password
+          likeQueryColumn: like_query_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         amount:
           cipherColumn: cipher_amount
           encryptorName: rewrite_normal_fixture
@@ -49,27 +49,27 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          fuzzyQueryColumn: fuzzy_query_certificate_number
+          likeQueryColumn: like_query_certificate_number
           plainColumn: plain_certificate_number
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          fuzzyQueryColumn: fuzzy_query_password
+          likeQueryColumn: like_query_password
           plainColumn: plain_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         password_new:
           cipherColumn: password_new_cipher
           assistedQueryColumn: password_new_assisted
-          fuzzyQueryColumn: password_new_fuzzy
+          likeQueryColumn: password_new_like
           plainColumn: password_new_plain
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -79,19 +79,19 @@ rules:
         certificate_number:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
-          fuzzyQueryColumn: fuzzy_query_certificate_number
+          likeQueryColumn: like_query_certificate_number
           plainColumn: plain_certificate_number
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          fuzzyQueryColumn: fuzzy_query_password
+          likeQueryColumn: like_query_password
           plainColumn: plain_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          fuzzyQueryEncryptorName: rewrite_fuzzy_query_fixture
+          likeQueryEncryptorName: rewrite_like_query_fixture
         amount:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
@@ -110,5 +110,5 @@ rules:
       type: REWRITE.METADATA_AWARE.FIXTURE
     rewrite_assisted_query_fixture:
       type: REWRITE.ASSISTED_QUERY.FIXTURE
-    rewrite_fuzzy_query_fixture:
-      type: REWRITE.FUZZY_QUERY.FIXTURE
+    rewrite_like_query_fixture:
+      type: REWRITE.LIKE_QUERY.FIXTURE

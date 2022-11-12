@@ -82,11 +82,11 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
                     addedParams.add(assistedQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
                 }
-                Optional<EncryptAlgorithm> fuzzyQueryEncryptor = encryptRule.findFuzzyQueryEncryptor(tableName, encryptLogicColumnName);
-                if (fuzzyQueryEncryptor.isPresent()) {
-                    Optional<String> fuzzyColumnName = encryptRule.findFuzzyQueryColumn(tableName, encryptLogicColumnName);
-                    Preconditions.checkArgument(fuzzyColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParams.add(fuzzyQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
+                Optional<EncryptAlgorithm> likeQueryEncryptor = encryptRule.findLikeQueryEncryptor(tableName, encryptLogicColumnName);
+                if (likeQueryEncryptor.isPresent()) {
+                    Optional<String> likeColumnName = encryptRule.findLikeQueryColumn(tableName, encryptLogicColumnName);
+                    Preconditions.checkArgument(likeColumnName.isPresent(), "Can not find assisted query Column Name");
+                    addedParams.add(likeQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
                 }
                 if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParams.add(plainColumnValue);

@@ -96,15 +96,15 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().plainColumnName()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()),
-                null == ctx.fuzzyQueryColumnDefinition() ? null : getIdentifierValue(ctx.fuzzyQueryColumnDefinition().fuzzyQueryColumnName()),
+                null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()),
                 getIdentifierValue(ctx.columnDefinition().dataType()),
                 getIdentifierValue(ctx.cipherColumnDefinition().dataType()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
-                null == ctx.fuzzyQueryColumnDefinition() ? null : getIdentifierValue(ctx.fuzzyQueryColumnDefinition().dataType()),
+                null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().dataType()),
                 algorithmSegments.get(0),
                 null == ctx.assistedQueryColumnDefinition() || 1 == algorithmSegments.size() ? null : algorithmSegments.get(1),
-                null == ctx.fuzzyQueryColumnDefinition() ? null
+                null == ctx.likeQueryColumnDefinition() ? null
                         : Optional.ofNullable(algorithmSegments).filter(algorithm -> algorithm.size() > 2).map(algorithm -> algorithm.get(2)).orElse(null));
         
     }

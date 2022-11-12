@@ -87,13 +87,13 @@ public final class MergedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigFuzzyQueryColumn() throws SQLException {
+    public void assertGetValueWhenConfigLikeQueryColumn() throws SQLException {
         when(queryResult.next()).thenReturn(true).thenReturn(false);
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
-                        + "`user_id_fuzzy` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+                        + "`user_id_like` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
         MergedEncryptShowCreateTableMergedResult actual = createMergedEncryptShowCreateTableMergedResult(queryResult,
-                mockEncryptRule(Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_id_cipher", "", "user_id_fuzzy", "", "", "", null, false))));
+                mockEncryptRule(Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_id_cipher", "", "user_id_like", "", "", "", null, false))));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
                 is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL,"

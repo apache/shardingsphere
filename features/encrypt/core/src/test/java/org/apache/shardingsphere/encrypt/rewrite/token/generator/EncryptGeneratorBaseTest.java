@@ -63,7 +63,7 @@ public abstract class EncryptGeneratorBaseTest {
     
     protected static EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_fuzzy", "pwd_plain", "test_encryptor", "test_encryptor", "test_encryptor", false);
+                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "test_encryptor", false);
         return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.singletonList(pwdColumnConfig), null)),
                 Collections.singletonMap("test_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()))));
     }

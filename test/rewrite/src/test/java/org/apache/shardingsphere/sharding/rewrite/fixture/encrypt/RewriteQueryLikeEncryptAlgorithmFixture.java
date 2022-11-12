@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.fixture;
+package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
 
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -24,7 +24,7 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import java.util.Properties;
 
 @Getter
-public final class CoreQueryFuzzyEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
+public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -35,16 +35,19 @@ public final class CoreQueryFuzzyEncryptAlgorithmFixture implements EncryptAlgor
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "fuzzyEncryptValue";
+        if (null == plainValue) {
+            return null;
+        }
+        return "like_query_" + plainValue;
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
+        return cipherValue;
     }
     
     @Override
     public String getType() {
-        return "CORE.QUERY_FUZZY.FIXTURE";
+        return "REWRITE.LIKE_QUERY.FIXTURE";
     }
 }

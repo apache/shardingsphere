@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.fuzzy;
+package org.apache.shardingsphere.encrypt.algorithm.like;
 
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -31,19 +31,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class CharDigestFuzzyEncryptAlgorithmTest {
+public final class CharDigestLikeEncryptAlgorithmTest {
     
     private EncryptAlgorithm<Object, String> encryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> chineseFuzzyEncryptAlgorithm;
+    private EncryptAlgorithm<Object, String> chineseLikeEncryptAlgorithm;
     
-    private EncryptAlgorithm<Object, String> koreanFuzzyEncryptAlgorithm;
+    private EncryptAlgorithm<Object, String> koreanLikeEncryptAlgorithm;
     
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
-        chineseFuzzyEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", new Properties()));
-        koreanFuzzyEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_FUZZY", createProperties()));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+        chineseLikeEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+        koreanLikeEncryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("CHAR_DIGEST_LIKE", createProperties()));
     }
     
     private Properties createProperties() {
@@ -60,12 +60,12 @@ public final class CharDigestFuzzyEncryptAlgorithmTest {
     
     @Test
     public void assertEncryptWithChineseChar() {
-        assertThat(chineseFuzzyEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
+        assertThat(chineseLikeEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
     }
     
     @Test
     public void assertEncryptWithKoreanChar() {
-        assertThat(koreanFuzzyEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
+        assertThat(koreanLikeEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
     }
     
     @Test

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.fuzzy;
+package org.apache.shardingsphere.encrypt.algorithm.like;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Char digest fuzzy encrypt algorithm.
+ * Char digest like encrypt algorithm.
  */
-public final class CharDigestFuzzyEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private static final String DELTA = "delta";
     
@@ -137,7 +137,7 @@ public final class CharDigestFuzzyEncryptAlgorithm implements EncryptAlgorithm<O
             try {
                 return Integer.parseInt(delta);
             } catch (NumberFormatException ex) {
-                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_FUZZY", "delta can only be a decimal number");
+                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "delta can only be a decimal number");
             }
         }
         return DEFAULT_DELTA;
@@ -149,7 +149,7 @@ public final class CharDigestFuzzyEncryptAlgorithm implements EncryptAlgorithm<O
             try {
                 return Integer.parseInt(mask);
             } catch (NumberFormatException ex) {
-                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_FUZZY", "mask can only be a decimal number");
+                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "mask can only be a decimal number");
             }
         }
         return DEFAULT_MASK;
@@ -161,7 +161,7 @@ public final class CharDigestFuzzyEncryptAlgorithm implements EncryptAlgorithm<O
             try {
                 return Integer.parseInt(start);
             } catch (NumberFormatException ex) {
-                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_FUZZY", "start can only be a decimal number");
+                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "start can only be a decimal number");
             }
         }
         return DEFAULT_START;
@@ -214,6 +214,6 @@ public final class CharDigestFuzzyEncryptAlgorithm implements EncryptAlgorithm<O
     
     @Override
     public String getType() {
-        return "CHAR_DIGEST_FUZZY";
+        return "CHAR_DIGEST_LIKE";
     }
 }
