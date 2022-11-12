@@ -145,7 +145,8 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
         SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName,
-                metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false), eventBusContext);
+                metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), getConnectionSession().getConnectionContext()), eventBusContext);
         sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement, eventBusContext),
                 context);
         return context.getExecutionUnits();
