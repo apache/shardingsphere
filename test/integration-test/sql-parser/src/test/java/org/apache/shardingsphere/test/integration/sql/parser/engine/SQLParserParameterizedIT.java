@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.base;
+package org.apache.shardingsphere.test.integration.sql.parser.engine;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ import java.util.Properties;
 
 @RequiredArgsConstructor
 @Slf4j
-public abstract class DynamicLoadingSQLParserParameterizedIT {
+public abstract class SQLParserParameterizedIT {
     
     private final String sqlCaseId;
     
