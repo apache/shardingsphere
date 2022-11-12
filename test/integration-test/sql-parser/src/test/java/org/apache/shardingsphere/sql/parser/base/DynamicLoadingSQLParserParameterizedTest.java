@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -54,19 +55,30 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
     // TODO this will refactor as an abstract
     private final SQLParserResultProcessor resultGenerator;
     
-    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseURI) {
+    protected static Collection<Object[]> getTestParameters(final String sqlCaseAPI, final URI sqlCaseTestURI, final URI sqlCaseResultURI) {
         Collection<Object[]> result = new LinkedList<>();
         if (sqlCaseAPI.isEmpty()) {
-            result.addAll(getSQLCases("localFile", getContent(sqlCaseURI)));
+            result.addAll(getSQLCases("localFile", getContent(sqlCaseTestURI), ""));
         } else {
-            for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
+            Map<String, String> resultResponse = getResultResponse(sqlCaseAPI, sqlCaseResultURI);
+            for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseTestURI)) {
                 String sqlCaseFileName = each.get("name").split("\\.")[0];
-                String sqlCaseFileContent = getContent(URI.create(each.get("download_url")));
-                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseFileContent));
+                String sqlCaseTestFileContent = getContent(URI.create(each.get("download_url")));
+                String sqlCaseResultDownloadURL = resultResponse.get(sqlCaseFileName);
+                String sqlCaseResultFileContent = null == sqlCaseResultDownloadURL ? "" : getContent(URI.create(sqlCaseResultDownloadURL));
+                result.addAll(getSQLCases(sqlCaseFileName, sqlCaseTestFileContent, sqlCaseResultFileContent));
             }
         }
         if (result.isEmpty()) {
-            result.add(new Object[]{null, null});
+            result.add(new Object[]{"", ""});
+        }
+        return result;
+    }
+    
+    protected static Map<String, String> getResultResponse(final String sqlCaseAPI, final URI sqlCaseURI) {
+        Map<String, String> result = new HashMap<>();
+        for (Map<String, String> each : getResponse(sqlCaseAPI, sqlCaseURI)) {
+            result.put(each.get("name").split("\\.")[0], each.get("download_url"));
         }
         return result;
     }
@@ -112,22 +124,57 @@ public abstract class DynamicLoadingSQLParserParameterizedTest {
         return result;
     }
     
-    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent) {
+    protected static Collection<Object[]> getSQLCases(final String sqlCaseFileName, final String sqlCaseTestFileContent, final String sqlCaseResultFileContent) {
         Collection<Object[]> result = new LinkedList<>();
-        String[] lines = sqlCaseFileContent.split("\n");
+        String[] testLines = sqlCaseTestFileContent.split("\n");
+        String[] resultLines = sqlCaseResultFileContent.split("\n");
+        String completedSQL = "";
         int sqlCaseEnum = 1;
-        for (int i = 0; i < lines.length; i++) {
-            if (isStatement(lines[i]) && (i + 1 == lines.length || !lines[i + 1].contains("ERROR"))) {
-                String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                result.add(new Object[]{sqlCaseId, lines[i]});
-                sqlCaseEnum++;
+        int statementLines = 0;
+        int resultIndex = 0;
+        boolean inProcedure = false;
+        for (String testLine : testLines) {
+            inProcedure = isInProcedure(inProcedure, testLine.trim());
+            completedSQL = getStatement(completedSQL, testLine.trim(), inProcedure);
+            statementLines = completedSQL.isEmpty() ? 0 : statementLines + 1;
+            if (completedSQL.contains(";") && !inProcedure) {
+                resultIndex = searchResult(resultIndex, resultLines, completedSQL, statementLines);
+                if (resultIndex >= resultLines.length || !resultLines[resultIndex].contains("ERROR")) {
+                    String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
+                    result.add(new Object[]{sqlCaseId, completedSQL});
+                    sqlCaseEnum++;
+                }
+                completedSQL = "";
+                statementLines = 0;
             }
         }
         return result;
     }
     
-    private static boolean isStatement(final String statement) {
-        return !statement.isEmpty() && Character.isLetter(statement.charAt(0)) && statement.charAt(statement.length() - 1) == ';';
+    private static boolean isInProcedure(final boolean inProcedure, final String statementLines) {
+        if (statementLines.contains("{") && statementLines.contains("}")) {
+            return inProcedure;
+        }
+        return statementLines.contains("{") || statementLines.contains("}") || statementLines.contains("$$") ? !inProcedure : inProcedure;
+    }
+    
+    private static int searchResult(final int resultIndex, final String[] resultLines, final String completedSQL, final int statementLines) {
+        int index = resultIndex;
+        while (index < resultLines.length && !completedSQL.startsWith(resultLines[index].trim())) {
+            index++;
+        }
+        if (index != resultLines.length) {
+            return index + statementLines;
+        }
+        return resultIndex;
+    }
+    
+    private static String getStatement(final String completedSQL, final String statementTest, final boolean inProcedure) {
+        return (statementTest.isEmpty() || isComment(statementTest)) && !inProcedure ? "" : completedSQL + statementTest + " ";
+    }
+    
+    private static boolean isComment(final String statement) {
+        return statement.startsWith("#") || statement.startsWith("/") || statement.startsWith("--") || statement.startsWith(":") || statement.startsWith("\\");
     }
     
     @Test

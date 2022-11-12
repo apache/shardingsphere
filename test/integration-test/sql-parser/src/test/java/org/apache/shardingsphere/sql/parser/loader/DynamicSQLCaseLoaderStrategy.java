@@ -25,9 +25,11 @@ public interface DynamicSQLCaseLoaderStrategy {
     /**
      * Get test parameters.
      *
-     * @param sqlCaseURI the URI of sql case
+     * @param sqlCaseTestURI the URI of sql test case
+     *
+     * @param sqlCaseResultURI the URI of sql result case
      *
      * @return Test cases from with strategy
      */
-    Collection<Object[]> getTestParameters(URI sqlCaseURI);
+    Collection<Object[]> getTestParameters(URI sqlCaseTestURI, URI sqlCaseResultURI);
 }
