@@ -36,8 +36,7 @@ public final class ReplicaLoadBalanceAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstanceWithAlgorithmConfiguration() {
-        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
+        assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXTURE", new Properties())), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
     }
     
     @Test

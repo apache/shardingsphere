@@ -403,9 +403,9 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(JobType.MIGRATION);
         Map<String, Object> sourceDataSourceProps = swapper.swapToMap(metaDataDataSource.get(parameter.getSourceResourceName()));
-        YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfiguration = createYamlPipelineDataSourceConfiguration(StandardPipelineDataSourceConfiguration.TYPE,
-                YamlEngine.marshal(sourceDataSourceProps));
-        result.setSource(sourcePipelineDataSourceConfiguration);
+        YamlPipelineDataSourceConfiguration sourcePipelineDataSourceConfig = createYamlPipelineDataSourceConfiguration(
+                StandardPipelineDataSourceConfiguration.TYPE, YamlEngine.marshal(sourceDataSourceProps));
+        result.setSource(sourcePipelineDataSourceConfig);
         result.setSourceResourceName(parameter.getSourceResourceName());
         StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
         DatabaseType sourceDatabaseType = sourceDataSourceConfig.getDatabaseType();
@@ -415,14 +415,14 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
                 : parameter.getSourceSchemaName();
         result.setSourceSchemaName(sourceSchemaName);
         result.setSourceTableName(parameter.getSourceTableName());
-        Map<String, Map<String, Object>> targetDataSourceProperties = new HashMap<>();
+        Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
         ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(parameter.getTargetDatabaseName());
         for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
-            targetDataSourceProperties.put(entry.getKey(), dataSourceProps);
+            targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }
         String targetDatabaseName = parameter.getTargetDatabaseName();
-        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(targetDatabaseName, targetDataSourceProperties, targetDatabase.getRuleMetaData().getConfigurations());
+        YamlRootConfiguration targetRootConfig = getYamlRootConfiguration(targetDatabaseName, targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
         PipelineDataSourceConfiguration targetPipelineDataSource = new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
         result.setTarget(createYamlPipelineDataSourceConfiguration(targetPipelineDataSource.getType(), YamlEngine.marshal(targetPipelineDataSource.getDataSourceConfiguration())));
         result.setTargetDatabaseType(targetPipelineDataSource.getDatabaseType().getType());
