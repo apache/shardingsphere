@@ -20,9 +20,9 @@
         <column name="schema_name" />
     </metadata>
     <row values="information_schema" />
-    <row values="performance_schema" />
-    <row values="sys" />
-    <row values="shardingsphere" />
-    <row values="sharding_governance" />
     <row values="mysql" />
+    <row values="performance_schema" />
+    <row values="sharding_governance" />
+    <row values="shardingsphere" />
+    <row values="sys" />
 </dataset>
