@@ -38,7 +38,7 @@ public final class SQLParseResultReporterCreatorFactory {
      * @param type type
      * @return new instance of SQL parse result reporter creator
      */
-    public static SQLParseResultReporterCreator newInstance(String type) {
+    public static SQLParseResultReporterCreator newInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(SQLParseResultReporterCreator.class, type);
     }
 }
