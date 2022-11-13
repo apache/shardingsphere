@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Database meta data node.
+ * Database metadata node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseMetaDataNode {
@@ -60,7 +60,7 @@ public final class DatabaseMetaDataNode {
     /**
      * Get meta data node path.
      *
-     * @return meta data node path
+     * @return metadata node path
      */
     public static String getMetaDataNodePath() {
         return String.join("/", "", ROOT_NODE);
@@ -136,7 +136,7 @@ public final class DatabaseMetaDataNode {
      * @param databaseName database name
      * @param schemaName schema name
      * @param table table name
-     * @return table meta data path
+     * @return table metadata path
      */
     public static String getTableMetaDataPath(final String databaseName, final String schemaName, final String table) {
         return String.join("/", getMetaDataTablesPath(databaseName, schemaName), table);
@@ -148,7 +148,7 @@ public final class DatabaseMetaDataNode {
      * @param databaseName database name
      * @param schemaName schema name
      * @param view view name
-     * @return view meta data path
+     * @return view metadata path
      */
     public static String getViewMetaDataPath(final String databaseName, final String schemaName, final String view) {
         return String.join("/", getMetaDataViewsPath(databaseName, schemaName), view);
@@ -207,7 +207,7 @@ public final class DatabaseMetaDataNode {
     }
     
     /**
-     * Get table meta data path.
+     * Get table metadata path.
      *
      * @param tableMetaDataPath table meta data path
      * @return table name
@@ -221,7 +221,7 @@ public final class DatabaseMetaDataNode {
     /**
      * Get view meta data path.
      *
-     * @param viewMetaDataPath view meta data path
+     * @param viewMetaDataPath view metadata path
      * @return view name
      */
     public static Optional<String> getViewName(final String viewMetaDataPath) {
