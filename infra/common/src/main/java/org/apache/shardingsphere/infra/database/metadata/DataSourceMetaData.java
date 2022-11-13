@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.database.metadata;
 import java.util.Properties;
 
 /**
- * Data source meta data.
+ * Data source metadata.
  */
 public interface DataSourceMetaData {
     
