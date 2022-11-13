@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Meta data refresher.
+ * Metadata refresher.
  *
  * @param <T> type of SQL statement
  */
@@ -44,7 +44,7 @@ public interface MetaDataRefresher<T extends SQLStatement> extends TypedSPI {
      * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @param props configuration properties
-     * @return meta data refreshed event
+     * @return metadata refreshed event
      * @throws SQLException SQL exception
      */
     Optional<MetaDataRefreshedEvent> refresh(ShardingSphereDatabase database, Collection<String> logicDataSourceNames,
