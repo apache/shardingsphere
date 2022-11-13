@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.sql.parser.loader.impl;
 
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseFileSummary;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.FileSummary;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoadStrategy;
 
 import java.io.BufferedReader;
@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -40,22 +39,26 @@ import java.util.stream.Collectors;
 public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
     @Override
-    public Collection<SQLCaseFileSummary> loadSQLCaseFileSummaries(final URI uri) {
-        String caseContent = loadContent(getGitHubApiUri(uri));
-        if (caseContent.isEmpty()) {
+    public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
+        String content = loadContent(getGitHubApiUri(uri));
+        if (content.isEmpty()) {
             return Collections.emptyList();
         }
-        Collection<SQLCaseFileSummary> result = new LinkedList<>();
-        List<String> fileName = JsonPath.parse(caseContent).read("$..name");
-        List<String> downloadURL = JsonPath.parse(caseContent).read("$..download_url");
-        List<String> casesHtmlURL = JsonPath.parse(caseContent).read("$..html_url");
-        List<String> casesType = JsonPath.parse(caseContent).read("$..type");
-        int bound = JsonPath.parse(caseContent).read("$.length()");
-        for (int each = 0; each < bound; each++) {
-            if ("file".equals(casesType.get(each))) {
-                result.add(new SQLCaseFileSummary(fileName.get(each).split("\\.")[0], downloadURL.get(each)));
-            } else if ("dir".equals(casesType.get(each))) {
-                result.addAll(loadSQLCaseFileSummaries(URI.create(casesHtmlURL.get(each))));
+        Collection<FileSummary> result = new LinkedList<>();
+        List<String> fileNames = JsonPath.parse(content).read("$..name");
+        List<String> folderTypes = JsonPath.parse(content).read("$..type");
+        List<String> downloadURLs = JsonPath.parse(content).read("$..download_url");
+        List<String> htmlURLs = JsonPath.parse(content).read("$..html_url");
+        int length = JsonPath.parse(content).read("$.length()");
+        for (int i = 0; i < length; i++) {
+            String fileName = fileNames.get(i).split("\\.")[0];
+            String folderType = folderTypes.get(i);
+            String downloadURL = downloadURLs.get(i);
+            String htmlURL = htmlURLs.get(i);
+            if ("file".equals(folderType)) {
+                result.add(new FileSummary(fileName, downloadURL));
+            } else if ("dir".equals(folderType)) {
+                result.addAll(loadSQLCaseFileSummaries(URI.create(htmlURL)));
             }
         }
         return result;
@@ -74,13 +77,8 @@ public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
             InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
             return new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (final IOException ex) {
-            log.warn("Load SQL cases failed, reason is: ", ex);
+            log.warn("Load failed, reason is: ", ex);
             return "";
         }
-    }
-    
-    @Override
-    public Map<String, String> loadSQLCaseResults(final URI uri) {
-        return loadSQLCaseFileSummaries(uri).stream().collect(Collectors.toMap(SQLCaseFileSummary::getFileName, SQLCaseFileSummary::getAccessURL, (a, b) -> b));
     }
 }
