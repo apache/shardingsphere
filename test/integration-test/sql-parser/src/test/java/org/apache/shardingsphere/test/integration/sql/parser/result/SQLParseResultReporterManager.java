@@ -29,11 +29,11 @@ import java.net.URL;
 import java.util.Objects;
 
 /**
- * Get the corresponding result processor through config.
+ * SQL parse result reporter manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class SQLParserResultProcessorManager {
+public final class SQLParseResultReporterManager {
     
     /**
      * Get the SQL parser result processor.
@@ -41,21 +41,21 @@ public final class SQLParserResultProcessorManager {
      * @param databaseType database type
      * @return the implementation of SQLParserResultProcessor
      */
-    public static SQLParserResultProcessor getProcessor(final String databaseType) {
+    public static SQLParseResultReporter getProcessor(final String databaseType) {
         String type = SQLParserExternalITEnvironment.getInstance().getResultProcessorType();
         try {
-            Class<?> interfaceClazz = Class.forName(SQLParserResultProcessor.class.getPackage().getName() + "." + SQLParserResultProcessor.class.getSimpleName());
+            Class<?> interfaceClazz = Class.forName(SQLParseResultReporter.class.getPackage().getName() + "." + SQLParseResultReporter.class.getSimpleName());
             String packageName = interfaceClazz.getPackage().getName();
             URL packagePath = Thread.currentThread().getContextClassLoader().getResource(packageName.replace(".", "/"));
             File[] classFiles = new File(Objects.requireNonNull(packagePath).getFile()).listFiles((dir, name) -> name.endsWith(".class"));
             for (File file : Objects.requireNonNull(classFiles)) {
                 String className = file.getName().replaceAll(".class$", "");
                 Class<?> clazz = Class.forName(packageName + "." + className);
-                if (SQLParserResultProcessor.class.isAssignableFrom(clazz)) {
+                if (SQLParseResultReporter.class.isAssignableFrom(clazz)) {
                     Field typeField = clazz.getDeclaredField("type");
                     typeField.setAccessible(true);
                     Constructor<?> constructor = clazz.getConstructor(String.class);
-                    SQLParserResultProcessor result = (SQLParserResultProcessor) constructor.newInstance(databaseType);
+                    SQLParseResultReporter result = (SQLParseResultReporter) constructor.newInstance(databaseType);
                     if (type.equalsIgnoreCase(typeField.get(result).toString())) {
                         return result;
                     }

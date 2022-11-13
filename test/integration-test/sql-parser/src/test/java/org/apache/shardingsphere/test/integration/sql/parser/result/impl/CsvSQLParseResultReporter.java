@@ -21,23 +21,23 @@ import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.shardingsphere.test.integration.sql.parser.env.SQLParserExternalITEnvironment;
-import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessor;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- *  CSV result generator.
+ *  SQL parse result reporter for CSV.
  */
-public final class SQLParserCSVResultProcessor implements SQLParserResultProcessor {
+public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     
     private final CSVPrinter printer;
     
     @Getter
     private final String type = "CSV";
     
-    public SQLParserCSVResultProcessor(final String databaseType) {
+    public CsvSQLParseResultReporter(final String databaseType) {
         try {
             File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
             printHeader(csvFile);

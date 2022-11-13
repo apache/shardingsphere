@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.sql.parser.engine.dialect;
 import org.apache.shardingsphere.test.integration.sql.parser.engine.SQLParserParameterizedIT;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessorManager;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporterManager;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -32,7 +32,7 @@ import java.util.Collection;
 public final class MySQLParserParameterizedIT extends SQLParserParameterizedIT {
     
     public MySQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "MySQL", SQLParserResultProcessorManager.getProcessor("MySQL"));
+        super(sqlCaseId, sqlCaseValue, "MySQL", SQLParseResultReporterManager.getProcessor("MySQL"));
     }
     
     @Parameters(name = "{0} (MySQL) -> {1}")
