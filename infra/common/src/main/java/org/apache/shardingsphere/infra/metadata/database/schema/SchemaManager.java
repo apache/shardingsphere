@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Schema meta data manager.
+ * Schema metadata manager.
  */
 public final class SchemaManager {
     
@@ -53,7 +53,7 @@ public final class SchemaManager {
      *
      * @param reloadTables  reload tables
      * @param currentTables current tables
-     * @return To be added table meta data
+     * @return To be added table metadata
      */
     public static Map<String, ShardingSphereTable> getToBeAddedTables(final Map<String, ShardingSphereTable> reloadTables, final Map<String, ShardingSphereTable> currentTables) {
         return reloadTables.entrySet().stream().filter(entry -> !entry.getValue().equals(currentTables.get(entry.getKey()))).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
@@ -64,7 +64,7 @@ public final class SchemaManager {
      *
      * @param reloadSchemas reload schemas
      * @param currentSchemas current schemas
-     * @return To be deleted table meta data
+     * @return To be deleted table metadata
      */
     public static Map<String, ShardingSphereSchema> getToBeDeletedTablesBySchemas(final Map<String, ShardingSphereSchema> reloadSchemas, final Map<String, ShardingSphereSchema> currentSchemas) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(currentSchemas.size(), 1);
@@ -82,7 +82,7 @@ public final class SchemaManager {
      *
      * @param reloadTables reload tables
      * @param currentTables current tables
-     * @return To be deleted table meta data
+     * @return To be deleted table metadata
      */
     public static Map<String, ShardingSphereTable> getToBeDeletedTables(final Map<String, ShardingSphereTable> reloadTables, final Map<String, ShardingSphereTable> currentTables) {
         return currentTables.entrySet().stream().filter(entry -> !reloadTables.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
