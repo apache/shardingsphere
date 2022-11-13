@@ -56,9 +56,9 @@ public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     }
     
     @Override
-    public void printResult(final Object... recordValues) {
+    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
         try {
-            printer.printRecord(recordValues);
+            printer.printRecord(sqlCaseId, databaseType, isSuccess ? "success" : "failed", sql);
             printer.flush();
         } catch (final IOException ex) {
             throw new RuntimeException("Write CSV file failed.", ex);

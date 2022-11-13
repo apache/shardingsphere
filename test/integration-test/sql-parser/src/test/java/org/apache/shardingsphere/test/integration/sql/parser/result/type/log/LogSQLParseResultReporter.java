@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResu
 public final class LogSQLParseResultReporter implements SQLParseResultReporter {
     
     @Override
-    public void printResult(final Object... recordValues) {
+    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
         // TODO set up the log format
         log.info("Printing the SQL parser process result");
     }
