@@ -55,7 +55,6 @@ public abstract class SQLParserParameterizedIT {
             new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
         } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
             isSuccess = false;
-            log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
         resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
     }
