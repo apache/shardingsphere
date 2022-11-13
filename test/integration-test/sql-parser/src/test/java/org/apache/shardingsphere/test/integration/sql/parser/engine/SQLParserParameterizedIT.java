@@ -49,14 +49,14 @@ public abstract class SQLParserParameterizedIT {
     
     @Test
     public final void assertParseSQL() {
-        String result = "success";
+        boolean isSuccess = true;
         try {
             ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
             new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
         } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
-            result = "failed";
+            isSuccess = false;
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
-        resultReporter.printResult(sqlCaseId, databaseType, result, sql);
+        resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
     }
 }

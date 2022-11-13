@@ -24,8 +24,11 @@ public interface SQLParseResultReporter {
     
     /**
      * Print result.
-     *
-     * @param recordValues record values
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param databaseType database type
+     * @param sql SQL
+     * @param isSuccess whether success
      */
-    void printResult(Object... recordValues);
+    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
 }
