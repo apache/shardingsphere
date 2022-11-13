@@ -33,7 +33,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Meta data contexts.
+ * Metadata contexts.
  */
 @Getter
 public final class ShardingSphereMetaData {
