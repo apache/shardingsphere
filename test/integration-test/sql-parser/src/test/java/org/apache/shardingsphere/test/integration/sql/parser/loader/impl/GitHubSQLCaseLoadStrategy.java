@@ -41,21 +41,25 @@ public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
     @Override
     public Collection<SQLCaseFileSummary> loadSQLCaseFileSummaries(final URI uri) {
-        String caseContent = loadContent(getGitHubApiUri(uri));
-        if (caseContent.isEmpty()) {
+        String content = loadContent(getGitHubApiUri(uri));
+        if (content.isEmpty()) {
             return Collections.emptyList();
         }
         Collection<SQLCaseFileSummary> result = new LinkedList<>();
-        List<String> fileName = JsonPath.parse(caseContent).read("$..name");
-        List<String> downloadURL = JsonPath.parse(caseContent).read("$..download_url");
-        List<String> casesHtmlURL = JsonPath.parse(caseContent).read("$..html_url");
-        List<String> casesType = JsonPath.parse(caseContent).read("$..type");
-        int bound = JsonPath.parse(caseContent).read("$.length()");
-        for (int each = 0; each < bound; each++) {
-            if ("file".equals(casesType.get(each))) {
-                result.add(new SQLCaseFileSummary(fileName.get(each).split("\\.")[0], downloadURL.get(each)));
-            } else if ("dir".equals(casesType.get(each))) {
-                result.addAll(loadSQLCaseFileSummaries(URI.create(casesHtmlURL.get(each))));
+        List<String> fileNames = JsonPath.parse(content).read("$..name");
+        List<String> folderTypes = JsonPath.parse(content).read("$..type");
+        List<String> downloadURLs = JsonPath.parse(content).read("$..download_url");
+        List<String> htmlURLs = JsonPath.parse(content).read("$..html_url");
+        int length = JsonPath.parse(content).read("$.length()");
+        for (int i = 0; i < length; i++) {
+            String fileName = fileNames.get(i).split("\\.")[0];
+            String folderType = folderTypes.get(i);
+            String downloadURL = downloadURLs.get(i);
+            String htmlURL = htmlURLs.get(i);
+            if ("file".equals(folderType)) {
+                result.add(new SQLCaseFileSummary(fileName, downloadURL));
+            } else if ("dir".equals(folderType)) {
+                result.addAll(loadSQLCaseFileSummaries(URI.create(htmlURL)));
             }
         }
         return result;
