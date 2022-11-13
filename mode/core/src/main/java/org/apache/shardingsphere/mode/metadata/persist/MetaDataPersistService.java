@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Meta data persist service.
+ * Metadata persist service.
  */
 @Getter
 public final class MetaDataPersistService {
