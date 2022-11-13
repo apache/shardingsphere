@@ -79,17 +79,17 @@ public final class UpdatableScalingRALStatementAssert {
         } else if (actual instanceof StartMigrationStatement) {
             StartMigrationStatementAssert.assertIs(assertContext, (StartMigrationStatement) actual, (StartMigrationStatementTestCase) expected);
         } else if (actual instanceof RegisterMigrationSourceStorageUnitStatement) {
-            RegisterMigrationSourceStorageUnitStatementAssert.assertIs(assertContext, (RegisterMigrationSourceStorageUnitStatement) actual,
-                    (RegisterMigrationSourceStorageUnitStatementTestCase) expected);
+            RegisterMigrationSourceStorageUnitStatementAssert.assertIs(
+                    assertContext, (RegisterMigrationSourceStorageUnitStatement) actual, (RegisterMigrationSourceStorageUnitStatementTestCase) expected);
         } else if (actual instanceof UnregisterMigrationSourceStorageUnitStatement) {
-            UnregisterMigrationSourceStorageUnitStatementAssert.assertIs(assertContext, (UnregisterMigrationSourceStorageUnitStatement) actual,
-                    (UnregisterMigrationSourceStorageUnitStatementTestCase) expected);
+            UnregisterMigrationSourceStorageUnitStatementAssert.assertIs(
+                    assertContext, (UnregisterMigrationSourceStorageUnitStatement) actual, (UnregisterMigrationSourceStorageUnitStatementTestCase) expected);
         } else if (actual instanceof CheckMigrationStatement) {
             CheckMigrationStatementAssert.assertIs(assertContext, (CheckMigrationStatement) actual, (CheckMigrationStatementTestCase) expected);
-        } else if (actual instanceof StopMigrationCheckStatement) {
-            StopMigrationCheckStatementAssert.assertIs(assertContext, (StopMigrationCheckStatement) actual, (StopMigrationCheckStatementTestCase) expected);
         } else if (actual instanceof StartMigrationCheckStatement) {
             StartMigrationCheckStatementAssert.assertIs(assertContext, (StartMigrationCheckStatement) actual, (StartMigrationCheckStatementTestCase) expected);
+        } else if (actual instanceof StopMigrationCheckStatement) {
+            StopMigrationCheckStatementAssert.assertIs(assertContext, (StopMigrationCheckStatement) actual, (StopMigrationCheckStatementTestCase) expected);
         }
     }
 }
