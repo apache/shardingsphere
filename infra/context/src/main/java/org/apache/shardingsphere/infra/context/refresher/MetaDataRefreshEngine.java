@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Meta data refresh engine.
+ * Metadata refresh engine.
  */
 @RequiredArgsConstructor
 public final class MetaDataRefreshEngine {
@@ -46,12 +46,12 @@ public final class MetaDataRefreshEngine {
     private final ConfigurationProperties props;
     
     /**
-     * Refresh meta data.
+     * Refresh metadata.
      *
      * @param sqlStatementContext SQL statement context
      * @param routeUnits route units
      * @throws SQLException SQL exception
-     * @return meta data refreshed event
+     * @return metadata refreshed event
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
