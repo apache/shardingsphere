@@ -40,33 +40,29 @@ public final class SQLParserCSVResultProcessor implements SQLParserResultProcess
     public SQLParserCSVResultProcessor(final String databaseType) {
         try {
             File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
-            createHeader(csvFile);
+            printHeader(csvFile);
             printer = new CSVPrinter(new FileWriter(csvFile, true), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
         } catch (final IOException ex) {
             throw new RuntimeException("Create CSV file failed.", ex);
         }
     }
     
-    private synchronized void createHeader(final File csvFile) {
-        if (!csvFile.exists()) {
-            try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
-                printer.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
-                printer.flush();
-            } catch (final IOException ex) {
-                throw new RuntimeException("Create CSV file header failed.", ex);
-            }
+    private void printHeader(final File csvFile) {
+        if (csvFile.exists()) {
+            return;
+        }
+        try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
+            printer.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
+            printer.flush();
+        } catch (final IOException ex) {
+            throw new RuntimeException("Create CSV file header failed.", ex);
         }
     }
     
-    /**
-     * Process the result.
-     *
-     * @param params the content for a row of CSV record
-     */
     @Override
-    public void processResult(final Object... params) {
+    public void printResult(final Object... recordValues) {
         try {
-            printer.printRecord(params);
+            printer.printRecord(recordValues);
             printer.flush();
         } catch (final IOException ex) {
             throw new RuntimeException("Write CSV file failed.", ex);

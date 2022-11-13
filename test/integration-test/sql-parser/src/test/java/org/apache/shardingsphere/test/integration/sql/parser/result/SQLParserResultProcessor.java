@@ -23,11 +23,11 @@ package org.apache.shardingsphere.test.integration.sql.parser.result;
 public interface SQLParserResultProcessor {
     
     /**
-     * Process the result.
+     * Print result.
      *
-     * @param params the content for a row of CSV record
+     * @param recordValues record values
      */
-    void processResult(Object... params);
+    void printResult(Object... recordValues);
     
     /**
      * Get the generator type.

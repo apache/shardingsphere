@@ -32,7 +32,7 @@ public class SQLParserLogResultProcessor implements SQLParserResultProcessor {
     }
     
     @Override
-    public void processResult(final Object... params) {
+    public void printResult(final Object... recordValues) {
         // TODO set up the log format
         log.info("Printing the SQL parser process result");
     }

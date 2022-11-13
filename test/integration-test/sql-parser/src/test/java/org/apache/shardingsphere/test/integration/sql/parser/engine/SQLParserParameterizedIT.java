@@ -52,6 +52,6 @@ public abstract class SQLParserParameterizedIT {
             result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
-        resultGenerator.processResult(sqlCaseId, databaseType, result, sql);
+        resultGenerator.printResult(sqlCaseId, databaseType, result, sql);
     }
 }
