@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.loader;
+package org.apache.shardingsphere.test.integration.sql.parser.loader.summary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Assertable file summary.
+ * File summary.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AssertableFileSummary {
+public final class FileSummary {
     
     private final String fileName;
     
-    private final String sqlCaseFileAccessURL;
-    
-    private final String resultFileAccessURL;
+    private final String accessURL;
 }

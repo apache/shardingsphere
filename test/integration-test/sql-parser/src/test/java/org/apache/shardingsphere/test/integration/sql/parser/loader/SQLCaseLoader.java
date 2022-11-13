@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.sql.parser.loader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.SQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.summary.FileSummary;
 
 import java.io.BufferedReader;
 import java.io.IOException;
