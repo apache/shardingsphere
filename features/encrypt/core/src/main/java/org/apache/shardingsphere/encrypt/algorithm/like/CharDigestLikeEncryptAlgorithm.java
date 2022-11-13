@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.algorithm.like;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
+import com.google.common.io.LineProcessor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -121,7 +122,26 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
     @SneakyThrows
     private String initDefaultDict() {
         InputStream inputStream = CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("like/CommonChineseCharacters.dict");
-        return CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8));
+        LineProcessor<String> lineProcessor = new LineProcessor<String>() {
+            
+            private StringBuilder builder = new StringBuilder();
+            
+            @Override
+            public boolean processLine(final String line) {
+                if (line.startsWith("#") || 0 == line.length()) {
+                    return true;
+                } else {
+                    builder.append(line);
+                    return false;
+                }
+            }
+            
+            @Override
+            public String getResult() {
+                return builder.toString();
+            }
+        };
+        return CharStreams.readLines(new InputStreamReader(inputStream, Charsets.UTF_8), lineProcessor);
     }
     
     @Override
