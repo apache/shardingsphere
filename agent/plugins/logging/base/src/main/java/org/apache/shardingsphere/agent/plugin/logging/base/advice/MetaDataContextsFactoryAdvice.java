@@ -25,7 +25,7 @@ import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTi
 import java.lang.reflect.Method;
 
 /**
- * Schema meta data loader advice.
+ * Schema metadata loader advice.
  */
 @Slf4j
 public final class MetaDataContextsFactoryAdvice implements ClassStaticMethodAroundAdvice {
