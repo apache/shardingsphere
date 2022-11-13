@@ -21,16 +21,16 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Instance meta data builder.
+ * Instance metadata builder.
  */
 @SingletonSPI
 public interface InstanceMetaDataBuilder extends TypedSPI {
     
     /**
-     * Build instance meta data.
+     * Build instance metadata.
      * 
      * @param port port
-     * @return built instance meta data
+     * @return built instance metadata
      */
     InstanceMetaData build(int port);
 }
