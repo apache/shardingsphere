@@ -141,4 +141,5 @@
     <sql-case id="select_aggregate_cume_dist" value="SELECT CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct) 'Cume-Dist of 15500' FROM employees;" db-types="Oracle" />
     <sql-case id="select_aggregate_rank" value="SELECT RANK(15500) WITHIN GROUP (ORDER BY salary DESC) 'Rank of 15500' FROM employees;" db-types="Oracle" />
     <sql-case id="select_rowid" value="SELECT ROWID FROM employees WHERE ROWIDTOCHAR(ROWID) LIKE '%JAAB%' ORDER BY ROWID;" db-types="Oracle" />
+    <sql-case id="select_linear_regression_function" value="SELECT job_id, employee_id ID, salary, REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) slope, REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) intcpt, REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) rsqr, REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) count, REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) avgx, REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) avgy FROM employees WHERE department_id in (50, 80) ORDER BY job_id, employee_id;" db-types="Oracle" />
 </sql-cases>

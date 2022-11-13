@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -97,7 +99,9 @@ public final class ShardingInsertStatementValidatorTest {
     private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
-        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), params, insertStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData =
+                new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+        return new InsertStatementContext(metaData, params, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test(expected = MissingGenerateKeyColumnWithInsertSelectException.class)

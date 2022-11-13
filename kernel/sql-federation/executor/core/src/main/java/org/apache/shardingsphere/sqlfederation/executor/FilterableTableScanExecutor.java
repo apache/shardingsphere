@@ -58,6 +58,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
@@ -89,7 +90,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -121,11 +121,11 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
-        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
+        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         SqlString sqlString = createSQLString(table, (FilterableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
-        QueryContext queryContext = createQueryContext(federationContext.getDatabases(), sqlString, databaseType);
-        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
+        QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
+        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         // TODO need to get session context
         ExecutionContext context = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, executorContext.getProps(), new ConnectionContext());
         if (federationContext.isPreview()) {
@@ -220,8 +220,8 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     private RelNode createRelNode(final ShardingSphereTable table, final FilterableScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
-        ShardingSphereDatabase database = executorContext.getFederationContext().getDatabases().get(databaseName);
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContext(databaseName).getDialectProps());
+        ShardingSphereDatabase database = executorContext.getFederationContext().getMetaData().getDatabase(databaseName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
         RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
@@ -264,13 +264,13 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         return result;
     }
     
-    private QueryContext createQueryContext(final Map<String, ShardingSphereDatabase> databases, final SqlString sqlString, final DatabaseType databaseType) {
+    private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final SqlString sqlString, final DatabaseType databaseType) {
         String sql = sqlString.getSql().replace("\n", " ");
         SQLStatement sqlStatement = new SQLStatementParserEngine(databaseType.getType(),
                 optimizerContext.getSqlParserRule().getSqlStatementCache(), optimizerContext.getSqlParserRule().getParseTreeCache(),
                 optimizerContext.getSqlParserRule().isSqlCommentParseEnabled()).parse(sql, false);
         List<Object> params = getParameters(sqlString.getDynamicParameters());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, params, sqlStatement, executorContext.getDatabaseName());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaData, params, sqlStatement, executorContext.getDatabaseName());
         return new QueryContext(sqlStatementContext, sql, params);
     }
     

@@ -121,7 +121,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaDataContexts.getMetaData().getDatabases(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
+                metaDataContexts.getMetaData(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     

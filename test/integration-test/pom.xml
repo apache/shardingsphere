@@ -36,7 +36,6 @@
         <module>transaction</module>
         <module>ha</module>
         <module>showprocesslist</module>
-        <module>sql-parser</module>
     </modules>
     
     <properties>
