@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.test.integration.sql.parser.result;
 
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
 /**
- * SQL parse result reporter.
+ * SQL parse result reporter creator.
  */
-public interface SQLParseResultReporter {
+public interface SQLParseResultReporterCreator extends TypedSPI {
     
     /**
-     * Print result.
-     *
-     * @param recordValues record values
+     * Create SQL parse result reporter.
+     * 
+     * @param databaseType database type
+     * @return created SQL parse result reporter
      */
-    void printResult(Object... recordValues);
+    SQLParseResultReporter create(String databaseType);
 }

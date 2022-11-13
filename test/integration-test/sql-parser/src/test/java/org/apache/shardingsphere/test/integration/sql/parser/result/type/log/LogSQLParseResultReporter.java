@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.result;
+package org.apache.shardingsphere.test.integration.sql.parser.result.type.log;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporter;
 
 /**
- * SQL parse result reporter.
+ * SQL parse result reporter for log.
  */
-public interface SQLParseResultReporter {
+@Slf4j
+public final class LogSQLParseResultReporter implements SQLParseResultReporter {
     
-    /**
-     * Print result.
-     *
-     * @param recordValues record values
-     */
-    void printResult(Object... recordValues);
+    @Override
+    public void printResult(final Object... recordValues) {
+        // TODO set up the log format
+        log.info("Printing the SQL parser process result");
+    }
 }

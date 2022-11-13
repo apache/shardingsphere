@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.sql.parser.engine;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -25,11 +24,11 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporterCreatorFactory;
 import org.junit.Test;
 
 import java.util.Properties;
 
-@RequiredArgsConstructor
 @Slf4j
 public abstract class SQLParserParameterizedIT {
     
@@ -39,8 +38,14 @@ public abstract class SQLParserParameterizedIT {
     
     private final String databaseType;
     
-    // TODO this will refactor as an abstract
-    private final SQLParseResultReporter resultGenerator;
+    private final SQLParseResultReporter resultReporter;
+    
+    public SQLParserParameterizedIT(final String sqlCaseId, final String sql, final String databaseType, final String reportType) {
+        this.sqlCaseId = sqlCaseId;
+        this.sql = sql;
+        this.databaseType = databaseType;
+        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(reportType).create(databaseType);
+    }
     
     @Test
     public final void assertParseSQL() {
@@ -52,6 +57,6 @@ public abstract class SQLParserParameterizedIT {
             result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
-        resultGenerator.printResult(sqlCaseId, databaseType, result, sql);
+        resultReporter.printResult(sqlCaseId, databaseType, result, sql);
     }
 }

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.result.impl;
+package org.apache.shardingsphere.test.integration.sql.parser.result.type.csv;
 
-import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.shardingsphere.test.integration.sql.parser.env.SQLParserExternalITEnvironment;
@@ -33,9 +32,6 @@ import java.io.IOException;
 public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     
     private final CSVPrinter printer;
-    
-    @Getter
-    private final String type = "CSV";
     
     public CsvSQLParseResultReporter(final String databaseType) {
         try {
