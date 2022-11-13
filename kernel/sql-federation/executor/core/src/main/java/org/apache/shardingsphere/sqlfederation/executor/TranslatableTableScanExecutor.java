@@ -124,7 +124,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
-        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
+        DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         SqlString sqlString = createSQLString(table, (TranslatableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         // TODO replace sql parse with sql convert
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
@@ -222,7 +222,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     private RelNode createRelNode(final ShardingSphereTable table, final TranslatableScanNodeExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
-        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContexts().get(databaseName).getDialectProps());
+        CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContext(databaseName).getDialectProps());
         ShardingSphereDatabase database = executorContext.getFederationContext().getMetaData().getDatabase(databaseName);
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
