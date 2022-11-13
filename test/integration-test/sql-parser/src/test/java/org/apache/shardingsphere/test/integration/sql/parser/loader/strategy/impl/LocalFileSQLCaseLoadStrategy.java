@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.loader;
+package org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.impl;
+
+import org.apache.shardingsphere.test.integration.sql.parser.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.SQLCaseLoadStrategy;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * SQL case load strategy.
+ * SQL case loader with local file.
  */
-public interface SQLCaseLoadStrategy {
+public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
-    /**
-     * Load SQL case file summaries.
-     * 
-     * @param uri URL to be loaded
-     * @return loaded SQL file summaries
-     */
-    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
+    @Override
+    public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
+        // TODO
+        return Collections.emptyList();
+    }
 }

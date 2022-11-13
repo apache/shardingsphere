@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.loader.impl;
+package org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.impl;
 
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.sql.parser.loader.FileSummary;
-import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.SQLCaseLoadStrategy;
 
 import java.io.BufferedReader;
 import java.io.IOException;

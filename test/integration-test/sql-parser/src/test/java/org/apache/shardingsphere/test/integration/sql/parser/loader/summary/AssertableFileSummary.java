@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.loader.impl;
+package org.apache.shardingsphere.test.integration.sql.parser.loader.summary;
 
-import org.apache.shardingsphere.test.integration.sql.parser.loader.FileSummary;
-import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoadStrategy;
-
-import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL case loader with local file.
+ * Assertable file summary.
  */
-public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
+@RequiredArgsConstructor
+@Getter
+public final class AssertableFileSummary {
     
-    @Override
-    public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
-        // TODO
-        return Collections.emptyList();
-    }
+    private final String fileName;
+    
+    private final String sqlCaseFileAccessURL;
+    
+    private final String resultFileAccessURL;
 }
