@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
@@ -50,8 +51,8 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         EncryptSchemaMetaDataDecorator loader = getEncryptMetaDataBuilder(rule, Collections.singleton(rule));
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         tableMetaDataList.add(createTableMetaData());
-        TableMetaData actual = loader.decorate(Collections.singletonMap("logic_db",
-                new SchemaMetaData("logic_db", tableMetaDataList)), rule, mock(GenericSchemaBuilderMaterial.class)).get("logic_db").getTables().iterator().next();
+        TableMetaData actual = loader.decorate(Collections.singletonMap(DefaultDatabase.LOGIC_NAME,
+                new SchemaMetaData(DefaultDatabase.LOGIC_NAME, tableMetaDataList)), rule, mock(GenericSchemaBuilderMaterial.class)).get(DefaultDatabase.LOGIC_NAME).getTables().iterator().next();
         assertThat(actual.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actual.getColumns().iterator();
         assertThat(columnsIterator.next().getName(), is("id"));
@@ -63,6 +64,7 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.emptyList());
+        when(encryptTable.getLikeQueryColumns()).thenReturn(Collections.singletonList("pwd_like"));
         when(encryptTable.getPlainColumns()).thenReturn(Collections.singleton("pwd_plain"));
         when(encryptTable.isCipherColumn("pwd_cipher")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("pwd_cipher")).thenReturn("pwd");
@@ -73,7 +75,8 @@ public final class EncryptSchemaMetaDataDecoratorTest {
     private TableMetaData createTableMetaData() {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
-                new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false));
+                new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
+                new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
     
