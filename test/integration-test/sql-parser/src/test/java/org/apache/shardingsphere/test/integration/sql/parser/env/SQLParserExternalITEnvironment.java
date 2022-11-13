@@ -25,14 +25,12 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Integration test environment.
+ * SQL parser external IT environment.
  */
 @Getter
-public final class IntegrationTestEnvironment {
+public final class SQLParserExternalITEnvironment {
     
-    private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
-    
-    private final Properties props;
+    private static final SQLParserExternalITEnvironment INSTANCE = new SQLParserExternalITEnvironment();
     
     private final boolean sqlParserITEnabled;
     
@@ -40,26 +38,27 @@ public final class IntegrationTestEnvironment {
     
     private final String resultProcessorType;
     
-    private IntegrationTestEnvironment() {
-        props = loadProperties();
-        sqlParserITEnabled = Boolean.parseBoolean(null == System.getProperty("sql.parser.it.enabled") ? props.get("sql.parser.it.enabled").toString() : System.getProperty("sql.parser.it.enabled"));
-        resultPath = props.getOrDefault("sql.parser.it.report.path", "/tmp/").toString();
-        resultProcessorType = props.getOrDefault("sql.parser.it.report.type", "LOG").toString();
+    private SQLParserExternalITEnvironment() {
+        Properties props = loadProperties();
+        sqlParserITEnabled = Boolean.parseBoolean(
+                null == System.getProperty("sql.parser.external.it.enabled") ? props.get("sql.parser.external.it.enabled").toString() : System.getProperty("sql.parser.external.it.enabled"));
+        resultPath = props.getOrDefault("sql.parser.external.it.report.path", "/tmp/").toString();
+        resultProcessorType = props.getOrDefault("sql.parser.external.it.report.type", "LOG").toString();
     }
     
     /**
      * Get instance.
      *
-     * @return singleton instance
+     * @return got instance
      */
-    public static IntegrationTestEnvironment getInstance() {
+    public static SQLParserExternalITEnvironment getInstance() {
         return INSTANCE;
     }
     
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+        try (InputStream inputStream = SQLParserExternalITEnvironment.class.getClassLoader().getResourceAsStream("env/sql-parser-external-it-env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {

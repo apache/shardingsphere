@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.sql.parser.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.SQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.summary.FileSummary;
 
@@ -52,7 +52,7 @@ public final class SQLCaseLoader {
      * @return loaded SQL cases
      */
     public Collection<Object[]> load(final URI sqlCaseURI, final URI resultURI) {
-        if (!IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
+        if (!SQLParserExternalITEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
         Collection<Object[]> result = new LinkedList<>();

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.sql.parser.result.impl;
 import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessor;
 
 import java.io.File;
@@ -39,7 +39,7 @@ public final class SQLParserCSVResultProcessor implements SQLParserResultProcess
     
     public SQLParserCSVResultProcessor(final String databaseType) {
         try {
-            File csvFile = new File(IntegrationTestEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
+            File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
             createHeader(csvFile);
             printer = new CSVPrinter(new FileWriter(csvFile, true), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
         } catch (final IOException ex) {
