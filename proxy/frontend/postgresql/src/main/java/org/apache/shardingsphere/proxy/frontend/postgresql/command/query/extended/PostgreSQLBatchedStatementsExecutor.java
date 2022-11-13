@@ -104,7 +104,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final List<Object> params) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), params, preparedStatement.getSqlStatementContext().getSqlStatement(),
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), params, preparedStatement.getSqlStatementContext().getSqlStatement(),
                 connectionSession.getDatabaseName());
     }
     
