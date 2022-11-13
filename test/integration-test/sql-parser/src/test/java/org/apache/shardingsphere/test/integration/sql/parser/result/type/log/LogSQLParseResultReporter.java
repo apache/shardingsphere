@@ -28,7 +28,8 @@ public final class LogSQLParseResultReporter implements SQLParseResultReporter {
     
     @Override
     public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
-        // TODO set up the log format
-        log.info("Printing the SQL parser process result");
+        if (!isSuccess) {
+            log.warn("SQL parse failed. SQL Case ID is: {}, database type is: {}, SQL is: {}", sqlCaseId, databaseType, sql);
+        }
     }
 }
