@@ -43,24 +43,24 @@ public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionT
     }
     
     private void assertRollback() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertAccountRowCount(conn, 0);
-        Statement std1 = conn.createStatement();
-        std1.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        assertAccountRowCount(conn, 1);
-        conn.rollback();
-        assertAccountRowCount(conn, 0);
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertAccountRowCount(connection, 0);
+        Statement statement = connection.createStatement();
+        statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+        assertAccountRowCount(connection, 1);
+        connection.rollback();
+        assertAccountRowCount(connection, 0);
     }
     
     private void assertCommit() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertAccountRowCount(conn, 0);
-        Statement std1 = conn.createStatement();
-        std1.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
-        assertAccountRowCount(conn, 1);
-        conn.commit();
-        assertAccountRowCount(conn, 1);
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertAccountRowCount(connection, 0);
+        Statement statement = connection.createStatement();
+        statement.execute("insert into account(id, balance, transaction_id) values(1, 1, 1);");
+        assertAccountRowCount(connection, 1);
+        connection.commit();
+        assertAccountRowCount(connection, 1);
     }
 }

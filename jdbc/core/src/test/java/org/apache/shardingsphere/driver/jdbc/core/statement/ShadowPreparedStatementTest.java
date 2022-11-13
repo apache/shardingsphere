@@ -47,11 +47,11 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @Test
     public void assertInsertNativeCase() throws SQLException {
-        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, 2);
-            statement.setString(2, "cipher");
-            statement.setString(3, "plain");
-            statement.execute();
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+            preparedStatement.setObject(1, 2);
+            preparedStatement.setString(2, "cipher");
+            preparedStatement.setString(3, "plain");
+            preparedStatement.execute();
         }
         assertResultSet(true, 0, "cipher");
         assertResultSet(false, 1, "cipher");
@@ -72,11 +72,11 @@ public final class ShadowPreparedStatementTest extends AbstractShardingSphereDat
     
     @Test
     public void assertInsertShadowCase() throws SQLException {
-        try (PreparedStatement statement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, 1);
-            statement.setString(2, "cipher");
-            statement.setString(3, "plain");
-            statement.execute();
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(INSERT_SQL)) {
+            preparedStatement.setObject(1, 1);
+            preparedStatement.setString(2, "cipher");
+            preparedStatement.setString(3, "plain");
+            preparedStatement.execute();
         }
         assertResultSet(true, 1, "cipher");
         assertResultSet(false, 0, "cipher");

@@ -31,8 +31,8 @@ public interface ShardingConditionEngine<T extends SQLStatementContext<?>> {
      * Create sharding conditions.
      *
      * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return sharding conditions
      */
-    List<ShardingCondition> createShardingConditions(T sqlStatementContext, List<Object> parameters);
+    List<ShardingCondition> createShardingConditions(T sqlStatementContext, List<Object> params);
 }

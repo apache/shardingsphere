@@ -63,10 +63,10 @@ public final class ShadowDistSQLTest {
         ShadowAlgorithmSegment shadowAlgorithmSegment = shadowRuleSegment.getShadowTableRules().get("t_order").iterator().next();
         assertThat(shadowAlgorithmSegment.getAlgorithmName(), is("shadow_rule_t_order_simple_hint_0"));
         assertThat(shadowAlgorithmSegment.getAlgorithmSegment().getName(), is("SIMPLE_HINT"));
-        Properties properties = new Properties();
-        properties.setProperty("shadow", "true");
-        properties.setProperty("foo", "bar");
-        assertThat(shadowAlgorithmSegment.getAlgorithmSegment().getProps(), is(properties));
+        Properties props = new Properties();
+        props.setProperty("shadow", "true");
+        props.setProperty("foo", "bar");
+        assertThat(shadowAlgorithmSegment.getAlgorithmSegment().getProps(), is(props));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

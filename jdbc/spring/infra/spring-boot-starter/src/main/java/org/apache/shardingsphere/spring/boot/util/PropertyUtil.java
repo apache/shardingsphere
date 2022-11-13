@@ -49,14 +49,14 @@ public final class PropertyUtil {
     /**
      * Whether environment contain properties with specified prefix.
      *
-     * @param environment the environment context
-     * @param prefix the prefix part of property key
-     * @return true if contain, otherwise false
+     * @param env environment context
+     * @param prefix prefix part of property key
+     * @return contains or not
      */
     @SuppressWarnings("unchecked")
-    public static boolean containPropertyPrefix(final Environment environment, final String prefix) {
+    public static boolean containsPropertyPrefix(final Environment env, final String prefix) {
         try {
-            Map<String, Object> props = (Map<String, Object>) (1 == springBootVersion ? v1(environment, prefix, false) : v2(environment, prefix, Map.class));
+            Map<String, Object> props = (Map<String, Object>) (1 == springBootVersion ? v1(env, prefix, false) : v2(env, prefix, Map.class));
             return !props.isEmpty();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -68,16 +68,16 @@ public final class PropertyUtil {
     /**
      * Spring Boot 1.x is compatible with Spring Boot 2.x by Using Java Reflect.
      *
-     * @param environment : the environment context
-     * @param prefix : the prefix part of property key
-     * @param targetClass : the target class type of result
+     * @param env : environment context
+     * @param prefix : prefix part of property key
+     * @param targetClass : target class type of result
      * @param <T> : refer to @param targetClass
-     * @return T
+     * @return handle result
      */
     @SuppressWarnings("unchecked")
-    public static <T> T handle(final Environment environment, final String prefix, final Class<T> targetClass) {
+    public static <T> T handle(final Environment env, final String prefix, final Class<T> targetClass) {
         try {
-            return 1 == springBootVersion ? (T) v1(environment, prefix, true) : (T) v2(environment, prefix, targetClass);
+            return 1 == springBootVersion ? (T) v1(env, prefix, true) : (T) v2(env, prefix, targetClass);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -87,20 +87,20 @@ public final class PropertyUtil {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object v1(final Environment environment, final String prefix, final boolean handlePlaceholder) {
+    private static Object v1(final Environment env, final String prefix, final boolean handlePlaceholder) {
         Class<?> resolverClass = Class.forName("org.springframework.boot.bind.RelaxedPropertyResolver");
         Constructor<?> resolverConstructor = resolverClass.getDeclaredConstructor(PropertyResolver.class);
         Method getSubPropertiesMethod = resolverClass.getDeclaredMethod("getSubProperties", String.class);
-        Object resolverObject = resolverConstructor.newInstance(environment);
-        String prefixParameter = prefix.endsWith(".") ? prefix : prefix + ".";
+        Object resolverObject = resolverConstructor.newInstance(env);
+        String prefixParam = prefix.endsWith(".") ? prefix : prefix + ".";
         Method getPropertyMethod = resolverClass.getDeclaredMethod("getProperty", String.class);
-        Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParameter);
+        Map<String, Object> dataSourceProps = (Map<String, Object>) getSubPropertiesMethod.invoke(resolverObject, prefixParam);
         Map<String, Object> result = new HashMap<>(dataSourceProps.size(), 1);
         for (Entry<String, Object> entry : dataSourceProps.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             if (handlePlaceholder && value instanceof String && ((String) value).contains(PlaceholderConfigurerSupport.DEFAULT_PLACEHOLDER_PREFIX)) {
-                String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParameter + key);
+                String resolvedValue = (String) getPropertyMethod.invoke(resolverObject, prefixParam + key);
                 result.put(key, resolvedValue);
             } else {
                 result.put(key, value);
@@ -110,14 +110,14 @@ public final class PropertyUtil {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Object v2(final Environment environment, final String prefix, final Class<?> targetClass) {
+    private static Object v2(final Environment env, final String prefix, final Class<?> targetClass) {
         String dashedPrefix = toDashedForm(prefix);
         Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
         Method getMethod = binderClass.getDeclaredMethod("get", Environment.class);
         Method bindMethod = binderClass.getDeclaredMethod("bind", String.class, Class.class);
-        Object binderObject = getMethod.invoke(null, environment);
-        String prefixParameter = dashedPrefix.endsWith(".") ? dashedPrefix.substring(0, prefix.length() - 1) : dashedPrefix;
-        Object bindResultObject = bindMethod.invoke(binderObject, prefixParameter, targetClass);
+        Object binderObject = getMethod.invoke(null, env);
+        String prefixParam = dashedPrefix.endsWith(".") ? dashedPrefix.substring(0, prefix.length() - 1) : dashedPrefix;
+        Object bindResultObject = bindMethod.invoke(binderObject, prefixParam, targetClass);
         Method resultGetMethod = bindResultObject.getClass().getDeclaredMethod("get");
         return resultGetMethod.invoke(bindResultObject);
     }

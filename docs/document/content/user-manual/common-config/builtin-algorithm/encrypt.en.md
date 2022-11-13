@@ -56,6 +56,19 @@ Attributes:
 | sm4-iv        | String     | SM4 IV (should be specified on CBC, 16 bytes long)|
 | sm4-padding   | String     | SM4 PADDING (should be PKCS5Padding or PKCS7Padding, NoPadding excepted)|
 
+### CharDigestLike Encrypt Algorithm
+
+Type：CHAR_DIGEST_LIKE
+
+Attributes：
+
+| *Name* | *DataType* | *Description*                                   |
+| -------- | ------------ | ------------------------------------------------- |
+| delta    | int          | Character Unicode offset（decimal number）        |
+| mask     | int          | Character encryption mask（decimal number）       |
+| start    | int          | Ciphertext Unicode initial code（decimal number） |
+| dict     | String       | Common words                                      |
+
 ## Operating Procedures
 1. Configure encryptors in an encryption rule.
 2. Use relevant algorithm types in encryptors.
@@ -71,7 +84,11 @@ rules:
           plainColumn: username_plain
           cipherColumn: username
           encryptorName: name-encryptor
+          likeQueryColumn: name_like
+          likeQueryEncryptorName: like-encryptor
   encryptors:
+    like-encryptor:
+      type: CHAR_DIGEST_LIKE
     name-encryptor:
       type: AES
       props:

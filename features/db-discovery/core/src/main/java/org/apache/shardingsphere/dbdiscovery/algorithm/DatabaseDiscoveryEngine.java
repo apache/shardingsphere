@@ -70,7 +70,7 @@ public final class DatabaseDiscoveryEngine {
      */
     public String changePrimaryDataSource(final String databaseName, final String groupName, final String originalPrimaryDataSourceName,
                                           final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
-        Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap, disabledDataSourceNames);
+        Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap);
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
             eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
@@ -79,7 +79,7 @@ public final class DatabaseDiscoveryEngine {
         return result;
     }
     
-    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+    private Optional<String> findPrimaryDataSourceName(final Map<String, DataSource> dataSourceMap) {
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             try {
                 if (databaseDiscoveryProviderAlgorithm.isPrimaryInstance(entry.getValue())) {

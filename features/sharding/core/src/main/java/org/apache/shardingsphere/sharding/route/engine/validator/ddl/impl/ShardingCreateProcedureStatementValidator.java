@@ -42,7 +42,7 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
+                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
         if (!routineBodySegment.isPresent()) {
             return;
@@ -59,7 +59,7 @@ public final class ShardingCreateProcedureStatementValidator extends ShardingDDL
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, final List<Object> parameters,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateProcedureStatement> sqlStatementContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

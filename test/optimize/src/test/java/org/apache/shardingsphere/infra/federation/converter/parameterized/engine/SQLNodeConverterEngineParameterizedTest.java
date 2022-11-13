@@ -37,11 +37,11 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.CasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.CasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.SQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -163,12 +163,12 @@ public final class SQLNodeConverterEngineParameterizedTest {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParameter) {
-        return SQLCaseType.Placeholder == sqlTestParameter[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParameter[0].toString()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
+        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParam[0].toString()).getParameters().isEmpty();
     }
     
-    private static boolean isSupportedSQLCase(final Object[] sqlTestParameter) {
-        String sqlCaseId = sqlTestParameter[0].toString();
+    private static boolean isSupportedSQLCase(final Object[] sqlTestParam) {
+        String sqlCaseId = sqlTestParam[0].toString();
         return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId);
     }
     

@@ -29,13 +29,8 @@ public final class ReadwriteSplittingAlgorithmProvidedBeanRegistry extends Abstr
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.readwrite-splitting.load-balancers.";
     
-    /**
-     * Instantiates a new readwrite-splitting algorithm provided bean registry.
-     *
-     * @param environment environment
-     */
-    public ReadwriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public ReadwriteSplittingAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

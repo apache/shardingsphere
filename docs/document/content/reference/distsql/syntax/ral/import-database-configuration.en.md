@@ -11,7 +11,7 @@ The `IMPORT DATABASE CONFIGURATION` syntax is used to import `YAML` configuratio
 
 ```sql
 ExportDatabaseConfiguration ::=
-  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' filePath ('TO' databaseName)?
+  'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath ('TO' databaseName)?
 
 databaseName ::=
   identifier
@@ -31,18 +31,18 @@ filePath ::=
 - Import the configuration in `YAML` into the specified database
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM "/xxx/config_test1.yaml" TO test1;
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml" TO test1;
 ```
 
 - Import the configuration in `YAML` into the current database
 
 ```sql
-IMPORT DATABASE CONFIGURATION FROM "/xxx/config_test1.yaml";
+IMPORT DATABASE CONFIGURATION FROM FILE "/xxx/config_test1.yaml";
 ```
 
 ### Reserved word
 
-`IMPORT`, `DATABASE`, `CONFIGURATION`, `FROM`, `TO`
+`IMPORT`, `DATABASE`, `CONFIGURATION`, `FROM`, `FILE`, `TO`
 
 ### Related links
 

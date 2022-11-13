@@ -97,11 +97,11 @@ public final class EncryptPredicateRightValueTokenGenerator
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         if (encryptCondition instanceof EncryptLikeCondition) {
-            Optional<String> fuzzyQueryColumn = encryptRule.findFuzzyQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-            if (!fuzzyQueryColumn.isPresent()) {
+            Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+            if (!likeQueryColumn.isPresent()) {
                 throw new UnsupportedEncryptSQLException("LIKE");
             } else {
-                return encryptRule.getEncryptFuzzyQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+                return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
             }
         }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());

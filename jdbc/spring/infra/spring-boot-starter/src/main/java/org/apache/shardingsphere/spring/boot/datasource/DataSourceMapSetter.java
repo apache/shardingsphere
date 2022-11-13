@@ -55,14 +55,14 @@ public final class DataSourceMapSetter {
     /**
      * Get data source map.
      * 
-     * @param environment spring boot environment
+     * @param env spring boot environment
      * @return data source map
      */
-    public static Map<String, DataSource> getDataSourceMap(final Environment environment) {
+    public static Map<String, DataSource> getDataSourceMap(final Environment env) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (String each : getDataSourceNames(environment)) {
+        for (String each : getDataSourceNames(env)) {
             try {
-                result.put(each, getDataSource(environment, each));
+                result.put(each, getDataSource(env, each));
             } catch (final NamingException ex) {
                 throw new DataSourceJndiNotFoundServerException(ex);
             }
@@ -70,8 +70,8 @@ public final class DataSourceMapSetter {
         return result;
     }
     
-    private static List<String> getDataSourceNames(final Environment environment) {
-        StandardEnvironment standardEnv = (StandardEnvironment) environment;
+    private static List<String> getDataSourceNames(final Environment env) {
+        StandardEnvironment standardEnv = (StandardEnvironment) env;
         standardEnv.setIgnoreUnresolvableNestedPlaceholders(true);
         String dataSourceNames = standardEnv.getProperty(PREFIX + DATA_SOURCE_NAME);
         if (Strings.isNullOrEmpty(dataSourceNames)) {
@@ -81,9 +81,9 @@ public final class DataSourceMapSetter {
     }
     
     @SuppressWarnings("unchecked")
-    private static DataSource getDataSource(final Environment environment, final String dataSourceName) throws NamingException {
-        Map<String, Object> dataSourceProps = PropertyUtil.handle(environment, String.join("", PREFIX, dataSourceName), Map.class);
-        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong datasource [%s] properties.", dataSourceName);
+    private static DataSource getDataSource(final Environment env, final String dataSourceName) throws NamingException {
+        Map<String, Object> dataSourceProps = PropertyUtil.handle(env, String.join("", PREFIX, dataSourceName), Map.class);
+        Preconditions.checkState(!dataSourceProps.isEmpty(), "Wrong data source [%s] properties.", dataSourceName);
         if (dataSourceProps.containsKey(JNDI_NAME)) {
             return getJNDIDataSource(dataSourceProps.get(JNDI_NAME).toString());
         }

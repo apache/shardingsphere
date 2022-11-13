@@ -4485,4 +4485,132 @@
             <simple-table name="employees" start-index="98" stop-index="106" />
         </from>
     </select>
+
+    <select sql-case-id="select_aggregate_percentile_disc">
+        <projections start-index="7" stop-index="148">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <column-projection name="last_name" start-index="22" stop-index="30" />
+            <column-projection name="salary" start-index="33" stop-index="38" />
+            <expression-projection text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) OVER (PARTITION BY department_id)" alias="Percentile_Disc" start-index="41" stop-index="148" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="155" stop-index="163" />
+        </from>
+        <where start-index="165" stop-index="195">
+            <expr>
+                <in-expression start-index="171" stop-index="195">
+                    <not>false</not>
+                    <left>
+                        <column name="department_id" start-index="171" stop-index="183"/>
+                    </left>
+                    <right>
+                        <list-expression start-index="188" stop-index="195">
+                            <items>
+                                <literal-expression value="30" start-index="189" stop-index="190" />
+                            </items>
+                            <items>
+                                <literal-expression value="60" start-index="193" stop-index="194" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="last_name" start-index="206" stop-index="214" />
+            <column-item name="salary" start-index="217" stop-index="222" />
+            <column-item name="department_id" start-index="225" stop-index="237" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_aggregate_cume_dist">
+        <projections start-index="7" stop-index="95">
+            <expression-projection text="CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Cume-Dist of 15500" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="102" stop-index="110" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_aggregate_rank">
+        <projections start-index="7" stop-index="69">
+            <expression-projection text="RANK(15500) WITHIN GROUP (ORDER BY salary DESC)" alias="Rank of 15500" start-index="7" stop-index="69" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="76" stop-index="84" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_rowid">
+        <projections start-index="7" stop-index="11">
+            <column-projection name="ROWID" start-index="7" stop-index="11" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="18" stop-index="26" />
+        </from>
+        <where start-index="28" stop-index="65">
+            <expr>
+                <binary-operation-expression start-index="34" stop-index="65">
+                    <left>
+                        <function function-name="ROWIDTOCHAR" start-index="34" stop-index="51" text="ROWIDTOCHAR(ROWID)">
+                            <parameter>
+                                <column name="ROWID" start-index="46" stop-index="50" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="58" stop-index="65">
+                            <items>
+                                <literal-expression value="%JAAB%" start-index="58" stop-index="65" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="ROWID" start-index="76" stop-index="80" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_linear_regression_function">
+        <projections start-index="7" stop-index="465">
+            <column-projection name="job_id" start-index="7" stop-index="12" />
+            <column-projection name="employee_id" start-index="15" stop-index="28" alias="ID" />
+            <column-projection name="salary" start-index="31" stop-index="36" />
+            <expression-projection text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="39" stop-index="108" alias="slope" />
+            <expression-projection text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="111" stop-index="185" alias="intcpt" />
+            <expression-projection text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="188" stop-index="253" alias="rsqr" />
+            <expression-projection text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="256" stop-index="325" alias="count" />
+            <expression-projection text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="328" stop-index="395" alias="avgx"/>
+            <expression-projection text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="398" stop-index="465" alias="avgy" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="472" stop-index="480" />
+        </from>
+        <where start-index="482" stop-index="512">
+            <expr>
+                <in-expression start-index="488" stop-index="512">
+                    <left>
+                        <column name="department_id" start-index="488" stop-index="500" />
+                    </left>
+                    <right>
+                        <list-expression start-index="505" stop-index="512">
+                            <items>
+                                <literal-expression value="50" start-index="506" stop-index="507" />
+                            </items>
+                            <items>
+                                <literal-expression value="80" start-index="510" stop-index="511" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="job_id" start-index="523" stop-index="528" />
+            <column-item name="employee_id" start-index="531" stop-index="541" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

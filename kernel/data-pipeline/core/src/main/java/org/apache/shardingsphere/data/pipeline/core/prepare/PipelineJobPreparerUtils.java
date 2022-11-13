@@ -71,18 +71,16 @@ public final class PipelineJobPreparerUtils {
      * Prepare target schema.
      *
      * @param databaseType database type
-     * @param prepareTargetSchemasParameter prepare target schemas parameter
+     * @param prepareTargetSchemasParam prepare target schemas parameter
      * @throws SQLException if prepare target schema fail
      */
-    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParameter) throws SQLException {
+    public static void prepareTargetSchema(final String databaseType, final PrepareTargetSchemasParameter prepareTargetSchemasParam) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
-        log.info("prepareTargetSchema cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParam);
     }
     
     /**
@@ -101,17 +99,17 @@ public final class PipelineJobPreparerUtils {
      * Prepare target tables.
      *
      * @param databaseType database type
-     * @param prepareTargetTablesParameter prepare target tables parameter
+     * @param prepareTargetTablesParam prepare target tables parameter
      * @throws SQLException SQL exception
      */
-    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParameter) throws SQLException {
+    public static void prepareTargetTables(final String databaseType, final PrepareTargetTablesParameter prepareTargetTablesParam) throws SQLException {
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(databaseType);
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         long startTimeMillis = System.currentTimeMillis();
-        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
+        dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParam);
         log.info("prepareTargetTables cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
@@ -134,10 +132,7 @@ public final class PipelineJobPreparerUtils {
         }
         String databaseType = dumperConfig.getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
-        long startTimeMillis = System.currentTimeMillis();
-        IngestPosition<?> result = PositionInitializerFactory.getInstance(databaseType).init(dataSource, dumperConfig.getJobId());
-        log.info("getIncrementalPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
-        return result;
+        return PositionInitializerFactory.getInstance(databaseType).init(dataSource, dumperConfig.getJobId());
     }
     
     /**
@@ -147,16 +142,13 @@ public final class PipelineJobPreparerUtils {
      * @param dataSources data source
      */
     public static void checkSourceDataSource(final String databaseType, final Collection<? extends DataSource> dataSources) {
-        if (null == dataSources || dataSources.isEmpty()) {
-            log.info("source data source is empty, skip check");
+        if (dataSources.isEmpty()) {
             return;
         }
-        final long startTimeMillis = System.currentTimeMillis();
         DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(databaseType);
         dataSourceChecker.checkConnection(dataSources);
         dataSourceChecker.checkPrivilege(dataSources);
         dataSourceChecker.checkVariable(dataSources);
-        log.info("checkSourceDataSource cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**
@@ -172,10 +164,8 @@ public final class PipelineJobPreparerUtils {
             log.info("target data source is empty, skip check");
             return;
         }
-        long startTimeMillis = System.currentTimeMillis();
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
-        log.info("checkTargetDataSource cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
     
     /**

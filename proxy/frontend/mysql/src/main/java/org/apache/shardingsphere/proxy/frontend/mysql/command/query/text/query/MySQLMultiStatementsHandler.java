@@ -77,7 +77,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
-    private final JDBCExecutor jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false);
+    private final JDBCExecutor jdbcExecutor;
     
     private final ConnectionSession connectionSession;
     
@@ -89,7 +89,8 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private ExecutionContext anyExecutionContext;
     
-    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) throws SQLException {
+    public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) {
+        jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         connectionSession.getBackendConnection().handleAutoCommit();
         this.connectionSession = connectionSession;
         this.sqlStatementSample = sqlStatementSample;
@@ -120,7 +121,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     private QueryContext createQueryContext(final String sql, final SQLStatement sqlStatement) {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
-                metaDataContexts.getMetaData().getDatabases(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
+                metaDataContexts.getMetaData(), Collections.emptyList(), sqlStatement, connectionSession.getDatabaseName());
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList());
     }
     

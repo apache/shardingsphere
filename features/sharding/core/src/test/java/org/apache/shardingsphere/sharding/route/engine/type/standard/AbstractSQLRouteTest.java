@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
     
-    protected final RouteContext assertRoute(final String sql, final List<Object> parameters) {
+    protected final RouteContext assertRoute(final String sql, final List<Object> params) {
         ShardingRule shardingRule = createAllShardingRule();
         SingleTableRule singleTableRule = createSingleTableRule(Collections.singletonList(shardingRule));
         Map<String, ShardingSphereSchema> schemas = buildSchemas();
@@ -64,10 +65,14 @@ public abstract class AbstractSQLRouteTest extends AbstractRoutingEngineTest {
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageTypes()).thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), resourceMetaData, ruleMetaData, schemas);
-        Map<String, ShardingSphereDatabase> databases = Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, parameters, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, parameters);
+        SQLStatementContext<?> sqlStatementContext =
+                SQLStatementContextFactory.newInstance(createShardingSphereMetaData(database), params, sqlStatementParserEngine.parse(sql, false), DefaultDatabase.LOGIC_NAME);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params);
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleTableRule), props).route(new ConnectionContext(), queryContext, database);
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private Map<String, ShardingSphereSchema> buildSchemas() {

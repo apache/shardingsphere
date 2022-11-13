@@ -40,7 +40,7 @@ public final class DataConsistencyCalculateAlgorithmFixture implements DataConsi
     }
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
+    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
         return Collections.singletonList(new FixtureDataConsistencyCalculatedResult(2));
     }
     

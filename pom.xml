@@ -120,6 +120,7 @@
         <mockito.version>4.8.0</mockito.version>
         
         <!-- Plugin versions -->
+        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
@@ -984,6 +985,68 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <version>${apache-rat-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/gen/**</exclude>
+                        <exclude>**/target/**</exclude>
+                        <exclude>**/logs/**</exclude>
+                        <exclude>**/*.log</exclude>
+                        <exclude>**/*.tokens</exclude>
+                        <!-- IDE files -->
+                        <exclude>**/*.iml</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/*.classpath</exclude>
+                        <exclude>**/.project</exclude>
+                        <exclude>**/.settings/**</exclude>
+                        <exclude>**/dependency-reduced-pom.xml</exclude>
+                        <!-- git files -->
+                        <exclude>**/.gitignore</exclude>
+                        <exclude>**/.gitmodules</exclude>
+                        <exclude>**/.git/**</exclude>
+                        <!-- CI files -->
+                        <exclude>**/.travis.yml</exclude>
+                        <exclude>**/.codecov.yml</exclude>
+                        <exclude>**/.mvn/jvm.config</exclude>
+                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
+                        <!-- GitHub files -->
+                        <exclude>**/.github/**</exclude>
+                        <!-- document files -->
+                        <exclude>**/*.md</exclude>
+                        <excldue>**/*.MD</excldue>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/docs/**</exclude>
+                        <!-- UI files -->
+                        <exclude>**/.babelrc</exclude>
+                        <exclude>**/.editorconfig</exclude>
+                        <exclude>**/.eslintignore</exclude>
+                        <exclude>**/package.json</exclude>
+                        <exclude>**/assets/**</exclude>
+                        <exclude>**/dist/**</exclude>
+                        <exclude>**/etc/**</exclude>
+                        <exclude>**/node/**</exclude>
+                        <exclude>**/node_modules/**</exclude>
+                        <exclude>**/test/coverage/**</exclude>
+                        <exclude>**/package-lock.json</exclude>
+                        <!-- example files -->
+                        <exclude>/examples/**</exclude>
+                        <!-- Helm files -->
+                        <exclude>**/.helmignore</exclude>
+                        <exclude>**/_helpers.tpl</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>

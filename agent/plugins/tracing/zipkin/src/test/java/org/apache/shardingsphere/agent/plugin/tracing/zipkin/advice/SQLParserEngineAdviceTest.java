@@ -40,7 +40,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     @ClassRule
     public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
-    private static final String SQL_STMT = "select 1";
+    private static final String SQL_STATEMENT = "select 1";
     
     private SQLParserEngineAdvice advice;
     
@@ -55,8 +55,8 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertMethod() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());
@@ -67,9 +67,9 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     
     @Test
     public void assertExceptionHandle() {
-        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STMT, true}, new IOException());
-        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
+        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new MethodInvocationResult());
         parentSpan.finish();
         zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span.parentId());

@@ -324,9 +324,9 @@ public abstract class BaseITCase {
         while (retryNumber <= 3) {
             try {
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet resultSet = statement.executeQuery(sql);
                 int result = 0;
-                while (rs.next()) {
+                while (resultSet.next()) {
                     result++;
                 }
                 return result;

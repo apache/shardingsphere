@@ -33,18 +33,18 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    private final StorageContainerConfiguration storageContainerConfiguration;
+    private final StorageContainerConfiguration storageContainerConfig;
     
-    public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+    public OpenGaussContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
         super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(containerImage) ? "enmotech/opengauss:3.0.0" : containerImage, scenario);
-        this.storageContainerConfiguration = storageContainerConfiguration;
+        this.storageContainerConfig = storageContainerConfig;
     }
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfiguration.getContainerCommand());
-        addEnvs(storageContainerConfiguration.getContainerEnvironments());
-        mapResources(storageContainerConfiguration.getMountedResources());
+        setCommands(storageContainerConfig.getContainerCommand());
+        addEnvs(storageContainerConfig.getContainerEnvironments());
+        mapResources(storageContainerConfig.getMountedResources());
         withPrivilegedMode(true);
         super.configure();
         withStartupTimeout(Duration.of(120, ChronoUnit.SECONDS));

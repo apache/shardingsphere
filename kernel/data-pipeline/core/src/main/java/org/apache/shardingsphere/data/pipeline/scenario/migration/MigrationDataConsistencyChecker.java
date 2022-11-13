@@ -86,7 +86,6 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
             long recordsCount = jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
             checkJobItemContext.setRecordsCount(recordsCount);
             checkJobItemContext.getTableNames().add(jobConfig.getSourceTableName());
-            log.info("consistency check, get records count: {}", recordsCount);
             PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
             SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(jobConfig.getJobId(), sourceDataSource, targetDataSource,
                     sourceTable, targetTable, jobConfig.getUniqueKeyColumn(), metaDataLoader, readRateLimitAlgorithm, checkJobItemContext);

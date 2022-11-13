@@ -85,8 +85,8 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }
     
-    private SQLException toSQLException(final VendorError vendorError, final Object... messageArguments) {
-        return new SQLException(String.format(vendorError.getReason(), messageArguments), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
+    private SQLException toSQLException(final VendorError vendorError, final Object... messageArgs) {
+        return new SQLException(String.format(vendorError.getReason(), messageArgs), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
     }
     
     @Override

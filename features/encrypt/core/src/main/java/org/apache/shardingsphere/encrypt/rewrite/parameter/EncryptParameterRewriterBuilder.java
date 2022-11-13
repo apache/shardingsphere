@@ -64,26 +64,26 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
-    private void addParameterRewriter(final Collection<ParameterRewriter> parameterRewriters, final ParameterRewriter<?> toBeAddedParameterRewriter) {
-        if (toBeAddedParameterRewriter.isNeedRewrite(sqlStatementContext)) {
-            setUpParameterRewriter(toBeAddedParameterRewriter);
-            parameterRewriters.add(toBeAddedParameterRewriter);
+    private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter<?> toBeAddedParamRewriter) {
+        if (toBeAddedParamRewriter.isNeedRewrite(sqlStatementContext)) {
+            setUpParameterRewriter(toBeAddedParamRewriter);
+            paramRewriters.add(toBeAddedParamRewriter);
         }
     }
     
     @SuppressWarnings("rawtypes")
-    private void setUpParameterRewriter(final ParameterRewriter toBeAddedParameterRewriter) {
-        if (toBeAddedParameterRewriter instanceof SchemaMetaDataAware) {
-            ((SchemaMetaDataAware) toBeAddedParameterRewriter).setSchemas(schemas);
+    private void setUpParameterRewriter(final ParameterRewriter toBeAddedParamRewriter) {
+        if (toBeAddedParamRewriter instanceof SchemaMetaDataAware) {
+            ((SchemaMetaDataAware) toBeAddedParamRewriter).setSchemas(schemas);
         }
-        if (toBeAddedParameterRewriter instanceof EncryptRuleAware) {
-            ((EncryptRuleAware) toBeAddedParameterRewriter).setEncryptRule(encryptRule);
+        if (toBeAddedParamRewriter instanceof EncryptRuleAware) {
+            ((EncryptRuleAware) toBeAddedParamRewriter).setEncryptRule(encryptRule);
         }
-        if (toBeAddedParameterRewriter instanceof EncryptConditionsAware) {
-            ((EncryptConditionsAware) toBeAddedParameterRewriter).setEncryptConditions(encryptConditions);
+        if (toBeAddedParamRewriter instanceof EncryptConditionsAware) {
+            ((EncryptConditionsAware) toBeAddedParamRewriter).setEncryptConditions(encryptConditions);
         }
-        if (toBeAddedParameterRewriter instanceof DatabaseNameAware) {
-            ((DatabaseNameAware) toBeAddedParameterRewriter).setDatabaseName(databaseName);
+        if (toBeAddedParamRewriter instanceof DatabaseNameAware) {
+            ((DatabaseNameAware) toBeAddedParamRewriter).setDatabaseName(databaseName);
         }
     }
 }

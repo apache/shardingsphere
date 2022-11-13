@@ -40,20 +40,20 @@ public class NestedTransactionTestCase extends BaseTransactionTestCase {
     
     @Override
     protected void executeTest() throws SQLException {
-        ShardingSphereConnection conn1 = (ShardingSphereConnection) getDataSource().getConnection();
-        Assert.assertFalse(conn1.isHoldTransaction());
-        conn1.setAutoCommit(false);
-        Assert.assertTrue(conn1.isHoldTransaction());
+        ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
+        Assert.assertFalse(connection.isHoldTransaction());
+        connection.setAutoCommit(false);
+        Assert.assertTrue(connection.isHoldTransaction());
         requiresNewTransaction();
-        Assert.assertTrue(conn1.isHoldTransaction());
-        conn1.commit();
+        Assert.assertTrue(connection.isHoldTransaction());
+        connection.commit();
     }
     
     private void requiresNewTransaction() throws SQLException {
-        ShardingSphereConnection conn2 = (ShardingSphereConnection) getDataSource().getConnection();
-        Assert.assertFalse(conn2.isHoldTransaction());
-        conn2.setAutoCommit(false);
-        Assert.assertTrue(conn2.isHoldTransaction());
-        conn2.commit();
+        ShardingSphereConnection connection = (ShardingSphereConnection) getDataSource().getConnection();
+        Assert.assertFalse(connection.isHoldTransaction());
+        connection.setAutoCommit(false);
+        Assert.assertTrue(connection.isHoldTransaction());
+        connection.commit();
     }
 }

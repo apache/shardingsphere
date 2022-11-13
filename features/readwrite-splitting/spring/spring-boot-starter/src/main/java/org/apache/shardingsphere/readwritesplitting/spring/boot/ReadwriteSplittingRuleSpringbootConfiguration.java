@@ -69,11 +69,11 @@ public class ReadwriteSplittingRuleSpringbootConfiguration {
     /**
      * Readwrite-splitting algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return readwrite-splitting algorithm provided bean registry
      */
     @Bean
-    public static ReadwriteSplittingAlgorithmProvidedBeanRegistry readWriteSplittingAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new ReadwriteSplittingAlgorithmProvidedBeanRegistry(environment);
+    public static ReadwriteSplittingAlgorithmProvidedBeanRegistry readWriteSplittingAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new ReadwriteSplittingAlgorithmProvidedBeanRegistry(env);
     }
 }

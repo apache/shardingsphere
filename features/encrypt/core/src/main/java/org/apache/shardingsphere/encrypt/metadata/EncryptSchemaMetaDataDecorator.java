@@ -60,6 +60,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
         Collection<ColumnMetaData> result = new LinkedHashSet<>();
         Collection<String> plainColumns = encryptTable.getPlainColumns();
         Collection<String> assistedQueryColumns = encryptTable.getAssistedQueryColumns();
+        Collection<String> likeQueryColumns = encryptTable.getLikeQueryColumns();
         for (ColumnMetaData each : originalColumnMetaDataList) {
             String columnName = each.getName();
             if (plainColumns.contains(columnName)) {
@@ -70,7 +71,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
                 result.add(createColumnMetaData(encryptTable.getLogicColumnByCipherColumn(columnName), each));
                 continue;
             }
-            if (!assistedQueryColumns.contains(columnName)) {
+            if (!assistedQueryColumns.contains(columnName) && !likeQueryColumns.contains(columnName)) {
                 result.add(each);
             }
         }

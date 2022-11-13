@@ -132,8 +132,8 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     }
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
-        processedRecordsCount.addAndGet(parameter.getProcessedRecordsCount());
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
+        processedRecordsCount.addAndGet(param.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
     

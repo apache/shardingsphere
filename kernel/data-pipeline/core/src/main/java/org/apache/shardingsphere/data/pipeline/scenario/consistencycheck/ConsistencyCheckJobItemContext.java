@@ -84,8 +84,8 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     }
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter parameter) {
-        checkedRecordsCount.addAndGet(parameter.getProcessedRecordsCount());
+    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
+        checkedRecordsCount.addAndGet(param.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
 }

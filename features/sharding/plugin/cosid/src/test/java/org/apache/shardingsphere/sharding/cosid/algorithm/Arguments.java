@@ -28,24 +28,24 @@ public final class Arguments {
     /**
      * Of arguments.
      * 
-     * @param arguments arguments
+     * @param args arguments
      * @param <T> type of arguments
      * @return arguments
      */
     @SafeVarargs
-    public static <T> T[] of(final T... arguments) {
-        return arguments;
+    public static <T> T[] of(final T... args) {
+        return args;
     }
     
     /**
      * Of array element.
      * 
-     * @param arguments arguments
+     * @param args arguments
      * @param <T> type of arguments
      * @return iterable
      */
     @SafeVarargs
-    public static <T> Iterable<T[]> ofArrayElement(final T[]... arguments) {
-        return Arrays.asList(arguments);
+    public static <T> Iterable<T[]> ofArrayElement(final T[]... args) {
+        return Arrays.asList(args);
     }
 }

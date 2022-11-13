@@ -72,7 +72,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void persistCheckLatestJobId(final String jobId, final String checkJobId) {
-        log.info("persist check job id '{}' for job {}", checkJobId, jobId);
         repository.persist(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId), String.valueOf(checkJobId));
     }
     
@@ -95,10 +94,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public void persistCheckJobResult(final String jobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
         if (null == checkResultMap) {
-            log.warn("checkResultMap is null, jobId {}, checkJobId {}", jobId, checkJobId);
             return;
         }
-        log.info("persist check job result for job {}", checkJobId);
         Map<String, String> yamlCheckResultMap = new LinkedHashMap<>();
         for (Entry<String, DataConsistencyCheckResult> entry : checkResultMap.entrySet()) {
             YamlDataConsistencyCheckResult yamlCheckResult = new YamlDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
@@ -109,7 +106,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void deleteCheckJobResult(final String jobId, final String checkJobId) {
-        log.info("deleteCheckJobResult, jobId={}, checkJobId={}", jobId, checkJobId);
         repository.delete(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
     }
     
@@ -120,7 +116,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public void deleteJob(final String jobId) {
-        log.info("delete job {}", jobId);
         repository.delete(PipelineMetaDataNode.getJobRootPath(jobId));
     }
     
@@ -142,7 +137,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     @Override
     public List<Integer> getShardingItems(final String jobId) {
         List<String> result = getChildrenKeys(PipelineMetaDataNode.getJobOffsetPath(jobId));
-        log.info("getShardingItems, jobId={}, offsetKeys={}", jobId, result);
         return result.stream().map(Integer::parseInt).collect(Collectors.toList());
     }
     

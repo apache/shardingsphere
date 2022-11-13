@@ -61,7 +61,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule rule) {
         if (null == grantee) {
             return new SQLCheckResult(true, "");

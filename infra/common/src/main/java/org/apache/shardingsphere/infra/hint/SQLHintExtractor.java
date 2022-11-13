@@ -34,20 +34,18 @@ import java.util.Properties;
 @Getter
 public final class SQLHintExtractor {
     
-    private static final SQLHintProperties DEFAULT_SQL_HINT_PROPERTIES = new SQLHintProperties(new Properties());
+    private static final SQLHintProperties DEFAULT_SQL_HINT_PROPS = new SQLHintProperties(new Properties());
     
     private final SQLHintProperties sqlHintProperties;
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
         sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
                 ? extract((AbstractSQLStatement) sqlStatement)
-                : DEFAULT_SQL_HINT_PROPERTIES;
+                : DEFAULT_SQL_HINT_PROPS;
     }
     
     public SQLHintExtractor(final String sqlComment) {
-        sqlHintProperties = Strings.isNullOrEmpty(sqlComment)
-                ? DEFAULT_SQL_HINT_PROPERTIES
-                : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
+        sqlHintProperties = Strings.isNullOrEmpty(sqlComment) ? DEFAULT_SQL_HINT_PROPS : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
     }
     
     private SQLHintProperties extract(final AbstractSQLStatement statement) {

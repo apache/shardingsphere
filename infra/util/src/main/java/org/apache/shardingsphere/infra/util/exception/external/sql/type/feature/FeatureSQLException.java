@@ -29,7 +29,7 @@ public abstract class FeatureSQLException extends ShardingSphereSQLException {
     
     private static final int TYPE_OFFSET = 2;
     
-    public FeatureSQLException(final SQLState sqlState, final int featureCode, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, TYPE_OFFSET, featureCode * 100 + errorCode, reason, messageArguments);
+    public FeatureSQLException(final SQLState sqlState, final int featureCode, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, TYPE_OFFSET, featureCode * 100 + errorCode, reason, messageArgs);
     }
 }
