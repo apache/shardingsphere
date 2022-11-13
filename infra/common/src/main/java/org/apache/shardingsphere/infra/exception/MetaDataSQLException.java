@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLS
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Meta data SQL exception.
+ * Metadata SQL exception.
  */
 public abstract class MetaDataSQLException extends KernelSQLException {
     
