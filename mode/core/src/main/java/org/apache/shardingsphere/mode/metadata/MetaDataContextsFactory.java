@@ -50,7 +50,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Meta data contexts.
+ * Metadata contexts.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataContextsFactory {
