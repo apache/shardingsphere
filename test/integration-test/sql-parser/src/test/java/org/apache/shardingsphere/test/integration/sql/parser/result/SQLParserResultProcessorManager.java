@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.sql.parser.result;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.sql.parser.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.sql.parser.env.SQLParserExternalITEnvironment;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -42,7 +42,7 @@ public final class SQLParserResultProcessorManager {
      * @return the implementation of SQLParserResultProcessor
      */
     public static SQLParserResultProcessor getProcessor(final String databaseType) {
-        String type = IntegrationTestEnvironment.getInstance().getResultProcessorType();
+        String type = SQLParserExternalITEnvironment.getInstance().getResultProcessorType();
         try {
             Class<?> interfaceClazz = Class.forName(SQLParserResultProcessor.class.getPackage().getName() + "." + SQLParserResultProcessor.class.getSimpleName());
             String packageName = interfaceClazz.getPackage().getName();
