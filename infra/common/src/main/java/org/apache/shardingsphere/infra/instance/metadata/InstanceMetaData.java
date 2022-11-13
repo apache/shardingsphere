@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.instance.metadata;
 
 /**
- * Instance meta data.
+ * Instance metadata.
  */
 public interface InstanceMetaData {
     
