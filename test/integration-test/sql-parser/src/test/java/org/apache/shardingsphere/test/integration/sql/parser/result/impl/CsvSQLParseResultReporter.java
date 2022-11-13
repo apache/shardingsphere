@@ -21,52 +21,48 @@ import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.shardingsphere.test.integration.sql.parser.env.SQLParserExternalITEnvironment;
-import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessor;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- *  CSV result generator.
+ *  SQL parse result reporter for CSV.
  */
-public final class SQLParserCSVResultProcessor implements SQLParserResultProcessor {
+public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     
     private final CSVPrinter printer;
     
     @Getter
     private final String type = "CSV";
     
-    public SQLParserCSVResultProcessor(final String databaseType) {
+    public CsvSQLParseResultReporter(final String databaseType) {
         try {
             File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
-            createHeader(csvFile);
+            printHeader(csvFile);
             printer = new CSVPrinter(new FileWriter(csvFile, true), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
         } catch (final IOException ex) {
             throw new RuntimeException("Create CSV file failed.", ex);
         }
     }
     
-    private synchronized void createHeader(final File csvFile) {
-        if (!csvFile.exists()) {
-            try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
-                printer.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
-                printer.flush();
-            } catch (final IOException ex) {
-                throw new RuntimeException("Create CSV file header failed.", ex);
-            }
+    private void printHeader(final File csvFile) {
+        if (csvFile.exists()) {
+            return;
+        }
+        try (CSVPrinter printer = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
+            printer.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
+            printer.flush();
+        } catch (final IOException ex) {
+            throw new RuntimeException("Create CSV file header failed.", ex);
         }
     }
     
-    /**
-     * Process the result.
-     *
-     * @param params the content for a row of CSV record
-     */
     @Override
-    public void processResult(final Object... params) {
+    public void printResult(final Object... recordValues) {
         try {
-            printer.printRecord(params);
+            printer.printRecord(recordValues);
             printer.flush();
         } catch (final IOException ex) {
             throw new RuntimeException("Write CSV file failed.", ex);

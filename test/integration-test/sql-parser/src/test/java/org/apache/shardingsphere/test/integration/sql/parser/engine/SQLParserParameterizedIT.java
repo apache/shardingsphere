@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParserResultProcessor;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporter;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -40,7 +40,7 @@ public abstract class SQLParserParameterizedIT {
     private final String databaseType;
     
     // TODO this will refactor as an abstract
-    private final SQLParserResultProcessor resultGenerator;
+    private final SQLParseResultReporter resultGenerator;
     
     @Test
     public final void assertParseSQL() {
@@ -52,6 +52,6 @@ public abstract class SQLParserParameterizedIT {
             result = "failed";
             log.warn("ParserError: " + sqlCaseId + " value: " + sql + " db-type: " + databaseType);
         }
-        resultGenerator.processResult(sqlCaseId, databaseType, result, sql);
+        resultGenerator.printResult(sqlCaseId, databaseType, result, sql);
     }
 }
