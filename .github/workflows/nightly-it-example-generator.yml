@@ -25,32 +25,11 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true
 
 jobs:
-  build-cache:
-    if: github.repository == 'apache/shardingsphere'
-    name: Build Cache
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '8'
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            shardingsphere-maven-third-party-cache-
-            shardingsphere-maven-third-party-
-      - name: Build with Maven
-        run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
   generate-and-test-examples:
     if: github.repository == 'apache/shardingsphere'
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
-    needs: build-cache
     strategy:
       fail-fast: false
       matrix:
@@ -89,6 +68,8 @@ jobs:
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Prepare environments
         run: sh .github/workflows/resources/sql/nightly-generator-init.sh
+      - name: Build with Maven
+        run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate examples
         run: ./mvnw -B clean install -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
       - name: Test examples
