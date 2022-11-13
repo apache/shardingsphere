@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -44,22 +45,22 @@ public final class SQLCaseLoader {
      * Load SQL cases.
      *
      * @param sqlCaseURI SQL case URI
-     * @param sqlCaseResultURI SQL case result case URI
+     * @param resultURI result URI
      *
-     * @return Test cases from with strategy
+     * @return loaded SQL cases
      */
-    public Collection<Object[]> load(final URI sqlCaseURI, final URI sqlCaseResultURI) {
+    public Collection<Object[]> load(final URI sqlCaseURI, final URI resultURI) {
         if (!IntegrationTestEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
         Collection<Object[]> result = new LinkedList<>();
-        Collection<SQLCaseFileSummary> sqlCases = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
-        Map<String, String> resultResponse = loadStrategy.loadSQLCaseResults(sqlCaseResultURI);
-        for (SQLCaseFileSummary each : sqlCases) {
-            String fileName = each.getFileName();
-            String sqlCaseTestFileContent = loadContent(URI.create(each.getAccessURL()));
-            String sqlCaseResultFileContent = resultResponse.containsKey(fileName) ? loadContent(URI.create(resultResponse.get(fileName))) : "";
-            result.addAll(createSQLCases(fileName, sqlCaseTestFileContent, sqlCaseResultFileContent));
+        Map<String, FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
+        Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
+        for (Entry<String, FileSummary> entry : sqlCaseFileSummaries.entrySet()) {
+            String fileName = entry.getKey();
+            String sqlCaseFileContent = loadContent(URI.create(entry.getValue().getAccessURL()));
+            String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURL())) : "";
+            result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent));
         }
         if (result.isEmpty()) {
             result.add(new Object[]{"", ""});
@@ -72,15 +73,15 @@ public final class SQLCaseLoader {
             InputStreamReader in = new InputStreamReader(uri.toURL().openStream());
             return new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (final IOException ex) {
-            log.warn("Load SQL cases failed, reason is: ", ex);
+            log.warn("Load failed, reason is: ", ex);
             return "";
         }
     }
     
-    private Collection<Object[]> createSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String sqlCaseResultFileContent) {
+    private Collection<Object[]> createSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String resultFileContent) {
         Collection<Object[]> result = new LinkedList<>();
         String[] caseCaseLines = sqlCaseFileContent.split("\n");
-        String[] caseCaseResultLines = sqlCaseResultFileContent.split("\n");
+        String[] resultLines = resultFileContent.split("\n");
         String completedSQL = "";
         int sqlCaseEnum = 1;
         int statementLines = 0;
@@ -91,8 +92,8 @@ public final class SQLCaseLoader {
             completedSQL = getStatement(completedSQL, each.trim(), inProcedure);
             statementLines = completedSQL.isEmpty() ? 0 : statementLines + 1;
             if (completedSQL.contains(";") && !inProcedure) {
-                resultIndex = searchResult(resultIndex, caseCaseResultLines, completedSQL, statementLines);
-                if (resultIndex >= caseCaseResultLines.length || !caseCaseResultLines[resultIndex].contains("ERROR")) {
+                resultIndex = searchResult(resultIndex, resultLines, completedSQL, statementLines);
+                if (resultIndex >= resultLines.length || !resultLines[resultIndex].contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
                     result.add(new Object[]{sqlCaseId, completedSQL});
                     sqlCaseEnum++;

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.sql.parser.loader;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * SQL case load strategy.
@@ -32,13 +31,5 @@ public interface SQLCaseLoadStrategy {
      * @param uri URL to be loaded
      * @return loaded SQL file summaries
      */
-    Collection<SQLCaseFileSummary> loadSQLCaseFileSummaries(URI uri);
-    
-    /**
-     * Load SQL cases result.
-     * 
-     * @param uri URL to be loaded
-     * @return loaded SQL case results
-     */
-    Map<String, String> loadSQLCaseResults(URI uri);
+    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
 }

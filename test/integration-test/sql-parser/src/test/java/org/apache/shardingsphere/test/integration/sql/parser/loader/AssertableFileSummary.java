@@ -21,13 +21,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL case file summary.
+ * Assertable file summary.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLCaseFileSummary {
+public final class AssertableFileSummary {
     
     private final String fileName;
     
-    private final String accessURL;
+    private final String sqlCaseFileAccessURL;
+    
+    private final String resultFileAccessURL;
 }
