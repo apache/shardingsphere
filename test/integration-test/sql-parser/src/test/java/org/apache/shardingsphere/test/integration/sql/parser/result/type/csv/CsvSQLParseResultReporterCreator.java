@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.sql.parser.result;
+package org.apache.shardingsphere.test.integration.sql.parser.result.type.csv;
+
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.integration.sql.parser.result.SQLParseResultReporterCreator;
 
 /**
- * SQL parse result reporter.
+ * SQL parse result reporter creator for CSV.
  */
-public interface SQLParseResultReporter {
+public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
-    /**
-     * Print result.
-     *
-     * @param recordValues record values
-     */
-    void printResult(Object... recordValues);
+    @Override
+    public SQLParseResultReporter create(final String databaseType) {
+        return new CsvSQLParseResultReporter(databaseType);
+    }
+    
+    @Override
+    public String getType() {
+        return "CSV";
+    }
 }

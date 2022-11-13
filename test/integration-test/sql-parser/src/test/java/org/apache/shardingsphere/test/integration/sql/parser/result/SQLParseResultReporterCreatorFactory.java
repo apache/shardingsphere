@@ -17,15 +17,28 @@
 
 package org.apache.shardingsphere.test.integration.sql.parser.result;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+
 /**
- * SQL parse result reporter.
+ * SQL parse result reporter creator factory.
  */
-public interface SQLParseResultReporter {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLParseResultReporterCreatorFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(SQLParseResultReporterCreator.class);
+    }
     
     /**
-     * Print result.
-     *
-     * @param recordValues record values
+     * Create new instance of SQL parse result reporter creator.
+     * 
+     * @param type type
+     * @return new instance of SQL parse result reporter creator
      */
-    void printResult(Object... recordValues);
+    public static SQLParseResultReporterCreator newInstance(String type) {
+        return TypedSPIRegistry.getRegisteredService(SQLParseResultReporterCreator.class, type);
+    }
 }

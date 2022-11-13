@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.sql.parser.engine.dialect;
 import org.apache.shardingsphere.test.integration.sql.parser.engine.SQLParserParameterizedIT;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.integration.sql.parser.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.test.integration.sql.parser.result.impl.CsvSQLParseResultReporter;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -31,8 +30,8 @@ import java.util.Collection;
 @RunWith(ShardingSphereParallelTestParameterized.class)
 public final class PostgreSQLParserParameterizedIT extends SQLParserParameterizedIT {
     
-    public PostgreSQLParserParameterizedIT(final String sqlCaseId, final String sqlCaseValue) {
-        super(sqlCaseId, sqlCaseValue, "PostgreSQL", new CsvSQLParseResultReporter("PostgreSQL"));
+    public PostgreSQLParserParameterizedIT(final String sqlCaseId, final String sql) {
+        super(sqlCaseId, sql, "PostgreSQL", "CSV");
     }
     
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
