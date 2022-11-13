@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.external;
 
-import org.apache.shardingsphere.test.integration.sql.parser.external.engine.SQLParserParameterizedIT;
-import org.apache.shardingsphere.test.integration.sql.parser.external.loader.SQLCaseLoader;
-import org.apache.shardingsphere.test.integration.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
+import org.apache.shardingsphere.test.sql.parser.external.engine.SQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
+import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
