@@ -55,13 +55,13 @@ public final class OptimizerContextTest {
         assertThat(actual.getPlannerContext(DefaultDatabase.LOGIC_NAME.toLowerCase()), instanceOf(OptimizerPlannerContext.class));
     }
     
-    private static ShardingSphereDatabase createShardingSphereDatabase() {
+    private ShardingSphereDatabase createShardingSphereDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getProtocolType().getType()).thenReturn("MySQL");
         return result;
     }
     
-    private static ShardingSphereRuleMetaData createShardingSphereRuleMetaData() {
+    private ShardingSphereRuleMetaData createShardingSphereRuleMetaData() {
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         CacheOption cacheOption = new CacheOption(10, 1000);
         when(result.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
