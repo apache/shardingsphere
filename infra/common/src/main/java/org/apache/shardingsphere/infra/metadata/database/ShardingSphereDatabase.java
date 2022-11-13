@@ -71,7 +71,7 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Create database meta data.
+     * Create database metadata.
      * 
      * @param name database name
      * @param protocolType database protocol type
@@ -79,7 +79,7 @@ public final class ShardingSphereDatabase {
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param instanceContext instance context
-     * @return database meta data
+     * @return database metadata
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
@@ -94,11 +94,11 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Create system database meta data.
+     * Create system database metadata.
      * 
      * @param name system database name
      * @param protocolType protocol database type
-     * @return system database meta data
+     * @return system database metadata
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType) {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(new LinkedHashMap<>(), new LinkedList<>());
