@@ -194,7 +194,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()));
         sqlStatement = sqlParserEngine.parse(sql, true);
-        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, connection.getDatabaseName());
+        sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         executor = new DriverExecutor(connection);
@@ -304,7 +304,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         PreparedStatementExecuteQueryCallback callback = new PreparedStatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown(),
                 eventBusContext);
-        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData().getDatabases());
+        SQLFederationExecutorContext context = new SQLFederationExecutorContext(false, queryContext, metaDataContexts.getMetaData());
         return executor.getFederationExecutor().executeQuery(createDriverExecutionPrepareEngine(), callback, context);
     }
     
