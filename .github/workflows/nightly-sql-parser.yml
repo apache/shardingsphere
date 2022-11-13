@@ -26,9 +26,9 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Drat.skip=true
 
 jobs:
-  mysql-parse:
+  database-parse:
     if: github.repository == 'apache/shardingsphere'
-    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
+    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }} for ${{ matrix.database }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -36,6 +36,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         java-version: [ 8 ]
+        database: [ mysql, postgresql ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -52,38 +53,7 @@ jobs:
       - name: Build prod with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL parser
-        run: ./mvnw -nsu -B install -f sql-parser/dialect/mysql/pom.xml -Dsql.parser.external.it.enabled=true
-      - uses: actions/upload-artifact@v3
-        with:
-          name: sql-report
-          path: /tmp/*.csv
-  postgresql-parse:
-    if: github.repository == 'apache/shardingsphere'
-    name: CI - JDK ${{ matrix.java-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        java-version: [ 8 ]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java-version }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            shardingsphere-maven-third-party-cache-
-            shardingsphere-maven-third-party-
-      - name: Build prod with Maven
-        run: ./mvnw -T1C -B -ntp clean install
-      - name: Run SQL parser
-        run: ./mvnw -nsu -B install -f sql-parser/dialect/postgresql/pom.xml -Dsql.parser.external.it.enabled=true
+        run: ./mvnw -nsu -B install -f sql-parser/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
       - uses: actions/upload-artifact@v3
         with:
           name: sql-report
