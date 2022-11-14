@@ -24,7 +24,7 @@
     <clear-sharding-hint sql-case-id="clear-sharding-hint" />
     
     <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />
-    <set-readwrite-splitting-hint-source sql-case-id="set-readwrite-splitting-hint-source" />
+    <set-readwrite-splitting-hint-source sql-case-id="set-readwrite-splitting-hint-source" source-name="WRITE"/>
     <clear-readwrite-splitting-hint-source sql-case-id="clear-readwrite-splitting-hint-source" />
     
     <clear-hint sql-case-id="clear-hint" />

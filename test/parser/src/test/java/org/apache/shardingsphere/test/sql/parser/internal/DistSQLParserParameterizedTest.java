@@ -53,6 +53,10 @@ public final class DistSQLParserParameterizedTest {
     
     @Test
     public void assertDistSQL() {
+        StringBuilder flag = new StringBuilder();
+        if (0 == sqlCaseId.compareToIgnoreCase("set-readwrite-splitting-hint-source")) {
+            flag.append("Now, it's in : " + sqlCaseId.toString() + System.lineSeparator());
+        }
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), null);
         SQLStatement actual = ENGINE.parse(sql);
