@@ -32,6 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -78,11 +79,20 @@ public class PropertiesShadowSpringBootStarterTest {
         assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Collections.singletonList("simple-hint-algorithm")));
     }
     
-    private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
+    private void assertShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(2));
-        assertThat(dataSources.get("shadow-data-source-0").getProductionDataSourceName(), is("ds"));
-        assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
-        assertThat(dataSources.get("shadow-data-source-1").getProductionDataSourceName(), is("ds1"));
-        assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
+        for (ShadowDataSourceConfiguration each : dataSources) {
+            assertShadowDataSource(each);
+        }
+    }
+    
+    private void assertShadowDataSource(final ShadowDataSourceConfiguration shadowDataSourceConfiguration) {
+        if ("shadow-data-source-0".equals(shadowDataSourceConfiguration.getName())) {
+            assertThat(shadowDataSourceConfiguration.getProductionDataSourceName(), is("ds"));
+            assertThat(shadowDataSourceConfiguration.getShadowDataSourceName(), is("ds-shadow"));
+        } else {
+            assertThat(shadowDataSourceConfiguration.getProductionDataSourceName(), is("ds1"));
+            assertThat(shadowDataSourceConfiguration.getShadowDataSourceName(), is("ds1-shadow"));
+        }
     }
 }
