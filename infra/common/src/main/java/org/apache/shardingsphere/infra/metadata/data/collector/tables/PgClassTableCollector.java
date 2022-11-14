@@ -54,9 +54,8 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
         for (DataSource each : shardingSphereDatabase.getResourceMetaData().getDataSources().values()) {
             try (
                     Connection connection = each.getConnection();
-                    Statement statement = connection.createStatement()
-            ) {
-                ResultSet resultSet = statement.executeQuery(SELECT_SQL);
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery(SELECT_SQL)) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 while (resultSet.next()) {
                     List<Object> rows = new ArrayList<>(metaData.getColumnCount());

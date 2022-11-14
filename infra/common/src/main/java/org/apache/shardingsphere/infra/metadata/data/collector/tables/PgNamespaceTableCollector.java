@@ -48,9 +48,8 @@ public final class PgNamespaceTableCollector implements ShardingSphereDataCollec
         for (DataSource each : shardingSphereDatabase.getResourceMetaData().getDataSources().values()) {
             try (
                     Connection connection = each.getConnection();
-                    Statement statement = connection.createStatement()
-            ) {
-                ResultSet resultSet = statement.executeQuery("SELECT oid, nspname, nspowner, nspacl FROM pg_catalog.pg_namespace");
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT oid, nspname, nspowner, nspacl FROM pg_catalog.pg_namespace")) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 while (resultSet.next()) {
                     List<Object> rows = new ArrayList<>(metaData.getColumnCount());
