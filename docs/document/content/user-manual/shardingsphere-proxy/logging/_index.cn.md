@@ -1,13 +1,11 @@
 +++
-title = "日志管理"
+title = "日志配置"
 weight = 8
 +++
 
-ShardingSphere 使用 Logback 进行日志管理，内部采用 Java spi 提供默认日志配置，用户可以使用 XML 文件来配置自定义日志输出，Proxy 将优先读取 conf 目录下的 `logback.xml` 提供的日志配置。
+ShardingSphere 使用 Logback 进行日志管理，内部采用 Java SPI 提供默认日志配置，用户可以使用 XML 文件来配置自定义日志输出，Proxy 将优先读取 `/conf` 目录下的 `logback.xml` 提供的日志配置。
 
-## 相关使用
-
-### 示例文件
+## 示例文件
 
 logback.xml
 
