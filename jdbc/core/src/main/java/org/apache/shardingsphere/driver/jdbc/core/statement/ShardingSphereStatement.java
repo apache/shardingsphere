@@ -216,7 +216,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             return executor.getRawExecutor().execute(createRawExecutionContext(), executionContext.getQueryContext(),
                     new RawSQLExecutorCallback(eventBusContext)).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
         cacheStatements(executionGroupContext.getInputGroups());
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), executionContext.getSqlStatementContext().getSqlStatement(),
@@ -348,7 +348,30 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return isNeedImplicitCommitTransaction(executionContext) ? executeUpdateWithImplicitCommitTransaction(updater, sqlStatementContext) : useDriverToExecuteUpdate(updater, sqlStatementContext);
     }
     
-    private JDBCExecutorCallback<Integer> createUpdateCallback(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) {
+    private int executeUpdateWithImplicitCommitTransaction(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+        int result;
+        try {
+            connection.setAutoCommit(false);
+            result = useDriverToExecuteUpdate(updater, sqlStatementContext);
+            connection.commit();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            connection.rollback();
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+        }
+        return result;
+    }
+    
+    private int useDriverToExecuteUpdate(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
+        cacheStatements(executionGroupContext.getInputGroups());
+        JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback(updater, sqlStatementContext);
+        return executor.getRegularExecutor().executeUpdate(executionGroupContext,
+                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), callback);
+    }
+    
+    private JDBCExecutorCallback<Integer> createExecuteUpdateCallback(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Integer>(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown,
@@ -427,23 +450,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private JDBCExecutorCallback<Boolean> createExecuteCallback(final ExecuteCallback executeCallback, final SQLStatement sqlStatement) {
-        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
-                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatement, isExceptionThrown, eventBusContext) {
-            
-            @Override
-            protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-                return executeCallback.execute(sql, statement);
-            }
-            
-            @Override
-            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement1, final SQLException ex) {
-                return Optional.empty();
-            }
-        };
-    }
-    
     private boolean execute0(final String sql, final ExecuteCallback callback) throws SQLException {
         try {
             QueryContext queryContext = createQueryContext(sql);
@@ -514,7 +520,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 metaDataContexts.getMetaData().getProps(), connection.getConnectionContext());
     }
     
-    private ExecutionGroupContext<JDBCExecutionUnit> createExecutionContext() throws SQLException {
+    private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext() throws SQLException {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
@@ -525,11 +531,59 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
+    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
+        ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
+        boolean isInTransaction = connection.getConnectionContext().getTransactionConnectionContext().isInTransaction();
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
+                && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
+    }
+    
+    private boolean executeWithImplicitCommitTransaction(final ExecuteCallback callback) throws SQLException {
+        boolean result;
+        try {
+            connection.setAutoCommit(false);
+            result = useDriverToExecute(callback);
+            connection.commit();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            connection.rollback();
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+        }
+        return result;
+    }
+    
+    private boolean useDriverToExecute(final ExecuteCallback callback) throws SQLException {
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
+        cacheStatements(executionGroupContext.getInputGroups());
+        JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(callback, executionContext.getSqlStatementContext().getSqlStatement());
+        return executor.getRegularExecutor().execute(executionGroupContext,
+                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
+    }
+    
     private void cacheStatements(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) throws SQLException {
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
             statements.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
         }
         replay();
+    }
+    
+    private JDBCExecutorCallback<Boolean> createExecuteCallback(final ExecuteCallback executeCallback, final SQLStatement sqlStatement) {
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
+        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatement, isExceptionThrown, eventBusContext) {
+            
+            @Override
+            protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
+                return executeCallback.execute(sql, statement);
+            }
+            
+            @Override
+            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement1, final SQLException ex) {
+                return Optional.empty();
+            }
+        };
     }
     
     private void replay() throws SQLException {
@@ -631,59 +685,5 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return executionContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
-    }
-    
-    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
-        ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
-        boolean isInTransaction = connection.getConnectionContext().getTransactionConnectionContext().isInTransaction();
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
-                && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
-    }
-    
-    private boolean executeWithImplicitCommitTransaction(final ExecuteCallback callback) throws SQLException {
-        boolean result;
-        try {
-            connection.setAutoCommit(false);
-            result = useDriverToExecute(callback);
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
-        }
-        return result;
-    }
-    
-    private int executeUpdateWithImplicitCommitTransaction(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        int result;
-        try {
-            connection.setAutoCommit(false);
-            result = useDriverToExecuteUpdate(updater, sqlStatementContext);
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
-        }
-        return result;
-    }
-    
-    private boolean useDriverToExecute(final ExecuteCallback callback) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
-        cacheStatements(executionGroupContext.getInputGroups());
-        JDBCExecutorCallback<Boolean> jdbcExecutorCallback = createExecuteCallback(callback, executionContext.getSqlStatementContext().getSqlStatement());
-        return executor.getRegularExecutor().execute(executionGroupContext,
-                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), jdbcExecutorCallback);
-    }
-    
-    private int useDriverToExecuteUpdate(final ExecuteUpdateCallback updater, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionContext();
-        cacheStatements(executionGroupContext.getInputGroups());
-        JDBCExecutorCallback<Integer> callback = createUpdateCallback(updater, sqlStatementContext);
-        return executor.getRegularExecutor().executeUpdate(executionGroupContext,
-                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), callback);
     }
 }

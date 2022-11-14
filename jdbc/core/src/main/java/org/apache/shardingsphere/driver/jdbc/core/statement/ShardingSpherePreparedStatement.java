@@ -420,13 +420,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
     }
     
-    private boolean useDriverToExecute() throws SQLException {
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
-        cacheStatements(executionGroupContext.getInputGroups());
-        return executor.getRegularExecutor().execute(executionGroupContext,
-                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
-    }
-    
     private boolean hasRawExecutionRule() {
         for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules()) {
             if (each instanceof RawExecutionRule) {
@@ -442,9 +435,49 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 .prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
-    private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext() throws SQLException {
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
-        return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
+    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
+        ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
+        boolean isInTransaction = connection.getConnectionContext().getTransactionConnectionContext().isInTransaction();
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
+                && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
+    }
+    
+    private boolean executeWithImplicitCommitTransaction() throws SQLException {
+        boolean result;
+        try {
+            connection.setAutoCommit(false);
+            result = useDriverToExecute();
+            connection.commit();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            connection.rollback();
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+        }
+        return result;
+    }
+    
+    private int executeUpdateWithImplicitCommitTransaction() throws SQLException {
+        int result;
+        try {
+            connection.setAutoCommit(false);
+            result = useDriverToExecuteUpdate();
+            connection.commit();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            connection.rollback();
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
+        }
+        return result;
+    }
+    
+    private boolean useDriverToExecute() throws SQLException {
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
+        cacheStatements(executionGroupContext.getInputGroups());
+        return executor.getRegularExecutor().execute(executionGroupContext,
+                executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
     }
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback() {
@@ -463,6 +496,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return Optional.empty();
             }
         };
+    }
+    
+    private ExecutionGroupContext<JDBCExecutionUnit> createExecutionGroupContext() throws SQLException {
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine();
+        return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
     }
     
     @Override
@@ -675,43 +713,5 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public Collection<PreparedStatement> getRoutedStatements() {
         return statements;
-    }
-    
-    private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
-        ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
-        boolean isInTransaction = connection.getConnectionContext().getTransactionConnectionContext().isInTransaction();
-        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
-                && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
-    }
-    
-    private boolean executeWithImplicitCommitTransaction() throws SQLException {
-        boolean result;
-        try {
-            connection.setAutoCommit(false);
-            result = useDriverToExecute();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
-        }
-        return result;
-    }
-    
-    private int executeUpdateWithImplicitCommitTransaction() throws SQLException {
-        int result;
-        try {
-            connection.setAutoCommit(false);
-            result = useDriverToExecuteUpdate();
-            connection.commit();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            connection.rollback();
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
-        }
-        return result;
     }
 }
