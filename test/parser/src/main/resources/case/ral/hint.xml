@@ -20,7 +20,7 @@
     <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
     <add-sharding-hint-database-value sql-case-id="add-sharding-hint-database-value" logic-table-name="T_ORDER" sharding-value="1"/>
     <add-sharding-hint-table-value sql-case-id="add-sharding-hint-table-value" logic-table-name="T_ORDER" sharding-value="1"/>
-    <set-sharding-hint-database-value sql-case-id="set-sharding-hint-database-value" />
+    <set-sharding-hint-database-value sql-case-id="set-sharding-hint-database-value" sharding-value="1"/>
     <clear-sharding-hint sql-case-id="clear-sharding-hint" />
     
     <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />

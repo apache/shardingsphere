@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
- * Set sharding hint database value test case.
+ * Set sharding hint database value statement test case.
  */
+@Getter
+@Setter
 public final class SetShardingHintDatabaseValueStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "sharding-value")
+    private String shardingValue;
 }
