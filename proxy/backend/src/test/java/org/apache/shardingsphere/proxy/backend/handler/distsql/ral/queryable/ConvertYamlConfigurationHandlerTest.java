@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -34,6 +38,7 @@ import java.util.Objects;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -62,6 +67,8 @@ public final class ConvertYamlConfigurationHandlerTest {
     private final String shadowExpectedFilePath = "/expected/convert-shadow.yaml";
     
     private final String mixExpectedFilePath = "/expected/convert-mix.yaml";
+    
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
     public void assertExecuteWithSharding() throws SQLException {
@@ -123,9 +130,19 @@ public final class ConvertYamlConfigurationHandlerTest {
         assertFalse(actual.isAutoIncrement());
     }
     
-    private void assertRowData(final Collection<Object> actual, final String expectedFilePath) {
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(loadExpectedRow(expectedFilePath)));
+    private void assertRowData(final Collection<Object> data, final String expectedFilePath) {
+        assertThat(data.size(), is(1));
+        Object actual = data.iterator().next();
+        assertThat(actual, is(loadExpectedRow(expectedFilePath)));
+        assertParseSQL((String) actual);
+    }
+    
+    private void assertParseSQL(final String actual) {
+        for (String each : Splitter.on(";").trimResults().splitToList(actual)) {
+            if (!Strings.isNullOrEmpty(each)) {
+                assertNotNull(sqlParserRule.getSQLParserEngine("MYSQL").parse(each, false));
+            }
+        }
     }
     
     @SneakyThrows(IOException.class)
