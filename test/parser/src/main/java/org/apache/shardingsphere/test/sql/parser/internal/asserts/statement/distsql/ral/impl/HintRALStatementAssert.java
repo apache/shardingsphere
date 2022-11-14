@@ -22,12 +22,15 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.SetShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.hint.AddShardingHintDatabaseValueStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.hint.AddShardingHintTableValueStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.hint.SetShardingHintDatabaseValueStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 
 /**
  * Hint RAL statement assert.
@@ -47,6 +50,8 @@ public class HintRALStatementAssert {
             AddShardingHintTableValueStatementAssert.assertIs(assertContext, (AddShardingHintTableValueStatement) actual, (AddShardingHintTableValueStatementTestCase) expected);
         } else if (actual instanceof AddShardingHintDatabaseValueStatement) {
             AddShardingHintDatabaseValueStatementAssert.assertIs(assertContext, (AddShardingHintDatabaseValueStatement) actual, (AddShardingHintDatabaseValueStatementTestCase) expected);
+        } else if (actual instanceof SetShardingHintDatabaseValueStatement) {
+            SetShardingHintDatabaseValueStatementAssert.assertIs(assertContext, (SetShardingHintDatabaseValueStatement) actual, (SetShardingHintDatabaseValueStatementTestCase) expected);
         }
     }
 }
