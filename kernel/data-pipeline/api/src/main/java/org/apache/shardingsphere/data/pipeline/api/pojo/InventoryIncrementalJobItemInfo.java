@@ -34,5 +34,7 @@ public class InventoryIncrementalJobItemInfo {
     
     private final long startTimeMillis;
     
+    private final int inventoryFinishedPercentage;
+    
     private final String errorMessage;
 }

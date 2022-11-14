@@ -50,10 +50,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -109,15 +109,20 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         PipelineJobConfiguration jobConfig = getJobConfiguration(jobConfigPOJO);
         long startTimeMillis = Long.parseLong(Optional.ofNullable(jobConfigPOJO.getProps().getProperty("start_time_millis")).orElse("0"));
         Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = getJobProgress(jobConfig);
-        List<InventoryIncrementalJobItemInfo> result = new ArrayList<>(jobProgress.size());
+        List<InventoryIncrementalJobItemInfo> result = new LinkedList<>();
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : jobProgress.entrySet()) {
             int shardingItem = entry.getKey();
-            String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
-            InventoryIncrementalJobItemInfo progressInfo = new InventoryIncrementalJobItemInfo(shardingItem, entry.getValue(), startTimeMillis, errorMessage);
-            if (null == entry.getValue()) {
+            InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
+            if (null == jobItemProgress) {
+                result.add(new InventoryIncrementalJobItemInfo(shardingItem, null, startTimeMillis, 0, ""));
                 continue;
             }
-            result.add(progressInfo);
+            int inventoryFinishedPercentage = 0;
+            if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
+                inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
+            }
+            String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
+            result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
         }
         return result;
     }
