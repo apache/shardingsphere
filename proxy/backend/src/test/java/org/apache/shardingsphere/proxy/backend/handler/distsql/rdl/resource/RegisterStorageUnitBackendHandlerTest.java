@@ -148,8 +148,7 @@ public final class RegisterStorageUnitBackendHandlerTest extends ProxyContextRes
     }
     
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration(final String ruleName) {
-        ReadwriteSplittingDataSourceRuleConfiguration configuration = new ReadwriteSplittingDataSourceRuleConfiguration(ruleName, null, null, null);
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(configuration), Collections.emptyMap());
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(ruleName, null, null, null)), Collections.emptyMap());
     }
     
     private RegisterStorageUnitStatement createRegisterStorageUnitStatement() {

@@ -112,18 +112,18 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
      * @param sqlStatementContext SQL statement context
      * @param shardingRule shardingRule
      * @param assignments assignments
-     * @param parameters parameter collection
+     * @param params parameters
      * @return sharding conditions
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Optional<ShardingConditions> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule,
-                                                                    final Collection<AssignmentSegment> assignments, final List<Object> parameters) {
+                                                                    final Collection<AssignmentSegment> assignments, final List<Object> params) {
         Collection<ShardingConditionValue> values = new LinkedList<>();
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         for (AssignmentSegment each : assignments) {
             String shardingColumn = each.getColumns().get(0).getIdentifier().getValue();
             if (shardingRule.findShardingColumn(shardingColumn, tableName).isPresent()) {
-                Optional<Object> assignmentValue = getShardingColumnAssignmentValue(each, parameters);
+                Optional<Object> assignmentValue = getShardingColumnAssignmentValue(each, params);
                 assignmentValue.ifPresent(optional -> values.add(new ListShardingConditionValue(shardingColumn, tableName, Collections.singletonList(optional))));
             }
         }
@@ -135,7 +135,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         return Optional.of(new ShardingConditions(Collections.singletonList(shardingCondition), sqlStatementContext, shardingRule));
     }
     
-    private Optional<Object> getShardingColumnAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+    private Optional<Object> getShardingColumnAssignmentValue(final AssignmentSegment assignmentSegment, final List<Object> params) {
         ExpressionSegment segment = assignmentSegment.getValue();
         int shardingSetAssignIndex = -1;
         if (segment instanceof ParameterMarkerExpressionSegment) {
@@ -144,9 +144,9 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         if (segment instanceof LiteralExpressionSegment) {
             return Optional.of(((LiteralExpressionSegment) segment).getLiterals());
         }
-        if (-1 == shardingSetAssignIndex || shardingSetAssignIndex > parameters.size() - 1) {
+        if (-1 == shardingSetAssignIndex || shardingSetAssignIndex > params.size() - 1) {
             return Optional.empty();
         }
-        return Optional.of(parameters.get(shardingSetAssignIndex));
+        return Optional.of(params.get(shardingSetAssignIndex));
     }
 }

@@ -29,8 +29,8 @@ public final class ShardingAuditAlgorithmProvidedBeanRegistry extends AbstractAl
     
     private static final String AUDITORS = "spring.shardingsphere.rules.sharding.auditors.";
     
-    public ShardingAuditAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public ShardingAuditAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

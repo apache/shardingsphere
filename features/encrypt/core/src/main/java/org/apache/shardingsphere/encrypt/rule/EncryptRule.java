@@ -117,16 +117,16 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find fuzzy encryptor.
+     * Find like query encryptor.
      *
      * @param logicTable logic table name
      * @param logicColumn logic column name
-     * @return encryptor
+     * @return like query encryptor
      */
     @SuppressWarnings("rawtypes")
-    public Optional<EncryptAlgorithm> findFuzzyQueryEncryptor(final String logicTable, final String logicColumn) {
+    public Optional<EncryptAlgorithm> findLikeQueryEncryptor(final String logicTable, final String logicColumn) {
         String lowerCaseLogicTable = logicTable.toLowerCase();
-        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findFuzzyQueryEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findLikeQueryEncryptorName(logicColumn).map(encryptors::get) : Optional.empty();
     }
     
     /**
@@ -192,15 +192,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Find fuzzy query column.
+     * Find like query column.
      *
      * @param logicTable logic table name
      * @param logicColumn column name
-     * @return fuzzy query column
+     * @return like query column
      */
-    public Optional<String> findFuzzyQueryColumn(final String logicTable, final String logicColumn) {
+    public Optional<String> findLikeQueryColumn(final String logicTable, final String logicColumn) {
         String lowerCaseLogicTable = logicTable.toLowerCase();
-        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findFuzzyQueryColumn(logicColumn) : Optional.empty();
+        return tables.containsKey(lowerCaseLogicTable) ? tables.get(lowerCaseLogicTable).findLikeQueryColumn(logicColumn) : Optional.empty();
     }
     
     /**
@@ -214,13 +214,13 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Get fuzzy query columns.
+     * Get like query columns.
      *
      * @param logicTable logic table
-     * @return fuzzy query columns
+     * @return like query columns
      */
-    public Collection<String> getFuzzyQueryColumns(final String logicTable) {
-        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getFuzzyQueryColumns() : Collections.emptyList();
+    public Collection<String> getLikeQueryColumns(final String logicTable) {
+        return tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).getLikeQueryColumns() : Collections.emptyList();
     }
     
     /**
@@ -251,25 +251,25 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     }
     
     /**
-     * Get encrypt fuzzy query values.
+     * Get encrypt like query values.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param logicTable logic table
      * @param logicColumn logic column
      * @param originalValues original values
-     * @return fuzzy query values
+     * @return like query values
      */
     @SuppressWarnings("rawtypes")
-    public List<Object> getEncryptFuzzyQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
-        Optional<EncryptAlgorithm> encryptor = findFuzzyQueryEncryptor(logicTable, logicColumn);
+    public List<Object> getEncryptLikeQueryValues(final String databaseName, final String schemaName, final String logicTable, final String logicColumn, final List<Object> originalValues) {
+        Optional<EncryptAlgorithm> encryptor = findLikeQueryEncryptor(logicTable, logicColumn);
         EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, logicTable, logicColumn);
-        Preconditions.checkArgument(encryptor.isPresent(), "Can not find fuzzy encryptor by %s.%s.", logicTable, logicColumn);
-        return getEncryptFuzzyQueryValues(encryptor.get(), originalValues, encryptContext);
+        Preconditions.checkArgument(encryptor.isPresent(), "Can not find like encryptor by %s.%s.", logicTable, logicColumn);
+        return getEncryptLikeQueryValues(encryptor.get(), originalValues, encryptContext);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private List<Object> getEncryptFuzzyQueryValues(final EncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
+    private List<Object> getEncryptLikeQueryValues(final EncryptAlgorithm encryptor, final List<Object> originalValues, final EncryptContext encryptContext) {
         List<Object> result = new LinkedList<>();
         for (Object each : originalValues) {
             result.add(null == each ? null : encryptor.encrypt(each, encryptContext));

@@ -45,12 +45,12 @@ public final class ProxyConfigurationLoaderTest {
     @Test
     public void assertLoadEmptyConfiguration() throws IOException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/empty/");
-        YamlProxyServerConfiguration serverConfiguration = actual.getServerConfiguration();
-        assertNull(serverConfiguration.getMode());
-        assertNull(serverConfiguration.getAuthority());
-        assertNull(serverConfiguration.getLabels());
-        assertTrue(serverConfiguration.getProps().isEmpty());
-        assertTrue(serverConfiguration.getRules().isEmpty());
+        YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
+        assertNull(serverConfig.getMode());
+        assertNull(serverConfig.getAuthority());
+        assertNull(serverConfig.getLabels());
+        assertTrue(serverConfig.getProps().isEmpty());
+        assertTrue(serverConfig.getRules().isEmpty());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     

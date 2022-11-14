@@ -57,9 +57,9 @@ public final class EncryptRuleBeanDefinitionTag {
     public static final String ASSISTED_QUERY_COLUMN_ATTRIBUTE = "assisted-query-column";
     
     /**
-     * Fuzzy query column attribute.
+     * Like query column attribute.
      */
-    public static final String FUZZY_QUERY_COLUMN_ATTRIBUTE = "fuzzy-query-column";
+    public static final String LIKE_QUERY_COLUMN_ATTRIBUTE = "like-query-column";
     
     /**
      * Plain column attribute.
@@ -77,9 +77,9 @@ public final class EncryptRuleBeanDefinitionTag {
     public static final String ASSISTED_QUERY_ENCRYPT_ALGORITHM_REF_ATTRIBUTE = "assisted-query-encrypt-algorithm-ref";
     
     /**
-     * Fuzzy query encrypt algorithm ref attribute.
+     * Like query encrypt algorithm ref attribute.
      */
-    public static final String FUZZY_QUERY_ENCRYPT_ALGORITHM_REF_ATTRIBUTE = "fuzzy-query-encrypt-algorithm-ref";
+    public static final String LIKE_QUERY_ENCRYPT_ALGORITHM_REF_ATTRIBUTE = "like-query-encrypt-algorithm-ref";
     
     /**
      * Query with cipher column attribute.

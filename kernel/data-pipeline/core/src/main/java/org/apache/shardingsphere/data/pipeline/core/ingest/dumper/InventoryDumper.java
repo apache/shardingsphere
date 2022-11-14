@@ -93,7 +93,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         String firstSQL = buildInventoryDumpSQL(true);
         String laterSQL = buildInventoryDumpSQL(false);
         IngestPosition<?> position = dumperConfig.getPosition();
-        log.info("Inventory dump, uniqueKeyDataType={}, firstSQL={}, laterSQL={}, position={}.", dumperConfig.getUniqueKeyDataType(), firstSQL, laterSQL, position);
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
@@ -106,7 +105,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             while ((maxUniqueKeyValue = dump(tableMetaData, connection, 1 == round ? firstSQL : laterSQL, beginUniqueKeyValue, round++)).isPresent()) {
                 beginUniqueKeyValue = maxUniqueKeyValue.get();
                 if (!isRunning()) {
-                    log.info("Broke because of inventory dump is not running.");
                     break;
                 }
             }
@@ -115,7 +113,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
             throw new IngestException(ex);
         } finally {
-            log.info("Inventory dump, before put FinishedRecord.");
             channel.pushRecord(new FinishedRecord(new FinishedPosition()));
         }
     }

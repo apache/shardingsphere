@@ -17,30 +17,20 @@
 
 package org.apache.shardingsphere.infra.rewrite.parameter.builder.impl;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class StandardParameterBuilderTest {
     
-    private final List<Object> parameters = Arrays.asList(1, 2, 1, 5);
-    
-    private StandardParameterBuilder parameterBuilder;
-    
-    @Before
-    public void setUp() {
-        parameterBuilder = new StandardParameterBuilder(parameters);
-        parameterBuilder.addAddedParameters(4, Collections.singleton(7));
-    }
-    
     @Test
     public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
+        StandardParameterBuilder paramBuilder = new StandardParameterBuilder(Arrays.asList(1, 2, 1, 5));
+        paramBuilder.addAddedParameters(4, Collections.singleton(7));
+        assertThat(paramBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
     }
 }

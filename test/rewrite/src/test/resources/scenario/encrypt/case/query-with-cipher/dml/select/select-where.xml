@@ -19,27 +19,27 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_for_parameters" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ?" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND fuzzy_query_password like ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, fuzzy_query_aaa, encrypt_1000, OK" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_orderby1" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ? order by password desc" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND fuzzy_query_password like ? AND cipher_amount = ? AND status = ? order by assisted_query_password desc" parameters="1, assisted_query_aaa, fuzzy_query_aaa, encrypt_1000, OK" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ? order by assisted_query_password desc" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_for_literals" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND fuzzy_query_password like 'fuzzy_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_plain_for_parameters" db-types="MySQL">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.password = ? AND a.password like ? AND a.amount = ? AND a.status = ?" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.assisted_query_password = ? AND a.fuzzy_query_password like ? AND a.cipher_amount = ? AND a.status = ?" parameters="1, assisted_query_aaa, fuzzy_query_aaa, encrypt_1000, OK" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = ? AND a.assisted_query_password = ? AND a.like_query_password like ? AND a.cipher_amount = ? AND a.status = ?" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_plain_for_literals" db-types="MySQL">
         <input sql="SELECT a.account_id, a.password, a.amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.password = 'aaa' AND a.password like 'aaa' AND a.amount = 1000 AND a.status = 'OK'" />
-        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.fuzzy_query_password like 'fuzzy_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
+        <output sql="SELECT a.account_id, a.cipher_password AS password, a.cipher_amount AS a, a.status AS s FROM t_account_bak AS a WHERE a.account_id = 1 AND a.assisted_query_password = 'assisted_query_aaa' AND a.like_query_password like 'like_query_aaa' AND a.cipher_amount = 'encrypt_1000' AND a.status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_plain_for_parameters_with_in_has_no_left_space" db-types="MySQL">

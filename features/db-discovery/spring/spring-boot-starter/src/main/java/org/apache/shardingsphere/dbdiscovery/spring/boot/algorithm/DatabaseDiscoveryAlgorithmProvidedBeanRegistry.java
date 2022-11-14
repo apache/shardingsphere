@@ -29,13 +29,8 @@ public final class DatabaseDiscoveryAlgorithmProvidedBeanRegistry extends Abstra
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.database-discovery.discovery-types.";
     
-    /**
-     * Instantiates a new database-discovery algorithm provided bean registry.
-     *
-     * @param environment environment
-     */
-    public DatabaseDiscoveryAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public DatabaseDiscoveryAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

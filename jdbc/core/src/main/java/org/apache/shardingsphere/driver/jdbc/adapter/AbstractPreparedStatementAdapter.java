@@ -274,17 +274,17 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         parameters.set(parameterIndex - 1, value);
     }
     
-    protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
+    protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         setParameterMethodInvocations.clear();
-        addParameters(parameters);
+        addParameters(params);
         for (PreparedStatementInvocationReplayer each : setParameterMethodInvocations) {
             each.replayOn(preparedStatement);
         }
     }
     
-    private void addParameters(final List<Object> parameters) {
+    private void addParameters(final List<Object> params) {
         int i = 0;
-        for (Object each : parameters) {
+        for (Object each : params) {
             int index = ++i;
             setParameterMethodInvocations.add(preparedStatement -> preparedStatement.setObject(index, each));
         }

@@ -29,8 +29,8 @@ public final class ShadowAlgorithmProvidedBeanRegistry extends AbstractAlgorithm
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.shadow.shadow-algorithms.";
     
-    public ShadowAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public ShadowAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

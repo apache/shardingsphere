@@ -49,9 +49,8 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private static final String CASE_PATH = "scenario/mix/case";
     
-    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
-                                           final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
-        super(testParameters);
+    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) {
+        super(testParams);
     }
     
     @Parameters(name = "{0}: {1} ({3}) -> {2}")

@@ -46,7 +46,7 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
+                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         SelectStatement selectStatement = sqlStatementContext.getSqlStatement().getSelect();
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(selectStatement);
@@ -61,7 +61,7 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final List<Object> parameters,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         SelectStatement selectStatement = sqlStatementContext.getSqlStatement().getSelect();
         if (isContainsNotSupportedViewStatement(selectStatement, routeContext)) {

@@ -90,7 +90,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
         if (encryptTable.getAssistedQueryColumns().stream().anyMatch(columnDefinition::contains)) {
             return Optional.empty();
         }
-        if (encryptTable.getFuzzyQueryColumns().stream().anyMatch(columnDefinition::contains)) {
+        if (encryptTable.getLikeQueryColumns().stream().anyMatch(columnDefinition::contains)) {
             return Optional.empty();
         }
         return Optional.of(columnDefinition);

@@ -36,8 +36,8 @@ public interface ConditionValueGenerator<T extends ExpressionSegment> {
      * 
      * @param predicateRightValue predicate right value
      * @param column column
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return route value
      */
-    Optional<ShardingConditionValue> generate(T predicateRightValue, Column column, List<Object> parameters);
+    Optional<ShardingConditionValue> generate(T predicateRightValue, Column column, List<Object> params);
 }

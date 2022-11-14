@@ -46,15 +46,15 @@ public final class TopPaginationContextEngine {
      *
      * @param topProjectionSegment top projection segment
      * @param expressions expressions
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return pagination context
      */
-    public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final Collection<ExpressionSegment> expressions, final List<Object> parameters) {
+    public PaginationContext createPaginationContext(final TopProjectionSegment topProjectionSegment, final Collection<ExpressionSegment> expressions, final List<Object> params) {
         Collection<AndPredicate> andPredicates = expressions.stream().flatMap(each -> ExpressionExtractUtil.getAndPredicates(each).stream()).collect(Collectors.toList());
         Optional<ExpressionSegment> rowNumberPredicate = !expressions.isEmpty() ? getRowNumberPredicate(andPredicates, topProjectionSegment.getAlias()) : Optional.empty();
         Optional<PaginationValueSegment> offset = rowNumberPredicate.isPresent() ? createOffsetWithRowNumber(rowNumberPredicate.get()) : Optional.empty();
         PaginationValueSegment rowCount = topProjectionSegment.getTop();
-        return new PaginationContext(offset.orElse(null), rowCount, parameters);
+        return new PaginationContext(offset.orElse(null), rowCount, params);
     }
     
     private Optional<ExpressionSegment> getRowNumberPredicate(final Collection<AndPredicate> andPredicates, final String rowNumberAlias) {

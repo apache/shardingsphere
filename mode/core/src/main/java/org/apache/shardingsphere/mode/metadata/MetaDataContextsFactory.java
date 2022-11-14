@@ -59,33 +59,32 @@ public final class MetaDataContextsFactory {
      * Create meta data contexts.
      *
      * @param persistService persist service
-     * @param parameter database configurations
+     * @param param context manager builder parameter
      * @param instanceContext instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter,
-                                          final InstanceContext instanceContext) throws SQLException {
-        return create(persistService, parameter, instanceContext, Collections.emptyMap());
+    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param, final InstanceContext instanceContext) throws SQLException {
+        return create(persistService, param, instanceContext, Collections.emptyMap());
     }
     
     /**
      * Create meta data contexts.
      *
      * @param persistService persist service
-     * @param parameter database configurations
+     * @param param context manager builder parameter
      * @param instanceContext instance context
      * @param storageNodes storage nodes
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
-    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter,
+    public static MetaDataContexts create(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param,
                                           final InstanceContext instanceContext, final Map<String, StorageNodeDataSource> storageNodes) throws SQLException {
         Collection<String> databaseNames = instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
-                ? parameter.getDatabaseConfigs().keySet()
+                ? param.getDatabaseConfigs().keySet()
                 : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
-        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(databaseNames, parameter.getDatabaseConfigs(), persistService);
-        checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, parameter.isForce());
+        Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(databaseNames, param.getDatabaseConfigs(), persistService);
+        checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, param.isForce());
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);

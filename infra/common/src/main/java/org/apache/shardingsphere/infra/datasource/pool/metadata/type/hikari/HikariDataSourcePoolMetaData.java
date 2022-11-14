@@ -29,11 +29,11 @@ import java.util.Map;
  */
 public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
-    private static final Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>(6, 1);
+    private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1);
     
-    private static final Map<String, Object> INVALID_PROPERTIES = new HashMap<>(2, 1);
+    private static final Map<String, Object> INVALID_PROPS = new HashMap<>(2, 1);
     
-    private static final Map<String, String> PROPERTY_SYNONYMS = new HashMap<>(6, 1);
+    private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(6, 1);
     
     private static final Collection<String> TRANSIENT_FIELD_NAMES = new LinkedList<>();
     
@@ -45,26 +45,26 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     }
     
     private static void buildDefaultProperties() {
-        DEFAULT_PROPERTIES.put("connectionTimeout", 30 * 1000L);
-        DEFAULT_PROPERTIES.put("idleTimeout", 60 * 1000L);
-        DEFAULT_PROPERTIES.put("maxLifetime", 30 * 70 * 1000L);
-        DEFAULT_PROPERTIES.put("maximumPoolSize", 50);
-        DEFAULT_PROPERTIES.put("minimumIdle", 1);
-        DEFAULT_PROPERTIES.put("readOnly", false);
+        DEFAULT_PROPS.put("connectionTimeout", 30 * 1000L);
+        DEFAULT_PROPS.put("idleTimeout", 60 * 1000L);
+        DEFAULT_PROPS.put("maxLifetime", 30 * 70 * 1000L);
+        DEFAULT_PROPS.put("maximumPoolSize", 50);
+        DEFAULT_PROPS.put("minimumIdle", 1);
+        DEFAULT_PROPS.put("readOnly", false);
     }
     
     private static void buildInvalidProperties() {
-        INVALID_PROPERTIES.put("minimumIdle", -1);
-        INVALID_PROPERTIES.put("maximumPoolSize", -1);
+        INVALID_PROPS.put("minimumIdle", -1);
+        INVALID_PROPS.put("maximumPoolSize", -1);
     }
     
     private static void buildPropertySynonyms() {
-        PROPERTY_SYNONYMS.put("url", "jdbcUrl");
-        PROPERTY_SYNONYMS.put("connectionTimeoutMilliseconds", "connectionTimeout");
-        PROPERTY_SYNONYMS.put("idleTimeoutMilliseconds", "idleTimeout");
-        PROPERTY_SYNONYMS.put("maxLifetimeMilliseconds", "maxLifetime");
-        PROPERTY_SYNONYMS.put("maxPoolSize", "maximumPoolSize");
-        PROPERTY_SYNONYMS.put("minPoolSize", "minimumIdle");
+        PROP_SYNONYMS.put("url", "jdbcUrl");
+        PROP_SYNONYMS.put("connectionTimeoutMilliseconds", "connectionTimeout");
+        PROP_SYNONYMS.put("idleTimeoutMilliseconds", "idleTimeout");
+        PROP_SYNONYMS.put("maxLifetimeMilliseconds", "maxLifetime");
+        PROP_SYNONYMS.put("maxPoolSize", "maximumPoolSize");
+        PROP_SYNONYMS.put("minPoolSize", "minimumIdle");
     }
     
     private static void buildTransientFieldNames() {
@@ -75,17 +75,17 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        return DEFAULT_PROPERTIES;
+        return DEFAULT_PROPS;
     }
     
     @Override
     public Map<String, Object> getInvalidProperties() {
-        return INVALID_PROPERTIES;
+        return INVALID_PROPS;
     }
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        return PROPERTY_SYNONYMS;
+        return PROP_SYNONYMS;
     }
     
     @Override

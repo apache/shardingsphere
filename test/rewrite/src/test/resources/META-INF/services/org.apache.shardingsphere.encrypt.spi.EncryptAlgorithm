@@ -18,4 +18,4 @@
 org.apache.shardingsphere.sharding.rewrite.fixture.encrypt.RewriteNormalEncryptAlgorithmFixture
 org.apache.shardingsphere.sharding.rewrite.fixture.encrypt.RewriteSchemaMetaDataAwareEncryptAlgorithmFixture
 org.apache.shardingsphere.sharding.rewrite.fixture.encrypt.RewriteQueryAssistedEncryptAlgorithmFixture
-org.apache.shardingsphere.sharding.rewrite.fixture.encrypt.RewriteQueryFuzzyEncryptAlgorithmFixture
+org.apache.shardingsphere.sharding.rewrite.fixture.encrypt.RewriteQueryLikeEncryptAlgorithmFixture

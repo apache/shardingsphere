@@ -70,7 +70,7 @@ public final class YamlEncryptTableRuleConfigurationSwapperTest {
         encryptColumnRuleConfig.setLogicColumn("encrypt_column");
         encryptColumnRuleConfig.setCipherColumn("encrypt_cipher");
         encryptColumnRuleConfig.setAssistedQueryColumn("encrypt_assisted");
-        encryptColumnRuleConfig.setFuzzyQueryColumn("encrypt_fuzzy");
+        encryptColumnRuleConfig.setLikeQueryColumn("encrypt_like");
         encryptColumnRuleConfig.setPlainColumn("encrypt_plain");
         encryptColumnRuleConfig.setEncryptorName("test_encryptor");
         encryptColumnRuleConfig.setQueryWithCipherColumn(true);
@@ -89,7 +89,7 @@ public final class YamlEncryptTableRuleConfigurationSwapperTest {
         assertThat(actualEncryptColumnRuleConfig.getLogicColumn(), is("test_column"));
         assertThat(actualEncryptColumnRuleConfig.getCipherColumn(), is("encrypt_cipher"));
         assertThat(actualEncryptColumnRuleConfig.getAssistedQueryColumn(), is("encrypt_assisted"));
-        assertThat(actualEncryptColumnRuleConfig.getFuzzyQueryColumn(), is("encrypt_fuzzy"));
+        assertThat(actualEncryptColumnRuleConfig.getLikeQueryColumn(), is("encrypt_like"));
         assertThat(actualEncryptColumnRuleConfig.getPlainColumn(), is("encrypt_plain"));
         assertThat(actualEncryptColumnRuleConfig.getEncryptorName(), is("test_encryptor"));
         assertTrue(actualEncryptColumnRuleConfig.getQueryWithCipherColumn());

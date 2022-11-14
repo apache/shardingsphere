@@ -25,6 +25,7 @@ import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.schema.impl.AbstractSchema;
@@ -111,18 +112,18 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) {
         SQLStatementContext<?> sqlStatementContext = federationContext.getQueryContext().getSqlStatementContext();
         Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
-        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
+        ShardingSphereDatabase database = federationContext.getMetaData().getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         AbstractSchema sqlFederationSchema = createSQLFederationSchema(prepareEngine, database.getProtocolType(), schema, callback, federationContext);
-        Map<String, Object> parameters = createParameters(federationContext.getQueryContext().getParameters());
-        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, parameters);
+        Map<String, Object> params = createParameters(federationContext.getQueryContext().getParameters());
+        resultSet = execute((SelectStatementContext) sqlStatementContext, schema, sqlFederationSchema, params);
         return resultSet;
     }
     
-    private Map<String, Object> createParameters(final List<Object> parameters) {
-        Map<String, Object> result = new HashMap<>(parameters.size(), 1);
+    private Map<String, Object> createParameters(final List<Object> params) {
+        Map<String, Object> result = new HashMap<>(params.size(), 1);
         int index = 0;
-        for (Object each : parameters) {
+        for (Object each : params) {
             result.put("?" + index++, each);
         }
         return result;
@@ -139,17 +140,17 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     }
     
     @SuppressWarnings("unchecked")
-    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> parameters) {
-        OptimizerParserContext parserContext = optimizerContext.getParserContexts().get(databaseName);
+    private ResultSet execute(final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final AbstractSchema sqlFederationSchema, final Map<String, Object> params) {
+        OptimizerParserContext parserContext = optimizerContext.getParserContext(databaseName);
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(parserContext.getDialectProps());
         CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName, sqlFederationSchema, JAVA_TYPE_FACTORY, connectionConfig);
         SqlValidator validator = SQLFederationPlannerUtil.createSqlValidator(catalogReader, JAVA_TYPE_FACTORY, parserContext.getDatabaseType(), connectionConfig);
         SqlToRelConverter converter = SQLFederationPlannerUtil.createSqlToRelConverter(catalogReader, validator,
                 SQLFederationPlannerUtil.createRelOptCluster(JAVA_TYPE_FACTORY), optimizerContext.getSqlParserRule(), parserContext.getDatabaseType(), true);
-        SQLOptimizeContext optimizeContext =
-                new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner()).optimize(selectStatementContext.getSqlStatement());
+        RelOptPlanner hepPlanner = optimizerContext.getPlannerContext(databaseName).getHepPlanner();
+        SQLOptimizeContext optimizeContext = new SQLOptimizeEngine(converter, hepPlanner).optimize(selectStatementContext.getSqlStatement());
         Bindable<Object> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) optimizeContext.getBestPlan(), EnumerableRel.Prefer.ARRAY);
-        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, parameters)).enumerator();
+        Enumerator<Object> enumerator = executablePlan.bind(new SQLFederationDataContext(validator, converter, params)).enumerator();
         return new SQLFederationResultSet(enumerator, schema, sqlFederationSchema, selectStatementContext, optimizeContext.getValidatedNodeType());
     }
     

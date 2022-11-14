@@ -78,20 +78,20 @@ public final class IntegrationTestCaseAssertion {
         return result;
     }
     
-    private List<String> parse(final String parameter) {
-        List<String> result = Splitter.on(":").trimResults().splitToList(parameter);
+    private List<String> parse(final String param) {
+        List<String> result = Splitter.on(":").trimResults().splitToList(param);
         int size = result.size();
         if (size <= 2) {
             return result;
         }
-        return parseComplex(parameter);
+        return parseComplex(param);
     }
     
-    private List<String> parseComplex(final String parameter) {
+    private List<String> parseComplex(final String param) {
         List<String> result = new ArrayList<>(2);
-        int index = parameter.lastIndexOf(":");
-        result.add(parameter.substring(0, index));
-        result.add(parameter.substring(index + 1));
+        int index = param.lastIndexOf(":");
+        result.add(param.substring(0, index));
+        result.add(param.substring(index + 1));
         return result;
     }
 }

@@ -29,13 +29,8 @@ public final class EncryptAlgorithmProvidedBeanRegistry extends AbstractAlgorith
     
     private static final String ENCRYPTORS_ALGORITHMS = "spring.shardingsphere.rules.encrypt.encryptors.";
     
-    /**
-     * Instantiates a new encrypt algorithm provided bean registry.
-     *
-     * @param environment environment
-     */
-    public EncryptAlgorithmProvidedBeanRegistry(final Environment environment) {
-        super(environment);
+    public EncryptAlgorithmProvidedBeanRegistry(final Environment env) {
+        super(env);
     }
     
     @Override

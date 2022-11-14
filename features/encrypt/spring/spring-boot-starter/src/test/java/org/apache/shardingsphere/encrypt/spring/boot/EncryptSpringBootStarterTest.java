@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.spring.boot;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.algorithm.encrypt.AESEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.algorithm.encrypt.MD5EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.algorithm.fuzzy.CharDigestFuzzyEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.algorithm.like.CharDigestLikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -70,7 +70,7 @@ public class EncryptSpringBootStarterTest {
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
         assertThat(encryptors.get("md5Encryptor"), instanceOf(MD5EncryptAlgorithm.class));
-        assertThat(encryptors.get("fuzzyCnEncryptor"), instanceOf(CharDigestFuzzyEncryptAlgorithm.class));
+        assertThat(encryptors.get("likeQueryEncryptor"), instanceOf(CharDigestLikeEncryptAlgorithm.class));
     }
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
@@ -92,9 +92,9 @@ public class EncryptSpringBootStarterTest {
         assertThat(columnRuleConfig.getLogicColumn(), is("credit_card"));
         assertThat(columnRuleConfig.getCipherColumn(), is("credit_card_cipher"));
         assertThat(columnRuleConfig.getAssistedQueryColumn(), is("credit_card_assisted_query"));
-        assertThat(columnRuleConfig.getFuzzyQueryColumn(), is("credit_card_fuzzy_query"));
+        assertThat(columnRuleConfig.getLikeQueryColumn(), is("credit_card_like_query"));
         assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
-        assertThat(columnRuleConfig.getFuzzyQueryEncryptorName(), is("fuzzyCnEncryptor"));
+        assertThat(columnRuleConfig.getLikeQueryEncryptorName(), is("likeQueryEncryptor"));
     }
 }

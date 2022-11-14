@@ -49,21 +49,21 @@ public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     }
     
     private void assertErrors() throws SQLException {
-        Connection conn = getDataSource().getConnection();
+        Connection connection = getDataSource().getConnection();
         try {
-            conn.setSavepoint("point");
+            connection.setSavepoint("point");
             fail("Expect exception, but no exception report.");
         } catch (final SQLException ex) {
             assertThat(ex.getMessage(), is("Cannot establish a savepoint in auto-commit mode."));
         }
         try {
-            conn.rollback(new PSQLSavepoint("point1"));
+            connection.rollback(new PSQLSavepoint("point1"));
             fail("Expect exception, but no exception report.");
         } catch (final SQLException ex) {
             assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         }
         try {
-            conn.releaseSavepoint(new PSQLSavepoint("point1"));
+            connection.releaseSavepoint(new PSQLSavepoint("point1"));
             fail("Expect exception, but no exception report.");
         } catch (final SQLException ex) {
             assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));

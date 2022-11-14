@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.spring.boot.condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.mock.env.MockEnvironment;
@@ -35,26 +34,20 @@ public final class DatabaseDiscoverySpringBootConditionTest {
     
     @Test
     public void assertNotMatch() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
-        mockEnvironment.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
+        mockEnv.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
         ConditionContext context = mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-        when(context.getEnvironment()).thenReturn(mockEnvironment);
-        DatabaseDiscoverySpringBootCondition condition = new DatabaseDiscoverySpringBootCondition();
-        ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertFalse(matchOutcome.isMatch());
+        when(context.getEnvironment()).thenReturn(mockEnv);
+        assertFalse(new DatabaseDiscoverySpringBootCondition().getMatchOutcome(context, mock(AnnotatedTypeMetadata.class)).isMatch());
     }
     
     @Test
     public void assertMatch() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.database-discovery.data-sources.primary_replica_ds.discovery-type-name", "mgr");
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.rules.database-discovery.data-sources.primary_replica_ds.discovery-type-name", "mgr");
         ConditionContext context = mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-        when(context.getEnvironment()).thenReturn(mockEnvironment);
-        DatabaseDiscoverySpringBootCondition condition = new DatabaseDiscoverySpringBootCondition();
-        ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertTrue(matchOutcome.isMatch());
+        when(context.getEnvironment()).thenReturn(mockEnv);
+        assertTrue(new DatabaseDiscoverySpringBootCondition().getMatchOutcome(context, mock(AnnotatedTypeMetadata.class)).isMatch());
     }
 }

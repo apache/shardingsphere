@@ -35,7 +35,7 @@ public final class ShardingCopyStatementValidator extends ShardingDMLStatementVa
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
+                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
         if (shardingRule.isShardingTable(tableName)) {
             throw new UnsupportedShardingOperationException("COPY", tableName);
@@ -44,6 +44,6 @@ public final class ShardingCopyStatementValidator extends ShardingDMLStatementVa
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext,
-                             final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

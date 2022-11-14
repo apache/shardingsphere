@@ -53,16 +53,16 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     
     private static final String TYPE_SUFFIX = ".type";
     
-    private final Environment environment;
+    private final Environment env;
     
     private final Map<String, Properties> propsMap = new HashMap<>();
     
     @SuppressWarnings("unchecked")
     protected final void registerBean(final String prefix, final Class<T> algorithmClass, final BeanDefinitionRegistry registry) {
-        if (!PropertyUtil.containPropertyPrefix(environment, prefix)) {
+        if (!PropertyUtil.containsPropertyPrefix(env, prefix)) {
             return;
         }
-        Map<String, Object> parameterMap = PropertyUtil.handle(environment, prefix, Map.class);
+        Map<String, Object> parameterMap = PropertyUtil.handle(env, prefix, Map.class);
         Collection<String> algorithmNames = parameterMap.keySet().stream().map(key -> key.contains(POINT) ? key.substring(0, key.indexOf(POINT)) : key).collect(Collectors.toSet());
         Map<String, AlgorithmConfiguration> algorithmConfigs = createAlgorithmConfigurations(prefix, algorithmNames);
         ShardingSphereServiceLoader.register(algorithmClass);
@@ -83,7 +83,7 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     }
     
     private AlgorithmConfiguration createAlgorithmConfiguration(final String prefix, final String algorithmName) {
-        String type = environment.getProperty(String.join("", prefix, algorithmName, TYPE_SUFFIX));
+        String type = env.getProperty(String.join("", prefix, algorithmName, TYPE_SUFFIX));
         Properties props = getProperties(prefix, algorithmName);
         return new AlgorithmConfiguration(type, props);
     }
@@ -91,8 +91,8 @@ public abstract class AbstractAlgorithmProvidedBeanRegistry<T extends ShardingSp
     private Properties getProperties(final String prefix, final String algorithmName) {
         String propsPrefix = String.join("", prefix, algorithmName, PROPS_SUFFIX);
         Properties result = new Properties();
-        if (PropertyUtil.containPropertyPrefix(environment, propsPrefix)) {
-            result.putAll(PropertyUtil.handle(environment, propsPrefix, Map.class));
+        if (PropertyUtil.containsPropertyPrefix(env, propsPrefix)) {
+            result.putAll(PropertyUtil.handle(env, propsPrefix, Map.class));
         }
         return convertToStringTypedProperties(result);
     }

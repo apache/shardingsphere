@@ -20,7 +20,6 @@ package org.apache.shardingsphere.shadow.spring.boot.condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.mock.env.MockEnvironment;
@@ -35,25 +34,19 @@ public final class ShadowSpringBootConditionTest {
     
     @Test
     public void assertNotMatch() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.rules.encrypt.encryptors.aes_encryptor.type", "AES");
         ConditionContext context = mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-        when(context.getEnvironment()).thenReturn(mockEnvironment);
-        ShadowSpringBootCondition condition = new ShadowSpringBootCondition();
-        ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertFalse(matchOutcome.isMatch());
+        when(context.getEnvironment()).thenReturn(mockEnv);
+        assertFalse(new ShadowSpringBootCondition().getMatchOutcome(context, mock(AnnotatedTypeMetadata.class)).isMatch());
     }
     
     @Test
     public void assertMatch() {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
+        MockEnvironment mockEnv = new MockEnvironment();
+        mockEnv.setProperty("spring.shardingsphere.rules.shadow.column", "user_id");
         ConditionContext context = mock(ConditionContext.class);
-        AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-        when(context.getEnvironment()).thenReturn(mockEnvironment);
-        ShadowSpringBootCondition condition = new ShadowSpringBootCondition();
-        ConditionOutcome matchOutcome = condition.getMatchOutcome(context, metadata);
-        assertTrue(matchOutcome.isMatch());
+        when(context.getEnvironment()).thenReturn(mockEnv);
+        assertTrue(new ShadowSpringBootCondition().getMatchOutcome(context, mock(AnnotatedTypeMetadata.class)).isMatch());
     }
 }

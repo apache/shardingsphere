@@ -195,8 +195,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private void appendProperties(final Map<String, Object> properties, final StringBuilder result) {
-        Iterator<Entry<String, Object>> iterator = properties.entrySet().iterator();
+    private void appendProperties(final Map<String, Object> props, final StringBuilder result) {
+        Iterator<Entry<String, Object>> iterator = props.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, Object> entry = iterator.next();
             if (null == entry.getValue()) {
@@ -210,44 +210,11 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
     }
     
     private void appendShardingDistSQL(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
-        appendShardingAlgorithms(ruleConfig, result);
-        appendKeyGenerators(ruleConfig, result);
         appendShardingTableRules(ruleConfig, result);
         // TODO append autoTables
         appendShardingBindingTableRules(ruleConfig, result);
         appendShardingBroadcastTableRules(ruleConfig, result);
-    }
-    
-    private void appendShardingAlgorithms(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
-        if (ruleConfig.getShardingAlgorithms().isEmpty()) {
-            return;
-        }
-        result.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
-        Iterator<Entry<String, AlgorithmConfiguration>> iterator = ruleConfig.getShardingAlgorithms().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, AlgorithmConfiguration> entry = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.SHARDING_ALGORITHM, entry.getKey(), getAlgorithmType(entry.getValue())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
-            }
-        }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
-    }
-    
-    private void appendKeyGenerators(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
-        if (ruleConfig.getKeyGenerators().isEmpty()) {
-            return;
-        }
-        result.append(DistSQLScriptConstants.CREATE_KEY_GENERATOR);
-        Iterator<Entry<String, AlgorithmConfiguration>> iterator = ruleConfig.getKeyGenerators().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<String, AlgorithmConfiguration> entry = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.KEY_GENERATOR, entry.getKey(), getAlgorithmType(entry.getValue())));
-            if (iterator.hasNext()) {
-                result.append(DistSQLScriptConstants.COMMA);
-            }
-        }
-        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
+        // TODO append defaultStrategy
     }
     
     private void appendShardingTableRules(final ShardingRuleConfiguration ruleConfig, final StringBuilder result) {
@@ -258,7 +225,8 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<ShardingTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             ShardingTableRuleConfiguration tableRuleConfig = iterator.next();
-            result.append(String.format(DistSQLScriptConstants.SHARDING_TABLE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(), appendTableStrategy(tableRuleConfig)));
+            result.append(String.format(DistSQLScriptConstants.SHARDING_TABLE, tableRuleConfig.getLogicTable(), tableRuleConfig.getActualDataNodes(),
+                    appendTableStrategy(tableRuleConfig, ruleConfig.getShardingAlgorithms(), ruleConfig.getKeyGenerators())));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -266,35 +234,38 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
-    private String appendTableStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
+    private String appendTableStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig,
+                                       final Map<String, AlgorithmConfiguration> shardingAlgorithms, final Map<String, AlgorithmConfiguration> keyGenerators) {
         StringBuilder result = new StringBuilder();
         if (null != shardingTableRuleConfig.getDatabaseShardingStrategy()) {
-            appendStrategy(shardingTableRuleConfig.getDatabaseShardingStrategy(), DistSQLScriptConstants.DATABASE_STRATEGY, result);
+            appendStrategy(shardingTableRuleConfig.getDatabaseShardingStrategy(), DistSQLScriptConstants.DATABASE_STRATEGY, result, shardingAlgorithms);
         }
         if (null != shardingTableRuleConfig.getTableShardingStrategy()) {
-            appendStrategy(shardingTableRuleConfig.getTableShardingStrategy(), DistSQLScriptConstants.TABLE_STRATEGY, result);
+            appendStrategy(shardingTableRuleConfig.getTableShardingStrategy(), DistSQLScriptConstants.TABLE_STRATEGY, result, shardingAlgorithms);
         }
         if (null != shardingTableRuleConfig.getKeyGenerateStrategy()) {
             KeyGenerateStrategyConfiguration keyGenerateStrategyConfig = shardingTableRuleConfig.getKeyGenerateStrategy();
-            result.append(String.format(DistSQLScriptConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), keyGenerateStrategyConfig.getKeyGeneratorName()));
+            String algorithmDefinition = getAlgorithmType(keyGenerators.get(keyGenerateStrategyConfig.getKeyGeneratorName()));
+            result.append(String.format(DistSQLScriptConstants.KEY_GENERATOR_STRATEGY, keyGenerateStrategyConfig.getColumn(), algorithmDefinition));
         }
         return result.substring(0, result.lastIndexOf(","));
     }
     
-    private void appendStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType, final StringBuilder result) {
+    private void appendStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType,
+                                final StringBuilder result, final Map<String, AlgorithmConfiguration> shardingAlgorithms) {
         String type = shardingStrategyConfiguration.getType().toLowerCase();
-        String shardingAlgorithmName = shardingStrategyConfiguration.getShardingAlgorithmName();
+        String algorithmDefinition = getAlgorithmType(shardingAlgorithms.get(shardingStrategyConfiguration.getShardingAlgorithmName()));
         switch (type) {
             case DistSQLScriptConstants.STANDARD:
                 StandardShardingStrategyConfiguration standardShardingStrategyConfig = (StandardShardingStrategyConfiguration) shardingStrategyConfiguration;
-                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), shardingAlgorithmName));
+                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_STANDARD, strategyType, type, standardShardingStrategyConfig.getShardingColumn(), algorithmDefinition));
                 break;
             case DistSQLScriptConstants.COMPLEX:
                 ComplexShardingStrategyConfiguration complexShardingStrategyConfig = (ComplexShardingStrategyConfiguration) shardingStrategyConfiguration;
-                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), shardingAlgorithmName));
+                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_COMPLEX, strategyType, type, complexShardingStrategyConfig.getShardingColumns(), algorithmDefinition));
                 break;
             case DistSQLScriptConstants.HINT:
-                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_HINT, type, shardingAlgorithmName));
+                result.append(String.format(DistSQLScriptConstants.SHARDING_STRATEGY_HINT, type, algorithmDefinition));
                 break;
             default:
                 break;
@@ -517,19 +488,19 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         }
         String type = algorithmConfig.getType().toLowerCase();
         if (algorithmConfig.getProps().isEmpty()) {
-            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPERTIES, type));
+            result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE_WITHOUT_PROPS, type));
         } else {
             result.append(String.format(DistSQLScriptConstants.ALGORITHM_TYPE, type, getAlgorithmProperties(algorithmConfig.getProps())));
         }
         return result.toString();
     }
     
-    private String getAlgorithmProperties(final Properties properties) {
+    private String getAlgorithmProperties(final Properties props) {
         StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = new TreeMap(properties).keySet().iterator();
+        Iterator<String> iterator = new TreeMap(props).keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
-            String value = properties.getProperty(key);
+            String value = props.getProperty(key);
             if (null == value) {
                 continue;
             }
