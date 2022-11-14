@@ -51,6 +51,7 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
         DEFAULT_PROPS.put("maximumPoolSize", 50);
         DEFAULT_PROPS.put("minimumIdle", 1);
         DEFAULT_PROPS.put("readOnly", false);
+        DEFAULT_PROPS.put("keepaliveTime", 0);
     }
     
     private static void buildInvalidProperties() {
