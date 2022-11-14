@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.data.collector;
+package org.apache.shardingsphere.infra.metadata.data.collector;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
