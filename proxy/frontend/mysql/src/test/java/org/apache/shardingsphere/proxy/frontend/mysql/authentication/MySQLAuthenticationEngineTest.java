@@ -138,6 +138,18 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MySQLVendorError.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
+        verify(context).close();
+    }
+    
+    @Test
+    public void assertAuthWithDatabaseAccessDenied() {
+        setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
+        ChannelHandlerContext context = getContext();
+        setMetaDataContexts();
+        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MySQLVendorError.ER_DBACCESS_DENIED_ERROR));
+        authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
+        verify(context).writeAndFlush(any(MySQLErrPacket.class));
+        verify(context).close();
     }
     
     @Test
@@ -147,6 +159,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         authenticationEngine.authenticate(context, getPayload("root", "ABSENT DATABASE", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
+        verify(context).close();
     }
     
     @Test
