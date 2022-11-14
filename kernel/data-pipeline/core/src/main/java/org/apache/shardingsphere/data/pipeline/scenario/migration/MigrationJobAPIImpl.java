@@ -42,12 +42,15 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Standa
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
+import org.apache.shardingsphere.data.pipeline.api.pojo.MigrationJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobMetaData;
 import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -103,6 +106,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -131,6 +135,32 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         PipelineJobMetaData jobMetaData = new PipelineJobMetaData(jobId, !jobConfigPOJO.isDisabled(),
                 jobConfigPOJO.getShardingTotalCount(), jobConfigPOJO.getProps().getProperty("create_time"), jobConfigPOJO.getProps().getProperty("stop_time"), jobConfigPOJO.getJobParameter());
         return new TableBasedPipelineJobInfo(jobMetaData, getJobConfiguration(jobConfigPOJO).getSourceTableName());
+    }
+    
+    @Override
+    public List<InventoryIncrementalJobItemInfo> getJobItemInfos(final String jobId) {
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = super.getJobItemInfos(jobId);
+        List<InventoryIncrementalJobItemInfo> result = new ArrayList<>(jobItemInfos.size());
+        long currentTimeMillis = System.currentTimeMillis();
+        for (InventoryIncrementalJobItemInfo each : jobItemInfos) {
+            InventoryIncrementalJobItemProgress progress = each.getJobItemProgress();
+            if (null == progress) {
+                result.add(new MigrationJobItemInfo(each, 0, ""));
+                continue;
+            }
+            int inventoryFinishedPercentage = 0;
+            if (0 != progress.getProcessedRecordsCount() && 0 != progress.getInventoryRecordsCount()) {
+                inventoryFinishedPercentage = (int) Math.min(100, progress.getProcessedRecordsCount() * 100 / progress.getInventoryRecordsCount());
+            }
+            String incrementalIdleSeconds = "";
+            if (progress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
+                long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), progress.getIncremental().getIncrementalLatestActiveTimeMillis());
+                incrementalIdleSeconds = String.valueOf(TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis));
+            }
+            MigrationJobItemInfo progressInfo = new MigrationJobItemInfo(each, inventoryFinishedPercentage, incrementalIdleSeconds);
+            result.add(progressInfo);
+        }
+        return result;
     }
     
     @Override

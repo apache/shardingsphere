@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.api.pojo;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 
 /**
- * Inventory incremental job item info.
+ * Migration job item info.
  */
-@RequiredArgsConstructor
 @Getter
-public class InventoryIncrementalJobItemInfo {
+public final class MigrationJobItemInfo extends InventoryIncrementalJobItemInfo {
     
-    private final int shardingItem;
+    private final int inventoryFinishedPercentage;
     
-    private final InventoryIncrementalJobItemProgress jobItemProgress;
+    private final String incrementalIdleSeconds;
     
-    private final long startTimeMillis;
-    
-    private final String errorMessage;
+    public MigrationJobItemInfo(final InventoryIncrementalJobItemInfo progressInfo, final int inventoryFinishedPercentage, final String incrementalIdleSeconds) {
+        super(progressInfo.getShardingItem(), progressInfo.getJobItemProgress(), progressInfo.getStartTimeMillis(), progressInfo.getErrorMessage());
+        this.inventoryFinishedPercentage = inventoryFinishedPercentage;
+        this.incrementalIdleSeconds = incrementalIdleSeconds;
+    }
 }

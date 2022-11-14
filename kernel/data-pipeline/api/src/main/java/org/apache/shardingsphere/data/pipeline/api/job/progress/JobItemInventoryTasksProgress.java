@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
+
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Job item inventory tasks progress.
@@ -50,6 +51,7 @@ public final class JobItemInventoryTasksProgress {
     
     /**
      * Get inventory finished percentage.
+     * TODO will be deleted when the new implementation is complete
      *
      * @return finished percentage
      */
