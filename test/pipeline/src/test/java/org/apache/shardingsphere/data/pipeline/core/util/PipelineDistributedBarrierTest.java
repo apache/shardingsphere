@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -45,7 +46,7 @@ public final class PipelineDistributedBarrierTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
+        PipelineDistributedBarrier instance = PipelineContext.getPipelineDistributedBarrier();
         String parentPath = "/barrier";
         instance.register(parentPath, 1);
         Map countDownLatchMap = ReflectionUtil.getFieldValue(instance, "countDownLatchMap", Map.class);
@@ -60,13 +61,13 @@ public final class PipelineDistributedBarrierTest {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
-        PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance();
+        PipelineDistributedBarrier instance = PipelineContext.getPipelineDistributedBarrier();
         String barrierEnablePath = PipelineMetaDataNode.getJobBarrierEnablePath(jobId);
         instance.register(barrierEnablePath, 1);
         instance.persistEphemeralChildrenNode(barrierEnablePath, 1);
         boolean actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
         assertFalse(actual);
-        instance.checkChildrenNodeCount(new DataChangedEvent(barrierEnablePath + "/0", "", Type.ADDED));
+        instance.notifyChildrenNodeCountCheck(new DataChangedEvent(barrierEnablePath + "/0", "", Type.ADDED));
         actual = instance.await(barrierEnablePath, 1, TimeUnit.SECONDS);
         assertTrue(actual);
     }

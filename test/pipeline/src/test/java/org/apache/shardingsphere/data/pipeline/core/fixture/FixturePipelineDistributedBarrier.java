@@ -15,30 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.impl;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineDistributedBarrier;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
-import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
-/**
- * Barrier meta data changed event handler.
- */
-public final class BarrierMetaDataChangedEventHandler implements PipelineMetaDataChangedEventHandler {
+public final class FixturePipelineDistributedBarrier implements PipelineDistributedBarrier {
     
     @Override
-    public Pattern getKeyPattern() {
-        return PipelineMetaDataNode.BARRIER_PATTERN;
+    public void register(final String barrierPath, final int totalCount) {
     }
     
     @Override
-    public void handle(final DataChangedEvent event) {
-        if (event.getType() == Type.ADDED) {
-            PipelineContext.getPipelineDistributedBarrier().notifyChildrenNodeCountCheck(event);
-        }
+    public void persistEphemeralChildrenNode(final String barrierPath, final int shardingItem) {
+    }
+    
+    @Override
+    public void unregister(final String barrierPath) {
+    }
+    
+    @Override
+    public boolean await(final String barrierPath, final long timeout, final TimeUnit timeUnit) {
+        return false;
+    }
+    
+    @Override
+    public void notifyChildrenNodeCountCheck(final DataChangedEvent event) {
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

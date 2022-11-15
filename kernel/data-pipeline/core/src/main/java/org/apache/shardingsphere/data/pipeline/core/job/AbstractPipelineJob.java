@@ -27,9 +27,9 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 
 import java.util.ArrayList;
@@ -57,8 +57,6 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     private volatile JobBootstrap jobBootstrap;
     
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
-    
-    private final PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance();
     
     protected void setJobId(final String jobId) {
         this.jobId = jobId;
@@ -102,7 +100,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             return false;
         }
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        PipelineContext.getPipelineDistributedBarrier().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
         return true;
     }
     
