@@ -32,11 +32,6 @@ public final class DataSourcePropertiesValidatorTest {
         new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())));
     }
     
-    @Test(expected = InvalidResourcesException.class)
-    public void assertDatabaseTypeInValidateFail() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())));
-    }
-    
     private Map<String, Object> createValidProperties() {
         Map<String, Object> result = new HashMap<>();
         result.put("driverClassName", "org.h2.Driver");
