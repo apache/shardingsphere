@@ -96,14 +96,6 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
         ShardingSpherePreconditions.checkState(duplicatedStorageUnitNames.isEmpty(), () -> new DuplicateResourceException(duplicatedStorageUnitNames));
     }
     
-    private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
-        Map<String, DataSource> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
-        Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
-                .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
-                () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
-    }
-    
     private Collection<String> getDuplicatedStorageUnitNames(final Collection<String> storageUnitNames) {
         return storageUnitNames.stream().filter(each -> storageUnitNames.stream().filter(each::equals).count() > 1).collect(Collectors.toList());
     }
@@ -112,6 +104,14 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
         Map<String, DataSource> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
         Collection<String> notExistedStorageUnitNames = storageUnitNames.stream().filter(each -> !storageUnits.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedStorageUnitNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedStorageUnitNames));
+    }
+    
+    private void checkDatabase(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
+        Map<String, DataSource> storageUnits = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
+        Collection<String> invalidStorageUnitNames = sqlStatement.getStorageUnits().stream().collect(Collectors.toMap(DataSourceSegment::getName, each -> each)).entrySet().stream()
+                .filter(each -> !isIdenticalDatabase(each.getValue(), storageUnits.get(each.getKey()))).map(Entry::getKey).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(invalidStorageUnitNames.isEmpty(),
+                () -> new InvalidResourcesException(Collections.singleton(String.format("Cannot alter the database of %s", invalidStorageUnitNames))));
     }
     
     private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {

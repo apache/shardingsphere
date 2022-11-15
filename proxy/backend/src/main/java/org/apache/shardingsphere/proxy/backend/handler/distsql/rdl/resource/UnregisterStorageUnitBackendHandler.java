@@ -108,14 +108,6 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
         return result;
     }
     
-    private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedStorageUnits) {
-        for (String each : inUsedResourceNames) {
-            Collection<String> inUsedRules = inUsedStorageUnits.get(each);
-            inUsedRules.remove(SingleTableRule.class.getSimpleName());
-            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
-        }
-    }
-    
     private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
         Collection<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
@@ -130,5 +122,13 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
             result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
         }
         return result;
+    }
+    
+    private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedStorageUnits) {
+        for (String each : inUsedResourceNames) {
+            Collection<String> inUsedRules = inUsedStorageUnits.get(each);
+            inUsedRules.remove(SingleTableRule.class.getSimpleName());
+            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
+        }
     }
 }
