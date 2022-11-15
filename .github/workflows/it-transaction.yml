@@ -50,6 +50,7 @@ on:
       - 'test/integration-test/env/**'
       - 'test/integration-test/transaction/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: it-transaction-${{ github.workflow }}-${{ github.ref }}
