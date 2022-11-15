@@ -75,7 +75,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     @Override
     public void start() {
         if (jobItemContext.isStopping()) {
-            log.info("job stopping, ignore consistency check");
             return;
         }
         PipelineAPIFactory.getPipelineJobAPI(PipelineJobIdUtils.parseJobType(jobItemContext.getJobId())).persistJobItemProgress(jobItemContext);
@@ -86,7 +85,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     @Override
     public void stop() {
         jobItemContext.setStopping(true);
-        log.info("stop, jobId={}, shardingItem={}", jobItemContext.getJobId(), jobItemContext.getShardingItem());
         checkExecutor.stop();
     }
     
@@ -94,7 +92,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         protected void runBlocking() {
-            log.info("execute consistency check, check job id: {}, parent job id: {}", checkJobId, parentJobId);
             checkJobAPI.persistJobItemProgress(jobItemContext);
             JobType jobType = PipelineJobIdUtils.parseJobType(parentJobId);
             InventoryIncrementalJobAPI jobAPI = (InventoryIncrementalJobAPI) PipelineAPIFactory.getPipelineJobAPI(jobType);
@@ -110,7 +107,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         @Override
         protected void doStop() throws SQLException {
             DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm;
-            log.info("doStop, algorithm={}", algorithm);
             if (null != algorithm) {
                 algorithm.cancel();
             }

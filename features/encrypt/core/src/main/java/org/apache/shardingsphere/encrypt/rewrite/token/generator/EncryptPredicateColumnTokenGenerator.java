@@ -95,9 +95,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             }
             // TODO remove foreach loop to improve performance
             if (isColumnSegmentIncludedInLikeExpression(whereSegments, each)) {
-                Optional<String> fuzzyQueryColumn = encryptTable.get().findFuzzyQueryColumn(each.getIdentifier().getValue());
-                if (fuzzyQueryColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(fuzzyQueryColumn.get())));
+                Optional<String> likeQueryColumn = encryptTable.get().findLikeQueryColumn(each.getIdentifier().getValue());
+                if (likeQueryColumn.isPresent()) {
+                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get())));
                     continue;
                 } else {
                     throw new UnsupportedEncryptSQLException("LIKE");

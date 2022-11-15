@@ -30,6 +30,8 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -78,11 +80,14 @@ public final class ShadowAlgorithmSpringNamespaceTest extends AbstractJUnit4Spri
         assertThat(shadowTables.get("t_user").getShadowAlgorithmNames(), is(Arrays.asList("user-id-value-match-algorithm", "simple-hint-algorithm")));
     }
     
-    private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
+    private void assertShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(2));
-        assertThat(dataSources.get("shadow-data-source-0").getProductionDataSourceName(), is("ds"));
-        assertThat(dataSources.get("shadow-data-source-0").getShadowDataSourceName(), is("ds-shadow"));
-        assertThat(dataSources.get("shadow-data-source-1").getProductionDataSourceName(), is("ds1"));
-        assertThat(dataSources.get("shadow-data-source-1").getShadowDataSourceName(), is("ds1-shadow"));
+        Iterator<ShadowDataSourceConfiguration> iterator = dataSources.iterator();
+        ShadowDataSourceConfiguration shadowDataSourceConfiguration1 = iterator.next();
+        assertThat(shadowDataSourceConfiguration1.getProductionDataSourceName(), is("ds"));
+        assertThat(shadowDataSourceConfiguration1.getShadowDataSourceName(), is("ds-shadow"));
+        ShadowDataSourceConfiguration shadowDataSourceConfiguration2 = iterator.next();
+        assertThat(shadowDataSourceConfiguration2.getProductionDataSourceName(), is("ds1"));
+        assertThat(shadowDataSourceConfiguration2.getShadowDataSourceName(), is("ds1-shadow"));
     }
 }

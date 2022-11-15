@@ -73,20 +73,8 @@ COLUMNS(
 (NAME=order_id, CIPHER=order_cipher, TYPE(NAME='md5'))
 ),QUERY_WITH_CIPHER_COLUMN=true);
 
-CREATE SHARDING ALGORITHM database_inline (
-TYPE(NAME='inline', PROPERTIES('algorithm-expression'='replica_ds_${user_id % 2}'))
-), t_order_inline (
-TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))
-), t_order_item_inline (
-TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}'))
-);
-
-CREATE SHARDING KEY GENERATOR snowflake (
-TYPE(NAME='snowflake')
-);
-
 CREATE SHARDING TABLE RULE t_order (
 DATANODES('replica_ds_${0..1}.t_order_${0..1}'),
-TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM=t_order_inline),
-KEY_GENERATE_STRATEGY(COLUMN=order_id, KEY_GENERATOR=snowflake)
+TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))),
+KEY_GENERATE_STRATEGY(COLUMN=order_id, TYPE(NAME='snowflake'))
 );

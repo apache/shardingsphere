@@ -91,39 +91,35 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     protected void runBlocking() {
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
-        int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null == event) {
                 continue;
             }
-            eventCount += handleEvent(event);
+            handleEvent(event);
         }
-        log.info("incremental dump, eventCount={}", eventCount);
         channel.pushRecord(new FinishedRecord(new PlaceholderPosition()));
     }
     
-    private int handleEvent(final AbstractBinlogEvent event) {
+    private void handleEvent(final AbstractBinlogEvent event) {
         if (event instanceof PlaceholderEvent || !((AbstractRowsEvent) event).getDatabaseName().equals(catalog) || !dumperConfig.containsTable(((AbstractRowsEvent) event).getTableName())) {
             createPlaceholderRecord(event);
-            return 0;
+            return;
         }
         if (event instanceof WriteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((WriteRowsEvent) event).getTableName());
             handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
-            return 1;
+            return;
         }
         if (event instanceof UpdateRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((UpdateRowsEvent) event).getTableName());
             handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
-            return 1;
+            return;
         }
         if (event instanceof DeleteRowsEvent) {
             PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((DeleteRowsEvent) event).getTableName());
             handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
-            return 1;
         }
-        return 0;
     }
     
     private void createPlaceholderRecord(final AbstractBinlogEvent event) {

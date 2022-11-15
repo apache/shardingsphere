@@ -47,7 +47,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props) {
+                            final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
         if (!DropTableStatementHandler.ifExists(sqlStatementContext.getSqlStatement())) {
             String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
@@ -60,7 +60,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         checkTableInUsed(shardingRule, sqlStatementContext.getSqlStatement(), routeContext);
         for (SimpleTableSegment each : sqlStatementContext.getSqlStatement().getTables()) {

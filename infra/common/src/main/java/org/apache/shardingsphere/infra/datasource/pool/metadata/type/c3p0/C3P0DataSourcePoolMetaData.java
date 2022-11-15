@@ -29,11 +29,11 @@ import java.util.Map;
  */
 public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData {
     
-    private static final Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>(6, 1);
+    private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1);
     
-    private static final Map<String, Object> INVALID_PROPERTIES = new HashMap<>(2, 1);
+    private static final Map<String, Object> INVALID_PROPS = new HashMap<>(2, 1);
     
-    private static final Map<String, String> PROPERTY_SYNONYMS = new HashMap<>(5, 1);
+    private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(5, 1);
     
     private static final Collection<String> TRANSIENT_FIELD_NAMES = new LinkedList<>();
     
@@ -45,25 +45,25 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     }
     
     private static void buildDefaultProperties() {
-        DEFAULT_PROPERTIES.put("checkoutTimeout", 20 * 1000L);
-        DEFAULT_PROPERTIES.put("maxIdleTime", 60 * 1000L);
-        DEFAULT_PROPERTIES.put("maxIdleTimeExcessConnections", 30 * 70 * 1000L);
-        DEFAULT_PROPERTIES.put("maxPoolSize", 15);
-        DEFAULT_PROPERTIES.put("minPoolSize", 3);
-        DEFAULT_PROPERTIES.put("readOnly", false);
+        DEFAULT_PROPS.put("checkoutTimeout", 20 * 1000L);
+        DEFAULT_PROPS.put("maxIdleTime", 60 * 1000L);
+        DEFAULT_PROPS.put("maxIdleTimeExcessConnections", 30 * 70 * 1000L);
+        DEFAULT_PROPS.put("maxPoolSize", 15);
+        DEFAULT_PROPS.put("minPoolSize", 3);
+        DEFAULT_PROPS.put("readOnly", false);
     }
     
     private static void buildInvalidProperties() {
-        INVALID_PROPERTIES.put("minPoolSize", -1);
-        INVALID_PROPERTIES.put("maxPoolSize", -1);
+        INVALID_PROPS.put("minPoolSize", -1);
+        INVALID_PROPS.put("maxPoolSize", -1);
     }
     
     private static void buildPropertySynonyms() {
-        PROPERTY_SYNONYMS.put("username", "user");
-        PROPERTY_SYNONYMS.put("url", "jdbcUrl");
-        PROPERTY_SYNONYMS.put("connectionTimeoutMilliseconds", "checkoutTimeout");
-        PROPERTY_SYNONYMS.put("idleTimeoutMilliseconds", "maxIdleTime");
-        PROPERTY_SYNONYMS.put("maxLifetimeMilliseconds", "maxIdleTimeExcessConnections");
+        PROP_SYNONYMS.put("username", "user");
+        PROP_SYNONYMS.put("url", "jdbcUrl");
+        PROP_SYNONYMS.put("connectionTimeoutMilliseconds", "checkoutTimeout");
+        PROP_SYNONYMS.put("idleTimeoutMilliseconds", "maxIdleTime");
+        PROP_SYNONYMS.put("maxLifetimeMilliseconds", "maxIdleTimeExcessConnections");
     }
     
     private static void buildTransientFieldNames() {
@@ -73,17 +73,17 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     
     @Override
     public Map<String, Object> getDefaultProperties() {
-        return DEFAULT_PROPERTIES;
+        return DEFAULT_PROPS;
     }
     
     @Override
     public Map<String, Object> getInvalidProperties() {
-        return INVALID_PROPERTIES;
+        return INVALID_PROPS;
     }
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        return PROPERTY_SYNONYMS;
+        return PROP_SYNONYMS;
     }
     
     @Override

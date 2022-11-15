@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -69,8 +70,10 @@ public final class ShadowRuleStatementConverter {
         return new ShadowTableConfiguration(new ArrayList<>(Collections.singleton(ruleName)), entry.getValue().stream().map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList()));
     }
     
-    private static Map<String, ShadowDataSourceConfiguration> getDataSource(final Collection<ShadowRuleSegment> rules) {
-        return rules.stream().collect(Collectors.toMap(ShadowRuleSegment::getRuleName, each -> new ShadowDataSourceConfiguration(each.getSource(), each.getShadow())));
+    private static Collection<ShadowDataSourceConfiguration> getDataSource(final Collection<ShadowRuleSegment> rules) {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        rules.forEach(each -> result.add(new ShadowDataSourceConfiguration(each.getRuleName(), each.getSource(), each.getShadow())));
+        return result;
     }
     
     private static Map<String, AlgorithmConfiguration> getShadowAlgorithms(final Collection<ShadowRuleSegment> rules) {

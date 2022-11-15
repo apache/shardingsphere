@@ -51,26 +51,26 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     private void assertTruncateInMySQLXATransaction() throws SQLException {
         // TODO This test case may cause bad effects to other test cases in JDBC adapter
         prepare();
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertAccountRowCount(conn, 8);
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertAccountRowCount(connection, 8);
         try {
-            conn.createStatement().execute("truncate account;");
+            connection.createStatement().execute("truncate account;");
             fail("Expect exception, but no exception report.");
         } catch (TableModifyInTransactionException ex) {
             log.info("Exception for expected in Proxy: {}", ex.getMessage());
         } catch (SQLException ex) {
             log.info("Exception for expected in JDBC: {}", ex.getMessage());
         } finally {
-            conn.rollback();
-            conn.close();
+            connection.rollback();
+            connection.close();
         }
     }
     
     private void prepare() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        executeWithLog(conn, "delete from account;");
-        executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
-        conn.close();
+        Connection connection = getDataSource().getConnection();
+        executeWithLog(connection, "delete from account;");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+        connection.close();
     }
 }

@@ -66,11 +66,11 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
         PostgreSQLCallStatement result = new PostgreSQLCallStatement();
         result.setProcedureName(((IdentifierValue) visit(ctx.identifier())).getValue());
         if (null != ctx.callArguments()) {
-            Collection<ExpressionSegment> parameters = new LinkedList<>();
+            Collection<ExpressionSegment> params = new LinkedList<>();
             for (CallArgumentContext each : ctx.callArguments().callArgument()) {
-                parameters.add((ExpressionSegment) visit(each));
+                params.add((ExpressionSegment) visit(each));
             }
-            result.getParameters().addAll(parameters);
+            result.getParameters().addAll(params);
         }
         return result;
     }

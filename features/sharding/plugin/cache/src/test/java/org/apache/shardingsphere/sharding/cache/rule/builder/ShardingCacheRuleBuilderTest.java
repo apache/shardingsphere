@@ -37,11 +37,11 @@ public final class ShardingCacheRuleBuilderTest {
     @Test
     public void assertBuildShardingCacheRule() {
         ShardingRule expectedShardingRule = mock(ShardingRule.class);
-        ShardingCacheRuleConfiguration expectedConfiguration = new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 1, 1));
-        DatabaseRule actual = new ShardingCacheRuleBuilder().build(expectedConfiguration, "", Collections.emptyMap(), Collections.singletonList(expectedShardingRule), null);
+        ShardingCacheRuleConfiguration expectedConfig = new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 1, 1));
+        DatabaseRule actual = new ShardingCacheRuleBuilder().build(expectedConfig, "", Collections.emptyMap(), Collections.singletonList(expectedShardingRule), null);
         assertThat(actual, instanceOf(ShardingCacheRule.class));
         ShardingCacheRule actualShardingCacheRule = (ShardingCacheRule) actual;
-        assertThat(actualShardingCacheRule.getConfiguration(), is(expectedConfiguration));
+        assertThat(actualShardingCacheRule.getConfiguration(), is(expectedConfig));
         assertThat(actualShardingCacheRule.getShardingRule(), is(expectedShardingRule));
     }
     

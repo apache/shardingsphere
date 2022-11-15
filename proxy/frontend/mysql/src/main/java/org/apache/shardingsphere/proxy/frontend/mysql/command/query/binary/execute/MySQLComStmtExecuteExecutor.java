@@ -71,13 +71,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
-        preparedStatement.getLongData().forEach(parameters::set);
+        List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
+        preparedStatement.getLongData().forEach(params::set);
         SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
+            ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
         connectionSession.setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();

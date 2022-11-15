@@ -207,11 +207,11 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null == ctx.DOLLAR_()) {
             return new ParameterMarkerValue(currentParameterIndex++, ParameterMarkerType.QUESTION);
         }
-        int parameterIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
-        if (parameterIndex > currentParameterIndex) {
-            currentParameterIndex = parameterIndex;
+        int paramIndex = ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().intValue();
+        if (paramIndex > currentParameterIndex) {
+            currentParameterIndex = paramIndex;
         }
-        return new ParameterMarkerValue(parameterIndex - 1, ParameterMarkerType.DOLLAR);
+        return new ParameterMarkerValue(paramIndex - 1, ParameterMarkerType.DOLLAR);
     }
     
     @Override

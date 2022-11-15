@@ -46,7 +46,7 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
             for (EncryptColumnRuleConfiguration column : each.getColumns()) {
                 checkCipherColumnConfiguration(databaseName, encryptors, column);
                 checkAssistColumnConfiguration(databaseName, encryptors, column);
-                checkFuzzyColumnConfiguration(databaseName, encryptors, column);
+                checkLikeColumnConfiguration(databaseName, encryptors, column);
             }
         }
     }
@@ -72,16 +72,16 @@ public abstract class AbstractEncryptRuleConfigurationChecker<T extends RuleConf
                 "Can not find assisted query encryptor `%s` in database `%s`.", column.getAssistedQueryEncryptorName(), databaseName);
     }
     
-    private void checkFuzzyColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
-        if (Strings.isNullOrEmpty(column.getFuzzyQueryColumn()) && Strings.isNullOrEmpty(column.getFuzzyQueryEncryptorName())) {
+    private void checkLikeColumnConfiguration(final String databaseName, final Collection<String> encryptors, final EncryptColumnRuleConfiguration column) {
+        if (Strings.isNullOrEmpty(column.getLikeQueryColumn()) && Strings.isNullOrEmpty(column.getLikeQueryEncryptorName())) {
             return;
         }
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getFuzzyQueryColumn()),
-                "Fuzzy query column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(!Strings.isNullOrEmpty(column.getFuzzyQueryEncryptorName()),
-                "Fuzzy query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
-        Preconditions.checkState(encryptors.contains(column.getFuzzyQueryEncryptorName()),
-                "Can not find fuzzy query encryptor `%s` in database `%s`.", column.getFuzzyQueryEncryptorName(), databaseName);
+        Preconditions.checkState(!Strings.isNullOrEmpty(column.getLikeQueryColumn()),
+                "Like query column of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+        Preconditions.checkState(!Strings.isNullOrEmpty(column.getLikeQueryEncryptorName()),
+                "Like query encryptor name of `%s` can not be null in database `%s`.", column.getLogicColumn(), databaseName);
+        Preconditions.checkState(encryptors.contains(column.getLikeQueryEncryptorName()),
+                "Can not find like query encryptor `%s` in database `%s`.", column.getLikeQueryEncryptorName(), databaseName);
     }
     
     protected abstract Collection<String> getEncryptors(T config);

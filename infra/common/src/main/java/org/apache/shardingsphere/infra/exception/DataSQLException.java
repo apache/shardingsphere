@@ -29,7 +29,7 @@ public abstract class DataSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 1;
     
-    public DataSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, KERNEL_CODE, errorCode, reason, messageArguments);
+    public DataSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

@@ -60,7 +60,7 @@ public abstract class SingleITCase extends BaseITCase {
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
+        List<Object> params = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        return params.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), params.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
 }

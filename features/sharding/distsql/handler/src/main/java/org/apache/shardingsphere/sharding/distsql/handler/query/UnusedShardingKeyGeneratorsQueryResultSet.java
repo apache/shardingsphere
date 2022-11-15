@@ -57,9 +57,9 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements Database
     private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
         Map<String, AlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, AlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
-            if (!inUsedKeyGenerators.contains(each.getKey())) {
-                map.put(each.getKey(), each.getValue());
+        for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getKeyGenerators().entrySet()) {
+            if (!inUsedKeyGenerators.contains(entry.getKey())) {
+                map.put(entry.getKey(), entry.getValue());
             }
         }
         data = map.entrySet().iterator();

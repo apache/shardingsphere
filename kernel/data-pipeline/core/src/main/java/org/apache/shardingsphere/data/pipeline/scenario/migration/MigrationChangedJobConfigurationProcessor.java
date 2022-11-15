@@ -45,7 +45,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
     public void process(final Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
-            log.info("{} is disabled", jobId);
             Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
             for (Integer each : shardingItems) {
@@ -59,7 +58,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 if (PipelineJobCenter.isJobExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    log.info("{} executing jobs", jobId);
                     CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
                         if (null != throwable) {
                             log.error("execute failed, jobId={}", jobId, throwable);
@@ -68,7 +66,6 @@ public final class MigrationChangedJobConfigurationProcessor implements Pipeline
                 }
                 break;
             case DELETED:
-                log.info("deleted jobId={}", jobId);
                 new MigrationJobPreparer().cleanup(new YamlMigrationJobConfigurationSwapper().swapToObject(jobConfigPOJO.getJobParameter()));
                 PipelineJobCenter.stop(jobId);
                 break;

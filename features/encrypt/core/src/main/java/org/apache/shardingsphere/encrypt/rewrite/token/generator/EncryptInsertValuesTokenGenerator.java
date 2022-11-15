@@ -141,8 +141,8 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                     addAssistedQueryColumn(insertValueToken, encryptRule.findAssistedQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue);
                     indexDelta = indexDelta + 1;
                 }
-                if (encryptRule.findFuzzyQueryEncryptor(tableName, columnName).isPresent()) {
-                    addFuzzyQueryColumn(insertValueToken, encryptRule.findFuzzyQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
+                if (encryptRule.findLikeQueryEncryptor(tableName, columnName).isPresent()) {
+                    addLikeQueryColumn(insertValueToken, encryptRule.findLikeQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
                 }
                 setCipherColumn(insertValueToken, encryptor.get(), columnIndex, encryptContext, insertValueContext.getValueExpressions().get(columnIndex), originalValue);
             }
@@ -170,10 +170,10 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         }
     }
     
-    private void addFuzzyQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
-                                     final EncryptContext encryptContext, final InsertValueContext insertValueContext,
-                                     final Object originalValue, final int indexDelta) {
-        if (encryptRule.findFuzzyQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
+    private void addLikeQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
+                                    final EncryptContext encryptContext, final InsertValueContext insertValueContext,
+                                    final Object originalValue, final int indexDelta) {
+        if (encryptRule.findLikeQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
             DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
                     ? new DerivedLiteralExpressionSegment(encryptAlgorithm.encrypt(originalValue, encryptContext))
                     : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));

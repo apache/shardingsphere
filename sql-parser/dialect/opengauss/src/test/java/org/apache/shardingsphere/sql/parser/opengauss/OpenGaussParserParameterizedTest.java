@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.opengauss;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.parameterized.engine.SQLParserParameterizedTest;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.SQLParserParameterizedTest;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 

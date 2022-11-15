@@ -61,17 +61,17 @@ public final class SQLCheckEngine {
      * Check SQL.
      *
      * @param sqlStatementContext SQL statement context
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @param rules rules
      * @param currentDatabase current database
      * @param databases databases
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
+    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Collection<ShardingSphereRule> rules,
                              final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
-            SQLCheckResult checkResult = entry.getValue().check(sqlStatementContext, parameters, grantee, currentDatabase, databases, entry.getKey());
+            SQLCheckResult checkResult = entry.getValue().check(sqlStatementContext, params, grantee, currentDatabase, databases, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
             }
@@ -80,6 +80,7 @@ public final class SQLCheckEngine {
     
     /**
      * Check user exists.
+     * 
      * @param user user
      * @param rules rules
      * @return check result

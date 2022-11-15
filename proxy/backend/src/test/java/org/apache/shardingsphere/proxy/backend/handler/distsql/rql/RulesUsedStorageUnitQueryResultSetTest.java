@@ -120,7 +120,7 @@ public final class RulesUsedStorageUnitQueryResultSetTest {
     private ShadowRule mockShadowRule() {
         ShadowRule result = mock(ShadowRule.class);
         ShadowRuleConfiguration config = mock(ShadowRuleConfiguration.class);
-        when(config.getDataSources()).thenReturn(Collections.singletonMap("shadow_source", new ShadowDataSourceConfiguration("foo_ds", "shadow_ds")));
+        when(config.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("shadow_source", "foo_ds", "shadow_ds")));
         when(result.getConfiguration()).thenReturn(config);
         return result;
     }

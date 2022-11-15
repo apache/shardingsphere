@@ -31,10 +31,10 @@ import java.sql.SQLException;
 public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     
     @Override
-    public void prepareTargetTables(final PrepareTargetTablesParameter parameter) throws SQLException {
-        PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
-        for (CreateTableEntry each : parameter.getCreateTableConfig().getCreateTableEntries()) {
-            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, parameter.getSqlParserEngine());
+    public void prepareTargetTables(final PrepareTargetTablesParameter param) throws SQLException {
+        PipelineDataSourceManager dataSourceManager = param.getDataSourceManager();
+        for (CreateTableEntry each : param.getCreateTableConfig().getCreateTableEntries()) {
+            String createTargetTableSQL = getCreateTargetTableSQL(each, dataSourceManager, param.getSqlParserEngine());
             try (Connection targetConnection = getCachedDataSource(dataSourceManager, each.getTargetDataSourceConfig()).getConnection()) {
                 executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(createTargetTableSQL));
             }

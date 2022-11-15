@@ -56,7 +56,6 @@ public final class PipelineJobProgressPersistService {
      * @param jobId job id
      */
     public static void removeJobProgressPersistContext(final String jobId) {
-        log.info("Remove job progress persist context, jobId={}", jobId);
         JOB_PROGRESS_PERSIST_MAP.remove(jobId);
     }
     
@@ -67,7 +66,6 @@ public final class PipelineJobProgressPersistService {
      * @param shardingItem sharding item
      */
     public static void addJobProgressPersistContext(final String jobId, final int shardingItem) {
-        log.info("Add job progress persist context, jobId={}, shardingItem={}", jobId, shardingItem);
         JOB_PROGRESS_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobProgressPersistContext(jobId, shardingItem));
     }
     
@@ -81,7 +79,6 @@ public final class PipelineJobProgressPersistService {
         Map<Integer, PipelineJobProgressPersistContext> persistContextMap = JOB_PROGRESS_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
         PipelineJobProgressPersistContext persistContext = persistContextMap.get(shardingItem);
         if (null == persistContext) {
-            log.debug("persistContext is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
         persistContext.getHasNewEvents().set(true);

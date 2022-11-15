@@ -120,7 +120,6 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onSuccess() {
-                log.info("incremental dumper onSuccess, taskId={}", taskId);
             }
             
             @Override
@@ -134,7 +133,6 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             
             @Override
             public void onSuccess() {
-                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override

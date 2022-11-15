@@ -26,13 +26,15 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
  */
 @RequiredArgsConstructor
 @Getter
-public final class InventoryIncrementalJobItemInfo {
+public class InventoryIncrementalJobItemInfo {
     
     private final int shardingItem;
     
     private final InventoryIncrementalJobItemProgress jobItemProgress;
     
     private final long startTimeMillis;
+    
+    private final int inventoryFinishedPercentage;
     
     private final String errorMessage;
 }

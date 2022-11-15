@@ -30,18 +30,18 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    private final StorageContainerConfiguration storageContainerConfiguration;
+    private final StorageContainerConfiguration storageContainerConfig;
     
-    public MySQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+    public MySQLContainer(final String containerImage, final String scenario, final StorageContainerConfiguration storageContainerConfig) {
         super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(containerImage) ? "mysql/mysql-server:5.7" : containerImage, scenario);
-        this.storageContainerConfiguration = storageContainerConfiguration;
+        this.storageContainerConfig = storageContainerConfig;
     }
     
     @Override
     protected void configure() {
-        setCommands(storageContainerConfiguration.getContainerCommand());
-        addEnvs(storageContainerConfiguration.getContainerEnvironments());
-        mapResources(storageContainerConfiguration.getMountedResources());
+        setCommands(storageContainerConfig.getContainerCommand());
+        addEnvs(storageContainerConfig.getContainerEnvironments());
+        mapResources(storageContainerConfig.getMountedResources());
         super.configure();
     }
     

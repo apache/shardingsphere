@@ -40,7 +40,7 @@ public final class AbstractDataSourcePreparerTest {
     private final AbstractDataSourcePreparer preparer = new AbstractDataSourcePreparer() {
         
         @Override
-        public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
+        public void prepareTargetTables(final PrepareTargetTablesParameter param) {
         }
     };
     

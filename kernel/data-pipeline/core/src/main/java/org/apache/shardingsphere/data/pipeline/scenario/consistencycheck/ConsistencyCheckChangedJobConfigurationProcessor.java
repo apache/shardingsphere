@@ -44,7 +44,6 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
     public void process(final DataChangedEvent.Type eventType, final JobConfigurationPOJO jobConfigPOJO) {
         String jobId = jobConfigPOJO.getJobName();
         if (jobConfigPOJO.isDisabled()) {
-            log.info("{} is disabled", jobId);
             Collection<Integer> shardingItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
             for (Integer each : shardingItems) {
@@ -58,7 +57,6 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 if (PipelineJobCenter.isJobExisting(jobId)) {
                     log.info("{} added to executing jobs failed since it already exists", jobId);
                 } else {
-                    log.info("{} executing jobs", jobId);
                     CompletableFuture.runAsync(() -> execute(jobConfigPOJO), PipelineContext.getEventListenerExecutor()).whenComplete((unused, throwable) -> {
                         if (null != throwable) {
                             log.error("execute failed, jobId={}", jobId, throwable);
@@ -67,7 +65,6 @@ public final class ConsistencyCheckChangedJobConfigurationProcessor implements P
                 }
                 break;
             case DELETED:
-                log.info("deleted consistency check job id: {}", jobId);
                 PipelineJobCenter.stop(jobId);
                 break;
             default:

@@ -70,7 +70,7 @@ public final class SQLLogger {
         }
     }
     
-    private static void log(final String pattern, final Object... arguments) {
-        log.info(pattern, arguments);
+    private static void log(final String pattern, final Object... args) {
+        log.info(pattern, args);
     }
 }

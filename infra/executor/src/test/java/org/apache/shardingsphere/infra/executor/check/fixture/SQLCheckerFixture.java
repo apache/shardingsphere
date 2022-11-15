@@ -36,7 +36,7 @@ public final class SQLCheckerFixture implements SQLChecker<MockedRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final String currentDatabase,
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final String currentDatabase,
                                 final Map<String, ShardingSphereDatabase> databases, final MockedRule rule) {
         return null;
     }

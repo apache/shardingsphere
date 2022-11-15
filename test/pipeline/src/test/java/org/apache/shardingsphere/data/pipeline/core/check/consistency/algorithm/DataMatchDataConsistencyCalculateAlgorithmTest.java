@@ -84,10 +84,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     public void assertCalculateFromBegin() throws NoSuchFieldException, IllegalAccessException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         ReflectionUtil.setFieldValue(calculateAlgorithm, "chunkSize", 5);
-        DataConsistencyCalculateParameter sourceParameter = generateParameter(source, "t_order_copy", 0);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParameter);
-        DataConsistencyCalculateParameter targetParameter = generateParameter(target, "t_order", 0);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParameter);
+        DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
+        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
+        DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 0);
+        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());
         assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
@@ -101,10 +101,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     public void assertCalculateFromMiddle() throws NoSuchFieldException, IllegalAccessException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         ReflectionUtil.setFieldValue(calculateAlgorithm, "chunkSize", 5);
-        DataConsistencyCalculateParameter sourceParameter = generateParameter(source, "t_order_copy", 5);
-        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParameter);
-        DataConsistencyCalculateParameter targetParameter = generateParameter(target, "t_order", 5);
-        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParameter);
+        DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);
+        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
+        DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 5);
+        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());
         assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());

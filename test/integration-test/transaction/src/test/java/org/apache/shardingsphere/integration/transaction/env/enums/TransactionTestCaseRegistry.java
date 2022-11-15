@@ -21,12 +21,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.apache.shardingsphere.integration.transaction.engine.mysql.MySQLJdbcTransactionIT;
-import org.apache.shardingsphere.integration.transaction.engine.mysql.MySQLProxyTransactionIT;
+import org.apache.shardingsphere.integration.transaction.engine.mysql.MysqlJdbcTransactionIT;
+import org.apache.shardingsphere.integration.transaction.engine.mysql.MysqlProxyTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGaussJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGaussProxyTransactionIT;
-import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgreSQLJdbcTransactionIT;
-import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgreSQLProxyTransactionIT;
+import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgresqlJdbcTransactionIT;
+import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgresqlProxyTransactionIT;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 
 /**
@@ -36,17 +36,17 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.constants
 @Getter
 public enum TransactionTestCaseRegistry {
     
-    MySQL_JDBC_IT(MySQLJdbcTransactionIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.JDBC),
+    MySQL_JDBC_IT(MysqlJdbcTransactionIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.JDBC),
     
-    MySQL_PROXY_IT(MySQLProxyTransactionIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.PROXY),
+    MySQL_PROXY_IT(MysqlProxyTransactionIT.class, TransactionTestConstants.MYSQL, AdapterContainerConstants.PROXY),
     
     OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionIT.class, TransactionTestConstants.OPENGAUSS, AdapterContainerConstants.JDBC),
     
     OPENGAUSS_PROXY_IT(OpenGaussProxyTransactionIT.class, TransactionTestConstants.OPENGAUSS, AdapterContainerConstants.PROXY),
     
-    POSTGRESQL_JDBC_IT(PostgreSQLJdbcTransactionIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.JDBC),
+    POSTGRESQL_JDBC_IT(PostgresqlJdbcTransactionIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.JDBC),
     
-    POSTGRESQL_PROXY_IT(PostgreSQLProxyTransactionIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.PROXY);
+    POSTGRESQL_PROXY_IT(PostgresqlProxyTransactionIT.class, TransactionTestConstants.POSTGRESQL, AdapterContainerConstants.PROXY);
     
     private final Class<? extends BaseTransactionITCase> testCaseClass;
     

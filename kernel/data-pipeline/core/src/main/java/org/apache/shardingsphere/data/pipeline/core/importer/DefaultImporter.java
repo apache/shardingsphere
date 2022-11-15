@@ -91,34 +91,18 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void runBlocking() {
-        write();
-    }
-    
-    private void write() {
-        log.info("importer write");
-        int round = 1;
-        int rowCount = 0;
-        boolean finishedByBreak = false;
         int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(batchSize, 3);
             if (null != records && !records.isEmpty()) {
-                round++;
-                rowCount += records.size();
-                PipelineJobProgressUpdatedParameter updatedParameter = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
+                PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
-                jobProgressListener.onProgressUpdated(updatedParameter);
-                if (0 == round % 50) {
-                    log.info("importer write, round={}, rowCount={}", round, rowCount);
-                }
+                jobProgressListener.onProgressUpdated(updatedParam);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                    log.info("write, get FinishedRecord, break");
-                    finishedByBreak = true;
                     break;
                 }
             }
         }
-        log.info("importer write done, rowCount={}, finishedByBreak={}", rowCount, finishedByBreak);
     }
     
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
@@ -191,16 +175,16 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
         String insertSql = pipelineSqlBuilder.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord);
-        try (PreparedStatement ps = connection.prepareStatement(insertSql)) {
-            batchInsertStatement = ps;
-            ps.setQueryTimeout(30);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertSql)) {
+            batchInsertStatement = preparedStatement;
+            preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 for (int i = 0; i < each.getColumnCount(); i++) {
-                    ps.setObject(i + 1, each.getColumn(i).getValue());
+                    preparedStatement.setObject(i + 1, each.getColumn(i).getValue());
                 }
-                ps.addBatch();
+                preparedStatement.addBatch();
             }
-            ps.executeBatch();
+            preparedStatement.executeBatch();
         } finally {
             batchInsertStatement = null;
         }
@@ -224,16 +208,16 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record);
         String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns);
-        try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
-            updateStatement = ps;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(updateSql)) {
+            updateStatement = preparedStatement;
             for (int i = 0; i < updatedColumns.size(); i++) {
-                ps.setObject(i + 1, updatedColumns.get(i).getValue());
+                preparedStatement.setObject(i + 1, updatedColumns.get(i).getValue());
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
-                ps.setObject(updatedColumns.size() + i + 1, (keyColumn.isUniqueKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
+                preparedStatement.setObject(updatedColumns.size() + i + 1, (keyColumn.isUniqueKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
             }
-            int updateCount = ps.executeUpdate();
+            int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
                 log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
             }
@@ -246,17 +230,17 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
         DataRecord dataRecord = dataRecords.get(0);
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
         String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
-        try (PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
-            batchDeleteStatement = ps;
-            ps.setQueryTimeout(30);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
+            batchDeleteStatement = preparedStatement;
+            preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
-                    ps.setObject(i + 1, conditionColumns.get(i).getValue());
+                    preparedStatement.setObject(i + 1, conditionColumns.get(i).getValue());
                 }
-                ps.addBatch();
+                preparedStatement.addBatch();
             }
-            ps.executeBatch();
+            preparedStatement.executeBatch();
         } finally {
             batchDeleteStatement = null;
         }
@@ -264,10 +248,8 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void doStop() throws SQLException {
-        final long startTimeMillis = System.currentTimeMillis();
         cancelStatement(batchInsertStatement);
         cancelStatement(updateStatement);
         cancelStatement(batchDeleteStatement);
-        log.info("doStop cost {} ms", System.currentTimeMillis() - startTimeMillis);
     }
 }

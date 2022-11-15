@@ -79,8 +79,6 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             long startMillis = System.currentTimeMillis();
             String schemaNameFinal = isSchemaAvailable() ? schemaName : null;
             Map<TableName, PipelineTableMetaData> tableMetaDataMap = loadTableMetaData0(connection, schemaNameFinal, tableNamePattern);
-            log.info("loadTableMetaData, schemaNameFinal={}, tableNamePattern={}, result={}, cost time={} ms",
-                    schemaNameFinal, tableNamePattern, tableMetaDataMap, System.currentTimeMillis() - startMillis);
             this.tableMetaDataMap.putAll(tableMetaDataMap);
         }
     }
@@ -137,9 +135,9 @@ public final class StandardPipelineTableMetaDataLoader implements PipelineTableM
             }
         }
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (Entry<String, SortedMap<Short, String>> each : orderedColumnsOfIndexes.entrySet()) {
-            Collection<String> columnNames = result.computeIfAbsent(each.getKey(), unused -> new LinkedList<>());
-            columnNames.addAll(each.getValue().values());
+        for (Entry<String, SortedMap<Short, String>> entry : orderedColumnsOfIndexes.entrySet()) {
+            Collection<String> columnNames = result.computeIfAbsent(entry.getKey(), unused -> new LinkedList<>());
+            columnNames.addAll(entry.getValue().values());
         }
         return result;
     }

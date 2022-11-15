@@ -34,10 +34,10 @@ public interface ConsistencyCheckJobPublicAPI extends PipelineJobPublicAPI, Requ
     /**
      * Create consistency check configuration and start job.
      *
-     * @param parameter create consistency check job parameter
+     * @param param create consistency check job parameter
      * @return job id
      */
-    String createJobAndStart(CreateConsistencyCheckJobParameter parameter);
+    String createJobAndStart(CreateConsistencyCheckJobParameter param);
     
     /**
      * Get latest data consistency check result.

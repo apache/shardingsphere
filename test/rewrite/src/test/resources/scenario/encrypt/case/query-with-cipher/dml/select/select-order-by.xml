@@ -19,6 +19,6 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_with_orderby2" db-types="MySQL">
         <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ? order by amount desc" parameters="1, aaa, aaa, 1000, OK" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND fuzzy_query_password like ? AND cipher_amount = ? AND status = ? order by cipher_amount desc" parameters="1, assisted_query_aaa, fuzzy_query_aaa, encrypt_1000, OK" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = ? AND assisted_query_password = ? AND like_query_password like ? AND cipher_amount = ? AND status = ? order by cipher_amount desc" parameters="1, assisted_query_aaa, like_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
 </rewrite-assertions>

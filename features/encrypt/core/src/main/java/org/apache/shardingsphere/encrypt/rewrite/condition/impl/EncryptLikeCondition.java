@@ -70,18 +70,18 @@ public final class EncryptLikeCondition implements EncryptCondition {
     /**
      * Get values.
      *
-     * @param parameters SQL parameters
+     * @param params SQL parameters
      * @return values
      */
     @Override
-    public List<Object> getValues(final List<Object> parameters) {
+    public List<Object> getValues(final List<Object> params) {
         List<Object> result = new ArrayList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-            Object parameter = parameters.get(entry.getValue());
+            Object param = params.get(entry.getValue());
             if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), parameter);
+                result.add(entry.getKey(), param);
             } else {
-                result.add(parameter);
+                result.add(param);
             }
         }
         return result;

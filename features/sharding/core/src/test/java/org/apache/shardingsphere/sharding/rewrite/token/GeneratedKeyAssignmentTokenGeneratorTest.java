@@ -27,35 +27,39 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class GeneratedKeyAssignmentTokenGeneratorTest {
     
     @Test
-    public void assertGenerateSQLToken() {
-        GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class, RETURNS_DEEP_STUBS);
-        when(generatedKeyContext.getColumnName()).thenReturn("testColumnName");
-        when(generatedKeyContext.getGeneratedValues()).thenReturn(Collections.singleton(4));
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
-        MySQLInsertStatement insertStatement = mock(MySQLInsertStatement.class);
-        when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
-        SetAssignmentSegment setAssignmentSegment = mock(SetAssignmentSegment.class);
-        when(setAssignmentSegment.getStopIndex()).thenReturn(2);
-        when(insertStatement.getSetAssignment()).thenReturn(Optional.of(setAssignmentSegment));
-        List<Object> testParameters = new LinkedList<>();
+    public void assertGenerateSQLTokenWithLiteralValue() {
+        InsertStatementContext insertStatementContext = mockInsertStatementContext();
         GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
-        generator.setParameters(testParameters);
+        generator.setParameters(Collections.emptyList());
         assertThat(generator.generateSQLToken(insertStatementContext), instanceOf(LiteralGeneratedKeyAssignmentToken.class));
-        testParameters.add("testObject");
+    }
+    
+    @Test
+    public void assertGenerateSQLTokenWithPlaceholder() {
+        InsertStatementContext insertStatementContext = mockInsertStatementContext();
+        GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
+        generator.setParameters(Collections.singletonList("testObject"));
         assertThat(generator.generateSQLToken(insertStatementContext), instanceOf(ParameterMarkerGeneratedKeyAssignmentToken.class));
+    }
+    
+    private InsertStatementContext mockInsertStatementContext() {
+        InsertStatementContext result = mock(InsertStatementContext.class);
+        GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("testColumnName", false);
+        generatedKeyContext.getGeneratedValues().add(4);
+        when(result.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
+        MySQLInsertStatement insertStatement = new MySQLInsertStatement();
+        insertStatement.setSetAssignment(new SetAssignmentSegment(0, 2, Collections.emptyList()));
+        when(result.getSqlStatement()).thenReturn(insertStatement);
+        return result;
     }
 }

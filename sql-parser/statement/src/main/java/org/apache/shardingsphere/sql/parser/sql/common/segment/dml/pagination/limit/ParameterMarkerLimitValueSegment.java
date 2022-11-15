@@ -30,8 +30,8 @@ public final class ParameterMarkerLimitValueSegment extends LimitValueSegment im
     
     private final int parameterIndex;
     
-    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int parameterIndex) {
+    public ParameterMarkerLimitValueSegment(final int startIndex, final int stopIndex, final int paramIndex) {
         super(startIndex, stopIndex);
-        this.parameterIndex = parameterIndex;
+        this.parameterIndex = paramIndex;
     }
 }

@@ -58,10 +58,10 @@ public final class YamlDataConsistencyCheckResultSwapper implements YamlConfigur
     /**
      * Swap string to data consistency check result.
      *
-     * @param parameter parameter
+     * @param param parameter
      * @return data consistency check result
      */
-    public DataConsistencyCheckResult swapToObject(final String parameter) {
-        return swapToObject(YamlEngine.unmarshal(parameter, YamlDataConsistencyCheckResult.class, true));
+    public DataConsistencyCheckResult swapToObject(final String param) {
+        return swapToObject(YamlEngine.unmarshal(param, YamlDataConsistencyCheckResult.class, true));
     }
 }

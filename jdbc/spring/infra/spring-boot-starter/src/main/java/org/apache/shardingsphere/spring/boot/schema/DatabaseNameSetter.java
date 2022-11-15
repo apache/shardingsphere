@@ -37,11 +37,11 @@ public final class DatabaseNameSetter {
     /**
      * Get database name.
      *
-     * @param environment spring boot environment
+     * @param env spring boot environment
      * @return schema name
      */
-    public static String getDatabaseName(final Environment environment) {
-        StandardEnvironment standardEnv = (StandardEnvironment) environment;
+    public static String getDatabaseName(final Environment env) {
+        StandardEnvironment standardEnv = (StandardEnvironment) env;
         String databaseName = standardEnv.getProperty(DATABASE_NAME_KEY);
         if (!Strings.isNullOrEmpty(databaseName)) {
             return databaseName;

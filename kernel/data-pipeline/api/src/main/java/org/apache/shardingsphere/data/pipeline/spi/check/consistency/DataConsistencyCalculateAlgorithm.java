@@ -32,10 +32,10 @@ public interface DataConsistencyCalculateAlgorithm extends ShardingSphereAlgorit
     /**
      * Calculate data for consistency check.
      *
-     * @param parameter data consistency calculate parameter
+     * @param param data consistency calculate parameter
      * @return calculated result
      */
-    Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter parameter);
+    Iterable<DataConsistencyCalculatedResult> calculate(DataConsistencyCalculateParameter param);
     
     /**
      * Cancel calculation.

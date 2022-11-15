@@ -34,17 +34,60 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class TransactionRuleTest {
     
+    private static final String SHARDING_DB = "sharding_db";
+    
+    private static final String SHARDING_DB2 = "sharding_db2";
+    
     @Test
     public void assertInitTransactionRuleWithMultiDatabaseType() {
-        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap("sharding_db", createDatabase()));
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
         assertNotNull(actual.getResource());
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+    }
+    
+    @Test
+    public void assertAddResource() {
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
+        actual.addResource(createAddDatabase());
+        assertNotNull(actual.getResource());
+        assertThat(actual.getDatabases().size(), is(2));
+        assertTrue(actual.getDatabases().containsKey(SHARDING_DB));
+        ShardingSphereResourceMetaData shardingMetadata = actual.getDatabases().get(SHARDING_DB).getResourceMetaData();
+        assertThat(shardingMetadata.getDataSources().size(), is(2));
+        assertTrue(shardingMetadata.getDataSources().containsKey("ds_0"));
+        assertTrue(shardingMetadata.getDataSources().containsKey("ds_1"));
+        assertThat(shardingMetadata.getStorageTypes().size(), is(2));
+        assertTrue(actual.getDatabases().containsKey(SHARDING_DB2));
+        ShardingSphereResourceMetaData shardingMetadata2 = actual.getDatabases().get(SHARDING_DB2).getResourceMetaData();
+        assertThat(shardingMetadata2.getDataSources().size(), is(2));
+        assertTrue(shardingMetadata2.getDataSources().containsKey("ds_0"));
+        assertTrue(shardingMetadata2.getDataSources().containsKey("ds_1"));
+        assertThat(shardingMetadata2.getStorageTypes().size(), is(2));
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+    }
+    
+    @Test
+    public void assertCloseStaleResource() {
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
+        actual.closeStaleResource(SHARDING_DB);
+        assertTrue(actual.getDatabases().isEmpty());
+        assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+    }
+    
+    @Test
+    public void assertCloseAllStaleResources() {
+        TransactionRule actual = new TransactionRule(createTransactionRuleConfiguration(), Collections.singletonMap(SHARDING_DB, createDatabase()));
+        actual.closeStaleResource();
+        assertTrue(actual.getDatabases().isEmpty());
         assertThat(actual.getResource().getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
@@ -57,6 +100,27 @@ public final class TransactionRuleTest {
     }
     
     private static ShardingSphereResourceMetaData createResourceMetaData() {
+        ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
+        dataSourceMap.put("ds_0", new MockedDataSource());
+        dataSourceMap.put("ds_1", new MockedDataSource());
+        when(result.getDataSources()).thenReturn(dataSourceMap);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
+        databaseTypes.put("ds_1", new OpenGaussDatabaseType());
+        when(result.getStorageTypes()).thenReturn(databaseTypes);
+        return result;
+    }
+    
+    private static ShardingSphereDatabase createAddDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        ShardingSphereResourceMetaData resourceMetaData = createAddResourceMetaData();
+        when(result.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(result.getName()).thenReturn(SHARDING_DB2);
+        return result;
+    }
+    
+    private static ShardingSphereResourceMetaData createAddResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds_0", new MockedDataSource());

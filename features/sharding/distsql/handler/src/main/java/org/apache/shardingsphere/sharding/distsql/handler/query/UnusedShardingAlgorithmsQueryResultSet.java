@@ -57,9 +57,9 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DatabaseDis
     private void getUnusedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);
         Map<String, AlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, AlgorithmConfiguration> each : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
-            if (!inUsedAlgorithms.contains(each.getKey())) {
-                map.put(each.getKey(), each.getValue());
+        for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
+            if (!inUsedAlgorithms.contains(entry.getKey())) {
+                map.put(entry.getKey(), entry.getValue());
             }
         }
         data = map.entrySet().iterator();

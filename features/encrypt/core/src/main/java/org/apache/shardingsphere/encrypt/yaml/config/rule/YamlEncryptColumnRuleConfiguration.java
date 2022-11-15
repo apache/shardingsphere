@@ -34,7 +34,7 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     
     private String assistedQueryColumn;
     
-    private String fuzzyQueryColumn;
+    private String likeQueryColumn;
     
     private String plainColumn;
     
@@ -42,7 +42,7 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     
     private String assistedQueryEncryptorName;
     
-    private String fuzzyQueryEncryptorName;
+    private String likeQueryEncryptorName;
     
     private Boolean queryWithCipherColumn;
 }
