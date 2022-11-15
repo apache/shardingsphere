@@ -21,6 +21,10 @@ on:
   schedule:
     - cron: '0 16 */1 * *'  # once a day. UTC time
   workflow_dispatch:
+    inputs:
+      commit-id:
+        required: false
+        type: string
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
@@ -68,6 +72,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commit-id }}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
