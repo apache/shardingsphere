@@ -31,7 +31,7 @@ public final class SQLParserExternalITEnvironment {
     
     private static final String SQL_PARSER_EXTERNAL_IT_ENABLED_KEY = "sql.parser.external.it.enabled";
     
-    private static final String SQL_PARSER_EXTERNAL_IT_REPORT_PATH= "sql.parser.external.it.report.path";
+    private static final String SQL_PARSER_EXTERNAL_IT_REPORT_PATH = "sql.parser.external.it.report.path";
     
     private static final String SQL_PARSER_EXTERNAL_IT_REPORT_TYPE = "sql.parser.external.it.report.type";
     
