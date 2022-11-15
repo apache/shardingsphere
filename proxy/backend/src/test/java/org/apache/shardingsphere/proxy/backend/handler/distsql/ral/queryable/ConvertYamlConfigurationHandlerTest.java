@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -140,7 +141,7 @@ public final class ConvertYamlConfigurationHandlerTest {
     private void assertParseSQL(final String actual) {
         for (String each : Splitter.on(";").trimResults().splitToList(actual)) {
             if (!Strings.isNullOrEmpty(each)) {
-                assertNotNull(sqlParserRule.getSQLParserEngine("MYSQL").parse(each, false));
+                assertNotNull(sqlParserRule.getSQLParserEngine(new MySQLDatabaseType().getType()).parse(each, false));
             }
         }
     }
