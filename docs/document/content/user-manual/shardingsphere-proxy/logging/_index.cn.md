@@ -11,16 +11,12 @@ ShardingSphere 使用 Logback 进行日志管理，内部采用 Java SPI 提供�
 
 ## 操作步骤
 
-1. 获取 ShardingSphere-Proxy 二进制发布包
-
-在[下载页面](https://shardingsphere.apache.org/document/current/cn/downloads/)获取。
-
-2. 新建 `conf/logback.xml`
+1. 新建 `conf/logback.xml`
 
 根据需求自定义 logger 级别、pattern 等。
 > 建议在配置示例的基础上进行修改
 
-3. 查看日志
+2. 查看日志
 
 ShardingSphere-Proxy 启动后，日志将输出到 `logs` 目录下，选择目标日志文件进行查看。
 

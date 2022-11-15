@@ -11,16 +11,12 @@ The following describes how to customize the log configuration.
 
 ## Procedure
 
-1. Obtain the binary release package of ShardingSphere-Proxy
-
-Obtain the binary release package of ShardingSphere-Proxy on the [download page](https://shardingsphere.apache.org/document/current/en/downloads/).
-
-2. Create file `conf/logback.xml`
+1. Create file `conf/logback.xml`
 
 Customize the logger level and pattern, etc. according to your needs.
 > It is recommended to make modifications based on the configuration example
 
-3. View logs
+2. View logs
 
 After ShardingSphere-Proxy starts, the log will be output to the `logs` directory, select the target log file to view.
 
