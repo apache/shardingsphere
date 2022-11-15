@@ -20,7 +20,6 @@ name: Nightly - Build
 on:
   schedule:
     - cron: '0 16 */1 * *'  # once a day. UTC time
-  push:
   workflow_dispatch:
     inputs:
       commit-id:
@@ -35,7 +34,7 @@ env:
 
 jobs:
   upload-to-nightlies:
-    if: github.repository == 'apache/shardingsphere'
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -65,7 +64,7 @@ jobs:
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
   
   build-proxy-image:
-    #if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere'
     runs-on: ubuntu-latest
     permissions:
       contents: read
