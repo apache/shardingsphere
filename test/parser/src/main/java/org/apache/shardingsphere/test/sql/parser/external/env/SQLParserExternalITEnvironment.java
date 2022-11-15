@@ -31,6 +31,10 @@ public final class SQLParserExternalITEnvironment {
     
     private static final String SQL_PARSER_EXTERNAL_IT_ENABLED_KEY = "sql.parser.external.it.enabled";
     
+    private static final String SQL_PARSER_EXTERNAL_IT_REPORT_PATH= "sql.parser.external.it.report.path";
+    
+    private static final String SQL_PARSER_EXTERNAL_IT_REPORT_TYPE = "sql.parser.external.it.report.type";
+    
     @Getter
     private static final SQLParserExternalITEnvironment INSTANCE = new SQLParserExternalITEnvironment();
     
@@ -47,8 +51,8 @@ public final class SQLParserExternalITEnvironment {
         Properties props = loadProperties();
         sqlParserITEnabled = Boolean.parseBoolean(
                 null == System.getProperty(SQL_PARSER_EXTERNAL_IT_ENABLED_KEY) ? props.get(SQL_PARSER_EXTERNAL_IT_ENABLED_KEY).toString() : System.getProperty(SQL_PARSER_EXTERNAL_IT_ENABLED_KEY));
-        resultPath = props.getOrDefault("sql.parser.external.it.report.path", "/tmp/").toString();
-        resultProcessorType = props.getOrDefault("sql.parser.external.it.report.type", "LOG").toString();
+        resultPath = props.getOrDefault(SQL_PARSER_EXTERNAL_IT_REPORT_PATH, "/tmp/").toString();
+        resultProcessorType = props.getOrDefault(SQL_PARSER_EXTERNAL_IT_REPORT_TYPE, "LOG").toString();
     }
     
     /**
