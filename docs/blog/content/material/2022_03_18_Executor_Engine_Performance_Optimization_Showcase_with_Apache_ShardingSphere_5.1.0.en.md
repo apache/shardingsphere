@@ -1,7 +1,5 @@
 +++ 
-title = "Executor Engine: Performance Optimization Showcase with 
-Apache ShardingSphere
- 5.1.0"
+title = "Executor Engine: Performance Optimization Showcase with Apache ShardingSphere 5.1.0"
 weight = 43
 chapter = true 
 +++
