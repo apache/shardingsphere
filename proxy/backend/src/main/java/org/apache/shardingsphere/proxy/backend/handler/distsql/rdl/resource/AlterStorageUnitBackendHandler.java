@@ -69,7 +69,7 @@ public final class AlterStorageUnitBackendHandler extends DatabaseRequiredBacken
     public ResponseHeader execute(final String databaseName, final AlterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        validator.validate(dataSourcePropsMap, databaseType);
+        validator.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
