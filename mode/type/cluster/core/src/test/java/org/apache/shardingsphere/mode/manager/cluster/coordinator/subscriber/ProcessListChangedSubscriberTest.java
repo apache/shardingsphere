@@ -132,7 +132,7 @@ public final class ProcessListChangedSubscriberTest {
                 "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
     }
-
+    
     @Test
     public void assertKillProcessListId() throws SQLException, NoSuchFieldException, IllegalAccessException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();

@@ -66,7 +66,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        validator.validate(dataSourcePropsMap, databaseType);
+        validator.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereServerException ex) {
