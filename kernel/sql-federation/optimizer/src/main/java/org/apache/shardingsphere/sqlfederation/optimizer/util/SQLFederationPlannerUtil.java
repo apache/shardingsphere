@@ -39,6 +39,8 @@ import org.apache.calcite.rel.rules.ProjectRemoveRule;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.schema.Schema;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.fun.SqlLibrary;
 import org.apache.calcite.sql.fun.SqlLibraryOperatorTableFactory;
@@ -181,7 +183,38 @@ public final class SQLFederationPlannerUtil {
     public static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, schema);
+        registryUserDefinedFunction(schemaName, rootSchema.plus());
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
+    }
+    
+    private static void registryUserDefinedFunction(final String schemaName, final SchemaPlus schemaPlus) {
+        if (!"pg_catalog".equalsIgnoreCase(schemaName)) {
+            return;
+        }
+        schemaPlus.add("pg_catalog.pg_table_is_visible", ScalarFunctionImpl.create(SQLFederationPlannerUtil.class, "pgTableIsVisible"));
+        schemaPlus.add("pg_catalog.pg_get_userbyid", ScalarFunctionImpl.create(SQLFederationPlannerUtil.class, "pgGetUserById"));
+    }
+    
+    /**
+     * Mock pg_table_is_visible function.
+     *
+     * @param oid oid
+     * @return true
+     */
+    @SuppressWarnings("unused")
+    public static boolean pgTableIsVisible(final Long oid) {
+        return true;
+    }
+    
+    /**
+     * Mock pg_get_userbyid function.
+     * 
+     * @param oid oid
+     * @return user name
+     */
+    @SuppressWarnings("unused")
+    public static String pgGetUserById(final Long oid) {
+        return "mock user";
     }
     
     /**
