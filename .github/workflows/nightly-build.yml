@@ -20,6 +20,7 @@ name: Nightly - Build
 on:
   schedule:
     - cron: '0 16 */1 * *'  # once a day. UTC time
+  push:
   workflow_dispatch:
     inputs:
       commit-id:
