@@ -486,25 +486,6 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
     }
     
-    /**
-     * Reload table metadata.
-     *
-     * @param databaseName to be reloaded database name
-     */
-    public synchronized void reloadTableMetaData(final String databaseName) {
-        try {
-            ShardingSphereResourceMetaData currentResourceMetaData = metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData();
-            SwitchingResource switchingResource = new SwitchingResource(currentResourceMetaData, currentResourceMetaData.getDataSources(), Collections.emptyMap());
-            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
-            deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
-            metaDataContexts = reloadedMetaDataContexts;
-            metaDataContexts.getMetaData().getDatabases().values().forEach(
-                    each -> each.getSchemas().forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
-        } catch (final SQLException ex) {
-            log.error("Reload table meta data: {} failed", databaseName, ex);
-        }
-    }
-    
     private void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         SchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
                 .forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
