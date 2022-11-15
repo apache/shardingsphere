@@ -54,6 +54,7 @@ on:
       - '!distribution/proxy/src/main/release-docs/**'
       - '!kernel/data-pipeline/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
