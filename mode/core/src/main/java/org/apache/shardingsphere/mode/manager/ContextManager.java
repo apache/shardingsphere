@@ -502,8 +502,11 @@ public final class ContextManager implements AutoCloseable {
             Map<String, DataSourceProperties> dataSourceProps = metaDataContexts.getPersistService().getDataSourceService().load(databaseName);
             SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourceProps(currentResourceMetaData, dataSourceProps);
             metaDataContexts.getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), switchingResource));
-            metaDataContexts = createMetaDataContexts(databaseName, switchingResource);
-            metaDataContexts.getMetaData().getDatabases().putAll(newShardingSphereDatabase(metaDataContexts.getMetaData().getDatabase(databaseName)));
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);
+            deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
+            metaDataContexts = reloadedMetaDataContexts;
+            metaDataContexts.getMetaData().getDatabases().values().forEach(
+                    each -> each.getSchemas().forEach((schemaName, schema) -> this.metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
             log.error("Reload database meta data: {} failed", databaseName, ex);
