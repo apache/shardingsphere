@@ -438,12 +438,12 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             return;
         }
         result.append(DistSQLScriptConstants.CREATE_SHADOW);
-        Iterator<Entry<String, ShadowDataSourceConfiguration>> iterator = ruleConfig.getDataSources().entrySet().iterator();
+        Iterator<ShadowDataSourceConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
-            Entry<String, ShadowDataSourceConfiguration> dataSourceConfig = iterator.next();
-            String source = dataSourceConfig.getValue().getProductionDataSourceName();
-            String shadow = dataSourceConfig.getValue().getShadowDataSourceName();
-            String shadowRuleName = dataSourceConfig.getKey();
+            ShadowDataSourceConfiguration dataSourceConfig = iterator.next();
+            String source = dataSourceConfig.getProductionDataSourceName();
+            String shadow = dataSourceConfig.getShadowDataSourceName();
+            String shadowRuleName = dataSourceConfig.getName();
             String shadowTables = getShadowTables(shadowRuleName, ruleConfig.getTables(), ruleConfig.getShadowAlgorithms());
             result.append(String.format(DistSQLScriptConstants.SHADOW, shadowRuleName, source, shadow, shadowTables));
             if (iterator.hasNext()) {

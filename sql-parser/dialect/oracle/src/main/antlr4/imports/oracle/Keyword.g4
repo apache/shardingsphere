@@ -639,3 +639,7 @@ REGR_SYY
 REGR_SXY
     : R E G R UL_ S X Y
     ;
+
+LPAD
+    : L P A D
+    ;

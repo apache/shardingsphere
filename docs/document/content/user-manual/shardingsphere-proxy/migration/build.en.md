@@ -59,7 +59,7 @@ If the backend is connected to the following databases, download the correspondi
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )                              | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
 | openGauss             | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar ) |                                                                                                  |
 
-If you are migrating to a heterogeneous database, then you could use more types of database, e.g. Oracle. Introduce JDBC driver as above too.
+If you are migrating to a heterogeneous database, then you could use more types of database. Introduce JDBC driver as above too.
 
 5. Start ShardingSphere-Proxy:
 

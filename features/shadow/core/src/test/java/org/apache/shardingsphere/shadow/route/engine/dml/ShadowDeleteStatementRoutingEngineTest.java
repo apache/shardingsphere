@@ -94,7 +94,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setDataSources(Collections.singletonMap("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
+        result.setDataSources(Collections.singletonList(new ShadowDataSourceConfiguration("shadow-data-source-0", "ds", "ds_shadow")));
         result.setTables(
                 Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source-0"), Collections.singleton("user-id-delete-regex-algorithm"))));
         result.setShadowAlgorithms(Collections.singletonMap("user-id-delete-regex-algorithm", createShadowAlgorithm()));

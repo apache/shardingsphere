@@ -39,9 +39,8 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-cache-
             shardingsphere-maven-third-party-
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
@@ -81,14 +80,15 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: shardingsphere-maven-third-party-cache-${{ github.sha }}
+          key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            shardingsphere-maven-third-party-cache-
             shardingsphere-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Prepare environments
         run: sh .github/workflows/resources/sql/nightly-generator-init.sh
+      - name: Build with Maven
+        run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate examples
         run: ./mvnw -B clean install -f examples/shardingsphere-example-generator/pom.xml -Pexample-generator -Dproducts=${{ matrix.product }} -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
       - name: Test examples

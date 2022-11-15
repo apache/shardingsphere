@@ -15,4 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.sqlbuilder.DefaultPipelineSQLBuilder
+org.apache.shardingsphere.infra.metadata.data.collector.tables.PgNamespaceTableCollector
+org.apache.shardingsphere.infra.metadata.data.collector.tables.PgClassTableCollector

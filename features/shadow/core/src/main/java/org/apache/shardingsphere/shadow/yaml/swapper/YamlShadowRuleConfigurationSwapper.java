@@ -20,17 +20,16 @@ package org.apache.shardingsphere.shadow.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.datasource.YamlShadowDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 /**
  * YAML shadow rule configuration swapper.
  */
 public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlShadowRuleConfiguration, ShadowRuleConfiguration> {
-    
-    private final YamlShadowDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlShadowDataSourceConfigurationSwapper();
     
     private final YamlShadowTableConfigurationSwapper tableConfigurationSwapper = new YamlShadowTableConfigurationSwapper();
     
@@ -46,16 +45,23 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
         return result;
     }
     
-    private void parseShadowAlgorithms(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getShadowAlgorithms().forEach((key, value) -> yamlConfig.getShadowAlgorithms().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+    private void parseDataSources(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
+        data.getDataSources().forEach(each -> yamlConfig.getDataSources().put(each.getName(), swapToDataSourceYamlConfiguration(each)));
+    }
+    
+    private YamlShadowDataSourceConfiguration swapToDataSourceYamlConfiguration(final ShadowDataSourceConfiguration data) {
+        YamlShadowDataSourceConfiguration result = new YamlShadowDataSourceConfiguration();
+        result.setProductionDataSourceName(data.getProductionDataSourceName());
+        result.setShadowDataSourceName(data.getShadowDataSourceName());
+        return result;
     }
     
     private void parseShadowTables(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
         data.getTables().forEach((key, value) -> yamlConfig.getTables().put(key, tableConfigurationSwapper.swapToYamlConfiguration(value)));
     }
     
-    private void parseDataSources(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getDataSources().forEach((key, value) -> yamlConfig.getDataSources().put(key, dataSourceConfigSwapper.swapToYamlConfiguration(value)));
+    private void parseShadowAlgorithms(final ShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
+        data.getShadowAlgorithms().forEach((key, value) -> yamlConfig.getShadowAlgorithms().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
     }
     
     @Override
@@ -77,7 +83,11 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
     }
     
     private void parseYamlDataSources(final YamlShadowRuleConfiguration yamlConfig, final ShadowRuleConfiguration data) {
-        yamlConfig.getDataSources().forEach((key, value) -> data.getDataSources().put(key, dataSourceConfigSwapper.swapToObject(value)));
+        yamlConfig.getDataSources().forEach((key, value) -> data.getDataSources().add(swapToDataSourceObject(key, value)));
+    }
+    
+    private ShadowDataSourceConfiguration swapToDataSourceObject(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
+        return new ShadowDataSourceConfiguration(name, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     
     @Override

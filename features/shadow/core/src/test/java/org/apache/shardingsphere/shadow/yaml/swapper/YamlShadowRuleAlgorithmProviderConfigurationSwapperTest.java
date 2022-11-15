@@ -30,10 +30,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
     
@@ -49,9 +52,10 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
         AlgorithmProvidedShadowRuleConfiguration expected = buildAlgorithmProvidedShadowRuleConfiguration();
         YamlShadowRuleConfiguration actual = swapper.swapToYamlConfiguration(expected);
         actual.getDataSources().forEach((key, value) -> {
-            ShadowDataSourceConfiguration dataSourceConfig = expected.getDataSources().get(key);
-            assertThat(value.getShadowDataSourceName(), is(dataSourceConfig.getShadowDataSourceName()));
-            assertThat(value.getProductionDataSourceName(), is(dataSourceConfig.getProductionDataSourceName()));
+            Optional<ShadowDataSourceConfiguration> dataSourceConfig = getDataSourceConfig(expected.getDataSources(), key);
+            assertTrue(dataSourceConfig.isPresent());
+            assertThat(value.getShadowDataSourceName(), is(dataSourceConfig.get().getShadowDataSourceName()));
+            assertThat(value.getProductionDataSourceName(), is(dataSourceConfig.get().getProductionDataSourceName()));
         });
         actual.getTables().forEach((key, value) -> {
             ShadowTableConfiguration shadowTableConfig = expected.getTables().get(key);
@@ -63,9 +67,18 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
         });
     }
     
+    private Optional<ShadowDataSourceConfiguration> getDataSourceConfig(final Collection<ShadowDataSourceConfiguration> dataSources, final String name) {
+        for (ShadowDataSourceConfiguration each : dataSources) {
+            if (name.equals(each.getName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
     private AlgorithmProvidedShadowRuleConfiguration buildAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.getDataSources().put("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds-shadow"));
+        result.getDataSources().add(new ShadowDataSourceConfiguration("shadow-data-source", "ds", "ds-shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("user-id-match-algorithm", "note-algorithm")));
         result.getShadowAlgorithms().put("user-id-match-algorithm", new ColumnRegexMatchedShadowAlgorithm());
         return result;
@@ -75,10 +88,10 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapperTest {
     public void assertSwapToObject() {
         YamlShadowRuleConfiguration expected = buildYamlShadowRuleConfiguration();
         AlgorithmProvidedShadowRuleConfiguration actual = swapper.swapToObject(expected);
-        actual.getDataSources().forEach((key, value) -> {
-            YamlShadowDataSourceConfiguration yamlShadowDataSourceConfig = expected.getDataSources().get(key);
-            assertThat(value.getShadowDataSourceName(), is(yamlShadowDataSourceConfig.getShadowDataSourceName()));
-            assertThat(value.getProductionDataSourceName(), is(yamlShadowDataSourceConfig.getProductionDataSourceName()));
+        actual.getDataSources().forEach(each -> {
+            YamlShadowDataSourceConfiguration yamlShadowDataSourceConfig = expected.getDataSources().get(each.getName());
+            assertThat(each.getShadowDataSourceName(), is(yamlShadowDataSourceConfig.getShadowDataSourceName()));
+            assertThat(each.getProductionDataSourceName(), is(yamlShadowDataSourceConfig.getProductionDataSourceName()));
         });
         actual.getTables().forEach((key, value) -> assertThat(value.getShadowAlgorithmNames(), is(expected.getTables().get(key).getShadowAlgorithmNames())));
         actual.getShadowAlgorithms().forEach((key, value) -> assertThat(value.getType(), is(expected.getShadowAlgorithms().get(key).getType())));

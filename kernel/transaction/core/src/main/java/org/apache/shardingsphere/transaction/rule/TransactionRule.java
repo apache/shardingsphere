@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Transaction rule.
@@ -57,8 +58,8 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
-        this.databases = databases;
-        resource = createTransactionManagerEngine(databases);
+        this.databases = new ConcurrentHashMap<>(databases);
+        resource = createTransactionManagerEngine(this.databases);
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
@@ -86,7 +87,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (null == database) {
             return;
         }
-        log.debug("Transaction rule add resource: {}", database.getName());
+        databases.put(database.getName(), database);
         rebuildEngine();
     }
     
@@ -95,13 +96,13 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (!databases.containsKey(databaseName.toLowerCase())) {
             return;
         }
-        log.debug("Transaction rule close resource: {}", databaseName);
+        databases.remove(databaseName);
         rebuildEngine();
     }
     
     @Override
     public synchronized void closeStaleResource() {
-        log.debug("Transaction rule close all resources");
+        databases.clear();
         closeEngine();
     }
     

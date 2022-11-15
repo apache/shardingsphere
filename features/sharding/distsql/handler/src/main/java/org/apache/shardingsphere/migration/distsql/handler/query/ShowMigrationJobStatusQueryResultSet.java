@@ -56,7 +56,7 @@ public final class ShowMigrationJobStatusQueryResultSet implements DatabaseDistS
                 result.add(jobItemProgress.getStatus());
                 result.add(jobItemProgress.isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
                 result.add(jobItemProgress.getProcessedRecordsCount());
-                result.add(jobItemProgress.getInventory().getInventoryFinishedPercentage());
+                result.add(each.getInventoryFinishedPercentage());
                 String incrementalIdleSeconds = "";
                 if (jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis() > 0) {
                     long latestActiveTimeMillis = Math.max(each.getStartTimeMillis(), jobItemProgress.getIncremental().getIncrementalLatestActiveTimeMillis());
