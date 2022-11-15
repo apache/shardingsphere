@@ -71,9 +71,9 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Trigger show process list.
+     * Kill process list id.
      *
-     * @param event show process list trigger event
+     * @param event kill process list id event
      * @throws SQLException SQL exception
      */
     @Subscribe
