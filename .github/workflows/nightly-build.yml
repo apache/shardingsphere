@@ -111,6 +111,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.commit-id }}
       - uses: graalvm/setup-graalvm@v1
         with:
           version: 'dev'
