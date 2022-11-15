@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Unregister storage unit backend handler.
  */
 @Slf4j
-public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> {
+public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<UnregisterStorageUnitStatement> implements StorageUnitBackendHandler<UnregisterStorageUnitStatement> {
     
     public UnregisterStorageUnitBackendHandler(final UnregisterStorageUnitStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
@@ -57,10 +57,9 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
     
     @Override
     public ResponseHeader execute(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
-        Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
-        check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExists());
+        checkSQLStatement(databaseName, sqlStatement);
         try {
-            ProxyContext.getInstance().getContextManager().dropResources(databaseName, toBeDroppedResourceNames);
+            ProxyContext.getInstance().getContextManager().dropResources(databaseName, sqlStatement.getStorageUnitNames());
         } catch (final SQLException | ShardingSphereServerException ex) {
             log.error("Unregister storage unit failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
@@ -68,39 +67,31 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void check(final String databaseName, final Collection<String> toBeDroppedResourceNames,
-                       final boolean ignoreSingleTables, final boolean allowNotExist) {
-        if (!allowNotExist) {
-            checkResourceNameExisted(databaseName, toBeDroppedResourceNames);
+    @Override
+    public void checkSQLStatement(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
+        if (!sqlStatement.isIfExists()) {
+            checkExisted(databaseName, sqlStatement.getStorageUnitNames());
         }
-        checkResourceNameNotInUse(databaseName, toBeDroppedResourceNames, ignoreSingleTables);
+        checkInUsed(databaseName, sqlStatement);
     }
     
-    private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
-        Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedResourceNames.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedResourceNames));
+    private void checkExisted(final String databaseName, final Collection<String> storageUnitNames) {
+        Map<String, DataSource> dataSources = ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources();
+        Collection<String> notExistedStorageUnits = storageUnitNames.stream().filter(each -> !dataSources.containsKey(each)).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredResourcesException(databaseName, notExistedStorageUnits));
     }
     
-    private void checkResourceNameNotInUse(final String databaseName, final Collection<String> toBeDroppedResourceNames, final boolean ignoreSingleTables) {
-        Multimap<String, String> inUsedMultimap = getInUsedResources(databaseName);
-        Collection<String> inUsedResourceNames = inUsedMultimap.keySet();
-        inUsedResourceNames.retainAll(toBeDroppedResourceNames);
-        if (!inUsedResourceNames.isEmpty()) {
-            if (ignoreSingleTables) {
-                checkResourceNameNotInUseIgnoreSingleTableRule(new HashSet<>(inUsedResourceNames), inUsedMultimap);
+    private void checkInUsed(final String databaseName, final UnregisterStorageUnitStatement sqlStatement) {
+        Multimap<String, String> inUsedStorageUnits = getInUsedResources(databaseName);
+        Collection<String> inUsedStorageUnitNames = inUsedStorageUnits.keySet();
+        inUsedStorageUnitNames.retainAll(sqlStatement.getStorageUnitNames());
+        if (!inUsedStorageUnitNames.isEmpty()) {
+            if (sqlStatement.isIgnoreSingleTables()) {
+                checkInUsedIgnoreSingleTables(new HashSet<>(inUsedStorageUnitNames), inUsedStorageUnits);
             } else {
-                String firstResource = inUsedResourceNames.iterator().next();
-                throw new ResourceInUsedException(firstResource, inUsedMultimap.get(firstResource));
+                String firstResource = inUsedStorageUnitNames.iterator().next();
+                throw new ResourceInUsedException(firstResource, inUsedStorageUnits.get(firstResource));
             }
-        }
-    }
-    
-    private void checkResourceNameNotInUseIgnoreSingleTableRule(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedMultimap) {
-        for (String each : inUsedResourceNames) {
-            Collection<String> inUsedRules = inUsedMultimap.get(each);
-            inUsedRules.remove(SingleTableRule.class.getSimpleName());
-            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
         }
     }
     
@@ -108,15 +99,21 @@ public final class UnregisterStorageUnitBackendHandler extends DatabaseRequiredB
         Multimap<String, String> result = LinkedListMultimap.create();
         for (ShardingSphereRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataSourceContainedRule) {
-                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
-                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
+                getInUsedResourceNames((DataSourceContainedRule) each).forEach(eachResource -> result.put(eachResource, each.getType()));
             }
             if (each instanceof DataNodeContainedRule) {
-                Collection<String> inUsedResourceNames = getInUsedResourceNames((DataNodeContainedRule) each);
-                inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));
+                getInUsedResourceNames((DataNodeContainedRule) each).forEach(eachResource -> result.put(eachResource, each.getType()));
             }
         }
         return result;
+    }
+    
+    private void checkInUsedIgnoreSingleTables(final Collection<String> inUsedResourceNames, final Multimap<String, String> inUsedStorageUnits) {
+        for (String each : inUsedResourceNames) {
+            Collection<String> inUsedRules = inUsedStorageUnits.get(each);
+            inUsedRules.remove(SingleTableRule.class.getSimpleName());
+            ShardingSpherePreconditions.checkState(inUsedRules.isEmpty(), () -> new ResourceInUsedException(each, inUsedRules));
+        }
     }
     
     private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {

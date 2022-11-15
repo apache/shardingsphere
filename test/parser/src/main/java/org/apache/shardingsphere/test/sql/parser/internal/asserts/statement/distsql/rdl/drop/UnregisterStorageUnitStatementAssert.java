@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.UnregisterStorageUnitStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 /**
  * Unregister storage unit statement assert.
@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class UnregisterStorageUnitStatementAssert {
     
     /**
-     * Assert drop resource statement is correct with expected parser result.
+     * Assert unregister storage unit statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual unregister storage unit statement
@@ -42,11 +42,11 @@ public final class UnregisterStorageUnitStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UnregisterStorageUnitStatement actual, final UnregisterStorageUnitStatementTestCase expected) {
         if (null == expected.getDataSources()) {
-            assertNull(assertContext.getText("Actual resource should not exist."), actual);
+            assertNull(assertContext.getText("Actual storage unit should not exist."), actual);
         } else {
-            assertThat(assertContext.getText("resource assertion error: "), actual.getNames(), is(expected.getDataSources()));
-            assertThat(assertContext.getText("resource assertion error: "), actual.isIgnoreSingleTables(), is(expected.getIgnoreSingleTables().iterator().next()));
-            assertThat(assertContext.getText("resource assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
+            assertThat(assertContext.getText("storage unit assertion error: "), actual.getStorageUnitNames(), is(expected.getDataSources()));
+            assertThat(assertContext.getText("storage unit assertion error: "), actual.isIgnoreSingleTables(), is(expected.getIgnoreSingleTables().iterator().next()));
+            assertThat(assertContext.getText("storage unit assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }
