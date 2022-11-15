@@ -27,21 +27,26 @@ import java.util.Properties;
 /**
  * SQL parser external IT environment.
  */
-@Getter
 public final class SQLParserExternalITEnvironment {
     
+    private static final String SQL_PARSER_EXTERNAL_IT_ENABLED_KEY = "sql.parser.external.it.enabled";
+    
+    @Getter
     private static final SQLParserExternalITEnvironment INSTANCE = new SQLParserExternalITEnvironment();
     
+    @Getter
     private final boolean sqlParserITEnabled;
     
+    @Getter
     private final String resultPath;
     
+    @Getter
     private final String resultProcessorType;
     
     private SQLParserExternalITEnvironment() {
         Properties props = loadProperties();
         sqlParserITEnabled = Boolean.parseBoolean(
-                null == System.getProperty("sql.parser.external.it.enabled") ? props.get("sql.parser.external.it.enabled").toString() : System.getProperty("sql.parser.external.it.enabled"));
+                null == System.getProperty(SQL_PARSER_EXTERNAL_IT_ENABLED_KEY) ? props.get(SQL_PARSER_EXTERNAL_IT_ENABLED_KEY).toString() : System.getProperty(SQL_PARSER_EXTERNAL_IT_ENABLED_KEY));
         resultPath = props.getOrDefault("sql.parser.external.it.report.path", "/tmp/").toString();
         resultProcessorType = props.getOrDefault("sql.parser.external.it.report.type", "LOG").toString();
     }

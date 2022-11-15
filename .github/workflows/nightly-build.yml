@@ -62,9 +62,10 @@ jobs:
           remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
           remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
-  
+
   build-proxy-image:
     if: github.repository == 'apache/shardingsphere'
+    name: Build Proxy Image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -103,12 +104,8 @@ jobs:
     permissions:
       contents: read
       packages: write
-    name: GraalVM Native Image on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-      fail-fast: false
+    name: Build GraalVM Native Image
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:

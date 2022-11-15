@@ -40,7 +40,7 @@ public abstract class SQLParserParameterizedIT {
     
     private final SQLParseResultReporter resultReporter;
     
-    public SQLParserParameterizedIT(final String sqlCaseId, final String sql, final String databaseType, final String reportType) {
+    protected SQLParserParameterizedIT(final String sqlCaseId, final String sql, final String databaseType, final String reportType) {
         this.sqlCaseId = sqlCaseId;
         this.sql = sql;
         this.databaseType = databaseType;

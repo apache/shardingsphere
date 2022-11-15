@@ -60,8 +60,8 @@ public final class SQLCaseLoader {
         Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         for (Entry<String, FileSummary> entry : sqlCaseFileSummaries.entrySet()) {
             String fileName = entry.getKey();
-            String sqlCaseFileContent = loadContent(URI.create(entry.getValue().getAccessURL()));
-            String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURL())) : "";
+            String sqlCaseFileContent = loadContent(URI.create(entry.getValue().getAccessURI()));
+            String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
             result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent));
         }
         if (result.isEmpty()) {
@@ -71,9 +71,10 @@ public final class SQLCaseLoader {
     }
     
     private String loadContent(final URI uri) {
-        try {
-            InputStreamReader in = new InputStreamReader(uri.toURL().openStream());
-            return new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
+        try (
+                InputStreamReader in = new InputStreamReader(uri.toURL().openStream());
+                BufferedReader reader = new BufferedReader(in)) {
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (final IOException ex) {
             log.warn("Load failed, reason is: ", ex);
             return "";
@@ -82,20 +83,20 @@ public final class SQLCaseLoader {
     
     private Collection<Object[]> createSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String resultFileContent) {
         Collection<Object[]> result = new LinkedList<>();
-        String[] caseCaseLines = sqlCaseFileContent.split("\n");
-        String[] resultLines = resultFileContent.split("\n");
+        String[] rawsCaseLines = sqlCaseFileContent.split("\n");
+        String[] rawResultLines = resultFileContent.split("\n");
         String completedSQL = "";
         int sqlCaseEnum = 1;
         int statementLines = 0;
         int resultIndex = 0;
         boolean inProcedure = false;
-        for (String each : caseCaseLines) {
+        for (String each : rawsCaseLines) {
             inProcedure = isInProcedure(inProcedure, each.trim());
             completedSQL = getStatement(completedSQL, each.trim(), inProcedure);
             statementLines = completedSQL.isEmpty() ? 0 : statementLines + 1;
             if (completedSQL.contains(";") && !inProcedure) {
-                resultIndex = searchResult(resultIndex, resultLines, completedSQL, statementLines);
-                if (resultIndex >= resultLines.length || !resultLines[resultIndex].contains("ERROR")) {
+                resultIndex = searchInResultContent(resultIndex, rawResultLines, completedSQL, statementLines);
+                if (resultIndex >= rawResultLines.length || !rawResultLines[resultIndex].contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
                     result.add(new Object[]{sqlCaseId, completedSQL});
                     sqlCaseEnum++;
@@ -114,15 +115,15 @@ public final class SQLCaseLoader {
         return (statementLines.contains("{") || statementLines.contains("}") || statementLines.contains("$$")) != inProcedure;
     }
     
-    private static String getStatement(final String completedSQL, final String sqlLine, final boolean inProcedure) {
-        return (sqlLine.isEmpty() || isComment(sqlLine)) && !inProcedure ? "" : completedSQL + sqlLine + " ";
+    private static String getStatement(final String completedSQL, final String rawSQLLine, final boolean inProcedure) {
+        return (rawSQLLine.isEmpty() || isComment(rawSQLLine)) && !inProcedure ? "" : completedSQL + rawSQLLine + " ";
     }
     
     private static boolean isComment(final String statement) {
         return statement.startsWith("#") || statement.startsWith("/") || statement.startsWith("--") || statement.startsWith(":") || statement.startsWith("\\");
     }
     
-    private static int searchResult(final int resultIndex, final String[] resultLines, final String completedSQL, final int statementLines) {
+    private static int searchInResultContent(final int resultIndex, final String[] resultLines, final String completedSQL, final int statementLines) {
         int index = resultIndex;
         while (index < resultLines.length && !completedSQL.startsWith(resultLines[index].trim())) {
             index++;
