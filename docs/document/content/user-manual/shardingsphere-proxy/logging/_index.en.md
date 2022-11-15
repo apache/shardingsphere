@@ -3,11 +3,28 @@ title = "Logging Configuration"
 weight = 8
 +++
 
+## Background
+
 ShardingSphere uses Logback for log management, and uses Java SPI internally to provide default log configuration. Users can use XML files to configure customized log output. Proxy will preferentially read the log configuration provided in `logback.xml` in the `/conf` directory.
 
-## Sample File
+The following describes how to customize the log configuration.
 
-logback.xml
+## Procedure
+
+1. Obtain the binary release package of ShardingSphere-Proxy
+
+Obtain the binary release package of ShardingSphere-Proxy on the [download page](https://shardingsphere.apache.org/document/current/en/downloads/).
+
+2. Create file `conf/logback.xml`
+
+Customize the logger level and pattern, etc. according to your needs.
+> It is recommended to make modifications based on the configuration example
+
+3. View logs
+
+After ShardingSphere-Proxy starts, the log will be output to the `logs` directory, select the target log file to view.
+
+### Sample
 
 ```xml
 <?xml version="1.0"?>
@@ -49,4 +66,5 @@ logback.xml
         <appender-ref ref="console" />
     </root>
 </configuration>
+
 ```
