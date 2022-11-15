@@ -52,7 +52,7 @@ public final class RegisterMigrationSourceStorageUnitUpdater implements RALUpdat
         DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(urlBasedDataSourceSegment.getUrl());
         Map<String, DataSourceProperties> sourcePropertiesMap = ResourceSegmentsConverter.convert(databaseType, dataSources);
         DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
-        validator.validate(sourcePropertiesMap, databaseType);
+        validator.validate(sourcePropertiesMap);
         JOB_API.addMigrationSourceResources(sourcePropertiesMap);
     }
     
