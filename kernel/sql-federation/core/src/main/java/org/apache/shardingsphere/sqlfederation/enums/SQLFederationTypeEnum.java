@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums;
+package org.apache.shardingsphere.sqlfederation.enums;
 
-import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
+import java.util.Arrays;
 
 /**
- * Variable enum.
+ * SQL federation type enum.
  */
-public enum VariableEnum {
+public enum SQLFederationTypeEnum {
     
-    AGENT_PLUGINS_ENABLED,
-    
-    CACHED_CONNECTIONS,
-    
-    TRANSACTION_TYPE;
+    NONE, ORIGINAL, ADVANCED;
     
     /**
-     * Returns the variable constant of the specified variable name.
-     * 
-     * @param variableName variable name
-     * @return variable constant
+     * Judge whether is valid sql federation type or not.
+     *
+     * @param sqlFederationType sql federation type
+     * @return whether is valid sql federation type or not
      */
-    public static VariableEnum getValueOf(final String variableName) {
-        try {
-            return valueOf(variableName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new UnsupportedVariableException(variableName);
-        }
+    public static boolean isValidSQLFederationType(final String sqlFederationType) {
+        return Arrays.stream(values()).anyMatch(each -> each.name().equals(sqlFederationType));
     }
 }

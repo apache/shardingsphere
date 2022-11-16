@@ -167,6 +167,11 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     }
     
     @Override
+    public boolean isDefault() {
+        return true;
+    }
+    
+    @Override
     public String getType() {
         return "ADVANCED";
     }
