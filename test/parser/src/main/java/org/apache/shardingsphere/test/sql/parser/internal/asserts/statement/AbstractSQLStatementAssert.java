@@ -26,17 +26,17 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dist
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Abstract sql statement assert.
+ * Abstract SQL statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AbstractSQLStatementAssert {
     
     /**
-     * Assert abstract sql statement is correct with expected parser result.
+     * Assert abstract SQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual abstract sql statement
-     * @param expected expected abstract sql statement test case
+     * @param actual actual abstract SQL statement
+     * @param expected expected abstract SQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof DistSQLStatement) {

@@ -32,11 +32,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class FormatSQLStatementAssert {
     
     /**
-     * Assert format sql statement is correct with expected parser result.
+     * Assert format SQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual format sql statement
-     * @param expected expected format sql statement test case
+     * @param actual actual format SQL statement
+     * @param expected expected format SQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final FormatStatement actual, final FormatSQLStatementTestCase expected) {
         if (null == expected) {

@@ -42,7 +42,7 @@ public final class CommentAssert {
      * Assert comment is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual sql statement
+     * @param actual actual SQL statement
      * @param expected expected statement test case
      */
     public static void assertComment(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
