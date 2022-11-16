@@ -56,10 +56,9 @@ jobs:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} -DskipTests -Dspotless.apply.skip=true
+      - uses: docker/setup-buildx-action@v1
       - name: Push docker image
-        run: docker push ${{ env.PROXY }}:${{ github.sha }}
+        run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
 
   it-empty-rule:
     name: empty rule
