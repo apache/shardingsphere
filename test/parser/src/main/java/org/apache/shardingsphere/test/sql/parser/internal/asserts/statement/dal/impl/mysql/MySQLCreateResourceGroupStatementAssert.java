@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLResetPersistStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.ResetPersistStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL reset persist statement assert.
+ * MySQL create resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLResetPersistStatementAssert {
+public final class MySQLCreateResourceGroupStatementAssert {
     
     /**
-     * Assert reset persist statement is correct with expected reset persist statement test case.
+     * Assert create resource group statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual reset persist statement
-     * @param expected expected reset persist statement test case
+     * @param actual actual create resource group statement
+     * @param expected expected create resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetPersistStatement actual, final ResetPersistStatementTestCase expected) {
-        assertThat(assertContext.getText("Actual reset persist exist clause does not match: "), actual.isIfExists(), is(expected.isIfExists()));
-        if (null != expected.getIdentifier()) {
-            assertThat(assertContext.getText("Actual reset persist identifier does not match: "), actual.getIdentifier().getValue(), is(expected.getIdentifier()));
-        }
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
+        assertNotNull("expected create resource group should be not null", expected.getGroup());
+        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

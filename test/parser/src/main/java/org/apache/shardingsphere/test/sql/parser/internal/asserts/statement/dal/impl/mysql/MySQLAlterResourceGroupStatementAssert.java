@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
