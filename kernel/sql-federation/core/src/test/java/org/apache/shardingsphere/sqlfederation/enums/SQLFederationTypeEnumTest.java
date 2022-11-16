@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums;
+package org.apache.shardingsphere.sqlfederation.enums;
 
-import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
+import org.junit.Test;
 
-/**
- * Variable enum.
- */
-public enum VariableEnum {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class SQLFederationTypeEnumTest {
     
-    AGENT_PLUGINS_ENABLED,
-    
-    CACHED_CONNECTIONS,
-    
-    TRANSACTION_TYPE;
-    
-    /**
-     * Returns the variable constant of the specified variable name.
-     * 
-     * @param variableName variable name
-     * @return variable constant
-     */
-    public static VariableEnum getValueOf(final String variableName) {
-        try {
-            return valueOf(variableName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new UnsupportedVariableException(variableName);
-        }
+    @Test
+    public void assertIsValidSQLFederationType() {
+        assertTrue(SQLFederationTypeEnum.isValidSQLFederationType("NONE"));
+        assertTrue(SQLFederationTypeEnum.isValidSQLFederationType("ORIGINAL"));
+        assertTrue(SQLFederationTypeEnum.isValidSQLFederationType("ADVANCED"));
+        assertFalse(SQLFederationTypeEnum.isValidSQLFederationType("XXX"));
     }
 }
