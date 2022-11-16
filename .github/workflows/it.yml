@@ -36,6 +36,9 @@ jobs:
   build-it-image:
     name: Build IT image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
