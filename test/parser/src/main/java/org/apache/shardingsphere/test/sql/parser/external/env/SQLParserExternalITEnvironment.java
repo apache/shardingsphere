@@ -27,6 +27,7 @@ import java.util.Properties;
 /**
  * SQL parser external IT environment.
  */
+@Getter
 public final class SQLParserExternalITEnvironment {
     
     private static final String SQL_PARSER_EXTERNAL_IT_ENABLED_KEY = "sql.parser.external.it.enabled";
@@ -35,16 +36,12 @@ public final class SQLParserExternalITEnvironment {
     
     private static final String SQL_PARSER_EXTERNAL_IT_REPORT_TYPE = "sql.parser.external.it.report.type";
     
-    @Getter
     private static final SQLParserExternalITEnvironment INSTANCE = new SQLParserExternalITEnvironment();
     
-    @Getter
     private final boolean sqlParserITEnabled;
     
-    @Getter
     private final String resultPath;
     
-    @Getter
     private final String resultProcessorType;
     
     private SQLParserExternalITEnvironment() {
