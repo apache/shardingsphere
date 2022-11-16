@@ -2084,12 +2084,22 @@
             </expr>
         </where>
     </select>
-    <select sql-case-id="select_age_for_postgres" >
+
+    <select sql-case-id="select_age_for_postgres">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
             <simple-table name="not support" start-index="14" stop-index="70" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_datetime_expression">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="SYSTIMESTAMP AT TIME ZONE 'UTC'" start-index="7" stop-index="37" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="44" stop-index="47" />
         </from>
     </select>
 </sql-parser-test-cases>

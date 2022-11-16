@@ -91,4 +91,5 @@
     <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
     <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL" />
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
+    <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
 </sql-cases>
