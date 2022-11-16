@@ -20,6 +20,8 @@ name: IT
 on:
   push:
   workflow_dispatch:
+  pull_request:
+
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
