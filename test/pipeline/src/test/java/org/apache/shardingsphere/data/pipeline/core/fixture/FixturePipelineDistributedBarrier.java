@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineDistributedBarrier;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
+import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
 
 import java.util.concurrent.TimeUnit;
 
@@ -38,15 +37,15 @@ public final class FixturePipelineDistributedBarrier implements PipelineDistribu
     
     @Override
     public boolean await(final String barrierPath, final long timeout, final TimeUnit timeUnit) {
-        return false;
+        return true;
     }
     
     @Override
-    public void notifyChildrenNodeCountCheck(final DataChangedEvent event) {
+    public void notifyChildrenNodeCountCheck(final String nodePath) {
     }
     
     @Override
-    public String getType() {
-        return "FIXTURE";
+    public boolean isDefault() {
+        return true;
     }
 }

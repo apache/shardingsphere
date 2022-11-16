@@ -40,7 +40,6 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
             return;
         }
         PipelineContext.initModeConfig(modeConfig);
-        PipelineContext.initPipelineDistributedBarrier(modeConfig.getRepository().getType());
         PipelineContext.initContextManager(contextManager);
         PipelineJobWorker.initialize();
     }

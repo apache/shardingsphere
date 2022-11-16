@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.api.impl.ZookeeperPipelineDistributedBarrier
+org.apache.shardingsphere.data.pipeline.core.spi.impl.PipelineDistributedBarrierImpl

@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
+package org.apache.shardingsphere.data.pipeline.spi.barrier;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * Pipeline distributed barrier.
  */
 @SingletonSPI
-public interface PipelineDistributedBarrier extends RequiredSPI, TypedSPI {
+public interface PipelineDistributedBarrier extends RequiredSPI {
     
     /**
      * Register distributed barrier.
@@ -66,7 +64,7 @@ public interface PipelineDistributedBarrier extends RequiredSPI, TypedSPI {
     /**
      * notify children node count check.
      *
-     * @param event event
+     * @param nodePath node path
      */
-    void notifyChildrenNodeCountCheck(DataChangedEvent event);
+    void notifyChildrenNodeCountCheck(String nodePath);
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
+package org.apache.shardingsphere.data.pipeline.spi.barrier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
  * Pipeline distributed barrier factory.
@@ -34,12 +34,11 @@ public final class PipelineDistributedBarrierFactory {
     }
     
     /**
-     * Get instance of pipeline distribute barrier.
+     * Get instance of pipeline distributed barrier.
      *
-     * @param type type
      * @return got instance
      */
-    public static PipelineDistributedBarrier getInstance(final String type) {
-        return TypedSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class, type);
+    public static PipelineDistributedBarrier getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(PipelineDistributedBarrier.class);
     }
 }

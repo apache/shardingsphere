@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api.impl;
+package org.apache.shardingsphere.data.pipeline.core.spi.impl;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -24,10 +24,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineDistributedBarrier;
+import org.apache.shardingsphere.data.pipeline.spi.barrier.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * Pipeline distributed barrier.
  */
 @Slf4j
-public final class ZookeeperPipelineDistributedBarrier implements PipelineDistributedBarrier {
+public final class PipelineDistributedBarrierImpl implements PipelineDistributedBarrier {
     
     private static final LazyInitializer<ClusterPersistRepository> REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
         
@@ -120,11 +119,11 @@ public final class ZookeeperPipelineDistributedBarrier implements PipelineDistri
     }
     
     @Override
-    public void notifyChildrenNodeCountCheck(final DataChangedEvent event) {
-        if (Strings.isNullOrEmpty(event.getKey())) {
+    public void notifyChildrenNodeCountCheck(final String nodePath) {
+        if (Strings.isNullOrEmpty(nodePath)) {
             return;
         }
-        String barrierPath = event.getKey().substring(0, event.getKey().lastIndexOf("/"));
+        String barrierPath = nodePath.substring(0, nodePath.lastIndexOf("/"));
         InnerCountDownLatchHolder holder = countDownLatchMap.get(barrierPath);
         if (null == holder) {
             return;
@@ -133,11 +132,6 @@ public final class ZookeeperPipelineDistributedBarrier implements PipelineDistri
         if (childrenKeys.size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
         }
-    }
-    
-    @Override
-    public String getType() {
-        return "ZooKeeper";
     }
     
     @RequiredArgsConstructor

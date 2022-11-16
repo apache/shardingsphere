@@ -91,7 +91,6 @@ public final class PipelineContextUtil {
     private static void mockModeConfig() {
         if (null == PipelineContext.getModeConfig()) {
             PipelineContext.initModeConfig(createModeConfig());
-            PipelineContext.initPipelineDistributedBarrier("Zookeeper");
         }
     }
     

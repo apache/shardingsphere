@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.context;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineDistributedBarrier;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineDistributedBarrierFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -37,8 +35,6 @@ public final class PipelineContext {
     
     private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Pipeline-EventListener-%d").build());
     
-    private static PipelineDistributedBarrier pipelineDistributedBarrier;
-    
     /**
      * Get mode configuration.
      *
@@ -55,24 +51,6 @@ public final class PipelineContext {
      */
     public static void initModeConfig(final ModeConfiguration modeConfig) {
         PipelineContext.modeConfig = modeConfig;
-    }
-    
-    /**
-     * Get pipeline distributed barrier.
-     *
-     * @return pipeline distributed barrier
-     */
-    public static PipelineDistributedBarrier getPipelineDistributedBarrier() {
-        return pipelineDistributedBarrier;
-    }
-    
-    /**
-     * Initialize pipeline distributed barrier.
-     *
-     * @param type type
-     */
-    public static void initPipelineDistributedBarrier(final String type) {
-        pipelineDistributedBarrier = PipelineDistributedBarrierFactory.getInstance(type);
     }
     
     /**
