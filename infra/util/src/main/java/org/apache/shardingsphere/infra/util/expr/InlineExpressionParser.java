@@ -65,7 +65,15 @@ public final class InlineExpressionParser {
      * @return result list
      */
     public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split()));
+        if(Strings.isNullOrEmpty(inlineExpression) ){
+            return Collections.emptyList();
+        }
+        if (!isInlineExpression(inlineExpression)) {
+            List<String> res = new ArrayList<>();
+            res.add(inlineExpression);
+            return res;
+        }
+        return flatten(evaluate(split()));
     }
     
     /**
