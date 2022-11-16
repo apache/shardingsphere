@@ -52,7 +52,9 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final ShardingSphereDatabase shardingSphereDatabase, final ShardingSphereTable table) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, 
+                                                     final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
+        ShardingSphereDatabase shardingSphereDatabase = shardingSphereDatabases.get(databaseName);
         Optional<ShardingRule> shardingRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!shardingRule.isPresent()) {
             return Optional.empty();

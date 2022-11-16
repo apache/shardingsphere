@@ -33,6 +33,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -49,9 +50,10 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
             + "AND pg_catalog.pg_table_is_visible(oid);";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final ShardingSphereDatabase shardingSphereDatabase, final ShardingSphereTable table) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, 
+                                                     final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS, new ArrayList<>(table.getColumns().values()));
-        for (DataSource each : shardingSphereDatabase.getResourceMetaData().getDataSources().values()) {
+        for (DataSource each : shardingSphereDatabases.get(databaseName).getResourceMetaData().getDataSources().values()) {
             try (
                     Connection connection = each.getConnection();
                     Statement statement = connection.createStatement();
