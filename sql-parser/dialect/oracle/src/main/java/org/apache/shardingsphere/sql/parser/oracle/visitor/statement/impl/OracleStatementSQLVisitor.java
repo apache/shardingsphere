@@ -26,47 +26,7 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AggregationFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyticFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BitValueLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.BooleanPrimaryContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CastFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CharFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ConstraintNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionCallContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HexadecimalLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IdentifierContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NullValueLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.NumberLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OwnerContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PackageNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ParameterMarkerContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.PredicateContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RegularFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SimpleExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpecialFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StringLiteralsContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SynonymNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNamesContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.*;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -77,13 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTy
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.*;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -114,11 +68,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.String
 import org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker.ParameterMarkerValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -312,7 +262,22 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.orOperator()) {
             return createBinaryOperationExpression(ctx, ctx.orOperator().getText());
         }
+        if (null != ctx.datetimeExpr()) {
+            return createDatetimeExpression(ctx, ctx.datetimeExpr());
+        }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)));
+    }
+    
+    private ASTNode createDatetimeExpression(final ExprContext ctx, final DatetimeExprContext datetimeExpr) {
+        ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
+        String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+        if (null != datetimeExpr.expr()) {
+            ExpressionSegment right =
+                    new ExpressionProjectionSegment(datetimeExpr.getStart().getStartIndex(), datetimeExpr.getStop().getStopIndex(), datetimeExpr.getText(),
+                            (ExpressionSegment) visit(datetimeExpr.expr()));
+            return new DatetimeExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, text);
+        }
+        return new DatetimeExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, text);
     }
     
     private ASTNode createBinaryOperationExpression(final ExprContext ctx, final String operator) {

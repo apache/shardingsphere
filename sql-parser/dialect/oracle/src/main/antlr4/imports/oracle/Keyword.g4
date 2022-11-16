@@ -643,3 +643,23 @@ REGR_SXY
 LPAD
     : L P A D
     ;
+
+ZONE
+    : Z O N E
+    ;
+
+AT
+    : A T
+    ;
+
+SESSIONTIMEZONE
+    : S E S S I O N T I M E Z O N E
+    ;
+
+SYSTIMESTAMP
+    : S Y S T I M E S T A M P
+    ;
+
+DBTIMEZONE
+    : D B T I M E Z O N E
+    ;

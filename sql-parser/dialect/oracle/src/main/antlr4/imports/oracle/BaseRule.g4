@@ -163,7 +163,7 @@ unreservedWord
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD
+    | LPAD | ZONE | SESSIONTIMEZONE
     ;
 
 schemaName
@@ -444,6 +444,7 @@ expr
     | booleanPrimary
     | aggregationFunction
     | analyticFunction
+    | expr datetimeExpr
     ;
 
 andOperator
@@ -1609,3 +1610,6 @@ maxNumberOfSnapshots
     : INTEGER_
     ;
 
+datetimeExpr
+    : AT (LOCAL | TIME ZONE expr)
+    ;
