@@ -170,3 +170,4 @@ jobs:
         run: |
           ./mvnw -B clean install -f test/integration-agent-test/plugins/metrics/pom.xml -Dspotless.apply.skip=true -Pit.env.metrics
           ./mvnw -B clean install -f test/integration-agent-test/plugins/opentelemetry/pom.xml -Dspotless.apply.skip=true -Pit.env.opentelemetry
+
