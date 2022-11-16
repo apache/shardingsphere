@@ -29,7 +29,7 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true -Drat.skip=true
-  HUB: ghcr.io/taojintianxia/shardingsphere
+  HUB: ghcr.io
   PROXY: ghcr.io/taojintianxia/shardingsphere-proxy
 
 jobs:
