@@ -55,5 +55,4 @@ public final class DatetimeExpression implements ExpressionSegment {
         this.right = null;
         this.text = text;
     }
-    
 }

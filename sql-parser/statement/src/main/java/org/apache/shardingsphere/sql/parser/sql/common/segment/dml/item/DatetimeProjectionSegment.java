@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
- * Column projection segment.
+ * Datetime projection segment.
  */
 @Getter
 @Setter
