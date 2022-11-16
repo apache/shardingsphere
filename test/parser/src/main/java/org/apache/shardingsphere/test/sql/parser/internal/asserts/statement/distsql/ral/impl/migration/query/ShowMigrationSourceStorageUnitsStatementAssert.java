@@ -30,11 +30,11 @@ import static org.junit.Assert.assertNull;
 public final class ShowMigrationSourceStorageUnitsStatementAssert {
     
     /**
-     * Assert show migration status is correct with expected parser result.
+     * Assert show migration source storage units statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show migration storage units statement
-     * @param expected expected show migration storage units statement test case
+     * @param actual actual show migration source storage units statement
+     * @param expected expected show migration source storage units statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationSourceStorageUnitsStatement actual, final ShowMigrationSourceStorageUnitsStatementTestCase expected) {
         if (null == expected) {

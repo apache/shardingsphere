@@ -48,7 +48,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.stat
  * Hint RAL statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class HintRALStatementAssert {
+public final class HintRALStatementAssert {
     
     /**
      * Assert Hint RAL statement is correct with expected parser result.

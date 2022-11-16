@@ -29,10 +29,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Add sharding hint database statement assert.
+ * Add sharding hint database value statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AddShardingHintDatabaseValueStatementAssert {
+public final class AddShardingHintDatabaseValueStatementAssert {
     
     /**
      * Assert add sharding hint database value statement is correct with expected parser result.

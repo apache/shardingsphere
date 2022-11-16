@@ -27,10 +27,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Add readwrite-splitting hint status statement assert.
+ * Show readwrite-splitting hint status statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShowReadwriteSplittingHintStatusStatementAssert {
+public final class ShowReadwriteSplittingHintStatusStatementAssert {
     
     /**
      * Assert show readwrite-splitting hint status statement is correct with expected parser result.

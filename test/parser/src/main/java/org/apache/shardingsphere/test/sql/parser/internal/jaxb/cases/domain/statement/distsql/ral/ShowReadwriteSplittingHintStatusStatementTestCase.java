@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.sta
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Show readwrite-splitting hint statement test case.
+ * Show readwrite-splitting hint status statement test case.
  */
 public final class ShowReadwriteSplittingHintStatusStatementTestCase extends SQLParserTestCase {
 }

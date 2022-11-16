@@ -33,8 +33,8 @@ public final class ExportDatabaseConfigurationStatementAssert {
      * Assert export database configuration statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual export database configuration statement statement
-     * @param expected expected export configuration database statement statement test case
+     * @param actual actual export database configuration statement
+     * @param expected expected export database configuration statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ExportDatabaseConfigurationStatement actual,
                                 final ExportDatabaseConfigurationStatementTestCase expected) {
