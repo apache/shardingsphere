@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
+
+import org.apache.shardingsphere.distsql.parser.statement.rdl.StorageUnitDefinitionStatement;
 
 /**
- * Resource definition statement.
+ * Storage unit backend handler.
  */
-public abstract class ResourceDefinitionStatement extends RDLStatement {
+public interface StorageUnitBackendHandler<T extends StorageUnitDefinitionStatement> {
+    
+    /**
+     * Check SQL statement.
+     *
+     * @param databaseName database name
+     * @param sqlStatement SQL statement
+     */
+    void checkSQLStatement(String databaseName, T sqlStatement);
 }

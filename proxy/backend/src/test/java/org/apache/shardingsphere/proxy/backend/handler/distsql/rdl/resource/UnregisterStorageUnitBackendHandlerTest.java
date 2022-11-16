@@ -104,7 +104,7 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), false);
         assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
-        verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
+        verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test(expected = MissingRequiredResourcesException.class)
@@ -148,14 +148,14 @@ public final class UnregisterStorageUnitBackendHandlerTest extends ProxyContextR
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(Collections.singleton("foo_ds"), true);
         assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
-        verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
+        verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test
     public void assertExecuteWithIfExists() throws SQLException {
         UnregisterStorageUnitStatement unregisterStorageUnitStatement = new UnregisterStorageUnitStatement(true, Collections.singleton("foo_ds"), true);
         assertThat(unregisterStorageUnitBackendHandler.execute("test", unregisterStorageUnitStatement), instanceOf(UpdateResponseHeader.class));
-        verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getNames());
+        verify(contextManager).dropResources("test", unregisterStorageUnitStatement.getStorageUnitNames());
     }
     
     @Test(expected = DistSQLException.class)

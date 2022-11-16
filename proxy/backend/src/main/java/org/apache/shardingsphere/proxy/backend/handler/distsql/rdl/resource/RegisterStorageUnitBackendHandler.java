@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  * Register storage unit backend handler.
  */
 @Slf4j
-public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<RegisterStorageUnitStatement> {
+public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBackendHandler<RegisterStorageUnitStatement> implements StorageUnitBackendHandler<RegisterStorageUnitStatement> {
     
     private final DatabaseType databaseType;
     
@@ -65,7 +65,7 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
     @Override
     public ResponseHeader execute(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
         checkSQLStatement(databaseName, sqlStatement);
-        Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
+        Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getStorageUnits());
         validator.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().addResources(databaseName, dataSourcePropsMap);
@@ -76,28 +76,34 @@ public final class RegisterStorageUnitBackendHandler extends DatabaseRequiredBac
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void checkSQLStatement(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
-        Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getDataSources().size());
-        Collection<String> duplicateDataSourceNames = new HashSet<>(sqlStatement.getDataSources().size(), 1);
-        for (DataSourceSegment each : sqlStatement.getDataSources()) {
+    @Override
+    public void checkSQLStatement(final String databaseName, final RegisterStorageUnitStatement sqlStatement) {
+        Collection<String> dataSourceNames = new ArrayList<>(sqlStatement.getStorageUnits().size());
+        checkDuplicatedDataSourceNames(databaseName, dataSourceNames, sqlStatement);
+        checkDuplicatedDataSourceNameWithReadwriteSplittingRule(databaseName, dataSourceNames);
+    }
+    
+    private void checkDuplicatedDataSourceNames(final String databaseName, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
+        Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1);
+        for (DataSourceSegment each : sqlStatement.getStorageUnits()) {
             if (dataSourceNames.contains(each.getName()) || ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().containsKey(each.getName())) {
-                duplicateDataSourceNames.add(each.getName());
+                duplicatedDataSourceNames.add(each.getName());
             }
             dataSourceNames.add(each.getName());
         }
-        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new DuplicateResourceException(duplicateDataSourceNames));
-        checkDuplicateDataSourceNameWithReadwriteSplittingRule(databaseName, dataSourceNames);
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(), () -> new DuplicateResourceException(duplicatedDataSourceNames));
     }
     
-    private void checkDuplicateDataSourceNameWithReadwriteSplittingRule(final String databaseName, final Collection<String> requiredDataSourceNames) {
-        Optional<ReadwriteSplittingRule> readwriteSplittingRule = ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        if (!readwriteSplittingRule.isPresent()) {
+    private void checkDuplicatedDataSourceNameWithReadwriteSplittingRule(final String databaseName, final Collection<String> requiredDataSourceNames) {
+        // TODO use SPI to decouple features
+        Optional<ReadwriteSplittingRule> rule = ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        if (!rule.isPresent()) {
             return;
         }
-        ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) readwriteSplittingRule.get().getConfiguration();
-        Collection<String> existRuleNames = config.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
-        Collection<String> duplicateDataSourceNames = requiredDataSourceNames.stream().filter(each -> existRuleNames.contains(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(),
-                () -> new InvalidResourcesException(Collections.singleton(String.format("%s already exists in readwrite splitting", duplicateDataSourceNames))));
+        ReadwriteSplittingRuleConfiguration ruleConfig = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
+        Collection<String> existedRuleNames = ruleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> duplicatedDataSourceNames = requiredDataSourceNames.stream().filter(existedRuleNames::contains).collect(Collectors.toSet());
+        ShardingSpherePreconditions.checkState(duplicatedDataSourceNames.isEmpty(),
+                () -> new InvalidResourcesException(Collections.singleton(String.format("%s already exists in readwrite splitting", duplicatedDataSourceNames))));
     }
 }
