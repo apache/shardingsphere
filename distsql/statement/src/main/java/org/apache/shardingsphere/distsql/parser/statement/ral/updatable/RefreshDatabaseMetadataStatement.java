@@ -17,51 +17,27 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 import java.util.Optional;
 
 /**
- * Refresh table metadata statement.
+ * Refresh database metadata statement.
  */
 @RequiredArgsConstructor
-public final class RefreshTableMetadataStatement extends UpdatableRALStatement {
+@Getter
+public final class RefreshDatabaseMetadataStatement extends UpdatableRALStatement {
     
-    private final String tableName;
-    
-    private final String storageUnitName;
-    
-    private final String schemaName;
-    
-    public RefreshTableMetadataStatement() {
-        this(null, null, null);
-    }
+    private final String databaseName;
     
     /**
-     * Get table name.
+     * Get database name.
      *
-     * @return table name
+     * @return database name
      */
-    public Optional<String> getTableName() {
-        return Optional.ofNullable(tableName);
-    }
-    
-    /**
-     * Get storage unit name.
-     *
-     * @return storage unit name
-     */
-    public Optional<String> getStorageUnitName() {
-        return Optional.ofNullable(storageUnitName);
-    }
-    
-    /**
-     * Get schema name.
-     *
-     * @return schema name
-     */
-    public Optional<String> getSchemaName() {
-        return Optional.ofNullable(schemaName);
+    public Optional<String> getDatabaseName() {
+        return Optional.ofNullable(databaseName);
     }
 }
