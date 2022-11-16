@@ -48,7 +48,7 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
     
     private static final int DEFAULT_DELTA = 1;
     
-    private static final int DEFAULT_MASK = 0b1111_1011_1101;
+    private static final int DEFAULT_MASK = 0b1111_0111_1101;
     
     private static final int DEFAULT_START = 0x4e00;
     
