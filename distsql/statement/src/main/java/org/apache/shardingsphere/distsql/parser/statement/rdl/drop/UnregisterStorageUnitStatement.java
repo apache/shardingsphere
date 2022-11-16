@@ -19,26 +19,24 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.StorageUnitDefinitionStatement;
 
 import java.util.Collection;
 
 /**
- * Drop resource statement.
+ * Unregister storage unit statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UnregisterStorageUnitStatement extends ResourceDefinitionStatement {
+public final class UnregisterStorageUnitStatement extends StorageUnitDefinitionStatement {
     
     private final boolean ifExists;
     
-    private final Collection<String> names;
+    private final Collection<String> storageUnitNames;
     
     private final boolean ignoreSingleTables;
     
-    public UnregisterStorageUnitStatement(final Collection<String> names, final boolean ignoreSingleTables) {
-        this.ifExists = false;
-        this.names = names;
-        this.ignoreSingleTables = ignoreSingleTables;
+    public UnregisterStorageUnitStatement(final Collection<String> storageUnitNames, final boolean ignoreSingleTables) {
+        this(false, storageUnitNames, ignoreSingleTables);
     }
 }

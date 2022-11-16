@@ -30,9 +30,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Alter storage unit statement assert.
@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public final class AlterStorageUnitStatementAssert {
     
     /**
-     * Assert alter resource statement is correct with expected parser result.
+     * Assert alter storage unit statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual alter storage unit statement
@@ -52,16 +52,16 @@ public final class AlterStorageUnitStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertDataSources(assertContext, actual.getDataSources(), expected.getDataSources());
+            assertDataSources(assertContext, actual.getStorageUnits(), expected.getDataSources());
         }
     }
     
     private static void assertDataSources(final SQLCaseAssertContext assertContext, final Collection<DataSourceSegment> actual, final List<ExpectedDataSource> expected) {
         if (null == expected) {
-            assertNull(assertContext.getText("Actual datasource should not exist."), actual);
+            assertNull(assertContext.getText("Actual storage unit should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual datasource should exist."), actual);
-            assertThat(assertContext.getText(String.format("Actual datasource size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
+            assertNotNull(assertContext.getText("Actual storage unit should exist."), actual);
+            assertThat(assertContext.getText(String.format("Actual storage unit size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (DataSourceSegment actualDataSource : actual) {
                 DataSourceAssert.assertIs(assertContext, actualDataSource, expected.get(count));
