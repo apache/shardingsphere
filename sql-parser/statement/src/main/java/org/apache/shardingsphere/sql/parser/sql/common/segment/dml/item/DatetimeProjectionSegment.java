@@ -40,7 +40,7 @@ public final class DatetimeProjectionSegment implements ProjectionSegment {
     
     private final String text;
     
-    public DatetimeProjectionSegment(final int startIndex, final int stopIndex, final ExpressionSegment left, final ExpressionSegment right, String text) {
+    public DatetimeProjectionSegment(final int startIndex, final int stopIndex, final ExpressionSegment left, final ExpressionSegment right, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.left = left;
@@ -48,7 +48,7 @@ public final class DatetimeProjectionSegment implements ProjectionSegment {
         this.text = text;
     }
     
-    public DatetimeProjectionSegment(final int startIndex, final int stopIndex, final ExpressionSegment left, String text) {
+    public DatetimeProjectionSegment(final int startIndex, final int stopIndex, final ExpressionSegment left, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.left = left;

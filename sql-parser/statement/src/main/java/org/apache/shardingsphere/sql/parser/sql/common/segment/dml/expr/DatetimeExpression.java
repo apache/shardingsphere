@@ -40,7 +40,7 @@ public final class DatetimeExpression implements ExpressionSegment {
     
     private final String text;
     
-    public DatetimeExpression(int startIndex, int stopIndex, ExpressionSegment left, ExpressionSegment right, String text) {
+    public DatetimeExpression(final int startIndex, final int stopIndex, final ExpressionSegment left, final ExpressionSegment right, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.left = left;
@@ -48,7 +48,7 @@ public final class DatetimeExpression implements ExpressionSegment {
         this.text = text;
     }
     
-    public DatetimeExpression(int startIndex, int stopIndex, ExpressionSegment left, String text) {
+    public DatetimeExpression(final int startIndex, final int stopIndex, final ExpressionSegment left, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.left = left;
