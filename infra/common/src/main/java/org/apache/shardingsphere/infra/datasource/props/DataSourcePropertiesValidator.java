@@ -59,8 +59,7 @@ public final class DataSourcePropertiesValidator {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
             checkFailFast(dataSource);
             // CHECKSTYLE:OFF
-            // TODO check why catch exception here, can it simplify to catch SQLException and ShardingSphereInternalException?
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         } finally {
