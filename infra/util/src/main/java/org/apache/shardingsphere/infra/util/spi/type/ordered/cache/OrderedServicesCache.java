@@ -20,10 +20,10 @@ package org.apache.shardingsphere.infra.util.spi.type.ordered.cache;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import java.lang.ref.SoftReference;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,12 +68,17 @@ public final class OrderedServicesCache {
         cache.put(new Key(spiClass, types), services);
     }
     
-    @RequiredArgsConstructor
     @EqualsAndHashCode
     private static final class Key {
         
         private final Class<?> clazz;
         
-        private final Collection<?> types;
+        private final Collection<Class<?>> types;
+        
+        Key(final Class<?> clazz, final Collection<?> types) {
+            this.clazz = clazz;
+            this.types = new LinkedList<>();
+            types.forEach(each -> this.types.add(each.getClass()));
+        }
     }
 }

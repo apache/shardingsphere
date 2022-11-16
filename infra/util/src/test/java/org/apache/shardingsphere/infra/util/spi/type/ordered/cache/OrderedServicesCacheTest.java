@@ -35,8 +35,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class OrderedServicesCacheTest {
@@ -61,6 +61,21 @@ public final class OrderedServicesCacheTest {
         cachedOrderedServices.put(orderedInterfaceFixture, cacheOrderedSPIFixture);
         OrderedServicesCache.cacheServices(OrderedSPIFixture.class, customInterfaces, cachedOrderedServices);
         Optional<Map<?, ?>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, customInterfaces);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().get(orderedInterfaceFixture), is(cacheOrderedSPIFixture));
+    }
+    
+    @Test
+    public void assertFindCachedServicesWithDifferentTypesObject() {
+        OrderedInterfaceFixture orderedInterfaceFixture = new OrderedInterfaceFixtureImpl();
+        Collection<OrderedInterfaceFixture> customInterfaces = Collections.singleton(orderedInterfaceFixture);
+        OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
+        Map<OrderedInterfaceFixture, OrderedSPIFixture<?>> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1);
+        cachedOrderedServices.put(orderedInterfaceFixture, cacheOrderedSPIFixture);
+        OrderedServicesCache.cacheServices(OrderedSPIFixture.class, customInterfaces, cachedOrderedServices);
+        OrderedInterfaceFixture newOrderedInterfaceFixture = new OrderedInterfaceFixtureImpl();
+        Collection<OrderedInterfaceFixture> newCustomInterfaces = Collections.singleton(newOrderedInterfaceFixture);
+        Optional<Map<?, ?>> actual = OrderedServicesCache.findCachedServices(OrderedSPIFixture.class, newCustomInterfaces);
         assertTrue(actual.isPresent());
         assertThat(actual.get().get(orderedInterfaceFixture), is(cacheOrderedSPIFixture));
     }
