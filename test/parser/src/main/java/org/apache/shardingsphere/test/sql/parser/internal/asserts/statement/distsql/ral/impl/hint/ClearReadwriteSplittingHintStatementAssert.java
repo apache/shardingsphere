@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
  * Clear readwrite-splitting hint statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ClearReadwriteSplittingHintStatementAssert {
+public final class ClearReadwriteSplittingHintStatementAssert {
     
     /**
      * Assert clear readwrite-splitting hint statement is correct with expected parser result.

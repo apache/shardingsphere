@@ -29,17 +29,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Add sharding hint statement assert.
+ * Add sharding hint table value statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AddShardingHintTableValueStatementAssert {
+public final class AddShardingHintTableValueStatementAssert {
     
     /**
-     * Assert add sharding hint statement is correct with expected parser result.
+     * Assert add sharding hint table value statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual add sharding hint statement
-     * @param expected expected add sharding hint statement test case
+     * @param actual actual add sharding hint table value statement
+     * @param expected expected add sharding hint table value statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AddShardingHintTableValueStatement actual, final AddShardingHintTableValueStatementTestCase expected) {
         if (null == expected) {

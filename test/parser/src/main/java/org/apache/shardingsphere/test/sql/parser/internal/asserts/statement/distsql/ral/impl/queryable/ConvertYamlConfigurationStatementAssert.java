@@ -34,8 +34,8 @@ public final class ConvertYamlConfigurationStatementAssert {
      * Assert convert yaml configuration statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual convert yaml configuration statement statement
-     * @param expected expected convert configuration database statement statement test case
+     * @param actual actual convert yaml configuration statement
+     * @param expected expected convert yaml configuration statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ConvertYamlConfigurationStatement actual,
                                 final ConvertYamlConfigurationStatementTestCase expected) {

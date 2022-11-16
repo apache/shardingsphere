@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
  * Show sharding hint status statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShowShardingHintStatusStatementAssert {
+public final class ShowShardingHintStatusStatementAssert {
     
     /**
      * Assert show sharding hint status statement is correct with expected parser result.

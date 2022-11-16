@@ -29,17 +29,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Set read write splitting hint statement assert.
+ * Set readwrite-splitting hint statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SetReadwriteSplittingHintStatementAssert {
+public final class SetReadwriteSplittingHintStatementAssert {
     
     /**
-     * Assert set read write splitting hint source statement is correct with expected parser result.
+     * Assert set readwrite-splitting hint statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual set read write splitting hint source statement
-     * @param expected expected set read write splitting hint source statement test case
+     * @param actual actual set readwrite-splitting hint statement
+     * @param expected expected set readwrite-splitting hint statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final SetReadwriteSplittingHintStatement actual, final SetReadwriteSplittingHintStatementTestCase expected) {
         if (null == expected) {
