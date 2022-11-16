@@ -27,10 +27,10 @@
         return new SQLParserRuleConfiguration(true, new CacheOption(128, 1024L), new CacheOption(2000, 65535L));
     }
     
-    private Map<String, ShadowTableConfiguration> createShadowTables() {
-        Map<String, ShadowTableConfiguration> result = new LinkedHashMap<>();
-        result.put("t_order", new ShadowTableConfiguration(createDataSourceNames(), createShadowAlgorithmNames()));
-        return result;
+    private Collection<ShadowDataSourceConfiguration> createShadowDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source", "ds_0", "ds_1"));
+        return result; 
     }
     
     private Collection<String> createShadowAlgorithmNames() {
