@@ -1,4 +1,5 @@
 {{ $currentNode := . }}
+{{ $permalink := string .Permalink }}
         {{ $showvisitedlinks := .Site.Params.showVisitedLinks }}
         {{ if or .Site.IsMultiLingual $showvisitedlinks }}
         <section id="prefooter">
@@ -6,6 +7,24 @@
           <ul>
           {{ if and .Site.IsMultiLingual (not .Site.Params.DisableLanguageSwitchingButton)}}
             <li>
+              <a class="padding">
+                <i class="fa fa-fw fa-tags"></i>
+              <div class="select-style">
+                <select id="select-version" onchange="location = this.value;">
+              {{ $versions := slice "current" "5.2.1" "5.2.0" "5.1.2" "5.1.1" "5.1.0" "5.0.0-RC1" "5.0.0-beta" "5.0.0-alpha" "5.0.0" "4.1.1" "4.1.0" "4.0.1" "4.0.0-RC3" "4.0.0-RC2" "4.0.0-RC1" "4.0.0" "3.1.0.M1" "3.1.0" "3.0.0.M4" "3.0.0.M3" "3.0.0.M2" "3.0.0.M1" "3.0.0" "2.0.3" "2.0.2" "2.0.1" "2.0.0.M3" "2.0.0.M2" "2.0.0.M1" "2.0.0" "1.5.4.1" "1.5.4" "1.5.3" "1.5.2" "1.5.1" "1.5.0.M3" "1.5.0.M2" "1.5.0.M1" "1.5.0" "1.4.2" "1.4.1" "1.4.0" "1.3.3" "1.3.2" "1.3.1" "1.3.0" "1.2.1" "1.2.0" "1.1.0" "1.0.1" "1.0.0"}}
+              {{ $permalink }}
+              {{ range $versions }}
+                {{ $version := . }}
+                {{ if strings.HasSuffix $permalink $version }}
+                  <option id="{{ $version }}" value="{{ replaceRE "document/[\\w|-]*" $version $permalink }}" selected>{{ $version }}</option>
+                {{ else }}
+                  <option id="{{ $version }}" value="{{ replaceRE "document/[\\w|-]*" $version $permalink }}" >{{ $version }}</option>
+                {{ end }}
+              {{ end }}
+                </select>
+                <svg t="1645437162166" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2449" width="32" height="32"><path d="M483.072 714.496l30.165333 30.208 415.957334-415.829333a42.837333 42.837333 0 0 0 0-60.288 42.538667 42.538667 0 0 0-60.330667-0.042667l-355.541333 355.413333-355.242667-355.413333a42.496 42.496 0 0 0-60.288 0 42.837333 42.837333 0 0 0-0.085333 60.330667l383.701333 383.872 1.706667 1.749333z" fill="#3D3D3D" p-id="2450"></path></svg>
+              </div>
+              </a>
               <a class="padding">
                 <i class="fa fa-fw fa-language"></i>
               <div class="select-style">
