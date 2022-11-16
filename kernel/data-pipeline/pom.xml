@@ -32,5 +32,6 @@
         <module>api</module>
         <module>core</module>
         <module>dialect</module>
+        <module>scenario</module>
     </modules>
 </project>
