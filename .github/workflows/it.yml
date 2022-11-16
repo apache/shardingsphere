@@ -19,41 +19,6 @@ name: IT
 
 on:
   push:
-    branches: [ master, dev ]
-    paths:
-      - '.github/workflows/it.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - 'distribution/proxy/**'
-      - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/test-suite/**'
-      - 'test/integration-agent-test/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
-      - '!*.md'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '.github/workflows/it.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - 'distribution/proxy/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/integration-test/fixture/**'
-      - 'test/integration-test/env/**'
-      - 'test/integration-test/test-suite/**'
-      - 'test/integration-agent-test/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!*.md'
   workflow_dispatch:
 
 concurrency:
@@ -62,6 +27,8 @@ concurrency:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true -Drat.skip=true
+  HUB: ghcr.io/apache/shardingsphere
+  PROXY: ghcr.io/apache/shardingsphere-proxy
 
 jobs:
   build-it-image:
@@ -83,17 +50,16 @@ jobs:
             shardingsphere-maven-third-party-
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
-      - name: Build IT image
-        run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -DskipTests -Dspotless.apply.skip=true
-      - name: Verify Suite CI Run
-        run: ./mvnw -B install -pl test/integration-test/test-suite -Dspotless.apply.skip=true
-      - name: Save IT image
-        run: docker save -o /tmp/shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
-      - uses: actions/upload-artifact@v3
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
         with:
-          name: it-image
-          path: /tmp/shardingsphere-proxy-test.tar
-          retention-days: 1
+          registry: ${{ env.HUB }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build IT image
+        run: ./mvnw -B clean install -am -pl test/integration-test/test-suite -Pit.env.docker -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} -DskipTests -Dspotless.apply.skip=true
+      - name: Push docker image
+        run: docker push ${{ env.PROXY }}:${{ github.sha }}
 
   it-empty-rule:
     name: empty rule
@@ -117,13 +83,7 @@ jobs:
           java-version: 8
       - name: Download IT image
         if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/
-      - name: Load IT image
-        if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+        run: docker pull ${{ env.PROXY }}:${{ github.sha }}
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
@@ -153,13 +113,7 @@ jobs:
           java-version: 8
       - name: Download IT image
         if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/
-      - name: Load IT image
-        if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+        run: docker pull ${{ env.PROXY }}:${{ github.sha }}
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
@@ -189,13 +143,7 @@ jobs:
           java-version: 8
       - name: Download IT image
         if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v3
-        with:
-          name: it-image
-          path: /tmp/
-      - name: Load IT image
-        if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/shardingsphere-proxy-test.tar
+        run: docker pull ${{ env.PROXY }}:${{ github.sha }}
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f test/integration-test/test-suite/pom.xml -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
