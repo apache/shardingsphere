@@ -33,6 +33,6 @@ public enum SQLFederationTypeEnum {
      * @return whether is valid sql federation type or not
      */
     public static boolean isValidSQLFederationType(final String sqlFederationType) {
-        return Arrays.stream(values()).anyMatch(each -> sqlFederationType.equalsIgnoreCase(each.name()));
+        return Arrays.stream(values()).anyMatch(each -> sqlFederationType.equals(each.name()));
     }
 }
