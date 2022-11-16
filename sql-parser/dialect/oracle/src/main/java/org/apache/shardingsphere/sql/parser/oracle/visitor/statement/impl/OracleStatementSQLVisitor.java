@@ -324,9 +324,8 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         ExpressionSegment left = (ExpressionSegment) visit(ctx.expr(0));
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         if (null != datetimeExpr.expr()) {
-            ExpressionSegment right =
-                    new ExpressionProjectionSegment(datetimeExpr.getStart().getStartIndex(), datetimeExpr.getStop().getStopIndex(), datetimeExpr.getText(),
-                            (ExpressionSegment) visit(datetimeExpr.expr()));
+            ExpressionSegment right = new ExpressionProjectionSegment(datetimeExpr.getStart().getStartIndex(),
+                    datetimeExpr.getStop().getStopIndex(), datetimeExpr.getText(), (ExpressionSegment) visit(datetimeExpr.expr()));
             return new DatetimeExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, text);
         }
         return new DatetimeExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, text);

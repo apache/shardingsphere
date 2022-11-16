@@ -22,7 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Binary operation expression.
+ * Datetime expression.
  */
 
 @Getter
