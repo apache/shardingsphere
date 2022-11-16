@@ -29,5 +29,5 @@ public final class FileSummary {
     
     private final String fileName;
     
-    private final String accessURL;
+    private final String accessURI;
 }

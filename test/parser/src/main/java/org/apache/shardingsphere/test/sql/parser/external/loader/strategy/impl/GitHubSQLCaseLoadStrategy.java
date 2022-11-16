@@ -73,9 +73,10 @@ public final class GitHubSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     }
     
     private String loadContent(final URI casesURI) {
-        try {
-            InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
-            return new BufferedReader(in).lines().collect(Collectors.joining(System.lineSeparator()));
+        try (
+                InputStreamReader in = new InputStreamReader(casesURI.toURL().openStream());
+                BufferedReader reader = new BufferedReader(in)) {
+            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (final IOException ex) {
             log.warn("Load failed, reason is: ", ex);
             return "";
