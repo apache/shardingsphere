@@ -56,10 +56,11 @@ jobs:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/setup-buildx-action@v1
+      - name: Build docker image
+        run: ./mvnw -B -Prelease,docker -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
       - name: Push docker image
-        run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
-
+        run: docker push ${{ env.PROXY }}:${{ github.sha }}
+        
   it-empty-rule:
     name: empty rule
     runs-on: ubuntu-latest
