@@ -19,27 +19,27 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dis
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
- * Add readwrite-splitting hint status statement assert.
+ * Show sharding hint status statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShowReadwriteSplittingHintStatusStatementAssert {
+public class ShowShardingHintStatusStatementAssert {
     
     /**
-     * Assert show readwrite-splitting hint status statement is correct with expected parser result.
+     * Assert show sharding hint status statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show readwrite-splitting hint status statement
-     * @param expected expected show readwrite-splitting hint status statement test case
+     * @param actual actual show sharding hint status statement
+     * @param expected expected show sharding hint status statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowReadwriteSplittingHintStatusStatement actual, final ShowReadwriteSplittingHintStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingHintStatusStatement actual, final ShowShardingHintStatusStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
