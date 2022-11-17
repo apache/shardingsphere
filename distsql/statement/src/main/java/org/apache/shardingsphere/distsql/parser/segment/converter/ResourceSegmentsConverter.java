@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.handler.converter;
+package org.apache.shardingsphere.distsql.parser.segment.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
