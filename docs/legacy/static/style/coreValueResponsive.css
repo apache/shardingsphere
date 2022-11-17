@@ -1,0 +1,76 @@
+@media (min-width: 868px) {
+  #coreValue .content h1 {
+    font-size: 40px;
+    line-height: 56px;
+    margin-top: 64px;
+    text-align: center;
+  }
+
+  #coreValue .content .main p {
+    font-size: 20px;
+    line-height: 40px;
+  }
+
+  #coreValue .image {
+    width: 380px;
+    height: 387px;
+  }
+
+  #coreValue .content .list .text {
+    margin-left: 8px;
+  }
+
+  #coreValue .content .list .card .icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  #coreValue .content .list .card .title {
+    font-size: 22px;
+    line-height: 32px;
+    margin-top: 12px;
+  }
+
+  #coreValue .content .list .card .description {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+@media (min-width: 1124px) {
+  #coreValue .content .list {
+    display: flex;
+    gap: 40px;
+  }
+}
+
+@media (min-width: 1380px) {
+  #coreValue .content .list {
+    margin-left: 40px;
+  }
+
+  #coreValue .logo1.image {
+    display: none;
+  }
+
+  #coreValue .logo2.image {
+    display: block;
+  }
+
+  #coreValue .detailContent {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 720px) {
+  #coreValue .image {
+    width: 380px;
+    height: 387px;
+    display: none!important;
+  }
+}
+
+@media (min-width: 1380px) {
+}

@@ -1,0 +1,101 @@
+#firstSection {
+  width: 100%;
+  height: 900px;
+  position: relative;
+  overflow: hidden;
+  background-image: url('/images/firstSection/headLineBody.png'),
+    url('/images/firstSection/headLineCornerMobile.png');
+  background-repeat: no-repeat;
+  background-position: center bottom, top right;
+  background-size: 1440px auto, 240px auto;
+}
+
+#firstSection .logo {
+  width: 220px;
+  height: auto;
+}
+
+#firstSection .book{
+  width: 220px;
+  height: auto;
+}
+
+#firstSection .container {
+  height: 100%;
+}
+
+#firstSection .content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#firstSection .leftContent {
+  margin-top: 80px;
+  max-width: 735px;
+}
+
+#firstSection .leftContent span{
+  color:#ff5c00;
+  font-weight: bold;
+}
+
+#firstSection .content h1 {
+  font-family: 'Styrene A Web';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  color: #080b22;
+  margin: 0;
+}
+
+#firstSection .content h2 {
+  font-family: 'Styrene A Web';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  color: #080b22;
+  margin: 8px 0;
+}
+
+#firstSection .content .subtitle {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #6b6d7a;
+}
+
+#firstSection .buttons {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 24px;
+}
+
+#firstSection .buttons button {
+  width: 220px;
+  box-shadow: 6px 6px 22px 2px rgba(255, 85, 0, 0.2);
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+#firstSection .buttons .link button{
+  
+}
+
+#firstSection .learnMoreButton {
+  border-color: transparent;
+  background-color: #fff;/*transparent*/
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #ff5c00;
+}

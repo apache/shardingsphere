@@ -1,0 +1,113 @@
+@media (min-width: 868px) {
+  #firstSection .content {
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  }
+
+  #firstSection .buttons {
+    flex-direction: row;
+  }
+  #firstSection .leftContent{
+    max-width: 500px;
+  }
+  #firstSection .buttons button {
+    min-width: 160px;
+    width: auto;
+    white-space: nowrap;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-right: 24px;
+  }
+
+  #firstSection.en .buttons button{
+    width: 220px;
+  }
+
+  #firstSection .topShadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 164px;
+    background: linear-gradient(0, rgba(255, 255, 255, 0) 0%, #ffffff 86.98%);
+  }
+}
+
+@media (min-width: 1124px) {
+  #firstSection {
+    height: 70vh;
+    min-height: 800px;
+
+    background-image: url('/images/firstSection/headLineBody.png'),
+      url('/images/firstSection/headLineCorner.png');
+    background-repeat: no-repeat;
+    background-position: center bottom, top right;
+    background-size: 100% auto, 620px auto;
+  }
+
+  #firstSection .logo {
+    width: 420px;
+    height: 300px;
+  }
+
+  #firstSection .book {
+    width: 240px;
+    height: auto;
+  }
+
+  #firstSection .content h1 {
+    font-size: 64px;
+    margin: 0;
+  }
+
+  #firstSection .content h2 {
+    font-size: 40px;
+    margin: 0;
+  }
+
+  #firstSection .content .subtitle {
+    font-size: 18px;
+    line-height: 30px;
+  }
+
+  #firstSection .leftContent {
+    margin-top: 0;
+    max-width: 735px;
+  }
+
+  .book-en #firstSection  .leftContent{
+    max-width: 720px;
+  }
+
+  .book-en #firstSection  .leftContent h1{
+    font-size: 40px;
+  }
+  
+  #firstSection.en .logo{
+    width: 280px;
+    height: auto;
+  }
+  
+}
+
+@media (min-width: 1380px) {
+  #firstSection .logo {
+    margin-right: 100px;
+  }
+
+  #firstSection .logo, #firstSection.en .logo {
+    width: 420px;
+    height: 300px;
+  }
+
+  #firstSection .book {
+    width: 284px;
+    height: auto;
+  }
+}
+
+@media (min-width: 1636px) {
+  #firstSection {
+    padding: 0 200px;
+  }
+}

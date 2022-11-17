@@ -1,0 +1,30 @@
+@media (min-width: 868px) {
+  #coreFunctions .con-functions .con-functions-item .desc{
+    min-height: auto;
+  }
+  }
+  
+  @media (min-width: 1124px) {
+    #coreFunctions .con-functions .con-functions-item .desc{
+      min-height: 120px;
+    }
+    #coreFunctions .con-functions{
+        flex-direction: row;
+    }
+    #coreFunctions .con-functions .con-functions-col{
+        width: 30%;
+    }
+  }
+  
+  @media (min-width: 1380px) {
+    
+  }
+  
+  @media (max-width: 720px) {
+    
+  }
+  
+  @media (min-width: 1380px) {
+    
+  }
+  

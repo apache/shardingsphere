@@ -1,0 +1,277 @@
+.navigation {
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 24px;
+  z-index: 10000;
+  /* backdrop-filter: blur(5px); */
+
+  width: 100%;
+  max-width: 1536px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.navigation .content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.navigation .logos {
+  display: flex;
+  align-items: center;
+}
+
+.navigation .logos img {
+  margin-right: 24px;
+  height: 48px;
+  width: auto;
+}
+
+.navigation a,
+.i-drop-btn > span {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  /* Gray 900 */
+  color: #080b22;
+  transition: all 100ms ease;
+}
+
+.navigation a:hover {
+  color: #f28d25;
+}
+
+.navigation .links > * {
+  margin-right: 16px;
+}
+
+@media (min-width: 1200px) {
+  .navigation .links > * {
+    margin-right: 32px;
+  }
+
+  .navigation .logos img {
+    height: 72px;
+  }
+}
+
+.navigation .iconMenu {
+  width: 40px;
+  height: 40px;
+  background-image: url('/images/navigation/menu.svg');
+  display: block;
+  cursor: pointer;
+}
+
+.navigation .links {
+  display: none;
+}
+
+.i-drop-btn {
+  position: relative;
+  cursor: pointer;
+  height: 40px;
+  line-height: 40px;
+}
+
+.i-drop-btn .i-drop-pop {
+  z-index: 1;
+  position: absolute;
+  min-width: 150px;
+  background-color: white;
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  text-align: left;
+  display: none;
+  padding: 8px 0;
+  left: -10px;
+}
+
+.i-drop-btn .arrow {
+  display: inline-block;
+  background: url('/images/navigation/down.svg');
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  opacity: 0.72;
+}
+
+.i-drop-btn:hover .i-drop-pop {
+  display: block;
+}
+
+.i-drop-btn:hover .arrow {
+  opacity: 1;
+}
+
+.dropListItem {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dropListItem:last-child {
+  border-bottom: none;
+}
+
+.dropListItem a {
+  display: block;
+  height: 44px;
+  line-height: 44px;
+  width: 100%;
+  padding: 0 12px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.dropListItem a:hover {
+  color: #f28d25;
+  /* Gray 400 */
+  background-color: #f3f4f6;
+}
+
+.dropListItem .qrcode{
+  margin:0 auto;
+  font-size: 16px;
+  font-weight: 500;
+}
+.dropListItem img{
+  width: 128px;
+  height: 128px;
+  display: block;
+  margin:0 auto;
+}
+
+/* mobile */
+
+.mobileMenu {
+  position: fixed;
+  z-index: 88888;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  overflow: auto;
+}
+
+.mobileMenu .header {
+  padding: 24px;
+}
+
+.mobileMenu .header .logos img {
+  height: 48px;
+  width: auto;
+}
+
+.mobileMenu .header,
+.mobileMenu .header .logos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobileMenu .header .logos img:first-child {
+  margin-right: 24px;
+}
+
+.mobileMenu .buttons button {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.mobileMenu .x {
+  width: 40px;
+  height: 40px;
+  background-image: url('/images/navigation/x.svg');
+  display: block;
+  cursor: pointer;
+}
+
+.mobileMenu .arrowIcon {
+  width: 40px;
+  height: 40px;
+  background-image: url('/images/navigation/arrow.svg');
+  margin-right: -8px;
+}
+
+.mobileMenu .arrowIcon.active {
+  transform: rotate(90deg);
+  margin-right: 0;
+}
+
+.mobileMenuList {
+  padding: 0 20px;
+}
+
+.mobileMenuList a,
+.mobileMenuList .languageSelect,
+.mobileMenuList .item {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 24px;
+  /* Gray 900 */
+  color: #080b22;
+  display: block;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.item + .itemList {
+  padding-left: 20px;
+
+}
+
+.item + .itemList .qrcode{
+  font-size: 15px;
+  margin:0 auto;
+  font-weight: 500;
+}
+
+.item + .itemList .qrcode img{
+  width: 128px;
+  height:128px;
+  display: block;
+}
+
+.navigation .langs {
+  display: flex;
+  align-items: center;
+}
+
+.navigation .langs .l {
+  height: 12px;
+  margin: 0 8px;
+  border-left: 1px solid rgba(0, 0, 0, 0.24);
+}
+
+@media (min-width: 1636px) {
+  .navigation {
+    padding: 24px 0;
+  }
+}
+
+@media (min-width: 1000px) {
+  .navigation .links {
+    display: flex;
+    align-items: center;
+    height: 40px;
+  }
+
+  .navigation .iconMenu {
+    display: none;
+  }
+}

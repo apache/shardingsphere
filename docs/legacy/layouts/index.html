@@ -1,0 +1,35 @@
+{{ define "main" }}
+{{ $baseURL := .Site.BaseURL }}
+{{ $versions := slice }}
+{{ range os.ReadDir "content" }}
+  {{ $versions = $versions | append .Name }}
+{{ end }}
+{{ $versions = partial "reverse.html" $versions -}}
+<section class="topShandow" id="topShandow">
+    Legacy Versions
+  </section>
+  
+  <section class="legacy-list" id="legacyList">
+    <div class="container">
+      <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <thead>
+            <tr>
+              <th style="width: 50%;">Version</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{ range $versions }}
+          {{ $version := . }}
+            <tr>
+                <td>{{ $version }}</td>
+                <td><a href="{{ printf "%s/%s/en/overview/" $baseURL $version }}">View</a></td>
+            </tr>
+          {{ end }}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+{{ end }}

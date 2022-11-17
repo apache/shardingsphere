@@ -1,0 +1,185 @@
+footer {
+  width: 100%;
+  padding: 64px 0;
+  background: #29292c;
+}
+
+footer.zh-page{
+  background: #fff;
+}
+
+footer .content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column-reverse;
+}
+
+/* left */
+footer .logosAndCommunityList {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+footer .text {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 440;
+  font-size: 13px;
+  line-height: 20px;
+  color: #9c9da7;
+  max-width: 450px;
+  display: block;
+  margin-top: 40px;
+}
+
+footer.zh-page .text{
+  color:#6B6D7A;
+}
+
+footer .logos img {
+  margin-right: 24px;
+  height: 48px;
+  width: auto;
+}
+
+/* communityList */
+footer .communityList {
+  display: flex;
+  max-width: 450px;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 80px;
+}
+
+footer .communityList .item {
+  display: flex;
+  align-items: center;
+  width: 50%;
+}
+
+footer .communityList .item.wechat{
+  position: relative;
+}
+
+footer .communityList .item.wechat:hover .wechat-detail{
+  display: block;
+}
+
+footer .communityList .item.wechat .wechat-detail{
+  z-index: 1;
+    display: none;
+    overflow: hidden;
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    left: 45px;
+    top: -80px;
+    width: 120px;
+    background-color: #FFFFFF;
+    position: absolute;
+    border-radius: 8px;
+    padding-bottom: 10px;
+    box-shadow: 0px 2px 12px rgb(0 0 0 / 8%)
+}
+
+footer .communityList .item.wechat .wechat-detail img{
+  width: 120px;
+  height: 120px;
+}
+
+footer .communityList .item.wechat .wechat-detail p{
+  color: #393C4E;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 21px;
+    margin: 0;
+    text-align: center;
+}
+
+footer .communitySubList {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer .communityList img {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+}
+
+footer .communityList a {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 40px;
+  color: #9c9da7;
+}
+
+footer.zh-page .communityList a{
+  color: #393C4E;
+}
+
+footer .communityList a:hover {
+  color: #c5c5cc;
+}
+
+footer.zh-page .communityList a:hover {
+  color: #999;
+}
+
+/* right */
+
+.footerNavigation {
+  display: flex;
+  flex-direction: column;
+}
+
+.footerNavigation > .item {
+  width: 120px;
+  margin-bottom: 32px;
+}
+
+.footerNavigation > .item:last-child {
+  width: auto;
+}
+
+.footerNavigation a:hover {
+  opacity: 0.8;
+}
+
+.footerNavigation > .item > span,
+.footerNavigation > .item > a {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #9c9da7;
+}
+
+footer.zh-page .footerNavigation > .item > span,
+footer.zh-page .footerNavigation > .item > a{
+  color: #393C4E;
+}
+
+.footerNavigation .links a {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #f3f4f6;
+
+  margin-top: 16px;
+  display: block;
+}
+
+
+footer.zh-page .footerNavigation .links a{
+  color:#393C4E;
+}

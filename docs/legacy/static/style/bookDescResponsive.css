@@ -1,0 +1,14 @@
+  @media (min-width: 868px) {
+    #bookDesc .learn-con{
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    #bookDesc .learn-con ul{
+        width: 450px;
+    }
+  }
+  
+  @media (min-width: 1980px) {
+    
+  }

@@ -1,0 +1,4 @@
+baseURL = "https://shardingsphere.apache.org/document/legacy/"
+canonifyurls = true
+languageCode = "en-us"
+title = "ShardingSphere"

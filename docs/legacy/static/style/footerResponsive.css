@@ -1,0 +1,48 @@
+@media (min-width: 740px) {
+  footer .communityList {
+    margin-top: 48px;
+    flex-direction: row;
+  }
+
+  footer .communitySubList {
+    display: block;
+  }
+
+  .footerNavigation {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 868px) {
+}
+
+@media (min-width: 1124px) {
+  .footerNavigation > .item {
+    width: 128px;
+  }
+
+  footer .content {
+    flex-direction: row;
+  }
+
+  footer .text {
+    max-width: 450px;
+  }
+
+  footer .logosAndCommunityList {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 1380px) {
+  .footerNavigation > .item {
+    width: 138px;
+  }
+}
+
+@media (min-width: 1636px) {
+  .footerNavigation > .item {
+    width: 158px;
+  }
+}

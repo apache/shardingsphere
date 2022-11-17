@@ -1,0 +1,70 @@
+#philosophy{
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background:#29292c;
+    padding:76px 0 70px 0;
+}
+
+#philosophy h2{
+    margin:0;
+    font-family: 'Styrene A Web';
+    font-size: 40px;
+    text-align: center;
+    padding:0 0 116px 0;
+}
+
+#philosophy p{
+    margin:0;
+}
+
+#philosophy .con-list{
+    display: flex;
+    flex-wrap:wrap;
+    justify-content: space-between;
+}
+
+#philosophy .con-item{
+    background:#34333A;
+    padding:32px;
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+#philosophy .con-item .con-itme-desc b{
+    color:#EB6F31;
+}
+
+#philosophy .con-item:first-child{
+    flex-basis: 100%;
+}
+
+#philosophy .con-item:first-child .con-itme-title{
+   
+}
+
+#philosophy .con-item div{
+    font-size: 20px;
+}
+
+#philosophy .con-item:last-child{
+    margin-right: 0;
+}
+
+
+#philosophy .con-item .con-itme-title{
+    text-align: center;
+}
+
+#philosophy .con-item .con-itme-title img{
+    width: 100px;
+    height: 100px;
+}
+
+#philosophy .con-item .con-itme-title p{
+    padding-bottom: 24px;
+    font-size: 28px;
+    font-weight: bold;
+}

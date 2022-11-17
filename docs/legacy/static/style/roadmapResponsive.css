@@ -1,0 +1,51 @@
+@media (min-width: 868px) {
+  #roadmapSection {
+    background-image: url('/images/roadmap/background.svg');
+    background-repeat: no-repeat;
+    background-position: right top;
+    padding-top: 120px;
+    padding-bottom: 120px;
+  }
+
+  #roadmapSection .cardItem:first-child {
+    width: 270px;
+    padding-left: 20px;
+  }
+
+  #roadmapSection .cardItem:first-child .point {
+    margin-left: -1px;
+  }
+
+  #roadmapSection .maintitle {
+    font-family: 'Styrene A Web';
+    text-align: center;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 40px;
+    color: #080b22;
+    margin: 0 0 116px;
+  }
+
+  #roadmapSection.zh-page .maintitle{
+    color:#fff;
+  }
+
+  #roadmapSection .container {
+    position: relative;
+    padding-bottom: 120px;
+    padding: 0;
+  }
+}
+
+@media (min-width: 1980px) {
+  #roadmapSection {
+    padding-top: 88px;
+    padding-bottom: 88px;
+  }
+
+  /* #roadmapSection .shadow,
+  .slick-prev,
+  .slick-next {
+    display: none !important;
+  } */
+}

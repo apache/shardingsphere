@@ -1,0 +1,43 @@
+#bookDesc{
+    background-image: url('/images/roadmap/background.svg');
+    background-repeat: no-repeat;
+    background-position: right top;
+    padding:88px 0;
+}
+
+#bookDesc h1{
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+#bookDesc p{
+    font-size: 20px;
+    margin-bottom: 52px;
+}
+
+#bookDesc p a{
+    color: #4053FF;
+    text-decoration: underline;
+}
+
+#bookDesc h3{
+    text-align: center;
+    font-size: 24px;
+    padding-top: 48px;
+    margin-bottom: 40px;
+}
+
+#bookDesc .learn-con{
+    display: flex;
+    flex-direction: column;
+}
+
+#bookDesc .learn-con ul{
+    margin-bottom: 40px;
+}
+
+#bookDesc .learn-con li{
+    font-size: 22px;
+    margin-bottom: 25px;
+}

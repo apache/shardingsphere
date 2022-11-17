@@ -1,0 +1,107 @@
+/*
+ * container
+ */
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (min-width: 740px) {
+  .container {
+    max-width: 640px;
+    padding: 0 10px;
+  }
+}
+
+@media (min-width: 820px) {
+  .container {
+    max-width: 720px;
+    padding: 0;
+  }
+}
+
+@media (min-width: 868px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1124px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1380px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1636px) {
+  .container {
+    max-width: 1536px;
+  }
+}
+
+/*
+ * button
+ */
+
+button {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  border-style: solid;
+  border-radius: 8px;
+  padding: 8px 40px;
+  text-align: center;
+  border-width: 2px;
+  cursor: pointer;
+}
+
+button.primary {
+  /* Orange 700 */
+  background: #fe8244;
+  border-color: #fe8244;
+  color: #ffffff;
+}
+
+button.primary:active {
+  background-color: white;
+  border-color: #fe8244;
+  color: #fe8244;
+}
+
+button.outline {
+  /* Gray 300 */
+  background: white;
+  border-color: #fe8244;
+  color: #fe8244;
+}
+
+button.outline:hover {
+  border-color: #fe8244;
+  color: #fe8244;
+}
+
+button.outline:active {
+  background-color: #fe8244;
+  border-color: #fe8244;
+  color: #ffffff;
+}
+
+.colorOrange700 {
+  color: #fe8244;
+}
+
+.colorOrange800 {
+  color: #f6712e;
+}
+
+.textBold {
+  font-weight: bold !important;
+}

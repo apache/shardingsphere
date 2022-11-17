@@ -1,0 +1,17 @@
+#introduce{
+    width: 100%;
+    position: relative;
+    padding-bottom: 70px;
+    color: white;
+    background: #29292c;
+    padding:120px 0;
+}
+
+#introduce p{
+    margin-bottom: 80px;
+    font-size: 24px;
+}
+
+#introduce p:last-child{
+    margin-bottom: 0;
+}

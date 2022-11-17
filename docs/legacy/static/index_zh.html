@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apache ShardingSphere</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5" />
+    <meta name="msapplication-TileColor" content="#da532c" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content="Apache SharingSphere" />
+    <meta property="og:description" content="The ecosystem to transform any database into a distributed database system, and enhance it with sharding, elastic scaling, encryption features & more" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shardingsphere.apache.org/" />
+    <meta property="og:image" content="https://shardingsphere.apache.org/images/base/logo.png" />
+    <meta name="twitter:card" value="summary" />
+    <meta name="twitter:site" value="@ShardingSphere" />
+    <script src="./js/libs/bodyScrollLock.min.js"></script>
+    <script src="./js/libs/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="./style/font.css" />
+    <link rel="stylesheet" href="./style/modern-normalize.css" />
+    <link rel="stylesheet" href="./style/base.css?202209011805" />
+    <link rel="stylesheet" href="./style/index.css?202209011805" />
+    <link rel="stylesheet" href="./style/firstSection.css?202209011805" />
+    <link rel="stylesheet" href="./style/firstSectionResponsive.css?202209011805" />
+    <link rel="stylesheet" href="./style/philosophy.css?202209091805" />
+    <link rel="stylesheet" href="./style/philosophyResponsive.css?202209091805" />
+    <link rel="stylesheet" href="./style/coreFunctions.css?202209011805" />
+    <link rel="stylesheet" href="./style/coreFunctionsResponsive.css?202209011805" />
+    <link rel="stylesheet" href="./style/roadmap.css?202209011805" />
+    <link rel="stylesheet" href="./style/roadmapResponsive.css?202209011805" />
+    <link rel="stylesheet" href="./style/footer.css?202209011805" />
+    <link rel="stylesheet" href="./style/footerResponsive.css?202209011805" />
+    <link rel="stylesheet" href="./style/navigation.css?202209011805" />
+    <link rel="stylesheet" href="./style/coreValue.css?202209011805" />
+    <link rel="stylesheet" href="./style/coreValueResponsive.css?202209011805" />
+    <link rel="stylesheet" type="text/css" href="./style/slick.min.css?202209011805" />
+    <link rel="stylesheet" href="./style/slick.css" />
+    <link rel="stylesheet" href="./style/legacy.css?202209011805" />
+    <!-- <link rel="stylesheet" href="./style/dark.css" /> -->
+
+    <!-- baidu Analytics -->
+    <script>
+      var _hmt = _hmt || []
+      ;(function () {
+        var hm = document.createElement('script')
+        hm.src = 'https://hm.baidu.com/hm.js?d5a1dc8dcf63a64ee55b80de01c7fb1a'
+        var s = document.getElementsByTagName('script')[0]
+        s.parentNode.insertBefore(hm, s)
+      })()
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-HETCF66YL0"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        window.dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+
+      gtag('config', 'G-HETCF66YL0', {
+        page_title: 'homepage_zh',
+      })
+    </script>
+  </head>
+  <body>
+    <!-- navigation -->
+    <nav class="navigation">
+      <div class="content">
+        <div class="logos">
+          <a href="https://www.apache.org/foundation/contributing.html">
+            <img src="./images/base/support-apache.png" alt="Apache Support Logo" />
+          </a>
+          <a href="https://www.apache.org/">
+            <img src="./images/base/asf_logo.svg" alt="The Apache Software Foundation" />
+          </a>
+        </div>
+
+        <div class="links">
+          <a href="https://shardingsphere.apache.org/document/current/cn/downloads/" target="_blank">产品下载</a>
+
+          <div class="i-drop-btn">
+            <span>文档</span>
+            <span class="arrow"></span>
+
+            <div class="i-drop-pop">
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/current/cn/overview" target="_blank">master</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/5.2.1/cn/overview" target="_blank">Latest Release</a>
+              </div>
+              <div class="dropListItem">
+                <a href="/legacy_zh.html" target="_blank" target="_blank">遗留</a>
+              </div>
+              <!-- <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/5.1.1/cn/overview" target="_blank">5.1.1</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/5.1.0/cn/overview" target="_blank">5.1.0</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/5.0.0/cn/overview" target="_blank">5.0.0</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/5.0.0-beta/cn/overview" target="_blank">5.0.0-beta</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/5.0.0-alpha/cn/overview" target="_blank">5.0.0-alpha</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/4.1.1/cn/overview" target="_blank">4.1.1(遗留)</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/4.1.0/cn/overview" target="_blank">4.1.0(遗留)</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/overview" target="_blank">4.0.0(遗留)</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview" target="_blank">3.x(遗留)</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/legacy/2.x/cn/" target="_blank">2.x(遗留)</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/document/legacy/1.x/cn/" target="_blank">1.x(遗留)</a>
+              </div> -->
+            </div>
+          </div>
+
+          <div class="i-drop-btn">
+            <span>社区</span>
+            <span class="arrow"></span>
+
+            <div class="i-drop-pop">
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/community/cn/involved/" target="_blank">参与贡献</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/community/cn/team/" target="_blank">团队成员</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://github.com/apache/shardingsphere/wiki" target="_blank">Wiki</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://github.com/apache/shardingsphere" target="_blank">GitHub</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://github.com/apache/shardingsphere/issues" target="_blank">缺陷跟踪</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/community/cn/powered-by/" target="_blank">采用公司</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/community/cn/contribute/subscribe/" target="_blank">邮件列表</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://twitter.com/ShardingSphere" target="_blank">推特</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://apacheshardingsphere.slack.com/messages/C026MLH7F34" target="_blank">讨论群组</a>
+              </div>
+              <div class="dropListItem">
+                <div class="qrcode">
+                  <img  src="/images/footer/QRcode.jpg" alt="wechat qrcode">
+                  扫码关注微信公众号
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="btn-subproject" class="i-drop-btn">
+            <span>子项目</span>
+            <span class="arrow"></span>
+
+            <div class="i-drop-pop">
+              <div class="dropListItem">
+                <a
+                  class="i-drop-list" href="https://shardingsphere.apache.org/elasticjob/" target="_blank">ElasticJob</a>
+              </div>
+            </div>
+          </div>
+
+          <div id="btn-community" class="i-drop-btn">
+            <span>博客</span>
+            <span class="arrow"></span>
+
+            <div class="i-drop-pop">
+              <div class="dropListItem">
+                <a href="https://shardingsphere.apache.org/blog/cn/material" target="_blank">精选集</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://github.com/apache/shardingsphere/issues/650" target="_blank">汇总集</a>
+              </div>
+            </div>
+          </div>
+
+          <div id="btn-asf" class="i-drop-btn">
+            <span>ASF</span>
+            <span class="arrow"></span>
+
+            <div class="i-drop-pop">
+              <div class="dropListItem">
+                <a href="https://www.apache.org" target="_self">基金会</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://www.apache.org/licenses/" target="_self">证书</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://www.apache.org/events/current-event" target="_self">事件</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://www.apache.org/security/" target="_self">安全</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://www.apache.org/foundation/sponsorship.html" target="_self">赞助</a>
+              </div>
+              <div class="dropListItem">
+                <a href="https://www.apache.org/foundation/thanks.html" target="_self">致谢</a>
+              </div>
+            </div>
+          </div>
+
+          <span class="langs">
+            <a href="/">EN</a>
+            <div class="l"></div>
+            <a href="/index_zh.html">CN</a>
+          </span>
+        </div>
+
+        <div class="iconMenu"></div>
+      </div>
+    </nav>
+
+    <main>
+      <!-- first section -->
+      <section class="topShandow" id="topShandow">
+        遗 留 文 档
+      </section>
+      
+      <section class="legacy-list" id="legacyList">
+        <div class="container">
+          <div class="content">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <thead>
+                <tr>
+                  <th style="width: 50%;">版本</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                    
+                <tr>
+                  <td>5.2.1</td>
+                  <td><a href="http://example.org/5.2.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.2.0</td>
+                    <td><a href="http://example.org/5.2.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.1.2</td>
+                    <td><a href="http://example.org/5.1.2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.1.1</td>
+                    <td><a href="http://example.org/5.1.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.1.0</td>
+                    <td><a href="http://example.org/5.1.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.0.0-beta</td>
+                    <td><a href="http://example.org/5.0.0-beta/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.0.0-alpha</td>
+                    <td><a href="http://example.org/5.0.0-alpha/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.0.0-RC1</td>
+                    <td><a href="http://example.org/5.0.0-RC1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>5.0.0</td>
+                    <td><a href="http://example.org/5.0.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.1.1</td>
+                    <td><a href="http://example.org/4.1.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.1.0</td>
+                    <td><a href="http://example.org/4.1.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.0.1</td>
+                    <td><a href="http://example.org/4.0.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.0.0-RC3</td>
+                    <td><a href="http://example.org/4.0.0-RC3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.0.0-RC2</td>
+                    <td><a href="http://example.org/4.0.0-RC2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.0.0-RC1</td>
+                    <td><a href="http://example.org/4.0.0-RC1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>4.0.0</td>
+                    <td><a href="http://example.org/4.0.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.1.0.M1</td>
+                    <td><a href="http://example.org/3.1.0.M1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.1.0</td>
+                    <td><a href="http://example.org/3.1.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.0.0.M4</td>
+                    <td><a href="http://example.org/3.0.0.M4/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.0.0.M3</td>
+                    <td><a href="http://example.org/3.0.0.M3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.0.0.M2</td>
+                    <td><a href="http://example.org/3.0.0.M2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.0.0.M1</td>
+                    <td><a href="http://example.org/3.0.0.M1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>3.0.0</td>
+                    <td><a href="http://example.org/3.0.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.3</td>
+                    <td><a href="http://example.org/2.0.3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.2</td>
+                    <td><a href="http://example.org/2.0.2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.1</td>
+                    <td><a href="http://example.org/2.0.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.0.M3</td>
+                    <td><a href="http://example.org/2.0.0.M3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.0.M2</td>
+                    <td><a href="http://example.org/2.0.0.M2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.0.M1</td>
+                    <td><a href="http://example.org/2.0.0.M1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>2.0.0</td>
+                    <td><a href="http://example.org/2.0.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.4.1</td>
+                    <td><a href="http://example.org/1.5.4.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.4</td>
+                    <td><a href="http://example.org/1.5.4/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.3</td>
+                    <td><a href="http://example.org/1.5.3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.2</td>
+                    <td><a href="http://example.org/1.5.2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.1</td>
+                    <td><a href="http://example.org/1.5.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.0.M3</td>
+                    <td><a href="http://example.org/1.5.0.M3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.0.M2</td>
+                    <td><a href="http://example.org/1.5.0.M2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.0.M1</td>
+                    <td><a href="http://example.org/1.5.0.M1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.5.0</td>
+                    <td><a href="http://example.org/1.5.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.4.2</td>
+                    <td><a href="http://example.org/1.4.2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.4.1</td>
+                    <td><a href="http://example.org/1.4.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.4.0</td>
+                    <td><a href="http://example.org/1.4.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.3.3</td>
+                    <td><a href="http://example.org/1.3.3/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.3.2</td>
+                    <td><a href="http://example.org/1.3.2/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.3.1</td>
+                    <td><a href="http://example.org/1.3.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.3.0</td>
+                    <td><a href="http://example.org/1.3.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.2.1</td>
+                    <td><a href="http://example.org/1.2.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.2.0</td>
+                    <td><a href="http://example.org/1.2.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.1.0</td>
+                    <td><a href="http://example.org/1.1.0/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.0.1</td>
+                    <td><a href="http://example.org/1.0.1/en/overview/">查看</a></td>
+                </tr>
+              
+              
+                <tr>
+                    <td>1.0.0</td>
+                    <td><a href="http://example.org/1.0.0/en/overview/">查看</a></td>
+                </tr>
+              
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+
+    <!-- footer -->
+    <footer>
+      <div class="container content">
+        <div class="logosAndCommunityList">
+          <div>
+            <div class="logos">
+              <a href="https://www.apache.org/foundation/contributing.html">
+                <img src="./images/base/support-apache.png" alt="Apache Support Logo" />
+              </a>
+              <a href="https://www.apache.org/">
+                <img src="./images/base/asf_logo.svg" alt="The Apache Software Foundation" />
+              </a>
+            </div>
+
+            <span class="text">
+              Copyright © 2018-2022, Apache ShardingSphere, ShardingSphere,
+              Apache, the Apache feather logo, and the Apache ShardingSphere
+              project logo are either registered trademarks or trademarks of The
+              Apache Software Foundation in the United States and other
+              countries.
+            </span>
+          </div>
+
+          <div class="communityList">
+            <div class="communitySubList">
+              <a href="https://github.com/apache/shardingsphere" class="item">
+                <img src="/images/footer/github.png" alt="github" />
+                <span>Github</span>
+              </a>
+              <a href="https://twitter.com/ShardingSphere" class="item">
+                <img src="/images/footer/twitter.png" alt="twitter" />
+                <span>Twitter</span>
+              </a>
+            </div>
+
+            <div class="communitySubList">
+              <a href="https://app.slack.com/client/T026JKU2DPF/C026MLH7F34" class="item">
+                <img src="/images/footer/slack.png" alt="slack" />
+                <span>Slack</span>
+              </a>
+
+              <a href="https://www.linkedin.com/showcase/apache-shardingsphere/" class="item">
+                <img src="/images/footer/linkedIn.png" alt="linkedIn" />
+                <span>LinkedIn</span>
+              </a>
+            </div>
+
+            <div class="communitySubList">
+              <a href="https://medium.com/@shardingsphere" class="item">
+                <img src="/images/footer/medium.png" alt="medium" />
+                <span>Medium</span>
+              </a>
+              <a  class="item wechat">
+                <img src="/images/footer/webchat.png" alt="wechat" />
+                <span>WeChat</span>
+
+                <div class="wechat-detail" >
+                  <img  src="/images/footer/QRcode.jpg" alt="wechat qrcode">
+                  <p>扫码关注<br>微信公众号</p>
+                </div>
+              </a>
+            </div>
+
+            <div class="communitySubList">
+              <a href="https://www.reddit.com/r/Apache_ShardingSphere/" class="item">
+                <img src="/images/footer/reddit.png" alt="reddit" />
+                <span>Reddit</span>
+              </a>
+              <div class="item">
+                <img src="/images/footer/black.png"/>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footerNavigation">
+          <div class="item">
+            <a href="https://shardingsphere.apache.org/document/current/cn/downloads/" target="_blank">产品下载</a>
+          </div>
+
+          <div class="item">
+            <span>文档</span>
+
+            <div class="links">
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/current/cn/overview" target="_blank">master</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/5.2.1/cn/overview" target="_blank">Latest Release</a>
+              </div>
+              <div class="item">
+                <a href="/legacy_zh.html" target="_blank" target="_blank">遗留</a>
+              </div>
+              <!-- <div class="item">
+                <a href="https://shardingsphere.apache.org/document/5.1.1/cn/overview" target="_blank">5.1.1</a>
+              </div>
+              <div class="item">
+                <a href="/document/5.1.0/cn/overview" target="_blank">5.1.0</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/5.0.0/cn/overview" target="_blank">5.0.0</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/5.0.0-beta/cn/overview" target="_blank">5.0.0-beta</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/5.0.0-alpha/cn/overview" target="_blank">5.0.0-alpha</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/4.1.1/cn/overview" target="_blank">4.1.1(遗留)</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/4.1.0/cn/overview" target="_blank">4.1.0(遗留)</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/overview" target="_blank">4.x(遗留)</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview" target="_blank">3.x(遗留)</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/legacy/2.x/cn/" target="_blank">2.x(遗留)</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/document/legacy/1.x/cn/" target="_blank">1.x(遗留)</a>
+              </div> -->
+            </div>
+          </div>
+
+          <div class="item">
+            <span>社区</span>
+
+            <div class="links">
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/community/cn/involved/" target="_blank">参与贡献</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/community/cn/team/" target="_blank">团队成员</a>
+              </div>
+              <div class="item">
+                <a href="https://github.com/apache/shardingsphere/wiki" target="_blank">Wiki</a>
+              </div>
+              <div class="item">
+                <a href="https://github.com/apache/shardingsphere" target="_blank">GitHub</a>
+              </div>
+              <div class="item">
+                <a href="https://github.com/apache/shardingsphere/issues" target="_blank">缺陷跟踪</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/community/cn/powered-by/" target="_blank">采用公司</a>
+              </div>
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/community/cn/contribute/subscribe/" target="_blank">邮件列表</a>
+              </div>
+              <div class="item">
+                <a href="https://twitter.com/ShardingSphere" target="_blank">推特</a>
+              </div>
+              <div class="item">
+                <a href="https://apacheshardingsphere.slack.com/messages/C026MLH7F34" target="_blank">讨论群组</a>
+              </div>
+            </div>
+          </div>
+
+          <div id="btn-subproject" class="item">
+            <span>子项目</span>
+
+            <div class="links">
+              <div class="item">
+                <a class="i-drop-list" href="https://shardingsphere.apache.org/elasticjob/" target="_blank">ElasticJob</a>
+              </div>
+            </div>
+          </div>
+
+          <div id="btn-community" class="item">
+            <span>博客</span>
+
+            <div class="links">
+              <div class="item">
+                <a href="https://shardingsphere.apache.org/blog/cn/material" target="_blank">精选集</a>
+              </div>
+              <div class="item">
+                <a href="https://github.com/apache/shardingsphere/issues/650" target="_blank">汇总集</a>
+              </div>
+            </div>
+          </div>
+
+          <div id="btn-asf" class="item">
+            <span>ASF</span>
+
+            <div class="links">
+              <div class="item">
+                <a href="https://www.apache.org" target="_self">基金会</a>
+              </div>
+              <div class="item">
+                <a href="https://www.apache.org/licenses/" target="_self">证书</a>
+              </div>
+              <div class="item">
+                <a href="https://www.apache.org/events/current-event" target="_self">事件</a>
+              </div>
+              <div class="item">
+                <a href="https://www.apache.org/security/" target="_self">安全</a>
+              </div>
+              <div class="item">
+                <a href="https://www.apache.org/foundation/sponsorship.html" target="_self">赞助</a>
+              </div>
+              <div class="item">
+                <a href="https://www.apache.org/foundation/thanks.html" target="_self">致谢</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobileMenu" style="display: none">
+      <div class="header">
+        <div class="logos">
+          <a href="https://www.apache.org/foundation/contributing.html">
+            <img src="./images/base/support-apache.png" alt="Apache Support Logo" />
+          </a>
+          <a href="https://www.apache.org/">
+            <img src="./images/base/asf_logo.svg" alt="The Apache Software Foundation" />
+          </a>
+        </div>
+        <div class="x"></div>
+      </div>
+
+      <div class="mobileMenuList">
+        <a href="https://shardingsphere.apache.org/document/current/cn/downloads/" target="_blank" class="item">下载</a>
+
+        <div class="item">
+          <span>文档</span>
+          <div class="arrowIcon"></div>
+        </div>
+
+        <div class="itemList">
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/current/cn/overview" target="_blank">master</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/5.2.1/cn/overview" target="_blank">Latest Release</a>
+          <a class="i-drop-list" href="/legacy_zh.html" target="_blank">遗留</a>
+          <!-- <a class="i-drop-list" href="https://shardingsphere.apache.org/document/5.1.1/cn/overview" target="_blank">5.1.1</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/5.1.0/cn/overview" target="_blank">5.1.0</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/5.0.0/cn/overview" target="_blank">5.0.0</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/5.0.0-beta/cn/overview" target="_blank">5.0.0-beta(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/5.0.0-alpha/cn/overview" target="_blank">5.0.0-alpha(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/4.1.1/cn/overview" target="_blank">4.1.1(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/4.1.0/cn/overview" target="_blank">4.1.0(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/legacy/4.x/document/cn/overview" target="_blank">4.x(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/legacy/3.x/document/cn/overview" target="_blank">3.x(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/legacy/2.x/cn/" target="_blank">2.x(遗留)</a>
+          <a class="i-drop-list" href="https://shardingsphere.apache.org/document/legacy/1.x/cn/" target="_blank">1.x(遗留)</a> -->
+        </div>
+
+        <div class="item">
+          <span>社区</span>
+          <div class="arrowIcon"></div>
+        </div>
+
+        <div class="itemList">
+          <a href="https://shardingsphere.apache.org/community/cn/involved/" target="_blank">参与贡献</a>
+          <a href="https://shardingsphere.apache.org/community/cn/team/" target="_blank">团队成员</a>
+          <a href="https://github.com/apache/shardingsphere/wiki" target="_blank">Wiki</a>
+          <a href="https://github.com/apache/shardingsphere" target="_blank">GitHub</a>
+          <a href="https://github.com/apache/shardingsphere/issues" target="_blank">缺陷跟踪</a>
+          <a href="https://shardingsphere.apache.org/community/cn/powered-by/" target="_blank">采用公司</a>
+          <a href="https://shardingsphere.apache.org/community/cn/contribute/subscribe/" target="_blank">邮件列表</a>
+          <a href="https://twitter.com/ShardingSphere" target="_blank">推特</a>
+          <a href="https://apacheshardingsphere.slack.com/messages/C026MLH7F34" target="_blank">讨论群组</a>
+          <div class="qrcode">
+            <img  src="/images/footer/QRcode.jpg" alt="wechat qrcode">
+            扫码关注微信公众号
+          </div>
+        </div>
+
+        <div class="item">
+          <span>子项目</span>
+          <div class="arrowIcon"></div>
+        </div>
+
+        <div class="itemList">
+          <a href="https://shardingsphere.apache.org/elasticjob/" target="_blank">ElasticJob</a>
+        </div>
+
+        <div class="item">
+          <span>博客</span>
+          <div class="arrowIcon"></div>
+        </div>
+
+        <div class="itemList">
+          <a href="https://shardingsphere.apache.org/blog/cn/material" target="_blank">精选集</a>
+          <a href="https://github.com/apache/shardingsphere/issues/650" target="_blank">汇总集</a>
+        </div>
+
+        <div class="item">
+          <span>ASF</span>
+          <div class="arrowIcon"></div>
+        </div>
+
+        <div class="itemList">
+          <a href="https://www.apache.org" target="_self">基金会</a>
+          <a href="https://www.apache.org/licenses/" target="_self">证书</a>
+          <a href="https://www.apache.org/events/current-event" target="_self">事件</a>
+          <a href="https://www.apache.org/security/" target="_self">安全</a>
+          <a href="https://www.apache.org/foundation/sponsorship.html" target="_self">赞助</a>
+          <a href="https://www.apache.org/foundation/thanks.html" target="_self">致谢</a>
+        </div>
+
+        <div class="languageSelect item">
+          <span>Language</span>
+          <div class="arrowIcon"></div>
+        </div>
+        <div class="langs itemList">
+          <a href="/index_zh.html">
+            <span>CN</span>
+          </a>
+          <a href="/">
+            <span>English</span>
+          </a>
+        </div>
+
+        <div class="buttons">
+          <a href="https://shardingsphere.apache.org/document/current/cn/downloads/">
+            <button class="primary">产品下载</button>
+          </a>
+          <a href="https://shardingsphere.apache.org/document/current/cn/">
+            <button class="outline">了解更多</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="./js/libs/slick.min.js"></script>
+    <script src="./js/index.js"></script>
+  </body>
+</html>

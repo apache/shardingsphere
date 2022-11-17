@@ -1,0 +1,46 @@
+#topShandow{
+    margin:120px 0 90px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 54px;
+    font-weight: 600;
+    color:#fff;
+    background:#29292C url('../images/firstSection/legacy_line.png') center center no-repeat;
+    background-size: cover;
+    font-family: 'Styrene A';
+}
+
+#legacyList{
+    font-family: 'PingFang SC';
+    margin-bottom: 150px;
+}
+#legacyList table{
+    width:100%;
+}
+#legacyList table thead tr{
+    height: 57px;
+    background-color: #EEEFFF;
+}
+
+#legacyList table tbody tr{
+    height: 96px;
+    
+}
+#legacyList table tbody tr td{
+    text-align: center;
+    font-size: 14px;
+    color: #6D7793;
+    border-bottom: 1px solid #E4E6FF;
+}
+#legacyList table tbody tr td a{
+    font-size: 16px;
+    color:#EB6F31;
+}
+#legacyList table tbody tr td:first-child{
+    padding-left: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}

@@ -1,0 +1,49 @@
+#coreFunctions{
+    padding:88px 0 65px 0;
+    /* background-image: url('/images/roadmap/background.svg'); */
+    background: #29292c url('/images/coreValue/background.png');
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
+    color:#fff;
+}
+
+#coreFunctions h2{
+    font-size: 40px;
+    font-family: 'Styrene A Web';
+    text-align: center;
+    margin-top:0;
+    margin-bottom: 76px;
+}
+
+#coreFunctions .con-functions{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#coreFunctions .con-functions .con-functions-col{
+   
+}
+
+#coreFunctions .con-functions .con-functions-item{
+    display: flex;
+    margin:40px 0;
+}
+
+#coreFunctions .con-functions .con-functions-item .ico{
+    width: 64px;
+    height: 64px;
+    margin-right: 10px;
+}
+
+#coreFunctions .con-functions .con-functions-item .title{
+    font-size: 24px;
+    font-weight: 600;
+    margin:18px 0 14px;
+}
+
+#coreFunctions .con-functions .con-functions-item .desc{
+    font-size: 16px;
+    min-height: 120px;
+}

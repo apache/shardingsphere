@@ -1,0 +1,236 @@
+#roadmapSection {
+  background-image: url('/images/roadmap/mobileBackground.svg');
+  background-repeat: no-repeat;
+  background-position: right top;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+#roadmapSection .roadmapSectionContainer {
+  position: relative;
+  max-width: 1960px;
+  margin: 0 auto;
+  /* padding-left: 20px; */
+}
+
+#roadmapSection .container {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+#roadmapSection .maintitle {
+  font-family: 'Styrene A Web';
+  text-align: center;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  color: #080b22;
+}
+
+#roadmapSection .cardItem {
+  width: 250px;
+  margin: 12px;
+  padding-bottom: 100px;
+  position: relative;
+}
+
+#roadmapSection .cardItem .point {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f6712e;
+  position: absolute;
+  left: 50%;
+  margin-top: 35px;
+  margin-left: -9px;
+}
+
+#roadmapSection .cardItem.inactive .point {
+  background: #e7e7f3;
+}
+
+#roadmapSection.zh-page .cardItem.inactive .point {
+  background: #5D5C61;
+}
+
+#roadmapSection .cardItem.inactive .point::before {
+  background-color: #e7e7f3;
+}
+
+#roadmapSection.zh-page .cardItem.inactive .point::before {
+  background-color: #5D5C61;
+}
+
+#roadmapSection .cardItem .point::before {
+  height: 2px;
+  background-color: #f6712e;
+  content: ' ';
+  position: absolute;
+  right: 28px;
+  top: 8px;
+  width: 206px;
+}
+
+#roadmapSection .cardItem:first-child .point::before {
+  height: 2px;
+  background-color: #f6712e;
+  content: ' ';
+  position: absolute;
+  right: 28px;
+  top: 8px;
+  width: 800px;
+}
+
+#roadmapSection .card {
+  width: 250px;
+  height: 290px;
+  background: #f7f7fb;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+}
+
+#roadmapSection.zh-page .card{
+  background:#34333A;
+}
+
+#roadmapSection .card.inactive .version,
+#roadmapSection .card.inactive .title,
+#roadmapSection .card.inactive .year,
+#roadmapSection .card.inactive .content {
+  /* Gray 700 */
+  color: #6b6d7a !important;
+}
+
+#roadmapSection.zh-page .card.inactive .version,
+#roadmapSection.zh-page .card.inactive .title,
+#roadmapSection.zh-page .card.inactive .year,
+#roadmapSection.zh-page .card.inactive .content {
+  /* Gray 700 */
+  color: #CECED3 !important;
+}
+
+#roadmapSection .card .version {
+  /* EN/Subtitle 1 */
+  font-family: 'Styrene A Web', sans-serif;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 24px;
+  /* Orange 2 */
+  color: #f6712e;
+}
+
+#roadmapSection .card .title {
+  font-family: 'Styrene A Web', sans-serif;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 24px;
+  /* Gray 900 */
+  color: #080b22;
+}
+
+#roadmapSection.zh-page .card .title {
+  color:#fff;
+}
+
+#roadmapSection .card .content {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 18px;
+  /* Gray 800 */
+  color: #393c4e;
+}
+
+#roadmapSection.zh-page .card .content {
+  color: #fff;
+}
+
+#roadmapSection .card .year {
+  font-size: 20px;
+  line-height: 24px;
+  /* Orange 2 */
+  color: #f6712e;
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+}
+
+#roadmapSection .card .flag {
+  width: 23px;
+  height: 25px;
+  background-image: url('/images/roadmap/flag.svg');
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+#roadmapSection .shadow.right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 88px;
+  background: linear-gradient(
+    90deg,
+    #ffffff 31.44%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: matrix(-1, 0, 0, 1, 0, 0);
+}
+
+#roadmapSection.zh-page .shadow.right{
+  background: linear-gradient(
+    90deg,
+    #080b22 31.44%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+#roadmapSection .shadow.left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 88px;
+  background: linear-gradient(
+    90deg,
+    #ffffff 31.44%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+#roadmapSection.zh-page .shadow.left{
+  background: linear-gradient(
+    90deg,
+    #080b22 31.44%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.slick-arrow {
+  transition: all 0.1s ease-in-out;
+}
+
+.slick-arrow:hover {
+  transform-origin: center;
+  transform: translate(0, -50%) scale(1.1);
+}
+
+.slick-arrow:active {
+  transform-origin: center;
+  transform: translate(0, -50%) scale(0.9);
+}
+
+
+#roadmapSection.zh-page{
+  background-color: #080b22;
+  background-image: none;
+}
+
+#roadmapSection.zh-page .slick-prev, #roadmapSection.zh-page .slick-next{
+  background-color: #525059;
+}

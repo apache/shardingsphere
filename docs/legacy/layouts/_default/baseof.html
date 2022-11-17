@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{ partial "head" . }}
+  </head>
+  <body>
+    <!-- navigation -->
+    <nav class="navigation">
+      {{ partial "navigation" . }}
+    </nav>
+
+    <main>
+      <!-- first section -->
+      {{ block "main" . }}{{ end }}
+    </main>
+
+    <!-- footer -->
+    <footer>
+      {{ partial "footer" . }}
+    </footer>
+
+    <div class="mobileMenu" style="display: none">
+      {{ partial "mobile" . }}
+    </div>
+
+    {{ partial "script" .}}
+  </body>
+</html>

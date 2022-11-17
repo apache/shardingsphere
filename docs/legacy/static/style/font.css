@@ -1,0 +1,46 @@
+/*
+  This font software is the property of Commercial Type.
+
+  You may not modify the font software, use it on another website, or install it on a computer.
+
+  License information is available at http://commercialtype.com/eula
+  For more information please visit Commercial Type at http://commercialtype.com or email us at info[at]commercialtype.com
+
+  Copyright (C) 2022 Schwartzco Inc.
+  License: 2202-TQPWEP
+*/
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Regular.eot');
+  src: local('Inter Regular'), local('Inter-Regular'),
+    url('/fonts/Inter-Regular.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/Inter-Regular.woff2') format('woff2'),
+    url('/fonts/Inter-Regular.woff') format('woff'),
+    url('/fonts/Inter-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Medium.eot');
+  src: local('Inter Medium'), local('Inter-Medium'),
+    url('/fonts/Inter-Medium.eot?#iefix') format('embedded-opentype'),
+    url('/fonts/Inter-Medium.woff2') format('woff2'),
+    url('/fonts/Inter-Medium.woff') format('woff'),
+    url('/fonts/Inter-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Styrene A Web';
+  src: url('/fonts/StyreneA-Bold-Web.woff2') format('woff2'),
+    url('/fonts/StyreneA-Bold-Web.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
