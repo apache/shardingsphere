@@ -663,3 +663,7 @@ SYSTIMESTAMP
 DBTIMEZONE
     : D B T I M E Z O N E
     ;
+
+TO_CHAR
+    : T O UL_ C H A R
+    ;
