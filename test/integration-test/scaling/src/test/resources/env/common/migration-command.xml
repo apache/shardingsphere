@@ -75,8 +75,8 @@
     <create-target-order-item-table-rule>
         CREATE SHARDING TABLE RULE t_order_item(
         DATANODES('ds_${2..4}.t_order_item_${0..1}'),
-        DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES("algorithm-expression"="ds_${user_id % 3 + 2}")))),
-        TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))),
+        DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 3 + 2}')))),
+        TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 2}')))),
         KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake'))
         );
     </create-target-order-item-table-rule>
