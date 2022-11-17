@@ -31,11 +31,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "sql-cases")
 @Getter
-public final class SQLCases extends Cases {
+public final class SQLCases implements Cases {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
     
     @XmlElement(name = "sql-case")
-    private List<SQLCase> sqlCases = new LinkedList<>();
+    private final List<SQLCase> sqlCases = new LinkedList<>();
 }

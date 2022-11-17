@@ -93,13 +93,4 @@ public final class SQLParserTestCasesRegistry {
         Preconditions.checkState(sqlParserTestCases.containsKey(sqlCaseId), "Can not find SQL of ID: %s", sqlCaseId);
         return sqlParserTestCases.get(sqlCaseId);
     }
-    
-    /**
-     * Get all SQL case IDs.
-     *
-     * @return all SQL case IDs
-     */
-    public Collection<String> getAllSQLCaseIDs() {
-        return sqlParserTestCases.keySet();
-    }
 }

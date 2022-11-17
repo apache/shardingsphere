@@ -24,16 +24,15 @@ import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.SQLCas
 /**
  * SQL cases registry.
  */
+@Getter
 public final class CasesRegistry {
     
     private static final CasesRegistry INSTANCE = new CasesRegistry();
     
     private static final String CASE_PATH = "sql/supported/";
     
-    @Getter
     private final SQLCasesLoader sqlCasesLoader;
     
-    @Getter
     private final DistSQLCasesLoader distSQLCasesLoader;
     
     private CasesRegistry() {
@@ -42,9 +41,9 @@ public final class CasesRegistry {
     }
     
     /**
-     * Get singleton instance.
+     * Get instance.
      * 
-     * @return singleton instance
+     * @return got instance
      */
     public static CasesRegistry getInstance() {
         return INSTANCE;

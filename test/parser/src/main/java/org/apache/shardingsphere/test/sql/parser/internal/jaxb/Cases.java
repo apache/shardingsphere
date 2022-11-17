@@ -20,5 +20,5 @@ package org.apache.shardingsphere.test.sql.parser.internal.jaxb;
 /**
  * Base cases.
  */
-public abstract class Cases {
+public interface Cases {
 }

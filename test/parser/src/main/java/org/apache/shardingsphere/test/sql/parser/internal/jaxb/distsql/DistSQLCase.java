@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.Case;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -28,7 +26,5 @@ import javax.xml.bind.annotation.XmlAccessorType;
  * DistSQL test case for xml tag.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
 public final class DistSQLCase extends Case {
 }
