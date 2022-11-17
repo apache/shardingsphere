@@ -30,7 +30,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "sql-cases")
 @Getter
-public final class DistSQLCases extends Cases {
+public final class DistSQLCases implements Cases {
     
     @XmlElement(name = "distsql-case")
     private final List<DistSQLCase> distSQLCases = new LinkedList<>();
