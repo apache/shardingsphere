@@ -93,13 +93,4 @@ public abstract class CasesLoader {
      * @return SQL
      */
     public abstract String getCaseValue(String sqlCaseId, SQLCaseType sqlCaseType, List<?> params, String databaseType);
-    
-    /**
-     * Get all SQL case IDs.
-     * 
-     * @return all SQL case IDs
-     */
-    public Collection<String> getAllSQLCaseIDs() {
-        return cases.keySet();
-    }
 }
