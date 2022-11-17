@@ -87,4 +87,5 @@
     <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
     <sql-case id="insert_on_duplicate_key_update_multi_column" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE user_id = user_id + 1, status='update'" db-types="MySQL,openGauss" />
     <sql-case id="insert_with_negative_value" value="insert into t_order (order_id, user_id, status) values (?, ?, ?)" />
+    <sql-case id="insert_datetime_literals" value="INSERT INTO date_tab VALUES ( TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00');" db-types="Oracle" />
 </sql-cases>

@@ -162,6 +162,9 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.nullValueLiterals()) {
             return visit(ctx.nullValueLiterals());
         }
+        if (null != ctx.dateTimeLiterals()) {
+            return visit(ctx.dateTimeLiterals());
+        }
         throw new IllegalStateException("Literals must have string, number, dateTime, hex, bit, boolean or null.");
     }
     

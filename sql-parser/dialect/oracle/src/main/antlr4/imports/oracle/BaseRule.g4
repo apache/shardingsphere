@@ -42,8 +42,8 @@ numberLiterals
    ;
 
 dateTimeLiterals
-    : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier STRING_ RBE_
+    : (DATE | TIME | TIMESTAMP) stringLiterals
+    | LBE_ identifier stringLiterals RBE_
     ;
 
 hexadecimalLiterals
