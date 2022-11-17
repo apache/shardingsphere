@@ -71,18 +71,18 @@ public final class ShardingSphereDataScheduleCollector {
             compareUpdateAndSendEvent(shardingSphereData, changedShardingSphereData);
         }
         
-        private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData, 
+        private void collectForDatabase(final String databaseName, final ShardingSphereDatabaseData databaseData,
                                         final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
             databaseData.getSchemaData().forEach((key, value) -> collectForSchema(databaseName, key, value, databases, changedShardingSphereData));
         }
         
-        private void collectForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, 
+        private void collectForSchema(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData,
                                       final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
-            schemaData.getTableData().forEach((key, value) -> collectForTable(databaseName, schemaName, databases.get(databaseName).getSchema(schemaName).getTable(key), 
+            schemaData.getTableData().forEach((key, value) -> collectForTable(databaseName, schemaName, databases.get(databaseName).getSchema(schemaName).getTable(key),
                     databases, changedShardingSphereData));
         }
         
-        private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table, 
+        private void collectForTable(final String databaseName, final String schemaName, final ShardingSphereTable table,
                                      final Map<String, ShardingSphereDatabase> databases, final ShardingSphereData changedShardingSphereData) {
             Optional<ShardingSphereDataCollector> shardingSphereDataCollector = ShardingSphereDataCollectorFactory.findInstance(table.getName());
             if (!shardingSphereDataCollector.isPresent()) {
