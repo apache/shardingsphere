@@ -15,5 +15,28 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.metadata.data.ShardingStatisticsTableCollector
-org.apache.shardingsphere.sharding.metadata.data.StorageUnitStateTableCollector
+name: storage_unit_state
+
+columns:
+  database_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: database_name
+    primaryKey: false
+    visible: true
+  data_source_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: data_source_name
+    primaryKey: false
+    visible: true
+  state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: state
+    primaryKey: false
+    visible: true
+  

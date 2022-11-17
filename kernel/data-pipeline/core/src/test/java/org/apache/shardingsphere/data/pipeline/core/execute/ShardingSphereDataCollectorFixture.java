@@ -35,7 +35,7 @@ import java.util.Optional;
 public final class ShardingSphereDataCollectorFixture implements ShardingSphereDataCollector {
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, 
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table", Collections.emptyList());
         shardingSphereTableData.getRows().add(new ShardingSphereRowData(Arrays.asList("1", "2")));

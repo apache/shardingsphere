@@ -85,6 +85,7 @@ public final class DataSourceStateManager {
             dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
         } catch (final SQLException ex) {
             ShardingSpherePreconditions.checkState(forceStart, UnavailableDataSourceException::new);
+            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ERROR);
             log.error("Data source unavailable, ignored with the -f parameter.", ex);
         }
     }
@@ -111,16 +112,16 @@ public final class DataSourceStateManager {
         if (dataSources.isEmpty() || !initialized) {
             return dataSources;
         }
-        Map<String, DataSource> result = filterDisabledDataSources(databaseName, dataSources);
+        Map<String, DataSource> result = filterDataSources(databaseName, dataSources);
         checkForceConnection(result);
         return result;
     }
     
-    private Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
+    private Map<String, DataSource> filterDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
         dataSources.forEach((key, value) -> {
             DataSourceState dataSourceState = dataSourceStates.get(getCacheKey(databaseName, key));
-            if (DataSourceState.DISABLED != dataSourceState) {
+            if (DataSourceState.DISABLED != dataSourceState && DataSourceState.ERROR != dataSourceState) {
                 result.put(key, value);
             }
         });
@@ -149,6 +150,28 @@ public final class DataSourceStateManager {
      */
     public void updateState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
         dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
+    }
+    
+    /**
+     * Update data source state.
+     *
+     * @param databaseName database name
+     * @param actualDataSourceName actual data source name
+     * @param stateName data source state name
+     */
+    public void updateState(final String databaseName, final String actualDataSourceName, final String stateName) {
+        dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.valueOf(stateName.toUpperCase()));
+    }
+    
+    /**
+     * Get data source state.
+     * 
+     * @param databaseName database name 
+     * @param actualDataSourceName actual data source name
+     * @return data source state
+     */
+    public DataSourceState getState(final String databaseName, final String actualDataSourceName) {
+        return dataSourceStates.get(getCacheKey(databaseName, actualDataSourceName));
     }
     
     private String getCacheKey(final String databaseName, final String dataSourceName) {

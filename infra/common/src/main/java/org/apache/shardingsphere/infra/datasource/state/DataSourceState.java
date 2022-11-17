@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.datasource.state;
  */
 public enum DataSourceState {
     
-    DISABLED, ENABLED
+    DISABLED, ENABLED, ERROR
 }
