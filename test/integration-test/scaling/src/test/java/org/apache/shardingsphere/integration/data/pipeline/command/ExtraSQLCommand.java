@@ -44,6 +44,10 @@ public final class ExtraSQLCommand {
     @Getter
     private String fullInsertOrderItem;
     
+    @XmlElement(name = "create-table-user")
+    @Getter
+    private String createTableUser;
+    
     /**
      * Get full insert order sql.
      *
