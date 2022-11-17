@@ -39,4 +39,3 @@ columns:
     name: state
     primaryKey: false
     visible: true
-  
