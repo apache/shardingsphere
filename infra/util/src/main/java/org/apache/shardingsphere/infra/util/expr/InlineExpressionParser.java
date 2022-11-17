@@ -68,7 +68,7 @@ public final class InlineExpressionParser {
         if(Strings.isNullOrEmpty(inlineExpression) ){
             return Collections.emptyList();
         }
-        if (!isInlineExpression(inlineExpression)) {
+        if (!isInlineExpressionNeedEvaluate(inlineExpression)) {
             List<String> res = new ArrayList<>();
             res.add(inlineExpression);
             return res;
@@ -83,6 +83,10 @@ public final class InlineExpressionParser {
      */
     public Closure<?> evaluateClosure() {
         return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
+    }
+
+    private boolean isInlineExpressionNeedEvaluate() {
+        return inlineExpression.contains("$") || inlineExpression.contains(",");
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
