@@ -543,12 +543,12 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     }
     
     @Override
-    public ASTNode visitXmlFunction(XmlFunctionContext ctx) {
+    public ASTNode visitXmlFunction(final XmlFunctionContext ctx) {
         return visit(ctx.xmlAggFunction());
     }
     
     @Override
-    public ASTNode visitXmlAggFunction(XmlAggFunctionContext ctx) {
+    public ASTNode visitXmlAggFunction(final XmlAggFunctionContext ctx) {
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.XMLAGG().getText(), getOriginalText(ctx));
     }
     
