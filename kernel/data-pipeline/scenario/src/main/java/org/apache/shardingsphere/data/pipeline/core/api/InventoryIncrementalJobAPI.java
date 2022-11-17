@@ -60,6 +60,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      * @param checkJobItemContext consistency check job item context
      * @return each logic table check result
      */
+    // TODO do not depend on ConsistencyCheckJobItemContext
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm,
                                                                  ConsistencyCheckJobItemContext checkJobItemContext);
     
