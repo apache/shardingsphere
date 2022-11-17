@@ -667,3 +667,11 @@ DBTIMEZONE
 TO_CHAR
     : T O UL_ C H A R
     ;
+
+XMLELEMENT
+    : X M L E L E M E N T
+    ;
+
+XMLAGG
+    : X M L A G G
+    ;

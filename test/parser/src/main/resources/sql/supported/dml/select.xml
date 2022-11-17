@@ -144,4 +144,5 @@
     <sql-case id="select_linear_regression_function" value="SELECT job_id, employee_id ID, salary, REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) slope, REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) intcpt, REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) rsqr, REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) count, REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) avgx, REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) avgy FROM employees WHERE department_id in (50, 80) ORDER BY job_id, employee_id;" db-types="Oracle" />
     <sql-case id="select_lpad_function" value="SELECT LPAD('Page 1',15,'*.') 'LPAD example' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_to_char_function" value="SELECT TO_CHAR(ts_col, 'DD-MON-YYYY HH24:MI:SSxFF') AS ts_col FROM date_tab ORDER BY ts_col;" />
+    <sql-case id="select_xmlelement_xmlagg_function" value="SELECT XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)) as 'Dept_list' FROM employees e WHERE e.department_id = 30;" db-types="Oracle" />
 </sql-cases>

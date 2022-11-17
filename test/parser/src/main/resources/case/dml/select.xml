@@ -4634,4 +4634,28 @@
             <column-item name="ts_col" start-index="85" stop-index="90" />
         </order-by>
     </select>
+
+    <select sql-case-id="select_xmlelement_xmlagg_function">
+        <projections start-index="7" stop-index="124">
+            <expression-projection text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" alias="Dept_list" start-index="7" stop-index="124" />
+        </projections>
+        <from>
+            <simple-table name="employees" alias="e" start-index="131" stop-index="141" />
+        </from>
+        <where start-index="143" stop-index="168">
+            <expr>
+                <binary-operation-expression start-index="149" stop-index="168">
+                    <left>
+                        <column name="department_id" start-index="149" stop-index="163" >
+                            <owner name="e" start-index="149" stop-index="149" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="30" start-index="167" stop-index="168" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
