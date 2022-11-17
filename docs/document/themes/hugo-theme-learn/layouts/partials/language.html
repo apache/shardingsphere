@@ -16,9 +16,9 @@
               {{ range $versions }}
                 {{ $version := . }}
                 {{ if strings.HasSuffix $permalink $version }}
-                  <option id="{{ $version }}" value="{{ replaceRE "document/[\\w|-]*" $version $permalink }}" selected>{{ $version }}</option>
+                  <option id="{{ $version }}" value="{{ replaceRE "document/[\\w|-]*" (printf "document/%s" $version) $permalink }}" selected>{{ $version }}</option>
                 {{ else }}
-                  <option id="{{ $version }}" value="{{ replaceRE "document/[\\w|-]*" $version $permalink }}" >{{ $version }}</option>
+                  <option id="{{ $version }}" value="{{ replaceRE "document/[\\w|-]*" (printf "document/%s" $version) $permalink }}" >{{ $version }}</option>
                 {{ end }}
               {{ end }}
                 </select>
