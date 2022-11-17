@@ -24,7 +24,7 @@
           {{ $version := . }}
             <tr>
                 <td>{{ $version }}</td>
-                <td><a href="{{ printf "%s/%s/en/overview/" $baseURL $version }}">View</a></td>
+                <td><a href="{{ printf "%s%s/en/overview/" $baseURL $version }}">View</a></td>
             </tr>
           {{ end }}
           </tbody>
