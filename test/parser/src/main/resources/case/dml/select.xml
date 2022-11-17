@@ -4613,6 +4613,7 @@
             <column-item name="employee_id" start-index="531" stop-index="541" />
         </order-by>
     </select>
+
     <select sql-case-id="select_lpad_function">
         <projections start-index="7" stop-index="43">
             <expression-projection text="LPAD('Page 1',15,'*.')" alias="LPAD example" start-index="7" stop-index="43" />
@@ -4620,5 +4621,17 @@
         <from>
             <simple-table name="DUAL" start-index="50" stop-index="53"/>
         </from>
+    </select>
+
+    <select sql-case-id="select_to_char_function">
+        <projections start-index="7" stop-index="60">
+            <expression-projection text="TO_CHAR(ts_col, 'DD-MON-YYYY HH24:MI:SSxFF')" alias="ts_col" start-index="7" stop-index="60" />
+        </projections>
+        <from>
+            <simple-table name="date_tab" start-index="67" stop-index="74" />
+        </from>
+        <order-by>
+            <column-item name="ts_col" start-index="85" stop-index="90" />
+        </order-by>
     </select>
 </sql-parser-test-cases>
