@@ -19,11 +19,16 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.postgresql.jdbc.TimestampUtils;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Utils for PostgreSQL timestamp.
@@ -49,7 +54,15 @@ public final class PostgreSQLTextTimestampUtils {
         try {
             return Timestamp.valueOf(LocalDateTime.from(POSTGRESQL_DATE_TIME_FORMATTER.parse(value)));
         } catch (final DateTimeParseException ignored) {
-            return Timestamp.valueOf(value);
+            return fallbackToPostgreSQLTimestampUtils(value);
+        }
+    }
+    
+    private static Timestamp fallbackToPostgreSQLTimestampUtils(final String value) {
+        try {
+            return new TimestampUtils(false, TimeZone::getDefault).toTimestamp(Calendar.getInstance(), value);
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
         }
     }
 }
