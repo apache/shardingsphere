@@ -35,7 +35,4 @@ public final class SQLCase extends Case {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
-    
-    @XmlAttribute(name = "rule-type")
-    private String ruleType;
 }
