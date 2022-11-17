@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.sta
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Apply dist sql statement test case.
+ * Apply Dist SQL statement test case.
  */
 public final class ApplyDistSQLStatementTestCase extends SQLParserTestCase {
 }

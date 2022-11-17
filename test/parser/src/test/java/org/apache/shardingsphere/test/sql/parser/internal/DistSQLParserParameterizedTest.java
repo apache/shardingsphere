@@ -19,9 +19,10 @@ package org.apache.shardingsphere.test.sql.parser.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.AbstractSQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.DistSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.CasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistryFactory;
@@ -56,6 +57,8 @@ public final class DistSQLParserParameterizedTest {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), null);
         SQLStatement actual = ENGINE.parse(sql);
-        AbstractSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null, null), actual, expected);
+        if (actual instanceof DistSQLStatement) {
+            DistSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null, null), (DistSQLStatement) actual, expected);
+        }
     }
 }

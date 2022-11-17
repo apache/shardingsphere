@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.value.IdentifierValueAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.index.ExpectedCacheTableIndex;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.index.ExpectedPartitionDefinition;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.CacheIndexStatementTestCase;

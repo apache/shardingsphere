@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetResourceGroupStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.UseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.SetResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL use statement assert.
+ * MySQL set resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLUseStatementAssert {
+public final class MySQLSetResourceGroupStatementAssert {
     
     /**
-     * Assert use statement is correct with expected parser result.
-     * 
+     * Assert set resource group statement is correct with expected parser result.
+     *
      * @param assertContext assert context
-     * @param actual actual use statement
-     * @param expected expected use statement test case
+     * @param actual actual set resource group statement
+     * @param expected expected set resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLUseStatement actual, final UseStatementTestCase expected) {
-        assertThat(assertContext.getText("Schema name assertion error: "), actual.getSchema(), is(expected.getSchema().getName()));
-        // TODO create a new assert class named `SchemaAssert`
-        // TODO extract and assert start index, stop index, start delimiter and end delimiter
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLSetResourceGroupStatement actual, final SetResourceGroupStatementTestCase expected) {
+        assertNotNull("expected set resource group should be not null", expected.getGroup());
+        assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

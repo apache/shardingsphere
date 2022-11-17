@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLOptimizeTableStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.ChecksumTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 
 /**
- * MySQL checksum table statement assert.
+ * MySQL optimize table statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLChecksumTableStatementAssert {
+public final class MySQLOptimizeTableStatementAssert {
     
     /**
-     * Assert checksum table statement is correct with expected parser result.
+     * Assert optimize table statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual checksum table statement
-     * @param expected expected checksum table statement test case
+     * @param actual actual optimize table statement
+     * @param expected expected optimize table statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
         assertTables(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLChecksumTableStatement actual, final ChecksumTableStatementTestCase expected) {
+    private static void assertTables(final SQLCaseAssertContext assertContext, final MySQLOptimizeTableStatement actual, final OptimizeTableStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
     }
 }

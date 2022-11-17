@@ -38,11 +38,11 @@ import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.stat
 public final class DistSQLStatementAssert {
     
     /**
-     * Assert dist sql statement is correct with expected parser result.
+     * Assert Dist SQL statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual dist sql statement
-     * @param expected expected dist sql statement test case
+     * @param actual actual Dist SQL statement
+     * @param expected expected Dist SQL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DistSQLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof RDLStatement) {

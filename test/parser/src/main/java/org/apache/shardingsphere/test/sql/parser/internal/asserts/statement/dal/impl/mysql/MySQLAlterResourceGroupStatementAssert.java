@@ -15,33 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCreateResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.CreateResourceGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.AlterResourceGroupStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * MySQL create resource group statement assert.
+ * MySQL alter resource group statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLCreateResourceGroupStatementAssert {
+public final class MySQLAlterResourceGroupStatementAssert {
     
     /**
-     * Assert create resource group statement is correct with expected parser result.
+     * Assert alter resource group statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual create resource group statement
-     * @param expected expected create resource group statement test case
+     * @param actual actual alter resource group statement
+     * @param expected expected alter resource group statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLCreateResourceGroupStatement actual, final CreateResourceGroupStatementTestCase expected) {
-        assertNotNull("expected create resource group should be not null", expected.getGroup());
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLAlterResourceGroupStatement actual, final AlterResourceGroupStatementTestCase expected) {
+        assertNotNull("expected alter resource group should be not null", expected.getGroup());
         assertThat(actual.getGroupName(), is(expected.getGroup().getName()));
     }
 }

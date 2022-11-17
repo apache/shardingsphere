@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.DistSQLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.UseStatementTestCase;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Abstract sql statement assert.
+ * MySQL use statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AbstractSQLStatementAssert {
+public final class MySQLUseStatementAssert {
     
     /**
-     * Assert abstract sql statement is correct with expected parser result.
-     *
+     * Assert use statement is correct with expected parser result.
+     * 
      * @param assertContext assert context
-     * @param actual actual abstract sql statement
-     * @param expected expected abstract sql statement test case
+     * @param actual actual use statement
+     * @param expected expected use statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SQLStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof DistSQLStatement) {
-            DistSQLStatementAssert.assertIs(assertContext, (DistSQLStatement) actual, expected);
-        }
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLUseStatement actual, final UseStatementTestCase expected) {
+        assertThat(assertContext.getText("Schema name assertion error: "), actual.getSchema(), is(expected.getSchema().getName()));
+        // TODO create a new assert class named `SchemaAssert`
+        // TODO extract and assert start index, stop index, start delimiter and end delimiter
     }
 }

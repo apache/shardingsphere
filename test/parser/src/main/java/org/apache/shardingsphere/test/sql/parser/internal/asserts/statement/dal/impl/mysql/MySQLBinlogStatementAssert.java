@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.impl.mysql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLDelimiterStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.DelimiterStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.BinlogStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * delimiter statement assert.
+ * MySQL binlog statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLDelimiterStatementAssert {
+public final class MySQLBinlogStatementAssert {
     
     /**
-     * Assert delimiter index statement is correct with expected parser result.
+     * Assert binlog statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual delimiter statement
-     * @param expected expected delimiter statement test case
+     * @param actual actual binlog statement
+     * @param expected expected binlog statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDelimiterStatement actual, final DelimiterStatementTestCase expected) {
-        assertThat(assertContext.getText("delimiter name assertion error: "), actual.getDelimiterName(), is(expected.getDelimiterName()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLBinlogStatement actual, final BinlogStatementTestCase expected) {
+        assertThat(assertContext.getText("Binlog statement context does not match: "), actual.getBase64Str(), is(expected.getBase64Str()));
     }
 }

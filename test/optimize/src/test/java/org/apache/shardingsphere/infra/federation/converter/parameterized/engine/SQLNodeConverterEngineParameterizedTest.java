@@ -68,7 +68,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private static final Set<String> SUPPORTED_SQL_CASE_IDS = new HashSet<>();
     
-    // TODO remove SUPPORTED_SQL_CASE_IDS when all sql statement support convert to sql node
+    // TODO remove SUPPORTED_SQL_CASE_IDS when all SQL statement support convert to SQL node
     // CHECKSTYLE:OFF
     static {
         SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");

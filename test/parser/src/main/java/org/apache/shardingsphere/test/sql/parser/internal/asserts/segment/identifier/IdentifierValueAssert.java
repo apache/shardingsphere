@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.asserts.value;
+package org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -40,13 +40,9 @@ public final class IdentifierValueAssert {
      * @param expected expected identifier
      * @param type assert identifier value type
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final IdentifierValue actual,
-                                final ExpectedIdentifierSQLSegment expected, final String type) {
-        assertThat(assertContext.getText(String.format("%s name assertion error: ", type)),
-                actual.getValue(), is(expected.getName()));
-        assertThat(assertContext.getText(String.format("%s start delimiter assertion error: ", type)),
-                actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText(String.format("%s end delimiter assertion error: ", type)),
-                actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+    public static void assertIs(final SQLCaseAssertContext assertContext, final IdentifierValue actual, final ExpectedIdentifierSQLSegment expected, final String type) {
+        assertThat(assertContext.getText(String.format("%s name assertion error: ", type)), actual.getValue(), is(expected.getName()));
+        assertThat(assertContext.getText(String.format("%s start delimiter assertion error: ", type)), actual.getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
+        assertThat(assertContext.getText(String.format("%s end delimiter assertion error: ", type)), actual.getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
     }
 }
