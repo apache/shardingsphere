@@ -60,11 +60,11 @@ public final class PostgreSQLTextTimestampUtilsTest {
                 new Object[]{"2021-10-12 23:23:23.12345678", Timestamp.valueOf("2021-10-12 23:23:23.12345678")},
                 new Object[]{"2021-10-12 23:23:23.123456789", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
                 new Object[]{"2021-10-12 23:23:23.123456 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
-//                TODO The following 4 cases are related to user.timezone of test environment
-//                new Object[]{"2021-10-12 23:23:23.1234567 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.1234567")},
-//                new Object[]{"2021-10-12 23:23:23.12345678 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.12345678")},
-//                new Object[]{"2021-10-12 23:23:23.123456789+08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
-//                new Object[]{"2021-10-12 23:23:23.123456789 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
+                // TODO The following 4 cases are related to user.timezone of test environment
+                // new Object[]{"2021-10-12 23:23:23.1234567 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.1234567")},
+                // new Object[]{"2021-10-12 23:23:23.12345678 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.12345678")},
+                // new Object[]{"2021-10-12 23:23:23.123456789+08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
+                // new Object[]{"2021-10-12 23:23:23.123456789 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")},
                 new Object[]{"2021-10-12 23:23:23.123456 -08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")},
                 new Object[]{"2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")});
     }
