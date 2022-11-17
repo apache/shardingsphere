@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -25,6 +27,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,6 +35,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
 public final class PostgreSQLTextTimestampUtilsTest {
+    
+    private static final TimeZone ORIGIN_DEFAULT_TIME_ZONE = TimeZone.getDefault();
     
     private final String input;
     
@@ -68,8 +73,18 @@ public final class PostgreSQLTextTimestampUtilsTest {
                 new Object[]{"2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")});
     }
     
+    @BeforeClass
+    public static void setup() {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+    }
+    
     @Test
     public void assertGetLocalDateTimeNoExceptionOccurs() {
         assertThat(PostgreSQLTextTimestampUtils.parse(input), is(expected));
+    }
+    
+    @AfterClass
+    public static void tearDown() {
+        TimeZone.setDefault(ORIGIN_DEFAULT_TIME_ZONE);
     }
 }
