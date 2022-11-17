@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import javax.sql.DataSource;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -32,9 +31,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Table pg_namespace data collector.
@@ -44,9 +45,9 @@ public final class PgNamespaceTableCollector implements ShardingSphereDataCollec
     private static final String PG_NAMESPACE = "pg_namespace";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table, 
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE, new ArrayList<>(table.getColumns().values()));
+        Set<ShardingSphereRowData> rows = new LinkedHashSet<>();
         for (DataSource each : shardingSphereDatabases.get(databaseName).getResourceMetaData().getDataSources().values()) {
             try (
                     Connection connection = each.getConnection();
@@ -54,25 +55,27 @@ public final class PgNamespaceTableCollector implements ShardingSphereDataCollec
                     ResultSet resultSet = statement.executeQuery("SELECT oid, nspname, nspowner, nspacl FROM pg_catalog.pg_namespace")) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 while (resultSet.next()) {
-                    List<Object> rows = new ArrayList<>(metaData.getColumnCount());
+                    List<Object> row = new ArrayList<>(metaData.getColumnCount());
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                        rows.add(convertIfNecessary(resultSet.getObject(i), metaData.getColumnType(i)));
+                        row.add(convertIfNecessary(resultSet.getObject(i), metaData.getColumnType(i)));
                     }
-                    ShardingSphereRowData rowData = new ShardingSphereRowData(rows);
-                    result.getRows().add(rowData);
+                    ShardingSphereRowData rowData = new ShardingSphereRowData(row);
+                    rows.add(rowData);
                 }
             }
         }
+        ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE, new ArrayList<>(table.getColumns().values()));
+        result.getRows().addAll(rows);
         return Optional.of(result);
     }
     
     // TODO extract to util
     private Object convertIfNecessary(final Object data, final int dataType) {
-        if (Types.ARRAY == dataType || Types.OTHER == dataType) {
+        if (Types.ARRAY == dataType) {
             return null == data ? null : data.toString();
         }
         if (Types.BIGINT == dataType) {
-            return null == data ? null : new BigInteger(data.toString());
+            return null == data ? null : Long.valueOf(data.toString());
         }
         return data;
     }

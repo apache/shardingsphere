@@ -40,7 +40,7 @@
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-
+        
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
