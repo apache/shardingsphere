@@ -27,8 +27,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 /**
  * Utils for PostgreSQL timestamp.
@@ -60,7 +58,7 @@ public final class PostgreSQLTextTimestampUtils {
     
     private static Timestamp fallbackToPostgreSQLTimestampUtils(final String value) {
         try {
-            return new TimestampUtils(false, TimeZone::getDefault).toTimestamp(Calendar.getInstance(), value);
+            return new TimestampUtils(false, null).toTimestamp(null, value);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
