@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<test-cases>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id WHERE t_user_info.user_id = 13">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])  EnumerableHashJoin(condition=[=($2, $4)], joinType=[inner])    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 13), null]])"/>
+    </test-case>
+    <test-case sql="SELECT user_id, information FROM t_user_info WHERE user_id = 12">
+        <assertion expected-result="TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[=(CAST($0):INTEGER, 12), null]])"/>
+    </test-case>
+    <test-case sql="SELECT user_id FROM t_user_info WHERE user_id = 12">
+        <assertion expected-result="TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 12)]])"/>
+    </test-case>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate , t_user_info WHERE t_order_federate.user_id = t_user_info.user_id">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])  EnumerableHashJoin(condition=[=($2, $4)], joinType=[inner])    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]])"/>
+    </test-case>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])  EnumerableHashJoin(condition=[=($2, $4)], joinType=[inner])    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]])"/>
+    </test-case>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id FROM t_order_federate ,t_user_info WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13">
+        <assertion expected-result="EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])  EnumerableHashJoin(condition=[=($2, $4)], joinType=[inner])    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], proj#0..2=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])    EnumerableCalc(expr#0=[{inputs}], expr#1=[CAST($t0):VARCHAR], proj#0..1=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 13), null]])"/>
+    </test-case>
+    <test-case sql="SELECT user.user_id, user.information FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ">
+        <assertion expected-result="TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[>(CAST($0):INTEGER, 1), null]])"/>
+    </test-case>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)">
+        <assertion expected-result="EnumerableCalc(expr#0..3=[{inputs}], expr#4=[IS NOT NULL($t3)], proj#0..1=[{exprs}], $condition=[$t4])  EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1}])    TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1, 2]])    EnumerableAggregate(group=[{}], agg#0=[MIN($0)])      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], $f0=[$t2])        TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0, 1]], filters=[[=(CAST($cor0.user_id):VARCHAR, CAST($0):VARCHAR), null]])"/>
+    </test-case>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)">
+        <assertion expected-result="EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])  EnumerableHashJoin(condition=[=($1, $2)], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])    EnumerableAggregate(group=[{0}])      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]])"/>
+    </test-case>
+    <test-case sql="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE user_id = 1) AND (SELECT user_id FROM t_user_info WHERE user_id = 3)">
+        <assertion expected-result="EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])  EnumerableNestedLoopJoin(condition=[&lt;=($1, $2)], joinType=[inner])    EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])      EnumerableNestedLoopJoin(condition=[>=($1, $2)], joinType=[inner])        TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])        EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])          TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 1)]])    EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])      TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($0):INTEGER, 3)]])"/>
+    </test-case>
+    <test-case sql="SELECT order_id, user_id FROM t_order_federate UNION SELECT 1, user_id FROM t_user_info WHERE information = 'before'">
+        <assertion expected-result="EnumerableUnion(all=[false])  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])  EnumerableCalc(expr#0=[{inputs}], expr#1=['1':VARCHAR], EXPR$0=[$t1], user_id=[$t0])    TranslatableTableScan(table=[[federate_jdbc, t_user_info]], fields=[[0]], filters=[[=(CAST($1):VARCHAR, 'before'), null]])"/>
+    </test-case>
+    <test-case sql="SELECT order_id, user_id FROM t_order_federate LIMIT 1">
+        <assertion expected-result="EnumerableLimit(fetch=[1])  TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1]])"/>
+    </test-case>
+    <test-case sql="SELECT MAX(order_id), MIN(order_id), SUM(order_id), AVG(order_id), COUNT(1) FROM t_order_federate GROUP BY user_id">
+        <assertion expected-result="EnumerableCalc(expr#0..5=[{inputs}], expr#6=[0], expr#7=[=($t4, $t6)], expr#8=[null:DECIMAL(19, 9)], expr#9=[CASE($t7, $t8, $t3)], expr#10=[/($t9, $t4)], EXPR$0=[$t1], EXPR$1=[$t2], EXPR$2=[$t9], EXPR$3=[$t10], EXPR$4=[$t5])  EnumerableAggregate(group=[{0}], EXPR$0=[MAX($1)], EXPR$1=[MIN($1)], EXPR$2=[$SUM0($2)], agg#3=[COUNT($2)], EXPR$4=[COUNT()])    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):DECIMAL(19, 9)], user_id=[$t1], order_id=[$t0], $f2=[$t2])      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[1, 0]])"/>
+    </test-case>
+</test-cases>
