@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -15,4 +15,8 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckStatusQueryResultSet
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationListQueryResultSet
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationJobStatusQueryResultSet
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationCheckAlgorithmsQueryResultSet
+org.apache.shardingsphere.migration.distsql.handler.query.ShowMigrationSourceStorageUnitsQueryResultSet

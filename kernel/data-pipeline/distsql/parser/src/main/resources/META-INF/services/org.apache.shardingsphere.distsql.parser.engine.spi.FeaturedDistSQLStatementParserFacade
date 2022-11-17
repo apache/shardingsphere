@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLStatementParserFacade
+org.apache.shardingsphere.migration.distsql.parser.facade.MigrationDistSQLStatementParserFacade

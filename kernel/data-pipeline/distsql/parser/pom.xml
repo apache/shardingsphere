@@ -21,22 +21,50 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-distsql</artifactId>
+        <artifactId>shardingsphere-data-pipeline-distsql</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-distsql-statement</artifactId>
+    <artifactId>shardingsphere-data-pipeline-distsql-parser</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-common</artifactId>
+            <artifactId>shardingsphere-sql-parser-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-statement</artifactId>
+            <artifactId>shardingsphere-distsql-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-data-pipeline-distsql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>antlr-migration</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>src/main/antlr4/migration/</sourceDirectory>
+                            <libDirectory>src/main/antlr4/imports/migration/</libDirectory>
+                            <listener>false</listener>
+                            <visitor>true</visitor>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
