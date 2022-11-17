@@ -153,17 +153,6 @@ public final class DataSourceStateManager {
     }
     
     /**
-     * Update data source state.
-     *
-     * @param databaseName database name
-     * @param actualDataSourceName actual data source name
-     * @param stateName data source state name
-     */
-    public void updateState(final String databaseName, final String actualDataSourceName, final String stateName) {
-        dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.valueOf(stateName.toUpperCase()));
-    }
-    
-    /**
      * Get data source state.
      * 
      * @param databaseName database name 

@@ -65,7 +65,7 @@ public final class StorageUnitStateTableCollector implements ShardingSphereDataC
     private DataSourceState checkState(final DataSource dataSource) {
         try (Connection ignored = dataSource.getConnection()) {
             return DataSourceState.ENABLED;
-        } catch (final SQLException ex) {
+        } catch (final SQLException ignored) {
             return DataSourceState.ERROR;
         }
     }

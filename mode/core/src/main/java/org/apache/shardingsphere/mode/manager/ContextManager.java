@@ -680,10 +680,10 @@ public final class ContextManager implements AutoCloseable {
     private synchronized void alterTableData(final String databaseName, final String schemaName, final ShardingSphereTableData toBeChangedTable) {
         ShardingSphereDatabaseData database = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName);
         database.getSchemaData().get(schemaName).getTableData().put(toBeChangedTable.getName(), toBeChangedTable);
-        alterStorageUnitStateTableData(toBeChangedTable);
+        handleStorageUnitStateTableData(toBeChangedTable);
     }
     
-    private void alterStorageUnitStateTableData(final ShardingSphereTableData toBeChangedTable) {
+    private void handleStorageUnitStateTableData(final ShardingSphereTableData toBeChangedTable) {
         if (!"storage_unit_state".equals(toBeChangedTable.getName())) {
             return;
         }
@@ -692,8 +692,8 @@ public final class ContextManager implements AutoCloseable {
             Preconditions.checkArgument(3 == rows.size(), "Illegal data source state data.");
             String databaseName = String.valueOf(rows.get(0));
             String dataSourceName = String.valueOf(rows.get(1));
-            String state = String.valueOf(rows.get(2));
-            if (!DataSourceState.valueOf(state.toUpperCase()).equals(DataSourceStateManager.getInstance().getState(databaseName, dataSourceName))) {
+            DataSourceState state = DataSourceState.valueOf(String.valueOf(rows.get(2)));
+            if (!state.equals(DataSourceStateManager.getInstance().getState(databaseName, dataSourceName))) {
                 DataSourceStateManager.getInstance().updateState(databaseName, dataSourceName, state);
             }
         });
