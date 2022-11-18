@@ -51,7 +51,10 @@ public final class SQLValue {
             case "varchar":
             case "char":
                 return value;
+            case "tinyint":
+                return Byte.parseByte(value);
             case "smallint":
+                return Short.parseShort(value);
             case "int":
                 return Integer.parseInt(value);
             case "long":

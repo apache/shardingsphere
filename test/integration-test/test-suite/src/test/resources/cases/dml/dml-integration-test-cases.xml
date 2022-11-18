@@ -289,4 +289,10 @@
     <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow,sharding_encrypt_shadow,encrypt_shadow,readwrite_splitting_and_shadow,sharding_and_shadow">
         <assertion parameters="0:int, 4:int, 5:int" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
+    
+    <test-case sql="INSERT INTO t_single_table_integer (col_bigint, col_int, col_mediumint, col_smallint, col_tinyint) values (?, ?, ?, ?, ?)" db-types="MySQL" scenario-types="tbl">
+        <assertion parameters="-1:long, -1:int, -1:int, 0:smallint, -1:tinyint" expected-data-file="insert_negative_values_into_single_table_integer.xml" />
+        <!-- TODO fixme https://github.com/apache/shardingsphere/issues/21902 -->
+        <!-- <assertion parameters="0:int, 0:int, 0:int, -1:smallint, 0:int" expected-data-file="insert_negative_smallint_into_single_table_integer.xml" />-->
+    </test-case>
 </integration-test-cases>

@@ -27,5 +27,6 @@ CREATE TABLE expected_dataset.t_single_table (single_id INT NOT NULL, id INT NOT
 CREATE TABLE expected_dataset.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE expected_dataset.t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE TABLE expected_dataset.t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE expected_dataset.t_single_table_integer (col_bigint BIGINT DEFAULT 0, col_int INT DEFAULT 0, col_mediumint MEDIUMINT DEFAULT 0, col_smallint SMALLINT DEFAULT 0, col_tinyint TINYINT DEFAULT 0);
 
 CREATE INDEX order_index_t_order ON expected_dataset.t_order (order_id);
