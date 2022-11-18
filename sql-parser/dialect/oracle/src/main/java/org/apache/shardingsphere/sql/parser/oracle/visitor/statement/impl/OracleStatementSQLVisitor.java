@@ -571,7 +571,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     }
     
     @Override
-    public ASTNode visitXmlExistsFunction(XmlExistsFunctionContext ctx) {
+    public ASTNode visitXmlExistsFunction(final XmlExistsFunctionContext ctx) {
         XmlExistsFunctionSegment result =
                 new XmlExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLEXISTS().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
