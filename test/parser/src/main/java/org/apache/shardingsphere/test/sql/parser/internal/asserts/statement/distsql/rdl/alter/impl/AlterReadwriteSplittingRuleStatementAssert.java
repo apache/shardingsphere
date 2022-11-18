@@ -23,8 +23,8 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.Readw
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.rdl.ReadwriteSplittingRuleAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
