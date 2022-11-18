@@ -4701,4 +4701,14 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_xmlexists_function">
+        <projections start-index="7" stop-index="68">
+            <column-projection name="id" start-index="7" stop-index="8" />
+            <expression-projection text="XMLEXISTS('//student[@age=20]' PASSING BY VALUE xcol AS x)" start-index="11" stop-index="68" />
+        </projections>
+        <from>
+            <simple-table name="x_table" start-index="75" stop-index="81" />
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -1617,6 +1617,7 @@ datetimeExpr
 xmlFunction
     : xmlAggFunction
     | xmlColattvalFunction
+    | xmlExistsFunction
     ;
 
 xmlAggFunction
@@ -1625,4 +1626,8 @@ xmlAggFunction
 
 xmlColattvalFunction
     : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    ;
+
+xmlExistsFunction
+    : XMLEXISTS LP_ STRING_ (PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*)? RP_
     ;
