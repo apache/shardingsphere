@@ -291,8 +291,10 @@
     </test-case>
     
     <test-case sql="INSERT INTO t_single_table_integer (col_bigint, col_int, col_mediumint, col_smallint, col_tinyint) values (?, ?, ?, ?, ?)" db-types="MySQL" scenario-types="tbl">
+        <assertion parameters="9223372036854775807:long, 2147483647:int, 8388607:int, 32767:smallint, 127:tinyint" expected-data-file="insert_max_values_into_single_table_integer.xml" />
+        <!-- TODO Support negative value of smallint & tinyint. https://github.com/apache/shardingsphere/issues/21902 -->
+        <assertion parameters="-9223372036854775808:long, -2147483648:int, -8388608:int, 0:smallint, -128:tinyint" expected-data-file="insert_min_values_into_single_table_integer.xml" />
         <assertion parameters="-1:long, -1:int, -1:int, 0:smallint, -1:tinyint" expected-data-file="insert_negative_values_into_single_table_integer.xml" />
-        <!-- TODO fixme https://github.com/apache/shardingsphere/issues/21902 -->
         <!-- <assertion parameters="0:int, 0:int, 0:int, -1:smallint, 0:int" expected-data-file="insert_negative_smallint_into_single_table_integer.xml" />-->
     </test-case>
 </integration-test-cases>
