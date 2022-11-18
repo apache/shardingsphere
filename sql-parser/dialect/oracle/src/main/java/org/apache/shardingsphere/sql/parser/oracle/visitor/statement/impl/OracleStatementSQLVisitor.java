@@ -581,8 +581,9 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         FunctionSegment result;
         if (null != ctx.CAST()) {
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
-        } else
+        } else {
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.XMLCAST().getText(), getOriginalText(ctx));
+        }
         ASTNode exprSegment = visit(ctx.expr());
         if (exprSegment instanceof ColumnSegment) {
             result.getParameters().add((ColumnSegment) exprSegment);
