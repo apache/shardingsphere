@@ -78,7 +78,7 @@
         <assertion expected-data-file="show_compute_nodes.xml"/>
     </test-case>
 
-    <test-case sql="REFRESH DATABASE METADATA FROM GOVERNANCE CENTER">
+    <test-case sql="REFRESH DATABASE METADATA FROM GOVERNANCE CENTER" db-types="MySQL">
         <assertion expected-data-file="show_sharding_table_rule.xml">
             <assertion-sql sql="SHOW SHARDING TABLE RULES" />
         </assertion>
