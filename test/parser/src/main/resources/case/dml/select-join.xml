@@ -276,10 +276,10 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="department_id" start-index="172" stop-index="186">
+            <column-item name="department_id" start-index="172" stop-index="186" nulls-order-type="LAST">
                 <owner name="d" start-index="172" stop-index="172" />
             </column-item>
-            <column-item name="last_name" start-index="189" stop-index="199">
+            <column-item name="last_name" start-index="189" stop-index="199" nulls-order-type="LAST">
                 <owner name="e" start-index="189" stop-index="189" />
             </column-item>
         </order-by>
@@ -304,8 +304,8 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="department_id" start-index="127" stop-index="139"/>
-            <column-item name="last_name" start-index="142" stop-index="152">
+            <column-item name="department_id" start-index="127" stop-index="139" nulls-order-type="LAST" />
+            <column-item name="last_name" start-index="142" stop-index="152" nulls-order-type="LAST">
                 <owner name="e" start-index="142" stop-index="142" />
             </column-item>
         </order-by>
@@ -387,10 +387,10 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="department_name" start-index="238" stop-index="254">
+            <column-item name="department_name" start-index="238" stop-index="254" nulls-order-type="LAST">
                 <owner name="d" start-index="238" stop-index="238" />
             </column-item>
-            <column-item name="employee_id" start-index="257" stop-index="269">
+            <column-item name="employee_id" start-index="257" stop-index="269" nulls-order-type="LAST">
                 <owner name="v" start-index="257" stop-index="257" />
             </column-item>
         </order-by>

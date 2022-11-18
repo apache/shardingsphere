@@ -15,20 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry;
+
+import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
 
 /**
- * Order direction.
+ * SQL cases registry.
  */
-public enum OrderDirection {
+@Getter
+public final class SQLCasesRegistry {
+    
+    private static final SQLCasesRegistry INSTANCE = new SQLCasesRegistry();
+    
+    private static final String CASE_PATH = "sql/supported/";
+    
+    private final SQLCasesLoader sqlCasesLoader;
+    
+    private SQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader(CASE_PATH);
+    }
     
     /**
-     * Ascending direction.
+     * Get instance.
+     * 
+     * @return got instance
      */
-    ASC,
-    
-    /**
-     * Descending direction.
-     */
-    DESC
+    public static SQLCasesRegistry getInstance() {
+        return INSTANCE;
+    }
 }

@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.Test;
 
-/**
- * Parameter marker type enum.
- */
-@RequiredArgsConstructor
-@Getter
-public enum ParameterMarkerType {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class AggregationTypeTest {
     
-    QUESTION("?"), DOLLAR("$");
-    
-    private final String marker;
+    @Test
+    public void assertIsAggregationType() {
+        assertTrue(AggregationType.isAggregationType("MAX"));
+        assertTrue(AggregationType.isAggregationType("MIN"));
+        assertTrue(AggregationType.isAggregationType("SUM"));
+        assertTrue(AggregationType.isAggregationType("COUNT"));
+        assertTrue(AggregationType.isAggregationType("AVG"));
+        assertFalse(AggregationType.isAggregationType("XXX"));
+    }
 }

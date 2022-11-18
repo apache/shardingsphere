@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendC
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**

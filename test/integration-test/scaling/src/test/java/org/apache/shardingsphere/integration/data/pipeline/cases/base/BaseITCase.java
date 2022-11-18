@@ -58,8 +58,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -85,8 +83,6 @@ public abstract class BaseITCase {
     protected static final String DS_3 = "scaling_it_3";
     
     protected static final String DS_4 = "scaling_it_4";
-    
-    protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
     
     protected static final int TABLE_INIT_ROW_COUNT = 3000;
     

@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
 
 /**
- * OperationScope enum.
+ * Aggregation function enum.
  */
-@RequiredArgsConstructor
-@Getter
-public enum OperationScope {
+public enum AggregationType {
     
-    GLOBAL("GLOBAL"),
-    SESSION("SESSION");
+    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
     
-    private final String scope;
+    /**
+     * Is aggregation type.
+     * 
+     * @param aggregationType aggregation type
+     * @return is aggregation type or not
+     */
+    public static boolean isAggregationType(final String aggregationType) {
+        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
+    }
 }

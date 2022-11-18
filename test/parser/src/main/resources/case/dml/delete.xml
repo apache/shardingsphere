@@ -143,8 +143,8 @@
                                     <aggregation-projection type="MAX" inner-expression="(effective_from_date)" start-index="125" stop-index="148" />
                                 </projections>
                                 <group-by>
-                                    <column-item name="product_id" start-index="186" stop-index="195" />
-                                    <column-item name="currency_code" start-index="198" stop-index="210" />
+                                    <column-item name="product_id" start-index="186" stop-index="195" nulls-order-type="LAST" />
+                                    <column-item name="currency_code" start-index="198" stop-index="210" nulls-order-type="LAST" />
                                 </group-by>
                             </select>
                         </subquery>

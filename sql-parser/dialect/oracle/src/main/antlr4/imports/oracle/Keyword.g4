@@ -667,3 +667,27 @@ DBTIMEZONE
 TO_CHAR
     : T O UL_ C H A R
     ;
+
+XMLELEMENT
+    : X M L E L E M E N T
+    ;
+
+XMLAGG
+    : X M L A G G
+    ;
+
+XMLCAST
+    : X M L C A S T
+    ;
+
+COLUMN_VALUE
+    : C O L U M N UL_ V A L U E
+    ;
+
+XMLCOLATTVAL
+    : X M L C O L A T T V A L
+    ;
+
+EVALNAME
+    : E V A L N A M E
+    ;

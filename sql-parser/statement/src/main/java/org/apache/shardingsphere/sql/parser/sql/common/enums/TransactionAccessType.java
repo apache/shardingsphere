@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Join type enum.
+ * Transaction access type enum.
  */
-public enum JoinType {
+@RequiredArgsConstructor
+@Getter
+public enum TransactionAccessType {
     
-    INNER, FULL, CROSS, LEFT, RIGHT, COMMA
+    READ_ONLY("READ_ONLY"),
+    READ_WRITE("READ_WRITE");
+    
+    private final String accessType;
 }

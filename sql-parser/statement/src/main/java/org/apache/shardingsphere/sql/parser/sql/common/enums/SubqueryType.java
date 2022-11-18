@@ -15,33 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry;
-
-import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 /**
- * SQL cases registry.
+ * Subquery type enum.
  */
-@Getter
-public final class CasesRegistry {
+public enum SubqueryType {
     
-    private static final CasesRegistry INSTANCE = new CasesRegistry();
-    
-    private static final String CASE_PATH = "sql/supported/";
-    
-    private final SQLCasesLoader sqlCasesLoader;
-    
-    private CasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader(CASE_PATH);
-    }
-    
-    /**
-     * Get instance.
-     * 
-     * @return got instance
-     */
-    public static CasesRegistry getInstance() {
-        return INSTANCE;
-    }
+    PROJECTION_SUBQUERY, TABLE_SUBQUERY, PREDICATE_SUBQUERY, INSERT_SELECT_SUBQUERY, EXISTS_SUBQUERY
 }

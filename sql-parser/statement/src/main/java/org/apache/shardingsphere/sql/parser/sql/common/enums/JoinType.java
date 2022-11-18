@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 /**
- * Combine type.
+ * Join type enum.
  */
-public enum CombineType {
+public enum JoinType {
     
-    UNION_ALL,
-    UNION,
-    INTERSECT_ALL,
-    INTERSECT,
-    EXCEPT_ALL,
-    EXCEPT,
-    MINUS_ALL,
-    MINUS
+    INNER, FULL, CROSS, LEFT, RIGHT, COMMA
 }

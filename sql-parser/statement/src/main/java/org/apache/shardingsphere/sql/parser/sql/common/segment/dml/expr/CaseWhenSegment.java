@@ -15,20 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
+import java.util.Collection;
 
 /**
- * Transaction access type enum.
+ * Case when segment.
  */
 @RequiredArgsConstructor
 @Getter
-public enum TransactionAccessType {
+@ToString
+public final class CaseWhenSegment implements ExpressionSegment {
     
-    READ_ONLY("READ_ONLY"),
-    READ_WRITE("READ_WRITE");
+    private final int startIndex;
     
-    private final String accessType;
+    private final int stopIndex;
+    
+    private final ExpressionSegment caseArg;
+    
+    private final Collection<ExpressionSegment> whenList;
+    
+    private final Collection<ExpressionSegment> thenList;
+    
+    private final ExpressionSegment elseExpression;
 }
