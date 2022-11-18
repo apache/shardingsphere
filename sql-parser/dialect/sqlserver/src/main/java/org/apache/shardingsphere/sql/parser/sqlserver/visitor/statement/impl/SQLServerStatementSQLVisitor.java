@@ -107,6 +107,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Whe
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -653,16 +654,17 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
+        NullsOrderDirection nullsOrderDirection = OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.FIRST : NullsOrderDirection.LAST;
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            return new ColumnOrderByItemSegment(column, orderDirection);
+            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderDirection);
         }
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, NullsOrderDirection.FIRST);
         }
         return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()),
-                orderDirection, (ExpressionSegment) visit(ctx.expr()));
+                orderDirection, nullsOrderDirection, (ExpressionSegment) visit(ctx.expr()));
     }
     
     @Override

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -246,8 +247,8 @@ public final class SelectStatementContextTest {
     
     private void assertIsSameGroupByAndOrderByItems(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderDirection.LAST))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderDirection.LAST))));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
@@ -316,8 +317,8 @@ public final class SelectStatementContextTest {
     
     private void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
-        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderDirection.LAST))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderDirection.LAST))));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
@@ -573,15 +574,15 @@ public final class SelectStatementContextTest {
     private OrderByItemSegment createOrderByItemSegment(final String type) {
         switch (type) {
             case INDEX_ORDER_BY:
-                return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, OrderDirection.ASC);
+                return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, NullsOrderDirection.FIRST);
             case COLUMN_ORDER_BY_WITH_OWNER:
                 ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
                 columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
-                return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderDirection.FIRST);
             case COLUMN_ORDER_BY_WITH_ALIAS:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, NullsOrderDirection.FIRST);
             default:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, NullsOrderDirection.FIRST);
         }
     }
     

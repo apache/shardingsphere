@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.junit.Test;
 
@@ -29,66 +30,66 @@ public final class CompareUtilTest {
     
     @Test
     public void assertCompareToWhenBothNull() {
-        assertThat(CompareUtil.compareTo(null, null, OrderDirection.DESC, OrderDirection.ASC, caseSensitive), is(0));
+        assertThat(CompareUtil.compareTo(null, null, OrderDirection.DESC, NullsOrderDirection.FIRST, caseSensitive), is(0));
     }
     
     @Test
-    public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.ASC, OrderDirection.ASC, caseSensitive), is(-1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullsFirst() {
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.ASC, NullsOrderDirection.FIRST, caseSensitive), is(-1));
     }
     
     @Test
-    public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.ASC, OrderDirection.DESC, caseSensitive), is(1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullsLast() {
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.ASC, NullsOrderDirection.LAST, caseSensitive), is(1));
     }
     
     @Test
-    public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.DESC, OrderDirection.ASC, caseSensitive), is(1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullsFirst() {
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.DESC, NullsOrderDirection.FIRST, caseSensitive), is(-1));
     }
     
     @Test
-    public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.DESC, OrderDirection.DESC, caseSensitive), is(-1));
+    public void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullsLast() {
+        assertThat(CompareUtil.compareTo(null, 1, OrderDirection.DESC, NullsOrderDirection.LAST, caseSensitive), is(1));
     }
     
     @Test
-    public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderDirection.ASC, OrderDirection.ASC, caseSensitive), is(1));
+    public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullsFirst() {
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.ASC, NullsOrderDirection.FIRST, caseSensitive), is(1));
     }
     
     @Test
-    public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderDirection.ASC, OrderDirection.DESC, caseSensitive), is(-1));
+    public void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullsLast() {
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.ASC, NullsOrderDirection.LAST, caseSensitive), is(-1));
     }
     
     @Test
-    public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullOrderByAsc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderDirection.DESC, OrderDirection.ASC, caseSensitive), is(-1));
+    public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullsFirst() {
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.DESC, NullsOrderDirection.FIRST, caseSensitive), is(1));
     }
     
     @Test
-    public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullOrderByDesc() {
-        assertThat(CompareUtil.compareTo(1, null, OrderDirection.DESC, OrderDirection.DESC, caseSensitive), is(1));
+    public void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullsLast() {
+        assertThat(CompareUtil.compareTo(1, null, OrderDirection.DESC, NullsOrderDirection.LAST, caseSensitive), is(-1));
     }
     
     @Test
     public void assertCompareToWhenAsc() {
-        assertThat(CompareUtil.compareTo(1, 2, OrderDirection.ASC, OrderDirection.ASC, caseSensitive), is(-1));
+        assertThat(CompareUtil.compareTo(1, 2, OrderDirection.ASC, NullsOrderDirection.FIRST, caseSensitive), is(-1));
     }
     
     @Test
     public void assertCompareToWhenDesc() {
-        assertThat(CompareUtil.compareTo(1, 2, OrderDirection.DESC, OrderDirection.ASC, caseSensitive), is(1));
+        assertThat(CompareUtil.compareTo(1, 2, OrderDirection.DESC, NullsOrderDirection.FIRST, caseSensitive), is(1));
     }
     
     @Test
     public void assetCompareToStringWithCaseSensitive() {
-        assertThat(CompareUtil.compareTo("A", "a", OrderDirection.DESC, OrderDirection.ASC, caseSensitive), is(32));
+        assertThat(CompareUtil.compareTo("A", "a", OrderDirection.DESC, NullsOrderDirection.FIRST, caseSensitive), is(32));
     }
     
     @Test
     public void assetCompareToStringWithCaseInsensitive() {
-        assertThat(CompareUtil.compareTo("A", "a", OrderDirection.DESC, OrderDirection.ASC, !caseSensitive), is(0));
+        assertThat(CompareUtil.compareTo("A", "a", OrderDirection.DESC, NullsOrderDirection.FIRST, !caseSensitive), is(0));
     }
 }

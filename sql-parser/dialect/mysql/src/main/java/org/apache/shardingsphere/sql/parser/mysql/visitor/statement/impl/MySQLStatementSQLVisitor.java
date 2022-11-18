@@ -138,6 +138,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowF
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -1075,16 +1076,17 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         } else {
             orderDirection = OrderDirection.ASC;
         }
+        NullsOrderDirection nullsOrderDirection = OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.FIRST : NullsOrderDirection.LAST;
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderDirection);
         } else {
             ASTNode expr = visitExpr(ctx.expr());
             if (expr instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection);
+                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, nullsOrderDirection);
             } else {
                 return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(),
-                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, (ExpressionSegment) expr);
+                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, nullsOrderDirection, (ExpressionSegment) expr);
             }
         }
     }

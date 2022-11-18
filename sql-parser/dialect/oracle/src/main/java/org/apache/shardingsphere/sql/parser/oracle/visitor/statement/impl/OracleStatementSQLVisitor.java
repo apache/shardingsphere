@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Constr
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeLengthContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DataTypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionCallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FunctionContext;
@@ -71,6 +72,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Dateti
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -82,12 +84,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -631,16 +633,24 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
+        NullsOrderDirection nullsOrderDirection = generateNullsOrderDirection(ctx, orderDirection);
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            return new ColumnOrderByItemSegment(column, orderDirection);
+            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderDirection);
         }
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderDirection);
         }
         return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(),
-                getOriginalText(ctx.expr()), orderDirection, (ExpressionSegment) visit(ctx.expr()));
+                getOriginalText(ctx.expr()), orderDirection, nullsOrderDirection, (ExpressionSegment) visit(ctx.expr()));
+    }
+    
+    private NullsOrderDirection generateNullsOrderDirection(final OrderByItemContext ctx, final OrderDirection orderDirection) {
+        if (null == ctx) {
+            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
+        }
+        return null == ctx.FIRST() ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
     }
     
     @Override

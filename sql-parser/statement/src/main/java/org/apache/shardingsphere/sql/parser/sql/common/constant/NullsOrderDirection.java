@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
-
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
 /**
- * Order by item segment for index.
+ * Nulls order direction.
  */
-@Getter
-@ToString(callSuper = true)
-public final class IndexOrderByItemSegment extends OrderByItemSegment {
+public enum NullsOrderDirection {
     
-    private final int columnIndex;
+    /**
+     * Nulls first direction.
+     */
+    FIRST,
     
-    public IndexOrderByItemSegment(final int startIndex, final int stopIndex, final int columnIndex, final OrderDirection orderDirection, final NullsOrderDirection nullsOrderDirection) {
-        super(startIndex, stopIndex, orderDirection, nullsOrderDirection);
-        this.columnIndex = columnIndex;
-    }
+    /**
+     * Nulls last direction.
+     */
+    LAST
 }

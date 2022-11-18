@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
@@ -37,5 +38,5 @@ public abstract class OrderByItemSegment implements SQLSegment {
     
     private final OrderDirection orderDirection;
     
-    private final OrderDirection nullOrderDirection;
+    private final NullsOrderDirection nullsOrderDirection;
 }
