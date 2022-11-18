@@ -139,6 +139,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_minus");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_projections_with_only_expr_for_postgres");
     }
     // CHECKSTYLE:ON
     
