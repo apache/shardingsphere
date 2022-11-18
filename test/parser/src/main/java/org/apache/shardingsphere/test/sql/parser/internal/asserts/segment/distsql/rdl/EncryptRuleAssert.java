@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptColumn;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedEncryptRule;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.rdl.ExpectedEncryptColumn;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.rdl.ExpectedEncryptRule;
 
 import java.util.Collection;
 import java.util.List;

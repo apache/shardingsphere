@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.SavepointStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.oracle;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.SQLParserParameterizedTest;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 

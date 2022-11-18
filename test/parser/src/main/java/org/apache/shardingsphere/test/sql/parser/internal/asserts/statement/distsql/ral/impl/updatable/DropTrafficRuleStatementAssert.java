@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dis
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.DropTrafficRuleStatement;
 
 import java.util.ArrayList;

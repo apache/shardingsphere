@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.SQLRULStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rul.impl.SQLRULStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
 
 /**
  * RUL statement assert.

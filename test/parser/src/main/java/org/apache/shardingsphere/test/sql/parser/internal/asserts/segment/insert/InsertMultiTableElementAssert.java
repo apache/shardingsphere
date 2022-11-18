@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertState
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.InsertStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.insert.ExpectedInsertMultiTableElement;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.insert.ExpectedInsertMultiTableElement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

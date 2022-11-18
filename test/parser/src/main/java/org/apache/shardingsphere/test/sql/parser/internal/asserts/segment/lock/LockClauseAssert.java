@@ -26,9 +26,9 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.lock.ExpectedLockClause;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.lock.ExpectedLockClause;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
 
 import java.util.List;
 

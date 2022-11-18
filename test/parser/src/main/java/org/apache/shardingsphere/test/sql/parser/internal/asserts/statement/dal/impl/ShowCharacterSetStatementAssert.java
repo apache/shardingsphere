@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCharacterSetStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.ShowCharacterSetStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dal.ShowCharacterSetStatementTestCase;
 
 /**
  * Show character set statement assert.

@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.test.sql.parser.internal.engine;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.SQLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.CasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.CasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -74,7 +75,8 @@ public abstract class SQLParserParameterizedTest {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        CacheOption cacheOption = new CacheOption(128, 1024L);
-        return new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, cacheOption).parse(sql, false));
+        return "ShardingSphere".equals(databaseType)
+                ? new DistSQLStatementParserEngine().parse(sql)
+                : new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
 }

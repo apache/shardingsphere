@@ -47,20 +47,20 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dist
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rdl.drop.impl.DropShardingKeyGeneratorStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rdl.drop.impl.DropShardingTableReferenceRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rdl.drop.impl.DropShardingTableRuleStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropBroadcastTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryTypeStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropDefaultShardingStrategyStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropReadwriteSplittingRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAlgorithmStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingAuditorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableReferenceRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropBroadcastTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryHeartbeatStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropDataBaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropDefaultShardingStrategyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropShadowRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropShardingAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropShardingAuditorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropShardingTableReferenceRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
 
 /**
  * Drop RDL statement assert.

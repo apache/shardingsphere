@@ -27,10 +27,10 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rul.impl.sql.FormatSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rul.impl.sql.ParseStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rul.impl.sql.PreviewStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rul.FormatSQLStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rul.ParseStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.distsql.rul.PreviewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rul.FormatSQLStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rul.ParseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rul.PreviewStatementTestCase;
 
 /**
  * SQL RUL statement assert.

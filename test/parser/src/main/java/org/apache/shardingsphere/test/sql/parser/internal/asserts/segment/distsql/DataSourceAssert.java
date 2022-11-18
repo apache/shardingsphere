@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.ExpectedDataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSeg
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.show.ExpectedShowFilter;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.show.ExpectedShowFilter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

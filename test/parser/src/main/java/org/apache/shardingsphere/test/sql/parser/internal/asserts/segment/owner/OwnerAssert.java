@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegm
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.table.ExpectedOwner;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
