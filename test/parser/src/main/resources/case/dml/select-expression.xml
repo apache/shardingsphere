@@ -41,7 +41,7 @@
             <expression-projection text="o.order_id + 1 * 2" alias="exp" start-index="7" stop-index="31"/>
         </projections>
         <order-by>
-            <column-item name="order_id" start-index="60" stop-index="69">
+            <column-item name="order_id" start-index="60" stop-index="69" nulls-order-type="LAST">
                 <owner name="o" start-index="60" stop-index="60"/>
             </column-item>
         </order-by>
@@ -65,7 +65,7 @@
             </expression-projection>
         </projections>
         <order-by>
-            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100"/>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" nulls-order-type="LAST" start-index="80" stop-index="100"/>
         </order-by>
     </select>
 
@@ -1760,7 +1760,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="127" stop-index="135" />
+            <column-item name="last_name" start-index="127" stop-index="135" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -1808,8 +1808,8 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="144" stop-index="152" />
-            <column-item name="department_id" start-index="155" stop-index="167" />
+            <column-item name="last_name" start-index="144" stop-index="152" nulls-order-type="LAST" />
+            <column-item name="department_id" start-index="155" stop-index="167" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -1856,7 +1856,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="125" stop-index="133" />
+            <column-item name="last_name" start-index="125" stop-index="133" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -1936,7 +1936,7 @@
             </expr>
         </where>
         <group-by>
-            <expression-item expression="ABS(1)" start-index="53" stop-index="58">
+            <expression-item expression="ABS(1)" start-index="53" stop-index="58" nulls-order-type="LAST">
                 <expr>
                     <function function-name="ABS" text="ABS(1)" start-index="53" stop-index="58">
                         <parameter>
@@ -1947,7 +1947,7 @@
             </expression-item>
         </group-by>
         <order-by>
-            <expression-item expression="ABS(1)" start-index="69" stop-index="74">
+            <expression-item expression="ABS(1)" start-index="69" stop-index="74" nulls-order-type="LAST">
                 <expr>
                     <function function-name="ABS" text="ABS(1)" start-index="69" stop-index="74">
                         <parameter>

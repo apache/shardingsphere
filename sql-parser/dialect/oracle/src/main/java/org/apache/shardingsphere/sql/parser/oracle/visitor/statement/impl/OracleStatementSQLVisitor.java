@@ -651,7 +651,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     }
     
     private NullsOrderType generateNullsOrderType(final OrderByItemContext ctx, final OrderDirection orderDirection) {
-        if (null == ctx) {
+        if (null == ctx.FIRST() && null == ctx.LAST()) {
             return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
         return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;

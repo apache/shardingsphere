@@ -17,13 +17,13 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_order_by_asc_and_index_desc" value="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" />
-    <sql-case id="select_order_by_desc_and_index_asc" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY o.order_id DESC, 1" />
-    <sql-case id="select_order_by_with_ordered_column" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id" />
-    <sql-case id="select_order_by_with_date" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY i.creation_date DESC, o.order_id DESC, i.item_id" />
-    <sql-case id="select_order_by_for_nulls_first" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id NULLS FIRST" db-types="Oracle" />
-    <sql-case id="select_order_by_for_nulls_last" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id ASC NULLS LAST" db-types="Oracle" />
-    <sql-case id="select_order_by_with_multiple_stars" value="SELECT *, order_id, o.* FROM t_order o ORDER BY o.order_id" db-types="MySQL, SQLServer, PostgreSQL,openGauss" />
+    <sql-case id="select_order_by_asc_and_index_desc" value="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="H2,MySQL,SQL92" />
+    <sql-case id="select_order_by_desc_and_index_asc" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY o.order_id DESC, 1" db-types="H2,MySQL,SQLServer,SQL92" />
+    <sql-case id="select_order_by_with_ordered_column" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL,SQLServer,SQL92" />
+    <sql-case id="select_order_by_with_date" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY i.creation_date DESC, o.order_id DESC, i.item_id" db-types="H2,MySQL,SQLServer,SQL92" />
+    <sql-case id="select_order_by_for_nulls_first" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" />
+    <sql-case id="select_order_by_for_nulls_last" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id ASC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" />
+    <sql-case id="select_order_by_with_multiple_stars" value="SELECT *, order_id, o.* FROM t_order o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_order_by_desc" value="SELECT * FROM employees WHERE job_id = 'PU_CLERK' ORDER BY salary DESC" db-types="Oracle" />
     <sql-case id="select_order_by_asc_desc" value="SELECT salary, last_name FROM employees ORDER BY salary ASC, last_name DESC" db-types="Oracle" />
     <sql-case id="select_order_by_with_alias_star_alias_name" value="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL" />
