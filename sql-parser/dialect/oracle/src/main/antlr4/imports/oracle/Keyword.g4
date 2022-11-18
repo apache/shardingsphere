@@ -683,3 +683,11 @@ XMLCAST
 COLUMN_VALUE
     : C O L U M N UL_ V A L U E
     ;
+
+XMLCOLATTVAL
+    : X M L C O L A T T V A L
+    ;
+
+EVALNAME
+    : E V A L N A M E
+    ;
