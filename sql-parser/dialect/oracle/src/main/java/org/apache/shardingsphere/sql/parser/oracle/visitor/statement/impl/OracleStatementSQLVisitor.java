@@ -68,9 +68,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableN
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
