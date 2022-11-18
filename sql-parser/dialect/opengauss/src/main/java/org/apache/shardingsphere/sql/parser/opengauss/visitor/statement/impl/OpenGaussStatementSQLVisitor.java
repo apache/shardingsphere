@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Joi
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NaturalJoinTypeContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NullsOrderContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NumberLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OptOnDuplicateKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.OuterJoinTypeContext;
@@ -107,6 +108,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Win
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
@@ -579,20 +581,28 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     @Override
     public final ASTNode visitSortby(final SortbyContext ctx) {
         OrderDirection orderDirection = null != ctx.ascDesc() ? generateOrderDirection(ctx.ascDesc()) : OrderDirection.ASC;
+        NullsOrderDirection nullsOrderDirection = generateNullsOrderDirection(ctx.nullsOrder(), orderDirection);
         ASTNode expr = visit(ctx.aExpr());
         if (expr instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) expr;
-            return new ColumnOrderByItemSegment(column, orderDirection);
+            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderDirection);
         }
         if (expr instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment index = (LiteralExpressionSegment) expr;
-            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection);
+            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection, nullsOrderDirection);
         }
         if (expr instanceof ExpressionSegment) {
             return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(),
-                    ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, (ExpressionSegment) expr);
+                    ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderDirection, (ExpressionSegment) expr);
         }
-        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection);
+        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderDirection);
+    }
+    
+    private NullsOrderDirection generateNullsOrderDirection(final NullsOrderContext ctx, final OrderDirection orderDirection) {
+        if (null == ctx) {
+            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
+        }
+        return null == ctx.FIRST() ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
     }
     
     private OrderDirection generateOrderDirection(final AscDescContext ctx) {
@@ -984,16 +994,16 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         if (null != ctx.aExpr()) {
             ASTNode astNode = visit(ctx.aExpr());
             if (astNode instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC, NullsOrderDirection.LAST);
             }
             if (astNode instanceof LiteralExpressionSegment) {
                 LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
-                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC);
+                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, NullsOrderDirection.LAST);
             }
-            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC);
+            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderDirection.LAST);
         }
-        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC);
+        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderDirection.LAST);
     }
     
     @Override

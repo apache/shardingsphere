@@ -19,8 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
  * Order by item segment for column.
@@ -31,13 +32,8 @@ public final class ColumnOrderByItemSegment extends TextOrderByItemSegment {
     
     private final ColumnSegment column;
     
-    public ColumnOrderByItemSegment(final ColumnSegment column, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        super(column.getStartIndex(), column.getStopIndex(), orderDirection, nullOrderDirection);
-        this.column = column;
-    }
-    
-    public ColumnOrderByItemSegment(final ColumnSegment column, final OrderDirection orderDirection) {
-        super(column.getStartIndex(), column.getStopIndex(), orderDirection, OrderDirection.ASC);
+    public ColumnOrderByItemSegment(final ColumnSegment column, final OrderDirection orderDirection, final NullsOrderDirection nullsOrderDirection) {
+        super(column.getStartIndex(), column.getStopIndex(), orderDirection, nullsOrderDirection);
         this.column = column;
     }
     

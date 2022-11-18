@@ -86,7 +86,7 @@ public final class OrderByItemAssert {
     
     private static void assertOrderInfo(final SQLCaseAssertContext assertContext, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item order direction assertion error: ", type)),
-                null != actual.getOrderDirection() ? actual.getOrderDirection().name() : actual.getNullOrderDirection().name(), is(expected.getOrderDirection()));
+                null != actual.getOrderDirection() ? actual.getOrderDirection().name() : actual.getNullsOrderDirection().name(), is(expected.getOrderDirection()));
     }
     
     private static void assertColumnOrderByItem(final SQLCaseAssertContext assertContext,

@@ -19,6 +19,16 @@ package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -26,16 +36,12 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.IgnoreForSingleRoute;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ProjectionsToken;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -83,7 +89,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
             } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjection() instanceof ColumnOrderByItemSegment) {
                 TableExtractor tableExtractor = new TableExtractor();
                 tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
-                result.add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, tableExtractor, routeUnit));
+                result.add(getDerivedProjectionTextFromColumnOrderByItemSegment((DerivedProjection) each, tableExtractor, routeUnit, selectStatementContext.getDatabaseType()));
             } else if (each instanceof DerivedProjection) {
                 result.add(getDerivedProjectionText(each));
             }
@@ -99,11 +105,12 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         return projection.getExpression() + " AS " + projection.getAlias().get() + " ";
     }
     
-    private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit) {
+    private String getDerivedProjectionTextFromColumnOrderByItemSegment(final DerivedProjection projection, final TableExtractor tableExtractor, final RouteUnit routeUnit,
+                                                                        final DatabaseType databaseType) {
         Preconditions.checkState(projection.getAlias().isPresent());
         Preconditions.checkState(projection.getDerivedProjection() instanceof ColumnOrderByItemSegment);
         ColumnOrderByItemSegment columnOrderByItemSegment = (ColumnOrderByItemSegment) projection.getDerivedProjection();
-        ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor);
+        ColumnOrderByItemSegment newColumnOrderByItem = generateNewColumnOrderByItem(columnOrderByItemSegment, routeUnit, tableExtractor, databaseType);
         return newColumnOrderByItem.getText() + " AS " + projection.getAlias().get() + " ";
     }
     
@@ -116,7 +123,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         return Optional.empty();
     }
     
-    private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old, final RouteUnit routeUnit, final TableExtractor tableExtractor) {
+    private ColumnOrderByItemSegment generateNewColumnOrderByItem(final ColumnOrderByItemSegment old, final RouteUnit routeUnit, final TableExtractor tableExtractor, final DatabaseType databaseType) {
         Optional<OwnerSegment> ownerSegment = old.getColumn().getOwner();
         if (!ownerSegment.isPresent()) {
             return old;
@@ -130,6 +137,13 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
         IdentifierValue newOwnerIdentifier = new IdentifierValue(ownerSegment.get().getIdentifier().getQuoteCharacter().wrap(actualTableName.get()));
         OwnerSegment newOwner = new OwnerSegment(0, 0, newOwnerIdentifier);
         newColumnSegment.setOwner(newOwner);
-        return new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection());
+        return new ColumnOrderByItemSegment(newColumnSegment, old.getOrderDirection(), generateNewNullsOrderDirection(databaseType, old.getOrderDirection()));
+    }
+    
+    private NullsOrderDirection generateNewNullsOrderDirection(final DatabaseType databaseType, final OrderDirection orderDirection) {
+        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType || databaseType instanceof OracleDatabaseType) {
+            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
+        }
+        return OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.FIRST : NullsOrderDirection.LAST;
     }
 }

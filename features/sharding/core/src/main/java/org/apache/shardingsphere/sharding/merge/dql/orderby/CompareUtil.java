@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 
 /**
@@ -33,20 +34,21 @@ public final class CompareUtil {
      * @param thisValue this value
      * @param otherValue other value
      * @param orderDirection order direction 
-     * @param nullOrderDirection order direction for null value
+     * @param nullsOrderDirection order direction for nulls value
      * @param caseSensitive case sensitive
      * @return compare result
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final OrderDirection nullOrderDirection, final boolean caseSensitive) {
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final NullsOrderDirection nullsOrderDirection,
+                                final boolean caseSensitive) {
         if (null == thisValue && null == otherValue) {
             return 0;
         }
         if (null == thisValue) {
-            return orderDirection == nullOrderDirection ? -1 : 1;
+            return NullsOrderDirection.FIRST.equals(nullsOrderDirection) ? -1 : 1;
         }
         if (null == otherValue) {
-            return orderDirection == nullOrderDirection ? 1 : -1;
+            return NullsOrderDirection.FIRST.equals(nullsOrderDirection) ? 1 : -1;
         }
         if (!caseSensitive && thisValue instanceof String && otherValue instanceof String) {
             return compareToCaseInsensitiveString((String) thisValue, (String) otherValue, orderDirection);
