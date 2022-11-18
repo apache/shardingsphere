@@ -52,13 +52,13 @@ chapter = true
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
- - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
  - 注释只能包含 javadoc，todo 和 fixme。
- - 公开的类和方法必须有 javadoc，其他类和方法以及覆盖自父类的方法无需 javadoc。
+ - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
+ - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
