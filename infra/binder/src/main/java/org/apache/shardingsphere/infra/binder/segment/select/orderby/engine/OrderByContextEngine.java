@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.binder.segment.select.orderby.engine;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -71,7 +71,7 @@ public final class OrderByContextEngine {
                 if (projectionSegment instanceof ColumnProjectionSegment) {
                     ColumnProjectionSegment columnProjectionSegment = (ColumnProjectionSegment) projectionSegment;
                     ColumnOrderByItemSegment columnOrderByItemSegment =
-                            new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC, createDefaultNullsOrderDirection(selectStatement));
+                            new ColumnOrderByItemSegment(columnProjectionSegment.getColumn(), OrderDirection.ASC, createDefaultNullsOrderType(selectStatement));
                     OrderByItem item = new OrderByItem(columnOrderByItemSegment);
                     item.setIndex(index++);
                     orderByItems.add(item);
@@ -84,8 +84,8 @@ public final class OrderByContextEngine {
         return null;
     }
     
-    private NullsOrderDirection createDefaultNullsOrderDirection(final SelectStatement selectStatement) {
-        return selectStatement instanceof PostgreSQLStatement || selectStatement instanceof OpenGaussStatement || selectStatement instanceof OracleStatement ? NullsOrderDirection.LAST
-                : NullsOrderDirection.FIRST;
+    private NullsOrderType createDefaultNullsOrderType(final SelectStatement selectStatement) {
+        return selectStatement instanceof PostgreSQLStatement || selectStatement instanceof OpenGaussStatement || selectStatement instanceof OracleStatement ? NullsOrderType.LAST
+                : NullsOrderType.FIRST;
     }
 }

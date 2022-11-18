@@ -118,7 +118,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         int i = 0;
         for (OrderByItem each : orderByItems) {
             int result = CompareUtil.compareTo(orderValues.get(i), orderByValue.orderValues.get(i), each.getSegment().getOrderDirection(),
-                    each.getSegment().getNullsOrderDirection(), orderValuesCaseSensitive.get(i));
+                    each.getSegment().getNullsOrderType(), orderValuesCaseSensitive.get(i));
             if (0 != result) {
                 return result;
             }

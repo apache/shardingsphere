@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-public final class AggregationTypeTest {
+/**
+ * Nulls order type.
+ */
+public enum NullsOrderType {
     
-    @Test
-    public void assertIsAggregationType() {
-        assertTrue(AggregationType.isAggregationType("MAX"));
-        assertTrue(AggregationType.isAggregationType("MIN"));
-        assertTrue(AggregationType.isAggregationType("SUM"));
-        assertTrue(AggregationType.isAggregationType("COUNT"));
-        assertTrue(AggregationType.isAggregationType("AVG"));
-        assertFalse(AggregationType.isAggregationType("XXX"));
-    }
+    /**
+     * Nulls first.
+     */
+    FIRST,
+    
+    /**
+     * Nulls last.
+     */
+    LAST
 }

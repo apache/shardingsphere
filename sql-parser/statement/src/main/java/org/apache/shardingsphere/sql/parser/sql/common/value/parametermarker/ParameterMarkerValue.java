@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.value.parametermarker;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.value.ValueASTNode;
 
 /**

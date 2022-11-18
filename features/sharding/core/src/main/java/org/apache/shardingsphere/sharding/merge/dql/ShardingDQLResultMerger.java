@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedR
 import org.apache.shardingsphere.sharding.merge.dql.pagination.LimitDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.RowNumberDecoratorMergedResult;
 import org.apache.shardingsphere.sharding.merge.dql.pagination.TopAndRowNumberDecoratorMergedResult;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
@@ -112,15 +112,15 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     private void setGroupByForDistinctRow(final SelectStatementContext selectStatementContext) {
         for (int index = 1; index <= selectStatementContext.getProjectionsContext().getExpandProjections().size(); index++) {
-            OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, createDefaultNullsOrderDirection(selectStatementContext.getSqlStatement())));
+            OrderByItem orderByItem = new OrderByItem(new IndexOrderByItemSegment(-1, -1, index, OrderDirection.ASC, createDefaultNullsOrderType(selectStatementContext.getSqlStatement())));
             orderByItem.setIndex(index);
             selectStatementContext.getGroupByContext().getItems().add(orderByItem);
         }
     }
     
-    private NullsOrderDirection createDefaultNullsOrderDirection(final SelectStatement selectStatement) {
-        return selectStatement instanceof PostgreSQLStatement || selectStatement instanceof OpenGaussStatement || selectStatement instanceof OracleStatement ? NullsOrderDirection.LAST
-                : NullsOrderDirection.FIRST;
+    private NullsOrderType createDefaultNullsOrderType(final SelectStatement selectStatement) {
+        return selectStatement instanceof PostgreSQLStatement || selectStatement instanceof OpenGaussStatement || selectStatement instanceof OracleStatement ? NullsOrderType.LAST
+                : NullsOrderType.FIRST;
     }
     
     private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,

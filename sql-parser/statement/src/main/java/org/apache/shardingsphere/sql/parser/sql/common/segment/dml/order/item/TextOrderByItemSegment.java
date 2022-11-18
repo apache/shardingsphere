@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 
 /**
  * Order by item segment for text.
@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 @ToString
 public abstract class TextOrderByItemSegment extends OrderByItemSegment {
     
-    protected TextOrderByItemSegment(final int startIndex, final int stopIndex, final OrderDirection orderDirection, final NullsOrderDirection nullsOrderDirection) {
-        super(startIndex, stopIndex, orderDirection, nullsOrderDirection);
+    protected TextOrderByItemSegment(final int startIndex, final int stopIndex, final OrderDirection orderDirection, final NullsOrderType nullsOrderType) {
+        super(startIndex, stopIndex, orderDirection, nullsOrderType);
     }
     
     /**
