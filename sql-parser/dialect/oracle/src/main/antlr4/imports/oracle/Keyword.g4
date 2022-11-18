@@ -675,3 +675,11 @@ XMLELEMENT
 XMLAGG
     : X M L A G G
     ;
+
+XMLCAST
+    : X M L C A S T
+    ;
+
+COLUMN_VALUE
+    : C O L U M N UL_ V A L U E
+    ;
