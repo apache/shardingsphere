@@ -4658,4 +4658,13 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_xmlcast_function">
+        <projections start-index="7" stop-index="48">
+            <expression-projection text="XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))" start-index="7" stop-index="48" />
+        </projections>
+        <from>
+            <simple-table name="purchaseorder" start-index="55" stop-index="67" />
+        </from>
+    </select>
 </sql-parser-test-cases>
