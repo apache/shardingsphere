@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.At
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AttrsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CaseExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNamesContext;
@@ -100,6 +101,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhenClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
@@ -122,6 +124,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -380,6 +383,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.selectWithParens()) {
             return createSubqueryExpressionSegment(ctx);
         }
+        if (null != ctx.caseExpr()) {
+            return visit(ctx.caseExpr());
+        }
         super.visitCExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text);
@@ -389,6 +395,19 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (PostgreSQLSelectStatement) visit(ctx.selectWithParens()));
         return null == ctx.EXISTS() ? new SubqueryExpressionSegment(subquerySegment) : new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
+    }
+    
+    @Override
+    public ASTNode visitCaseExpr(final CaseExprContext ctx) {
+        Collection<ExpressionSegment> whenList = new LinkedList<>();
+        Collection<ExpressionSegment> thenList = new LinkedList<>();
+        for (WhenClauseContext each : ctx.whenClauseList().whenClause()) {
+            whenList.add((ExpressionSegment) visit(each.aExpr(0)));
+            thenList.add((ExpressionSegment) visit(each.aExpr(1)));
+        }
+        ExpressionSegment argExpression = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
+        ExpressionSegment elseExpression = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
+        return new CaseWhenSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), argExpression, whenList, thenList, elseExpression);
     }
     
     @Override
@@ -1022,6 +1041,9 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         }
         if (projection instanceof LiteralExpressionSegment) {
             return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (LiteralExpressionSegment) projection));
+        }
+        if (projection instanceof CaseWhenSegment) {
+            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (CaseWhenSegment) projection));
         }
         return Optional.empty();
     }

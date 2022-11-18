@@ -86,4 +86,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "collate-expression")
     private ExpectedCollateExpression collateExpression;
+    
+    @XmlElement(name = "case-when-expression")
+    private ExpectedCaseWhenExpression caseWhenExpression;
 }
