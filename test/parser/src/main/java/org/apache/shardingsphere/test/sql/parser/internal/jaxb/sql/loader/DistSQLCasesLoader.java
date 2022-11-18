@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql.loader;
+package org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.Case;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql.DistSQLCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql.DistSQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.loader.CasesLoader;
 
 import javax.xml.bind.JAXBContext;
@@ -43,8 +43,8 @@ public final class DistSQLCasesLoader extends CasesLoader {
     
     @Override
     public void buildCaseMap(final Map<String, Case> sqlCaseMap, final InputStream inputStream) throws JAXBException {
-        DistSQLCases sqlCases = (DistSQLCases) JAXBContext.newInstance(DistSQLCases.class).createUnmarshaller().unmarshal(inputStream);
-        for (DistSQLCase each : sqlCases.getDistSQLCases()) {
+        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase each : sqlCases.getDistSQLCases()) {
             Preconditions.checkState(!sqlCaseMap.containsKey(each.getId()), "Find duplicated Case ID: %s", each.getId());
             sqlCaseMap.put(each.getId(), each);
         }
@@ -65,7 +65,7 @@ public final class DistSQLCasesLoader extends CasesLoader {
     public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> params, final String databaseType) {
         Map<String, Case> sqlCaseMap = super.getCases();
         Preconditions.checkState(sqlCaseMap.containsKey(sqlCaseId), "Can't find case of ID: %s", sqlCaseId);
-        DistSQLCase statement = (DistSQLCase) sqlCaseMap.get(sqlCaseId);
+        SQLCase statement = (SQLCase) sqlCaseMap.get(sqlCaseId);
         return statement.getValue();
     }
 }

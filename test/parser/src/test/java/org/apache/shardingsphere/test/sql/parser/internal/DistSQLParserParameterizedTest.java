@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.jaxb.CasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql.loader.DistSQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.DistSQLCasesLoader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;

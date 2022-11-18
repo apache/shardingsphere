@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.jaxb;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql.loader.DistSQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.DistSQLCasesLoader;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.SQLCasesLoader;
 
 /**

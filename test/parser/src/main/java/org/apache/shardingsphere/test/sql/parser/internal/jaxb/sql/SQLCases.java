@@ -38,4 +38,7 @@ public final class SQLCases implements Cases {
     
     @XmlElement(name = "sql-case")
     private final List<SQLCase> sqlCases = new LinkedList<>();
+    
+    @XmlElement(name = "distsql-case")
+    private final List<SQLCase> distSQLCases = new LinkedList<>();
 }
