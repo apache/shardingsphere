@@ -55,7 +55,7 @@ public final class GeneralRALIT extends BaseRALIT {
     }
     
     private void assertResultSet(final Statement statement) throws SQLException, ParseException {
-        if (null == getAssertion().getAssertionSQL().getSql()) {
+        if (null == getAssertion().getAssertionSQL()) {
             assertResultSet(statement, getSQL());
         } else {
             statement.execute(getSQL());
