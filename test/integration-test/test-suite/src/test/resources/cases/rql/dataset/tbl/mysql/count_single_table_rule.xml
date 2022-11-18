@@ -17,8 +17,9 @@
 
 <dataset>
     <metadata>
-        <column name="table_name" />
-        <column name="resource_name" />
+        <column name="rule_name"/>
+        <column name="database"/>
+        <column name="count"/>
     </metadata>
-    <row values="t_single_table| tbl" />
+    <row values="single_table| tbl| 2"/>
 </dataset>
