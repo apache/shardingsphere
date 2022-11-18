@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Unrese
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -545,12 +546,23 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public ASTNode visitXmlFunction(final XmlFunctionContext ctx) {
-        return visit(ctx.xmlAggFunction());
+        if (null != ctx.xmlAggFunction()) {
+            return visit(ctx.xmlAggFunction());
+        }
+        return visit(ctx.xmlColattvalFunction());
     }
     
     @Override
     public ASTNode visitXmlAggFunction(final XmlAggFunctionContext ctx) {
         return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.XMLAGG().getText(), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlColattvalFunction(final XmlColattvalFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLCOLATTVAL().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {

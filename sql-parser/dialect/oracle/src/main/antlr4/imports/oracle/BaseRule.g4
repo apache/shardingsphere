@@ -163,7 +163,7 @@ unreservedWord
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME
     ;
 
 schemaName
@@ -1616,8 +1616,13 @@ datetimeExpr
 
 xmlFunction
     : xmlAggFunction
+    | xmlColattvalFunction
     ;
 
 xmlAggFunction
     : XMLAGG LP_ expr orderByClause? RP_
+    ;
+
+xmlColattvalFunction
+    :XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
     ;

@@ -4667,4 +4667,26 @@
             <simple-table name="purchaseorder" start-index="55" stop-index="67" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlcolattval_function">
+        <projections start-index="7" stop-index="95" >
+            <expression-projection text="XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)" alias="Emp Element" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="employees" alias="e" start-index="102" stop-index="112" />
+        </from>
+        <where start-index="114" stop-index="136">
+            <expr>
+                <binary-operation-expression start-index="120" stop-index="136" >
+                    <left>
+                        <column name="employee_id" start-index="120" stop-index="130" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="204" start-index="134" stop-index="136" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
