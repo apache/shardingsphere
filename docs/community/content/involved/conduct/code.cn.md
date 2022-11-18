@@ -56,8 +56,8 @@ chapter = true
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 日志与注释一律使用英文。
- - 注释只能包含 javadoc，todo 和 fixme，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面。
- - 公开的类和方法必须有 javadoc，其他类和方法以及覆盖自父类的方法无需 javadoc。
+ - 注释只能包含 javadoc，todo 和 fixme。
+ - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
