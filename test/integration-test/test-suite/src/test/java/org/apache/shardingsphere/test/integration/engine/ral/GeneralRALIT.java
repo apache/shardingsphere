@@ -59,7 +59,6 @@ public final class GeneralRALIT extends BaseRALIT {
             assertResultSet(statement, getSQL());
         } else {
             statement.execute(getSQL());
-            sleep();
             assertResultSet(statement, getAssertion().getAssertionSQL().getSql());
         }
     }

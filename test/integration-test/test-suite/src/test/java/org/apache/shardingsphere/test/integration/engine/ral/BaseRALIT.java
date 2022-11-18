@@ -34,7 +34,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -84,13 +83,6 @@ public abstract class BaseRALIT extends SingleITCase {
             try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
                 preparedStatement.executeUpdate();
             }
-        }
-    }
-    
-    protected void sleep() {
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (final InterruptedException ignored) {
         }
     }
     
