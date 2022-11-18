@@ -28,5 +28,6 @@ CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VAR
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id_sharding));
 CREATE TABLE t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE t_single_table_integer (col_bigint BIGINT NOT NULL, col_int INT NOT NULL, col_mediumint MEDIUMINT NOT NULL, col_smallint SMALLINT NOT NULL, col_tinyint TINYINT NOT NULL);
 
 CREATE INDEX order_index_t_order ON t_order (order_id);
