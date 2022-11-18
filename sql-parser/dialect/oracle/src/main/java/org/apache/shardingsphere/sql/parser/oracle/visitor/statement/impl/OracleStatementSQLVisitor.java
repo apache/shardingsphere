@@ -68,6 +68,8 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DatetimeExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -503,6 +505,9 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.regularFunction()) {
             return visit(ctx.regularFunction());
         }
+        if (null != ctx.xmlFunction()) {
+            return visit(ctx.xmlFunction());
+        }
         throw new IllegalStateException("FunctionCallContext must have aggregationFunction, regularFunction, analyticFunction or specialFunction.");
     }
     
@@ -535,6 +540,16 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, innerExpression);
         result.getParameters().addAll(getExpressions(ctx));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlFunction(final XmlFunctionContext ctx) {
+        return visit(ctx.xmlAggFunction());
+    }
+    
+    @Override
+    public ASTNode visitXmlAggFunction(final XmlAggFunctionContext ctx) {
+        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.XMLAGG().getText(), getOriginalText(ctx));
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
