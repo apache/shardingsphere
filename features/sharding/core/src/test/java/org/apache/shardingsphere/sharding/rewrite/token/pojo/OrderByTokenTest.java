@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -105,12 +105,12 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wh
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WhereOrCurrentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -578,28 +578,28 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     @Override
     public final ASTNode visitSortby(final SortbyContext ctx) {
         OrderDirection orderDirection = null != ctx.ascDesc() ? generateOrderDirection(ctx.ascDesc()) : OrderDirection.ASC;
-        NullsOrderDirection nullsOrderDirection = generateNullsOrderDirection(ctx.nullsOrder(), orderDirection);
+        NullsOrderType nullsOrderType = generateNullsOrderType(ctx.nullsOrder(), orderDirection);
         ASTNode expr = visit(ctx.aExpr());
         if (expr instanceof ColumnSegment) {
             ColumnSegment column = (ColumnSegment) expr;
-            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderDirection);
+            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderType);
         }
         if (expr instanceof LiteralExpressionSegment) {
             LiteralExpressionSegment index = (LiteralExpressionSegment) expr;
-            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection, nullsOrderDirection);
+            return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(), Integer.parseInt(index.getLiterals().toString()), orderDirection, nullsOrderType);
         }
         if (expr instanceof ExpressionSegment) {
             return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(),
-                    ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderDirection, (ExpressionSegment) expr);
+                    ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderType, (ExpressionSegment) expr);
         }
-        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderDirection);
+        return new ExpressionOrderByItemSegment(ctx.aExpr().getStart().getStartIndex(), ctx.aExpr().getStop().getStopIndex(), getOriginalText(ctx.aExpr()), orderDirection, nullsOrderType);
     }
     
-    private NullsOrderDirection generateNullsOrderDirection(final NullsOrderContext ctx, final OrderDirection orderDirection) {
+    private NullsOrderType generateNullsOrderType(final NullsOrderContext ctx, final OrderDirection orderDirection) {
         if (null == ctx) {
-            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
+            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
-        return null == ctx.FIRST() ? NullsOrderDirection.LAST : NullsOrderDirection.FIRST;
+        return null == ctx.FIRST() ? NullsOrderType.LAST : NullsOrderType.FIRST;
     }
     
     private OrderDirection generateOrderDirection(final AscDescContext ctx) {
@@ -961,16 +961,16 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.aExpr()) {
             ASTNode astNode = visit(ctx.aExpr());
             if (astNode instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC, NullsOrderDirection.LAST);
+                return new ColumnOrderByItemSegment((ColumnSegment) astNode, OrderDirection.ASC, NullsOrderType.LAST);
             }
             if (astNode instanceof LiteralExpressionSegment) {
                 LiteralExpressionSegment index = (LiteralExpressionSegment) astNode;
                 return new IndexOrderByItemSegment(index.getStartIndex(), index.getStopIndex(),
-                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, NullsOrderDirection.LAST);
+                        Integer.parseInt(index.getLiterals().toString()), OrderDirection.ASC, NullsOrderType.LAST);
             }
-            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderDirection.LAST);
+            return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderType.LAST);
         }
-        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderDirection.LAST);
+        return new ExpressionOrderByItemSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), OrderDirection.ASC, NullsOrderType.LAST);
     }
     
     @Override

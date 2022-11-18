@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
+
+import java.util.Arrays;
 
 /**
- * Subquery type enum.
+ * Aggregation function enum.
  */
-public enum SubqueryType {
+public enum AggregationType {
     
-    PROJECTION_SUBQUERY, TABLE_SUBQUERY, PREDICATE_SUBQUERY, INSERT_SELECT_SUBQUERY, EXISTS_SUBQUERY
+    MAX, MIN, SUM, COUNT, AVG, BIT_XOR;
+    
+    /**
+     * Is aggregation type.
+     * 
+     * @param aggregationType aggregation type
+     * @return is aggregation type or not
+     */
+    public static boolean isAggregationType(final String aggregationType) {
+        return Arrays.stream(values()).anyMatch(each -> aggregationType.equalsIgnoreCase(each.name()));
+    }
 }

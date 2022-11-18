@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Transaction access type enum.
+ * OperationScope enum.
  */
 @RequiredArgsConstructor
 @Getter
-public enum TransactionAccessType {
+public enum OperationScope {
     
-    READ_ONLY("READ_ONLY"),
-    READ_WRITE("READ_WRITE");
+    GLOBAL("GLOBAL"),
+    SESSION("SESSION");
     
-    private final String accessType;
+    private final String scope;
 }

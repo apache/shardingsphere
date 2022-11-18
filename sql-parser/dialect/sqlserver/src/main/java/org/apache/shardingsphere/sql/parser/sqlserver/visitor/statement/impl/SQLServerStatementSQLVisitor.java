@@ -105,11 +105,11 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Upd
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.WithClauseContext;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -654,17 +654,17 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
-        NullsOrderDirection nullsOrderDirection = OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.FIRST : NullsOrderDirection.LAST;
+        NullsOrderType nullsOrderType = OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderDirection);
+            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderType);
         }
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, NullsOrderDirection.FIRST);
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, NullsOrderType.FIRST);
         }
         return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(), ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()),
-                orderDirection, nullsOrderDirection, (ExpressionSegment) visit(ctx.expr()));
+                orderDirection, nullsOrderType, (ExpressionSegment) visit(ctx.expr()));
     }
     
     @Override

@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Transaction isolation level enum.
+ * Transaction access type enum.
  */
 @RequiredArgsConstructor
 @Getter
-public enum TransactionIsolationLevel {
+public enum TransactionAccessType {
     
-    NONE("NONE"),
-    READ_UNCOMMITTED("READ-UNCOMMITTED"),
-    READ_COMMITTED("READ-COMMITTED"),
-    REPEATABLE_READ("REPEATABLE-READ"),
-    SNAPSHOT("SNAPSHOT"),
-    SERIALIZABLE("SERIALIZABLE");
+    READ_ONLY("READ_ONLY"),
+    READ_WRITE("READ_WRITE");
     
-    private final String isolationLevel;
+    private final String accessType;
 }

@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 /**
- * Order direction.
+ * Subquery type enum.
  */
-public enum OrderDirection {
+public enum SubqueryType {
     
-    /**
-     * Ascending direction.
-     */
-    ASC,
-    
-    /**
-     * Descending direction.
-     */
-    DESC
+    PROJECTION_SUBQUERY, TABLE_SUBQUERY, PREDICATE_SUBQUERY, INSERT_SELECT_SUBQUERY, EXISTS_SUBQUERY
 }

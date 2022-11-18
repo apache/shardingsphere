@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.Optional;

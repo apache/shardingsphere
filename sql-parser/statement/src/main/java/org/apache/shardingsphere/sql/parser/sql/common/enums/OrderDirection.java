@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.constant;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 /**
- * Nulls order direction.
+ * Order direction.
  */
-public enum NullsOrderDirection {
+public enum OrderDirection {
     
     /**
-     * Nulls first direction.
+     * Ascending direction.
      */
-    FIRST,
+    ASC,
     
     /**
-     * Nulls last direction.
+     * Descending direction.
      */
-    LAST
+    DESC
 }

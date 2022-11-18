@@ -135,12 +135,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WeightS
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowFunctionContext;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.JoinType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -1076,17 +1076,17 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         } else {
             orderDirection = OrderDirection.ASC;
         }
-        NullsOrderDirection nullsOrderDirection = OrderDirection.ASC.equals(orderDirection) ? NullsOrderDirection.FIRST : NullsOrderDirection.LAST;
+        NullsOrderType nullsOrderType = OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderDirection);
+                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderType);
         } else {
             ASTNode expr = visitExpr(ctx.expr());
             if (expr instanceof ColumnSegment) {
-                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, nullsOrderDirection);
+                return new ColumnOrderByItemSegment((ColumnSegment) expr, orderDirection, nullsOrderType);
             } else {
                 return new ExpressionOrderByItemSegment(ctx.expr().getStart().getStartIndex(),
-                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, nullsOrderDirection, (ExpressionSegment) expr);
+                        ctx.expr().getStop().getStopIndex(), getOriginalText(ctx.expr()), orderDirection, nullsOrderType, (ExpressionSegment) expr);
             }
         }
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.Case;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;

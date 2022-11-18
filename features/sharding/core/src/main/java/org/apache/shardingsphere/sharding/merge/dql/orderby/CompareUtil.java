@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.NullsOrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 
 /**
  * Compare util.
@@ -34,21 +34,21 @@ public final class CompareUtil {
      * @param thisValue this value
      * @param otherValue other value
      * @param orderDirection order direction 
-     * @param nullsOrderDirection order direction for nulls value
+     * @param nullsOrderType order type for nulls value
      * @param caseSensitive case sensitive
      * @return compare result
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final NullsOrderDirection nullsOrderDirection,
+    public static int compareTo(final Comparable thisValue, final Comparable otherValue, final OrderDirection orderDirection, final NullsOrderType nullsOrderType,
                                 final boolean caseSensitive) {
         if (null == thisValue && null == otherValue) {
             return 0;
         }
         if (null == thisValue) {
-            return NullsOrderDirection.FIRST.equals(nullsOrderDirection) ? -1 : 1;
+            return NullsOrderType.FIRST.equals(nullsOrderType) ? -1 : 1;
         }
         if (null == otherValue) {
-            return NullsOrderDirection.FIRST.equals(nullsOrderDirection) ? 1 : -1;
+            return NullsOrderType.FIRST.equals(nullsOrderType) ? 1 : -1;
         }
         if (!caseSensitive && thisValue instanceof String && otherValue instanceof String) {
             return compareToCaseInsensitiveString((String) thisValue, (String) otherValue, orderDirection);
