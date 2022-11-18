@@ -69,4 +69,4 @@ CREATE INDEX order_index_t_order_9 ON tbl.t_order_9 (order_id);
 CREATE TABLE tbl.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 
 CREATE TABLE tbl.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE tbl.t_single_table_integer (col_bigint BIGINT DEFAULT 0, col_int INT DEFAULT 0, col_mediumint MEDIUMINT DEFAULT 0, col_smallint SMALLINT DEFAULT 0, col_tinyint TINYINT DEFAULT 0);
+CREATE TABLE tbl.t_single_table_integer (col_bigint BIGINT NOT NULL, col_int INT NOT NULL, col_mediumint MEDIUMINT NOT NULL, col_smallint SMALLINT NOT NULL, col_tinyint TINYINT NOT NULL);
