@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.RegisterSto
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.DataSourceAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedDataSource;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create.RegisterStorageUnitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;

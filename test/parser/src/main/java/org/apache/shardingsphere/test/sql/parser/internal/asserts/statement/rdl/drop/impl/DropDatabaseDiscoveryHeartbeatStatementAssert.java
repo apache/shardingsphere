@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropDataBaseDiscoveryHeartbeatStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryHeartbeatStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +41,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementAssert {
      * @param actual actual drop database discovery heartbeat statement
      * @param expected expected drop database discovery heartbeat statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryHeartbeatStatement actual, final DropDataBaseDiscoveryHeartbeatStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryHeartbeatStatement actual, final DropDatabaseDiscoveryHeartbeatStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

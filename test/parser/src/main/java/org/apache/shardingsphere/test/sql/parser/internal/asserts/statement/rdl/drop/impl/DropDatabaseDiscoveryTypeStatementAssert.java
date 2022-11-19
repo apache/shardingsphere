@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropDataBaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryTypeStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -41,7 +41,7 @@ public final class DropDatabaseDiscoveryTypeStatementAssert {
      * @param actual actual drop database discovery type statement
      * @param expected expected drop database discovery type statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryTypeStatement actual, final DropDataBaseDiscoveryTypeStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final DropDatabaseDiscoveryTypeStatement actual, final DropDatabaseDiscoveryTypeStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

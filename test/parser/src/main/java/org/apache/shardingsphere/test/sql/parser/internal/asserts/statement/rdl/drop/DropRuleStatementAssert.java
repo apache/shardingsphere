@@ -48,19 +48,19 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.drop.impl.DropShardingTableReferenceRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.drop.impl.DropShardingTableRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropBroadcastTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropDataBaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropDataBaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropDataBaseDiscoveryTypeStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropDefaultShardingStrategyStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropEncryptRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropReadwriteSplittingRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropShadowRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropShardingAlgorithmStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropShardingAuditorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropShardingTableReferenceRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop.DropShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropBroadcastTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryHeartbeatStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropDefaultShardingStrategyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.encrypt.DropEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.readwritesplitting.DropReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.shadow.DropShadowRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropShardingAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropShardingAuditorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropShardingKeyGeneratorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropShardingTableReferenceRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.DropShardingTableRuleStatementTestCase;
 
 /**
  * Drop RDL statement assert.
@@ -77,13 +77,13 @@ public final class DropRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropRuleStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof DropDatabaseDiscoveryRuleStatement) {
-            DropDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryRuleStatement) actual, (DropDataBaseDiscoveryRuleStatementTestCase) expected);
+            DropDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryRuleStatement) actual, (DropDatabaseDiscoveryRuleStatementTestCase) expected);
         } else if (actual instanceof DropDatabaseDiscoveryTypeStatement) {
-            DropDatabaseDiscoveryTypeStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryTypeStatement) actual, (DropDataBaseDiscoveryTypeStatementTestCase) expected);
+            DropDatabaseDiscoveryTypeStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryTypeStatement) actual, (DropDatabaseDiscoveryTypeStatementTestCase) expected);
         } else if (actual instanceof DropDefaultShardingStrategyStatement) {
             DropDefaultShardingStrategyStatementAssert.assertIs(assertContext, (DropDefaultShardingStrategyStatement) actual, (DropDefaultShardingStrategyStatementTestCase) expected);
         } else if (actual instanceof DropDatabaseDiscoveryHeartbeatStatement) {
-            DropDatabaseDiscoveryHeartbeatStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryHeartbeatStatement) actual, (DropDataBaseDiscoveryHeartbeatStatementTestCase) expected);
+            DropDatabaseDiscoveryHeartbeatStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryHeartbeatStatement) actual, (DropDatabaseDiscoveryHeartbeatStatementTestCase) expected);
         } else if (actual instanceof DropEncryptRuleStatement) {
             DropEncryptRuleStatementAssert.assertIs(assertContext, (DropEncryptRuleStatement) actual, (DropEncryptRuleStatementTestCase) expected);
         } else if (actual instanceof DropReadwriteSplittingRuleStatement) {

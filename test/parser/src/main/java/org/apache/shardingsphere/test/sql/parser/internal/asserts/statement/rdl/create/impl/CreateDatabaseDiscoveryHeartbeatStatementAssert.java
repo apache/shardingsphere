@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDisc
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CreateDatabaseDiscoveryHeartbeatStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.PropertiesAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create.CreateDatabaseDiscoveryHeartbeatStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryHeartbeatStatementTestCase;
 
 import java.util.Map;
 import java.util.stream.Collectors;
