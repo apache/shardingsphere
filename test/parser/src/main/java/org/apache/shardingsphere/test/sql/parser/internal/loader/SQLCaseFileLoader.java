@@ -39,10 +39,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * Test case file loader.
+ * SQL case file loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TestCaseFileLoader {
+public final class SQLCaseFileLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
@@ -76,7 +76,7 @@ public final class TestCaseFileLoader {
      */
     @SneakyThrows({URISyntaxException.class, IOException.class})
     public static Collection<File> loadFilesFromTargetDirectory(final String path) {
-        URL url = TestCaseFileLoader.class.getClassLoader().getResource(path);
+        URL url = SQLCaseFileLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return Collections.emptyList();
         }
