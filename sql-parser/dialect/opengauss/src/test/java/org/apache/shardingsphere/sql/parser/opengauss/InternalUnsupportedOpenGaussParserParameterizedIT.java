@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92;
+package org.apache.shardingsphere.sql.parser.opengauss;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.UnsupportedSQLParserParameterizedTest;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalUnsupportedSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class UnsupportedSQL92ParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
+public final class InternalUnsupportedOpenGaussParserParameterizedIT extends InternalUnsupportedSQLParserParameterizedIT {
     
-    public UnsupportedSQL92ParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+    public InternalUnsupportedOpenGaussParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
         super(sqlCaseId, databaseType, sqlCaseType);
     }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return UnsupportedSQLParserParameterizedTest.getTestParameters("SQL92");
+        return InternalUnsupportedSQLParserParameterizedIT.getTestParameters("openGauss");
     }
 }

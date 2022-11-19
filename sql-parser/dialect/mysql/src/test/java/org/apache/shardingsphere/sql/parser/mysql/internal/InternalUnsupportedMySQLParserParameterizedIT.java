@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.internal;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.UnsupportedSQLParserParameterizedTest;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalUnsupportedSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class UnsupportedMySQLParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
+public final class InternalUnsupportedMySQLParserParameterizedIT extends InternalUnsupportedSQLParserParameterizedIT {
     
-    public UnsupportedMySQLParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+    public InternalUnsupportedMySQLParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
         super(sqlCaseId, databaseType, sqlCaseType);
     }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return UnsupportedSQLParserParameterizedTest.getTestParameters("MySQL");
+        return InternalUnsupportedSQLParserParameterizedIT.getTestParameters("MySQL");
     }
 }

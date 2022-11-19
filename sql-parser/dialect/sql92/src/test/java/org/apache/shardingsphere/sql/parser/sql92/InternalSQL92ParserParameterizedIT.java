@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.internal;
+package org.apache.shardingsphere.sql.parser.sql92;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.UnsupportedSQLParserParameterizedTest;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class UnsupportedPostgreSQLParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
+public final class InternalSQL92ParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
-    public UnsupportedPostgreSQLParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+    public InternalSQL92ParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
         super(sqlCaseId, databaseType, sqlCaseType);
     }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return UnsupportedSQLParserParameterizedTest.getTestParameters("PostgreSQL");
+        return InternalSQLParserParameterizedIT.getTestParameters("SQL92");
     }
 }

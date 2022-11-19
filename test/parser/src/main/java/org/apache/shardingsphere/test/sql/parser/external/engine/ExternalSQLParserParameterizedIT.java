@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.engine;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -29,7 +28,6 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-@Slf4j
 public abstract class ExternalSQLParserParameterizedIT {
     
     private final String sqlCaseId;
