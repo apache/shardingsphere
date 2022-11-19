@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql.external;
+package org.apache.shardingsphere.sql.parser.oracle;
 
-import org.apache.shardingsphere.test.sql.parser.external.engine.SQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
-import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalUnsupportedSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.net.URI;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class MySQLParserParameterizedIT extends SQLParserParameterizedIT {
+public final class InternalUnsupportedOracleParserParameterizedIT extends InternalUnsupportedSQLParserParameterizedIT {
     
-    public MySQLParserParameterizedIT(final String sqlCaseId, final String sql) {
-        super(sqlCaseId, sql, "MySQL", "CSV");
+    public InternalUnsupportedOracleParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+        super(sqlCaseId, databaseType, sqlCaseType);
     }
     
-    @Parameters(name = "{0} (MySQL) -> {1}")
+    @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(
-                URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"), URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r"));
+        return InternalUnsupportedSQLParserParameterizedIT.getTestParameters("Oracle");
     }
 }

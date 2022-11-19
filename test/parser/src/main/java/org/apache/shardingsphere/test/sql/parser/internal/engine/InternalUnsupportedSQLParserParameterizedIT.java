@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 @RequiredArgsConstructor
-public abstract class UnsupportedSQLParserParameterizedTest {
+public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
     

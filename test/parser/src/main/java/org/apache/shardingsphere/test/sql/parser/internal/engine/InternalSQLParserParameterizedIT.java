@@ -39,7 +39,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 @RequiredArgsConstructor
-public abstract class SQLParserParameterizedTest {
+public abstract class InternalSQLParserParameterizedIT {
     
     private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
     

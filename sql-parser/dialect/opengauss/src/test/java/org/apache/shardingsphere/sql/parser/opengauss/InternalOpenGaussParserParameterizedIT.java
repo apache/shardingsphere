@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql.internal;
+package org.apache.shardingsphere.sql.parser.opengauss;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.UnsupportedSQLParserParameterizedTest;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -26,14 +26,14 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class UnsupportedMySQLParserParameterizedTest extends UnsupportedSQLParserParameterizedTest {
+public final class InternalOpenGaussParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
-    public UnsupportedMySQLParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+    public InternalOpenGaussParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
         super(sqlCaseId, databaseType, sqlCaseType);
     }
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return UnsupportedSQLParserParameterizedTest.getTestParameters("MySQL");
+        return InternalSQLParserParameterizedIT.getTestParameters("openGauss");
     }
 }
