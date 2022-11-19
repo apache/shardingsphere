@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.PrepareTransactionStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.tcl.PrepareTransactionTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.PrepareTransactionTestCase;
 
 /**
  * Prepare transaction statement assert.

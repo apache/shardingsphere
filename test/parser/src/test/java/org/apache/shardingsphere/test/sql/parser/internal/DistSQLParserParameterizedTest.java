@@ -17,48 +17,23 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.DistSQLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.CasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.distsql.loader.DistSQLCasesLoader;
-import org.junit.Test;
+import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.SQLParserParameterizedTest;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
-@RunWith(Parameterized.class)
-@RequiredArgsConstructor
-public final class DistSQLParserParameterizedTest {
+@RunWith(ShardingSphereParallelTestParameterized.class)
+public final class DistSQLParserParameterizedTest extends SQLParserParameterizedTest {
     
-    private static final DistSQLCasesLoader DIST_SQL_CASES_LOADER = CasesRegistry.getInstance().getDistSQLCasesLoader();
-    
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
-    
-    private static final DistSQLStatementParserEngine ENGINE = new DistSQLStatementParserEngine();
-    
-    private final String sqlCaseId;
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getTestParameters() {
-        return DIST_SQL_CASES_LOADER.getTestParameters(null);
+    public DistSQLParserParameterizedTest(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
+        super(sqlCaseId, databaseType, sqlCaseType);
     }
     
-    @Test
-    public void assertDistSQL() {
-        SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
-        String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), null);
-        SQLStatement actual = ENGINE.parse(sql);
-        if (actual instanceof DistSQLStatement) {
-            DistSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null, null), (DistSQLStatement) actual, expected);
-        }
+    @Parameters(name = "{0} ({2}) -> {1}")
+    public static Collection<Object[]> getTestParameters() {
+        return SQLParserParameterizedTest.getTestParameters("ShardingSphere");
     }
 }

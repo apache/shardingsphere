@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.mysql.MySQLGrantStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.sqlserver.SQLServerGrantStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dcl.GrantStatementTestCase;
 
 /**
  * Grant statement assert.

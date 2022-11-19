@@ -17,23 +17,23 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = CACHED_CONNECTIONS" />
-    <distsql-case id="show-dist-variables" value="SHOW DIST VARIABLES" />
+    <sql-case id="show-dist-variable" value="SHOW DIST VARIABLE WHERE NAME = CACHED_CONNECTIONS" db-types="ShardingSphere" />
+    <sql-case id="show-dist-variables" value="SHOW DIST VARIABLES" db-types="ShardingSphere" />
     
-    <distsql-case id="show-status-from-readwrite-splitting-rules" value="SHOW STATUS FROM READWRITE_SPLITTING RULES" />
+    <sql-case id="show-status-from-readwrite-splitting-rules" value="SHOW STATUS FROM READWRITE_SPLITTING RULES" db-types="ShardingSphere" />
     
-    <distsql-case id="show-table-metadata" value="SHOW TABLE METADATA t_order FROM database_name" />
+    <sql-case id="show-table-metadata" value="SHOW TABLE METADATA t_order FROM database_name" db-types="ShardingSphere" />
     
-    <distsql-case id="show-authority-rule" value="SHOW AUTHORITY RULE" />
-    <distsql-case id="show-transaction-rule" value="SHOW TRANSACTION RULE" />
-    <distsql-case id="show-sql-parser-rule" value="SHOW SQL_PARSER RULE" />
-    <distsql-case id="show-traffic-rules" value="SHOW TRAFFIC RULE rule_name" />
-    <distsql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" />
+    <sql-case id="show-authority-rule" value="SHOW AUTHORITY RULE" db-types="ShardingSphere" />
+    <sql-case id="show-transaction-rule" value="SHOW TRANSACTION RULE" db-types="ShardingSphere" />
+    <sql-case id="show-sql-parser-rule" value="SHOW SQL_PARSER RULE" db-types="ShardingSphere" />
+    <sql-case id="show-traffic-rules" value="SHOW TRAFFIC RULE rule_name" db-types="ShardingSphere" />
+    <sql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" db-types="ShardingSphere" />
     
-    <distsql-case id="show-compute-nodes" value="SHOW COMPUTE NODES" />
-    <distsql-case id="show-compute-node-info" value="SHOW COMPUTE NODE INFO" />
-    <distsql-case id="show-compute-node-mode" value="SHOW COMPUTE NODE MODE" />
+    <sql-case id="show-compute-nodes" value="SHOW COMPUTE NODES" db-types="ShardingSphere" />
+    <sql-case id="show-compute-node-info" value="SHOW COMPUTE NODE INFO" db-types="ShardingSphere" />
+    <sql-case id="show-compute-node-mode" value="SHOW COMPUTE NODE MODE" db-types="ShardingSphere" />
     
-    <distsql-case id="export-database-config" value="EXPORT DATABASE CONFIGURATION FROM database_name" />
-    <distsql-case id="convert-yaml-config" value="CONVERT YAML CONFIGURATION FROM FILE '/yaml/config-resource.yaml'" />
+    <sql-case id="export-database-config" value="EXPORT DATABASE CONFIGURATION FROM database_name" db-types="ShardingSphere" />
+    <sql-case id="convert-yaml-config" value="CONVERT YAML CONFIGURATION FROM FILE '/yaml/config-resource.yaml'" db-types="ShardingSphere" />
 </sql-cases>

@@ -17,39 +17,39 @@
   -->
 
 <sql-cases>
-    <distsql-case id="show-sharding-table-reference-rules" value="SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db" />
-    <distsql-case id="show-broadcast-table-rules" value="SHOW BROADCAST TABLE RULES FROM sharding_db" />
-    <distsql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM databaseName" />
-    <distsql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" />
-    <distsql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM databaseName" />
-    <distsql-case id="show-sharding-algorithms-from" value="SHOW SHARDING ALGORITHMS FROM databaseName" />
-    <distsql-case id="show-sharding-auditors-from" value = "SHOW SHARDING AUDITORS FROM databaseName" />
-    <distsql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" />
-    <distsql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
-    <distsql-case id="show-db-discovery-types" value="SHOW DB_DISCOVERY TYPES FROM db_discovery_db" />
-    <distsql-case id="show-db-discovery-heartbeats" value="SHOW DB_DISCOVERY HEARTBEATS FROM db_discovery_db" />
-    <distsql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" />
-    <distsql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" />
-    <distsql-case id="show-shadow-rules" value="SHOW SHADOW RULE shadow_rule FROM shadow_db" />
-    <distsql-case id="show-shadow-table-rules" value="SHOW SHADOW TABLE RULES FROM shadow_db" />
-    <distsql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" />
-    <distsql-case id="show-default-shadow-algorithm" value="SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db" />
-    <distsql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" />
-    <distsql-case id="show-default-single-table-storage-unit" value="SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM single_table_db" />
-    <distsql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" />
-    <distsql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" />
-    <distsql-case id="show-default-sharding-strategy" value="SHOW DEFAULT SHARDING STRATEGY FROM sharding_db" />
-    <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM databaseName" />
-    <distsql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM databaseName" />
-    <distsql-case id="show-unused-sharding-auditors" value="SHOW UNUSED SHARDING AUDITORS FROM databaseName" />
-    <distsql-case id="show-rules-used-storage-unit" value="SHOW RULES USED STORAGE UNIT ds_0 FROM databaseName" />
-    <distsql-case id="show-sharding-table-rules-used-key-generator" value="SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake FROM sharding_db" />
-    <distsql-case id="show-sharding-table-rules-used-auditor" value="SHOW SHARDING TABLE RULES USED AUDITOR shardingKeyAudit FROM sharding_db" />
-    <distsql-case id="show-sharding-table-rules-used-algorithm" value="SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline FROM sharding_db" />
-    <distsql-case id="count-single-table-rule" value="COUNT SINGLE_TABLE RULE FROM db1" />
-    <distsql-case id="count-sharding-rule" value="COUNT SHARDING RULE FROM db1" />
-    <distsql-case id="count-readwrite-splitting-rule" value="COUNT READWRITE_SPLITTING RULE FROM db1" />
-    <distsql-case id="count-db-discovery-rule" value="COUNT DB_DISCOVERY RULE FROM db1" />
-    <distsql-case id="count-encrypt-rule" value="COUNT ENCRYPT RULE FROM db1" />
-    <distsql-case id="count-shadow-rule" value="COUNT SHADOW RULE FROM db1" />
+    <sql-case id="show-sharding-table-reference-rules" value="SHOW SHARDING TABLE REFERENCE RULES FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-broadcast-table-rules" value="SHOW BROADCAST TABLE RULES FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-algorithms-from" value="SHOW SHARDING ALGORITHMS FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-auditors-from" value = "SHOW SHARDING AUDITORS FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" db-types="ShardingSphere" />
+    <sql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" db-types="ShardingSphere" />
+    <sql-case id="show-db-discovery-types" value="SHOW DB_DISCOVERY TYPES FROM db_discovery_db" db-types="ShardingSphere" />
+    <sql-case id="show-db-discovery-heartbeats" value="SHOW DB_DISCOVERY HEARTBEATS FROM db_discovery_db" db-types="ShardingSphere" />
+    <sql-case id="show-encrypt-rules" value="SHOW ENCRYPT RULES FROM encrypt_db" db-types="ShardingSphere" />
+    <sql-case id="show-encrypt-table-rules" value="SHOW ENCRYPT TABLE RULE t_encrypt FROM encrypt_db" db-types="ShardingSphere" />
+    <sql-case id="show-shadow-rules" value="SHOW SHADOW RULE shadow_rule FROM shadow_db" db-types="ShardingSphere" />
+    <sql-case id="show-shadow-table-rules" value="SHOW SHADOW TABLE RULES FROM shadow_db" db-types="ShardingSphere" />
+    <sql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" db-types="ShardingSphere" />
+    <sql-case id="show-default-shadow-algorithm" value="SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db" db-types="ShardingSphere" />
+    <sql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" db-types="ShardingSphere" />
+    <sql-case id="show-default-single-table-storage-unit" value="SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM single_table_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-default-sharding-strategy" value="SHOW DEFAULT SHARDING STRATEGY FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-unused-sharding-auditors" value="SHOW UNUSED SHARDING AUDITORS FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-rules-used-storage-unit" value="SHOW RULES USED STORAGE UNIT ds_0 FROM databaseName" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-rules-used-key-generator" value="SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-rules-used-auditor" value="SHOW SHARDING TABLE RULES USED AUDITOR shardingKeyAudit FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-sharding-table-rules-used-algorithm" value="SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="count-single-table-rule" value="COUNT SINGLE_TABLE RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="count-sharding-rule" value="COUNT SHARDING RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="count-readwrite-splitting-rule" value="COUNT READWRITE_SPLITTING RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="count-db-discovery-rule" value="COUNT DB_DISCOVERY RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="count-encrypt-rule" value="COUNT ENCRYPT RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="count-shadow-rule" value="COUNT SHADOW RULE FROM db1" db-types="ShardingSphere" />
 </sql-cases>
