@@ -15,31 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry;
+package org.apache.shardingsphere.test.sql.parser.internal.loader.registry;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
 
 /**
- * Unsupported SQL cases registry.
+ * SQL cases registry.
  */
-public final class UnsupportedSQLCasesRegistry {
+@Getter
+public final class SQLCasesRegistry {
     
-    private static final UnsupportedSQLCasesRegistry INSTANCE = new UnsupportedSQLCasesRegistry();
+    private static final SQLCasesRegistry INSTANCE = new SQLCasesRegistry();
     
-    @Getter
+    private static final String CASE_PATH = "sql/supported/";
+    
     private final SQLCasesLoader sqlCasesLoader;
     
-    private UnsupportedSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/unsupported/");
+    private SQLCasesRegistry() {
+        sqlCasesLoader = new SQLCasesLoader(CASE_PATH);
     }
     
     /**
-     * Get singleton instance.
+     * Get instance.
      * 
-     * @return singleton instance
+     * @return got instance
      */
-    public static UnsupportedSQLCasesRegistry getInstance() {
+    public static SQLCasesRegistry getInstance() {
         return INSTANCE;
     }
 }

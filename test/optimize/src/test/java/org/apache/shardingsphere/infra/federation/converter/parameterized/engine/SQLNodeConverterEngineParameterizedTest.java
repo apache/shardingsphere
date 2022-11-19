@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistryFactory;
