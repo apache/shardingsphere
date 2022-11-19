@@ -31,6 +31,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class InstallPluginStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "plugin")
+    @XmlElement
     private ExpectedPlugin plugin;
 }

@@ -35,6 +35,6 @@ public final class CloneStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "data-directory")
     private ExpectedDataDirectory dataDirectory;
     
-    @XmlElement(name = "instance")
+    @XmlElement
     private ExpectedInstance instance;
 }

@@ -33,10 +33,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class CommentStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedSimpleTable table;
     
-    @XmlElement(name = "column")
+    @XmlElement
     private ExpectedColumn column;
     
     @XmlElement(name = "index-type")

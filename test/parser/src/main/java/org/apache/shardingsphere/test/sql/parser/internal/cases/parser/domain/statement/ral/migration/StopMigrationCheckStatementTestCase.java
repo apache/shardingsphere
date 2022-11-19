@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -26,6 +27,7 @@ import javax.xml.bind.annotation.XmlElement;
  * Stop migration check statement test case.
  */
 @Getter
+@Setter
 public final class StopMigrationCheckStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")

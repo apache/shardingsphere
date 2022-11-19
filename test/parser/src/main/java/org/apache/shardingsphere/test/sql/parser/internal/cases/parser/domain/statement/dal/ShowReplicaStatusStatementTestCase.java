@@ -24,12 +24,12 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * MySQL replica status statement test case.
+ * Show peplica status statement test case.
  */
 @Getter
 @Setter
 public final class ShowReplicaStatusStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "channel")
+    @XmlAttribute
     private String channel;
 }

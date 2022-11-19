@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * MySQL slave status statement test case.
+ * Show slave status statement test case.
  */
 @Getter
 @Setter

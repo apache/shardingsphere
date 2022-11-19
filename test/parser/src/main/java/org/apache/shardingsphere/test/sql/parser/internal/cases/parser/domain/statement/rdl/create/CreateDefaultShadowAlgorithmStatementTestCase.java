@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShadowAlgorithm;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
@@ -30,9 +29,8 @@ import java.util.LinkedList;
  * Create default shadow algorithm statement test case.
  */
 @Getter
-@Setter
 public final class CreateDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "shadow-algorithm")
-    private final Collection<ExpectedShadowAlgorithm> rules = new LinkedList<>();
+    private final Collection<ExpectedShadowAlgorithm> algorithms = new LinkedList<>();
 }

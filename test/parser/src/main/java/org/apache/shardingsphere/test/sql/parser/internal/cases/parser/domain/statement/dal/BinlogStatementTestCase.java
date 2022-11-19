@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class BinlogStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute
+    @XmlAttribute(name = "base64")
     private String base64Str;
 }

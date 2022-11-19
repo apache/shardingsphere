@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 /**
- * MySQL show slave host statement test case.
+ * Show slave hosts statement test case.
  */
 public final class ShowSlaveHostsStatementTestCase extends SQLParserTestCase {
 }

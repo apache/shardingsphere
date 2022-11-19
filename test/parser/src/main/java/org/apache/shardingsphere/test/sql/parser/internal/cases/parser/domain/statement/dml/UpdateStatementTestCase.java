@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class UpdateStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedTable table;
     
     @XmlElement(name = "set")

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryDefinitionRule;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
@@ -30,7 +29,6 @@ import java.util.List;
  * Create database discovery definition rule statement test case.
  */
 @Getter
-@Setter
 public final class CreateDatabaseDiscoveryDefinitionRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rule")
