@@ -19,6 +19,10 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatement;
@@ -31,6 +35,10 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.comm
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dal.DALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.DCLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ddl.DDLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.RALStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.RDLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rql.RQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rul.RULStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.TCLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
@@ -61,6 +69,14 @@ public final class SQLStatementAssert {
             DCLStatementAssert.assertIs(assertContext, (DCLStatement) actual, expected);
         } else if (actual instanceof DALStatement) {
             DALStatementAssert.assertIs(assertContext, (DALStatement) actual, expected);
+        } else if (actual instanceof RDLStatement) {
+            RDLStatementAssert.assertIs(assertContext, (RDLStatement) actual, expected);
+        } else if (actual instanceof RQLStatement) {
+            RQLStatementAssert.assertIs(assertContext, (RQLStatement) actual, expected);
+        } else if (actual instanceof RALStatement) {
+            RALStatementAssert.assertIs(assertContext, (RALStatement) actual, expected);
+        } else if (actual instanceof RULStatement) {
+            RULStatementAssert.assertIs(assertContext, (RULStatement) actual, expected);
         }
     }
 }
