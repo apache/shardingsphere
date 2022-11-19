@@ -19,6 +19,9 @@ package org.apache.shardingsphere.infra.datasource.props;
 
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 
 import javax.sql.DataSource;
@@ -27,6 +30,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source properties validator.
@@ -43,7 +47,8 @@ public final class DataSourcePropertiesValidator {
         Collection<String> errorMessages = new LinkedList<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
             try {
-                validate(entry.getKey(), entry.getValue());
+                validateProperties(entry.getKey(), entry.getValue());
+                validateConnection(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourcePropertiesException ex) {
                 errorMessages.add(ex.getMessage());
             }
@@ -53,7 +58,20 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void validate(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
+    private void validateProperties(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
+        Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceProps.getDataSourceClassName());
+        if (!poolMetaData.isPresent()) {
+            return;
+        }
+        try {
+            DataSourcePoolPropertiesValidator propertiesValidator = poolMetaData.get().getDataSourcePoolPropertiesValidator();
+            propertiesValidator.validateProperties(dataSourceProps);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
+        }
+    }
+    
+    private void validateConnection(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);

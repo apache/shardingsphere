@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -97,6 +98,11 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     @Override
     public HikariDataSourcePoolFieldMetaData getFieldMetaData() {
         return new HikariDataSourcePoolFieldMetaData();
+    }
+    
+    @Override
+    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
+        return new HikariDataSourcePoolPropertiesValidator();
     }
     
     @Override
