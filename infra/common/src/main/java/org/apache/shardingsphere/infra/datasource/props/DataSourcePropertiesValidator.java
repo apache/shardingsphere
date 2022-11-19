@@ -66,7 +66,7 @@ public final class DataSourcePropertiesValidator {
         try {
             DataSourcePoolPropertiesValidator propertiesValidator = poolMetaData.get().getDataSourcePoolPropertiesValidator();
             propertiesValidator.validateProperties(dataSourceProps);
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         }
     }
