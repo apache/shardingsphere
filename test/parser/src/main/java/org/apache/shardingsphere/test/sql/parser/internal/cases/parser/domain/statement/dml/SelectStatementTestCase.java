@@ -42,13 +42,13 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class SelectStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "from")
+    @XmlElement
     private ExpectedTable from;
     
     @XmlElement(name = "simple-table")
     private ExpectedSimpleTable simpleTable;
     
-    @XmlElement(name = "projections")
+    @XmlElement
     private final ExpectedProjections projections = new ExpectedProjections();
     
     @XmlElement(name = "where")

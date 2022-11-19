@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 /**
- * MySQL shutdown statement test case.
+ * Shutdown statement test case.
  */
 public final class ShutdownStatementTestCase extends SQLParserTestCase {
 }

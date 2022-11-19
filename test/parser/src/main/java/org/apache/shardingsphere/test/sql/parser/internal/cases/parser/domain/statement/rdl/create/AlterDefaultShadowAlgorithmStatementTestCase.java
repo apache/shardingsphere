@@ -29,8 +29,8 @@ import java.util.LinkedList;
  * Alter default shadow algorithm statement test case.
  */
 @Getter
-public class AlterDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
+public final class AlterDefaultShadowAlgorithmStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "shadow-algorithm")
-    private final Collection<ExpectedShadowAlgorithm> rules = new LinkedList<>();
+    private final Collection<ExpectedShadowAlgorithm> algorithms = new LinkedList<>();
 }

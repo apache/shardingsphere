@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.DropRuleStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,7 +28,6 @@ import java.util.List;
  * Drop broadcast table rule statement test cast.
  */
 @Getter
-@Setter
 public final class DropBroadcastTableRuleStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElement(name = "table")

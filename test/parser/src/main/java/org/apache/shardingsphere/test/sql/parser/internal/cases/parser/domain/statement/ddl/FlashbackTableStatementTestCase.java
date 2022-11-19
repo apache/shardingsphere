@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class FlashbackTableStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedSimpleTable table;
     
     @XmlElement(name = "rename-table")

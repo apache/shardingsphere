@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.drop;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.DropRuleStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,9 +28,8 @@ import java.util.List;
  * Drop readwrite-splitting rule statement test case.
  */
 @Getter
-@Setter
 public final class DropReadwriteSplittingRuleStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElement(name = "rule")
-    private List<String> rules = new LinkedList<>();
+    private final List<String> rules = new LinkedList<>();
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * show triggers statement test case.
+ * Show triggers statement test case.
  */
 @Getter
 @Setter

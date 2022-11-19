@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShardingAuditor;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
@@ -30,7 +29,6 @@ import java.util.List;
  * Create sharding auditor statement test case.
  */
 @Getter
-@Setter
 public final class CreateShardingAuditorStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "sharding-auditor")

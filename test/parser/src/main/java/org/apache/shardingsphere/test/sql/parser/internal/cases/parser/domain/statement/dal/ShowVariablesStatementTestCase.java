@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * MySQL show variables statement test case.
+ * Show variables statement test case.
  */
 @Getter
 @Setter

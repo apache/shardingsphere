@@ -32,9 +32,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ClusterStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedSimpleTable table;
     
-    @XmlElement(name = "index")
+    @XmlElement
     private ExpectedIndex index;
 }

@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class FormatSQLStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "sql")
+    @XmlAttribute
     private String sql;
 }

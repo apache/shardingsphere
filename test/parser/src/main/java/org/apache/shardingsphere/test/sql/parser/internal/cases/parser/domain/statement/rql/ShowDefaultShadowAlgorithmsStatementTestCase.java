@@ -22,5 +22,5 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 /**
  * Show default shadow algorithm statement test case.
  */
-public class ShowDefaultShadowAlgorithmsStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowDefaultShadowAlgorithmsStatementTestCase extends DatabaseContainedTestCase {
 }

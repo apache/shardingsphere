@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 /**
  * Show migration source storage units statement test case.
  */
-@Getter
-@Setter
 public final class ShowMigrationSourceStorageUnitsStatementTestCase extends SQLParserTestCase {
-    
 }
