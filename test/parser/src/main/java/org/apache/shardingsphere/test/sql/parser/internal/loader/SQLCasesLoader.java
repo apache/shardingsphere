@@ -65,7 +65,7 @@ public final class SQLCasesLoader {
     
     private Map<String, SQLCase> loadFromJar(final File file, final String path) throws JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
-        for (String each : TestCaseFileLoader.loadFileNamesFromJar(file, path)) {
+        for (String each : SQLCaseFileLoader.loadFileNamesFromJar(file, path)) {
             buildCaseMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(each));
         }
         return result;
@@ -73,7 +73,7 @@ public final class SQLCasesLoader {
     
     private Map<String, SQLCase> loadFromTargetDirectory(final String path) throws JAXBException, FileNotFoundException {
         Map<String, SQLCase> result = new TreeMap<>();
-        for (File each : TestCaseFileLoader.loadFilesFromTargetDirectory(path)) {
+        for (File each : SQLCaseFileLoader.loadFilesFromTargetDirectory(path)) {
             buildCaseMap(result, new FileInputStream(each));
         }
         return result;

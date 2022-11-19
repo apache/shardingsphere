@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.TestCaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCaseFileLoader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -53,7 +53,7 @@ public final class SQLParserTestCasesRegistry {
     
     private Map<String, SQLParserTestCase> loadFromJar(final String directory, final File file) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (String each : TestCaseFileLoader.loadFileNamesFromJar(file, directory)) {
+        for (String each : SQLCaseFileLoader.loadFileNamesFromJar(file, directory)) {
             Map<String, SQLParserTestCase> sqlParserTestCaseMap = createSQLParserTestCases(SQLParserTestCasesRegistry.class.getClassLoader().getResourceAsStream(each));
             checkDuplicate(result, sqlParserTestCaseMap);
             result.putAll(sqlParserTestCaseMap);
@@ -63,7 +63,7 @@ public final class SQLParserTestCasesRegistry {
     
     private Map<String, SQLParserTestCase> loadFromTargetDirectory(final String directory) throws IOException, JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (File each : TestCaseFileLoader.loadFilesFromTargetDirectory(directory)) {
+        for (File each : SQLCaseFileLoader.loadFilesFromTargetDirectory(directory)) {
             try (FileInputStream fileInputStream = new FileInputStream(each)) {
                 Map<String, SQLParserTestCase> sqlParserTestCaseMap = createSQLParserTestCases(fileInputStream);
                 checkDuplicate(result, sqlParserTestCaseMap);
