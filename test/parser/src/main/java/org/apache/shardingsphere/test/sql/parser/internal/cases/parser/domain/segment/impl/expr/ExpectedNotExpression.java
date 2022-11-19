@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public class ExpectedNotExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "expr")
+    @XmlElement
     private ExpectedExpression expr;
 }

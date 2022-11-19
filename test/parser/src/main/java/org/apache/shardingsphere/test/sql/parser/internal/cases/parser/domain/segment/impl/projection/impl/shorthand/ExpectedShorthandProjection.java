@@ -25,6 +25,9 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected shorthand projection.
+ */
 @Getter
 @Setter
 public final class ExpectedShorthandProjection extends AbstractExpectedSQLSegment implements ExpectedProjection {

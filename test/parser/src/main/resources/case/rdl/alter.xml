@@ -222,7 +222,7 @@
     </alter-encrypt-rule>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
-        <rule name="t_encrypt" queryWithCipherColumn="false">
+        <rule name="t_encrypt" query-with-cipher-column="false">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>

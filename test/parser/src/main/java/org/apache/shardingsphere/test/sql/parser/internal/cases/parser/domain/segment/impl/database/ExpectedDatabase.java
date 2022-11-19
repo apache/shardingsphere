@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.schema;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.database;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
- * Expected schema.
+ * Expected database.
  */
-@Getter
-@Setter
 public final class ExpectedDatabase extends AbstractExpectedIdentifierSQLSegment {
 }

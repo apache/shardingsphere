@@ -31,5 +31,5 @@ import java.util.List;
 public final class ExpectedInsertValuesClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "value")
-    private List<ExpectedInsertValue> values = new LinkedList<>();
+    private final List<ExpectedInsertValue> values = new LinkedList<>();
 }

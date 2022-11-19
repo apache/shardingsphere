@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedBinaryOperationExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "left")
+    @XmlElement
     private ExpectedExpression left;
     
-    @XmlElement(name = "operator")
+    @XmlElement
     private String operator;
     
-    @XmlElement(name = "right")
+    @XmlElement
     private ExpectedExpression right;
 }

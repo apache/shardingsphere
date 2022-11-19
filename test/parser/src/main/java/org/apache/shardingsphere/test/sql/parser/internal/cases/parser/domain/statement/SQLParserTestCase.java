@@ -45,7 +45,7 @@ public abstract class SQLParserTestCase {
     private String parameters;
     
     @XmlElement(name = "comment")
-    private List<ExpectedComment> comments = new LinkedList<>();
+    private final List<ExpectedComment> comments = new LinkedList<>();
     
     /**
      * Get parameters.

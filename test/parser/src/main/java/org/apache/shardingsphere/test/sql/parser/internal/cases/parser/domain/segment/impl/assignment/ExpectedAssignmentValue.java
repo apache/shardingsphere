@@ -45,12 +45,12 @@ public final class ExpectedAssignmentValue extends AbstractExpectedSQLSegment {
     @XmlElement(name = "common-expression")
     private ExpectedCommonExpression commonExpression;
     
-    @XmlElement(name = "column")
+    @XmlElement
     private ExpectedColumn column;
     
-    @XmlElement(name = "subquery")
+    @XmlElement
     private ExpectedSubquery subquery;
     
-    @XmlElement(name = "function")
+    @XmlElement
     private ExpectedFunction function;
 }

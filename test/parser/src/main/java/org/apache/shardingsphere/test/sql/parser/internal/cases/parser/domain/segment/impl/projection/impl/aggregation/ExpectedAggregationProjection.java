@@ -28,6 +28,9 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Expected aggregation projection.
+ */
 @Getter
 @Setter
 public class ExpectedAggregationProjection extends AbstractExpectedSQLSegment implements ExpectedProjection {
@@ -42,5 +45,5 @@ public class ExpectedAggregationProjection extends AbstractExpectedSQLSegment im
     private String alias;
     
     @XmlElement(name = "parameters")
-    private List<ExpectedExpression> parameters = new LinkedList<>();
+    private final List<ExpectedExpression> parameters = new LinkedList<>();
 }

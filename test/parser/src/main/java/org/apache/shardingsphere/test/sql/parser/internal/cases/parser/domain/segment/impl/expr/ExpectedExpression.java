@@ -45,7 +45,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "binary-operation-expression")
     private ExpectedBinaryOperationExpression binaryOperationExpression;
     
-    @XmlElement(name = "column")
+    @XmlElement
     private ExpectedColumn column;
     
     @XmlElement(name = "data-type")
@@ -60,7 +60,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "expression-projection")
     private ExpectedExpressionProjection expressionProjection;
     
-    @XmlElement(name = "function")
+    @XmlElement
     private ExpectedFunction function;
     
     @XmlElement(name = "in-expression")
@@ -78,7 +78,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "parameter-marker-expression")
     private ExpectedParameterMarkerExpression parameterMarkerExpression;
     
-    @XmlElement(name = "subquery")
+    @XmlElement
     private ExpectedSubquery subquery;
     
     @XmlElement(name = "aggregation-projection")

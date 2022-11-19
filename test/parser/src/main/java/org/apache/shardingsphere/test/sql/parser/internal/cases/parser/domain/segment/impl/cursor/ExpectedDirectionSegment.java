@@ -33,6 +33,6 @@ public final class ExpectedDirectionSegment extends AbstractExpectedSQLSegment {
     @XmlAttribute(name = "direction-type")
     private String directionType;
     
-    @XmlAttribute(name = "count")
+    @XmlAttribute
     private Long count;
 }

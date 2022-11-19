@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.plugin;
 
-import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
  * Expected plugin.
  */
-@Getter
 public final class ExpectedPlugin extends AbstractExpectedIdentifierSQLSegment {
 }

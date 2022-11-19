@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.window;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -27,8 +25,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 /**
  * Expected window clause.
  */
-@Getter
-@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedWindowClause extends AbstractExpectedSQLSegment {
 }

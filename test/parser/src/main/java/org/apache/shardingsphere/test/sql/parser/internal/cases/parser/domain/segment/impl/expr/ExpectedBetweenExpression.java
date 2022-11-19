@@ -30,10 +30,10 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedBetweenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "not")
+    @XmlElement
     private boolean not;
     
-    @XmlElement(name = "left")
+    @XmlElement
     private ExpectedExpression left;
     
     @XmlElement(name = "between-expr")

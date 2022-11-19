@@ -25,11 +25,14 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected top projection.
+ */
 @Getter
 @Setter
 public final class ExpectedTopProjection extends AbstractExpectedSQLSegment implements ExpectedProjection {
     
-    @XmlAttribute(name = "alias")
+    @XmlAttribute
     private String alias;
     
     @XmlElement(name = "top-value")

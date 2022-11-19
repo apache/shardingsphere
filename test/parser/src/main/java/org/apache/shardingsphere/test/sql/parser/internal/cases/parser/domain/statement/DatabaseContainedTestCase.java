@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.schema.ExpectedDatabase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.database.ExpectedDatabase;
 
 import javax.xml.bind.annotation.XmlElement;
 

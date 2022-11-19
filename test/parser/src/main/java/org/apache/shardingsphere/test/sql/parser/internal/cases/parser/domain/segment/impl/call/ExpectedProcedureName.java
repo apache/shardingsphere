@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ExpectedProcedureName extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "name")
+    @XmlAttribute
     private String name;
 }

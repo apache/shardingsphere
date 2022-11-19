@@ -404,11 +404,11 @@
     </create-encrypt-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
-        <rule name="encrypt" queryWithCipherColumn="false">
+        <rule name="encrypt" query-with-cipher-column="false">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>
-                        <property key="aes-key-value" value="123456abc"/>
+                        <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
             </column>

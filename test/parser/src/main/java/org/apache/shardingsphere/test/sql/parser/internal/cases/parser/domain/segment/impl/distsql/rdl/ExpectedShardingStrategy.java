@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedShardingStrategy extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlAttribute(name = "type")
+    @XmlAttribute
     private String type;
     
     @XmlAttribute(name = "sharding-column")

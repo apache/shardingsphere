@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.clone;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -26,18 +27,19 @@ import javax.xml.bind.annotation.XmlAttribute;
  * Expected instance.
  */
 @Getter
+@Setter
 public final class ExpectedInstance extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "username")
+    @XmlAttribute
     private String username;
     
-    @XmlAttribute(name = "hostname")
+    @XmlAttribute
     private String hostname;
     
-    @XmlAttribute(name = "port")
+    @XmlAttribute
     private Integer port;
     
-    @XmlAttribute(name = "password")
+    @XmlAttribute
     private String password;
     
     @XmlAttribute(name = "require-ssl")

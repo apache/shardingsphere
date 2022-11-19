@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.call;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,9 +28,8 @@ import java.util.List;
  * Expected procedure parameters.
  */
 @Getter
-@Setter
 public final class ExpectedProcedureParameters extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "parameter")
-    private List<ExpectedCallParameter> parameters = new LinkedList<>();
+    private final List<ExpectedCallParameter> parameters = new LinkedList<>();
 }

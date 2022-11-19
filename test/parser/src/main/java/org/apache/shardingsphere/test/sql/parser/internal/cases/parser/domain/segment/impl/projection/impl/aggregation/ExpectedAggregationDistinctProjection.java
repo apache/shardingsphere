@@ -22,6 +22,9 @@ import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * Expected aggregation distinct projection.
+ */
 @Getter
 @Setter
 public final class ExpectedAggregationDistinctProjection extends ExpectedAggregationProjection {

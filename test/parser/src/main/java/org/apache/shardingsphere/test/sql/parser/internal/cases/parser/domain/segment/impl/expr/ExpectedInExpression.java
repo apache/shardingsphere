@@ -30,12 +30,12 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedInExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "not")
+    @XmlElement
     private boolean not;
     
-    @XmlElement(name = "left")
+    @XmlElement
     private ExpectedExpression left;
     
-    @XmlElement(name = "right")
+    @XmlElement
     private ExpectedExpression right;
 }

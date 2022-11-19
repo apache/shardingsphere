@@ -35,6 +35,6 @@ public final class ExpectedEncryptRule extends AbstractExpectedIdentifierSQLSegm
     @XmlElement(name = "column")
     private List<ExpectedEncryptColumn> columns;
     
-    @XmlAttribute
+    @XmlAttribute(name = "query-with-cipher-column")
     private Boolean queryWithCipherColumn;
 }

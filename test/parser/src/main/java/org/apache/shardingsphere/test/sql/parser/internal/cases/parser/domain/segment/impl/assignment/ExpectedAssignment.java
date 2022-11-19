@@ -35,7 +35,7 @@ public final class ExpectedAssignment extends AbstractExpectedSQLSegment {
     @XmlElement
     private ExpectedColumn column;
     
-    @XmlElement(name = "columns")
+    @XmlElement
     private List<ExpectedColumn> columns;
     
     @XmlElement(name = "assignment-value")

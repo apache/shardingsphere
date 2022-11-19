@@ -19,5 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.ExpectedSQLSegment;
 
+/**
+ * Expected projection.
+ */
 public interface ExpectedProjection extends ExpectedSQLSegment {
 }

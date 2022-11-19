@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.cursor;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedIdentifierSQLSegment;
 
 /**
  * Expected cursor name.
  */
-@Getter
-@Setter
 public final class ExpectedCursorName extends AbstractExpectedIdentifierSQLSegment {
 }
