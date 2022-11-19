@@ -32,5 +32,5 @@ import java.util.List;
 public final class ExpectedInsertMultiTableElement extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "table-element")
-    private List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
+    private final List<InsertStatementTestCase> insertTestCases = new LinkedList<>();
 }

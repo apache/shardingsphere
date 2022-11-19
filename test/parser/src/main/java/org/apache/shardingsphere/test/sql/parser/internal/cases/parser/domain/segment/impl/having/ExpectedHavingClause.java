@@ -34,6 +34,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedHavingClause extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "expr")
+    @XmlElement
     private ExpectedExpression expr;
 }

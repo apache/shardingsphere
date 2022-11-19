@@ -32,5 +32,5 @@ import java.util.List;
 public final class ExpectedInsertColumnsClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "column")
-    private List<ExpectedColumn> columns = new LinkedList<>();
+    private final List<ExpectedColumn> columns = new LinkedList<>();
 }

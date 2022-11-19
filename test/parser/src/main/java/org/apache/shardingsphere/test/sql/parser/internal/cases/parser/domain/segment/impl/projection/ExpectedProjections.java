@@ -36,10 +36,10 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter
 @Setter
 public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     
-    @Getter
     @XmlAttribute(name = "distinct-row")
     private boolean distinctRow;
     

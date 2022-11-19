@@ -35,10 +35,10 @@ public final class ExpectedShadowRule extends AbstractExpectedIdentifierSQLSegme
     @XmlAttribute(name = "rule-name")
     private String ruleName;
     
-    @XmlAttribute(name = "source")
+    @XmlAttribute
     private String source;
     
-    @XmlAttribute(name = "shadow")
+    @XmlAttribute
     private String shadow;
     
     @XmlElement(name = "table-rule")
@@ -47,8 +47,8 @@ public final class ExpectedShadowRule extends AbstractExpectedIdentifierSQLSegme
     /**
      * Expected shadow table rule.
      */
-    @Setter
     @Getter
+    @Setter
     public static class ExpectedShadowTableRule extends AbstractExpectedIdentifierSQLSegment {
         
         @XmlAttribute(name = "table-name")

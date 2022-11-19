@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.clone;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -26,8 +27,9 @@ import javax.xml.bind.annotation.XmlAttribute;
  * Expected data directory.
  */
 @Getter
+@Setter
 public final class ExpectedDataDirectory extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "location")
+    @XmlAttribute
     private String location;
 }

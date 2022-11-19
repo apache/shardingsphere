@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.lock;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSimpleTable;
@@ -31,7 +30,6 @@ import java.util.List;
  * Expected lock clause.
  */
 @Getter
-@Setter
 public final class ExpectedLockClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "table")

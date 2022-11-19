@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,8 +36,8 @@ public final class ExpectedAssignment extends AbstractExpectedSQLSegment {
     @XmlElement
     private ExpectedColumn column;
     
-    @XmlElement(name = "columns")
-    private List<ExpectedColumn> columns;
+    @XmlElement
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
     @XmlElement(name = "assignment-value")
     private ExpectedAssignmentValue assignmentValue;

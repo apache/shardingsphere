@@ -32,5 +32,5 @@ import java.util.List;
 public final class ExpectedOnDuplicateKeyColumns extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "assignment")
-    private List<ExpectedAssignment> assignments = new LinkedList<>();
+    private final List<ExpectedAssignment> assignments = new LinkedList<>();
 }

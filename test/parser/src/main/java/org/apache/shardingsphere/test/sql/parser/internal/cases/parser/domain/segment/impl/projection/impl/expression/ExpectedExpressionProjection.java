@@ -27,19 +27,22 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected expression projection.
+ */
 @Getter
 @Setter
 public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedProjection, ExpectedComplexExpressionSegment {
     
-    @XmlAttribute(name = "text")
+    @XmlAttribute
     private String text;
     
     @XmlAttribute(name = "literal-text")
     private String literalText;
     
-    @XmlAttribute(name = "alias")
+    @XmlAttribute
     private String alias;
     
-    @XmlElement(name = "expr")
+    @XmlElement
     private ExpectedExpression expr;
 }

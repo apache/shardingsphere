@@ -35,10 +35,10 @@ import java.util.List;
 @Setter
 public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlElement(name = "left")
+    @XmlElement
     private ExpectedTable left;
     
-    @XmlElement(name = "right")
+    @XmlElement
     private ExpectedTable right;
     
     @XmlElement(name = "on-condition")

@@ -26,6 +26,9 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected column projection.
+ */
 @Getter
 @Setter
 public final class ExpectedColumnProjection extends AbstractExpectedIdentifierSQLSegment implements ExpectedProjection {

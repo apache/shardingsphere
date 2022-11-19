@@ -33,7 +33,7 @@ import java.util.List;
 @Setter
 public final class ExpectedPartitionDefinition extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "table")
+    @XmlElement
     private ExpectedSimpleTable table;
     
     @XmlElement(name = "partition")

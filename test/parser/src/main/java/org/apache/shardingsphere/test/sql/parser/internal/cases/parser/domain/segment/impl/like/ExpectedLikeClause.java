@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * Expected like clause.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class ExpectedLikeClause extends AbstractExpectedSQLSegment {
     
     @XmlAttribute

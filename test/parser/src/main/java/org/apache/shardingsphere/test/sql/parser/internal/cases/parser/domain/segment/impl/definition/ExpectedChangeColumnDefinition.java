@@ -37,6 +37,6 @@ public final class ExpectedChangeColumnDefinition extends AbstractExpectedSQLSeg
     @XmlElement(name = "column-position")
     private ExpectedColumnPosition columnPosition;
     
-    @XmlElement(name = "previousColumn")
+    @XmlElement(name = "previous-column")
     private ExpectedColumn previousColumn;
 }

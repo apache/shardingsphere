@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.reset;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -26,17 +27,18 @@ import javax.xml.bind.annotation.XmlAttribute;
  * Expected reset option segment.
  */
 @Getter
+@Setter
 public final class ExpectedResetOptionSegment extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "master")
+    @XmlAttribute
     private boolean master;
     
     @XmlAttribute(name = "binary-log-file-index-number")
     private Long binaryLogFileIndexNumber;
     
-    @XmlAttribute(name = "all")
+    @XmlAttribute
     private boolean all;
     
-    @XmlAttribute(name = "channel")
+    @XmlAttribute
     private String channel;
 }

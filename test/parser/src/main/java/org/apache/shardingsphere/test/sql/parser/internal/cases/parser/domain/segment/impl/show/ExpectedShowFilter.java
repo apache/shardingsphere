@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.show;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.like.ExpectedLikeClause;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.where.ExpectedWhereClause;
@@ -28,11 +29,12 @@ import javax.xml.bind.annotation.XmlElement;
  * Expected show filter segment.
  */
 @Getter
+@Setter
 public final class ExpectedShowFilter extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "like")
+    @XmlElement
     private ExpectedLikeClause like;
     
-    @XmlElement(name = "where")
+    @XmlElement
     private ExpectedWhereClause where;
 }
