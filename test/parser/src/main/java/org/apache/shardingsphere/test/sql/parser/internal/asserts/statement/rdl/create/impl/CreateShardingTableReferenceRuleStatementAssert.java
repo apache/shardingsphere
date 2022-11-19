@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardin
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.rdl.ShardingTableReferenceRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShardingTableReferenceRule;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create.CreateShardingTableReferenceRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.CreateShardingTableReferenceRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;

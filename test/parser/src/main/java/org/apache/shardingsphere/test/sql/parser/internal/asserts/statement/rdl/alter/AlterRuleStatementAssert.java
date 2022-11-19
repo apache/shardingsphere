@@ -42,15 +42,15 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterShardingTableReferenceRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.alter.impl.AlterShardingTableRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterDatabaseDiscoveryTypeStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterDefaultShardingStrategyStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterEncryptRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterReadwriteSplittingRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterShadowRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterShardingAuditorStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterShardingTableReferenceRulesStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create.AlterDefaultShadowAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryHeartbeatStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterDefaultShardingStrategyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.encrypt.AlterEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.readwritesplitting.AlterReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.shadow.AlterShadowRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingAuditorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingTableReferenceRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.shadow.AlterDefaultShadowAlgorithmStatementTestCase;
 
 /**
  * Alter rule statement assert.

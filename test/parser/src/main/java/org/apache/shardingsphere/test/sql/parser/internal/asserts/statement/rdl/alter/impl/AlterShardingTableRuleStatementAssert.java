@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsq
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedAutoTableRule;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedTableRule;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterShardingAutoTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingAutoTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingTableRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;

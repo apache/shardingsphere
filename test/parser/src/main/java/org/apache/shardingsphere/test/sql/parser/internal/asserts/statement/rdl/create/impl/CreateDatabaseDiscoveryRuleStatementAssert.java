@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsq
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.PropertiesAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedDatabaseDiscoveryDefinitionRule;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.create.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryDefinitionRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;

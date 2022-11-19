@@ -24,7 +24,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.AlterShadowRule
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.rdl.ShadowRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShadowRule;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.alter.AlterShadowRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.shadow.AlterShadowRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
