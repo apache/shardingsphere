@@ -35,14 +35,14 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dist
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.hint.ShowReadwriteSplittingHintStatusStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.hint.ShowShardingHintStatusStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.hint.ClearReadwriteSplittingHintStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 
 /**
  * Hint RAL statement assert.

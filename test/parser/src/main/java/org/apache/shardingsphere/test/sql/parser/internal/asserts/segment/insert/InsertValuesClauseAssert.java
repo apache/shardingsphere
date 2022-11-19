@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.In
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.assignment.AssignmentValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.insert.ExpectedInsertValue;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.insert.ExpectedInsertValuesClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedInsertValue;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedInsertValuesClause;
 
 import java.util.Collection;
 

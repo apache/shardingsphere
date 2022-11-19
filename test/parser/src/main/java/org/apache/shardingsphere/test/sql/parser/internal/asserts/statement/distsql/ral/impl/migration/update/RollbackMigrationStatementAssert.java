@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dis
 
 import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.migration.RollbackMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.migration.RollbackMigrationStatementTestCase;
 
 import java.util.List;
 

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSeg
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.index.ExpectedLoadTableIndex;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dal.LoadIndexInfoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.index.ExpectedLoadTableIndex;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dal.LoadIndexInfoStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

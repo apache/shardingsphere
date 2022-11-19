@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dist
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.migration.QueryableScalingRALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.UpdatableRALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.migration.UpdatableScalingRALStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 /**
  * RAL statement assert.

@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.SQLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.registry.SQLCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
 import org.junit.Test;
 

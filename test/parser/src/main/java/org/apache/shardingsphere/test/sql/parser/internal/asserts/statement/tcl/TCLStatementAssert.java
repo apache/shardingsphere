@@ -41,17 +41,17 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.impl.SetConstraintsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.impl.SetTransactionStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.impl.UnlockStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.BeginTransactionStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.CommitStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.LockStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.PrepareTransactionTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.RollbackStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.SavepointStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.SetAutoCommitStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.SetConstraintsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.SetTransactionStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.tcl.UnlockStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.BeginTransactionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.CommitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.LockStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.PrepareTransactionTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.RollbackStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.SavepointStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.SetAutoCommitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.SetConstraintsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.SetTransactionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.tcl.UnlockStatementTestCase;
 
 /**
  * TCL statement assert.

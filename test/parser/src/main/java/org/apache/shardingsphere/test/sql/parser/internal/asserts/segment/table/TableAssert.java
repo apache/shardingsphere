@@ -31,11 +31,11 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expres
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.table.ExpectedJoinTable;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.table.ExpectedSubqueryTable;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedJoinTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSubqueryTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedTable;
 
 import java.util.Collection;
 import java.util.List;

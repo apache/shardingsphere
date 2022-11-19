@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dist
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rdl.RDLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rql.RQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.rul.RULStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 /**
  * DistSQL statement assert.

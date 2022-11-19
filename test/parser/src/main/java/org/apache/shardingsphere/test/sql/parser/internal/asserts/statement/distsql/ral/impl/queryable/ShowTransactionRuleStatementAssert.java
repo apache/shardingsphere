@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dis
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.ShowTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
 
 import static org.junit.Assert.assertNotNull;

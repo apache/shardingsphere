@@ -31,12 +31,12 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dist
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.migration.query.ShowMigrationListStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.migration.query.ShowMigrationSourceStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.distsql.ral.impl.migration.query.ShowMigrationStatusStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.ShowMigrationListStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.migration.ShowMigrationCheckStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.migration.ShowMigrationStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.ShowMigrationListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.migration.ShowMigrationCheckStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.migration.ShowMigrationStatusStatementTestCase;
 
 /**
  * Queryable RAL statement assert.

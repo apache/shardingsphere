@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLRepairTableStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dal.RepairTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dal.RepairTableStatementTestCase;
 
 /**
  * MySQL repair table statement assert.

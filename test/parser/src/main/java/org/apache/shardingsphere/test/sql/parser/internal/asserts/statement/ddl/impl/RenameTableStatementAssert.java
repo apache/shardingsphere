@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTable
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.ddl.RenameTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ddl.RenameTableStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

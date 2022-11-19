@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.assignment.ExpectedAssignmentValue;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.assignment.ExpectedAssignmentValue;
 
 /**
  * Assignment value assert.

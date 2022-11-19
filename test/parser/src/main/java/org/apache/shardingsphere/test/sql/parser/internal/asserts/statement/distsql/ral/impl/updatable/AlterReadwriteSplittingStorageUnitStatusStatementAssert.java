@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.AlterReadwriteSplittingStorageUnitStatusStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.DatabaseContainedTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.DatabaseContainedTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.registry.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
 
 import java.util.Collections;
