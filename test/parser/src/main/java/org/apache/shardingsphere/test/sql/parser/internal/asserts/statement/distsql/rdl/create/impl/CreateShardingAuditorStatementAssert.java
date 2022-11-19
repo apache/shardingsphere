@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditor
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAuditorStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.rdl.ShardingAuditorAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.rdl.ExpectedShardingAuditor;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.distsql.rdl.create.CreateShardingAuditorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShardingAuditor;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.distsql.rdl.create.CreateShardingAuditorStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;

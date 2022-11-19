@@ -23,9 +23,9 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCases;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

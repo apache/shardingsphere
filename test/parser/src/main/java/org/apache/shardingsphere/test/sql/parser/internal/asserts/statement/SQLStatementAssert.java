@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ddl.DDLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.DMLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.TCLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 /**
  * SQL statement assert.

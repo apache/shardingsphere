@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sqlserver;
 
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalUnsupportedSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CharsetNameSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.charset.ExpectedCharsetName;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.charset.ExpectedCharsetName;
 
 import java.util.Optional;
 

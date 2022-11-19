@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.InsertStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.UpdateStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.query.ExpectedPrepareStatementQuery;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.query.ExpectedPrepareStatementQuery;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
