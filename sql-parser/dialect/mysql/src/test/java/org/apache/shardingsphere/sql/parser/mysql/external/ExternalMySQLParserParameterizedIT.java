@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.external;
 
-import org.apache.shardingsphere.test.sql.parser.external.engine.SQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
@@ -28,9 +28,9 @@ import java.net.URI;
 import java.util.Collection;
 
 @RunWith(ShardingSphereParallelTestParameterized.class)
-public final class MySQLParserParameterizedIT extends SQLParserParameterizedIT {
+public final class ExternalMySQLParserParameterizedIT extends ExternalSQLParserParameterizedIT {
     
-    public MySQLParserParameterizedIT(final String sqlCaseId, final String sql) {
+    public ExternalMySQLParserParameterizedIT(final String sqlCaseId, final String sql) {
         super(sqlCaseId, sql, "MySQL", "CSV");
     }
     

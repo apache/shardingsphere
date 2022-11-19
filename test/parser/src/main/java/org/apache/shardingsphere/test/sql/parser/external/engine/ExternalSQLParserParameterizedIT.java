@@ -30,7 +30,7 @@ import org.junit.Test;
 import java.util.Properties;
 
 @Slf4j
-public abstract class SQLParserParameterizedIT {
+public abstract class ExternalSQLParserParameterizedIT {
     
     private final String sqlCaseId;
     
@@ -40,7 +40,7 @@ public abstract class SQLParserParameterizedIT {
     
     private final SQLParseResultReporter resultReporter;
     
-    protected SQLParserParameterizedIT(final String sqlCaseId, final String sql, final String databaseType, final String reportType) {
+    protected ExternalSQLParserParameterizedIT(final String sqlCaseId, final String sql, final String databaseType, final String reportType) {
         this.sqlCaseId = sqlCaseId;
         this.sql = sql;
         this.databaseType = databaseType;
