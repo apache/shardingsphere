@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.hikari;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Objects;
 
@@ -43,9 +44,8 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
             return;
         }
         long connectionTimeout = Long.parseLong(dataSourceProps.getAllLocalProperties().get("connectionTimeout").toString());
-        if (connectionTimeout < SOFT_TIMEOUT_FLOOR) {
-            throw new IllegalArgumentException("connectionTimeout cannot be less than " + SOFT_TIMEOUT_FLOOR + "ms");
-        }
+        ShardingSpherePreconditions.checkState(connectionTimeout >= SOFT_TIMEOUT_FLOOR,
+                () -> new IllegalArgumentException(String.format("connectionTimeout cannot be less than %sms", SOFT_TIMEOUT_FLOOR)));
     }
     
     private void validateIdleTimeout(final DataSourceProperties dataSourceProps) {
@@ -53,9 +53,7 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
             return;
         }
         long idleTimeout = Long.parseLong(dataSourceProps.getAllLocalProperties().get("idleTimeout").toString());
-        if (idleTimeout < 0) {
-            throw new IllegalArgumentException("idleTimeout cannot be negative");
-        }
+        ShardingSpherePreconditions.checkState(idleTimeout >= 0, () -> new IllegalArgumentException("idleTimeout cannot be negative"));
     }
     
     private void validateMaximumPoolSize(final DataSourceProperties dataSourceProps) {
@@ -63,9 +61,7 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
             return;
         }
         int maximumPoolSize = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("maximumPoolSize").toString());
-        if (maximumPoolSize < 1) {
-            throw new IllegalArgumentException("maxPoolSize cannot be less than 1");
-        }
+        ShardingSpherePreconditions.checkState(maximumPoolSize >= 1, () -> new IllegalArgumentException("maxPoolSize cannot be less than 1"));
     }
     
     private void validateMinimumIdle(final DataSourceProperties dataSourceProps) {
@@ -73,9 +69,7 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
             return;
         }
         int minimumIdle = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("minimumIdle").toString());
-        if (minimumIdle < 0) {
-            throw new IllegalArgumentException("minimumIdle cannot be negative");
-        }
+        ShardingSpherePreconditions.checkState(minimumIdle >= 0, () -> new IllegalArgumentException("minimumIdle cannot be negative"));
     }
     
     private void validateValidationTimeout(final DataSourceProperties dataSourceProps) {
@@ -83,9 +77,8 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
             return;
         }
         long validationTimeout = Long.parseLong(dataSourceProps.getAllLocalProperties().get("validationTimeout").toString());
-        if (validationTimeout < SOFT_TIMEOUT_FLOOR) {
-            throw new IllegalArgumentException("validationTimeout cannot be less than " + SOFT_TIMEOUT_FLOOR + "ms");
-        }
+        ShardingSpherePreconditions.checkState(validationTimeout >= SOFT_TIMEOUT_FLOOR,
+                () -> new IllegalArgumentException(String.format("validationTimeout cannot be less than %sms", SOFT_TIMEOUT_FLOOR)));
     }
     
     private boolean checkValueExist(final DataSourceProperties dataSourceProps, final String key) {

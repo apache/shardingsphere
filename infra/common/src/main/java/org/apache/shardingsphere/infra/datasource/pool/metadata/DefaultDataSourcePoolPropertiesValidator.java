@@ -26,6 +26,5 @@ public class DefaultDataSourcePoolPropertiesValidator implements DataSourcePoolP
     
     @Override
     public void validateProperties(final DataSourceProperties dataSourceProps) {
-        
     }
 }
