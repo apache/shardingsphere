@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleAssert {
                     actual.getClass().getSimpleName())), actual.getReadDataSources(), is(expected.getReadDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getLoadBalancer(), is(expected.getLoadBalancer()));
-            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
         }
     }
 }

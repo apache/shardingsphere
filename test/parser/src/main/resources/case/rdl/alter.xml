@@ -156,9 +156,9 @@
                     <property key="groupName" value="92504d5b-6dec" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/5 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
@@ -168,9 +168,9 @@
                     <property key="groupName" value="92504d5b-6dec-2" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/6 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
     </alter-database-discovery-definition-rule>
     
