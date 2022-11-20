@@ -143,14 +143,9 @@ public final class StateChangedSubscriberTest {
     
     @Test
     public void assertRenewInstanceStatus() {
-        Collection<String> testStates = new LinkedList<>();
-        testStates.add(StateType.OK.name());
-        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), testStates);
+        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), StateType.OK.name());
         subscriber.renew(mockStateEvent);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
-        testStates.add(StateType.CIRCUIT_BREAK.name());
-        subscriber.renew(mockStateEvent);
-        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
     
     @Test
