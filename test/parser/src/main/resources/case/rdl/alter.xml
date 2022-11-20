@@ -156,9 +156,9 @@
                     <property key="groupName" value="92504d5b-6dec" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/5 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
@@ -168,9 +168,9 @@
                     <property key="groupName" value="92504d5b-6dec-2" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/6 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
     </alter-database-discovery-definition-rule>
     
@@ -222,7 +222,7 @@
     </alter-encrypt-rule>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
-        <rule name="t_encrypt" queryWithCipherColumn="false">
+        <rule name="t_encrypt" query-with-cipher-column="false">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>

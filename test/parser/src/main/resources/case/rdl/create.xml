@@ -296,9 +296,9 @@
                     <property key="groupName" value="92504d5b-6dec" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/5 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
@@ -308,9 +308,9 @@
                     <property key="groupName" value="92504d5b-6dec-2" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/6 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
     </create-database-discovery-definition-rule>
 
@@ -323,9 +323,9 @@
                     <property key="groupName" value="92504d5b-6dec"/>
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/5 * * * * ?"/>
-            </heartbeat>
+            </properties>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
@@ -335,9 +335,9 @@
                     <property key="groupName" value="92504d5b-6dec-2"/>
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/6 * * * * ?"/>
-            </heartbeat>
+            </properties>
         </rule>
     </create-database-discovery-definition-rule>
     
@@ -404,11 +404,11 @@
     </create-encrypt-rule>
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
-        <rule name="encrypt" queryWithCipherColumn="false">
+        <rule name="encrypt" query-with-cipher-column="false">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>
-                        <property key="aes-key-value" value="123456abc"/>
+                        <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
             </column>

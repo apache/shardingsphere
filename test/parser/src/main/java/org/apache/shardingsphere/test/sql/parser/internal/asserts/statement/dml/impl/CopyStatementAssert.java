@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.prepare.PrepareStatementQueryAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.CopyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.CopyStatementTestCase;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -65,11 +65,11 @@ public final class CopyStatementAssert {
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         Collection<ColumnSegment> columnSegments = CopyStatementHandler.getColumns(actual);
-        if (null == expected.getColumns() || expected.getColumns().getColumns().isEmpty()) {
+        if (expected.getColumns().isEmpty()) {
             assertTrue(assertContext.getText("Actual column segments should not exist."), columnSegments.isEmpty());
         } else {
             assertFalse(assertContext.getText("Actual column segments should exist."), columnSegments.isEmpty());
-            ColumnAssert.assertIs(assertContext, columnSegments, expected.getColumns().getColumns());
+            ColumnAssert.assertIs(assertContext, columnSegments, expected.getColumns());
         }
     }
     

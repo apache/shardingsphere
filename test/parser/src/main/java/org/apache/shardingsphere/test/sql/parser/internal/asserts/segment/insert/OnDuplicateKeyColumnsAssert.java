@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDupl
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.assignment.AssignmentAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.PropertiesAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleAssert {
                     actual.getClass().getSimpleName())), actual.getReadDataSources(), is(expected.getReadDataSources()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getLoadBalancer(), is(expected.getLoadBalancer()));
-            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
         }
     }
 }

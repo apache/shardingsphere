@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLInstallComponentStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.component.ExpectedComponent;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dal.InstallComponentStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.component.ExpectedComponent;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dal.InstallComponentStatementTestCase;
 
 import java.util.List;
 

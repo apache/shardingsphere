@@ -34,6 +34,6 @@ public final class ShardingSphereParallelTestParameterized extends Parameterized
         super(clazz);
         ParallelRuntimeStrategy parallelRuntimeStrategy = clazz.getAnnotation(ParallelRuntimeStrategy.class);
         ParallelLevel level = null != parallelRuntimeStrategy ? parallelRuntimeStrategy.value() : ParallelLevel.DEFAULT;
-        setScheduler(new ParallelRunnerScheduler(level, new DefaultParallelRunnerExecutorFactory()));
+        setScheduler(new ParallelRunnerScheduler(level, new DefaultParallelRunnerExecutorFactory<>()));
     }
 }

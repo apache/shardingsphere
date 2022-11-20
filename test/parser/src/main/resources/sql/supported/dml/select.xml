@@ -147,4 +147,5 @@
     <sql-case id="select_xmlelement_xmlagg_function" value="SELECT XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)) as 'Dept_list' FROM employees e WHERE e.department_id = 30;" db-types="Oracle" />
     <sql-case id="select_xmlcast_function" value="SELECT XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256)) FROM purchaseorder;" db-types="Oracle" />
     <sql-case id="select_xmlcolattval_function" value="SELECT XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) 'Emp Element' FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
+    <sql-case id="select_xmlexists_function" value="SELECT id, XMLEXISTS('//student[@age=20]' PASSING BY VALUE xcol AS x) FROM x_table;" db-types="Oracle" />
 </sql-cases>

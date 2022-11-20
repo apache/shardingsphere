@@ -691,3 +691,7 @@ XMLCOLATTVAL
 EVALNAME
     : E V A L N A M E
     ;
+
+XMLEXISTS
+    : X M L E X I S T S
+    ;

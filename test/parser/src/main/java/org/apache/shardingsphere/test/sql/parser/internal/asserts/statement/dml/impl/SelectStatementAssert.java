@@ -41,7 +41,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.projec
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.with.WithClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.SelectStatementTestCase;
 
 import java.util.Optional;
 

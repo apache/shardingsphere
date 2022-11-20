@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.ddl.CreateIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ddl.CreateIndexStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -67,10 +67,10 @@ public final class CreateIndexStatementAssert {
     }
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
-        if (null == expected.getIndexColumns() || expected.getIndexColumns().getColumns().isEmpty()) {
+        if (null == expected.getColumns()) {
             assertTrue(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().isEmpty());
         } else {
-            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getIndexColumns().getColumns());
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }
 }

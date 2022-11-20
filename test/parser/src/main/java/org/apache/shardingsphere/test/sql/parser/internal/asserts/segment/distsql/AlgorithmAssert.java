@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.distsql.ExpectedAlgorithm;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedAlgorithm;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +47,7 @@ public final class AlgorithmAssert {
         } else {
             assertNotNull(assertContext.getText("Actual algorithm should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s algorithm segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
-            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
         }
     }
 }

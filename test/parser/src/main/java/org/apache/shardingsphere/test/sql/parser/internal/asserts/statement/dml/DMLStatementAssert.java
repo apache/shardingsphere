@@ -37,15 +37,15 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.MergeStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.UpdateStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.CallStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.CopyStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.DeleteStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.DoStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.InsertStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.MergeStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.SelectStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.CallStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.CopyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.DoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.MergeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.UpdateStatementTestCase;
 
 /**
  * DML statement assert.

@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.with.ExpectedCommonTableExpressionClause;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.domain.segment.impl.with.ExpectedWithClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.with.ExpectedCommonTableExpressionClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.with.ExpectedWithClause;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -59,13 +59,13 @@ public final class WithClauseAssert {
     }
     
     private static void assertCommonTableExpressionSegment(final SQLCaseAssertContext assertContext, final CommonTableExpressionSegment actual, final ExpectedCommonTableExpressionClause expected) {
-        if (null != expected.getCommonTableExpressColumns()) {
-            assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getCommonTableExpressColumns().getColumns().size()));
+        if (!expected.getColumns().isEmpty()) {
+            assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
         }
         assertThat(assertContext.getText("Common table expression name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
         int count = 0;
         for (ColumnSegment each : actual.getColumns()) {
-            ColumnAssert.assertIs(assertContext, each, expected.getCommonTableExpressColumns().getColumns().get(count));
+            ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
             count++;
         }
         if (null != expected.getSubquery()) {
