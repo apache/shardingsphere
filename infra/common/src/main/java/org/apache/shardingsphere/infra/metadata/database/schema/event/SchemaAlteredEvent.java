@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Schema altered event.
@@ -36,11 +36,11 @@ public final class SchemaAlteredEvent implements MetaDataRefreshedEvent {
     
     private final String schemaName;
     
-    private final Collection<ShardingSphereTable> alteredTables = new ArrayList<>();
+    private final Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
     
-    private final Collection<ShardingSphereView> alteredViews = new ArrayList<>();
+    private final Collection<ShardingSphereView> alteredViews = new LinkedList<>();
     
-    private final Collection<String> droppedTables = new ArrayList<>();
+    private final Collection<String> droppedTables = new LinkedList<>();
     
-    private final Collection<String> droppedViews = new ArrayList<>();
+    private final Collection<String> droppedViews = new LinkedList<>();
 }

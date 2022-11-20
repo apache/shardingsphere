@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Instance of compute node.
@@ -36,7 +36,7 @@ public final class ComputeNodeInstance {
     
     private final StateContext state = new StateContext();
     
-    private Collection<String> labels = new ArrayList<>();
+    private Collection<String> labels = new LinkedList<>();
     
     @Setter
     private volatile int workerId;
