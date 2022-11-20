@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingTableReferenceRuleStatement;
 
 import java.util.Collection;

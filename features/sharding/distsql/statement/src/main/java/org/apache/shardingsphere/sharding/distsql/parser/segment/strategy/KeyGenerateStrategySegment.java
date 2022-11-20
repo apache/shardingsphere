@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;

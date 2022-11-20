@@ -15,31 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
- * Table reference rule segment.
+ * Abstract table rule segment.
  */
+@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-public final class TableReferenceRuleSegment implements ASTNode {
+@Setter
+public abstract class AbstractTableRuleSegment implements ASTNode {
     
-    private final String tableGroup;
+    private final String logicTable;
+    
+    private final Collection<String> dataSourceNodes;
+    
+    private KeyGenerateStrategySegment keyGenerateStrategySegment;
+    
+    private AuditStrategySegment auditStrategySegment;
     
     /**
-     * Get table reference.
-     * 
-     * @return table reference
+     * Empty table rule segment.
      */
-    public Collection<String> getTableReference() {
-        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
+        
+        public EmptyTableRuleSegment() {
+            super(null, null);
+        }
     }
 }

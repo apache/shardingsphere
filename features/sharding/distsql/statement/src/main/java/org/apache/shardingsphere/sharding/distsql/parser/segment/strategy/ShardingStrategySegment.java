@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * Audit strategy segment.
+ * Sharding strategy segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuditStrategySegment implements ASTNode {
+public final class ShardingStrategySegment implements ASTNode {
     
-    private final Collection<String> auditorNames;
+    private final String type;
     
-    private final Collection<ShardingAuditorSegment> shardingAuditorSegments;
+    private final String shardingColumn;
     
-    private final boolean allowHintDisable;
-    
-    public AuditStrategySegment(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        this(auditorNames, Collections.emptyList(), allowHintDisable);
-    }
+    private final AlgorithmSegment shardingAlgorithm;
 }

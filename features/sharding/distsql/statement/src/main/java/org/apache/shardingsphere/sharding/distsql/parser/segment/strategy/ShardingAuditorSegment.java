@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,15 +23,13 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Sharding strategy segment.
+ * Sharding auditor segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingStrategySegment implements ASTNode {
+public final class ShardingAuditorSegment implements ASTNode {
     
-    private final String type;
-    
-    private final String shardingColumn;
+    private final String auditorName;
     
     private final AlgorithmSegment algorithmSegment;
 }

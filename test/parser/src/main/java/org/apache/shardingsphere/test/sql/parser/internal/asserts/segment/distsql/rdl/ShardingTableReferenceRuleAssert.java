@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.dists
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShardingTableReferenceRule;
 

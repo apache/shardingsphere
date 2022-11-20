@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
 
 import java.util.Arrays;
