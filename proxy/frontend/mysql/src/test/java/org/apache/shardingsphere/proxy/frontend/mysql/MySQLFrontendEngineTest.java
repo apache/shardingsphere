@@ -64,6 +64,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -137,9 +138,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
-        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getUsername());
         assertNull(actual.getDatabase());
-        assertTrue(actual.isFinished());
+        assertFalse(actual.isFinished());
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
     
@@ -152,9 +153,9 @@ public final class MySQLFrontendEngineTest extends ProxyContextRestorer {
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress(InetAddress.getByAddress(new byte[]{(byte) 192, (byte) 168, (byte) 0, (byte) 102}), 3307));
         AuthenticationResult actual = mysqlFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
-        assertThat(actual.getUsername(), is("root"));
+        assertNull(actual.getUsername());
         assertNull(actual.getDatabase());
-        assertTrue(actual.isFinished());
+        assertFalse(actual.isFinished());
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
     

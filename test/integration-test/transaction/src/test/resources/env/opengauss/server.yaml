@@ -44,6 +44,6 @@ props:
   proxy-backend-query-fetch-size: -1
   proxy-backend-executor-suitable: OLAP
   proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
-  sql-federation-type: NONE
+  sql-federation-type: ADVANCED
   proxy-backend-driver-type: JDBC
   proxy-frontend-database-protocol-type: openGauss

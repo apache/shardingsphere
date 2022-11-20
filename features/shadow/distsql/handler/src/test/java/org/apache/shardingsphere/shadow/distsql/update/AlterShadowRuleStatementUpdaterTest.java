@@ -39,10 +39,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -64,11 +64,11 @@ public final class AlterShadowRuleStatementUpdaterTest {
     
     @Before
     public void before() {
-        Map<String, ShadowDataSourceConfiguration> map = new HashMap<>();
-        map.put("initRuleName1", new ShadowDataSourceConfiguration("ds1", "ds_shadow1"));
-        map.put("initRuleName2", new ShadowDataSourceConfiguration("ds2", "ds_shadow2"));
+        Collection<ShadowDataSourceConfiguration> shadowDataSource = new LinkedList<>();
+        shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName1", "ds1", "ds_shadow1"));
+        shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName2", "ds2", "ds_shadow2"));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(currentConfig.getDataSources()).thenReturn(map);
+        when(currentConfig.getDataSources()).thenReturn(shadowDataSource);
     }
     
     @Test(expected = MissingRequiredRuleException.class)

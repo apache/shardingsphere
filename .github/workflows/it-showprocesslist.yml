@@ -46,6 +46,7 @@ on:
       - 'test/integration-test/env/**'
       - 'test/integration-test/showprocesslist/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: it-showprocesslist-${{ github.workflow }}-${{ github.ref }}

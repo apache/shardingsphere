@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.ClusterState
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.ddl.ClusterStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ddl.ClusterStatementTestCase;
 
 import java.util.Optional;
 

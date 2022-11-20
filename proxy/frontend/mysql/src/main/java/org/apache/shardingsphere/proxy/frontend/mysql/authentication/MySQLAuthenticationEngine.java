@@ -83,7 +83,12 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             authenticationMethodMismatch((MySQLPacketPayload) payload);
         }
         Optional<MySQLVendorError> vendorError = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
-        context.writeAndFlush(vendorError.isPresent() ? createErrorPacket(vendorError.get(), context) : new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
+        if (vendorError.isPresent()) {
+            context.writeAndFlush(createErrorPacket(vendorError.get(), context));
+            context.close();
+            return AuthenticationResultBuilder.continued();
+        }
+        context.writeAndFlush(new MySQLOKPacket(++sequenceId, DEFAULT_STATUS_FLAG));
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase());
     }
     
@@ -96,6 +101,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         context.channel().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).set(characterSet);
         if (!Strings.isNullOrEmpty(packet.getDatabase()) && !ProxyContext.getInstance().databaseExists(packet.getDatabase())) {
             context.writeAndFlush(new MySQLErrPacket(++sequenceId, MySQLVendorError.ER_BAD_DB_ERROR, packet.getDatabase()));
+            context.close();
             return AuthenticationResultBuilder.continued();
         }
         MySQLAuthenticator authenticator = authenticationHandler.getAuthenticator(packet.getUsername(), getHostAddress(context));

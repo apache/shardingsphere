@@ -2111,4 +2111,22 @@
             </value>
         </values>
     </insert>
+
+    <insert sql-case-id="insert_datetime_literals">
+        <table name="date_tab" start-index="12" stop-index="19" />
+        <columns start-index="20" stop-index="20" />
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1999-12-01 10:00:00" start-index="30" stop-index="59" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1999-12-01 10:00:00" start-index="62" stop-index="91" />
+                </assignment-value>
+                <assignment-value>
+                    <literal-expression value="1999-12-01 10:00:00" start-index="94" stop-index="123" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
 </sql-parser-test-cases>

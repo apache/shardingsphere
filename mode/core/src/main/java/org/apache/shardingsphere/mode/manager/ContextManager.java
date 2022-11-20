@@ -50,6 +50,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -409,6 +410,15 @@ public final class ContextManager implements AutoCloseable {
         return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props));
     }
     
+    private MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource) throws SQLException {
+        MetaDataPersistService metaDataPersistService = metaDataContexts.getPersistService();
+        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, metaDataPersistService.getDatabaseRulePersistService().load(databaseName));
+        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
+        ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
+                GlobalRulesBuilder.buildRules(metaDataPersistService.getGlobalRuleService().load(), changedDatabases, instanceContext, props));
+        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, props));
+    }
+    
     private Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
                                                                        final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         if (null != switchingResource && !switchingResource.getNewDataSources().isEmpty()) {
@@ -476,28 +486,31 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
     }
     
+    private void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        SchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
+                .forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
+    }
+    
     /**
-     * Reload database.
+     * Reload database metadata from governance center.
      *
      * @param databaseName to be reloaded database name
      */
-    public synchronized void reloadDatabase(final String databaseName) {
+    public synchronized void reloadDatabaseMetaData(final String databaseName) {
         try {
             ShardingSphereResourceMetaData currentResourceMetaData = metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData();
-            SwitchingResource switchingResource = new SwitchingResource(currentResourceMetaData, currentResourceMetaData.getDataSources(), Collections.emptyMap());
-            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
+            Map<String, DataSourceProperties> dataSourceProps = metaDataContexts.getPersistService().getDataSourceService().load(databaseName);
+            SwitchingResource switchingResource = new ResourceSwitchManager().createByAlterDataSourceProps(currentResourceMetaData, dataSourceProps);
+            metaDataContexts.getMetaData().getDatabases().putAll(renewDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), switchingResource));
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource);
             deletedSchemaNames(databaseName, reloadedMetaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getDatabase(databaseName));
             metaDataContexts = reloadedMetaDataContexts;
             metaDataContexts.getMetaData().getDatabases().values().forEach(
                     each -> each.getSchemas().forEach((schemaName, schema) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().compareAndPersist(each.getName(), schemaName, schema)));
+            switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
-            log.error("Reload database: {} failed", databaseName, ex);
+            log.error("Reload database meta data: {} failed", databaseName, ex);
         }
-    }
-    
-    private void deletedSchemaNames(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
-        SchemaManager.getToBeDeletedSchemaNames(reloadDatabase.getSchemas(), currentDatabase.getSchemas()).keySet()
-                .forEach(each -> metaDataContexts.getPersistService().getDatabaseMetaDataService().dropSchema(databaseName, each));
     }
     
     /**

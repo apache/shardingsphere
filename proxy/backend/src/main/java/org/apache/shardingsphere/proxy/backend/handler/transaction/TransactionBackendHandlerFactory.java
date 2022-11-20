@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;

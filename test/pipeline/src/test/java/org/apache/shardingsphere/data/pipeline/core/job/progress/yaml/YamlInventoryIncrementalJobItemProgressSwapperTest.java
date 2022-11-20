@@ -59,7 +59,6 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
-        assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
         assertThat(progress.getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
@@ -74,7 +73,6 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
         assertNotNull(progress.getIncremental());
-        assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
         assertThat(progress.getDataSourceName(), is("ds_0"));
         assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);

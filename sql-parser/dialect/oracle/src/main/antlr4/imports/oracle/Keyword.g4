@@ -639,3 +639,59 @@ REGR_SYY
 REGR_SXY
     : R E G R UL_ S X Y
     ;
+
+LPAD
+    : L P A D
+    ;
+
+ZONE
+    : Z O N E
+    ;
+
+AT
+    : A T
+    ;
+
+SESSIONTIMEZONE
+    : S E S S I O N T I M E Z O N E
+    ;
+
+SYSTIMESTAMP
+    : S Y S T I M E S T A M P
+    ;
+
+DBTIMEZONE
+    : D B T I M E Z O N E
+    ;
+
+TO_CHAR
+    : T O UL_ C H A R
+    ;
+
+XMLELEMENT
+    : X M L E L E M E N T
+    ;
+
+XMLAGG
+    : X M L A G G
+    ;
+
+XMLCAST
+    : X M L C A S T
+    ;
+
+COLUMN_VALUE
+    : C O L U M N UL_ V A L U E
+    ;
+
+XMLCOLATTVAL
+    : X M L C O L A T T V A L
+    ;
+
+EVALNAME
+    : E V A L N A M E
+    ;
+
+XMLEXISTS
+    : X M L E X I S T S
+    ;

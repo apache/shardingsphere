@@ -85,7 +85,7 @@ public final class EncryptConditionEngine {
      *
      * @param whereSegments where segments
      * @param columnSegments column segments
-     * @param sqlStatementContext sql statement context
+     * @param sqlStatementContext SQL statement context
      * @param databaseName database name
      * @return encrypt conditions
      */

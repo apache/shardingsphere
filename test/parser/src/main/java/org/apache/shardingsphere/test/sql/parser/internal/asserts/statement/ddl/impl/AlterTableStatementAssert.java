@@ -38,11 +38,11 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.defini
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.definition.ExpectedAddColumnDefinition;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.definition.ExpectedChangeColumnDefinition;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.definition.ExpectedColumnDefinition;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.definition.ExpectedAddColumnDefinition;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.definition.ExpectedChangeColumnDefinition;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.definition.ExpectedColumnDefinition;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.definition.ExpectedModifyColumnDefinition;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ddl.AlterTableStatementTestCase;
 
 import java.util.Collection;
 import java.util.LinkedList;

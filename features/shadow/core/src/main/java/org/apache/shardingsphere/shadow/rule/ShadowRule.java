@@ -80,8 +80,8 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         initShadowTableRules(ruleConfig.getTables());
     }
     
-    private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {
-        dataSources.forEach((key, value) -> shadowDataSourceMappings.put(key, new ShadowDataSourceRule(value.getProductionDataSourceName(), value.getShadowDataSourceName())));
+    private void initShadowDataSourceMappings(final Collection<ShadowDataSourceConfiguration> dataSources) {
+        dataSources.forEach(each -> shadowDataSourceMappings.put(each.getName(), new ShadowDataSourceRule(each.getProductionDataSourceName(), each.getShadowDataSourceName())));
     }
     
     private void initShadowAlgorithmConfigurations(final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {

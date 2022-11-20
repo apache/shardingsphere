@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Collection;

@@ -38,7 +38,7 @@ public final class SingleTableRouteEngineFactory {
      * Create new instance of single table route engine.
      *
      * @param singleTableNames single table names
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      * @return created instance
      */
     public static Optional<SingleTableRouteEngine> newInstance(final Collection<QualifiedTable> singleTableNames, final SQLStatement sqlStatement) {

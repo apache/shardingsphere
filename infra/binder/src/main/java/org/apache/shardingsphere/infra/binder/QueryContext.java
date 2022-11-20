@@ -48,7 +48,7 @@ public final class QueryContext {
     }
     
     /**
-     * Find sql statement database name.
+     * Find SQL statement database name.
      * 
      * @return database name
      */

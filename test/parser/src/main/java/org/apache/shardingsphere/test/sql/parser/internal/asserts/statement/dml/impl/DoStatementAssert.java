@@ -27,8 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.dostatement.ExpectedDoParameter;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dml.DoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.dostatement.ExpectedDoParameter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.DoStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
