@@ -71,9 +71,9 @@ public final class EncryptDistSqlTest {
         assertThat(userEncryptColumn.getPlainColumn(), is("user_plain"));
         assertThat(userEncryptColumn.getCipherColumn(), is("user_cipher"));
         assertThat(userEncryptColumn.getEncryptor().getName(), is("AES"));
-        Properties properties = new Properties();
-        properties.setProperty("aes-key-value", "123456abc");
-        assertThat(userEncryptColumn.getEncryptor().getProps(), is(properties));
+        Properties props = new Properties();
+        props.setProperty("aes-key-value", "123456abc");
+        assertThat(userEncryptColumn.getEncryptor().getProps(), is(props));
         EncryptColumnSegment orderEncryptColumn = encryptRuleColumns.next();
         assertThat(orderEncryptColumn.getName(), is("order_id"));
         assertNull(orderEncryptColumn.getPlainColumn());

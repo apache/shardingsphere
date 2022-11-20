@@ -26,18 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistSQLScriptConstants {
     
-    public static final String RESOURCE_DB = "resource_db";
-    
-    public static final String SHARDING_DB = "sharding_db";
-    
-    public static final String READWRITE_SPLITTING_DB = "readwrite_splitting_db";
-    
-    public static final String DATABASE_DISCOVERY_DB = "database_discovery_db";
-    
-    public static final String ENCRYPT_DB = "encrypt_db";
-    
-    public static final String SHADOW_DB = "shadow_db";
-    
     public static final String STANDARD = "standard";
     
     public static final String COMPLEX = "complex";
@@ -52,7 +40,7 @@ public final class DistSQLScriptConstants {
     
     public static final String USE_DATABASE = "USE %s;";
     
-    public static final String ADD_RESOURCE = "REGISTER STORAGE UNIT";
+    public static final String REGISTER_STORAGE_UNIT = "REGISTER STORAGE UNIT";
     
     public static final String KEY_URL = "url";
     
@@ -62,11 +50,11 @@ public final class DistSQLScriptConstants {
     
     public static final String RESOURCE_DEFINITION = " %s ("
             + System.lineSeparator()
-            + "URL=\"%s\","
+            + "URL='%s',"
             + System.lineSeparator()
-            + "USER=\"%s\","
+            + "USER='%s',"
             + System.lineSeparator()
-            + "PASSWORD=\"%s\","
+            + "PASSWORD='%s',"
             + System.lineSeparator()
             + "PROPERTIES(%s)"
             + System.lineSeparator()
@@ -74,28 +62,20 @@ public final class DistSQLScriptConstants {
     
     public static final String RESOURCE_DEFINITION_WITHOUT_PASSWORD = " %s ("
             + System.lineSeparator()
-            + "URL=\"%s\","
+            + "URL='%s',"
             + System.lineSeparator()
-            + "USER=\"%s\","
+            + "USER='%s',"
             + System.lineSeparator()
             + "PROPERTIES(%s)"
             + ")";
     
-    public static final String PROPERTY = "\"%s\"=\"%s\"";
-    
-    public static final String CREATE_SHARDING_ALGORITHM = "CREATE SHARDING ALGORITHM";
-    
-    public static final String SHARDING_ALGORITHM = " %s ("
-            + System.lineSeparator()
-            + "TYPE(NAME=\"%s\", PROPERTIES(%s))"
-            + System.lineSeparator()
-            + ")";
+    public static final String PROPERTY = "'%s'='%s'";
     
     public static final String CREATE_SHARDING_TABLE = "CREATE SHARDING TABLE RULE";
     
     public static final String SHARDING_TABLE = " %s ("
             + System.lineSeparator()
-            + "DATANODES(\"%s\"),"
+            + "DATANODES('%s'),"
             + System.lineSeparator()
             + "%s"
             + System.lineSeparator()
@@ -105,47 +85,49 @@ public final class DistSQLScriptConstants {
     
     public static final String TABLE_STRATEGY = "TABLE_STRATEGY";
     
-    public static final String SHARDING_STRATEGY_STANDARD = "%s(TYPE=\"%s\", SHARDING_COLUMN=%s, SHARDING_ALGORITHM=%s),"
-            + System.lineSeparator();
+    public static final String STRATEGY_STANDARD = "TYPE='%s', SHARDING_COLUMN=%s, SHARDING_ALGORITHM(%s)";
     
-    public static final String SHARDING_STRATEGY_COMPLEX = "%s(TYPE=\"%s\", SHARDING_COLUMNS=%s, SHARDING_ALGORITHM=%s),"
-            + System.lineSeparator();
+    public static final String STRATEGY_COMPLEX = "TYPE='%s', SHARDING_COLUMNS=%s, SHARDING_ALGORITHM(%s)";
     
-    public static final String SHARDING_STRATEGY_HINT = "%s(TYPE=\"%s\", SHARDING_ALGORITHM=%s),"
-            + System.lineSeparator();
+    public static final String STRATEGY_HINT = "TYPE='%s', SHARDING_ALGORITHM(%s)";
     
-    public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, KEY_GENERATOR=%s),"
-            + System.lineSeparator();
+    public static final String SHARDING_STRATEGY_STANDARD = "%s(" + STRATEGY_STANDARD + ")," + System.lineSeparator();
     
-    public static final String CREATE_KEY_GENERATOR = "CREATE SHARDING KEY GENERATOR";
+    public static final String SHARDING_STRATEGY_COMPLEX = "%s(" + STRATEGY_COMPLEX + ")," + System.lineSeparator();
+    
+    public static final String SHARDING_STRATEGY_HINT = "%s(" + STRATEGY_HINT + ")," + System.lineSeparator();
+    
+    public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, %s)," + System.lineSeparator();
     
     public static final String KEY_GENERATOR = " %s ("
-            + System.lineSeparator()
-            + "TYPE(NAME=\"%s\")"
-            + System.lineSeparator()
-            + ")";
-    
-    public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
-    
-    public static final String BRACKET = "(%s)";
-    
-    public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
-    
-    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
-    
-    public static final String READWRITE_SPLITTING = " %s ("
-            + System.lineSeparator()
-            + "WRITE_STORAGE_UNIT=%s,"
-            + System.lineSeparator()
-            + "READ_STORAGE_UNITS(%s),"
             + System.lineSeparator()
             + "%s"
             + System.lineSeparator()
             + ")";
     
-    public static final String READWRITE_SPLITTING_TYPE = "TYPE(NAME=\"%s\")";
+    public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING TABLE REFERENCE RULE";
     
-    public static final String READWRITE_SPLITTING_TYPE_PROPERTIES = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
+    public static final String BINDING_TABLES = " (%s)";
+    
+    public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
+    
+    public static final String CREATE_READWRITE_SPLITTING_RULE = "CREATE READWRITE_SPLITTING RULE";
+    
+    public static final String READWRITE_SPLITTING_FOR_STATIC = " %s ("
+            + System.lineSeparator()
+            + "WRITE_STORAGE_UNIT=%s,"
+            + System.lineSeparator()
+            + "READ_STORAGE_UNITS(%s)%s"
+            + System.lineSeparator()
+            + ")";
+    
+    public static final String READWRITE_SPLITTING_FOR_DYNAMIC = " %s ("
+            + System.lineSeparator()
+            + "AUTO_AWARE_RESOURCE=%s,"
+            + System.lineSeparator()
+            + "WRITE_DATA_SOURCE_QUERY_ENABLED=%s%s"
+            + System.lineSeparator()
+            + ")";
     
     public static final String READ_RESOURCE = "%s";
     
@@ -172,15 +154,15 @@ public final class DistSQLScriptConstants {
             + "),"
             + "QUERY_WITH_CIPHER_COLUMN=%s)";
     
-    public static final String ENCRYPT_COLUMN = "(NAME=%s,%s,%s)";
+    public static final String ENCRYPT_COLUMN = "(NAME=%s, %s, %s)";
     
     public static final String PLAIN = "PLAIN=%s";
     
     public static final String CIPHER = "CIPHER=%s";
     
-    public static final String TYPE = "TYPE(NAME=\'%s\', PROPERTIES(%s))";
+    public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
     
-    public static final String ENCRYPT_TYPE_WITHOUT_PROPERTIES = "TYPE(NAME=\'%s\')";
+    public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";
     
     public static final String CREATE_SHADOW = "CREATE SHADOW RULE";
     
@@ -195,6 +177,4 @@ public final class DistSQLScriptConstants {
             + ")";
     
     public static final String SHADOW_TABLE = "%s(%s)";
-    
-    public static final String SHADOW_TABLE_TYPE = "TYPE(NAME=\"%s\", PROPERTIES(%s))";
 }

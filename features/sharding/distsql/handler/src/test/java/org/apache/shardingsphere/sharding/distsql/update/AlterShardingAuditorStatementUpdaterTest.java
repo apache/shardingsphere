@@ -85,8 +85,8 @@ public final class AlterShardingAuditorStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getAuditors().put("exist_auditor_name", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", createProperties()));
         AlterShardingAuditorStatement statement = new AlterShardingAuditorStatement(Collections.singletonList(auditorSegment));
-        ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);
+        ShardingRuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(statement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
         assertThat(currentRuleConfig.getAuditors().get("exist_auditor_name").getType(), is("DML_SHARDING_CONDITIONS"));
     }
     

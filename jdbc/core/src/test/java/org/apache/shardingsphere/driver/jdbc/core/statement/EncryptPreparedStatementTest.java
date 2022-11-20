@@ -29,8 +29,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class EncryptPreparedStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
@@ -54,39 +54,39 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     private static final String SELECT_SQL_FOR_CONTAINS_COLUMN = "SELECT * FROM t_encrypt_contains_column WHERE plain_pwd = ?";
     
     @Test
-    public void assertSQLShow() throws SQLException {
+    public void assertSQLShow() {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
     public void assertInsertWithExecute() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, 2);
-            statement.setObject(2, 'b');
-            statement.execute();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
+            preparedStatement.setObject(1, 2);
+            preparedStatement.setObject(2, 'b');
+            preparedStatement.execute();
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
     }
     
     @Test
     public void assertInsertWithBatchExecute() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
-            statement.setObject(1, 3);
-            statement.setObject(2, 'c');
-            statement.addBatch();
-            statement.setObject(1, 4);
-            statement.setObject(2, 'd');
-            statement.addBatch();
-            statement.executeBatch();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_SQL)) {
+            preparedStatement.setObject(1, 3);
+            preparedStatement.setObject(2, 'c');
+            preparedStatement.addBatch();
+            preparedStatement.setObject(1, 4);
+            preparedStatement.setObject(2, 'd');
+            preparedStatement.addBatch();
+            preparedStatement.executeBatch();
         }
         assertResultSet(4, 3, "encryptValue", "assistedEncryptValue");
     }
     
     @Test
     public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.execute();
-            ResultSet resultSet = statement.getGeneratedKeys();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
@@ -96,22 +96,22 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertInsertWithBatchExecuteWithGeneratedKeys() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setObject(1, 'b');
-            statement.addBatch();
-            statement.setObject(1, 'c');
-            statement.addBatch();
-            statement.executeBatch();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setObject(1, 'b');
+            preparedStatement.addBatch();
+            preparedStatement.setObject(1, 'c');
+            preparedStatement.addBatch();
+            preparedStatement.executeBatch();
         }
         assertResultSet(3, 2, "encryptValue", "assistedEncryptValue");
     }
     
     @Test
     public void assertDeleteWithExecute() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(DELETE_SQL)) {
-            statement.setObject(1, 'a');
-            statement.setObject(2, 1);
-            statement.execute();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(DELETE_SQL)) {
+            preparedStatement.setObject(1, 'a');
+            preparedStatement.setObject(2, 1);
+            preparedStatement.execute();
         }
         assertResultSet(1, 5, "encryptValue", "assistedEncryptValue");
     }
@@ -119,10 +119,10 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     @Test
     public void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(UPDATE_SQL)) {
-            statement.setObject(1, 'f');
-            statement.setObject(2, 'a');
-            result = statement.executeUpdate();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(UPDATE_SQL)) {
+            preparedStatement.setObject(1, 'f');
+            preparedStatement.setObject(2, 'a');
+            result = preparedStatement.executeUpdate();
         }
         assertThat(result, is(2));
         assertResultSet(2, 1, "encryptValue", "assistedEncryptValue");
@@ -130,9 +130,9 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSelectWithExecuteQuery() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
-            statement.setObject(1, 'a');
-            ResultSet resultSet = statement.executeQuery();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
+            preparedStatement.setObject(1, 'a');
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
             assertThat(resultSet.getString(2), is("decryptValue"));
@@ -144,11 +144,11 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSelectWithOr() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_OR)) {
-            statement.setObject(1, "plainValue");
-            statement.setObject(2, 1);
-            statement.setObject(3, 5);
-            ResultSet resultSet = statement.executeQuery();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL_OR)) {
+            preparedStatement.setObject(1, "plainValue");
+            preparedStatement.setObject(2, 1);
+            preparedStatement.setObject(3, 5);
+            ResultSet resultSet = preparedStatement.executeQuery();
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
             assertTrue(resultSet.next());
@@ -158,9 +158,9 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSelectWithMetaData() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
-            statement.setObject(1, 'a');
-            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+        try (PreparedStatement prepareStatement = getEncryptConnection().prepareStatement(SELECT_SQL)) {
+            prepareStatement.setObject(1, 'a');
+            ResultSetMetaData metaData = prepareStatement.executeQuery().getMetaData();
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
@@ -171,20 +171,22 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSelectWithExecuteWithProperties() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
-            boolean result = statement.execute();
+        try (
+                PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(
+                        SELECT_ALL_SQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
+            boolean result = preparedStatement.execute();
             assertTrue(result);
-            assertThat(statement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
-            assertThat(statement.getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
-            assertThat(statement.getResultSetHoldability(), is(ResultSet.HOLD_CURSORS_OVER_COMMIT));
+            assertThat(preparedStatement.getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
+            assertThat(preparedStatement.getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
+            assertThat(preparedStatement.getResultSetHoldability(), is(ResultSet.HOLD_CURSORS_OVER_COMMIT));
         }
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
         try (
-                Connection conn = getActualDataSources().get("encrypt").getConnection();
-                Statement stmt = conn.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
+                Connection connection = getActualDataSources().get("encrypt").getConnection();
+                Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(SELECT_ALL_SQL);
             int count = 1;
             while (resultSet.next()) {
                 if (id == count) {
@@ -199,23 +201,23 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test(expected = SQLException.class)
     public void assertQueryWithNull() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(null)) {
-            statement.executeQuery();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(null)) {
+            preparedStatement.executeQuery();
         }
     }
     
     @Test(expected = SQLException.class)
     public void assertQueryWithEmptyString() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement("")) {
-            statement.executeQuery();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement("")) {
+            preparedStatement.executeQuery();
         }
     }
     
     @Test
     public void assertSelectWithInOperator() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR)) {
-            statement.setObject(1, 'a');
-            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+        try (PreparedStatement preparedStatement = getEncryptConnection().prepareStatement(SELECT_SQL_WITH_IN_OPERATOR)) {
+            preparedStatement.setObject(1, 'a');
+            ResultSetMetaData metaData = preparedStatement.executeQuery().getMetaData();
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
@@ -226,9 +228,9 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     
     @Test
     public void assertSelectWithPlainColumnForContainsColumn() throws SQLException {
-        try (PreparedStatement statement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
-            statement.setObject(1, "plainValue");
-            ResultSetMetaData metaData = statement.executeQuery().getMetaData();
+        try (PreparedStatement preparedStatement = getEncryptConnectionWithProps().prepareStatement(SELECT_SQL_FOR_CONTAINS_COLUMN)) {
+            preparedStatement.setObject(1, "plainValue");
+            ResultSetMetaData metaData = preparedStatement.executeQuery().getMetaData();
             assertThat(metaData.getColumnCount(), is(3));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));

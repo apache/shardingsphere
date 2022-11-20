@@ -58,9 +58,10 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.StringL
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnreservedWordContext;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -534,12 +535,13 @@ public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
         OrderDirection orderDirection = null != ctx.DESC() ? OrderDirection.DESC : OrderDirection.ASC;
+        NullsOrderType nullsOrderType = OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
         if (null != ctx.columnName()) {
             ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
-            return new ColumnOrderByItemSegment(column, orderDirection);
+            return new ColumnOrderByItemSegment(column, orderDirection, nullsOrderType);
         }
         return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection);
+                SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, nullsOrderType);
     }
     
     @Override

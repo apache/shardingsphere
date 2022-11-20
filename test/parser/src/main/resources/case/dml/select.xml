@@ -1711,7 +1711,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235">
+            <column-item name="item_id" start-index="221" stop-index="229" literal-start-index="227" literal-stop-index="235" nulls-order-type="LAST">
                 <owner name="i" start-index="221" stop-index="221" literal-start-index="227" literal-stop-index="227" />
             </column-item>
         </order-by>
@@ -2195,7 +2195,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="59" stop-index="67" />
+            <column-item name="item_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="59" stop-index="67" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -2560,6 +2560,18 @@
         </projections>
         <order-by>
             <column-item name="item_id" start-index="52" stop-index="58" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_distinct_function_nulls_last">
+        <from>
+            <simple-table name="t_order_item" start-index="30" stop-index="41" />
+        </from>
+        <projections distinct-row="true" start-index="15" stop-index="23">
+            <column-projection start-index="16" stop-index="22" name="item_id"/>
+        </projections>
+        <order-by>
+            <column-item name="item_id" start-index="52" stop-index="58" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3472,7 +3484,7 @@
                                     <simple-table name="employees" start-index="185" stop-index="193" />
                                 </from>
                                 <group-by>
-                                    <column-item name="department_id" start-index="204" stop-index="216" />
+                                    <column-item name="department_id" start-index="204" stop-index="216" nulls-order-type="LAST" />
                                 </group-by>
                             </select>
                         </subquery>
@@ -3503,7 +3515,7 @@
             <expression-projection text="a.sal_sum/b.total_sal" alias="%_Salary" start-index="76" stop-index="107" />
         </projections>
         <order-by>
-            <column-item name="department_id" start-index="301" stop-index="315">
+            <column-item name="department_id" start-index="301" stop-index="315" nulls-order-type="LAST">
                 <owner name="a" start-index="301" stop-index="301"/>
             </column-item>
         </order-by>
@@ -3532,9 +3544,9 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="cust_id" start-index="84" stop-index="90" />
-            <column-item name="time_id" start-index="93" stop-index="99" />
-            <column-item name="channel_id" start-index="102" stop-index="111" />
+            <column-item name="cust_id" start-index="84" stop-index="90" nulls-order-type="LAST" />
+            <column-item name="time_id" start-index="93" stop-index="99" nulls-order-type="LAST" />
+            <column-item name="channel_id" start-index="102" stop-index="111" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3575,8 +3587,8 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="164" stop-index="172" />
-            <column-item name="job_id" start-index="175" stop-index="180" />
+            <column-item name="last_name" start-index="164" stop-index="172" nulls-order-type="LAST" />
+            <column-item name="job_id" start-index="175" stop-index="180" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3643,7 +3655,7 @@
             <column-projection name="manager_id" start-index="31" stop-index="40"/>
         </projections>
         <order-by>
-            <column-item name="last_name" start-index="102" stop-index="110" />
+            <column-item name="last_name" start-index="102" stop-index="110" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3750,9 +3762,9 @@
             <cell-assignment-column name="s" start-index="265" stop-index="265"/>
         </model>
         <order-by>
-            <column-item name="country" start-index="329" stop-index="335" />
-            <column-item name="prod" start-index="338" stop-index="341" />
-            <column-item name="year" start-index="344" stop-index="347" />
+            <column-item name="country" start-index="329" stop-index="335" nulls-order-type="LAST" />
+            <column-item name="prod" start-index="338" stop-index="341" nulls-order-type="LAST" />
+            <column-item name="year" start-index="344" stop-index="347" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3770,8 +3782,8 @@
                             <aggregation-projection type="SUM" alias="sale" inner-expression="(sale)" start-index="61" stop-index="69"/>
                         </projections>
                         <group-by>
-                            <column-item name="country" start-index="105" stop-index="111" />
-                            <column-item name="year" start-index="114" stop-index="117" />
+                            <column-item name="country" start-index="105" stop-index="111" nulls-order-type="LAST" />
+                            <column-item name="year" start-index="114" stop-index="117" nulls-order-type="LAST" />
                         </group-by>
                     </select>
                 </subquery>
@@ -3787,8 +3799,8 @@
             <cell-assignment-column name="csum" start-index="186" stop-index="189"/>
         </model>
         <order-by>
-            <column-item name="country" start-index="290" stop-index="296" />
-            <column-item name="year" start-index="299" stop-index="302" />
+            <column-item name="country" start-index="290" stop-index="296" nulls-order-type="LAST" />
+            <column-item name="year" start-index="299" stop-index="302" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3820,9 +3832,9 @@
             <cell-assignment-column name="prod" start-index="225" stop-index="228"/>
         </model>
         <order-by>
-            <column-item name="country" start-index="313" stop-index="319" />
-            <column-item name="prod" start-index="322" stop-index="325" />
-            <column-item name="year" start-index="328" stop-index="331" />
+            <column-item name="country" start-index="313" stop-index="319" nulls-order-type="LAST" />
+            <column-item name="prod" start-index="322" stop-index="325" nulls-order-type="LAST" />
+            <column-item name="year" start-index="328" stop-index="331" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3857,8 +3869,8 @@
             </expr>
         </where>
         <group-by>
-            <column-item name="country" start-index="130" stop-index="136" />
-            <column-item name="year" start-index="139" stop-index="142" />
+            <column-item name="country" start-index="130" stop-index="136" nulls-order-type="LAST" />
+            <column-item name="year" start-index="139" stop-index="142" nulls-order-type="LAST" />
         </group-by>
         <model start-index="144" stop-index="713">
             <reference-model-select>
@@ -3921,7 +3933,7 @@
             </order-by>
         </model>
         <order-by>
-            <column-item name="year" start-index="207" stop-index="210" />
+            <column-item name="year" start-index="207" stop-index="210" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -3965,9 +3977,9 @@
             </cell-assignment-select>
         </model>
         <order-by>
-            <column-item name="country" start-index="294" stop-index="300" />
-            <column-item name="year" start-index="303" stop-index="306" />
-            <column-item name="product" start-index="309" stop-index="315" />
+            <column-item name="country" start-index="294" stop-index="300" nulls-order-type="LAST" />
+            <column-item name="year" start-index="303" stop-index="306" nulls-order-type="LAST" />
+            <column-item name="product" start-index="309" stop-index="315" nulls-order-type="LAST" />
         </order-by>
     </select>
     
@@ -4443,6 +4455,260 @@
         </projections>
         <from>
             <simple-table name="t_product_category" start-index="108" stop-index="127" alias="c" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_aggregate_percent_rank">
+        <projections start-index="7" stop-index="92">
+            <expression-projection text="PERCENT_RANK(15000, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Percent-Rank" start-index="7" stop-index="92" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="99" stop-index="107" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_analytic_percent_rank">
+        <projections start-index="7" stop-index="115">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <column-projection name="last_name" start-index="22" stop-index="30" />
+            <column-projection name="salary" start-index="33" stop-index="38" />
+            <expression-projection text="PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)" start-index="41" stop-index="115" alias="pr">
+                <expr>
+                    <function function-name="PERCENT_RANK" start-index="41" stop-index="109" text="PERCENT_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="122" stop-index="130" />
+        </from>
+        <order-by>
+            <column-item name="pr" start-index="141" stop-index="142" nulls-order-type="LAST" />
+            <column-item name="salary" start-index="145" stop-index="150" nulls-order-type="LAST" />
+            <column-item name="last_name" start-index="153" stop-index="161" nulls-order-type="LAST" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_aggregate_percentile_cont">
+        <projections start-index="7" stop-index="91">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <expression-projection text="PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC)" alias="Median cont" start-index="22" stop-index="91" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="98" stop-index="106" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_aggregate_percentile_disc">
+        <projections start-index="7" stop-index="148">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <column-projection name="last_name" start-index="22" stop-index="30" />
+            <column-projection name="salary" start-index="33" stop-index="38" />
+            <expression-projection text="PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) OVER (PARTITION BY department_id)" alias="Percentile_Disc" start-index="41" stop-index="148" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="155" stop-index="163" />
+        </from>
+        <where start-index="165" stop-index="195">
+            <expr>
+                <in-expression start-index="171" stop-index="195">
+                    <not>false</not>
+                    <left>
+                        <column name="department_id" start-index="171" stop-index="183"/>
+                    </left>
+                    <right>
+                        <list-expression start-index="188" stop-index="195">
+                            <items>
+                                <literal-expression value="30" start-index="189" stop-index="190" />
+                            </items>
+                            <items>
+                                <literal-expression value="60" start-index="193" stop-index="194" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="last_name" start-index="206" stop-index="214" nulls-order-type="LAST" />
+            <column-item name="salary" start-index="217" stop-index="222" nulls-order-type="LAST" />
+            <column-item name="department_id" start-index="225" stop-index="237" nulls-order-type="LAST" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_aggregate_cume_dist">
+        <projections start-index="7" stop-index="95">
+            <expression-projection text="CUME_DIST(15500, .05) WITHIN GROUP (ORDER BY salary, commission_pct)" alias="Cume-Dist of 15500" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="102" stop-index="110" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_aggregate_rank">
+        <projections start-index="7" stop-index="69">
+            <expression-projection text="RANK(15500) WITHIN GROUP (ORDER BY salary DESC)" alias="Rank of 15500" start-index="7" stop-index="69" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="76" stop-index="84" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_rowid">
+        <projections start-index="7" stop-index="11">
+            <column-projection name="ROWID" start-index="7" stop-index="11" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="18" stop-index="26" />
+        </from>
+        <where start-index="28" stop-index="65">
+            <expr>
+                <binary-operation-expression start-index="34" stop-index="65">
+                    <left>
+                        <function function-name="ROWIDTOCHAR" start-index="34" stop-index="51" text="ROWIDTOCHAR(ROWID)">
+                            <parameter>
+                                <column name="ROWID" start-index="46" stop-index="50" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="58" stop-index="65">
+                            <items>
+                                <literal-expression value="%JAAB%" start-index="58" stop-index="65" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="ROWID" start-index="76" stop-index="80" nulls-order-type="LAST" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_linear_regression_function">
+        <projections start-index="7" stop-index="465">
+            <column-projection name="job_id" start-index="7" stop-index="12" />
+            <column-projection name="employee_id" start-index="15" stop-index="28" alias="ID" />
+            <column-projection name="salary" start-index="31" stop-index="36" />
+            <expression-projection text="REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="39" stop-index="108" alias="slope" />
+            <expression-projection text="REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="111" stop-index="185" alias="intcpt" />
+            <expression-projection text="REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="188" stop-index="253" alias="rsqr" />
+            <expression-projection text="REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="256" stop-index="325" alias="count" />
+            <expression-projection text="REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="328" stop-index="395" alias="avgx"/>
+            <expression-projection text="REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id)" start-index="398" stop-index="465" alias="avgy" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="472" stop-index="480" />
+        </from>
+        <where start-index="482" stop-index="512">
+            <expr>
+                <in-expression start-index="488" stop-index="512">
+                    <left>
+                        <column name="department_id" start-index="488" stop-index="500" />
+                    </left>
+                    <right>
+                        <list-expression start-index="505" stop-index="512">
+                            <items>
+                                <literal-expression value="50" start-index="506" stop-index="507" />
+                            </items>
+                            <items>
+                                <literal-expression value="80" start-index="510" stop-index="511" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="job_id" start-index="523" stop-index="528" nulls-order-type="LAST" />
+            <column-item name="employee_id" start-index="531" stop-index="541" nulls-order-type="LAST" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_lpad_function">
+        <projections start-index="7" stop-index="43">
+            <expression-projection text="LPAD('Page 1',15,'*.')" alias="LPAD example" start-index="7" stop-index="43" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="50" stop-index="53"/>
+        </from>
+    </select>
+
+    <select sql-case-id="select_to_char_function">
+        <projections start-index="7" stop-index="60">
+            <expression-projection text="TO_CHAR(ts_col, 'DD-MON-YYYY HH24:MI:SSxFF')" alias="ts_col" start-index="7" stop-index="60" />
+        </projections>
+        <from>
+            <simple-table name="date_tab" start-index="67" stop-index="74" />
+        </from>
+        <order-by>
+            <column-item name="ts_col" start-index="85" stop-index="90" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_xmlelement_xmlagg_function">
+        <projections start-index="7" stop-index="124">
+            <expression-projection text="XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name))" alias="Dept_list" start-index="7" stop-index="124" />
+        </projections>
+        <from>
+            <simple-table name="employees" alias="e" start-index="131" stop-index="141" />
+        </from>
+        <where start-index="143" stop-index="168">
+            <expr>
+                <binary-operation-expression start-index="149" stop-index="168">
+                    <left>
+                        <column name="department_id" start-index="149" stop-index="163" >
+                            <owner name="e" start-index="149" stop-index="149" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="30" start-index="167" stop-index="168" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_xmlcast_function">
+        <projections start-index="7" stop-index="48">
+            <expression-projection text="XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256))" start-index="7" stop-index="48" />
+        </projections>
+        <from>
+            <simple-table name="purchaseorder" start-index="55" stop-index="67" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlcolattval_function">
+        <projections start-index="7" stop-index="95" >
+            <expression-projection text="XMLCOLATTVAL(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)" alias="Emp Element" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="employees" alias="e" start-index="102" stop-index="112" />
+        </from>
+        <where start-index="114" stop-index="136">
+            <expr>
+                <binary-operation-expression start-index="120" stop-index="136" >
+                    <left>
+                        <column name="employee_id" start-index="120" stop-index="130" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="204" start-index="134" stop-index="136" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_xmlexists_function">
+        <projections start-index="7" stop-index="68">
+            <column-projection name="id" start-index="7" stop-index="8" />
+            <expression-projection text="XMLEXISTS('//student[@age=20]' PASSING BY VALUE xcol AS x)" start-index="11" stop-index="68" />
+        </projections>
+        <from>
+            <simple-table name="x_table" start-index="75" stop-index="81" />
         </from>
     </select>
 </sql-parser-test-cases>

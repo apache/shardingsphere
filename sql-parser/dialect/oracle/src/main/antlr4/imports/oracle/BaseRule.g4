@@ -42,8 +42,8 @@ numberLiterals
    ;
 
 dateTimeLiterals
-    : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier STRING_ RBE_
+    : (DATE | TIME | TIMESTAMP) stringLiterals
+    | LBE_ identifier stringLiterals RBE_
     ;
 
 hexadecimalLiterals
@@ -162,7 +162,8 @@ unreservedWord
     | ENFORCED | TRUSTED | ID | SYNCHRONOUS | ASYNCHRONOUS | REPEAT | FEATURE | STATEMENT | CLAUSE | UNPLUG
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
-    | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA
+    | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME
     ;
 
 schemaName
@@ -441,6 +442,9 @@ expr
     | PRIOR expr
     | LP_ expr RP_
     | booleanPrimary
+    | aggregationFunction
+    | analyticFunction
+    | expr datetimeExpr
     ;
 
 andOperator
@@ -505,15 +509,16 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | analyticFunction | specialFunction | regularFunction 
+    : aggregationFunction | analyticFunction | specialFunction | regularFunction | xmlFunction
     ;
 
 aggregationFunction
-    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
+    : aggregationFunctionName LP_ (((DISTINCT | ALL)? expr (COMMA_ expr)*) | ASTERISK_) (COMMA_ stringLiterals)? listaggOverflowClause? RP_ (WITHIN GROUP LP_ orderByClause RP_)? (OVER LP_ analyticClause RP_)? (OVER LP_ analyticClause RP_)?
     ;
 
 aggregationFunctionName
-    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG
+    : MAX | MIN | SUM | COUNT | AVG | GROUPING | LISTAGG | PERCENT_RANK | PERCENTILE_CONT | PERCENTILE_DISC | CUME_DIST | RANK
+    | REGR_SLOPE | REGR_INTERCEPT | REGR_COUNT | REGR_R2 | REGR_AVGX | REGR_AVGY | REGR_SXX | REGR_SYY | REGR_SXY
     ;
 
 listaggOverflowClause
@@ -542,7 +547,7 @@ specialFunction
     ;
 
 castFunction
-    : CAST LP_ expr AS dataType RP_
+    : (CAST | XMLCAST) LP_ expr AS dataType RP_
     ;
 
 charFunction
@@ -614,7 +619,7 @@ dataTypeName
     | BOOLEAN | PLS_INTEGER | BINARY_INTEGER | INTEGER | NUMBER | NATURAL | NATURALN | POSITIVE | POSITIVEN | SIGNTYPE
     | SIMPLE_INTEGER | BFILE | MLSLABEL | UROWID | DATE | TIMESTAMP | TIMESTAMP WITH TIME ZONE | TIMESTAMP WITH LOCAL TIME ZONE
     | INTERVAL DAY TO SECOND | INTERVAL YEAR TO MONTH | JSON | FLOAT | REAL | DOUBLE PRECISION | INT | SMALLINT
-    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE
+    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE | ROWID
     ;
 
 datetimeTypeSuffix
@@ -1605,3 +1610,24 @@ maxNumberOfSnapshots
     : INTEGER_
     ;
 
+datetimeExpr
+    : AT (LOCAL | TIME ZONE expr)
+    ;
+
+xmlFunction
+    : xmlAggFunction
+    | xmlColattvalFunction
+    | xmlExistsFunction
+    ;
+
+xmlAggFunction
+    : XMLAGG LP_ expr orderByClause? RP_
+    ;
+
+xmlColattvalFunction
+    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    ;
+
+xmlExistsFunction
+    : XMLEXISTS LP_ STRING_ (PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*)? RP_
+    ;

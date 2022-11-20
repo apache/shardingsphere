@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,27 +89,32 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     @Override
-    protected Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter parameter) {
-        CalculatedResult previousCalculatedResult = (CalculatedResult) parameter.getPreviousCalculatedResult();
-        String sql = getQuerySQL(parameter);
+    protected Optional<DataConsistencyCalculatedResult> calculateChunk(final DataConsistencyCalculateParameter param) {
+        CalculatedResult previousCalculatedResult = (CalculatedResult) param.getPreviousCalculatedResult();
+        String sql = getQuerySQL(param);
         try (
-                Connection connection = parameter.getDataSource().getConnection();
+                Connection connection = param.getDataSource().getConnection();
                 PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql))) {
             preparedStatement.setFetchSize(chunkSize);
+            Object tableCheckPosition = param.getTableCheckPosition();
             if (null == previousCalculatedResult) {
-                preparedStatement.setInt(1, chunkSize);
+                if (null == tableCheckPosition) {
+                    preparedStatement.setInt(1, chunkSize);
+                } else {
+                    preparedStatement.setObject(1, tableCheckPosition);
+                    preparedStatement.setInt(2, chunkSize);
+                }
             } else {
-                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue());
+                preparedStatement.setObject(1, previousCalculatedResult.getMaxUniqueKeyValue().orElse(null));
                 preparedStatement.setInt(2, chunkSize);
             }
             Collection<Collection<Object>> records = new LinkedList<>();
             Object maxUniqueKeyValue = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(parameter.getDatabaseType());
+                ColumnValueReader columnValueReader = ColumnValueReaderFactory.getInstance(param.getDatabaseType());
                 while (resultSet.next()) {
                     if (isCanceling()) {
-                        log.info("canceling, schemaName={}, tableName={}", parameter.getSchemaName(), parameter.getLogicTableName());
-                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+                        throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
                     }
                     ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                     int columnCount = resultSetMetaData.getColumnCount();
@@ -117,24 +123,24 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
                     }
                     records.add(record);
-                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, parameter.getUniqueKey().getOrdinalPosition());
+                    maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
                 }
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(parameter.getLogicTableName());
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }
     
-    private String getQuerySQL(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        String logicTableName = parameter.getLogicTableName();
-        String schemaName = parameter.getSchemaName();
-        String uniqueKey = parameter.getUniqueKey().getName();
-        String cacheKey = parameter.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(parameter.getDatabaseType()).isSchemaAvailable()
+    private String getQuerySQL(final DataConsistencyCalculateParameter param) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(param.getDatabaseType());
+        String logicTableName = param.getLogicTableName();
+        String schemaName = param.getSchemaName();
+        String uniqueKey = param.getUniqueKey().getName();
+        String cacheKey = param.getDatabaseType() + "-" + (null != schemaName && DatabaseTypeFactory.getInstance(param.getDatabaseType()).isSchemaAvailable()
                 ? schemaName + "." + logicTableName
                 : logicTableName);
-        if (null == parameter.getPreviousCalculatedResult()) {
+        if (null == param.getPreviousCalculatedResult() && null == param.getTableCheckPosition()) {
             return firstSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, true));
         }
         return laterSQLCache.computeIfAbsent(cacheKey, s -> sqlBuilder.buildChunkedQuerySQL(schemaName, logicTableName, uniqueKey, false));
@@ -157,7 +163,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     
     @RequiredArgsConstructor
     @Getter
-    private static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    static final class CalculatedResult implements DataConsistencyCalculatedResult {
         
         @NonNull
         private final Object maxUniqueKeyValue;
@@ -165,6 +171,10 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         private final int recordsCount;
         
         private final Collection<Collection<Object>> records;
+        
+        public Optional<Object> getMaxUniqueKeyValue() {
+            return Optional.of(maxUniqueKeyValue);
+        }
         
         @SneakyThrows(SQLException.class)
         @Override
@@ -180,15 +190,16 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;
-            boolean equalsFirst = new EqualsBuilder().append(getRecordsCount(), that.getRecordsCount()).append(getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue()).isEquals();
-            if (!equalsFirst) {
+            if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
                 log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
-                        getRecordsCount(), that.getRecordsCount(), getMaxUniqueKeyValue(), that.getMaxUniqueKeyValue());
+                        recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
                 return false;
             }
-            Iterator<Collection<Object>> thisIterator = this.records.iterator();
+            EqualsBuilder equalsBuilder = new EqualsBuilder();
+            Iterator<Collection<Object>> thisIterator = records.iterator();
             Iterator<Collection<Object>> thatIterator = that.records.iterator();
             while (thisIterator.hasNext() && thatIterator.hasNext()) {
+                equalsBuilder.reset();
                 Collection<Object> thisNext = thisIterator.next();
                 Collection<Object> thatNext = thatIterator.next();
                 if (thisNext.size() != thatNext.size()) {
@@ -197,24 +208,21 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 }
                 Iterator<Object> thisNextIterator = thisNext.iterator();
                 Iterator<Object> thatNextIterator = thatNext.iterator();
+                int columnIndex = 0;
                 while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
+                    ++columnIndex;
                     Object thisResult = thisNextIterator.next();
                     Object thatResult = thatNextIterator.next();
-                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
-                        return ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
-                    }
-                    // TODO The standard MySQL JDBC will convert unsigned mediumint to Integer, but proxy convert it to Long
-                    if (thisResult instanceof Integer && thatResult instanceof Long) {
-                        return ((Integer) thisResult).longValue() == (Long) thatResult;
-                    }
                     boolean matched;
-                    if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
+                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
+                        matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
+                    } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
                     } else {
-                        matched = new EqualsBuilder().append(thisResult, thatResult).isEquals();
+                        matched = equalsBuilder.append(thisResult, thatResult).isEquals();
                     }
                     if (!matched) {
-                        log.warn("record column value not match, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", thisResult, thatResult,
+                        log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
                                 null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
                                 thisNext, thatNext);
                         return false;
@@ -226,7 +234,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue()).append(getRecordsCount()).append(getRecords()).toHashCode();
+            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue().orElse(null)).append(getRecordsCount()).append(getRecords()).toHashCode();
         }
     }
 }

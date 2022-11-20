@@ -29,11 +29,13 @@ public final class YamlEncryptColumnRuleConfigurationSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName", true);
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig =
+                new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", true);
         YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
+        assertThat(actual.getLikeQueryColumn(), is("likeQueryColumn"));
         assertThat(actual.getPlainColumn(), is("plainColumn"));
         assertThat(actual.getEncryptorName(), is("encryptorName"));
         assertThat(actual.getQueryWithCipherColumn(), is(true));
@@ -46,7 +48,7 @@ public final class YamlEncryptColumnRuleConfigurationSwapperTest {
         yamlEncryptColumnRuleConfig.setLogicColumn("logicColumn");
         yamlEncryptColumnRuleConfig.setCipherColumn("cipherColumn");
         yamlEncryptColumnRuleConfig.setAssistedQueryColumn("assistedQueryColumn");
-        yamlEncryptColumnRuleConfig.setFuzzyQueryColumn("fuzzyQueryColumn");
+        yamlEncryptColumnRuleConfig.setLikeQueryColumn("likeQueryColumn");
         yamlEncryptColumnRuleConfig.setPlainColumn("plainColumn");
         yamlEncryptColumnRuleConfig.setEncryptorName("encryptorName");
         yamlEncryptColumnRuleConfig.setQueryWithCipherColumn(true);
@@ -54,7 +56,7 @@ public final class YamlEncryptColumnRuleConfigurationSwapperTest {
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
-        assertThat(actual.getFuzzyQueryColumn(), is("fuzzyQueryColumn"));
+        assertThat(actual.getLikeQueryColumn(), is("likeQueryColumn"));
         assertThat(actual.getPlainColumn(), is("plainColumn"));
         assertThat(actual.getEncryptorName(), is("encryptorName"));
         assertThat(actual.getQueryWithCipherColumn(), is(true));

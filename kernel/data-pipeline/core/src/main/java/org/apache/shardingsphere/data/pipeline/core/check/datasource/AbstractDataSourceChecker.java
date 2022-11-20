@@ -66,7 +66,6 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     
     private boolean checkEmpty(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         String sql = getSQLBuilder().buildCheckEmptySQL(schemaName, tableName);
-        log.info("checkEmpty, sql={}", sql);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);

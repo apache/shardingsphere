@@ -44,33 +44,35 @@ public final class PostgresSQLAndOpenGaussTruncateTestCase extends BaseTransacti
     
     private void assertTruncateRollback() throws SQLException {
         prepare();
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertAccountRowCount(conn, 8);
-        executeWithLog(conn, "truncate account;");
-        assertAccountRowCount(conn, 0);
-        conn.rollback();
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertAccountRowCount(connection, 8);
+        executeWithLog(connection, "truncate account;");
+        assertAccountRowCount(connection, 0);
+        connection.rollback();
         // Expected truncate operation can be rolled back in PostgreSQL & OpenGauss
-        assertAccountRowCount(conn, 8);
-        conn.close();
+        assertAccountRowCount(connection, 8);
+        connection.close();
     }
     
     private void assertTruncateCommit() throws SQLException {
         prepare();
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertAccountRowCount(conn, 8);
-        executeWithLog(conn, "truncate account;");
-        assertAccountRowCount(conn, 0);
-        conn.commit();
-        assertAccountRowCount(conn, 0);
-        conn.close();
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertAccountRowCount(connection, 8);
+        executeWithLog(connection, "truncate account;");
+        assertAccountRowCount(connection, 0);
+        connection.commit();
+        assertAccountRowCount(connection, 0);
+        connection.close();
     }
     
     private void prepare() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        executeWithLog(conn, "delete from account;");
-        executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
-        conn.close();
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        executeWithLog(connection, "delete from account;");
+        executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6),(7, 7, 7),(8, 8, 8);");
+        connection.commit();
+        connection.close();
     }
 }

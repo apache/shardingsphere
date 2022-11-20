@@ -20,4 +20,5 @@
         <column name="sharding_table_reference" />
     </metadata>
     <row values="t_user,t_user_item,t_user_details" />
+    <row values="t_order,t_order_item" />
 </dataset>

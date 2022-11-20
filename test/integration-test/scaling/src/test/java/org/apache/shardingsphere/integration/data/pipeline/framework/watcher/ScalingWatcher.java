@@ -20,13 +20,12 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.watcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerContainerComposer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeContainerComposer;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.CuratorZookeeperRepository;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
@@ -34,7 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -46,19 +44,18 @@ public class ScalingWatcher extends TestWatcher {
     protected void failed(final Throwable e, final Description description) {
         if (containerComposer instanceof NativeContainerComposer) {
             super.failed(e, description);
-            return;
         }
-        outputZookeeperData();
     }
     
+    // TODO now the metadata mistake is not reproduce, but keep this method, it may be used again later
     private void outputZookeeperData() {
         DockerContainerComposer dockerContainerComposer = (DockerContainerComposer) containerComposer;
         DatabaseType databaseType = dockerContainerComposer.getStorageContainer().getDatabaseType();
         String namespace = "it_db_" + databaseType.getType().toLowerCase();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration("ZooKeeper", namespace,
                 dockerContainerComposer.getGovernanceContainer().getServerLists(), new Properties());
-        ClusterPersistRepository zookeeperRepository = new CuratorZookeeperRepository();
-        zookeeperRepository.init(config, new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307));
+        ClusterPersistRepository zookeeperRepository = new ZookeeperRepository();
+        zookeeperRepository.init(config);
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");
         for (String each : childrenKeys) {
             if (!"scaling".equals(each)) {

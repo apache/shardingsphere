@@ -62,8 +62,8 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
     }
     
     private Object convertDataType(final Object data, final int dataType) {
-        if (Types.DECIMAL == dataType) {
-            return data.toString();
+        if (Types.DECIMAL == dataType || Types.BIGINT == dataType) {
+            return null == data ? null : data.toString();
         }
         // TODO use general type convertor
         return data;
@@ -105,14 +105,23 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
     }
     
     private Object convertByDataType(final Object data, final int dataType) {
+        if (null == data) {
+            return null;
+        }
         if (Types.DECIMAL == dataType) {
             return new BigDecimal(data.toString());
+        }
+        if (Types.BIGINT == dataType) {
+            return Long.valueOf(data.toString());
+        }
+        if (Types.REAL == dataType || Types.FLOAT == dataType) {
+            return Float.parseFloat(data.toString());
         }
         // TODO use general type convertor
         return data;
     }
     
     private ShardingSphereColumn swapColumn(final YamlShardingSphereColumn column) {
-        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible());
+        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible(), column.isUnsigned());
     }
 }

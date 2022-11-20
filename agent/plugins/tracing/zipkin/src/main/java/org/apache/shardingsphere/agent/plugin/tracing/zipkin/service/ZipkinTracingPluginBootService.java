@@ -70,16 +70,16 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     
     private Sampler createSampler(final PluginConfiguration pluginConfig) {
         String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty(KEY_SAMPLER_TYPE)).orElse(DEFAULT_SAMPLER_TYPE);
-        String samplerParameter = Optional.ofNullable(pluginConfig.getProps().getProperty(KEY_SAMPLER_PARAM)).orElse(DEFAULT_SAMPLER_PARAM);
+        String samplerParam = Optional.ofNullable(pluginConfig.getProps().getProperty(KEY_SAMPLER_PARAM)).orElse(DEFAULT_SAMPLER_PARAM);
         switch (samplerType) {
             case "const":
-                return "0".equals(samplerParameter) ? Sampler.NEVER_SAMPLE : Sampler.ALWAYS_SAMPLE;
+                return "0".equals(samplerParam) ? Sampler.NEVER_SAMPLE : Sampler.ALWAYS_SAMPLE;
             case "counting":
-                return Sampler.create(Float.parseFloat(samplerParameter));
+                return Sampler.create(Float.parseFloat(samplerParam));
             case "ratelimiting":
-                return RateLimitingSampler.create(Integer.parseInt(samplerParameter));
+                return RateLimitingSampler.create(Integer.parseInt(samplerParam));
             case "boundary":
-                return BoundarySampler.create(Float.parseFloat(samplerParameter));
+                return BoundarySampler.create(Float.parseFloat(samplerParam));
             default:
                 return Sampler.ALWAYS_SAMPLE;
         }

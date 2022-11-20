@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.repository.cluster;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 /**
  * Cluster persist repository.
@@ -30,9 +30,8 @@ public interface ClusterPersistRepository extends PersistRepository {
      * Initialize registry center.
      *
      * @param config cluster persist repository configuration
-     * @param instanceMetaData instance meta data
      */
-    void init(ClusterPersistRepositoryConfiguration config, InstanceMetaData instanceMetaData);
+    void init(ClusterPersistRepositoryConfiguration config);
     
     /**
      * Persist ephemeral data.
@@ -51,20 +50,11 @@ public interface ClusterPersistRepository extends PersistRepository {
     void persistExclusiveEphemeral(String key, String value);
     
     /**
-     * Try lock.
-     *
-     * @param lockKey lock key
-     * @param timeoutMillis timeout millis
-     * @return is locked or not
+     * Get distributed lock holder.
+     * 
+     * @return distributed lock holder
      */
-    boolean tryLock(String lockKey, long timeoutMillis);
-    
-    /**
-     * Unlock.
-     *
-     * @param lockKey lock key
-     */
-    void unlock(String lockKey);
+    DistributedLockHolder getDistributedLockHolder();
     
     /**
      * Watch key or path of governance server.

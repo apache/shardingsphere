@@ -27,7 +27,7 @@ public abstract class ResourceDefinitionViolationException extends DistSQLExcept
     
     private static final long serialVersionUID = -2686784350802985974L;
     
-    public ResourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArguments) {
-        super(sqlState, errorCode, reason, messageArguments);
+    public ResourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, errorCode, reason, messageArgs);
     }
 }

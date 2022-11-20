@@ -50,8 +50,7 @@ public final class EncryptParameterRewriterBuilderTest {
         Collection<ParameterRewriter> actual = new EncryptParameterRewriterBuilder(
                 encryptRule, DefaultDatabase.LOGIC_NAME, Collections.singletonMap("test", mock(ShardingSphereSchema.class)), sqlStatementContext, Collections.emptyList()).getParameterRewriters();
         assertThat(actual.size(), is(1));
-        ParameterRewriter parameterRewriter = actual.iterator().next();
-        assertThat(parameterRewriter, instanceOf(EncryptPredicateParameterRewriter.class));
+        assertThat(actual.iterator().next(), instanceOf(EncryptPredicateParameterRewriter.class));
     }
     
     @Test

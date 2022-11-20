@@ -18,11 +18,15 @@
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -60,8 +64,8 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -106,8 +110,7 @@ public final class SelectStatementContextTest {
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(INDEX_ORDER_BY))));
         selectStatement.setProjections(createProjectionsSegment());
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table"))));
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.emptyMap());
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(4));
     }
@@ -144,8 +147,7 @@ public final class SelectStatementContextTest {
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue(DefaultDatabase.LOGIC_NAME.toUpperCase())));
         selectStatement.setFrom(tableSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.emptyMap());
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(1));
     }
@@ -179,8 +181,7 @@ public final class SelectStatementContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_ALIAS))));
         selectStatement.setProjections(createProjectionsSegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
-                selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.singletonMap("n", 2));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(2));
     }
@@ -214,8 +215,7 @@ public final class SelectStatementContextTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITHOUT_OWNER_ALIAS))));
         selectStatement.setProjections(createProjectionsSegment());
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(),
-                selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.singletonMap("id", 3));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
@@ -247,15 +247,16 @@ public final class SelectStatementContextTest {
     
     private void assertIsSameGroupByAndOrderByItems(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
-        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
     }
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
-        return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)),
-                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class),
+                mock(ConfigurationProperties.class));
+        return new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     
     @Test
@@ -316,8 +317,8 @@ public final class SelectStatementContextTest {
     
     private void assertIsNotSameGroupByAndOrderByItemsWhenDifferentGroupByAndOrderBy(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.DESC))));
-        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, OrderDirection.DESC))));
+        selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
+        selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
     }
@@ -355,8 +356,7 @@ public final class SelectStatementContextTest {
         aggregationProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("id")));
         projectionsSegment.getProjections().add(aggregationProjectionSegment);
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database),
-                Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.singletonMap("id", 3));
         assertThat(selectStatementContext.getOrderByContext().getItems().iterator().next().getIndex(), is(3));
     }
@@ -391,8 +391,7 @@ public final class SelectStatementContextTest {
         selectStatement.setWhere(whereSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        SelectStatementContext actual = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext actual = new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertThat(actual.getTablesContext().getTableNames(), is(Collections.emptySet()));
         assertThat(actual.getAllTables(), is(Collections.emptyList()));
         assertThat(actual.getGroupByContext().getItems(), is(Collections.emptyList()));
@@ -442,8 +441,7 @@ public final class SelectStatementContextTest {
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        assertTrue(
-                new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
+        assertTrue(new SelectStatementContext(createShardingSphereMetaData(database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
     }
     
     @Test
@@ -487,8 +485,9 @@ public final class SelectStatementContextTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
-        assertTrue(new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class),
+                mock(ConfigurationProperties.class));
+        assertTrue(new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
     }
     
     @Test
@@ -520,15 +519,15 @@ public final class SelectStatementContextTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(),
-                selectStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class),
+                mock(ConfigurationProperties.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsDollarParameterMarker());
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setCondition(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
         selectStatement.setFrom(joinTableSegment);
-        selectStatementContext = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsDollarParameterMarker());
     }
     
@@ -562,23 +561,28 @@ public final class SelectStatementContextTest {
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
         projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression"));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class),
+                mock(ConfigurationProperties.class));
+        SelectStatementContext selectStatementContext = new SelectStatementContext(metaData, Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {
         switch (type) {
             case INDEX_ORDER_BY:
-                return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, OrderDirection.ASC);
+                return new IndexOrderByItemSegment(0, 0, 4, OrderDirection.ASC, NullsOrderType.FIRST);
             case COLUMN_ORDER_BY_WITH_OWNER:
                 ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
                 columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("table")));
-                return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC, NullsOrderType.FIRST);
             case COLUMN_ORDER_BY_WITH_ALIAS:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("n")), OrderDirection.ASC, NullsOrderType.FIRST);
             default:
-                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, OrderDirection.ASC);
+                return new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("id")), OrderDirection.ASC, NullsOrderType.FIRST);
         }
     }
     

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.merge.dal.show;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -30,8 +29,10 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Encrypt show create table merged result.
@@ -68,9 +69,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
             StringBuilder builder = new StringBuilder(result.substring(0, result.indexOf("(") + 1));
             List<String> columnDefinitions = Splitter.on(COMMA).splitToList(result.substring(result.indexOf("(") + 1, result.lastIndexOf(")")));
             for (String each : columnDefinitions) {
-                for (String logicColumn : encryptTable.get().getLogicColumns()) {
-                    findLogicColumnDefinition(each, logicColumn, encryptTable.get()).ifPresent(optional -> builder.append(optional).append(COMMA));
-                }
+                findLogicColumnDefinition(each, encryptTable.get()).ifPresent(optional -> builder.append(optional).append(COMMA));
             }
             builder.deleteCharAt(builder.length() - 1).append(result.substring(result.lastIndexOf(")")));
             return builder.toString();
@@ -78,21 +77,21 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
         return getOriginalValue(columnIndex, type);
     }
     
-    private Optional<String> findLogicColumnDefinition(final String columnDefinition, final String logicColumn, final EncryptTable encryptTable) {
-        Optional<EncryptColumn> encryptColumn = encryptTable.findEncryptColumn(logicColumn);
-        if (!encryptColumn.isPresent()) {
-            return Optional.of(columnDefinition);
+    private Optional<String> findLogicColumnDefinition(final String columnDefinition, final EncryptTable encryptTable) {
+        Collection<String> cipherColumns = encryptTable.getLogicColumns().stream().map(encryptTable::getCipherColumn).collect(Collectors.toList());
+        for (String each : cipherColumns) {
+            if (columnDefinition.contains(each)) {
+                return Optional.of(columnDefinition.replace(each, encryptTable.getLogicColumnByCipherColumn(each)));
+            }
         }
-        Optional<String> assistedQueryColumn = encryptColumn.get().getAssistedQueryColumn();
-        if (assistedQueryColumn.isPresent() && columnDefinition.contains(assistedQueryColumn.get())) {
+        if (encryptTable.getPlainColumns().stream().anyMatch(columnDefinition::contains)) {
             return Optional.empty();
         }
-        Optional<String> plainColumn = encryptColumn.get().getPlainColumn();
-        if (columnDefinition.contains(encryptColumn.get().getCipherColumn())) {
-            return plainColumn.isPresent() ? Optional.empty() : Optional.of(columnDefinition.replace(encryptColumn.get().getCipherColumn(), logicColumn));
+        if (encryptTable.getAssistedQueryColumns().stream().anyMatch(columnDefinition::contains)) {
+            return Optional.empty();
         }
-        if (plainColumn.isPresent() && columnDefinition.contains(plainColumn.get())) {
-            return Optional.of(columnDefinition.replace(plainColumn.get(), logicColumn));
+        if (encryptTable.getLikeQueryColumns().stream().anyMatch(columnDefinition::contains)) {
+            return Optional.empty();
         }
         return Optional.of(columnDefinition);
     }

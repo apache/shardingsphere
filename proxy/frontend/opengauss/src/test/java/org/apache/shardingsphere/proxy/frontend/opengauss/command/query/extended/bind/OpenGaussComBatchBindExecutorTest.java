@@ -21,7 +21,10 @@ import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.exte
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -72,6 +75,7 @@ public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestore
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertExecute() throws SQLException {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
@@ -89,6 +93,7 @@ public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestore
         when(packet.getStatementId()).thenReturn("S_1");
         when(packet.readParameterSets(anyList())).thenReturn(Collections.singletonList(Collections.singletonList(0)));
         ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getConnectionContext()).thenReturn(new ConnectionContext());
         when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getConnectionId()).thenReturn(1);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
@@ -105,7 +110,9 @@ public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestore
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, new PostgreSQLServerPreparedStatement(sql, sqlStatement, null, Collections.emptyList()));
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, Collections.emptyList()));
         OpenGaussComBatchBindExecutor executor = new OpenGaussComBatchBindExecutor(packet, connectionSession);
         Iterator<DatabasePacket<?>> actualPacketsIterator = executor.execute().iterator();
         assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));

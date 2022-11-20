@@ -75,9 +75,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(getExportData());
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
-        DatabaseDiscoveryDataSourceRuleConfiguration configuration = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
-        updater.checkSQLStatement(database, createSQLStatement(),
-                new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(configuration), Collections.emptyMap(), Collections.emptyMap()));
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("ha_group", null, null, null);
+        updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(config), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     private Map<String, Object> getExportData() {

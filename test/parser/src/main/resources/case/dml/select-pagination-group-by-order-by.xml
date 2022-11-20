@@ -120,7 +120,7 @@
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
+            <column-item name="item_id" order-direction="DESC" nulls-order-type="LAST" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
                 <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191"/>
             </column-item>
         </order-by>
@@ -234,7 +234,7 @@
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
+            <column-item name="item_id" order-direction="DESC" nulls-order-type="LAST" start-index="190" stop-index="198" literal-start-index="191" literal-stop-index="199">
                 <owner name="i" start-index="190" stop-index="190" literal-start-index="191" literal-stop-index="191"/>
             </column-item>
         </order-by>
@@ -1523,7 +1523,7 @@
                                             </column-item>
                                         </group-by>
                                         <order-by>
-                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC">
+                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC" nulls-order-type="LAST">
                                                 <owner start-index="344" stop-index="344" name="i"/>
                                             </column-item>
                                         </order-by>
@@ -1694,7 +1694,7 @@
                                             </column-item>
                                         </group-by>
                                         <order-by>
-                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC">
+                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC" nulls-order-type="LAST">
                                                 <owner start-index="344" stop-index="344" name="i"/>
                                             </column-item>
                                         </order-by>
@@ -1860,7 +1860,7 @@
                                             </expr>
                                         </where>
                                         <group-by>
-                                            <column-item start-index="325" stop-index="333" name="item_id">
+                                            <column-item start-index="325" stop-index="333" name="item_id" nulls-order-type="LAST">
                                                 <owner start-index="325" stop-index="325" name="i"/>
                                             </column-item>
                                         </group-by>
@@ -2031,7 +2031,7 @@
                                             </expr>
                                         </where>
                                         <group-by>
-                                            <column-item start-index="325" stop-index="333" name="user_id">
+                                            <column-item start-index="325" stop-index="333" name="user_id" nulls-order-type="LAST">
                                                 <owner start-index="325" stop-index="325" name="i"/>
                                             </column-item>
                                         </group-by>
@@ -2079,5 +2079,4 @@
             </expr>
         </where>
     </select>
-    
 </sql-parser-test-cases>

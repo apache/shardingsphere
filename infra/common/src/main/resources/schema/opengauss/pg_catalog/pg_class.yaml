@@ -1,0 +1,346 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: pg_class
+columns:
+  relname:
+    caseSensitive: true
+    dataType: 12
+    generated: false
+    name: relname
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relnamespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relnamespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reltype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reltype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reloftype:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reloftype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relowner:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relowner
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relam:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relam
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relfilenode:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relfilenode
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reltablespace:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reltablespace
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relpages:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: relpages
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reltuples:
+    caseSensitive: true
+    dataType: 8
+    generated: false
+    name: reltuples
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relallvisible:
+    caseSensitive: true
+    dataType: 4
+    generated: false
+    name: relallvisible
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reltoastrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reltoastrelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reltoastidxid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reltoastidxid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reldeltarelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reldeltarelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reldeltaidx:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: reldeltaidx
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relcudescrelid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relcudescrelid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relcudescidx:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relcudescidx
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhasindex:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhasindex
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relisshared:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relisshared
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relpersistence:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: relpersistence
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relkind:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: relkind
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relnatts:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: relnatts
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relchecks:
+    caseSensitive: true
+    dataType: 5
+    generated: false
+    name: relchecks
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhasoids:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhasoids
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhaspkey:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhaspkey
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhasrules:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhasrules
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhastriggers:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhastriggers
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhassubclass:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhassubclass
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relcmprs:
+    caseSensitive: true
+    dataType: -6
+    generated: false
+    name: relcmprs
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relhasclusterkey:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relhasclusterkey
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relrowmovement:
+    caseSensitive: true
+    dataType: -7
+    generated: false
+    name: relrowmovement
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parttype:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: parttype
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relfrozenxid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: relfrozenxid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relacl:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: relacl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  reloptions:
+    caseSensitive: true
+    dataType: 2003
+    generated: false
+    name: reloptions
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relreplident:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: relreplident
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relfrozenxid64:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: relfrozenxid64
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relbucket:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: relbucket
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relbucketkey:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: relbucketkey
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relminmxid:
+    caseSensitive: true
+    dataType: 1111
+    generated: false
+    name: relminmxid
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  pg_class_oid_index:
+    name: pg_class_oid_index
+  pg_class_relname_nsp_index:
+    name: pg_class_relname_nsp_index
+  pg_class_tblspc_relfilenode_index:
+    name: pg_class_tblspc_relfilenode_index

@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,26 +39,22 @@ public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     }
     
     void assertNotSetReadOnly() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        assertQueryBalance(conn);
-        Statement queryStatement = conn.createStatement();
-        queryStatement.executeUpdate("update account set balance=101 where id=2;");
-        queryStatement.close();
-        Statement statement3 = conn.createStatement();
-        ResultSet r3 = statement3.executeQuery("select * from account where id=2");
-        if (!r3.next()) {
-            fail("Update run failed, should success.");
+        Connection connection = getDataSource().getConnection();
+        assertQueryBalance(connection);
+        executeUpdateWithLog(connection, "update account set balance = 101 where id = 2;");
+        ResultSet resultSet = executeQueryWithLog(connection, "select * from account where id = 2");
+        if (!resultSet.next()) {
+            fail("Should have a result.");
         }
-        int balanceEnd = r3.getInt("balance");
-        assertThat(String.format("Balance is %s, should be 101.", balanceEnd), balanceEnd, is(101));
+        int balanceResult = resultSet.getInt("balance");
+        assertThat(String.format("Balance is %s, should be 101.", balanceResult), balanceResult, is(101));
     }
     
-    void assertQueryBalance(final Connection conn) throws SQLException {
-        Statement queryStatement = conn.createStatement();
-        ResultSet rs = queryStatement.executeQuery("select * from account;");
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            int balance = rs.getInt("balance");
+    void assertQueryBalance(final Connection connection) throws SQLException {
+        ResultSet resultSet = executeQueryWithLog(connection, "select * from account;");
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            int balance = resultSet.getInt("balance");
             if (1 == id) {
                 assertThat(String.format("Balance is %s, should be 0.", balance), balance, is(0));
             }

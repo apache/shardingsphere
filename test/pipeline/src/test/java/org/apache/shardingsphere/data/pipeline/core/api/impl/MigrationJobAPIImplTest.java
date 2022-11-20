@@ -29,8 +29,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.CreateMigrationJobParameter;
+import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.creator.PipelineDataSourceCreatorFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,6 +58,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -138,9 +142,10 @@ public final class MigrationJobAPIImplTest {
     
     @Test
     public void assertGetProgress() {
-        Optional<String> jobId = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        Optional<String> jobId = jobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
-        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = jobAPI.getJobProgress(jobId.get());
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgressMap = jobAPI.getJobProgress(jobConfig);
         assertThat(jobProgressMap.size(), is(1));
     }
     
@@ -153,7 +158,7 @@ public final class MigrationJobAPIImplTest {
         DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(jobConfig, "FIXTURE", null);
         ConsistencyCheckJobConfiguration checkJobConfig = mock(ConsistencyCheckJobConfiguration.class);
         when(checkJobConfig.getJobId()).thenReturn(jobConfig.getJobId() + "1");
-        ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(checkJobConfig, 0, JobStatus.RUNNING);
+        ConsistencyCheckJobItemContext checkJobItemContext = new ConsistencyCheckJobItemContext(checkJobConfig, 0, JobStatus.RUNNING, null);
         Map<String, DataConsistencyCheckResult> checkResultMap = jobAPI.dataConsistencyCheck(jobConfig, calculateAlgorithm, checkJobItemContext);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
@@ -206,7 +211,7 @@ public final class MigrationJobAPIImplTest {
         MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
         jobAPI.persistJobItemProgress(jobItemContext);
         jobAPI.updateJobItemStatus(jobId.get(), jobItemContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
-        Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobId.get());
+        Map<Integer, InventoryIncrementalJobItemProgress> progress = jobAPI.getJobProgress(jobConfig);
         for (Entry<Integer, InventoryIncrementalJobItemProgress> entry : progress.entrySet()) {
             assertSame(entry.getValue().getStatus(), JobStatus.EXECUTE_INVENTORY_TASK);
         }
@@ -251,8 +256,7 @@ public final class MigrationJobAPIImplTest {
     @Test
     public void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
-        CreateMigrationJobParameter parameter = new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order");
-        String jobId = jobAPI.createJobAndStart(parameter);
+        String jobId = jobAPI.createJobAndStart(new CreateMigrationJobParameter("ds_0", null, "t_order", "logic_db", "t_order"));
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId);
         assertThat(jobConfig.getSourceResourceName(), is("ds_0"));
         assertThat(jobConfig.getSourceTableName(), is("t_order"));
@@ -262,8 +266,8 @@ public final class MigrationJobAPIImplTest {
     
     private void initIntPrimaryEnvironment() throws SQLException {
         Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(JobType.MIGRATION);
-        DataSourceProperties dataSourceProperties = metaDataDataSource.get("ds_0");
-        DataSource dataSource = DataSourcePoolCreator.create(dataSourceProperties);
+        DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
+        DataSource dataSource = DataSourcePoolCreator.create(dataSourceProps);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -278,5 +282,36 @@ public final class MigrationJobAPIImplTest {
         assertThat(actual.size(), is(1));
         Collection<Object> objects = actual.iterator().next();
         assertThat(objects.toArray()[0], is("ds_0"));
+    }
+    
+    @Test
+    public void assertGetJobItemInfosAtBegin() {
+        Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(optional.isPresent());
+        String jobId = optional.get();
+        YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
+        yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
+        assertThat(jobItemInfos.size(), is(1));
+        InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
+        assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.RUNNING));
+        assertThat(jobItemInfo.getInventoryFinishedPercentage(), is(0));
+    }
+    
+    @Test
+    public void assertGetJobItemInfosAtIncrementTask() {
+        Optional<String> optional = jobAPI.start(JobConfigurationBuilder.createJobConfiguration());
+        assertTrue(optional.isPresent());
+        YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
+        yamlJobItemProgress.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
+        yamlJobItemProgress.setProcessedRecordsCount(100);
+        yamlJobItemProgress.setInventoryRecordsCount(50);
+        String jobId = optional.get();
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
+        List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
+        InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
+        assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));
+        assertThat(jobItemInfo.getInventoryFinishedPercentage(), is(100));
     }
 }

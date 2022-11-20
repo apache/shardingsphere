@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -33,106 +34,76 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class ConvertYamlConfigurationHandlerTest extends ProxyContextRestorer {
+public final class ConvertYamlConfigurationHandlerTest {
     
-    private final String resourceFilePath = "/conf/convert/config-resource.yaml";
+    private final String shardingConfigFilePath = "/conf/convert/config-sharding.yaml";
     
-    private final String shardingFilePath = "/conf/convert/config-sharding.yaml";
+    private final String readWriteSplittingConfigFilePath = "/conf/convert/config-readwrite-splitting.yaml";
     
-    private final String readWriteSplittingFilePath = "/conf/convert/config-readwrite-splitting.yaml";
+    private final String databaseDiscoveryConfigFilePath = "/conf/convert/config-database-discovery.yaml";
     
-    private final String databaseDiscoveryFilePath = "/conf/convert/config-database-discovery.yaml";
+    private final String encryptConfigFilePath = "/conf/convert/config-encrypt.yaml";
     
-    private final String encryptFilePath = "/conf/convert/config-encrypt.yaml";
+    private final String shadowConfigFilePath = "/conf/convert/config-shadow.yaml";
     
-    private final String shadowFilePath = "/conf/convert/config-shadow.yaml";
+    private final String mixConfigFilePath = "/conf/convert/config-mix.yaml";
     
-    private final String resourceExpectedFilePath = "/expected/convert-add-resource.yaml";
-    
-    private final String shardingExpectedFilePath = "/expected/convert-create-sharding.yaml";
+    private final String shardingExpectedFilePath = "/expected/convert-sharding.yaml";
     
     private final String readWriteSplittingExpectedFilePath = "/expected/convert-readwrite-splitting.yaml";
     
     private final String databaseDiscoveryExpectedFilePath = "/expected/convert-database-discovery.yaml";
     
-    private final String encryptExpectedFilePath = "/expected/convert-create-encrypt.yaml";
+    private final String encryptExpectedFilePath = "/expected/convert-encrypt.yaml";
     
-    private final String shadowExpectedFilePath = "/expected/convert-create-shadow.yaml";
+    private final String shadowExpectedFilePath = "/expected/convert-shadow.yaml";
     
-    private final String resource = "resource";
+    private final String mixExpectedFilePath = "/expected/convert-mix.yaml";
     
-    private final String sharding = "sharding";
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
-    private final String readWriteSplitting = "readWriteSplitting";
-    
-    private final String databaseDiscovery = "databaseDiscovery";
-    
-    private final String encrypt = "encrypt";
-    
-    private final String shadow = "shadow";
-    
-    private final Map<String, String> featureMap = new HashMap<>(5, 1);
-    
-    @Before
-    public void setup() {
-        featureMap.put(resource, resourceFilePath);
-        featureMap.put(sharding, shardingFilePath);
-        featureMap.put(readWriteSplitting, readWriteSplittingFilePath);
-        featureMap.put(databaseDiscovery, databaseDiscoveryFilePath);
-        featureMap.put(encrypt, encryptFilePath);
-        featureMap.put(shadow, shadowFilePath);
-    }
-    
-    @Before
-    public void init() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ProxyContext.init(contextManager);
+    @Test
+    public void assertExecuteWithSharding() throws SQLException {
+        assertExecute(shardingConfigFilePath, shardingExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithAddResource() throws SQLException {
-        assertExecute(resource, resourceExpectedFilePath);
+    public void assertExecuteWithReadWriteSplitting() throws SQLException {
+        assertExecute(readWriteSplittingConfigFilePath, readWriteSplittingExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateSharding() throws SQLException {
-        assertExecute(sharding, shardingExpectedFilePath);
+    public void assertExecuteWithDatabaseDiscovery() throws SQLException {
+        assertExecute(databaseDiscoveryConfigFilePath, databaseDiscoveryExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateReadWriteSplitting() throws SQLException {
-        assertExecute(readWriteSplitting, readWriteSplittingExpectedFilePath);
+    public void assertExecuteWithEncrypt() throws SQLException {
+        assertExecute(encryptConfigFilePath, encryptExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateDatabaseDiscovery() throws SQLException {
-        assertExecute(databaseDiscovery, databaseDiscoveryExpectedFilePath);
+    public void assertExecuteWithShadow() throws SQLException {
+        assertExecute(shadowConfigFilePath, shadowExpectedFilePath);
     }
     
     @Test
-    public void assertExecuteWithCreateEncrypt() throws SQLException {
-        assertExecute(encrypt, encryptExpectedFilePath);
+    public void assertExecuteWithMix() throws SQLException {
+        assertExecute(mixConfigFilePath, mixExpectedFilePath);
     }
     
-    @Test
-    public void assertExecuteWithCreateShadow() throws SQLException {
-        assertExecute(shadow, shadowExpectedFilePath);
-    }
-    
-    public void assertExecute(final String type, final String expectedFilePath) throws SQLException {
+    public void assertExecute(final String configFilePath, final String expectedFilePath) throws SQLException {
         ConvertYamlConfigurationHandler handler = new ConvertYamlConfigurationHandler();
-        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(featureMap.get(type))).getPath()),
+        handler.init(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationHandlerTest.class.getResource(configFilePath)).getPath()),
                 mock(ConnectionSession.class));
         assertQueryResponseHeader((QueryResponseHeader) handler.execute());
         assertTrue(handler.next());
@@ -160,9 +131,19 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
         assertFalse(actual.isAutoIncrement());
     }
     
-    private void assertRowData(final Collection<Object> actual, final String expectedFilePath) {
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is(loadExpectedRow(expectedFilePath)));
+    private void assertRowData(final Collection<Object> data, final String expectedFilePath) {
+        assertThat(data.size(), is(1));
+        Object actual = data.iterator().next();
+        assertThat(actual, is(loadExpectedRow(expectedFilePath)));
+        assertParseSQL((String) actual);
+    }
+    
+    private void assertParseSQL(final String actual) {
+        for (String each : Splitter.on(";").trimResults().splitToList(actual)) {
+            if (!Strings.isNullOrEmpty(each)) {
+                assertNotNull(sqlParserRule.getSQLParserEngine(new MySQLDatabaseType().getType()).parse(each, false));
+            }
+        }
     }
     
     @SneakyThrows(IOException.class)
@@ -174,10 +155,11 @@ public final class ConvertYamlConfigurationHandlerTest extends ProxyContextResto
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                if (!line.startsWith("#") && !line.trim().isEmpty()) {
+                if (!line.startsWith("#")) {
                     result.append(line).append(System.lineSeparator());
                 }
             }
+            result.append(System.lineSeparator());
         }
         return result.toString();
     }

@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TransactionTestConstants {
     
-    public static final String MYSQL = "mysql";
+    public static final String MYSQL = "MySQL";
     
     public static final String OPENGAUSS = "OpenGauss";
     

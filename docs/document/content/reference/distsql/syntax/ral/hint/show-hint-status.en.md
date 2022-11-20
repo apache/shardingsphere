@@ -1,6 +1,6 @@
 +++
 title = "SHOW HINT STATUS"
-weight = 6
+weight = 7
 +++
 
 ### Description

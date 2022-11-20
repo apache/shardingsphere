@@ -113,13 +113,13 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     }
     
     @Override
-    public CompletableFuture<?> start() {
+    public Collection<CompletableFuture<?>> start() {
         taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
-        CompletableFuture<?> dumperFuture = incrementalExecuteEngine.submit(dumper, new ExecuteCallback() {
+        Collection<CompletableFuture<?>> result = new LinkedList<>();
+        result.add(incrementalExecuteEngine.submit(dumper, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                log.info("incremental dumper onSuccess, taskId={}", taskId);
             }
             
             @Override
@@ -128,12 +128,11 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
                 stop();
                 close();
             }
-        });
-        CompletableFuture<?> importerFuture = incrementalExecuteEngine.submitAll(importers, new ExecuteCallback() {
+        }));
+        importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
@@ -142,8 +141,8 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
                 stop();
                 close();
             }
-        });
-        return CompletableFuture.allOf(dumperFuture, importerFuture);
+        })));
+        return result;
     }
     
     @Override

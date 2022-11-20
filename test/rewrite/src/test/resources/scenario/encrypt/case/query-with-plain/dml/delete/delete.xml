@@ -24,17 +24,17 @@
 <!--    </rewrite-assertion>-->
 
     <rewrite-assertion id="delete_for_literals_for_plain" db-types="MySQL">
-        <input sql="DELETE FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="DELETE FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <input sql="DELETE FROM t_account WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="DELETE FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_t_account_bak__parameters_for_plain" db-types="MySQL">
-        <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="DELETE FROM t_account_bak WHERE account_id = ? AND plain_password = ? AND plain_amount = ? AND status = ?" parameters="1, aaa, 1000, OK" />
+        <input sql="DELETE FROM t_account_bak WHERE account_id = ? AND password = ? AND password like ? AND amount = ? AND status = ?" parameters="1, aaa, aaa, 1000, OK" />
+        <output sql="DELETE FROM t_account_bak WHERE account_id = ? AND plain_password = ? AND plain_password like ? AND plain_amount = ? AND status = ?" parameters="1, aaa, aaa, 1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="delete_t_account_bak_for_literals_for_plain" db-types="MySQL">
-        <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND plain_password = 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
+        <input sql="DELETE FROM t_account_bak WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="DELETE FROM t_account_bak WHERE account_id = 1 AND plain_password = 'aaa' AND plain_password like 'aaa' AND plain_amount = 1000 AND status = 'OK'" />
     </rewrite-assertion>
 </rewrite-assertions>

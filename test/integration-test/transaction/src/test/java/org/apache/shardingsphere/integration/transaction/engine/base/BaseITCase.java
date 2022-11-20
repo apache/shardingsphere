@@ -40,7 +40,6 @@ import org.apache.shardingsphere.integration.transaction.framework.param.Transac
 import org.apache.shardingsphere.integration.transaction.util.TestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -49,7 +48,6 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -62,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -82,10 +79,6 @@ public abstract class BaseITCase {
     protected static final String DATA_SOURCE_0 = TRANSACTION_IT + "_0";
     
     protected static final String DATA_SOURCE_1 = TRANSACTION_IT + "_1";
-    
-    protected static final String DATA_SOURCE_2 = TRANSACTION_IT + "_2";
-    
-    protected static final Collection<String> ALL_DATA_SOURCES = Arrays.asList(DATA_SOURCE_0, DATA_SOURCE_1, DATA_SOURCE_2);
     
     protected static final List<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
     
@@ -111,12 +104,11 @@ public abstract class BaseITCase {
         log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
     }
     
-    public BaseITCase(final TransactionParameterized parameterized) throws SQLException {
+    public BaseITCase(final TransactionParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         adapter = parameterized.getAdapter();
         containerComposer = initializeContainerComposer(parameterized);
         commonSQLCommand = loadCommonSQLCommand();
-        initActualDataSources();
         dataSource = isProxyAdapter(parameterized) ? createProxyDataSource() : createJdbcDataSource();
     }
     
@@ -132,48 +124,12 @@ public abstract class BaseITCase {
         return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
-    private void initActualDataSources() throws SQLException {
-        DockerStorageContainer storageContainer = ((DockerContainerComposer) containerComposer).getStorageContainer();
-        String jdbcUrl = storageContainer.getJdbcUrl("");
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, storageContainer.getUsername(), storageContainer.getPassword())) {
-            for (String each : ALL_DATA_SOURCES) {
-                executeWithLog(connection, String.format("CREATE DATABASE %s", each));
-            }
-        }
-    }
-    
     final boolean isProxyAdapter(final TransactionParameterized parameterized) {
-        return parameterized.getAdapter().equalsIgnoreCase(AdapterContainerConstants.PROXY);
+        return AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter());
     }
     
-    private ProxyDataSource createProxyDataSource() throws SQLException {
-        initProxyDatabase();
+    private ProxyDataSource createProxyDataSource() {
         return new ProxyDataSource(containerComposer, SHARDING_DB, ENV.getProxyUserName(), ENV.getProxyPassword());
-    }
-    
-    private void initProxyDatabase() throws SQLException {
-        String jdbcUrl = getProxyJdbcUrl(databaseType);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
-            executeWithLog(connection, "CREATE DATABASE " + SHARDING_DB);
-        }
-    }
-    
-    private String getProxyJdbcUrl(final DatabaseType databaseType) {
-        String defaultDatabaseName = "";
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            defaultDatabaseName = "postgres";
-        }
-        String result = containerComposer.getProxyJdbcUrl(defaultDatabaseName);
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            result = JDBC_URL_APPENDER.appendQueryProperties(result, getPostgreSQLQueryProperties());
-        }
-        return result;
-    }
-    
-    private Properties getPostgreSQLQueryProperties() {
-        Properties result = new Properties();
-        result.put("preferQueryMode", "extendedForPrepared");
-        return result;
     }
     
     private JdbcDataSource createJdbcDataSource() {
@@ -243,56 +199,55 @@ public abstract class BaseITCase {
                 log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", each.getName());
                 continue;
             }
-            String group = annotation.group();
-            addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, parameterizedMap, group);
+            String scenario = annotation.scenario();
+            addParametersByTransactionTypes(version, currentTestCaseInfo, each, annotation, parameterizedMap, scenario);
         }
-        
         return parameterizedMap.values();
     }
     
     private static void addParametersByTransactionTypes(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                         final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation,
-                                                        final Map<String, TransactionParameterized> parameterizedMap, final String group) {
+                                                        final Map<String, TransactionParameterized> parameterizedMap, final String scenario) {
         if (AdapterContainerConstants.PROXY.equals(currentTestCaseInfo.getRunningAdaptor())) {
             List<TransactionType> allowTransactionTypes = ENV.getAllowTransactionTypes().isEmpty() ? Arrays.stream(TransactionType.values()).collect(Collectors.toList())
                     : ENV.getAllowTransactionTypes().stream().map(TransactionType::valueOf).collect(Collectors.toList());
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
-            addTestParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, parameterizedMap, group);
+            addTestParameters(version, currentTestCaseInfo, caseClass, allowTransactionTypes, allowProviders, parameterizedMap, scenario);
         } else {
             for (TransactionType each : annotation.transactionTypes()) {
                 if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
                     log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                     continue;
                 }
-                addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, parameterizedMap, group);
+                addParametersByTransactionProvidersInJDBC(version, currentTestCaseInfo, caseClass, each, parameterizedMap, scenario);
             }
         }
     }
     
     private static void addParametersByTransactionProvidersInJDBC(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                                                   final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each,
-                                                                  final Map<String, TransactionParameterized> parameterizedMap, final String group) {
+                                                                  final Map<String, TransactionParameterized> parameterizedMap, final String scenario) {
         if (TransactionType.LOCAL.equals(each)) {
-            addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), parameterizedMap, group);
+            addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(""), parameterizedMap, scenario);
         } else if (TransactionType.XA.equals(each)) {
             List<String> allowProviders = ENV.getAllowXAProviders().isEmpty() ? ALL_XA_PROVIDERS : ENV.getAllowXAProviders();
             for (String provider : allowProviders) {
-                addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), parameterizedMap, group);
+                addTestParameters(version, currentTestCaseInfo, caseClass, Collections.singletonList(each), Collections.singletonList(provider), parameterizedMap, scenario);
             }
         }
     }
     
     private static void addTestParameters(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
                                           final Class<? extends BaseTransactionTestCase> caseClass, final List<TransactionType> transactionTypes, final List<String> providers,
-                                          final Map<String, TransactionParameterized> parameterizedMap, final String group) {
-        String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, group);
+                                          final Map<String, TransactionParameterized> parameterizedMap, final String scenario) {
+        String uniqueKey = getUniqueKey(currentTestCaseInfo.getDbType(), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers, scenario);
         parameterizedMap.putIfAbsent(uniqueKey, new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionTypes, providers,
-                getStorageContainerImage(currentTestCaseInfo.getDbType(), version), group, new LinkedList<>()));
+                getStorageContainerImage(currentTestCaseInfo.getDbType(), version), scenario, new LinkedList<>()));
         parameterizedMap.get(uniqueKey).getTransactionTestCaseClasses().add(caseClass);
     }
     
-    private static String getUniqueKey(final String dbType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String group) {
-        return dbType + File.separator + runningAdapter + File.separator + transactionTypes + File.separator + providers + File.separator + group;
+    private static String getUniqueKey(final String dbType, final String runningAdapter, final List<TransactionType> transactionTypes, final List<String> providers, final String scenario) {
+        return dbType + File.separator + runningAdapter + File.separator + transactionTypes + File.separator + providers + File.separator + scenario;
     }
     
     private static DatabaseType getSqlDatabaseType(final String databaseType) {
@@ -322,33 +277,6 @@ public abstract class BaseITCase {
     
     final Connection getProxyConnection() throws SQLException {
         return dataSource.getConnection();
-    }
-    
-    final void addResources() throws SQLException {
-        if (DatabaseTypeUtil.isMySQL(databaseType)) {
-            try (Connection connection = DriverManager.getConnection(getContainerComposer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
-                executeWithLog(connection, "USE sharding_db");
-                addResources(connection);
-            }
-        } else {
-            Properties queryProps = getPostgreSQLQueryProperties();
-            try (
-                    Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getContainerComposer().getProxyJdbcUrl("sharding_db"), queryProps),
-                            ENV.getProxyUserName(), ENV.getProxyPassword())) {
-                addResources(connection);
-            }
-        }
-        int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db");
-        assertThat(resourceCount, is(2));
-    }
-    
-    private void addResources(final Connection connection) throws SQLException {
-        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate()
-                .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
-                .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
-                .replace("${ds0}", getActualJdbcUrlTemplate(DATA_SOURCE_0))
-                .replace("${ds1}", getActualJdbcUrlTemplate(DATA_SOURCE_1));
-        executeWithLog(connection, addSourceResource);
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
@@ -396,9 +324,9 @@ public abstract class BaseITCase {
         while (retryNumber <= 3) {
             try {
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery(sql);
+                ResultSet resultSet = statement.executeQuery(sql);
                 int result = 0;
-                while (rs.next()) {
+                while (resultSet.next()) {
                     result++;
                 }
                 return result;

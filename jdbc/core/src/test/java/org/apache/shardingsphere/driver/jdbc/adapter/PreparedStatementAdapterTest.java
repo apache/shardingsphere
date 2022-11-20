@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -47,6 +48,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,6 +74,7 @@ public final class PreparedStatementAdapterTest {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
+        when(connection.getContextManager().getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes())
                 .thenReturn(Collections.singletonMap("ds_0", new MySQLDatabaseType()));
@@ -268,8 +271,8 @@ public final class PreparedStatementAdapterTest {
         assertParameter(shardingSpherePreparedStatement, 5, obj);
     }
     
-    private void assertParameter(final PreparedStatement actual, final int index, final Object parameter) {
-        assertThat(((ShardingSpherePreparedStatement) actual).getParameters().get(index - 1), is(parameter));
+    private void assertParameter(final PreparedStatement actual, final int index, final Object param) {
+        assertThat(((ShardingSpherePreparedStatement) actual).getParameters().get(index - 1), is(param));
     }
     
     @Test

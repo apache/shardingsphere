@@ -31,7 +31,7 @@ import java.sql.SQLException;
 /**
  * Integration test of close resource.
  */
-@TransactionTestCase(adapters = AdapterContainerConstants.PROXY, group = "closeResource")
+@TransactionTestCase(adapters = AdapterContainerConstants.PROXY, scenario = "closeResource")
 @Slf4j
 public final class CloseResourceTestCase extends BaseTransactionTestCase {
     
@@ -45,36 +45,36 @@ public final class CloseResourceTestCase extends BaseTransactionTestCase {
     }
     
     private void assertCloseResource() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        getBaseTransactionITCase().createOriginalAccountTableRule(conn);
-        reCreateAccountTable(conn);
+        Connection connection = getDataSource().getConnection();
+        getBaseTransactionITCase().createOriginalAccountTableRule(connection);
+        reCreateAccountTable(connection);
         assertRollback();
         assertCommit();
-        conn.close();
+        connection.close();
     }
     
-    private void reCreateAccountTable(final Connection conn) throws SQLException {
-        getBaseTransactionITCase().dropAccountTable(conn);
-        getBaseTransactionITCase().createAccountTable(conn);
+    private void reCreateAccountTable(final Connection connection) throws SQLException {
+        getBaseTransactionITCase().dropAccountTable(connection);
+        getBaseTransactionITCase().createAccountTable(connection);
     }
     
     private void assertRollback() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(conn, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
-        conn.rollback();
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+        executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+        connection.rollback();
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
     }
     
     private void assertCommit() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
-        executeWithLog(conn, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
-        conn.commit();
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
+        executeWithLog(connection, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
+        connection.commit();
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 6);
     }
 }

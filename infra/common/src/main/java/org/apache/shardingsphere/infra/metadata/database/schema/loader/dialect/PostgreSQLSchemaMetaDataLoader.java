@@ -19,6 +19,16 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,15 +40,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 
 /**
  * Schema meta data loader for PostgreSQL.
@@ -169,13 +170,13 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
         // TODO user defined collation which deterministic is false
         boolean caseSensitive = true;
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive, true);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive, true, false);
     }
     
     private String getColumnMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
-        String schemaNameParameter = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParameter)
-                : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParameter, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        String schemaNameParam = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam)
+                : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private Map<String, Multimap<String, IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final Collection<String> schemaNames) throws SQLException {

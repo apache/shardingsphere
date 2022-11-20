@@ -50,16 +50,16 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
                                            final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
-        List<Object> parameters = executionUnit.getSqlUnit().getParameters();
+        List<Object> params = executionUnit.getSqlUnit().getParameters();
         PreparedStatement result = option.isReturnGeneratedKeys()
                 ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql);
-        for (int i = 0; i < parameters.size(); i++) {
-            Object parameter = parameters.get(i);
-            if (parameter instanceof TypeUnspecifiedSQLParameter) {
-                result.setObject(i + 1, parameter, Types.OTHER);
+        for (int i = 0; i < params.size(); i++) {
+            Object param = params.get(i);
+            if (param instanceof TypeUnspecifiedSQLParameter) {
+                result.setObject(i + 1, param, Types.OTHER);
             } else {
-                result.setObject(i + 1, parameter);
+                result.setObject(i + 1, param);
             }
         }
         if (ConnectionMode.MEMORY_STRICTLY == connectionMode) {

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
     }
     
     @Override
@@ -63,16 +63,12 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
+    public DistributedLockHolder getDistributedLockHolder() {
+        return null;
+    }
+    
+    @Override
     public void delete(final String key) {
-    }
-    
-    @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return false;
-    }
-    
-    @Override
-    public void unlock(final String lockKey) {
     }
     
     @Override

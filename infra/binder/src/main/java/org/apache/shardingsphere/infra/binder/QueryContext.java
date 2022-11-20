@@ -42,18 +42,18 @@ public final class QueryContext {
     
     private HintValueContext hintValueContext;
     
-    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters) {
+    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
+        parameters = params;
         this.hintValueContext = SQLHintUtils.extractHint(sql);
-        this.parameters = parameters;
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
         }
     }
     
     /**
-     * Find sql statement database name.
+     * Find SQL statement database name.
      * 
      * @return database name
      */

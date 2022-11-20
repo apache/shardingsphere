@@ -19,13 +19,10 @@ package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * PostgreSQL pipeline SQL builder.
@@ -38,12 +35,12 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     }
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildConflictSQL(dataRecord, shardingColumnsMap);
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
+        return super.buildInsertSQL(schemaName, dataRecord) + buildConflictSQL(dataRecord);
     }
     
     // Refer to https://www.postgresql.org/docs/current/sql-insert.html
-    private String buildConflictSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    private String buildConflictSQL(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON CONFLICT (");
         for (Column each : RecordUtil.extractPrimaryColumns(dataRecord)) {
             result.append(each.getName()).append(",");
@@ -52,7 +49,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
         result.append(") DO UPDATE SET ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isUniqueKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
+            if (column.isUniqueKey()) {
                 continue;
             }
             result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");

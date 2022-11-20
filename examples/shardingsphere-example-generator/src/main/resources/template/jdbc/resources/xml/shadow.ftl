@@ -23,7 +23,7 @@
         </props>
     </shadow:shadow-algorithm>
     
-    <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="VALUE_MATCH">
+    <shadow:shadow-algorithm id="order-type-delete-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">delete</prop>
             <prop key="column">order_type</prop>
@@ -31,7 +31,7 @@
         </props>
     </shadow:shadow-algorithm>
     
-    <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="VALUE_MATCH">
+    <shadow:shadow-algorithm id="order-type-select-match-algorithm" type="VALUE_MATCH">
         <props>
             <prop key="operation">select</prop>
             <prop key="column">order_type</prop>
@@ -49,9 +49,9 @@
     <shadow:rule id="shadowRule">
         <shadow:data-source id="shadow-data-source" production-data-source-name="ds_0" shadow-data-source-name="ds_1"/>
         <shadow:shadow-table name="t_order" data-sources="shadow-data-source">
-            <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
-            <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="order-type-insert-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="order-type-delete-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="order-type-select-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
         </shadow:shadow-table>
         <shadow:default-shadow-algorithm-name name="simple-hint-algorithm"/>

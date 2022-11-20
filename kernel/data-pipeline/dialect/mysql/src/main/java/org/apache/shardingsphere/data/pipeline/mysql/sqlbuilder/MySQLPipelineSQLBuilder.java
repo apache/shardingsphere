@@ -19,12 +19,9 @@ package org.apache.shardingsphere.data.pipeline.mysql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * MySQL pipeline SQL builder.
@@ -32,15 +29,19 @@ import java.util.Set;
 public final class MySQLPipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
-    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
-        return super.buildInsertSQL(schemaName, dataRecord, shardingColumnsMap) + buildDuplicateUpdateSQL(dataRecord, shardingColumnsMap);
+    public String buildInsertSQL(final String schemaName, final DataRecord dataRecord) {
+        return super.buildInsertSQL(schemaName, dataRecord) + buildDuplicateUpdateSQL(dataRecord);
     }
     
-    private String buildDuplicateUpdateSQL(final DataRecord dataRecord, final Map<LogicTableName, Set<String>> shardingColumnsMap) {
+    private String buildDuplicateUpdateSQL(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isUniqueKey() || isShardingColumn(shardingColumnsMap, dataRecord.getTableName(), column.getName())) {
+            if (!column.isUpdated()) {
+                continue;
+            }
+            // TOOD not skip unique key
+            if (column.isUniqueKey()) {
                 continue;
             }
             result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");

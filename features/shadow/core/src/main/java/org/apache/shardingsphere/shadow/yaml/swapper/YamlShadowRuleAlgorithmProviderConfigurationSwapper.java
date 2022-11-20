@@ -20,17 +20,16 @@ package org.apache.shardingsphere.shadow.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.datasource.YamlShadowDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.shadow.yaml.config.datasource.YamlShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
 
 /**
  * YAML shadow rule algorithm provider configuration swapper.
  */
 public final class YamlShadowRuleAlgorithmProviderConfigurationSwapper implements YamlRuleConfigurationSwapper<YamlShadowRuleConfiguration, AlgorithmProvidedShadowRuleConfiguration> {
-    
-    private final YamlShadowDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlShadowDataSourceConfigurationSwapper();
     
     private final YamlShadowTableConfigurationSwapper tableSwapper = new YamlShadowTableConfigurationSwapper();
     
@@ -53,7 +52,14 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapper implement
     }
     
     private void parseDataSources(final AlgorithmProvidedShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getDataSources().forEach((key, value) -> yamlConfig.getDataSources().put(key, dataSourceConfigSwapper.swapToYamlConfiguration(value)));
+        data.getDataSources().forEach(each -> yamlConfig.getDataSources().put(each.getName(), swapToDataSourceYamlConfiguration(each)));
+    }
+    
+    private YamlShadowDataSourceConfiguration swapToDataSourceYamlConfiguration(final ShadowDataSourceConfiguration data) {
+        YamlShadowDataSourceConfiguration result = new YamlShadowDataSourceConfiguration();
+        result.setProductionDataSourceName(data.getProductionDataSourceName());
+        result.setShadowDataSourceName(data.getShadowDataSourceName());
+        return result;
     }
     
     @Override
@@ -70,7 +76,11 @@ public final class YamlShadowRuleAlgorithmProviderConfigurationSwapper implement
     }
     
     private void parseYamlDataSources(final YamlShadowRuleConfiguration yamlConfig, final AlgorithmProvidedShadowRuleConfiguration data) {
-        yamlConfig.getDataSources().forEach((key, value) -> data.getDataSources().put(key, dataSourceConfigSwapper.swapToObject(value)));
+        yamlConfig.getDataSources().forEach((key, value) -> data.getDataSources().add(swapToDataSourceObject(key, value)));
+    }
+    
+    private ShadowDataSourceConfiguration swapToDataSourceObject(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
+        return new ShadowDataSourceConfiguration(name, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     
     @Override

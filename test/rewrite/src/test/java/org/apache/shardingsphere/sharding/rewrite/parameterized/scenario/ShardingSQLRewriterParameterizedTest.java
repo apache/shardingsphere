@@ -53,9 +53,8 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private static final String CASE_PATH = "scenario/sharding/case";
     
-    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
-                                                final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
-        super(testParameters);
+    public ShardingSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) {
+        super(testParams);
     }
     
     @Parameters(name = "{0}: {1} ({3}) -> {2}")
@@ -102,7 +101,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private Map<String, ShardingSphereColumn> createColumnMetaDataMap() {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true));
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
         result.put("amount", mock(ShardingSphereColumn.class));
         result.put("status", mock(ShardingSphereColumn.class));
         return result;

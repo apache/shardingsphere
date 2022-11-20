@@ -187,7 +187,7 @@ public final class ContextManagerTest {
         ShardingSphereSchema toBeAlteredSchema = createToBeAlteredSchema();
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_schema", toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
-        ShardingSphereColumn toBeChangedColumn = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, false, true);
+        ShardingSphereColumn toBeChangedColumn = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, false, true, false);
         ShardingSphereTable toBeChangedTable = new ShardingSphereTable("foo_tbl", Collections.singleton(toBeChangedColumn), Collections.emptyList(), Collections.emptyList());
         contextManager.alterSchema("foo_db", "foo_schema", toBeChangedTable, null);
         ShardingSphereTable table = contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTables().get("foo_tbl");
@@ -328,21 +328,6 @@ public final class ContextManagerTest {
         props.put("foo", "foo_value");
         contextManager.alterProperties(props);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty("foo"), is("foo_value"));
-    }
-    
-    @Test
-    public void assertReloadDatabase() {
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(1, 1);
-        dataSourceMap.put("foo_ds", new MockedDataSource());
-        when(metaDataContexts.getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
-        when(metaDataContexts.getMetaData().getActualDatabaseName("foo_db")).thenReturn("foo_db");
-        DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        MetaDataPersistService persistService = mock(MetaDataPersistService.class);
-        when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
-        when(metaDataContexts.getPersistService()).thenReturn(persistService);
-        contextManager.reloadDatabase("foo_db");
-        verify(databaseMetaDataPersistService, times(1)).dropSchema(eq("foo_db"), eq("foo_schema"));
-        verify(databaseMetaDataPersistService, times(1)).compareAndPersist(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
     }
     
     @Test

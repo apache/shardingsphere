@@ -54,9 +54,9 @@ public final class UnusedShardingAuditorsQueryResultSet implements DatabaseDistS
     private void getUnusedAuditors(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> inUsedAuditors = getUsedAuditors(shardingRuleConfig);
         Map<String, AlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, AlgorithmConfiguration> each : shardingRuleConfig.getAuditors().entrySet()) {
-            if (!inUsedAuditors.contains(each.getKey())) {
-                map.put(each.getKey(), each.getValue());
+        for (Entry<String, AlgorithmConfiguration> entry : shardingRuleConfig.getAuditors().entrySet()) {
+            if (!inUsedAuditors.contains(entry.getKey())) {
+                map.put(entry.getKey(), entry.getValue());
             }
         }
         data = map.entrySet().iterator();

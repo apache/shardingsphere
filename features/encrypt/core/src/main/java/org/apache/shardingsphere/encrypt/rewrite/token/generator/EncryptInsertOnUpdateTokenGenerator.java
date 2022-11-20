@@ -108,6 +108,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         addCipherColumn(tableName, columnName, result);
         addAssistedQueryColumn(tableName, columnName, result);
+        addLikeQueryColumn(tableName, columnName, result);
         addPlainColumn(tableName, columnName, result);
         return result;
     }
@@ -116,6 +117,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         EncryptLiteralAssignmentToken result = new EncryptLiteralAssignmentToken(assignmentSegment.getColumns().get(0).getStartIndex(), assignmentSegment.getStopIndex());
         addCipherAssignment(schemaName, tableName, assignmentSegment, result);
         addAssistedQueryAssignment(schemaName, tableName, assignmentSegment, result);
+        addLikeAssignment(schemaName, tableName, assignmentSegment, result);
         addPlainAssignment(tableName, assignmentSegment, result);
         return result;
     }
@@ -142,6 +144,13 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         } else if (assistedQueryColumn.isPresent() != valueAssistedQueryColumn.isPresent()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
+        Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(tableName, column);
+        Optional<String> valueLikeQueryColumn = encryptRule.findLikeQueryColumn(tableName, valueColumn);
+        if (likeQueryColumn.isPresent() && valueLikeQueryColumn.isPresent()) {
+            result.addAssignment(likeQueryColumn.get(), "VALUES(" + valueLikeQueryColumn.get() + ")");
+        } else if (likeQueryColumn.isPresent() != valueLikeQueryColumn.isPresent()) {
+            throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
+        }
         Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column);
         Optional<String> valuePlainColumn = encryptRule.findPlainColumn(tableName, valueColumn);
         if (plainColumn.isPresent() && valuePlainColumn.isPresent()) {
@@ -163,6 +172,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         encryptRule.findAssistedQueryColumn(tableName, columnName).ifPresent(token::addColumnName);
     }
     
+    private void addLikeQueryColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
+        encryptRule.findLikeQueryColumn(tableName, columnName).ifPresent(token::addColumnName);
+    }
+    
     private void addPlainColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
         encryptRule.findPlainColumn(tableName, columnName).ifPresent(token::addColumnName);
     }
@@ -181,6 +194,16 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                     .getEncryptAssistedQueryValues(databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue))
                     .iterator().next();
             token.addAssignment(optional, assistedQueryValue);
+        });
+    }
+    
+    private void addLikeAssignment(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
+        encryptRule.findLikeQueryColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(optional -> {
+            Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
+            Object likeValue = encryptRule
+                    .getEncryptLikeQueryValues(databaseName, schemaName, tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue(), Collections.singletonList(originalValue))
+                    .iterator().next();
+            token.addAssignment(optional, likeValue);
         });
     }
     

@@ -27,12 +27,12 @@ import com.alibaba.nacos.common.utils.StringUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
+import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.KeyValue;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceController;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.entity.ServiceMetadata;
@@ -68,7 +68,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     private ServiceController serviceController;
     
     @Override
-    public void init(final ClusterPersistRepositoryConfiguration config, final InstanceMetaData instanceMetaData) {
+    public void init(final ClusterPersistRepositoryConfiguration config) {
         nacosProps = new NacosProperties(config.getProps());
         client = createClient(config);
         initServiceMetadata();
@@ -125,15 +125,9 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+    public DistributedLockHolder getDistributedLockHolder() {
         // TODO
-        throw new UnsupportedOperationException("Can not support tryLock on Nacos yet.");
-    }
-    
-    @Override
-    public void unlock(final String lockKey) {
-        // TODO
-        throw new UnsupportedOperationException("Can not support unlock on Nacos yet.");
+        throw new UnsupportedOperationException("Can not support distributed lock on Nacos yet.");
     }
     
     @Override

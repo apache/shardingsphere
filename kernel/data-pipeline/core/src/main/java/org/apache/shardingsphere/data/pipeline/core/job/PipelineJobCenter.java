@@ -43,7 +43,6 @@ public final class PipelineJobCenter {
      * @param job job
      */
     public static void addJob(final String jobId, final PipelineJob job) {
-        log.info("add job, jobId={}", jobId);
         JOB_MAP.put(jobId, job);
     }
     
@@ -65,11 +64,9 @@ public final class PipelineJobCenter {
     public static void stop(final String jobId) {
         PipelineJob job = JOB_MAP.get(jobId);
         if (null == job) {
-            log.info("job is null, ignore, jobId={}", jobId);
             return;
         }
         job.stop();
-        log.info("remove job, jobId={}", jobId);
         JOB_MAP.remove(jobId);
     }
     

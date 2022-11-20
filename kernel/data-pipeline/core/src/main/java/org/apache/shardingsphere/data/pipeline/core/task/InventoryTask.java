@@ -39,6 +39,8 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreatorFacto
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -84,12 +86,12 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     }
     
     @Override
-    public CompletableFuture<?> start() {
-        CompletableFuture<?> dumperFuture = inventoryDumperExecuteEngine.submit(dumper, new ExecuteCallback() {
+    public Collection<CompletableFuture<?>> start() {
+        Collection<CompletableFuture<?>> result = new LinkedList<>();
+        result.add(inventoryDumperExecuteEngine.submit(dumper, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                log.info("dumper onSuccess, taskId={}", taskId);
             }
             
             @Override
@@ -98,12 +100,11 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
                 stop();
                 close();
             }
-        });
-        CompletableFuture<?> importerFuture = inventoryImporterExecuteEngine.submit(importer, new ExecuteCallback() {
+        }));
+        result.add(inventoryImporterExecuteEngine.submit(importer, new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                log.info("importer onSuccess, taskId={}", taskId);
             }
             
             @Override
@@ -112,8 +113,8 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
                 stop();
                 close();
             }
-        });
-        return CompletableFuture.allOf(dumperFuture, importerFuture);
+        }));
+        return result;
     }
     
     private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator) {

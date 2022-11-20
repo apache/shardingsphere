@@ -72,11 +72,11 @@ public class ShadowRuleSpringBootConfiguration {
     /**
      * Shadow algorithm provided bean registry.
      *
-     * @param environment environment
+     * @param env environment
      * @return shadow algorithm provided bean registry
      */
     @Bean
-    public static ShadowAlgorithmProvidedBeanRegistry shadowAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new ShadowAlgorithmProvidedBeanRegistry(environment);
+    public static ShadowAlgorithmProvidedBeanRegistry shadowAlgorithmProvidedBeanRegistry(final Environment env) {
+        return new ShadowAlgorithmProvidedBeanRegistry(env);
     }
 }

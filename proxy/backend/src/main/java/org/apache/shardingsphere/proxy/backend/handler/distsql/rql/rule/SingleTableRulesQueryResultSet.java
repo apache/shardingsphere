@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -43,7 +42,7 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("storage_unit_name");
+        return Collections.singletonList("storage_unit_name");
     }
     
     @Override
@@ -53,7 +52,7 @@ public final class SingleTableRulesQueryResultSet implements DatabaseDistSQLResu
     
     @Override
     public Collection<Object> getRowData() {
-        return Arrays.asList(data.next());
+        return Collections.singletonList(data.next());
     }
     
     @Override

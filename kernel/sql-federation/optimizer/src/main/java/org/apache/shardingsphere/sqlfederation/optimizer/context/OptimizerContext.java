@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sqlfederation.optimizer.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
 import java.util.Map;
 
@@ -29,12 +29,32 @@ import java.util.Map;
  * Optimizer context.
  */
 @RequiredArgsConstructor
-@Getter
 public final class OptimizerContext {
     
+    @Getter
     private final SQLParserRule sqlParserRule;
     
     private final Map<String, OptimizerParserContext> parserContexts;
     
     private final Map<String, OptimizerPlannerContext> plannerContexts;
+    
+    /**
+     * Get parser context.
+     * 
+     * @param databaseName database name
+     * @return parser context
+     */
+    public OptimizerParserContext getParserContext(final String databaseName) {
+        return parserContexts.get(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Get planner context.
+     *
+     * @param databaseName database name
+     * @return Planner
+     */
+    public OptimizerPlannerContext getPlannerContext(final String databaseName) {
+        return plannerContexts.get(databaseName.toLowerCase());
+    }
 }

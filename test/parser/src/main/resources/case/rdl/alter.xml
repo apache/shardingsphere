@@ -17,51 +17,51 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-resource sql-case-id="alter-resource-simple-single-without-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-without-password">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-simple-single-with-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-single-with-password">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-simple-multiple">
+    <alter-storage-unit sql-case-id="alter-storage-unit-simple-multiple">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
         <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-without-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-without-password">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-with-password">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-password">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-multiple">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-multiple">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
         <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-single-with-properties">
+    <alter-storage-unit sql-case-id="alter-storage-unit-single-with-properties">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
             </properties>
         </data-source>
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-with-empty-properties">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-empty-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
-    </alter-resource>
+    </alter-storage-unit>
 
-    <alter-resource sql-case-id="alter-resource-url-single-with-properties">
+    <alter-storage-unit sql-case-id="alter-storage-unit-url-single-with-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
             <properties>
                 <property key="maxPoolSize" value="30" />
             </properties>
         </data-source>
-    </alter-resource>
+    </alter-storage-unit>
     
     <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule">
         <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
@@ -156,9 +156,9 @@
                     <property key="groupName" value="92504d5b-6dec" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/5 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
@@ -168,9 +168,9 @@
                     <property key="groupName" value="92504d5b-6dec-2" />
                 </properties>
             </discovery-type>
-            <heartbeat>
+            <properties>
                 <property key="keepAliveCron" value="0/6 * * * * ?" />
-            </heartbeat>
+            </properties>
         </rule>
     </alter-database-discovery-definition-rule>
     
@@ -205,8 +205,24 @@
         </rule>
     </alter-encrypt-rule>
     
+    <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-like-query-column">
+        <rule name="t_encrypt">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
+                <encryptor algorithm-name="AES">
+                    <properties>
+                        <property key="aes-key-value" value="123456abc"/>
+                    </properties>
+                </encryptor>
+                <like-query-encryptor algorithm-name="CHAR_DIGEST_LIKE"/>
+            </column>
+            <column name="order_id" cipher-column="order_cipher">
+                <encryptor algorithm-name="MD5"/>
+            </column>
+        </rule>
+    </alter-encrypt-rule>
+    
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
-        <rule name="t_encrypt" queryWithCipherColumn="false">
+        <rule name="t_encrypt" query-with-cipher-column="false">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>
@@ -261,8 +277,6 @@
         </sharding-auditor>
     </alter-sharding-auditor>
     
-    <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
-
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
             <algorithm-segment algorithm-name="INLINE">

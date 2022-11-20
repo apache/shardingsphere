@@ -67,15 +67,15 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     }
     
     @Override
-    public void rewrite(final ParameterBuilder parameterBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
             if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
-                StandardParameterBuilder standardParameterBuilder = parameterBuilder instanceof StandardParameterBuilder
-                        ? (StandardParameterBuilder) parameterBuilder
-                        : ((GroupedParameterBuilder) parameterBuilder).getParameterBuilders().get(0);
-                encryptParameters(standardParameterBuilder, schemaName, tableName, each, parameters);
+                StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
+                        ? (StandardParameterBuilder) paramBuilder
+                        : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);
+                encryptParameters(standardParamBuilder, schemaName, tableName, each, params);
             }
         }
     }
@@ -89,23 +89,27 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         return ((UpdateStatement) sqlStatement).getSetAssignment();
     }
     
-    private void encryptParameters(final StandardParameterBuilder parameterBuilder, final String schemaName,
-                                   final String tableName, final AssignmentSegment assignmentSegment, final List<Object> parameters) {
+    private void encryptParameters(final StandardParameterBuilder paramBuilder, final String schemaName,
+                                   final String tableName, final AssignmentSegment assignmentSegment, final List<Object> params) {
         String columnName = assignmentSegment.getColumns().get(0).getIdentifier().getValue();
         int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) assignmentSegment.getValue()).getParameterMarkerIndex();
-        Object originalValue = parameters.get(parameterMarkerIndex);
+        Object originalValue = params.get(parameterMarkerIndex);
         Object cipherValue = encryptRule.getEncryptValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-        parameterBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
-        Collection<Object> addedParameters = new LinkedList<>();
+        paramBuilder.addReplacedParameters(parameterMarkerIndex, cipherValue);
+        Collection<Object> addedParams = new LinkedList<>();
         if (encryptRule.findAssistedQueryColumn(tableName, columnName).isPresent()) {
             Object assistedQueryValue = encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
-            addedParameters.add(assistedQueryValue);
+            addedParams.add(assistedQueryValue);
+        }
+        if (encryptRule.findLikeQueryColumn(tableName, columnName).isPresent()) {
+            Object likeValue = encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
+            addedParams.add(likeValue);
         }
         if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-            addedParameters.add(originalValue);
+            addedParams.add(originalValue);
         }
-        if (!addedParameters.isEmpty()) {
-            parameterBuilder.addAddedParameters(parameterMarkerIndex, addedParameters);
+        if (!addedParams.isEmpty()) {
+            paramBuilder.addAddedParameters(parameterMarkerIndex, addedParams);
         }
     }
 }

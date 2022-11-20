@@ -58,28 +58,28 @@ public final class BroadcastTableTransactionTestCase extends BaseTransactionTest
     }
     
     private void init() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        executeWithLog(conn, "delete from t_address;");
-        assertTableRowCount(conn, T_ADDRESS, 0);
+        Connection connection = getDataSource().getConnection();
+        executeWithLog(connection, "delete from t_address;");
+        assertTableRowCount(connection, T_ADDRESS, 0);
     }
     
     private void commit() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        executeWithLog(conn, "delete from t_address;");
-        assertTableRowCount(conn, T_ADDRESS, 0);
-        executeWithLog(conn, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
-        assertTableRowCount(conn, T_ADDRESS, 1);
-        conn.commit();
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        executeWithLog(connection, "delete from t_address;");
+        assertTableRowCount(connection, T_ADDRESS, 0);
+        executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
+        assertTableRowCount(connection, T_ADDRESS, 1);
+        connection.commit();
     }
     
     private void rollback() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        conn.setAutoCommit(false);
-        executeWithLog(conn, "delete from t_address;");
-        assertTableRowCount(conn, T_ADDRESS, 0);
-        executeWithLog(conn, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
-        assertTableRowCount(conn, T_ADDRESS, 1);
-        conn.commit();
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        executeWithLog(connection, "delete from t_address;");
+        assertTableRowCount(connection, T_ADDRESS, 0);
+        executeWithLog(connection, "INSERT INTO t_address (id, code, address) VALUES (1, '1', 'nanjing');");
+        assertTableRowCount(connection, T_ADDRESS, 1);
+        connection.commit();
     }
 }

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 
 public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
-    private static final long FIXTURE_WORKER_ID = 0;
+    private static final int FIXTURE_WORKER_ID = 0;
     
     private final SnowflakeIdStateParser snowflakeIdStateParser = new MillisecondSnowflakeIdStateParser(
             CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH,

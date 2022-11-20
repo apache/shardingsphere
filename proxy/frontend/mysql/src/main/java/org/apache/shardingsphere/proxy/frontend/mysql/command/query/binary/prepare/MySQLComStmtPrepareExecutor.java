@@ -30,8 +30,7 @@ import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStat
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
@@ -64,16 +62,15 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         failedIfContainsMultiStatements();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType())).parse(packet.getSql(), true);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(DatabaseTypeFactory.getInstance("MySQL").getType()).parse(packet.getSql(), true);
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
         int projectionCount = getProjectionCount(sqlStatement);
         int statementId = MySQLStatementIDGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
-        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement(packet.getSql(), sqlStatement, sqlStatementContext));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext));
         return createPackets(statementId, projectionCount, sqlStatement.getParameterCount());
     }
     
@@ -88,9 +85,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private int getProjectionCount(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            Map<String, ShardingSphereDatabase> databases = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases();
-            String databaseName = connectionSession.getDatabaseName();
-            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory.newInstance(databases, sqlStatement, databaseName);
+            SelectStatementContext sqlStatementContext = (SelectStatementContext) SQLStatementContextFactory
+                    .newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), sqlStatement, connectionSession.getDatabaseName());
             return sqlStatementContext.getProjectionsContext().getExpandProjections().size();
         }
         return 0;

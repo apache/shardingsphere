@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,31 +57,25 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
     }
     
     @Override
-    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter parameter) {
-        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getDatabaseType());
-        List<CalculatedItem> calculatedItems = parameter.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, parameter, each)).collect(Collectors.toList());
+    public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
+        PipelineSQLBuilder sqlBuilder = PipelineSQLBuilderFactory.getInstance(param.getDatabaseType());
+        List<CalculatedItem> calculatedItems = param.getColumnNames().stream().map(each -> calculateCRC32(sqlBuilder, param, each)).collect(Collectors.toList());
         return Collections.singletonList(new CalculatedResult(calculatedItems.get(0).getRecordsCount(), calculatedItems.stream().map(CalculatedItem::getCrc32).collect(Collectors.toList())));
     }
     
-    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter parameter, final String columnName) {
-        String logicTableName = parameter.getLogicTableName();
-        String schemaName = parameter.getSchemaName();
-        Optional<String> sql = sqlBuilder.buildCRC32SQL(schemaName, logicTableName, columnName);
-        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(parameter.getDatabaseType()));
-        return calculateCRC32(parameter.getDataSource(), logicTableName, sql.get());
-    }
-    
-    private CalculatedItem calculateCRC32(final DataSource dataSource, final String logicTableName, final String sql) {
+    private CalculatedItem calculateCRC32(final PipelineSQLBuilder sqlBuilder, final DataConsistencyCalculateParameter param, final String columnName) {
+        Optional<String> sql = sqlBuilder.buildCRC32SQL(param.getSchemaName(), param.getLogicTableName(), columnName);
+        ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
         try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql));
+                Connection connection = param.getDataSource().getConnection();
+                PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql.get()));
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             long crc32 = resultSet.getLong(1);
             int recordsCount = resultSet.getInt(2);
             return new CalculatedItem(crc32, recordsCount);
         } catch (final SQLException ex) {
-            throw new PipelineTableDataConsistencyCheckLoadingFailedException(logicTableName);
+            throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }
     
@@ -147,6 +140,12 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
             int result = recordsCount;
             result = 31 * result + columnsCrc32.hashCode();
             return result;
+        }
+        
+        // TODO not support now
+        @Override
+        public Optional<Object> getMaxUniqueKeyValue() {
+            return Optional.empty();
         }
     }
 }

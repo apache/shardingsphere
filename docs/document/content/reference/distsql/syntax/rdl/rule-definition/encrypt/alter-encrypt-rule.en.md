@@ -38,7 +38,7 @@ encryptAlgorithmType ::=
 ### Supplement
 
 - `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column 
-- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to Encryption Algorithm 
+- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/) 
 - `queryWithCipherColumn` support uppercase or lowercase true or false
 
 ### Example
@@ -60,3 +60,4 @@ COLUMNS(
 ### Related links
 
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)
+- [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/)

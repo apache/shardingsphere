@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptConditionsAware;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptLikeCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -94,6 +96,14 @@ public final class EncryptPredicateRightValueTokenGenerator
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
+        if (encryptCondition instanceof EncryptLikeCondition) {
+            Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
+            if (!likeQueryColumn.isPresent()) {
+                throw new UnsupportedEncryptSQLException("LIKE");
+            } else {
+                return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
+            }
+        }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues)

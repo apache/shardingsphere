@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.metadata.data;
 
-import org.apache.shardingsphere.data.pipeline.spi.data.collector.ShardingSphereDataCollector;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -25,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -52,7 +52,9 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     private static final String MYSQL_TABLE_ROWS_AND_DATA_LENGTH = "SELECT TABLE_ROWS, DATA_LENGTH FROM information_schema.TABLES WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME = '%s'";
     
     @Override
-    public Optional<ShardingSphereTableData> collect(final ShardingSphereDatabase shardingSphereDatabase, final ShardingSphereTable table) throws SQLException {
+    public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
+                                                     final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
+        ShardingSphereDatabase shardingSphereDatabase = shardingSphereDatabases.get(databaseName);
         Optional<ShardingRule> shardingRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!shardingRule.isPresent()) {
             return Optional.empty();

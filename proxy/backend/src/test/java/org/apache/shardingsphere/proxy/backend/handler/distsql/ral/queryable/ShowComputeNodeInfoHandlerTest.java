@@ -57,7 +57,7 @@ public final class ShowComputeNodeInfoHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(2), is(3309));
         assertThat(data.get(3), is("OK"));
         assertThat(data.get(4), is("Standalone"));
-        assertThat(data.get(5), is(0L));
+        assertThat(data.get(5), is(0));
         assertThat(data.get(6), is(""));
     }
     
@@ -66,7 +66,7 @@ public final class ShowComputeNodeInfoHandlerTest extends ProxyContextRestorer {
         when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309"));
         when(result.getInstance().getState()).thenReturn(new StateContext());
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties())));
-        when(result.getInstance().getWorkerId()).thenReturn(0L);
+        when(result.getInstance().getWorkerId()).thenReturn(0);
         return result;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
@@ -55,11 +55,18 @@ public class InsertValue {
         }
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
-            return literals instanceof String ? "'" + ((LiteralExpressionSegment) expressionSegment).getLiterals() + "'" : literals.toString();
+            return getLiteralValue((LiteralExpressionSegment) expressionSegment, literals);
         }
         if (expressionSegment instanceof BinaryOperationExpression) {
             return ((BinaryOperationExpression) expressionSegment).getText();
         }
         return ((ComplexExpressionSegment) expressionSegment).getText();
+    }
+    
+    private String getLiteralValue(final LiteralExpressionSegment expressionSegment, final Object literals) {
+        if (null == literals) {
+            return "NULL";
+        }
+        return literals instanceof String ? "'" + expressionSegment.getLiterals() + "'" : String.valueOf(literals);
     }
 }

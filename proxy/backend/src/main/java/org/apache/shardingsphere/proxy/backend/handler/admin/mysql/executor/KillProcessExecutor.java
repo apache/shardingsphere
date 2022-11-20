@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.process.event.KillProcessListIdRequestEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
@@ -26,13 +27,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 /**
  * Kill process executor.
  */
+@RequiredArgsConstructor
 public final class KillProcessExecutor implements DatabaseAdminExecutor {
     
     private final MySQLKillStatement killStatement;
-    
-    public KillProcessExecutor(final MySQLKillStatement sqlStatement) {
-        this.killStatement = sqlStatement;
-    }
     
     /**
      * Execute.

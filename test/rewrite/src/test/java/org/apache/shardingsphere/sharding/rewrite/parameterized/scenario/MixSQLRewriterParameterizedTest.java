@@ -49,9 +49,8 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private static final String CASE_PATH = "scenario/mix/case";
     
-    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName,
-                                           final String databaseType, final SQLRewriteEngineTestParameters testParameters) {
-        super(testParameters);
+    public MixSQLRewriterParameterizedTest(final String type, final String name, final String fileName, final String databaseType, final SQLRewriteEngineTestParameters testParams) {
+        super(testParams);
     }
     
     @Parameters(name = "{0}: {1} ({3}) -> {2}")
@@ -97,7 +96,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private Map<String, ShardingSphereColumn> createColumns() {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(4, 1);
-        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true));
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
         result.put("password", mock(ShardingSphereColumn.class));
         result.put("amount", mock(ShardingSphereColumn.class));
         result.put("status", mock(ShardingSphereColumn.class));

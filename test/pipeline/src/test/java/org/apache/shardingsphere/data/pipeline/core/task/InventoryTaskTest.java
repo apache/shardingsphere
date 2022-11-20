@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -75,7 +76,7 @@ public final class InventoryTaskTest {
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
                         PipelineContextUtil.getPipelineChannelCreator(), DATA_SOURCE_MANAGER, dataSource,
                         metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
-            inventoryTask.start().get(10, TimeUnit.SECONDS);
+            CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
         }
     }
     
@@ -90,7 +91,7 @@ public final class InventoryTaskTest {
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
                         PipelineContextUtil.getPipelineChannelCreator(), new DefaultPipelineDataSourceManager(), dataSource,
                         metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
-            inventoryTask.start().get(10, TimeUnit.SECONDS);
+            CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
             assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
     }

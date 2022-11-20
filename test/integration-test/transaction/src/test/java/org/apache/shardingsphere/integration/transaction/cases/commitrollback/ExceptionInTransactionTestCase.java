@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,7 +34,7 @@ import static org.junit.Assert.fail;
 /**
  * An exception occurred within the transaction integration test.
  */
-@TransactionTestCase
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL, TransactionTestConstants.OPENGAUSS})
 @Slf4j
 public final class ExceptionInTransactionTestCase extends BaseTransactionTestCase {
     
@@ -43,28 +44,28 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
     
     @Override
     protected void executeTest() throws SQLException {
-        Connection conn = null;
+        Connection connection = null;
         try {
-            conn = getDataSource().getConnection();
-            conn.setAutoCommit(false);
-            assertAccountRowCount(conn, 0);
-            executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
+            connection = getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            assertAccountRowCount(connection, 0);
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
             int causedExceptionResult = 1 / 0;
             log.info("Caused exception result: {}", causedExceptionResult);
-            executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-            conn.commit();
+            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
+            connection.commit();
             fail("It should fail here.");
         } catch (final ArithmeticException ex) {
             assertThat(ex.getMessage(), is("/ by zero"));
         } finally {
-            if (null != conn) {
-                conn.rollback();
+            if (null != connection) {
+                connection.rollback();
             }
         }
         Thread queryThread = new Thread(() -> {
             log.info("Execute query in new thread.");
-            try (Connection connection = getDataSource().getConnection()) {
-                assertAccountRowCount(connection, 0);
+            try (Connection connection2 = getDataSource().getConnection()) {
+                assertAccountRowCount(connection2, 0);
             } catch (final SQLException ignored) {
             }
         });

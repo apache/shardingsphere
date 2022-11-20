@@ -32,9 +32,9 @@ public interface ContextManagerBuilder extends TypedSPI, RequiredSPI {
     /**
      * Build context manager.
      *
-     * @param parameter context manager builder parameter
+     * @param param context manager builder parameter
      * @return context manager
      * @throws SQLException SQL exception
      */
-    ContextManager build(ContextManagerBuilderParameter parameter) throws SQLException;
+    ContextManager build(ContextManagerBuilderParameter param) throws SQLException;
 }

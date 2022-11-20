@@ -73,9 +73,21 @@
             sql="PREVIEW SELECT * FROM t_single_table s INNER JOIN t_user_item i ON s.single_id = i.item_id WHERE i.user_id = 1">
         <assertion expected-data-file="preview_federation_select.xml"/>
     </test-case>
-    
+
     <test-case sql="SHOW COMPUTE NODES">
         <assertion expected-data-file="show_compute_nodes.xml"/>
+    </test-case>
+
+    <test-case sql="REFRESH DATABASE METADATA FROM GOVERNANCE CENTER" db-types="MySQL">
+        <assertion expected-data-file="show_sharding_table_rule.xml">
+            <assertion-sql sql="SHOW SHARDING TABLE RULES" />
+        </assertion>
+        <assertion expected-data-file="show_resources.xml">
+            <assertion-sql sql="SHOW STORAGE UNITS" />
+        </assertion>
+        <assertion expected-data-file="show_tables.xml">
+            <assertion-sql sql="SHOW TABLES" />
+        </assertion>
     </test-case>
 </integration-test-cases>
 

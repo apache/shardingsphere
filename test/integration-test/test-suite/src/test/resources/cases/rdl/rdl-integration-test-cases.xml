@@ -93,7 +93,7 @@
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
             CREATE SHARDING TABLE RULE t_order_item (DATANODES('ds_2.t_order_item_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_item_${order_id % 4}')))));
             SET DEFAULT SINGLE TABLE STORAGE UNIT = ds_1;"/>
-            <assertion-sql sql="SHOW SINGLE TABLES ;" />
+            <assertion-sql sql="SHOW SINGLE TABLES;" />
             <destroy-sql sql="DROP TABLE temp;SET DEFAULT SINGLE TABLE STORAGE UNIT = RANDOM;DROP SHARDING TABLE RULE t_order;DROP SHARDING TABLE RULE t_order_item;"/>
         </assertion>
     </test-case>

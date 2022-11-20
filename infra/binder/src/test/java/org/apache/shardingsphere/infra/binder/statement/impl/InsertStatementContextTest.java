@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -57,9 +60,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -105,13 +108,17 @@ public final class InsertStatementContextTest {
         assertInsertStatementContext(actual);
     }
     
-    private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
+    private InsertStatementContext createInsertStatementContext(final List<Object> params, final InsertStatement insertStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         String defaultSchemaName = insertStatement instanceof PostgreSQLStatement || insertStatement instanceof OpenGaussStatement ? "public" : DefaultDatabase.LOGIC_NAME;
         when(database.getSchema(defaultSchemaName)).thenReturn(schema);
         when(schema.getVisibleColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
-        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
+        return new InsertStatementContext(createShardingSphereMetaData(database), params, insertStatement, DefaultDatabase.LOGIC_NAME);
+    }
+    
+    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
     @Test

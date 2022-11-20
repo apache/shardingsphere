@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.spring.namespace;
 
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.algorithm.encrypt.AESEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.algorithm.encrypt.MD5EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.algorithm.like.CharDigestLikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -33,8 +34,8 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @ContextConfiguration(locations = "classpath:META-INF/spring/encrypt-application-context.xml")
@@ -45,6 +46,9 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     
     @Resource
     private EncryptAlgorithm<Object, String> md5Encryptor;
+    
+    @Resource
+    private EncryptAlgorithm<Object, String> likeQueryEncryptor;
     
     @Resource
     private AlgorithmProvidedEncryptRuleConfiguration encryptRule;
@@ -61,6 +65,11 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     }
     
     @Test
+    public void assertLikeQueryEncryptor() {
+        assertThat(likeQueryEncryptor.getType(), is("CHAR_DIGEST_LIKE"));
+    }
+    
+    @Test
     public void assertEncryptRuleConfiguration() {
         assertEncryptors(encryptRule.getEncryptors());
         assertThat(encryptRule.getTables().size(), is(1));
@@ -68,10 +77,11 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     }
     
     private void assertEncryptors(final Map<String, EncryptAlgorithm<?, ?>> encryptors) {
-        assertThat(encryptors.size(), is(2));
+        assertThat(encryptors.size(), is(3));
         assertThat(encryptors.get("aesEncryptor"), instanceOf(AESEncryptAlgorithm.class));
         assertThat(encryptors.get("aesEncryptor").getProps().getProperty("aes-key-value"), is("123456"));
         assertThat(encryptors.get("md5Encryptor"), instanceOf(MD5EncryptAlgorithm.class));
+        assertThat(encryptors.get("likeQueryEncryptor"), instanceOf(CharDigestLikeEncryptAlgorithm.class));
     }
     
     private void assertEncryptTable(final EncryptTableRuleConfiguration tableRuleConfig) {
@@ -93,9 +103,10 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
     private void assertEncryptColumn2(final EncryptColumnRuleConfiguration columnRuleConfig) {
         assertThat(columnRuleConfig.getLogicColumn(), is("credit_card"));
         assertThat(columnRuleConfig.getCipherColumn(), is("credit_card_cipher"));
-        assertThat(columnRuleConfig.getAssistedQueryColumn(), is("credit_card_assisted_query"));
+        assertThat(columnRuleConfig.getLikeQueryColumn(), is("credit_card_like_query"));
         assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
+        assertThat(columnRuleConfig.getLikeQueryEncryptorName(), is("likeQueryEncryptor"));
         assertFalse(columnRuleConfig.getQueryWithCipherColumn());
     }
 }

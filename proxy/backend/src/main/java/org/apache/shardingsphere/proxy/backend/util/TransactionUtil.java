@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 
 import java.sql.Connection;
 

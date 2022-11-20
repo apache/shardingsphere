@@ -26,7 +26,7 @@
     <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" storage-unit-name="ds_0" schema-name="public" />
     
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
-        <sql-parser sqlCommentParseEnabled="false">
+        <sql-parser sql-comment-parse-enabled="false">
             <parse-tree-cache initial-capacity="10" maximum-size="11" />
             <sql-statement-cache initial-capacity="11" maximum-size="11" />
         </sql-parser>
@@ -92,4 +92,12 @@
     <import-database-config sql-case-id="import-database-config">
         <file-path>/yaml/config-sharding.yaml</file-path>
     </import-database-config>
+    
+    <alter-readwrite-splitting-storage-unit-status-enable sql-case-id="alter-readwrite-splitting-storage-unit-status-enable" group-name="group_1" storage-unit-name="read_ds_0" status="ENABLE">
+        <database name="read_write" start-index="61" stop-index="70"/>
+    </alter-readwrite-splitting-storage-unit-status-enable>
+    
+    <alter-readwrite-splitting-storage-unit-status-disable sql-case-id="alter-readwrite-splitting-storage-unit-status-disable" group-name="group_1" storage-unit-name="read_ds_0" status="DISABLE">
+        <database name="read_write" start-index="62" stop-index="71"/>
+    </alter-readwrite-splitting-storage-unit-status-disable>
 </sql-parser-test-cases>

@@ -30,7 +30,6 @@ import java.util.Collection;
  * Instance of compute node.
  */
 @Getter
-@Setter
 public final class ComputeNodeInstance {
     
     private final InstanceMetaData metaData;
@@ -39,11 +38,12 @@ public final class ComputeNodeInstance {
     
     private Collection<String> labels = new ArrayList<>();
     
-    private volatile long workerId;
+    @Setter
+    private volatile int workerId;
     
     public ComputeNodeInstance(final InstanceMetaData metaData) {
         this.metaData = metaData;
-        workerId = -1L;
+        workerId = -1;
     }
     
     /**
@@ -52,10 +52,9 @@ public final class ComputeNodeInstance {
      * @param labels labels
      */
     public void setLabels(final Collection<String> labels) {
-        if (null == labels) {
-            return;
+        if (null != labels) {
+            this.labels = labels;
         }
-        this.labels = labels;
     }
     
     /**

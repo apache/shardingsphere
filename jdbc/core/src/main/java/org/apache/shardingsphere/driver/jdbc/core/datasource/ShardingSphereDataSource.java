@@ -71,9 +71,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
         Collection<RuleConfiguration> databaseRuleConfigs = new LinkedList<>(ruleConfigs);
         databaseRuleConfigs.removeAll(globalRuleConfigs);
-        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
+        ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
                 new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData, false);
-        return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
+        return ContextManagerBuilderFactory.getInstance(modeConfig).build(param);
     }
     
     @Override

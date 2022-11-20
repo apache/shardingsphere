@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -97,7 +98,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
             assertThat(each.getSql(), is(testParameters.getOutputSQLs().get(count)));
             assertThat(each.getParameters().size(), is(testParameters.getOutputGroupedParameters().get(count).size()));
             for (int i = 0; i < each.getParameters().size(); i++) {
-                assertThat(each.getParameters().get(i).toString(), is(testParameters.getOutputGroupedParameters().get(count).get(i)));
+                assertThat(String.valueOf(each.getParameters().get(i)), is(String.valueOf(testParameters.getOutputGroupedParameters().get(count).get(i))));
             }
             count++;
         }
@@ -123,7 +124,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, new ShardingSphereRuleMetaData(databaseRules), schemas);
         Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
         databases.put(schemaName, database);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases, sqlStatement, schemaName);
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(createShardingSphereMetaData(databases), sqlStatement, schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(getTestParameters().getInputParameters());
         }
@@ -142,6 +143,10 @@ public abstract class AbstractSQLRewriterParameterizedTest {
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
     }
     
+    private ShardingSphereMetaData createShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases) {
+        return new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+    }
+    
     private static Map<String, DatabaseType> createStorageTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
@@ -152,7 +157,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
     
     private CursorStatementContext createCursorDefinition(final String schemaName, final Map<String, ShardingSphereDatabase> databases, final SQLStatementParserEngine sqlStatementParserEngine) {
         return (CursorStatementContext) SQLStatementContextFactory.newInstance(
-                databases, sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false), schemaName);
+                createShardingSphereMetaData(databases), sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false), schemaName);
     }
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;

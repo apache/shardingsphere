@@ -59,11 +59,13 @@ public abstract class BaseTransactionTestCase {
     protected abstract void executeTest() throws SQLException;
     
     protected void beforeTest() throws SQLException {
-        Connection conn = getDataSource().getConnection();
-        executeWithLog(conn, "delete from account;");
-        executeWithLog(conn, "delete from t_order;");
-        executeWithLog(conn, "delete from t_order_item;");
-        conn.close();
+        Connection connection = getDataSource().getConnection();
+        connection.setAutoCommit(false);
+        executeWithLog(connection, "delete from account;");
+        executeWithLog(connection, "delete from t_order;");
+        executeWithLog(connection, "delete from t_order_item;");
+        connection.commit();
+        connection.close();
     }
     
     protected void afterTest() throws SQLException {
@@ -84,12 +86,12 @@ public abstract class BaseTransactionTestCase {
         return connection.createStatement().executeQuery(sql);
     }
     
-    protected static void assertAccountRowCount(final Connection conn, final int rowNum) throws SQLException {
-        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, rowNum);
+    protected static void assertAccountRowCount(final Connection connection, final int rowNum) throws SQLException {
+        assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, rowNum);
     }
     
-    protected static void assertTableRowCount(final Connection conn, final String tableName, final int rowNum) throws SQLException {
-        Statement statement = conn.createStatement();
+    protected static void assertTableRowCount(final Connection connection, final String tableName, final int rowNum) throws SQLException {
+        Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from " + tableName);
         int resultSetCount = 0;
         while (resultSet.next()) {
@@ -99,18 +101,18 @@ public abstract class BaseTransactionTestCase {
         assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
     }
     
-    protected void executeSqlListWithLog(final Connection conn, final String... sqlList) throws SQLException {
+    protected void executeSqlListWithLog(final Connection connection, final String... sqlList) throws SQLException {
         for (String each : sqlList) {
             log.info("Connection execute: {}.", each);
-            conn.createStatement().execute(each);
+            connection.createStatement().execute(each);
         }
     }
     
-    protected int countWithLog(final Connection conn, final String sql) throws SQLException {
-        Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
+    protected int countWithLog(final Connection connection, final String sql) throws SQLException {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
         int result = 0;
-        while (rs.next()) {
+        while (resultSet.next()) {
             result++;
         }
         return result;

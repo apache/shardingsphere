@@ -45,6 +45,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-data-pipeline-scenario</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -55,7 +60,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-cluster-mode-repository-zookeeper-curator</artifactId>
+            <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
         

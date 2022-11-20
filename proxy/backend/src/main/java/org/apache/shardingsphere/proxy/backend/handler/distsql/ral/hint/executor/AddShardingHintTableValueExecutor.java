@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintManagerHolder;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintManagerHolder;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.EmptyStatement;
 
 /**
  * Add sharding hint table value executor.
@@ -35,6 +34,6 @@ public final class AddShardingHintTableValueExecutor extends AbstractHintUpdateE
     @Override
     public ResponseHeader execute() {
         HintManagerHolder.get().addTableShardingValue(sqlStatement.getLogicTableName(), sqlStatement.getShardingValue());
-        return new UpdateResponseHeader(new EmptyStatement());
+        return new UpdateResponseHeader(sqlStatement);
     }
 }

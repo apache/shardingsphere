@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public final class ShardingRenameTableStatementValidator extends ShardingDDLStatementValidator<RenameTableStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<RenameTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<RenameTableStatement> sqlStatementContext, final List<Object> params, final ShardingSphereDatabase database,
                             final ConfigurationProperties props) {
         Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
                 ? ((TableAvailable) sqlStatementContext).getAllTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList())
@@ -56,7 +56,7 @@ public final class ShardingRenameTableStatementValidator extends ShardingDDLStat
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<RenameTableStatement> sqlStatementContext, final List<Object> parameters,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<RenameTableStatement> sqlStatementContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         for (RenameTableDefinitionSegment each : sqlStatementContext.getSqlStatement().getRenameTables()) {
             String primaryTable = each.getTable().getTableName().getIdentifier().getValue();

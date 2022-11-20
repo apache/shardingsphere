@@ -33,8 +33,8 @@
     </rewrite-assertion>
     
     <rewrite-assertion id="select_for_predicate_and_right_value_should_be_matched_for_cipher" db-types="MySQL">
-        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
+        <input sql="SELECT account_id, password, amount AS a, status AS s FROM t_account WHERE account_id = 1 AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
+        <output sql="SELECT account_id, cipher_password AS password, cipher_amount AS a, status AS s FROM t_account WHERE account_id = 1 AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_unqualified_shorthand" db-types="MySQL">

@@ -62,10 +62,10 @@ public class DatabaseDiscoveryDistSQLTest {
     private void assertDiscoverySegment(final DatabaseDiscoveryDefinitionSegment discoverySegment) {
         assertThat(discoverySegment.getName(), is("db_discovery_group_0"));
         assertThat(discoverySegment.getDataSources(), is(Arrays.asList("ds_0", "ds_1")));
-        Properties properties = new Properties();
-        properties.setProperty("group-name", "92504d5b");
+        Properties props = new Properties();
+        props.setProperty("group-name", "92504d5b");
         assertThat(discoverySegment.getDiscoveryType().getName(), equalTo("mgr"));
-        assertThat(discoverySegment.getDiscoveryType().getProps(), equalTo(properties));
+        assertThat(discoverySegment.getDiscoveryType().getProps(), equalTo(props));
         Properties heartbeatProps = new Properties();
         heartbeatProps.setProperty("keep-alive-cron", "0/5 * * * * ?");
         assertThat(discoverySegment.getDiscoveryHeartbeat(), is(heartbeatProps));

@@ -47,7 +47,6 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
     
     @Override
     public void start() {
-        log.info("start lifecycle executor {}", super.toString());
         running = true;
         startTimeMillis = System.currentTimeMillis();
         runBlocking();

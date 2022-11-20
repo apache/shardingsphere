@@ -26,7 +26,6 @@ import org.junit.Assert;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * PostgreSQL set read only transaction integration test.
@@ -46,17 +45,14 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     }
     
     private void assertSetReadOnly() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeUpdateWithLog(connection, "insert into account(id,balance) values (1,0),(2,100);");
-        Connection conn = getDataSource().getConnection();
-        conn.setReadOnly(true);
-        assertQueryBalance(conn);
-        Statement updateStatement = conn.createStatement();
+        Connection connection1 = getDataSource().getConnection();
+        executeUpdateWithLog(connection1, "insert into account(id, balance) values (1, 0), (2, 100);");
+        Connection connection2 = getDataSource().getConnection();
+        connection2.setReadOnly(true);
+        assertQueryBalance(connection2);
         try {
-            String updateSql = "update account set balance=100 where id=2;";
-            log.info("Connection execute update: {}.", updateSql);
-            updateStatement.execute(updateSql);
-            log.info("Using the driver of postgresql:42.4.1 expect to update successfully");
+            executeWithLog(connection2, "update account set balance = 100 where id = 2;");
+            log.info("Using the driver of postgresql:42.4.1 expect to update successfully.");
         } catch (SQLException e) {
             Assert.fail("Update failed, should be successfully.");
         }

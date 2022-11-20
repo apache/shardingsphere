@@ -49,7 +49,7 @@ public final class LocalEncryptConfiguration implements ExampleConfiguration {
     }
     
     private EncryptTableRuleConfiguration createEncryptTableRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("status", "status", "", "", "status_encryptor", null);
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("status", "status", "", "", "", "status_encryptor", null);
         return new EncryptTableRuleConfiguration("t_order", Collections.singleton(encryptColumnRuleConfig), null);
     }
     

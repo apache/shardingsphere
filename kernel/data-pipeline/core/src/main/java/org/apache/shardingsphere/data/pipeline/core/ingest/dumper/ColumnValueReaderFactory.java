@@ -21,9 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
-
-import java.util.Optional;
 
 /**
  * Column value reader factory.
@@ -42,7 +41,6 @@ public final class ColumnValueReaderFactory {
      * @return column value reader
      */
     public static ColumnValueReader getInstance(final String databaseType) {
-        Optional<ColumnValueReader> result = TypedSPIRegistry.findRegisteredService(ColumnValueReader.class, databaseType);
-        return result.orElseGet(BasicColumnValueReader::new);
+        return TypedSPIRegistry.findRegisteredService(ColumnValueReader.class, databaseType).orElseGet(() -> RequiredSPIRegistry.getRegisteredService(ColumnValueReader.class));
     }
 }

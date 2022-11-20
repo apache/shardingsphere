@@ -46,13 +46,14 @@ on:
       - 'test/integration-test/env/**'
       - 'test/integration-test/showprocesslist/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: it-showprocesslist-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Djacoco.skip=true -Drat.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
 jobs:
   showprocesslist-it-test:
@@ -61,6 +62,9 @@ jobs:
     env:
       mysql_version: 5.7
     timeout-minutes: 10
+    strategy:
+      matrix:
+        mode: [ Standalone, Cluster ]
     steps:
       - uses: actions/checkout@v3
       - name: Cache Maven Repos
@@ -79,4 +83,4 @@ jobs:
       - name: Build ShowProcesslist IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/showprocesslist -Pit.env.docker -DskipTests
       - name: Run MySQL ShowProcesslist Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/showprocesslist/pom.xml -Dit.env.type=docker -Dit.scenarios=cluster_jdbc_proxy
+        run: ./mvnw -nsu -B install -f test/integration-test/showprocesslist/pom.xml -Dit.env.type=docker -Dit.scenarios=cluster_jdbc_proxy -Dit.run.modes=${{ matrix.mode }}

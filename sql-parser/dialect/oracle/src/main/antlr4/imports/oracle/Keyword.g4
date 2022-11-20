@@ -17,7 +17,7 @@
 
 lexer grammar Keyword;
 
-import Alphabet;
+import Alphabet, Number;
 
 WS
     : [ \t\r\n] + ->skip
@@ -578,4 +578,120 @@ GLOBAL_NAME
 
 ROWTYPE
     : R O W T Y P E
+    ;
+
+PERCENTILE_CONT
+    : P E R C E N T I L E UL_ C O N T
+    ;
+
+PERCENTILE_DISC
+    : P E R C E N T I L E UL_ D I S C
+    ;
+
+CUME_DIST
+    : C U M E UL_ D I S T
+    ;
+
+PARTITION
+    : P A R T I T I O N
+    ;
+
+RANK
+    : R A N K
+    ;
+
+ROWID
+    : R O W I D
+    ;
+
+REGR_SLOPE
+    : R E G R UL_ S L O P E
+    ;
+
+REGR_INTERCEPT
+    : R E G R UL_ I N T E R C E P T
+    ;
+
+REGR_COUNT
+    : R E G R UL_ C O U N T
+    ;
+
+REGR_R2
+    : R E G R UL_ R TWO_
+    ;
+
+REGR_AVGX
+    : R E G R UL_ A V G X
+    ;
+
+REGR_AVGY
+    : R E G R UL_ A V G Y
+    ;
+
+REGR_SXX
+    : R E G R UL_ S X X
+    ;
+
+REGR_SYY
+    : R E G R UL_ S Y Y
+    ;
+
+REGR_SXY
+    : R E G R UL_ S X Y
+    ;
+
+LPAD
+    : L P A D
+    ;
+
+ZONE
+    : Z O N E
+    ;
+
+AT
+    : A T
+    ;
+
+SESSIONTIMEZONE
+    : S E S S I O N T I M E Z O N E
+    ;
+
+SYSTIMESTAMP
+    : S Y S T I M E S T A M P
+    ;
+
+DBTIMEZONE
+    : D B T I M E Z O N E
+    ;
+
+TO_CHAR
+    : T O UL_ C H A R
+    ;
+
+XMLELEMENT
+    : X M L E L E M E N T
+    ;
+
+XMLAGG
+    : X M L A G G
+    ;
+
+XMLCAST
+    : X M L C A S T
+    ;
+
+COLUMN_VALUE
+    : C O L U M N UL_ V A L U E
+    ;
+
+XMLCOLATTVAL
+    : X M L C O L A T T V A L
+    ;
+
+EVALNAME
+    : E V A L N A M E
+    ;
+
+XMLEXISTS
+    : X M L E X I S T S
     ;

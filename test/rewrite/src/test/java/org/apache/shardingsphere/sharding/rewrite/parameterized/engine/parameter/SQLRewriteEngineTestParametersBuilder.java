@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sharding.rewrite.parameterized.engine.paramete
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.primitives.Ints;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.entity.RewriteAssertionsRootEntity;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.entity.RewriteOutputEntity;
@@ -97,7 +98,7 @@ public final class SQLRewriteEngineTestParametersBuilder {
         for (RewriteAssertionEntity each : rootAssertions.getAssertions()) {
             for (String databaseType : getDatabaseTypes(each.getDatabaseTypes())) {
                 result.add(new SQLRewriteEngineTestParameters(type, each.getId(), fileName, rootAssertions.getYamlRule(), each.getInput().getSql(),
-                        createInputParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
+                        createParameters(each.getInput().getParameters()), createOutputSQLs(each.getOutputs()), createOutputGroupedParameters(each.getOutputs()), databaseType).toArray());
             }
         }
         return result;
@@ -111,14 +112,18 @@ public final class SQLRewriteEngineTestParametersBuilder {
         return Arrays.asList("MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
     }
     
-    private static List<Object> createInputParameters(final String inputParameters) {
-        if (null == inputParameters) {
+    private static List<Object> createParameters(final String inputParams) {
+        if (null == inputParams) {
             return Collections.emptyList();
         }
-        return Splitter.on(",").trimResults().splitToList(inputParameters).stream().map(each -> {
-            Object result = Ints.tryParse(each);
-            return null == result ? each : result;
-        }).collect(Collectors.toList());
+        return Splitter.on(",").trimResults().splitToList(inputParams).stream().map(SQLRewriteEngineTestParametersBuilder::createInputParameter).collect(Collectors.toList());
+    }
+    
+    private static Object createInputParameter(final String inputParam) {
+        if (StringUtils.isNumeric(inputParam)) {
+            return NumberUtils.createNumber(inputParam);
+        }
+        return "NULL".equals(inputParam) ? null : inputParam;
     }
     
     private static List<String> createOutputSQLs(final List<RewriteOutputEntity> outputs) {
@@ -129,10 +134,10 @@ public final class SQLRewriteEngineTestParametersBuilder {
         return result;
     }
     
-    private static List<List<String>> createOutputGroupedParameters(final List<RewriteOutputEntity> outputs) {
-        List<List<String>> result = new ArrayList<>(outputs.size());
+    private static List<List<Object>> createOutputGroupedParameters(final List<RewriteOutputEntity> outputs) {
+        List<List<Object>> result = new ArrayList<>(outputs.size());
         for (RewriteOutputEntity each : outputs) {
-            result.add(null == each.getParameters() ? Collections.emptyList() : Splitter.on(",").trimResults().splitToList(each.getParameters()));
+            result.add(createParameters(each.getParameters()));
         }
         return result;
     }

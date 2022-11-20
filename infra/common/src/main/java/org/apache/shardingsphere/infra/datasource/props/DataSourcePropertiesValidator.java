@@ -17,17 +17,11 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.exception.MismatchedProtocolAndDataSourceException;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,14 +37,13 @@ public final class DataSourcePropertiesValidator {
      * Validate data source properties map.
      * 
      * @param dataSourcePropertiesMap data source properties map
-     * @param databaseType database type
      * @throws InvalidResourcesException invalid resources exception
      */
-    public void validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap, final DatabaseType databaseType) throws InvalidResourcesException {
+    public void validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) throws InvalidResourcesException {
         Collection<String> errorMessages = new LinkedList<>();
         for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
             try {
-                validate(entry.getKey(), entry.getValue(), databaseType);
+                validate(entry.getKey(), entry.getValue());
             } catch (final InvalidDataSourcePropertiesException ex) {
                 errorMessages.add(ex.getMessage());
             }
@@ -60,14 +53,13 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void validate(final String dataSourceName, final DataSourceProperties dataSourceProps, final DatabaseType databaseType) throws InvalidDataSourcePropertiesException {
+    private void validate(final String dataSourceName, final DataSourceProperties dataSourceProps) throws InvalidDataSourcePropertiesException {
         DataSource dataSource = null;
         try {
             dataSource = DataSourcePoolCreator.create(dataSourceProps);
-            checkFailFast(dataSource, databaseType);
+            checkFailFast(dataSource);
             // CHECKSTYLE:OFF
-            // TODO check why catch exception here, can it simplify to catch SQLException and ShardingSphereInternalException?
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             throw new InvalidDataSourcePropertiesException(dataSourceName, ex.getMessage());
         } finally {
@@ -77,10 +69,7 @@ public final class DataSourcePropertiesValidator {
         }
     }
     
-    private void checkFailFast(final DataSource dataSource, final DatabaseType databaseType) throws SQLException, ShardingSphereInternalException {
-        try (Connection connection = dataSource.getConnection()) {
-            ShardingSpherePreconditions.checkState(null == databaseType || DatabaseTypeEngine.getDatabaseType(connection.getMetaData().getURL()).getType().equals(databaseType.getType()),
-                    MismatchedProtocolAndDataSourceException::new);
-        }
+    private void checkFailFast(final DataSource dataSource) throws SQLException {
+        dataSource.getConnection();
     }
 }

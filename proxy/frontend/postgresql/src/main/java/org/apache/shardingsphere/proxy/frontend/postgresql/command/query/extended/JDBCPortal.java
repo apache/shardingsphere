@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -79,24 +78,19 @@ public final class JDBCPortal implements Portal<Void> {
     
     private ResponseHeader responseHeader;
     
-    public JDBCPortal(final String name, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters, final List<PostgreSQLValueFormat> resultFormats,
+    public JDBCPortal(final String name, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> params, final List<PostgreSQLValueFormat> resultFormats,
                       final JDBCBackendConnection backendConnection) throws SQLException {
         this.name = name;
-        this.sqlStatement = preparedStatement.getSqlStatement();
+        this.sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
-        if (!preparedStatement.getSqlStatementContext().isPresent()) {
-            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"),
-                    preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
-            return;
-        }
         String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
-            ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
+            ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getDatabase(databaseName).getProtocolType();
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), parameters);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
         backendConnection.getConnectionSession().setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, backendConnection.getConnectionSession(), true);
     }
