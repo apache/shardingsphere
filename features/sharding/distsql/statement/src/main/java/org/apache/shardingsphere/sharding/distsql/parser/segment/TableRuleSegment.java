@@ -26,12 +26,11 @@ import java.util.Collection;
  * Table rule segment.
  */
 @Getter
+@Setter
 public final class TableRuleSegment extends AbstractTableRuleSegment {
     
-    @Setter
     private ShardingStrategySegment tableStrategySegment;
     
-    @Setter
     private ShardingStrategySegment databaseStrategySegment;
     
     public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote) {
