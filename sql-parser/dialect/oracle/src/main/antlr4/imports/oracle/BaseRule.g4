@@ -1618,6 +1618,7 @@ xmlFunction
     : xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
+    | xmlForestFunction
     ;
 
 xmlAggFunction
@@ -1631,3 +1632,7 @@ xmlColattvalFunction
 xmlExistsFunction
     : XMLEXISTS LP_ STRING_ (PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*)? RP_
     ;
+
+xmlForestFunction
+   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   ;
