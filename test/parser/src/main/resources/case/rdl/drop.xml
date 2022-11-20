@@ -46,11 +46,15 @@
     </drop-sharding-table-rule>
     
     <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule">
-        <rule>t_1,t_2</rule>
+        <rules>
+            <rule>t_1,t_2</rule>
+        </rules>
     </drop-sharding-table-reference-rule>
 
     <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule-if-exists" if-exists="true">
-        <rule>t_1,t_2</rule>
+        <rules>
+            <rule>t_1,t_2</rule>
+        </rules>
     </drop-sharding-table-reference-rule>
     
     <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >
@@ -67,23 +71,31 @@
     </drop-broadcast-table-rule>
 
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
-        <rule>ms_group_0</rule>
-        <rule>ms_group_1</rule>
+        <rules>
+            <rule>ms_group_0</rule>
+            <rule>ms_group_1</rule>
+        </rules>
     </drop-readwrite-splitting-rule>
 
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule-if-exists" if-exists="true">
-        <rule>ms_group_0</rule>
-        <rule>ms_group_1</rule>
+        <rules>
+            <rule>ms_group_0</rule>
+            <rule>ms_group_1</rule>
+        </rules>
     </drop-readwrite-splitting-rule>
     
     <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule">
-        <rule>ha_group_0</rule>
-        <rule>ha_group_1</rule>
+        <rules>
+            <rule>ha_group_0</rule>
+            <rule>ha_group_1</rule>
+        </rules>
     </drop-database-discovery-rule>
     
     <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule-if-exists" if-exists="true">
-        <rule>ha_group_0</rule>
-        <rule>ha_group_1</rule>
+        <rules>
+            <rule>ha_group_0</rule>
+            <rule>ha_group_1</rule>
+        </rules>
     </drop-database-discovery-rule>
 
     <drop-database-discovery-type sql-case-id="drop-database-discovery-type">
@@ -117,23 +129,31 @@
     </drop-encrypt-rule>
     
     <drop-shadow-rule sql-case-id="drop-shadow-rule">
-        <rule>shadow_rule_1</rule>
-        <rule>shadow_rule_2</rule>
+        <rules>
+            <rule>shadow_rule_1</rule>
+            <rule>shadow_rule_2</rule>
+        </rules>
     </drop-shadow-rule>
     
     <drop-shadow-rule sql-case-id="drop-shadow-rule-if-exists" if-exists="true">
-        <rule>shadow_rule_1</rule>
-        <rule>shadow_rule_2</rule>
+        <rules>
+            <rule>shadow_rule_1</rule>
+            <rule>shadow_rule_2</rule>
+        </rules>
     </drop-shadow-rule>
 
     <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm">
-        <rule>shadow_algorithm_1</rule>
-        <rule>shadow_algorithm_2</rule>
+        <rules>
+            <rule>shadow_algorithm_1</rule>
+            <rule>shadow_algorithm_2</rule>
+        </rules>
     </drop-shadow-algorithm>
 
     <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm-if-exists" if-exists="true">
-        <rule>shadow_algorithm_1</rule>
-        <rule>shadow_algorithm_2</rule>
+        <rules>
+            <rule>shadow_algorithm_1</rule>
+            <rule>shadow_algorithm_2</rule>
+        </rules>
     </drop-shadow-algorithm>
 
     <drop-shadow-algorithm sql-case-id="drop-default-shadow-algorithm-if-exists" if-exists="true"/>

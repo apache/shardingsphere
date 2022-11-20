@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import java.util.List;
 @Setter
 public final class DropDatabaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
     
+    @XmlElementWrapper
     @XmlElement(name = "rule")
     private final List<String> rules = new LinkedList<>();
     
