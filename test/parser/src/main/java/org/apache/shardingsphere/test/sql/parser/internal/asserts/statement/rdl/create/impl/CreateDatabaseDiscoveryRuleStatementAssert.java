@@ -76,7 +76,7 @@ public final class CreateDatabaseDiscoveryRuleStatementAssert {
             DatabaseDiscoveryDefinitionSegment actualSegment = actualMap.get(each.getName());
             assertThat(actualSegment.getName(), is(each.getName()));
             assertThat(actualSegment.getDataSources(), is(each.getDataSources()));
-            PropertiesAssert.assertIs(assertContext, actualSegment.getDiscoveryHeartbeat(), each.getDiscoveryHeartbeat());
+            PropertiesAssert.assertIs(assertContext, actualSegment.getDiscoveryHeartbeat(), each.getProperties());
             AlgorithmAssert.assertIs(assertContext, actualSegment.getDiscoveryType(), each.getDiscoveryType());
         });
     }

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.List;
 
 /**
  * Expected algorithm.
@@ -34,6 +36,7 @@ public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegmen
     @XmlAttribute(name = "algorithm-name")
     private String name;
     
-    @XmlElement(name = "properties")
-    private ExpectedProperties props;
+    @XmlElementWrapper
+    @XmlElement(name = "property")
+    private List<ExpectedProperty> properties;
 }

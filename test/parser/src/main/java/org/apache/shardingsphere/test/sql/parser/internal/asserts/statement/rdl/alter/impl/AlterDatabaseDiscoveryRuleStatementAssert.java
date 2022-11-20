@@ -77,7 +77,7 @@ public final class AlterDatabaseDiscoveryRuleStatementAssert {
             assertNotNull(actualSegment);
             assertThat(actualSegment.getName(), is(each.getName()));
             assertThat(actualSegment.getDataSources(), is(each.getDataSources()));
-            PropertiesAssert.assertIs(assertContext, actualSegment.getDiscoveryHeartbeat(), each.getDiscoveryHeartbeat());
+            PropertiesAssert.assertIs(assertContext, actualSegment.getDiscoveryHeartbeat(), each.getProperties());
             AlgorithmAssert.assertIs(assertContext, actualSegment.getDiscoveryType(), each.getDiscoveryType());
         });
     }
