@@ -18,19 +18,21 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.dostatement.ExpectedDoParameters;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.dostatement.ExpectedDoParameter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Do statement test case.
  */
 @Getter
-@Setter
 public final class DoStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "parameters")
-    private ExpectedDoParameters doParameters;
+    @XmlElementWrapper(name = "parameters")
+    @XmlElement(name = "parameter")
+    private final List<ExpectedDoParameter> doParameters = new LinkedList<>();
 }
