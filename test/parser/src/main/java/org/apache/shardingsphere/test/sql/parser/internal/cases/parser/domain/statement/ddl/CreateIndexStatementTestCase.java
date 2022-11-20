@@ -19,12 +19,15 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumns;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.index.ExpectedIndex;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Create index statement test case.
@@ -39,6 +42,7 @@ public final class CreateIndexStatementTestCase extends SQLParserTestCase {
     @XmlElement
     private ExpectedTable table;
     
-    @XmlElement(name = "columns")
-    private ExpectedColumns indexColumns;
+    @XmlElementWrapper
+    @XmlElement(name = "column")
+    private List<ExpectedColumn> columns = new LinkedList<>();
 }
