@@ -41,10 +41,10 @@ public final class DropShardingAuditorStatementAssert {
      * @param expected expected drop sharding auditor statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingAuditorStatement actual, final DropShardingAuditorStatementTestCase expected) {
-        if (null == expected.getAuditorName()) {
+        if (null == expected.getNames()) {
             assertNull(assertContext.getText("Actual auditor name should not exist."), actual);
         } else {
-            assertThat(assertContext.getText("Auditor names assertion error: "), actual.getAuditorNames(), is(expected.getAuditorName()));
+            assertThat(assertContext.getText("Auditor names assertion error: "), actual.getNames(), is(expected.getNames()));
             assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }

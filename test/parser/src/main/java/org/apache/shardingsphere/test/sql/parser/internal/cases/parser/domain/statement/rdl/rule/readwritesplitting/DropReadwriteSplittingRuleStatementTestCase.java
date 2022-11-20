@@ -32,6 +32,6 @@ import java.util.List;
 public final class DropReadwriteSplittingRuleStatementTestCase extends DropRuleStatementTestCase {
     
     @XmlElementWrapper
-    @XmlElement(name = "rule")
-    private final List<String> rules = new LinkedList<>();
+    @XmlElement(name = "name")
+    private final List<String> names = new LinkedList<>();
 }

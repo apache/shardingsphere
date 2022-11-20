@@ -41,10 +41,10 @@ public final class DropShardingAlgorithmStatementAssert {
      * @param expected expected drop sharding algorithm statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingAlgorithmStatement actual, final DropShardingAlgorithmStatementTestCase expected) {
-        if (null == expected.getAlgorithms()) {
+        if (null == expected.getNames()) {
             assertNull(assertContext.getText("Actual algorithm should not exist."), actual);
         } else {
-            assertThat(assertContext.getText("Algorithm names assertion error: "), actual.getAlgorithmNames(), is(expected.getAlgorithms()));
+            assertThat(assertContext.getText("Algorithm names assertion error: "), actual.getNames(), is(expected.getNames()));
             assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }

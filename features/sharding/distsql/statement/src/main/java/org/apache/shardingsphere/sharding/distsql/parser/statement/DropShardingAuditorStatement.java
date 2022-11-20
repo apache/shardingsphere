@@ -28,10 +28,10 @@ import java.util.Collection;
 @Getter
 public final class DropShardingAuditorStatement extends DropRuleStatement {
     
-    private final Collection<String> auditorNames;
+    private final Collection<String> names;
     
-    public DropShardingAuditorStatement(final boolean ifExists, final Collection<String> auditorNames) {
+    public DropShardingAuditorStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.auditorNames = auditorNames;
+        this.names = names;
     }
 }

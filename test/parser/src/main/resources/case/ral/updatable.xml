@@ -71,7 +71,9 @@
     </alter-traffic-rule>
     
     <drop-traffic-rule sql-case-id="drop-traffic-rule">
-        <rule-name>rule_name</rule-name>
+        <names>
+            <name>rule_name</name>
+        </names>
     </drop-traffic-rule>
     
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />

@@ -22,7 +22,7 @@
         <data-source>ds_1</data-source>
         <ignore-single-tables>false</ignore-single-tables>
     </unregister-storage-unit>
-
+    
     <unregister-storage-unit sql-case-id="unregister-storage-unit-if-exists" if-exists="true">
         <data-source>ds_0</data-source>
         <data-source>ds_1</data-source>
@@ -36,13 +36,17 @@
     </unregister-storage-unit>
     
     <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule" >
-        <table>t_order</table>
-        <table>t_order_item</table>
+        <tables>
+            <table>t_order</table>
+            <table>t_order_item</table>
+        </tables>
     </drop-sharding-table-rule>
     
     <drop-sharding-table-rule sql-case-id="drop-sharding-table-rule-if-exists" if-exists="true">
-        <table>t_order</table>
-        <table>t_order_item</table>
+        <tables>
+            <table>t_order</table>
+            <table>t_order_item</table>
+        </tables>
     </drop-sharding-table-rule>
     
     <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule">
@@ -50,7 +54,7 @@
             <rule>t_1,t_2</rule>
         </rules>
     </drop-sharding-table-reference-rule>
-
+    
     <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule-if-exists" if-exists="true">
         <rules>
             <rule>t_1,t_2</rule>
@@ -58,46 +62,52 @@
     </drop-sharding-table-reference-rule>
     
     <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >
-        <table>t_1</table>
+        <tables>
+            <table>t_1</table>
+        </tables>
     </drop-broadcast-table-rule>
-
+    
     <drop-broadcast-table-rule sql-case-id="drop-multiple-broadcast-table-rules" >
-        <table>t_1</table>
-        <table>t_2</table>
+        <tables>
+            <table>t_1</table>
+            <table>t_2</table>
+        </tables>
     </drop-broadcast-table-rule>
-
+    
     <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule-if-exists" if-exists="true">
-        <table>t_1</table>
+        <tables>
+            <table>t_1</table>
+        </tables>
     </drop-broadcast-table-rule>
-
+    
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule">
-        <rules>
-            <rule>ms_group_0</rule>
-            <rule>ms_group_1</rule>
-        </rules>
+        <names>
+            <name>ms_group_0</name>
+            <name>ms_group_1</name>
+        </names>
     </drop-readwrite-splitting-rule>
 
     <drop-readwrite-splitting-rule sql-case-id="drop-readwrite-splitting-rule-if-exists" if-exists="true">
-        <rules>
-            <rule>ms_group_0</rule>
-            <rule>ms_group_1</rule>
-        </rules>
+        <names>
+            <name>ms_group_0</name>
+            <name>ms_group_1</name>
+        </names>
     </drop-readwrite-splitting-rule>
     
     <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule">
-        <rules>
-            <rule>ha_group_0</rule>
-            <rule>ha_group_1</rule>
-        </rules>
+        <names>
+            <name>ha_group_0</name>
+            <name>ha_group_1</name>
+        </names>
     </drop-database-discovery-rule>
     
     <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule-if-exists" if-exists="true">
-        <rules>
-            <rule>ha_group_0</rule>
-            <rule>ha_group_1</rule>
-        </rules>
+        <names>
+            <name>ha_group_0</name>
+            <name>ha_group_1</name>
+        </names>
     </drop-database-discovery-rule>
-
+    
     <drop-database-discovery-type sql-case-id="drop-database-discovery-type">
         <type>type_name_0</type>
         <type>type_name_1</type>
@@ -107,7 +117,7 @@
         <type>type_name_0</type>
         <type>type_name_1</type>
     </drop-database-discovery-type>
-
+    
     <drop-database-discovery-heartbeat sql-case-id="drop-database-discovery-heartbeat">
         <heartbeat>heartbeat_name_0</heartbeat>
         <heartbeat>heartbeat_name_1</heartbeat>
@@ -122,63 +132,73 @@
         <table>t_encrypt</table>
         <table>t_encrypt_order</table>
     </drop-encrypt-rule>
-
+    
     <drop-encrypt-rule sql-case-id="drop-encrypt-rule-if-exists" if-exists="true">
         <table>t_encrypt</table>
         <table>t_encrypt_order</table>
     </drop-encrypt-rule>
     
     <drop-shadow-rule sql-case-id="drop-shadow-rule">
-        <rules>
-            <rule>shadow_rule_1</rule>
-            <rule>shadow_rule_2</rule>
-        </rules>
+        <names>
+            <name>shadow_rule_1</name>
+            <name>shadow_rule_2</name>
+        </names>
     </drop-shadow-rule>
     
     <drop-shadow-rule sql-case-id="drop-shadow-rule-if-exists" if-exists="true">
-        <rules>
-            <rule>shadow_rule_1</rule>
-            <rule>shadow_rule_2</rule>
-        </rules>
+        <names>
+            <name>shadow_rule_1</name>
+            <name>shadow_rule_2</name>
+        </names>
     </drop-shadow-rule>
-
+    
     <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm">
-        <rules>
-            <rule>shadow_algorithm_1</rule>
-            <rule>shadow_algorithm_2</rule>
-        </rules>
+        <names>
+            <name>shadow_algorithm_1</name>
+            <name>shadow_algorithm_2</name>
+        </names>
     </drop-shadow-algorithm>
-
+    
     <drop-shadow-algorithm sql-case-id="drop-shadow-algorithm-if-exists" if-exists="true">
-        <rules>
-            <rule>shadow_algorithm_1</rule>
-            <rule>shadow_algorithm_2</rule>
-        </rules>
+        <names>
+            <name>shadow_algorithm_1</name>
+            <name>shadow_algorithm_2</name>
+        </names>
     </drop-shadow-algorithm>
-
-    <drop-shadow-algorithm sql-case-id="drop-default-shadow-algorithm-if-exists" if-exists="true"/>
+    
+    <drop-shadow-algorithm sql-case-id="drop-default-shadow-algorithm-if-exists" if-exists="true" />
     
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator" >
-        <key-generator>uuid_key_generator</key-generator>
+        <names>
+            <name>uuid_key_generator</name>
+        </names>
     </drop-sharding-key-generator>
-
+    
     <drop-sharding-key-generator sql-case-id="drop-sharding-key-generator-if-exists" if-exists="true">
-        <key-generator>uuid_key_generator</key-generator>
+        <names>
+            <name>uuid_key_generator</name>
+        </names>
     </drop-sharding-key-generator>
-
+    
     <drop-sharding-auditor sql-case-id="drop-sharding-auditor" >
-        <auditor>sharding_key_required_auditor</auditor>
+        <names>
+            <name>sharding_key_required_auditor</name>
+        </names>
     </drop-sharding-auditor>
-
+    
     <drop-sharding-auditor sql-case-id="drop-sharding-auditor-if-exists" if-exists="true">
-        <auditor>sharding_key_required_auditor</auditor>
+        <names>
+            <name>sharding_key_required_auditor</name>
+        </names>
     </drop-sharding-auditor>
-
+    
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
     
     <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" if-exists="true"/>
     
     <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" if-exists="true">
-        <algorithm>t_order_hash_mod</algorithm>
+        <names>
+            <name>t_order_hash_mod</name>
+        </names>
     </drop-sharding-algorithm>
 </sql-parser-test-cases>
