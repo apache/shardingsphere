@@ -107,11 +107,11 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     /**
-     * Check binding table groups.
+     * Judge whether binding table groups are valid.
      *
      * @param bindingTableGroups binding table groups
      * @param currentRuleConfig current rule configuration
-     * @return whether the binding table groups is valid
+     * @return binding table groups are valid or not
      */
     public static boolean isValidBindingTableGroups(final Collection<String> bindingTableGroups, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
