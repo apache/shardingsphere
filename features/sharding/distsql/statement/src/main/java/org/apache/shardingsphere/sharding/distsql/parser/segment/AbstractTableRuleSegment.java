@@ -28,19 +28,18 @@ import java.util.Collection;
 /**
  * Abstract table rule segment.
  */
-@RequiredArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
+@Setter
 public abstract class AbstractTableRuleSegment implements ASTNode {
     
     private final String logicTable;
     
     private final Collection<String> dataSourceNodes;
     
-    @Setter
     private KeyGenerateStrategySegment keyGenerateStrategySegment;
     
-    @Setter
     private AuditStrategySegment auditStrategySegment;
     
     /**
