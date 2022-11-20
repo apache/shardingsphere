@@ -29,7 +29,7 @@
     
     <properties>
         <consul.api.version>1.4.1</consul.api.version>
-        <httpclient.version>4.5.5</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
     </properties>
     
     <dependencies>
