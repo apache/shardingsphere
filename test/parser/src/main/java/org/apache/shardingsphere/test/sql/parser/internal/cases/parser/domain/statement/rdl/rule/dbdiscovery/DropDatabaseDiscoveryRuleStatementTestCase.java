@@ -35,8 +35,8 @@ import java.util.List;
 public final class DropDatabaseDiscoveryRuleStatementTestCase extends SQLParserTestCase {
     
     @XmlElementWrapper
-    @XmlElement(name = "rule")
-    private final List<String> rules = new LinkedList<>();
+    @XmlElement(name = "name")
+    private final List<String> names = new LinkedList<>();
     
     @XmlAttribute(name = "if-exists")
     private boolean ifExists;

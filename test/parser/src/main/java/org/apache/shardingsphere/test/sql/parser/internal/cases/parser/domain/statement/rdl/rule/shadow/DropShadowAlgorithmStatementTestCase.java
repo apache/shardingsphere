@@ -38,6 +38,6 @@ public final class DropShadowAlgorithmStatementTestCase extends SQLParserTestCas
     private boolean ifExists;
     
     @XmlElementWrapper
-    @XmlElement(name = "rule")
-    private final List<String> ruleName = new LinkedList<>();
+    @XmlElement(name = "name")
+    private final List<String> names = new LinkedList<>();
 }
