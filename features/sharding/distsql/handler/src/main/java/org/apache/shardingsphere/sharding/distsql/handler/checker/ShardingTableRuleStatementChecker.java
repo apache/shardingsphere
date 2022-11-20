@@ -44,12 +44,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.distsql.handler.converter.ShardingTableRuleStatementConverter;
 import org.apache.shardingsphere.sharding.distsql.handler.enums.ShardingStrategyType;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.AutoTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingRuleNotFoundException;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
@@ -266,7 +266,7 @@ public final class ShardingTableRuleStatementChecker {
         ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("auditor", notExistAuditors));
         Set<String> requiredAuditors = new LinkedHashSet<>();
         for (AuditStrategySegment each : auditStrategySegments) {
-            requiredAuditors.addAll(each.getShardingAuditorSegments().stream()
+            requiredAuditors.addAll(each.getAuditorSegments().stream()
                     .map(ShardingAuditorSegment::getAlgorithmSegment).collect(Collectors.toList()).stream().map(AlgorithmSegment::getName).collect(Collectors.toList()));
         }
         Collection<String> invalidAuditors = requiredAuditors.stream().distinct().filter(each -> !ShardingAuditAlgorithmFactory.contains(each)).collect(Collectors.toList());
@@ -303,19 +303,15 @@ public final class ShardingTableRuleStatementChecker {
     private static void checkStrategy(final String databaseName, final Collection<TableRuleSegment> rules) {
         Collection<AlgorithmSegment> invalidAlgorithms = rules.stream().map(each -> Arrays.asList(each.getDatabaseStrategySegment(), each.getTableStrategySegment()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).filter(ShardingTableRuleStatementChecker::isInvalidStrategy)
-                .map(ShardingStrategySegment::getAlgorithmSegment).collect(Collectors.toList());
+                .map(ShardingStrategySegment::getShardingAlgorithm).collect(Collectors.toList());
         Collection<String> invalidAlgorithmNames = invalidAlgorithms.stream().filter(Objects::nonNull).map(AlgorithmSegment::getName).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(databaseName, invalidAlgorithmNames));
     }
     
     private static boolean isInvalidStrategy(final ShardingStrategySegment shardingStrategySegment) {
-        return !ShardingStrategyType.contain(shardingStrategySegment.getType())
+        return !ShardingStrategyType.contains(shardingStrategySegment.getType())
                 || !ShardingStrategyType.getValueOf(shardingStrategySegment.getType()).isValid(shardingStrategySegment.getShardingColumn())
-                || !isAlgorithmExists(shardingStrategySegment);
-    }
-    
-    private static boolean isAlgorithmExists(final ShardingStrategySegment shardingStrategySegment) {
-        return null != shardingStrategySegment.getAlgorithmSegment();
+                || null == shardingStrategySegment.getShardingAlgorithm();
     }
     
     private static Map<String, List<AbstractTableRuleSegment>> groupingByClassType(final Collection<AbstractTableRuleSegment> rules) {

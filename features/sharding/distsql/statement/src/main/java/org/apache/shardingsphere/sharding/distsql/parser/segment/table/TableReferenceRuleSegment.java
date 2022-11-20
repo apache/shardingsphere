@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 /**
- * Sharding auditor segment.
+ * Table reference rule segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingAuditorSegment implements ASTNode {
+public final class TableReferenceRuleSegment implements ASTNode {
     
-    private final String auditorName;
+    private final String tableGroup;
     
-    private final AlgorithmSegment algorithmSegment;
+    /**
+     * Get table reference.
+     * 
+     * @return table reference
+     */
+    public Collection<String> getTableReference() {
+        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    }
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingAuditorStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAuditorStatement;
 import org.junit.Before;
 import org.junit.Test;
