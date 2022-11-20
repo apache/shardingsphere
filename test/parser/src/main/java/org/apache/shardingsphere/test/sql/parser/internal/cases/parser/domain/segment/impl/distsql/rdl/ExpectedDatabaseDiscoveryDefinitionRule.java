@@ -46,6 +46,6 @@ public final class ExpectedDatabaseDiscoveryDefinitionRule extends AbstractExpec
     private ExpectedAlgorithm discoveryType;
     
     @XmlElementWrapper
-    @XmlElement(name = "heartbeat")
+    @XmlElement(name = "property")
     private List<ExpectedProperty> properties;
 }
