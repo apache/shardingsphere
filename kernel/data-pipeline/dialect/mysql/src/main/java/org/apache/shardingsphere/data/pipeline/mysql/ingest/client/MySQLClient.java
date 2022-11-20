@@ -127,7 +127,7 @@ public final class MySQLClient {
      */
     public synchronized int executeUpdate(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, true);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
         channel.writeAndFlush(comQueryPacket);
         return (int) Objects.requireNonNull(waitExpectedResponse(MySQLOKPacket.class)).getAffectedRows();
     }
@@ -140,7 +140,7 @@ public final class MySQLClient {
      */
     public synchronized InternalResultSet executeQuery(final String queryString) {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
-        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, true);
+        MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
         channel.writeAndFlush(comQueryPacket);
         return waitExpectedResponse(InternalResultSet.class);
     }

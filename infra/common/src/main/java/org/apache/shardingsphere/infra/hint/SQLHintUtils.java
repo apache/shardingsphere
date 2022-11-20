@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -35,6 +37,8 @@ import java.util.Properties;
 public final class SQLHintUtils {
     
     private static final String SQL_COMMENT_SUFFIX = "*/";
+    
+    private static final String SQL_START_HINT_TOKEN = "/* SHARDINGSPHERE_HINT:";
     
     private static final String SQL_HINT_TOKEN = "shardingsphere_hint:";
     
@@ -96,10 +100,10 @@ public final class SQLHintUtils {
      */
     public static HintValueContext extractHint(final String sql) {
         HintValueContext result = new HintValueContext();
-        if (!sql.startsWith("/* SHARDINGSPHERE_HINT:")) {
+        if (!sql.startsWith(SQL_START_HINT_TOKEN)) {
             return result;
         }
-        String hintText = sql.substring(0, sql.indexOf("*/") + 2);
+        String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
         Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
         if (hintProperties.containsKey(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())) {
             result.setWriteRouteOnly(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())));
@@ -116,7 +120,15 @@ public final class SQLHintUtils {
         if (hintProperties.containsKey(SQLHintPropertiesKey.SHADOW_KEY.getKey())) {
             result.setShadow(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.SHADOW_KEY.getKey())));
         }
-        
+        for (Entry<Object, Object> entry : hintProperties.entrySet()) {
+            Comparable value = entry.getValue() instanceof Comparable ? (Comparable<?>) entry.getValue() : Objects.toString(entry.getValue());
+            if (Objects.toString(entry.getKey()).contains(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey())) {
+                result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()), value);
+            }
+            if (Objects.toString(entry.getKey()).contains(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey())) {
+                result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()), value);
+            }
+        }
         return result;
     }
     
@@ -127,8 +139,8 @@ public final class SQLHintUtils {
      * @return SQL after remove hint
      */
     public static String removeHint(final String sql) {
-        if (sql.startsWith("/* SHARDINGSPHERE_HINT:")) {
-            return sql.substring(sql.indexOf("*/") + 2);
+        if (sql.startsWith(SQL_START_HINT_TOKEN)) {
+            return sql.substring(sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
         }
         return sql;
     }

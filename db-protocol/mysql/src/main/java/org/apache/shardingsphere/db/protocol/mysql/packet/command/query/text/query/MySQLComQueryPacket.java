@@ -40,14 +40,14 @@ public final class MySQLComQueryPacket extends MySQLCommandPacket {
     
     public MySQLComQueryPacket(final String sql, final boolean sqlCommentParseEnabled) {
         super(MySQLCommandPacketType.COM_QUERY);
-        hintValueContext = sqlCommentParseEnabled ? null : SQLHintUtils.extractHint(sql);
+        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(sql);
         this.sql = sqlCommentParseEnabled ? sql : SQLHintUtils.removeHint(sql);
     }
     
     public MySQLComQueryPacket(final MySQLPacketPayload payload, final boolean sqlCommentParseEnabled) {
         super(MySQLCommandPacketType.COM_QUERY);
         String originSQL = payload.readStringEOF();
-        hintValueContext = sqlCommentParseEnabled ? null : SQLHintUtils.extractHint(originSQL);
+        hintValueContext = sqlCommentParseEnabled ? new HintValueContext() : SQLHintUtils.extractHint(originSQL);
         sql = sqlCommentParseEnabled ? originSQL : SQLHintUtils.removeHint(originSQL);
     }
     
