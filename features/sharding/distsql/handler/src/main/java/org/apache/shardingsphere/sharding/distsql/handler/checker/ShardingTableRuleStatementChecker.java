@@ -107,18 +107,18 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     /**
-     * Check binding table configuration.
+     * Judge whether binding table groups are valid.
      *
      * @param bindingTableGroups binding table groups
      * @param currentRuleConfig current rule configuration
+     * @return binding table groups are valid or not
      */
-    public static void checkBindingTableConfiguration(final Collection<String> bindingTableGroups, final ShardingRuleConfiguration currentRuleConfig) {
+    public static boolean isValidBindingTableGroups(final Collection<String> bindingTableGroups, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
         toBeCheckedRuleConfig.setBindingTableGroups(bindingTableGroups);
         Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);
         dataSourceNames.addAll(getRequiredResource(currentRuleConfig));
-        ShardingSpherePreconditions.checkState(check(toBeCheckedRuleConfig, dataSourceNames),
-                () -> new InvalidRuleConfigurationException("sharding table", bindingTableGroups, Collections.singleton("invalid binding table configuration.")));
+        return check(toBeCheckedRuleConfig, dataSourceNames);
     }
     
     private static void check(final ShardingSphereDatabase database, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreated) {
