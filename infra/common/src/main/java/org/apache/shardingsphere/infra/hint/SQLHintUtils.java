@@ -100,7 +100,7 @@ public final class SQLHintUtils {
      */
     public static HintValueContext extractHint(final String sql) {
         HintValueContext result = new HintValueContext();
-        if (!sql.startsWith(SQL_START_HINT_TOKEN)) {
+        if (null == sql || !sql.startsWith(SQL_START_HINT_TOKEN)) {
             return result;
         }
         String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
