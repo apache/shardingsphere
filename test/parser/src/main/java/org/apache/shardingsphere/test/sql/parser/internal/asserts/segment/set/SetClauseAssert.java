@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Se
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.assignment.AssignmentAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.set.ExpectedSetClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.set.ExpectedSetClause;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

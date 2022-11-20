@@ -49,14 +49,14 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Minimize the access permission for classes and methods.
  - Private method should be just next to the method in which it is used; Multiple private methods should be in the same as the appearance order of original methods.
  - No `null` parameters or return values.
- - Replace if else return and assign statement with ternary operator in priority.
  - Replace constructors, getters, setter methods and log variable with lombok in priority.
  - Use `LinkedList`  in priority. Use `ArrayList` for use index to get element only.
  - Use capacity based `Collection` such as `ArrayList`, `HashMap` must indicate initial capacity to avoid recalculate capacity.
  - Use English in all the logs and javadoc.
  - Include Javadoc, todo and fixme only in the comments.
- - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
- - Nested using conditional operator is forbidden.
+ - Only `public` classes and methods need javadoc, the Javadoc for the user API and SPI needs to be written clearly and comprehensively, other methods, classes and override methods do not need javadoc.
+ - Replace if else return and assign statement with ternary operator in priority.
+ - Nested using ternary operator is forbidden.
  - Use forward semantics in priority for better understanding code logic in conditional expressions. For example: `if (null == param) {} else {}`.
  - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.

@@ -25,8 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.ResetSlaveOptionSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.reset.ExpectedResetOptionSegment;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.reset.ExpectedResetOptionSegment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dal.ResetStatementTestCase;
 
 import java.util.List;
 

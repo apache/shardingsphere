@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.type.ExpectedType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.type.ExpectedType;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

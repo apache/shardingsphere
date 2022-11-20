@@ -116,6 +116,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -740,6 +741,11 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
                         datetimeExpression.getText());
             }
             return new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText());
+        }
+        if (projection instanceof XmlExistsFunctionSegment) {
+            XmlExistsFunctionSegment xmlExistsFunctionSegment = (XmlExistsFunctionSegment) projection;
+            return new XmlExistsFunctionSegment(xmlExistsFunctionSegment.getStartIndex(), xmlExistsFunctionSegment.getStopIndex(),
+                    xmlExistsFunctionSegment.getFunctionName(), xmlExistsFunctionSegment.getXQueryString(), xmlExistsFunctionSegment.getText());
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)

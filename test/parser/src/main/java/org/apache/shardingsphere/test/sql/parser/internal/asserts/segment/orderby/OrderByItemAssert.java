@@ -28,11 +28,11 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSeg
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.ExpectedOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.impl.ExpectedColumnOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.impl.ExpectedExpressionOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.impl.ExpectedIndexOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.ExpectedOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.impl.ExpectedColumnOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.impl.ExpectedExpressionOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.impl.ExpectedIndexOrderByItem;
 
 import java.util.Collection;
 

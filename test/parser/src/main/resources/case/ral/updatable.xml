@@ -26,7 +26,7 @@
     <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" storage-unit-name="ds_0" schema-name="public" />
     
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
-        <sql-parser sqlCommentParseEnabled="false">
+        <sql-parser sql-comment-parse-enabled="false">
             <parse-tree-cache initial-capacity="10" maximum-size="11" />
             <sql-statement-cache initial-capacity="11" maximum-size="11" />
         </sql-parser>
