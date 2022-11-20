@@ -695,3 +695,7 @@ EVALNAME
 XMLEXISTS
     : X M L E X I S T S
     ;
+
+XMLFOREST
+    : X M L F O R E S T
+    ;
