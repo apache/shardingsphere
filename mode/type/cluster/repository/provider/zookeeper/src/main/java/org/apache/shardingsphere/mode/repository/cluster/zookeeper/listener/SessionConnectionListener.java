@@ -23,7 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
@@ -51,7 +53,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             do {
                 reRegistered = reRegister(client);
             } while (!reRegistered);
-            log.debug("instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
+            log.debug("Instance re-register success instance id: {}", instanceContext.getInstance().getCurrentInstanceId());
         }
     }
     
@@ -61,8 +63,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
                 if (isNeedGenerateWorkerId()) {
                     instanceContext.generateWorkerId(new Properties());
                 }
-                repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceContext.getInstance().getCurrentInstanceId(),
-                        instanceContext.getInstance().getMetaData().getType()), instanceContext.getInstance().getMetaData().getAttributes());
+                reRegisterInstanceComputeNode();
                 return true;
             }
             sleepInterval();
@@ -75,6 +76,13 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     private boolean isNeedGenerateWorkerId() {
         return -1 != instanceContext.getInstance().getWorkerId();
+    }
+    
+    private void reRegisterInstanceComputeNode() {
+        ComputeNodeInstance instance = instanceContext.getInstance();
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instance.getCurrentInstanceId(), instance.getMetaData().getType()), instance.getMetaData().getAttributes());
+        repository.persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instance.getCurrentInstanceId()), YamlEngine.marshal(instance.getLabels()));
+        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instance.getCurrentInstanceId()), instance.getState().getCurrentState().name());
     }
     
     @SneakyThrows(InterruptedException.class)
