@@ -48,7 +48,7 @@ public final class DropTrafficRuleStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("Rule name id assertion error"), new ArrayList<>(actual.getRuleNames()), is(new ArrayList<>(expected.getRuleNames())));
+            assertThat(assertContext.getText("Rule name id assertion error"), new ArrayList<>(actual.getRuleNames()), is(new ArrayList<>(expected.getNames())));
         }
     }
 }

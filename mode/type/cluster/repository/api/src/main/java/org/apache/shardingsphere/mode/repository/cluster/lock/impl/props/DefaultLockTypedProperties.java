@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.impl;
+package org.apache.shardingsphere.mode.repository.cluster.lock.impl.props;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-public final class EncryptEqualConditionTest {
+/**
+ * Default lock typed properties.
+ */
+public final class DefaultLockTypedProperties extends TypedProperties<DefaultLockPropertyKey> {
     
-    @Test
-    public void assertGetConditionValues() {
-        List<Object> actual = new EncryptEqualCondition("col", null,
-                0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is(1));
+    public DefaultLockTypedProperties(final Properties props) {
+        super(DefaultLockPropertyKey.class, props);
     }
 }

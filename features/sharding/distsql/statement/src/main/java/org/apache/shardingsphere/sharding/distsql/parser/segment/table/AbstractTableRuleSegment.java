@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
@@ -28,19 +30,18 @@ import java.util.Collection;
 /**
  * Abstract table rule segment.
  */
-@RequiredArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
+@Setter
 public abstract class AbstractTableRuleSegment implements ASTNode {
     
     private final String logicTable;
     
     private final Collection<String> dataSourceNodes;
     
-    @Setter
     private KeyGenerateStrategySegment keyGenerateStrategySegment;
     
-    @Setter
     private AuditStrategySegment auditStrategySegment;
     
     /**

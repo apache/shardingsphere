@@ -4711,4 +4711,53 @@
             <simple-table name="x_table" start-index="75" stop-index="81" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlforest_function">
+        <projections start-index="7" stop-index="78">
+            <expression-projection text="XMLFOREST(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary)" start-index="7" stop-index="78" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="85" stop-index="95" alias="e" />
+        </from>
+        <where start-index="97" stop-index="119">
+            <expr>
+                <binary-operation-expression start-index="103" stop-index="119">
+                    <left>
+                        <column name="employee_id" start-index="103" stop-index="113" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="204" start-index="117" stop-index="119" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_xmlparse_function">
+        <projections start-index="7" stop-index="53">
+            <expression-projection text="XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED)" alias="dept" start-index="7" stop-index="53" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="60" stop-index="63" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlpi_function">
+        <projections start-index="7" stop-index="89">
+            <expression-projection text="XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled')" alias="XMLPI" start-index="11" stop-index="78" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="96" stop-index="99" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlquery_function">
+        <projections start-index="7" stop-index="95">
+            <expression-projection text="XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY)" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="x_table" start-index="102" stop-index="108" />
+        </from>
+    </select>
 </sql-parser-test-cases>

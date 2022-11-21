@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sqlfederation.optimizer.common;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 
 /**
- * Audit strategy segment.
+ * JAXB definition of test cases.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AuditStrategySegment implements ASTNode {
+@XmlRootElement(name = "test-cases")
+public final class TestCases {
     
-    private final Collection<String> auditorNames;
-    
-    private final Collection<ShardingAuditorSegment> shardingAuditorSegments;
-    
-    private final boolean allowHintDisable;
-    
-    public AuditStrategySegment(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        this(auditorNames, Collections.emptyList(), allowHintDisable);
-    }
+    @XmlElement(name = "test-case")
+    private final Collection<TestCase> testCases = new LinkedList<>();
 }

@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute;
+package org.apache.shardingsphere.mode.repository.cluster.lock.impl.props;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
- * Compute node status.
+ * Default lock property key.
  */
-public enum ComputeNodeStatus {
+@RequiredArgsConstructor
+@Getter
+public enum DefaultLockPropertyKey implements TypedPropertyKey {
     
-    ONLINE, CIRCUIT_BREAK
+    INSTANCE_ID("instanceId", "", String.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

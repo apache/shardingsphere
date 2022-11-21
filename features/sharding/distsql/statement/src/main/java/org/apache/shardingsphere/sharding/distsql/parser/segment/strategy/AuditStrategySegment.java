@@ -15,23 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.dostatement;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Expected do parameters.
+ * Audit strategy segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedDoParameters extends AbstractExpectedSQLSegment {
+public final class AuditStrategySegment implements ASTNode {
     
-    @XmlElement(name = "parameter")
-    private List<ExpectedDoParameter> parameters = new LinkedList<>();
+    private final Collection<String> auditorNames;
+    
+    private final Collection<ShardingAuditorSegment> auditorSegments;
+    
+    private final boolean allowHintDisable;
+    
+    public AuditStrategySegment(final Collection<String> auditorNames, final boolean allowHintDisable) {
+        this(auditorNames, Collections.emptyList(), allowHintDisable);
+    }
 }

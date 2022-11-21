@@ -15,34 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Xml Exists Function segment.
+ * Sharding auditor segment.
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
-public final class XmlExistsFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
+public final class ShardingAuditorSegment implements ASTNode {
     
-    private final int startIndex;
+    private final String auditorName;
     
-    private final int stopIndex;
-    
-    private final String functionName;
-    
-    private final String xQueryString;
-    
-    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
-    
-    private final String text;
+    private final AlgorithmSegment algorithmSegment;
 }

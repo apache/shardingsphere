@@ -41,10 +41,10 @@ public final class DropShardingKeyGeneratorStatementAssert {
      * @param expected expected drop sharding key generator statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingKeyGeneratorStatement actual, final DropShardingKeyGeneratorStatementTestCase expected) {
-        if (null == expected.getKeyGeneratorName()) {
+        if (null == expected.getNames()) {
             assertNull(assertContext.getText("Actual key generator name should not exist."), actual);
         } else {
-            assertThat(assertContext.getText("Key generator names assertion error: "), actual.getKeyGeneratorNames(), is(expected.getKeyGeneratorName()));
+            assertThat(assertContext.getText("Key generator names assertion error: "), actual.getNames(), is(expected.getNames()));
             assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }

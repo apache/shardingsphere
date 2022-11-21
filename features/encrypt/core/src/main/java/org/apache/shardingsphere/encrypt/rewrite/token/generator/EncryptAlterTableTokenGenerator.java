@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -79,7 +78,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     
     private Collection<SQLToken> mergeDropColumnStatement(final Collection<SQLToken> dropSQLTokens, final String leftJoiner, final String rightJoiner) {
         Collection<SQLToken> result = new LinkedList<>();
-        List<String> dropColumns = new ArrayList<>();
+        Collection<String> dropColumns = new LinkedList<>();
         int lastStartIndex = -1;
         for (int i = 0; i < dropSQLTokens.size(); i++) {
             SQLToken token = ((List<SQLToken>) dropSQLTokens).get(i);

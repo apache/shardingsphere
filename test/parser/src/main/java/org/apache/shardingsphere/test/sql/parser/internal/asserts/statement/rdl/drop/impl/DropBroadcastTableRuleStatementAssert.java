@@ -46,7 +46,7 @@ public final class DropBroadcastTableRuleStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("broadcast table rule assertion error: "), actual.getRules(), is(expected.getTableName()));
+            assertThat(assertContext.getText("broadcast table rule assertion error: "), actual.getTables(), is(expected.getTables()));
             assertThat(assertContext.getText("broadcast table rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }

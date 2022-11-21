@@ -37,11 +37,13 @@ import java.util.Map.Entry;
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class EncryptEqualCondition implements EncryptCondition {
+public final class EncryptBinaryCondition implements EncryptCondition {
     
     private final String columnName;
     
     private final String tableName;
+    
+    private final String operator;
     
     private final int startIndex;
     
@@ -51,9 +53,10 @@ public final class EncryptEqualCondition implements EncryptCondition {
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptEqualCondition(final String columnName, final String tableName, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
+    public EncryptBinaryCondition(final String columnName, final String tableName, final String operator, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
         this.columnName = columnName;
         this.tableName = tableName;
+        this.operator = operator;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         putPositionMap(expressionSegment);

@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sqlfederation.optimizer.common;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Sharding auditor segment.
+ * JAXB definition of test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingAuditorSegment implements ASTNode {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class TestCase {
     
-    private final String auditorName;
+    @XmlAttribute(name = "sql")
+    private String sql;
     
-    private final AlgorithmSegment algorithmSegment;
+    @XmlElement(name = "assertion")
+    private TestCaseAssertion assertion;
 }

@@ -116,7 +116,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -742,10 +743,19 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             }
             return new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText());
         }
-        if (projection instanceof XmlExistsFunctionSegment) {
-            XmlExistsFunctionSegment xmlExistsFunctionSegment = (XmlExistsFunctionSegment) projection;
-            return new XmlExistsFunctionSegment(xmlExistsFunctionSegment.getStartIndex(), xmlExistsFunctionSegment.getStopIndex(),
+        if (projection instanceof XmlQueryAndExistsFunctionSegment) {
+            XmlQueryAndExistsFunctionSegment xmlExistsFunctionSegment = (XmlQueryAndExistsFunctionSegment) projection;
+            return new XmlQueryAndExistsFunctionSegment(xmlExistsFunctionSegment.getStartIndex(), xmlExistsFunctionSegment.getStopIndex(),
                     xmlExistsFunctionSegment.getFunctionName(), xmlExistsFunctionSegment.getXQueryString(), xmlExistsFunctionSegment.getText());
+        }
+        if (projection instanceof XmlPiFunctionSegment) {
+            XmlPiFunctionSegment xmlPiFunctionSegment = (XmlPiFunctionSegment) projection;
+            if (null != xmlPiFunctionSegment.getIdentifier()) {
+                return new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(), xmlPiFunctionSegment.getFunctionName(),
+                        xmlPiFunctionSegment.getIdentifier(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
+            }
+            return new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(), xmlPiFunctionSegment.getFunctionName(),
+                    xmlPiFunctionSegment.getEvalNameValueExpr(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)

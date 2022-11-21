@@ -15,31 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 /**
- * Table reference rule segment.
+ * Default data source pool properties validator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableReferenceRuleSegment implements ASTNode {
+public final class DefaultDataSourcePoolPropertiesValidator implements DataSourcePoolPropertiesValidator {
     
-    private final String tableGroup;
-    
-    /**
-     * Get table reference.
-     * 
-     * @return table reference
-     */
-    public Collection<String> getTableReference() {
-        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    @Override
+    public void validateProperties(final DataSourceProperties dataSourceProps) {
     }
 }

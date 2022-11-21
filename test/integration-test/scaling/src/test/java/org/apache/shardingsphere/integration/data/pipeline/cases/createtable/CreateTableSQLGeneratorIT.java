@@ -72,7 +72,7 @@ public final class CreateTableSQLGeneratorIT {
     
     private static final String DEFAULT_SCHEMA = "public";
     
-    private static final String DEFAULT_DATABASE = "ds";
+    private static final String DEFAULT_DATABASE = "scaling_it_0";
     
     private static final Pattern REPLACE_LINE_SPACE = Pattern.compile("\\s*|\t|\r|\n");
     
@@ -118,7 +118,6 @@ public final class CreateTableSQLGeneratorIT {
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
         log.info("generate create table sql, parameterized: {}", parameterized);
-        initData();
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
@@ -129,12 +128,6 @@ public final class CreateTableSQLGeneratorIT {
                 Collection<String> actualDDLs = CreateTableSQLGeneratorFactory.getInstance(parameterized.getDatabaseType()).generate(dataSource, DEFAULT_SCHEMA, each.getInput().getTable());
                 assertIsCorrect(actualDDLs, getVersionOutput(each.getOutputs(), majorVersion));
             }
-        }
-    }
-    
-    private void initData() throws SQLException {
-        try (Statement statement = storageContainer.createAccessDataSource("").getConnection().createStatement()) {
-            statement.execute("CREATE DATABASE " + DEFAULT_DATABASE);
         }
     }
     
