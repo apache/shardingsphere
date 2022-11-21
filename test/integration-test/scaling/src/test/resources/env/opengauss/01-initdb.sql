@@ -15,7 +15,6 @@
 -- limitations under the License.
 --
 
-ALTER USER test_user NOSYSADMIN;
 ALTER USER test_user REPLICATION;
 CREATE DATABASE scaling_it_0;
 CREATE DATABASE scaling_it_1;
