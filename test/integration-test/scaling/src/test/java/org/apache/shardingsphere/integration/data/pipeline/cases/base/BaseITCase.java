@@ -288,7 +288,8 @@ public abstract class BaseITCase {
             for (Map<String, Object> each : listJobStatus) {
                 assertTrue("error_message is not null", Strings.isNullOrEmpty(each.get("error_message").toString()));
                 actualStatus.add(each.get("status").toString());
-                incrementalIdleSecondsList.add(Integer.parseInt(each.getOrDefault("incremental_idle_seconds", "0").toString()));
+                String incrementalIdleSeconds = each.get("incremental_idle_seconds").toString();
+                incrementalIdleSecondsList.add(Strings.isNullOrEmpty(incrementalIdleSeconds) ? 0 : Integer.parseInt(incrementalIdleSeconds));
             }
             assertFalse("status is JobStatus.PREPARING_FAILURE", actualStatus.contains(JobStatus.PREPARING_FAILURE.name()));
             assertFalse("status is JobStatus.EXECUTE_INVENTORY_TASK_FAILURE", actualStatus.contains(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
