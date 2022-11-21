@@ -20,22 +20,17 @@ package org.apache.shardingsphere.infra.metadata.data.collector.tables;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
+import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereTableDataCollectorUtil;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Table pg_namespace data collector.
@@ -44,40 +39,18 @@ public final class PgNamespaceTableCollector implements ShardingSphereDataCollec
     
     private static final String PG_NAMESPACE = "pg_namespace";
     
+    private static final String COLUMN_NAMES = "oid, nspname, nspowner, nspacl";
+    
+    private static final String SELECT_SQL = "SELECT " + COLUMN_NAMES + " FROM pg_catalog.pg_namespace";
+    
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        Set<ShardingSphereRowData> rows = new LinkedHashSet<>();
-        for (DataSource each : shardingSphereDatabases.get(databaseName).getResourceMetaData().getDataSources().values()) {
-            try (
-                    Connection connection = each.getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery("SELECT oid, nspname, nspowner, nspacl FROM pg_catalog.pg_namespace")) {
-                ResultSetMetaData metaData = resultSet.getMetaData();
-                while (resultSet.next()) {
-                    List<Object> row = new ArrayList<>(metaData.getColumnCount());
-                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                        row.add(convertIfNecessary(resultSet.getObject(i), metaData.getColumnType(i)));
-                    }
-                    ShardingSphereRowData rowData = new ShardingSphereRowData(row);
-                    rows.add(rowData);
-                }
-            }
-        }
+        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtil.collectRowData(shardingSphereDatabases.get(databaseName).getResourceMetaData().getDataSources().values(),
+                SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
         ShardingSphereTableData result = new ShardingSphereTableData(PG_NAMESPACE, new ArrayList<>(table.getColumns().values()));
-        result.getRows().addAll(rows);
+        result.getRows().addAll(rows.stream().distinct().collect(Collectors.toList()));
         return Optional.of(result);
-    }
-    
-    // TODO extract to util
-    private Object convertIfNecessary(final Object data, final int dataType) {
-        if (Types.ARRAY == dataType) {
-            return null == data ? null : data.toString();
-        }
-        if (Types.BIGINT == dataType) {
-            return null == data ? null : Long.valueOf(data.toString());
-        }
-        return data;
     }
     
     @Override
