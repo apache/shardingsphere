@@ -46,6 +46,9 @@ public final class SQLValue {
         if (type.startsWith("enum#")) {
             return value;
         }
+        if ("null".equalsIgnoreCase(value)) {
+            return null;
+        }
         switch (type) {
             case "String":
             case "varchar":
