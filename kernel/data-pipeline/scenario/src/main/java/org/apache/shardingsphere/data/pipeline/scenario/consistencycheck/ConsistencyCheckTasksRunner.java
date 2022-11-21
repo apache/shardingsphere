@@ -99,9 +99,13 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(
                     parentJobConfig, checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
             setCalculateAlgorithm(calculateAlgorithm);
-            Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = jobAPI.dataConsistencyCheck(parentJobConfig, calculateAlgorithm, jobItemContext);
-            PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
-            jobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
+            Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult;
+            try {
+                dataConsistencyCheckResult = jobAPI.dataConsistencyCheck(parentJobConfig, calculateAlgorithm, jobItemContext);
+                PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
+            } finally {
+                jobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
+            }
         }
         
         @Override

@@ -104,12 +104,10 @@ public final class SingleTableInventoryDataConsistencyChecker {
         Collection<String> columnNames = tableMetaData.getColumnNames();
         Map<String, Object> tableCheckPositions = jobItemContext.getTableCheckPositions();
         DataConsistencyCalculateParameter sourceParam = buildParameter(
-                sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey,
-                tableCheckPositions.get(sourceTableName));
+                sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPositions.get(sourceTableName));
         String targetTableName = targetTable.getTableName().getOriginal();
-        DataConsistencyCalculateParameter targetParam = buildParameter(
-                targetDataSource, targetTable.getSchemaName().getOriginal(), targetTableName, columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey,
-                tableCheckPositions.get(targetTableName));
+        DataConsistencyCalculateParameter targetParam = buildParameter(targetDataSource, targetTable.getSchemaName().getOriginal(), targetTableName,
+                columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey, tableCheckPositions.get(targetTableName));
         Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParam).iterator();
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParam).iterator();
         long sourceRecordsCount = 0;
@@ -131,10 +129,10 @@ public final class SingleTableInventoryDataConsistencyChecker {
                 break;
             }
             if (sourceCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                jobItemContext.getTableCheckPositions().put(sourceTableName, sourceCalculatedResult.getMaxUniqueKeyValue().get());
+                tableCheckPositions.put(sourceTableName, sourceCalculatedResult.getMaxUniqueKeyValue().get());
             }
             if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
-                jobItemContext.getTableCheckPositions().put(targetTableName, targetCalculatedResult.getMaxUniqueKeyValue().get());
+                tableCheckPositions.put(targetTableName, targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
             jobItemContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }

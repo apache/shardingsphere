@@ -80,18 +80,12 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         try (
                 PipelineDataSourceWrapper sourceDataSource = PipelineDataSourceFactory.newInstance(jobConfig.getSource());
                 PipelineDataSourceWrapper targetDataSource = PipelineDataSourceFactory.newInstance(jobConfig.getTarget())) {
-            // TODO simplify code
-            MigrationJobAPI migrationJobAPI = MigrationJobAPIFactory.getInstance();
-            Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = migrationJobAPI.getJobProgress(jobConfig);
-            long recordsCount = jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
-            checkJobItemContext.setRecordsCount(recordsCount);
+            checkJobItemContext.setRecordsCount(getRecordsCount());
             checkJobItemContext.getTableNames().add(jobConfig.getSourceTableName());
             PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(sourceDataSource);
             SingleTableInventoryDataConsistencyChecker singleTableInventoryChecker = new SingleTableInventoryDataConsistencyChecker(jobConfig.getJobId(), sourceDataSource, targetDataSource,
                     sourceTable, targetTable, jobConfig.getUniqueKeyColumn(), metaDataLoader, readRateLimitAlgorithm, checkJobItemContext);
             result.put(sourceTable.getTableName().getOriginal(), singleTableInventoryChecker.check(calculateAlgorithm));
-            // TODO make sure checkEndTimeMillis will be set
-            checkJobItemContext.setCheckEndTimeMillis(System.currentTimeMillis());
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
@@ -101,5 +95,10 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
     private void verifyPipelineDatabaseType(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final PipelineDataSourceConfiguration dataSourceConfig) {
         ShardingSpherePreconditions.checkState(calculateAlgorithm.getSupportedDatabaseTypes().contains(dataSourceConfig.getDatabaseType().getType()),
                 () -> new UnsupportedPipelineDatabaseTypeException(dataSourceConfig.getDatabaseType()));
+    }
+    
+    private long getRecordsCount() {
+        Map<Integer, InventoryIncrementalJobItemProgress> jobProgress = MigrationJobAPIFactory.getInstance().getJobProgress(jobConfig);
+        return jobProgress.values().stream().filter(Objects::nonNull).mapToLong(InventoryIncrementalJobItemProgress::getProcessedRecordsCount).sum();
     }
 }
