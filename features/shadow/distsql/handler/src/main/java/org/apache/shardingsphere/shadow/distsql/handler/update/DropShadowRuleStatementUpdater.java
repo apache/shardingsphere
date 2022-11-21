@@ -20,45 +20,42 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.checker.ShadowRuleStatementChecker;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Drop shadow rule statement updater.
  */
 public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropUpdater<DropShadowRuleStatement, ShadowRuleConfiguration> {
     
-    private static final String SHADOW = "shadow";
-    
     @Override
-    public void checkSQLStatement(final ShardingSphereDatabase database,
-                                  final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    public void checkSQLStatement(final ShardingSphereDatabase database, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
-        checkConfigurationExist(database.getName(), currentRuleConfig);
-        checkRuleNames(database.getName(), sqlStatement, currentRuleConfig);
+        checkConfigurationExisted(database.getName(), currentRuleConfig);
+        checkRuleExisted(database.getName(), sqlStatement, currentRuleConfig);
     }
     
-    private void checkConfigurationExist(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
-        ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
+    private void checkConfigurationExisted(final String databaseName, final ShadowRuleConfiguration currentRuleConfig) {
+        ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Shadow", databaseName));
     }
     
-    private void checkRuleNames(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
+    private void checkRuleExisted(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfExists()) {
             ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
-                    different -> new MissingRequiredRuleException(SHADOW, databaseName, different));
+                    notExistedRuleNames -> new MissingRequiredRuleException("Shadow", databaseName, notExistedRuleNames));
         }
     }
     
-    private Collection<String> getDataSourceNames(final ShadowRuleConfiguration shadowRuleConfiguration) {
-        Collection<String> result = new LinkedList<>();
-        shadowRuleConfiguration.getDataSources().forEach(each -> result.add(each.getName()));
-        return result;
+    private Collection<String> getDataSourceNames(final ShadowRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getDataSources().stream().map(ShadowDataSourceConfiguration::getName).collect(Collectors.toList());
     }
     
     @Override
@@ -68,10 +65,10 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> ruleNames = sqlStatement.getNames();
-        ruleNames.forEach(each -> currentRuleConfig.getDataSources().remove(each));
-        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(ruleNames::contains));
-        return false;
+        currentRuleConfig.getDataSources().removeIf(each -> sqlStatement.getNames().contains(each.getName()));
+        currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(sqlStatement.getNames()::contains));
+        currentRuleConfig.getTables().entrySet().removeIf(entry -> entry.getValue().getDataSourceNames().isEmpty());
+        return currentRuleConfig.getDataSources().isEmpty() || currentRuleConfig.getTables().isEmpty();
     }
     
     @Override
