@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.sqlfederation.optimizer.common;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * State event.
+ * JAXB definition of test cases.
  */
-@RequiredArgsConstructor
 @Getter
-public final class StateEvent implements GovernanceEvent {
+@XmlRootElement(name = "test-cases")
+public final class TestCases {
     
-    private final String instanceId;
-    
-    private final String status;
+    @XmlElement(name = "test-case")
+    private final Collection<TestCase> testCases = new LinkedList<>();
 }

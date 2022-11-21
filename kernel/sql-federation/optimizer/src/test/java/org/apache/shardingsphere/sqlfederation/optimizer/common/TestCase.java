@@ -15,12 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute;
+package org.apache.shardingsphere.sqlfederation.optimizer.common;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Compute node status.
+ * JAXB definition of test case.
  */
-public enum ComputeNodeStatus {
+@Getter
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class TestCase {
     
-    ONLINE, CIRCUIT_BREAK
+    @XmlAttribute(name = "sql")
+    private String sql;
+    
+    @XmlElement(name = "assertion")
+    private TestCaseAssertion assertion;
 }
