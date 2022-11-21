@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TestCaseAssertion {
+public final class TestCaseAssertion {
     
     @XmlAttribute(name = "expected-result")
     private String expectedResult;

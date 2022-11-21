@@ -61,7 +61,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
-public class SQLOptimizeEngineTest {
+public final class SQLOptimizeEngineTest {
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
