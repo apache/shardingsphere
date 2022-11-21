@@ -74,6 +74,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlCol
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -94,6 +95,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpres
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -562,7 +564,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.xmlForestFunction()) {
             return visit(ctx.xmlForestFunction());
         }
-        return visit(ctx.xmlParseFunction());
+        if (null != ctx.xmlParseFunction()) {
+            return visit(ctx.xmlParseFunction());
+        }
+        return visit(ctx.xmlPiFunction());
     }
     
     @Override
@@ -598,6 +603,16 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     @Override
     public ASTNode visitXmlParseFunction(final XmlParseFunctionContext ctx) {
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), (ExpressionSegment) visit(ctx.expr()));
+    }
+    
+    @Override
+    public ASTNode visitXmlPiFunction(XmlPiFunctionContext ctx) {
+        if (null != ctx.identifier()) {
+            return new XmlPiFunctionSegment(ctx.start.getStopIndex(), ctx.stop.getStopIndex(), ctx.XMLPI().getText(),
+                    ctx.identifier().getText(), (ExpressionSegment) visit(ctx.expr(0)), getOriginalText(ctx));
+        }
+        return new XmlPiFunctionSegment(ctx.start.getStopIndex(), ctx.stop.getStopIndex(), ctx.XMLPI().getText(),
+                (ExpressionSegment) visit(ctx.expr(0)), (ExpressionSegment) visit(ctx.expr(1)), getOriginalText(ctx));
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {

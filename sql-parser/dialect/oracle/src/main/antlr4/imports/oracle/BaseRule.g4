@@ -1620,6 +1620,7 @@ xmlFunction
     | xmlExistsFunction
     | xmlForestFunction
     | xmlParseFunction
+    | xmlPiFunction
     ;
 
 xmlAggFunction
@@ -1640,4 +1641,8 @@ xmlForestFunction
 
 xmlParseFunction
     : XMLPARSE LP_ (DOCUMENT | CONTENT) expr (WELLFORMED)? RP_
+    ;
+
+xmlPiFunction
+    : XMLPI LP_ (EVALNAME expr | (NAME)? identifier) (COMMA_ expr)? RP_
     ;
