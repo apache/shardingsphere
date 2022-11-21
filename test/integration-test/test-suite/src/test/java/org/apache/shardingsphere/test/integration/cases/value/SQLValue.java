@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.cases.value;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -47,6 +46,9 @@ public final class SQLValue {
         if (type.startsWith("enum#")) {
             return value;
         }
+        if ("null".equalsIgnoreCase(value)) {
+            return null;
+        }
         switch (type) {
             case "String":
             case "varchar":
@@ -63,9 +65,6 @@ public final class SQLValue {
             case "double":
                 return Double.parseDouble(value);
             case "numeric":
-                if (Strings.isNullOrEmpty(value)) {
-                    return null;
-                }
                 return value.contains("//.") ? Double.parseDouble(value) : Long.parseLong(value);
             case "decimal":
                 return new BigDecimal(value);
