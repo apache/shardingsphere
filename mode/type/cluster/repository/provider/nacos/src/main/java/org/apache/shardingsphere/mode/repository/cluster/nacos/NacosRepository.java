@@ -126,8 +126,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     
     @Override
     public DistributedLockHolder getDistributedLockHolder() {
-        // TODO
-        throw new UnsupportedOperationException("Can not support distributed lock on Nacos yet.");
+        return null;
     }
     
     @Override
