@@ -91,6 +91,25 @@
             </rule>
         </rules>
     </alter-sharding-auto-table-rule>
+    
+    <alter-sharding-auto-table-rule sql-case-id="alter-sharding-auto-table-rule-with-auditor">
+        <rules>
+            <rule name="t_order" table-strategy-column="order_id" key-generate-strategy-column="another_id">
+                <data-source>ms_group_${0..1}</data-source>
+                <table-strategy algorithm-name="hash_mod">
+                    <properties>
+                        <property key="sharding-count" value="4" />
+                    </properties>
+                </table-strategy>
+                <key-generate-strategy algorithm-name="snowflake" />
+                <audit-strategy allow-hint-disable="true">
+                    <algorithms>
+                        <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                    </algorithms>
+                </audit-strategy>
+            </rule>
+        </rules>
+    </alter-sharding-auto-table-rule>
 
     <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule">
         <rules>
@@ -134,6 +153,34 @@
                     </algorithm-segment>
                 </database-strategy>
                 <key-generate-strategy algorithm-name="snowflake" />
+            </rule>
+        </rules>
+    </alter-sharding-table-rule>
+    
+    <alter-sharding-table-rule sql-case-id="alter-sharding-table-rule-with-auditor">
+        <rules>
+            <rule name="t_order" key-generate-strategy-column="another_id">
+                <data-node>ms_group_${0..1}.t_order_${0..1}</data-node>
+                <table-strategy type="standard" sharding-column="user_id">
+                    <algorithm-segment algorithm-name="INLINE">
+                        <properties>
+                            <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                        </properties>
+                    </algorithm-segment>
+                </table-strategy>
+                <database-strategy type="standard" sharding-column="order_id">
+                    <algorithm-segment algorithm-name="INLINE">
+                        <properties>
+                            <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                        </properties>
+                    </algorithm-segment>
+                </database-strategy>
+                <key-generate-strategy algorithm-name="snowflake" />
+                <audit-strategy allow-hint-disable="true">
+                    <algorithms>
+                        <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                    </algorithms>
+                </audit-strategy>
             </rule>
         </rules>
     </alter-sharding-table-rule>

@@ -88,11 +88,11 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP storageUnits COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? (COMMA auditDeclaration)? RP
+    : tableName LP storageUnits COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDefinition)? (COMMA auditDefinition)? RP
     ;
 
 shardingTableRule
-    : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDefinition)? (COMMA auditDeclaration)? RP
+    : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDefinition)? (COMMA auditDefinition)? RP
     ;
 
 keyGeneratorDefinition
@@ -163,12 +163,8 @@ keyGenerateDefinition
     : KEY_GENERATE_STRATEGY LP COLUMN EQ columnName COMMA algorithmDefinition RP
     ;
 
-auditDeclaration
-    : auditDefinition | auditStrategy
-    ;
-
 auditDefinition
-    : AUDIT_STRATEGY LP LBT multiAuditDefinition RBT COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
+    : AUDIT_STRATEGY LP multiAuditDefinition COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
     ;
 
 multiAuditDefinition
@@ -176,15 +172,7 @@ multiAuditDefinition
     ;
 
 singleAuditDefinition
-    : LP NAME EQ auditorName COMMA algorithmDefinition RP
-    ;
-
-auditStrategy
-    : AUDIT_STRATEGY LP AUDITORS EQ LBT auditorNames RBT COMMA ALLOW_HINT_DISABLE EQ auditAllowHintDisable RP
-    ;
-
-auditorNames
-    : auditorName (COMMA auditorName)*
+    : LP algorithmDefinition RP
     ;
 
 auditAllowHintDisable

@@ -47,4 +47,7 @@ public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegmen
     
     @XmlElement(name = "key-generate-strategy")
     private ExpectedAlgorithm keyGenerateStrategy;
+    
+    @XmlElement(name = "audit-strategy")
+    private ExpectedAuditor auditStrategy;
 }

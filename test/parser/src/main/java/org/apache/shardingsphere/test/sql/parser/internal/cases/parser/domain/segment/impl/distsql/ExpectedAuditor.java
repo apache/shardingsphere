@@ -23,30 +23,20 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.Collection;
 
 /**
- * Expected auto table rule.
+ * Expected SQL parser rule.
  */
 @Getter
 @Setter
-public final class ExpectedAutoTableRule extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedAuditor extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlElement(name = "data-source")
-    private List<String> dataSources;
+    @XmlAttribute(name = "allow-hint-disable")
+    private boolean allowHintDisable;
     
-    @XmlAttribute(name = "table-strategy-column")
-    private String tableStrategyColumn;
-    
-    @XmlAttribute(name = "key-generate-strategy-column")
-    private String keyGenerateStrategyColumn;
-    
-    @XmlElement(name = "table-strategy")
-    private ExpectedAlgorithm tableStrategy;
-    
-    @XmlElement(name = "key-generate-strategy")
-    private ExpectedAlgorithm keyGenerateStrategy;
-    
-    @XmlElement(name = "audit-strategy")
-    private ExpectedAuditor auditStrategy;
+    @XmlElementWrapper
+    @XmlElement(name = "algorithms")
+    private Collection<ExpectedAlgorithm> algorithms;
 }
