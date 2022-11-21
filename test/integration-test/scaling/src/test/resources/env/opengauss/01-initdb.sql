@@ -16,6 +16,7 @@
 --
 
 ALTER USER test_user nosuperuser;
+ALTER USER test_user replication;
 CREATE DATABASE scaling_it_0;
 CREATE DATABASE scaling_it_1;
 CREATE DATABASE scaling_it_2;
