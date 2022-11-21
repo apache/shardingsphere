@@ -1619,6 +1619,7 @@ xmlFunction
     | xmlColattvalFunction
     | xmlExistsFunction
     | xmlForestFunction
+    | xmlParseFunction
     ;
 
 xmlAggFunction
@@ -1636,3 +1637,7 @@ xmlExistsFunction
 xmlForestFunction
    : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
    ;
+
+xmlParseFunction
+    : XMLPARSE LP_ (DOCUMENT | CONTENT) expr (WELLFORMED)? RP_
+    ;
