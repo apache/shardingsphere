@@ -28,10 +28,10 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSeg
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.orderby.OrderByItemAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.model.ExpectedModelClause;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.model.ExpectedModelClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.SelectStatementTestCase;
 
 import java.util.List;
 

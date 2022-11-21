@@ -109,7 +109,7 @@
             <column-item name="user_id" start-index="66" stop-index="72" />
         </group-by>
         <order-by>
-            <column-item name="orders_sum" order-direction="DESC" start-index="83" stop-index="92" />
+            <column-item name="orders_sum" order-direction="DESC" start-index="83" stop-index="92" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -263,12 +263,12 @@
             </column-projection>
         </projections>
         <group-by>
-            <column-item name="user_id" start-index="45" stop-index="53">
+            <column-item name="user_id" start-index="45" stop-index="53" nulls-order-type="LAST">
                 <owner name="o" start-index="45" stop-index="45" />
             </column-item>
         </group-by>
         <order-by>
-            <column-item name="user_id" start-index="64" stop-index="72">
+            <column-item name="user_id" start-index="64" stop-index="72" nulls-order-type="LAST">
                 <owner name="o" start-index="64" stop-index="64" />
             </column-item>
         </order-by>
@@ -410,7 +410,7 @@
             <column-projection name="user_id" start-index="40" stop-index="46" />
         </projections>
         <group-by>
-            <column-item name="user_id" start-index="70" stop-index="76" />
+            <column-item name="user_id" start-index="70" stop-index="76" nulls-order-type="LAST" />
         </group-by>
         <having start-index="78" stop-index="100">
             <expr>
@@ -463,12 +463,12 @@
             </expr>
         </where>
         <group-by>
-            <column-item name="department_name" start-index="300" stop-index="314" />
-            <column-item name="job_id" start-index="317" stop-index="322" />
+            <column-item name="department_name" start-index="300" stop-index="314" nulls-order-type="LAST" />
+            <column-item name="job_id" start-index="317" stop-index="322" nulls-order-type="LAST" />
         </group-by>
         <order-by>
-            <column-item name="department_name" start-index="334" stop-index="348" />
-            <column-item name="job_id" start-index="351" stop-index="356" />
+            <column-item name="department_name" start-index="334" stop-index="348" nulls-order-type="LAST" />
+            <column-item name="job_id" start-index="351" stop-index="356" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -530,9 +530,9 @@
             </expr>
         </where>
         <group-by>
-            <expression-item expression="(channel_desc,calendar_month_desc,co.country_id)" start-index="218" stop-index="265" />
-            <expression-item expression="(channel_desc,co.country_id)" start-index="268" stop-index="295" />
-            <expression-item expression="(calendar_month_desc,co.country_id)" start-index="298" stop-index="332" />
+            <expression-item expression="(channel_desc,calendar_month_desc,co.country_id)" start-index="218" stop-index="265" nulls-order-type="LAST" />
+            <expression-item expression="(channel_desc,co.country_id)" start-index="268" stop-index="295" nulls-order-type="LAST" />
+            <expression-item expression="(calendar_month_desc,co.country_id)" start-index="298" stop-index="332" nulls-order-type="LAST" />
         </group-by>
     </select>
 
@@ -546,7 +546,7 @@
             <aggregation-projection type="MAX" inner-expression="(salary)" start-index="35" stop-index="45" />
         </projections>
         <group-by>
-            <column-item name="department_id" start-index="71" stop-index="83" />
+            <column-item name="department_id" start-index="71" stop-index="83" nulls-order-type="LAST" />
         </group-by>
         <having start-index="85" stop-index="109">
             <expr>
@@ -562,7 +562,7 @@
             </expr>
         </having>
         <order-by>
-            <column-item name="department_id" start-index="120" stop-index="132" />
+            <column-item name="department_id" start-index="120" stop-index="132" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -575,8 +575,8 @@
             <column-projection name="manager_id" start-index="22" stop-index="31" />
         </projections>
         <group-by>
-            <column-item name="department_id" start-index="57" stop-index="69" />
-            <column-item name="manager_id" start-index="72" stop-index="81" />
+            <column-item name="department_id" start-index="57" stop-index="69" nulls-order-type="LAST" />
+            <column-item name="manager_id" start-index="72" stop-index="81" nulls-order-type="LAST" />
         </group-by>
         <having start-index="83" stop-index="219">
             <expr>
@@ -619,7 +619,7 @@
             </expr>
         </having>
         <order-by>
-            <column-item name="department_id" start-index="230" stop-index="242" />
+            <column-item name="department_id" start-index="230" stop-index="242" nulls-order-type="LAST" />
         </order-by>
     </select>
 

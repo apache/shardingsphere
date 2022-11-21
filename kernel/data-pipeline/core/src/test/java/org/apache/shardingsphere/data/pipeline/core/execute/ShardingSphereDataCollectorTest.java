@@ -29,6 +29,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
@@ -65,6 +67,9 @@ public final class ShardingSphereDataCollectorTest {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("logic_db");
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(1, 1);
+        databases.put("logic_db", database);
+        when(result.getDatabases()).thenReturn(databases);
         when(result.getDatabase("logic_db")).thenReturn(database);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("logic_schema")).thenReturn(schema);

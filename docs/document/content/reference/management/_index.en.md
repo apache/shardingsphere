@@ -25,7 +25,7 @@ namespace
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # Metadata version list      
    ├     ├     ├     ├──${versionNumber}      # Metadata version
-   ├     ├     ├     ├     ├──dataSources     # Data source configuration
+   ├     ├     ├     ├     ├──data_sources     # Data source configuration
    ├     ├     ├     ├     ├──rules           # Rule configuration  
    ├     ├     ├     ├──...
    ├     ├     ├──active_version              # Active metadata version

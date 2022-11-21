@@ -26,7 +26,7 @@
     <refresh-table-metadata sql-case-id="refresh-table-metadata-table-with-schema" table-name="t_order" storage-unit-name="ds_0" schema-name="public" />
     
     <alter-sql-parser-rule sql-case-id="alter-sql-parser-rule">
-        <sql-parser sqlCommentParseEnabled="false">
+        <sql-parser sql-comment-parse-enabled="false">
             <parse-tree-cache initial-capacity="10" maximum-size="11" />
             <sql-statement-cache initial-capacity="11" maximum-size="11" />
         </sql-parser>
@@ -35,37 +35,45 @@
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
    
     <create-traffic-rule sql-case-id="create-traffic-rule">
-        <rule name="sql_match_traffic">
-            <label>OLTP</label>
-            <traffic-algorithm algorithm-name="SQL_MATCH">
-                <properties>
-                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-                </properties>
-            </traffic-algorithm>
-            <load-balancer algorithm-name="RANDOM">
-                <properties>
-                    <property key="key" value="value" />
-                </properties>
-            </load-balancer>
-        </rule>
+        <rules>
+            <rule name="sql_match_traffic">
+                <label>OLTP</label>
+                <traffic-algorithm algorithm-name="SQL_MATCH">
+                    <properties>
+                        <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+                    </properties>
+                </traffic-algorithm>
+                <load-balancer algorithm-name="RANDOM">
+                    <properties>
+                        <property key="key" value="value" />
+                    </properties>
+                </load-balancer>
+            </rule>
+        </rules>
     </create-traffic-rule>
+    
     <alter-traffic-rule sql-case-id="alter-traffic-rule">
-        <rule name="sql_match_traffic">
-            <label>OLTP</label>
-            <traffic-algorithm algorithm-name="SQL_MATCH">
-                <properties>
-                    <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-                </properties>
-            </traffic-algorithm>
-            <load-balancer algorithm-name="RANDOM">
-                <properties>
-                    <property key="key" value="value" />
-                </properties>
-            </load-balancer>
-        </rule>
+        <rules>
+            <rule name="sql_match_traffic">
+                <label>OLTP</label>
+                <traffic-algorithm algorithm-name="SQL_MATCH">
+                    <properties>
+                        <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+                    </properties>
+                </traffic-algorithm>
+                <load-balancer algorithm-name="RANDOM">
+                    <properties>
+                        <property key="key" value="value" />
+                    </properties>
+                </load-balancer>
+            </rule>
+        </rules>
     </alter-traffic-rule>
+    
     <drop-traffic-rule sql-case-id="drop-traffic-rule">
-        <rule-name>rule_name</rule-name>
+        <names>
+            <name>rule_name</name>
+        </names>
     </drop-traffic-rule>
     
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />

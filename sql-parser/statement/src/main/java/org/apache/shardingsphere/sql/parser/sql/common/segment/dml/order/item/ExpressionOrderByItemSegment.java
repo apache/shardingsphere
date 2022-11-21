@@ -19,7 +19,8 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
@@ -33,20 +34,15 @@ public final class ExpressionOrderByItemSegment extends TextOrderByItemSegment {
     
     private final ExpressionSegment expr;
     
-    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {
-        super(startIndex, stopIndex, orderDirection, nullOrderDirection);
+    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final NullsOrderType nullsOrderType) {
+        super(startIndex, stopIndex, orderDirection, nullsOrderType);
         this.expression = expression;
         this.expr = null;
     }
     
-    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection) {
-        super(startIndex, stopIndex, orderDirection, OrderDirection.ASC);
-        this.expression = expression;
-        this.expr = null;
-    }
-    
-    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final ExpressionSegment expr) {
-        super(startIndex, stopIndex, orderDirection, OrderDirection.ASC);
+    public ExpressionOrderByItemSegment(final int startIndex, final int stopIndex, final String expression, final OrderDirection orderDirection, final NullsOrderType nullsOrderType,
+                                        final ExpressionSegment expr) {
+        super(startIndex, stopIndex, orderDirection, nullsOrderType);
         this.expression = expression;
         this.expr = expr;
     }

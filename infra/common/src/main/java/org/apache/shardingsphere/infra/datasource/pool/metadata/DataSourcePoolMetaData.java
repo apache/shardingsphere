@@ -63,4 +63,12 @@ public interface DataSourcePoolMetaData extends TypedSPI {
      * @return data source pool field meta data
      */
     DataSourcePoolFieldMetaData getFieldMetaData();
+    
+    /**
+     * Get data source pool properties validator.
+     * 
+     * @return data source pool properties validator
+     */
+    DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator();
+    
 }

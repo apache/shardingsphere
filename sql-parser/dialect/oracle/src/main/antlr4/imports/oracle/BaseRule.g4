@@ -42,8 +42,8 @@ numberLiterals
    ;
 
 dateTimeLiterals
-    : (DATE | TIME | TIMESTAMP) STRING_
-    | LBE_ identifier STRING_ RBE_
+    : (DATE | TIME | TIMESTAMP) stringLiterals
+    | LBE_ identifier stringLiterals RBE_
     ;
 
 hexadecimalLiterals
@@ -163,7 +163,7 @@ unreservedWord
     | HOST | PORT | EVERY | MINUTES | HOURS | NORELOCATE | SAVE | DISCARD | APPLICATION | INSTALL
     | MINIMUM | VERSION | UNINSTALL | COMPATIBILITY | MATERIALIZE | SUBTYPE | RECORD | CONSTANT | CURSOR
     | OTHERS | EXCEPTION | CPU_PER_SESSION | CONNECT_TIME | LOGICAL_READS_PER_SESSION | PRIVATE_SGA | PERCENT_RANK | ROWID
-    | LPAD
+    | LPAD | ZONE | SESSIONTIMEZONE | TO_CHAR | XMLELEMENT | COLUMN_VALUE | EVALNAME
     ;
 
 schemaName
@@ -444,6 +444,7 @@ expr
     | booleanPrimary
     | aggregationFunction
     | analyticFunction
+    | expr datetimeExpr
     ;
 
 andOperator
@@ -508,7 +509,7 @@ simpleExpr
     ;
 
 functionCall
-    : aggregationFunction | analyticFunction | specialFunction | regularFunction 
+    : aggregationFunction | analyticFunction | specialFunction | regularFunction | xmlFunction
     ;
 
 aggregationFunction
@@ -546,7 +547,7 @@ specialFunction
     ;
 
 castFunction
-    : CAST LP_ expr AS dataType RP_
+    : (CAST | XMLCAST) LP_ expr AS dataType RP_
     ;
 
 charFunction
@@ -1609,3 +1610,39 @@ maxNumberOfSnapshots
     : INTEGER_
     ;
 
+datetimeExpr
+    : AT (LOCAL | TIME ZONE expr)
+    ;
+
+xmlFunction
+    : xmlAggFunction
+    | xmlColattvalFunction
+    | xmlExistsFunction
+    | xmlForestFunction
+    | xmlParseFunction
+    | xmlPiFunction
+    ;
+
+xmlAggFunction
+    : XMLAGG LP_ expr orderByClause? RP_
+    ;
+
+xmlColattvalFunction
+    : XMLCOLATTVAL LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+    ;
+
+xmlExistsFunction
+    : XMLEXISTS LP_ STRING_ (PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*)? RP_
+    ;
+
+xmlForestFunction
+   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   ;
+
+xmlParseFunction
+    : XMLPARSE LP_ (DOCUMENT | CONTENT) expr (WELLFORMED)? RP_
+    ;
+
+xmlPiFunction
+    : XMLPI LP_ (EVALNAME expr | (NAME)? identifier) (COMMA_ expr)? RP_
+    ;

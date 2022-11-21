@@ -21,5 +21,5 @@
         <column name="database"/>
         <column name="count"/>
     </metadata>
-    <row values="single_table| tbl| 1"/>
+    <row values="single_table| tbl| 2"/>
 </dataset>

@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber;
 
-import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -54,15 +49,7 @@ public final class ComputeNodeStatusSubscriber {
      */
     @Subscribe
     public void update(final ComputeNodeStatusChangedEvent event) {
-        String computeStatusNodePath = ComputeNode.getInstanceStatusNodePath(event.getInstanceId());
-        String yamlContext = repository.getDirectly(computeStatusNodePath);
-        Collection<String> status = Strings.isNullOrEmpty(yamlContext) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContext, Collection.class);
-        if (event.getStatus() == ComputeNodeStatus.CIRCUIT_BREAK) {
-            status.add(ComputeNodeStatus.CIRCUIT_BREAK.name());
-        } else {
-            status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
-        }
-        repository.persistEphemeral(computeStatusNodePath, YamlEngine.marshal(status));
+        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(event.getInstanceId()), event.getState().name());
     }
     
     /**

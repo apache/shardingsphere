@@ -28,10 +28,10 @@ import java.util.Collection;
 @Getter
 public final class DropShardingAlgorithmStatement extends DropRuleStatement {
     
-    private final Collection<String> algorithmNames;
+    private final Collection<String> names;
     
-    public DropShardingAlgorithmStatement(final boolean ifExists, final Collection<String> algorithmNames) {
+    public DropShardingAlgorithmStatement(final boolean ifExists, final Collection<String> names) {
         super(ifExists);
-        this.algorithmNames = algorithmNames;
+        this.names = names;
     }
 }

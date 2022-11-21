@@ -19,9 +19,8 @@ package org.apache.shardingsphere.encrypt.rewrite.condition;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptLikeCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -85,7 +84,7 @@ public final class EncryptConditionEngine {
      *
      * @param whereSegments where segments
      * @param columnSegments column segments
-     * @param sqlStatementContext sql statement context
+     * @param sqlStatementContext SQL statement context
      * @param databaseName database name
      * @return encrypt conditions
      */
@@ -172,22 +171,17 @@ public final class EncryptConditionEngine {
             return Optional.empty();
         }
         if (compareRightValue instanceof SimpleExpressionSegment) {
-            return Optional.of(createEncryptEqualCondition(tableName, expression, compareRightValue));
+            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, compareRightValue));
         }
         if (compareRightValue instanceof ListExpression) {
-            return Optional.of(createEncryptLikeCondition(tableName, expression, ((ListExpression) compareRightValue).getItems().get(0)));
+            return Optional.of(createEncryptBinaryOperationCondition(tableName, expression, ((ListExpression) compareRightValue).getItems().get(0)));
         }
         return Optional.empty();
     }
     
-    private EncryptLikeCondition createEncryptLikeCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
+    private EncryptBinaryCondition createEncryptBinaryOperationCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
         String columnName = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
-        return new EncryptLikeCondition(columnName, tableName, compareRightValue.getStartIndex(), expression.getStopIndex(), compareRightValue);
-    }
-    
-    private EncryptEqualCondition createEncryptEqualCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
-        String columnName = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
-        return new EncryptEqualCondition(columnName, tableName, compareRightValue.getStartIndex(), expression.getStopIndex(), compareRightValue);
+        return new EncryptBinaryCondition(columnName, tableName, expression.getOperator(), compareRightValue.getStartIndex(), expression.getStopIndex(), compareRightValue);
     }
     
     private static Optional<EncryptCondition> createInEncryptCondition(final String tableName, final InExpression inExpression, final ExpressionSegment inRightValue) {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.param
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

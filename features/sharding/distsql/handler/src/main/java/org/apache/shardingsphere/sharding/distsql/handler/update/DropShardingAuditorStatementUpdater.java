@@ -43,7 +43,7 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
             return;
         }
         String databaseName = database.getName();
-        Collection<String> auditorNames = new LinkedList<>(sqlStatement.getAuditorNames());
+        Collection<String> auditorNames = new LinkedList<>(sqlStatement.getNames());
         checkExist(databaseName, auditorNames, currentRuleConfig, sqlStatement);
         checkInUsed(databaseName, auditorNames, currentRuleConfig);
     }
@@ -75,13 +75,13 @@ public final class DropShardingAuditorStatementUpdater implements RuleDefinition
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getAuditorNames()::contains);
+        currentRuleConfig.getAuditors().keySet().removeIf(sqlStatement.getNames()::contains);
         return false;
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingAuditorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getAuditors().keySet(), sqlStatement.getAuditorNames()).isEmpty();
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getAuditors().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

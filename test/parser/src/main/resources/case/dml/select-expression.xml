@@ -41,7 +41,7 @@
             <expression-projection text="o.order_id + 1 * 2" alias="exp" start-index="7" stop-index="31"/>
         </projections>
         <order-by>
-            <column-item name="order_id" start-index="60" stop-index="69">
+            <column-item name="order_id" start-index="60" stop-index="69" nulls-order-type="LAST">
                 <owner name="o" start-index="60" stop-index="60"/>
             </column-item>
         </order-by>
@@ -65,7 +65,7 @@
             </expression-projection>
         </projections>
         <order-by>
-            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" start-index="80" stop-index="100"/>
+            <expression-item expression="DATE(i.creation_date)" order-direction="DESC" nulls-order-type="LAST" start-index="80" stop-index="100"/>
         </order-by>
     </select>
 
@@ -906,6 +906,34 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_with_predicate_with_not_like">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20"/>
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <column name="status" start-index="28" stop-index="41">
+                            <owner name="t_order" start-index="28" stop-index="34"/>
+                        </column>
+                    </left>
+                    <operator>NOT LIKE</operator>
+                    <right>
+                        <list-expression start-index="52" stop-index="55">
+                            <items>
+                                <literal-expression value="1%" start-index="52" stop-index="55"/>
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_with_predicate_with_regexp">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20"/>
@@ -1732,7 +1760,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="127" stop-index="135" />
+            <column-item name="last_name" start-index="127" stop-index="135" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -1780,8 +1808,8 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="144" stop-index="152" />
-            <column-item name="department_id" start-index="155" stop-index="167" />
+            <column-item name="last_name" start-index="144" stop-index="152" nulls-order-type="LAST" />
+            <column-item name="department_id" start-index="155" stop-index="167" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -1828,7 +1856,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="last_name" start-index="125" stop-index="133" />
+            <column-item name="last_name" start-index="125" stop-index="133" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -1860,6 +1888,64 @@
         </projections>
         <from>
             <simple-table name="t_order" start-index="65" stop-index="71" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_projections_with_expr_for_postgres">
+        <projections start-index="7" stop-index="58">
+            <expression-projection start-index="7" stop-index="11" text="10+20" />
+            <expression-projection start-index="13" stop-index="56" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
+                <expr>
+                    <case-when-expression>
+                        <case-arg>
+                            <column name="order_id" start-index="18" stop-index="25" />
+                        </case-arg>
+                        <when-list>
+                            <literal-expression value="1" start-index="32" stop-index="32"/>
+                        </when-list>
+                        <then-list>
+                            <literal-expression value="11" start-index="39" stop-index="42"/>
+                        </then-list>
+                        <else-expression>
+                            <literal-expression value="00" start-index="49" stop-index="52" />
+                        </else-expression>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="58" stop-index="58" text="1">
+                <expr>
+                    <literal-expression value="1" start-index="58" stop-index="58"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="65" stop-index="71" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_projections_with_only_expr_for_postgres">
+        <projections start-index="7" stop-index="50">
+            <expression-projection start-index="7" stop-index="50" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
+                <expr>
+                    <case-when-expression>
+                        <case-arg>
+                            <column name="order_id" start-index="12" stop-index="19" />
+                        </case-arg>
+                        <when-list>
+                            <literal-expression value="1" start-index="26" stop-index="26"/>
+                        </when-list>
+                        <then-list>
+                            <literal-expression value="11" start-index="33" stop-index="36"/>
+                        </then-list>
+                        <else-expression>
+                            <literal-expression value="00" start-index="43" stop-index="46" />
+                        </else-expression>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="57" stop-index="63" />
         </from>
     </select>
 
@@ -1908,7 +1994,7 @@
             </expr>
         </where>
         <group-by>
-            <expression-item expression="ABS(1)" start-index="53" stop-index="58">
+            <expression-item expression="ABS(1)" start-index="53" stop-index="58" nulls-order-type="LAST">
                 <expr>
                     <function function-name="ABS" text="ABS(1)" start-index="53" stop-index="58">
                         <parameter>
@@ -1919,7 +2005,7 @@
             </expression-item>
         </group-by>
         <order-by>
-            <expression-item expression="ABS(1)" start-index="69" stop-index="74">
+            <expression-item expression="ABS(1)" start-index="69" stop-index="74" nulls-order-type="LAST">
                 <expr>
                     <function function-name="ABS" text="ABS(1)" start-index="69" stop-index="74">
                         <parameter>
@@ -2056,12 +2142,22 @@
             </expr>
         </where>
     </select>
-    <select sql-case-id="select_age_for_postgres" >
+
+    <select sql-case-id="select_age_for_postgres">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <from>
             <simple-table name="not support" start-index="14" stop-index="70" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_datetime_expression">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="SYSTIMESTAMP AT TIME ZONE 'UTC'" start-index="7" stop-index="37" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="44" stop-index="47" />
         </from>
     </select>
 </sql-parser-test-cases>

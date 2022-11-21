@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlg
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingAuditorStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterShardingAuditorStatement;
 import org.junit.Before;
 import org.junit.Test;

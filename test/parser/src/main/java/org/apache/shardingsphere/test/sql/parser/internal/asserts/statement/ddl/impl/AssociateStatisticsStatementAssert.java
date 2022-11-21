@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.index.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.packages.PackageAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.type.TypeAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 
 /**
  * Associate Statistics statement assert.

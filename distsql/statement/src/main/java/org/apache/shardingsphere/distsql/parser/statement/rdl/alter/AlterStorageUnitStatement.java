@@ -20,16 +20,16 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.StorageUnitDefinitionStatement;
 
 import java.util.Collection;
 
 /**
- * Alter resource statement.
+ * Alter storage unit statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterStorageUnitStatement extends ResourceDefinitionStatement {
+public final class AlterStorageUnitStatement extends StorageUnitDefinitionStatement {
     
-    private final Collection<DataSourceSegment> dataSources;
+    private final Collection<DataSourceSegment> storageUnits;
 }

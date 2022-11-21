@@ -36,7 +36,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.output
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.with.WithClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.DeleteStatementTestCase;
 
 import java.util.LinkedList;
 import java.util.List;
