@@ -715,3 +715,7 @@ CONTENT
 WELLFORMED
     : W E L L F O R M E D
     ;
+
+XMLPI
+    : X M L P I
+    ;

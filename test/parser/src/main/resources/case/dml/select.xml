@@ -4742,4 +4742,13 @@
             <simple-table name="DUAL" start-index="60" stop-index="63" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlpi_function">
+        <projections start-index="7" stop-index="89">
+            <expression-projection text="XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled')" alias="XMLPI" start-index="11" stop-index="78" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="96" stop-index="99" />
+        </from>
+    </select>
 </sql-parser-test-cases>
