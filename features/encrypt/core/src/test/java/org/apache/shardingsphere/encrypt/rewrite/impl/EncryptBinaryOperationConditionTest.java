@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
-import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
+import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.Test;
 
@@ -27,11 +27,11 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptEqualConditionTest {
+public final class EncryptBinaryOperationConditionTest {
     
     @Test
     public void assertGetConditionValues() {
-        List<Object> actual = new EncryptEqualCondition("col", null,
+        List<Object> actual = new EncryptBinaryCondition("col", null, null,
                 0, 0, new LiteralExpressionSegment(0, 0, 1)).getValues(Collections.emptyList());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(1));
