@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFun
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -558,7 +559,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.xmlExistsFunction()) {
             return visit(ctx.xmlExistsFunction());
         }
-        return visit(ctx.xmlForestFunction());
+        if (null != ctx.xmlForestFunction()) {
+            return visit(ctx.xmlForestFunction());
+        }
+        return visit(ctx.xmlParseFunction());
     }
     
     @Override
@@ -589,6 +593,11 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlParseFunction(final XmlParseFunctionContext ctx) {
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), (ExpressionSegment) visit(ctx.expr()));
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
