@@ -80,7 +80,7 @@ public final class RegistryCenter {
     
     private DistributedLockHolder initDistributedLockHolder(final ClusterPersistRepository repository) {
         DistributedLockHolder distributedLockHolder = repository.getDistributedLockHolder();
-        return null == distributedLockHolder ? new DistributedLockHolder("Default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
+        return null == distributedLockHolder ? new DistributedLockHolder("default", repository, new DefaultLockTypedProperties(new Properties())) : distributedLockHolder;
     }
     
     private String getJDBCDatabaseName() {

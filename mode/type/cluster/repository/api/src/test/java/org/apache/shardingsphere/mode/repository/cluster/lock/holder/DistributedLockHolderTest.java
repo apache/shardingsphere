@@ -15,25 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.lock.impl;
+package org.apache.shardingsphere.mode.repository.cluster.lock.holder;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.mode.repository.cluster.lock.creator.DistributedLockCreator;
+import org.apache.shardingsphere.mode.repository.cluster.lock.impl.DefaultDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
+import org.junit.Before;
+import org.junit.Test;
 
-/**
- * Default distributed lock creator.
- */
-public final class DefaultDistributedLockCreator implements DistributedLockCreator<ClusterPersistRepository, DefaultLockTypedProperties> {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public final class DistributedLockHolderTest {
     
-    @Override
-    public DistributedLock create(final String lockKey, final ClusterPersistRepository client, final DefaultLockTypedProperties props) {
-        return new DefaultDistributedLock(lockKey, client, props);
+    private DistributedLockHolder defaultDistributedLockHolder;
+    
+    @Before
+    public void setUp() {
+        defaultDistributedLockHolder = new DistributedLockHolder("default", mock(ClusterPersistRepository.class), new DefaultLockTypedProperties(new Properties()));
     }
     
-    @Override
-    public String getType() {
-        return "default";
+    @Test
+    public void assertGetDistributedLock() {
+        DistributedLock distributedLock = defaultDistributedLockHolder.getDistributedLock("lock/key");
+        assertThat(distributedLock, instanceOf(DefaultDistributedLock.class));
     }
 }
