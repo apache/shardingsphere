@@ -14,8 +14,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
-ALTER USER test_user nosuperuser;
-ALTER USER test_user replication;
+ALTER USER test_user NOSUPERUSER;
+ALTER USER test_user REPLICATION;
 CREATE DATABASE scaling_it_0;
 CREATE DATABASE scaling_it_1;
 CREATE DATABASE scaling_it_2;
