@@ -75,6 +75,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -94,7 +95,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -567,7 +568,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.xmlParseFunction()) {
             return visit(ctx.xmlParseFunction());
         }
-        return visit(ctx.xmlPiFunction());
+        if (null != ctx.xmlPiFunction()) {
+            return visit(ctx.xmlPiFunction());
+        }
+        return visit(ctx.xmlQueryFunction());
     }
     
     @Override
@@ -585,9 +589,9 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public ASTNode visitXmlExistsFunction(final XmlExistsFunctionContext ctx) {
-        XmlExistsFunctionSegment result =
-                new XmlExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLEXISTS().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
-        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        XmlQueryAndExistsFunctionSegment result =
+                new XmlQueryAndExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLEXISTS().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
     }
@@ -613,6 +617,15 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         }
         return new XmlPiFunctionSegment(ctx.start.getStopIndex(), ctx.stop.getStopIndex(), ctx.XMLPI().getText(),
                 (ExpressionSegment) visit(ctx.expr(0)), (ExpressionSegment) visit(ctx.expr(1)), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlQueryFunction(final XmlQueryFunctionContext ctx) {
+        XmlQueryAndExistsFunctionSegment result =
+                new XmlQueryAndExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLQUERY().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {
