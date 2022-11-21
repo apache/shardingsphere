@@ -15,11 +15,13 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata>
-        <column name="rule_name"/>
-        <column name="database"/>
-        <column name="count"/>
+<dataset update-count="1">
+    <metadata data-nodes="tbl.t_single_table_integer">
+        <column name="col_bigint" type="numeric" />
+        <column name="col_int" type="numeric" />
+        <column name="col_mediumint" type="numeric" />
+        <column name="col_smallint" type="numeric" />
+        <column name="col_tinyint" type="numeric" />
     </metadata>
-    <row values="single_table| tbl| 2"/>
+    <row data-node="tbl.t_single_table_integer" values="0, 0, 0, -1, 0" />
 </dataset>

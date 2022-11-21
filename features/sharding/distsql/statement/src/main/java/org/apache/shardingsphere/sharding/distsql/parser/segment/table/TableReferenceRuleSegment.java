@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.with;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Expected common table expression columns clause.
+ * Table reference rule segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedCommonTableExpressColumnsClause extends AbstractExpectedSQLSegment {
+public final class TableReferenceRuleSegment implements ASTNode {
     
-    @XmlElement(name = "column")
-    private List<ExpectedColumn> columns = new LinkedList<>();
+    private final String tableGroup;
+    
+    /**
+     * Get table reference.
+     * 
+     * @return table reference
+     */
+    public Collection<String> getTableReference() {
+        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    }
 }

@@ -50,7 +50,7 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     private void checkRuleNames(final String databaseName, final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
         if (!sqlStatement.isIfExists()) {
-            ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getRuleNames(), getDataSourceNames(currentRuleConfig),
+            ShadowRuleStatementChecker.checkRulesExist(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig),
                     different -> new MissingRequiredRuleException(SHADOW, databaseName, different));
         }
     }
@@ -63,12 +63,12 @@ public final class DropShadowRuleStatementUpdater implements RuleDefinitionDropU
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(sqlStatement.getRuleNames(), getDataSourceNames(currentRuleConfig)).isEmpty();
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(sqlStatement.getNames(), getDataSourceNames(currentRuleConfig)).isEmpty();
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShadowRuleStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) {
-        Collection<String> ruleNames = sqlStatement.getRuleNames();
+        Collection<String> ruleNames = sqlStatement.getNames();
         ruleNames.forEach(each -> currentRuleConfig.getDataSources().remove(each));
         currentRuleConfig.getTables().forEach((key, value) -> value.getDataSourceNames().removeIf(ruleNames::contains));
         return false;

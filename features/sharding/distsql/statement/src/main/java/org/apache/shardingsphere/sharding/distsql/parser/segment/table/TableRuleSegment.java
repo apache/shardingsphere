@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
 
 import java.util.Collection;
 
@@ -26,12 +29,11 @@ import java.util.Collection;
  * Table rule segment.
  */
 @Getter
+@Setter
 public final class TableRuleSegment extends AbstractTableRuleSegment {
     
-    @Setter
     private ShardingStrategySegment tableStrategySegment;
     
-    @Setter
     private ShardingStrategySegment databaseStrategySegment;
     
     public TableRuleSegment(final String logicTable, final Collection<String> dataSourcesNote) {

@@ -15,23 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
+import java.util.Optional;
+
 /**
- * Sharding strategy segment.
+ * Key generate strategy segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ShardingStrategySegment implements ASTNode {
+public final class KeyGenerateStrategySegment implements ASTNode {
     
-    private final String type;
+    private final String keyGenerateColumn;
     
-    private final String shardingColumn;
+    private Optional<String> keyGenerateAlgorithmName;
     
-    private final AlgorithmSegment algorithmSegment;
+    private AlgorithmSegment keyGenerateAlgorithmSegment;
+    
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final String keyGenerateAlgorithmName) {
+        this.keyGenerateColumn = keyGenerateColumn;
+        this.keyGenerateAlgorithmName = Optional.ofNullable(keyGenerateAlgorithmName);
+    }
+    
+    public KeyGenerateStrategySegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment) {
+        this.keyGenerateColumn = keyGenerateColumn;
+        this.keyGenerateAlgorithmName = Optional.empty();
+        this.keyGenerateAlgorithmSegment = keyGenerateAlgorithmSegment;
+    }
 }

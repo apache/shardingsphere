@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.dostatement;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 /**
- * Expected do parameters.
+ * Sharding auditor segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedDoParameters extends AbstractExpectedSQLSegment {
+public final class ShardingAuditorSegment implements ASTNode {
     
-    @XmlElement(name = "parameter")
-    private List<ExpectedDoParameter> parameters = new LinkedList<>();
+    private final String auditorName;
+    
+    private final AlgorithmSegment algorithmSegment;
 }

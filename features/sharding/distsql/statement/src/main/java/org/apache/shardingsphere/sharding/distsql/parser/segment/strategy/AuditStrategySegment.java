@@ -15,41 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.segment;
+package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * Abstract table rule segment.
+ * Audit strategy segment.
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
-public abstract class AbstractTableRuleSegment implements ASTNode {
+public final class AuditStrategySegment implements ASTNode {
     
-    private final String logicTable;
+    private final Collection<String> auditorNames;
     
-    private final Collection<String> dataSourceNodes;
+    private final Collection<ShardingAuditorSegment> auditorSegments;
     
-    @Setter
-    private KeyGenerateStrategySegment keyGenerateStrategySegment;
+    private final boolean allowHintDisable;
     
-    @Setter
-    private AuditStrategySegment auditStrategySegment;
-    
-    /**
-     * Empty table rule segment.
-     */
-    public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
-        
-        public EmptyTableRuleSegment() {
-            super(null, null);
-        }
+    public AuditStrategySegment(final Collection<String> auditorNames, final boolean allowHintDisable) {
+        this(auditorNames, Collections.emptyList(), allowHintDisable);
     }
 }

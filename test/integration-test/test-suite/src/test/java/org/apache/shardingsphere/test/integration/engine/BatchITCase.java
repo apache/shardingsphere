@@ -130,7 +130,7 @@ public abstract class BatchITCase extends BaseITCase {
     }
     
     private void sortRow(final DataSet dataSet) {
-        dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.splitValues(",").get(0))));
+        dataSet.getRows().sort(Comparator.comparingLong(o -> Long.parseLong(o.splitValues(",").get(0))));
     }
     
     private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetaData expectedDataSetMetaData) throws SQLException {
