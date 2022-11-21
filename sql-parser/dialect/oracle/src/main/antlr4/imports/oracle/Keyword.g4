@@ -719,3 +719,7 @@ WELLFORMED
 XMLPI
     : X M L P I
     ;
+
+XMLQUERY
+    : X M L Q U E R Y
+    ;

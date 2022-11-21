@@ -4751,4 +4751,13 @@
             <simple-table name="DUAL" start-index="96" stop-index="99" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlquery_function">
+        <projections start-index="7" stop-index="95">
+            <expression-projection text="XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY)" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="x_table" start-index="102" stop-index="108" />
+        </from>
+    </select>
 </sql-parser-test-cases>

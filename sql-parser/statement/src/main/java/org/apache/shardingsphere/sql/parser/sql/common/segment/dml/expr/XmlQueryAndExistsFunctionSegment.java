@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Xml Exists Function segment.
+ * Xml Query and Exists Function segment.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class XmlExistsFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
+public final class XmlQueryAndExistsFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
     
     private final int startIndex;
     
