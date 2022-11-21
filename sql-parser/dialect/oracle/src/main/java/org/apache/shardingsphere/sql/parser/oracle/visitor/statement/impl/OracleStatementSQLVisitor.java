@@ -606,7 +606,7 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     }
     
     @Override
-    public ASTNode visitXmlPiFunction(XmlPiFunctionContext ctx) {
+    public ASTNode visitXmlPiFunction(final XmlPiFunctionContext ctx) {
         if (null != ctx.identifier()) {
             return new XmlPiFunctionSegment(ctx.start.getStopIndex(), ctx.stop.getStopIndex(), ctx.XMLPI().getText(),
                     ctx.identifier().getText(), (ExpressionSegment) visit(ctx.expr(0)), getOriginalText(ctx));
