@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 /**
  * Default data source pool properties validator.
  */
-public class DefaultDataSourcePoolPropertiesValidator implements DataSourcePoolPropertiesValidator {
+public final class DefaultDataSourcePoolPropertiesValidator implements DataSourcePoolPropertiesValidator {
     
     @Override
     public void validateProperties(final DataSourceProperties dataSourceProps) {
