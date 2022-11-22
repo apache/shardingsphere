@@ -39,7 +39,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class ClassBasedShardingAlgorithmTest {
-    
+
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
+
     @Test(expected = NullPointerException.class)
     public void assertInitWithNullStrategy() {
         Properties props = new Properties();
@@ -98,7 +100,7 @@ public final class ClassBasedShardingAlgorithmTest {
     public void assertComplexKeysDoSharding() {
         ClassBasedShardingAlgorithm algorithm = (ClassBasedShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("CLASS_BASED", createComplexProperties()));
         Collection<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
-        Collection<String> actual = algorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", null, null));
+        Collection<String> actual = algorithm.doSharding(availableTargetNames, new ComplexKeysShardingValue<>("t_order", null, null, DATA_NODE_INFO));
         assertThat(actual.size(), is(4));
     }
     

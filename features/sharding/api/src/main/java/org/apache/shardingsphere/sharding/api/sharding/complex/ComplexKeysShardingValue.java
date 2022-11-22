@@ -21,6 +21,7 @@ import com.google.common.collect.Range;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingValue;
 
 import java.util.Collection;
@@ -39,4 +40,6 @@ public final class ComplexKeysShardingValue<T extends Comparable<?>> implements 
     private final Map<String, Collection<T>> columnNameAndShardingValuesMap;
     
     private final Map<String, Range<T>> columnNameAndRangeValuesMap;
+
+    private final DataNodeInfo dataNodeInfo;
 }
