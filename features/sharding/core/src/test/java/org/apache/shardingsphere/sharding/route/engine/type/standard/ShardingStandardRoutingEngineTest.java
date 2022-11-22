@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.algorithm.ShardingRouteAlgorithmException;
@@ -48,7 +49,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByNonConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order",
-                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class));
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(4));
@@ -72,7 +73,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test
     public void assertRouteByShardingConditions() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"), mock(SQLStatementContext.class));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"),
+                mock(SQLStatementContext.class), new HintValueContext());
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -84,14 +86,15 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test(expected = ShardingRouteAlgorithmException.class)
     public void assertRouteByErrorShardingTableStrategy() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"), mock(SQLStatementContext.class));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"),
+                mock(SQLStatementContext.class), new HintValueContext());
         standardRoutingEngine.route(createErrorShardingRule());
     }
     
     @Test
     public void assertRouteByHint() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_test",
-                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class));
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
@@ -106,7 +109,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test
     public void assertRouteByMixedWithHintDataSource() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"), mock(SQLStatementContext.class));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"),
+                mock(SQLStatementContext.class), new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
@@ -121,7 +125,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByMixedWithHintDataSourceOnly() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test",
-                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class));
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
         RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
@@ -139,7 +143,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     
     @Test
     public void assertRouteByMixedWithHintTable() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", createShardingConditions("t_hint_table_test"), mock(SQLStatementContext.class));
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", createShardingConditions("t_hint_table_test"),
+                mock(SQLStatementContext.class), new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
@@ -154,7 +159,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByMixedWithHintTableOnly() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test",
-                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class));
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
         RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
@@ -173,7 +178,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     @Test
     public void assertRouteByIntervalTableShardingStrategyOnly() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_interval_test",
-                createIntervalShardingConditions("t_interval_test"), mock(SQLStatementContext.class));
+                createIntervalShardingConditions("t_interval_test"), mock(SQLStatementContext.class), new HintValueContext());
         RouteContext routeContext = standardRoutingEngine.route(createIntervalTableShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -184,7 +189,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions,
-                                                                              final SQLStatementContext<?> sqlStatementContext) {
-        return new ShardingStandardRoutingEngine(logicTableName, shardingConditions, sqlStatementContext, new ConfigurationProperties(new Properties()));
+                                                                              final SQLStatementContext<?> sqlStatementContext, final HintValueContext hintValueContext) {
+        return new ShardingStandardRoutingEngine(logicTableName, shardingConditions, sqlStatementContext, hintValueContext, new ConfigurationProperties(new Properties()));
     }
 }

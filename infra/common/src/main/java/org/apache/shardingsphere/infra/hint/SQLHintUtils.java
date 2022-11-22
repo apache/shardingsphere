@@ -126,7 +126,7 @@ public final class SQLHintUtils {
                 result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()), value);
             }
             if (Objects.toString(entry.getKey()).contains(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey())) {
-                result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()), value);
+                result.getShardingTableValues().put(Objects.toString(entry.getKey()), value);
             }
         }
         return result;

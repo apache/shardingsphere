@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -62,6 +63,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final ShardingConditions shardingConditions;
     
     private final SQLStatementContext<?> sqlStatementContext;
+    
+    private final HintValueContext hintValueContext;
     
     private final ConfigurationProperties props;
     
