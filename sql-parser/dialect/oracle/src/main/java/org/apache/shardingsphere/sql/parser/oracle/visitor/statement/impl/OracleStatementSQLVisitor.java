@@ -77,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPar
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlRootFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlSerializeFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -98,6 +99,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -575,7 +577,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.xmlQueryFunction()) {
             return visit(ctx.xmlQueryFunction());
         }
-        return visit(ctx.xmlRootFunction());
+        if (null != ctx.xmlRootFunction()) {
+            return visit(ctx.xmlRootFunction());
+        }
+        return visit(ctx.xmlSerializeFunction());
     }
     
     @Override
@@ -638,6 +643,12 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlSerializeFunction(final XmlSerializeFunctionContext ctx) {
+        return new XmlSerializeFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLSERIALIZE().getText(), (ExpressionSegment) visit(ctx.expr()),
+                ctx.dataType().getText(), ctx.STRING_().getText(), ctx.stringLiterals().getText(), ctx.INTEGER_().getText(), getOriginalText(ctx));
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {

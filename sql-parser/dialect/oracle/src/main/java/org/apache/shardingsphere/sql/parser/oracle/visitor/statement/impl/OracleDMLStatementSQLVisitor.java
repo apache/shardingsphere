@@ -118,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -756,6 +757,12 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             }
             return new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(), xmlPiFunctionSegment.getFunctionName(),
                     xmlPiFunctionSegment.getEvalNameValueExpr(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
+        }
+        if (projection instanceof XmlSerializeFunctionSegment) {
+            XmlSerializeFunctionSegment xmlSerializeFunctionSegment = (XmlSerializeFunctionSegment) projection;
+            return new XmlSerializeFunctionSegment(xmlSerializeFunctionSegment.getStartIndex(), xmlSerializeFunctionSegment.getStopIndex(), xmlSerializeFunctionSegment.getFunctionName(),
+                    xmlSerializeFunctionSegment.getParameter(), xmlSerializeFunctionSegment.getDatatype(), xmlSerializeFunctionSegment.getEncoding(), xmlSerializeFunctionSegment.getVersion(),
+                    xmlSerializeFunctionSegment.getIdentSize(), xmlSerializeFunctionSegment.getText());
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
         ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)

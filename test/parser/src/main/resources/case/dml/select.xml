@@ -4769,4 +4769,13 @@
             <simple-table name="DUAL" start-index="83" stop-index="86" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlserialize_function">
+        <projections start-index="7" stop-index="96">
+            <expression-projection text="XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' IDENT SIZE = 0 SHOW DEFAULT)" start-index="7" stop-index="96" />
+        </projections>
+        <from>
+            <simple-table name="b" start-index="103" stop-index="103" />
+        </from>
+    </select>
 </sql-parser-test-cases>

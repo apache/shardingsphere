@@ -153,4 +153,5 @@
     <sql-case id="select_xmlpi_function" value="SELECT XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled') AS 'XMLPI' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlquery_function" value="SELECT XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY) FROM x_table;" db-types="Oracle" />
     <sql-case id="select_xmlroot_function" value="SELECT XMLROOT(XMLType('143598'), VERSION '1.0', STANDALONE YES) AS 'XMLROOT' FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_xmlserialize_function" value="SELECT XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' IDENT SIZE = 0 SHOW DEFAULT) FROM b;" db-types="Oracle" />
 </sql-cases>

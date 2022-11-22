@@ -731,3 +731,23 @@ XMLROOT
 STANDALONE
     : S T A N D A L O N E
     ;
+
+XMLSERIALIZE
+    : X M L S E R I A L I Z E
+    ;
+
+ENCODING
+    : E N C O D I N G
+    ;
+
+IDENT
+    : I D E N T
+    ;
+
+HIDE
+    : H I D E
+    ;
+
+SHOW
+    : S H O W
+    ;
