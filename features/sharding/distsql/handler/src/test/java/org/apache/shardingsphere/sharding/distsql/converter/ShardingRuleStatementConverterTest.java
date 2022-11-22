@@ -81,13 +81,13 @@ public final class ShardingRuleStatementConverterTest {
         AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding_count", "2")),
                 new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"),
-                new AuditStrategySegment(Collections.singleton("sharding_key_required_auditor"), Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
                 new ShardingStrategySegment("standard", "order_id", databaseAlgorithmSegment),
                 new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("order_id_algorithm", new Properties())),
                 new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", newProperties("", ""))),
-                new AuditStrategySegment(Collections.singleton("sharding_key_required_auditor"), Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                         new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         result.add(autoTableRuleSegment1);
         result.add(autoTableRuleSegment2);

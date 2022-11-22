@@ -295,16 +295,13 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         if (null == ctx) {
             return null;
         }
-        Collection<String> auditorNames = new LinkedList<>();
         Collection<ShardingAuditorSegment> shardingAuditorSegments = new LinkedList<>();
-        int index = 0;
         for (SingleAuditDefinitionContext each : ctx.multiAuditDefinition().singleAuditDefinition()) {
             String algorithmTypeName = getIdentifierValue(each.algorithmDefinition().algorithmTypeName());
-            String auditorName = String.format("%s_%s_%s", tableName, algorithmTypeName, index++).toLowerCase();
-            auditorNames.add(auditorName);
+            String auditorName = String.format("%s_%s", tableName, algorithmTypeName).toLowerCase();
             shardingAuditorSegments.add(new ShardingAuditorSegment(auditorName, (AlgorithmSegment) visit(each.algorithmDefinition())));
         }
-        return new AuditStrategySegment(auditorNames, shardingAuditorSegments, Boolean.parseBoolean(getIdentifierValue(ctx.auditAllowHintDisable())));
+        return new AuditStrategySegment(shardingAuditorSegments, Boolean.parseBoolean(getIdentifierValue(ctx.auditAllowHintDisable())));
     }
     
     @Override

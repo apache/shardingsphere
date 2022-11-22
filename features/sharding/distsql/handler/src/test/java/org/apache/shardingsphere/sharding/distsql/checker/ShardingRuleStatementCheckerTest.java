@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.resource.MissingRequiredResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -33,12 +32,12 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.checker.ShardingTableRuleStatementChecker;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.AuditStrategySegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGenerateStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
@@ -137,19 +136,11 @@ public final class ShardingRuleStatementCheckerTest {
         ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), shardingRuleConfig);
     }
     
-    @Test(expected = MissingRequiredAlgorithmException.class)
-    public void assertCheckCreationWithMissedAuditAlgorithm() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Collections.singleton("invalid"),
-                Collections.singletonList(new ShardingAuditorSegment("invalid", new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
-        ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), shardingRuleConfig);
-    }
-    
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertCheckCreationWithInvalidAuditAlgorithm() {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Collections.singleton("sharding_key_required_auditor"),
-                Collections.singletonList(new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("invalid", new Properties()))), true));
+        autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Collections.singletonList(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AlgorithmSegment("invalid", new Properties()))), true));
         ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), shardingRuleConfig);
     }
     
