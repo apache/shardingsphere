@@ -16,7 +16,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 | *Name*                    | *Type*    | *Description*                                                                                  | *Default Value* |
 | ------------------------- | --------- | ---------------------------------------------------------------------------------------------- | --------------- |
 | id                        | Attribute | Spring Bean Id                                                                                 |                 |
-| queryWithCipherColumn (?) | Attribute | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
+| uery-with-cipher-column (?) | Attribute | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
 | table (+)                 | Tag       | Encrypt table configuration                                                                    |                 |
 
 \<encrypt:table />
@@ -29,13 +29,17 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encry
 
 \<encrypt:column />
 
-| *Name*                    | *Type*     | *Description*              |
-| ------------------------- | ---------- | -------------------------- |
-| logic-column              | Attribute  | Column logic name          |
-| cipher-column             | Attribute  | Cipher column name         |
-| assisted-query-column (?) | Attribute  | Assisted query column name |
-| plain-column (?)          | Attribute  | Plain column name          |
-| encrypt-algorithm-ref     | Attribute  | Encrypt algorithm name     |
+| *Name*                               | *Type*    | *Description*                                                        |
+| ------------------------------------ | --------- | -------------------------------------------------------------------- |
+| logic-column                         | Attribute | Column logic name                                                    |
+| cipher-column                        | Attribute | Cipher column name                                                   |
+| assisted-query-column (?)            | Attribute | Assisted query column name                                           |
+| like-query-column (?)                | Attribute | Like query column name                                               |
+| plain-column (?)                     | Attribute | Plain column name                                                    |
+| encrypt-algorithm-ref                | Attribute | Cipher encrypt algorithm name                                        |
+| assisted-query-encrypt-algorithm-ref | Attribute | Assisted query encrypt algorithm name                                |
+| like-query-encrypt-algorithm-ref     | Attribute | Like query encrypt algorithm name                                    |
+| query-with-cipher-column(?)          | Attribute | The current column whether query with cipher column for data encrypt |
 
 \<encrypt:encrypt-algorithm />
 
@@ -86,12 +90,18 @@ Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/
             <prop key="aes-key-value">123456</prop>
         </props>
     </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
+    <encrypt:encrypt-algorithm id="pwd_encryptor" type="MD5" />
+    <encrypt:encrypt-algorithm id="pwd_assisted_encryptor" type="AES">
+        <props>
+            <prop key="aes-key-value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="like_query_encryptor" type="CHAR_DIGEST_LIKE" />
     
     <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_user">
-            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
-            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
+        <encrypt:table name="t_user" query-with-cipher-column="false">
+            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" query-with-cipher-column="true"/>
+            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" like-query-column="like_query_pwd" encrypt-algorithm-ref="pwd_encryptor" assisted-query-encrypt-algorithm-ref="pwd_assisted_encryptor" like-query-encrypt-algorithm-ref="like_query_encryptor" query-with-cipher-column="true" />
         </encrypt:table>
     </encrypt:rule>
     
