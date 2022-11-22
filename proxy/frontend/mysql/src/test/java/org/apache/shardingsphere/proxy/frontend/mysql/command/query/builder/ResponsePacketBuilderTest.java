@@ -17,16 +17,20 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -63,5 +67,22 @@ public final class ResponsePacketBuilderTest {
         assertThat(actualItem, instanceOf(MySQLOKPacket.class));
         assertThat(actualItem.getAffectedRows(), is(10L));
         assertThat(actualItem.getLastInsertId(), is(100L));
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public void assertBuildQueryResponsePacketsWithBinaryColumnType() {
+        QueryHeader nonBinaryHeader = new QueryHeader("s", "t", "columnLabel1", "columnName1", 5, "VARCHAR", 1, 1, false, false, false, false);
+        QueryHeader binaryHeader = new QueryHeader("s", "t", "columnLabel2", "columnName2", 8, "VARBINARY", 1, 1, false, false, false, false);
+        List<QueryHeader> queryHeaders = Arrays.asList(nonBinaryHeader, binaryHeader);
+        QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
+        List<DatabasePacket<MySQLPacketPayload>> actual = new ArrayList(ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0));
+        assertThat(actual.size(), is(4));
+        byte[] actualNonBinaryData = new byte[48];
+        actual.get(1).write(new MySQLPacketPayload(Unpooled.wrappedBuffer(actualNonBinaryData).writerIndex(0), StandardCharsets.UTF_8));
+        assertThat(actualNonBinaryData[43] & 0x80, is(0));
+        byte[] actualBinaryData = new byte[48];
+        actual.get(2).write(new MySQLPacketPayload(Unpooled.wrappedBuffer(actualBinaryData).writerIndex(0), StandardCharsets.UTF_8));
+        assertThat(actualBinaryData[43] & 0x80, is(0x80));
     }
 }
