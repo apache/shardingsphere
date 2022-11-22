@@ -1623,6 +1623,7 @@ xmlFunction
     | xmlPiFunction
     | xmlQueryFunction
     | xmlRootFunction
+    | xmlSerializeFunction
     ;
 
 xmlAggFunction
@@ -1659,4 +1660,8 @@ xmlPassingClause
 
 xmlRootFunction
     : XMLROOT LP_ expr COMMA_ VERSION (expr | NO VALUE) (COMMA_ STANDALONE (YES | NO | NO VALUE))? RP_
+    ;
+
+xmlSerializeFunction
+    : XMLSERIALIZE LP_ (DOCUMENT | CONTENT) expr (AS dataType)? (ENCODING STRING_)? (VERSION stringLiterals)? (NO IDENT | IDENT (SIZE EQ_ INTEGER_)?)? ((HIDE | SHOW) DEFAULT)? RP_
     ;
