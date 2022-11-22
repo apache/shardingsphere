@@ -19,11 +19,9 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
 /**
  * Xml Serialize Function segment.
@@ -50,7 +48,4 @@ public final class XmlSerializeFunctionSegment implements ComplexExpressionSegme
     private final String identSize;
     
     private final String text;
-    
-    @Setter
-    private OwnerSegment owner;
 }
