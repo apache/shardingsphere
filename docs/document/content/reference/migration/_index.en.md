@@ -52,9 +52,9 @@ These incremental data captured are also written into the new data nodes by the 
 
 During this stage, there may be a read-only period of time, where data in the source data nodes is allowed to be in static mode for a short period of time to ensure that the incremental synchronization can be fully completed. Users can set this by shifting the database to read-only status or by controlling the traffic flow generated from the source.
 
-The length of this read-only window depends on whether users need to perform consistency checks on the data and the exact amount of data in this scenario. Once confirmed, the data migration is complete.
+The length of this read-only window depends on whether users need to perform consistency checks on the data and the exact amount of data in this scenario. Consistency verification is an independent task. It supports separate start/stop and breakpoint resume.
 
-Users can then switch the read traffic or write traffic to Apache ShardingSphere.
+Once confirmed, the data migration is complete. Users can then switch the read traffic or write traffic to Apache ShardingSphere.
 
 ## References
 
