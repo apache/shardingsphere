@@ -46,12 +46,6 @@ shadowRule:
 | props                 | Shadow algorithm properties |
 | is_default            | Default                     |
 
-### Shadow Rule status
-
-| Column                | Description |
-| --------------------- | ----------- |
-| status                | Enable      |
-
 ## Example
 
 *SHOW SHADOW RULES*
