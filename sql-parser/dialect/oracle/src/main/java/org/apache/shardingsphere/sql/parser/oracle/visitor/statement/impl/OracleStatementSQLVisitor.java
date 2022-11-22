@@ -72,6 +72,12 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAgg
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlQueryFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlRootFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlSerializeFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -91,7 +97,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -554,7 +562,25 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.xmlColattvalFunction()) {
             return visit(ctx.xmlColattvalFunction());
         }
-        return visit(ctx.xmlExistsFunction());
+        if (null != ctx.xmlExistsFunction()) {
+            return visit(ctx.xmlExistsFunction());
+        }
+        if (null != ctx.xmlForestFunction()) {
+            return visit(ctx.xmlForestFunction());
+        }
+        if (null != ctx.xmlParseFunction()) {
+            return visit(ctx.xmlParseFunction());
+        }
+        if (null != ctx.xmlPiFunction()) {
+            return visit(ctx.xmlPiFunction());
+        }
+        if (null != ctx.xmlQueryFunction()) {
+            return visit(ctx.xmlQueryFunction());
+        }
+        if (null != ctx.xmlRootFunction()) {
+            return visit(ctx.xmlRootFunction());
+        }
+        return visit(ctx.xmlSerializeFunction());
     }
     
     @Override
@@ -572,11 +598,61 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public ASTNode visitXmlExistsFunction(final XmlExistsFunctionContext ctx) {
-        XmlExistsFunctionSegment result =
-                new XmlExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLEXISTS().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
+        XmlQueryAndExistsFunctionSegment result =
+                new XmlQueryAndExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLEXISTS().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlForestFunction(final XmlForestFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLFOREST().getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlParseFunction(final XmlParseFunctionContext ctx) {
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), (ExpressionSegment) visit(ctx.expr()));
+    }
+    
+    @Override
+    public ASTNode visitXmlPiFunction(final XmlPiFunctionContext ctx) {
+        if (null != ctx.identifier()) {
+            return new XmlPiFunctionSegment(ctx.start.getStopIndex(), ctx.stop.getStopIndex(), ctx.XMLPI().getText(),
+                    ctx.identifier().getText(), (ExpressionSegment) visit(ctx.expr(0)), getOriginalText(ctx));
+        }
+        return new XmlPiFunctionSegment(ctx.start.getStopIndex(), ctx.stop.getStopIndex(), ctx.XMLPI().getText(),
+                (ExpressionSegment) visit(ctx.expr(0)), (ExpressionSegment) visit(ctx.expr(1)), getOriginalText(ctx));
+    }
+    
+    @Override
+    public ASTNode visitXmlQueryFunction(final XmlQueryFunctionContext ctx) {
+        XmlQueryAndExistsFunctionSegment result =
+                new XmlQueryAndExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLQUERY().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlRootFunction(final XmlRootFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLROOT().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlSerializeFunction(final XmlSerializeFunctionContext ctx) {
+        String dataType = null == ctx.dataType() ? null : ctx.dataType().getText();
+        String encoding = null == ctx.STRING_() ? null : ctx.STRING_().getText();
+        String version = null == ctx.stringLiterals() ? null : ctx.stringLiterals().getText();
+        String identSize = null == ctx.INTEGER_() ? null : ctx.INTEGER_().getText();
+        return new XmlSerializeFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLSERIALIZE().getText(), (ExpressionSegment) visit(ctx.expr()),
+                dataType, encoding, version, identSize, getOriginalText(ctx));
     }
     
     private Collection<ExpressionSegment> getExpressions(final AggregationFunctionContext ctx) {

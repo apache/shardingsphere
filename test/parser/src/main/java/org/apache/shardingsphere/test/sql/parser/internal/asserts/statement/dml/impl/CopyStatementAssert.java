@@ -65,11 +65,11 @@ public final class CopyStatementAssert {
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final CopyStatement actual, final CopyStatementTestCase expected) {
         Collection<ColumnSegment> columnSegments = CopyStatementHandler.getColumns(actual);
-        if (null == expected.getColumns() || expected.getColumns().getColumns().isEmpty()) {
+        if (expected.getColumns().isEmpty()) {
             assertTrue(assertContext.getText("Actual column segments should not exist."), columnSegments.isEmpty());
         } else {
             assertFalse(assertContext.getText("Actual column segments should exist."), columnSegments.isEmpty());
-            ColumnAssert.assertIs(assertContext, columnSegments, expected.getColumns().getColumns());
+            ColumnAssert.assertIs(assertContext, columnSegments, expected.getColumns());
         }
     }
     

@@ -24,9 +24,9 @@
         <column name="remark" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="db_0.t_order" values="1000, 10, init, 1, test, 2017-08-08" />
+    <row data-node="db_0.t_order" values="1000, 10, init, null, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
-    <row data-node="db_0.t_order" values="2000, 20, init, 3, test, 2017-08-08" />
+    <row data-node="db_0.t_order" values="2000, 20, init, null, test, 2017-08-08" />
     <row data-node="db_0.t_order" values="2001, 20, init, 4, test, 2017-08-08" />
     <row data-node="db_1.t_order" values="1, 1, insert, 1, test, 2017-08-08" />
     <row data-node="db_1.t_order" values="1100, 11, init, 5, test, 2017-08-08" />
@@ -48,7 +48,7 @@
     <row data-node="db_4.t_order" values="2401, 24, init, 20, test, 2017-08-08" />
     <row data-node="db_5.t_order" values="1500, 15, init, 1, test, 2017-08-08" />
     <row data-node="db_5.t_order" values="1501, 15, init, 2, test, 2017-08-08" />
-    <row data-node="db_5.t_order" values="2500, 25, init, 3, test, 2017-08-08" />
+    <row data-node="db_5.t_order" values="2500, 25, init, null, test, 2017-08-08" />
     <row data-node="db_5.t_order" values="2501, 25, init, 4, test, 2017-08-08" />
     <row data-node="db_6.t_order" values="1600, 16, init, 5, test, 2017-08-08" />
     <row data-node="db_6.t_order" values="1601, 16, init, 6, test, 2017-08-08" />
@@ -60,7 +60,7 @@
     <row data-node="db_7.t_order" values="2701, 27, init, 12, test, 2017-08-08" />
     <row data-node="db_8.t_order" values="1800, 18, init, 13, test, 2017-08-08" />
     <row data-node="db_8.t_order" values="1801, 18, init, 14, test, 2017-08-08" />
-    <row data-node="db_8.t_order" values="2800, 28, init, 15, test, 2017-08-08" />
+    <row data-node="db_8.t_order" values="2800, 28, init, null, test, 2017-08-08" />
     <row data-node="db_8.t_order" values="2801, 28, init, 16, test, 2017-08-08" />
     <row data-node="db_9.t_order" values="1900, 19, init, 17, test, 2017-08-08" />
     <row data-node="db_9.t_order" values="1901, 19, init, 18, test, 2017-08-08" />

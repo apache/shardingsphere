@@ -21,4 +21,5 @@
         <column name="resource_name" />
     </metadata>
     <row values="t_single_table| tbl" />
+    <row values="t_single_table_integer| tbl" />
 </dataset>

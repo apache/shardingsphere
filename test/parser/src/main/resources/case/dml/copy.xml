@@ -16,32 +16,31 @@
   ~ limitations under the License.
   -->
 
-
 <sql-parser-test-cases>
     <copy sql-case-id="copy_table_from_stdin">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_table_from_stdin_with_null_as">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_table_to_stdout_with_null_as">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_table_from_stdin_with_delimiter_null_as">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_table_to_stdout_format_csv">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_table_to_stdout_with_csv_force_quote">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_query_results_to_stdout">
         <query start-index="6" stop-index="26">
             <select>
@@ -54,7 +53,7 @@
             </select>
         </query>
     </copy>
-
+    
     <copy sql-case-id="copy_query_results_from_stdin">
         <query start-index="6" stop-index="26">
             <select>
@@ -67,11 +66,11 @@
             </select>
         </query>
     </copy>
-
+    
     <copy sql-case-id="copy_table_to_file">
         <table name="t_order" start-index="5" stop-index="11" />
     </copy>
-
+    
     <copy sql-case-id="copy_table_with_columns_to_file">
         <table name="t_order" start-index="5" stop-index="11" />
         <columns start-index="13" stop-index="20">

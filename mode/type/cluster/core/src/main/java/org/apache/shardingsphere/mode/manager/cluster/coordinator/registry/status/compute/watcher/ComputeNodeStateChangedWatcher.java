@@ -65,15 +65,14 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
         if (!Strings.isNullOrEmpty(instanceId)) {
-            if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId))) {
-                Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
-                return Optional.of(new StateEvent(instanceId, status));
+            if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId)) && Type.DELETED != event.getType()) {
+                return Optional.of(new StateEvent(instanceId, event.getValue()));
+            }
+            if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId)) && Type.DELETED != event.getType()) {
+                return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
             }
             if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
                 return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Integer.valueOf(event.getValue())));
-            }
-            if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
-                return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
             }
         }
         if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
@@ -88,18 +87,22 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createKillProcessListIdEvent(final DataChangedEvent event) {
-        Matcher matcher = getKillProcessListIdMatcher(event);
-        if (!matcher.find()) {
-            return Optional.empty();
-        }
-        if (Type.ADDED == event.getType()) {
-            return Optional.of(new KillProcessListIdEvent(matcher.group(1), matcher.group(2)));
-        }
-        if (Type.DELETED == event.getType()) {
-            return Optional.of(new KillProcessListIdUnitCompleteEvent(matcher.group(2)));
+    private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
+        Matcher matcher = matchInstanceOnlinePath(event.getKey());
+        if (matcher.find()) {
+            InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), event.getValue());
+            if (Type.ADDED == event.getType()) {
+                return Optional.of(new InstanceOnlineEvent(instanceMetaData));
+            }
+            if (Type.DELETED == event.getType()) {
+                return Optional.of(new InstanceOfflineEvent(instanceMetaData));
+            }
         }
         return Optional.empty();
+    }
+    
+    private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
+        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
     
     private Optional<GovernanceEvent> createShowProcessListTriggerEvent(final DataChangedEvent event) {
@@ -120,26 +123,22 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
     
-    private static Matcher getKillProcessListIdMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getProcessKillNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(event.getKey());
-    }
-    
-    private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
-        Matcher matcher = matchInstanceOnlinePath(event.getKey());
-        if (matcher.find()) {
-            InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), event.getValue());
-            if (Type.ADDED == event.getType()) {
-                return Optional.of(new InstanceOnlineEvent(instanceMetaData));
-            }
-            if (Type.DELETED == event.getType()) {
-                return Optional.of(new InstanceOfflineEvent(instanceMetaData));
-            }
+    private Optional<GovernanceEvent> createKillProcessListIdEvent(final DataChangedEvent event) {
+        Matcher matcher = getKillProcessListIdMatcher(event);
+        if (!matcher.find()) {
+            return Optional.empty();
+        }
+        if (Type.ADDED == event.getType()) {
+            return Optional.of(new KillProcessListIdEvent(matcher.group(1), matcher.group(2)));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new KillProcessListIdUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
     
-    private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
-        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+    private static Matcher getKillProcessListIdMatcher(final DataChangedEvent event) {
+        Pattern pattern = Pattern.compile(ComputeNode.getProcessKillNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(event.getKey());
     }
 }

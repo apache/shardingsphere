@@ -1618,6 +1618,12 @@ xmlFunction
     : xmlAggFunction
     | xmlColattvalFunction
     | xmlExistsFunction
+    | xmlForestFunction
+    | xmlParseFunction
+    | xmlPiFunction
+    | xmlQueryFunction
+    | xmlRootFunction
+    | xmlSerializeFunction
     ;
 
 xmlAggFunction
@@ -1629,5 +1635,33 @@ xmlColattvalFunction
     ;
 
 xmlExistsFunction
-    : XMLEXISTS LP_ STRING_ (PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*)? RP_
+    : XMLEXISTS LP_ STRING_ xmlPassingClause? RP_
+    ;
+
+xmlForestFunction
+   : XMLFOREST LP_ expr (AS (alias | EVALNAME expr))? (COMMA_ expr (AS (alias | EVALNAME expr))?)* RP_
+   ;
+
+xmlParseFunction
+    : XMLPARSE LP_ (DOCUMENT | CONTENT) expr (WELLFORMED)? RP_
+    ;
+
+xmlPiFunction
+    : XMLPI LP_ (EVALNAME expr | (NAME)? identifier) (COMMA_ expr)? RP_
+    ;
+
+xmlQueryFunction
+    : XMLQUERY LP_ STRING_ xmlPassingClause? RETURNING CONTENT (NULL ON EMPTY)? RP_
+    ;
+
+xmlPassingClause
+    : PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*
+    ;
+
+xmlRootFunction
+    : XMLROOT LP_ expr COMMA_ VERSION (expr | NO VALUE) (COMMA_ STANDALONE (YES | NO | NO VALUE))? RP_
+    ;
+
+xmlSerializeFunction
+    : XMLSERIALIZE LP_ (DOCUMENT | CONTENT) expr (AS dataType)? (ENCODING STRING_)? (VERSION stringLiterals)? (NO IDENT | IDENT (SIZE EQ_ INTEGER_)?)? ((HIDE | SHOW) DEFAULT)? RP_
     ;

@@ -36,6 +36,7 @@ import java.util.Properties;
 /**
  * Char digest like encrypt algorithm.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private static final String DELTA = "delta";
@@ -121,10 +122,10 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
     
     @SneakyThrows
     private String initDefaultDict() {
-        InputStream inputStream = CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("like/CommonChineseCharacters.dict");
+        InputStream inputStream = CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict");
         LineProcessor<String> lineProcessor = new LineProcessor<String>() {
             
-            private StringBuilder builder = new StringBuilder();
+            private final StringBuilder builder = new StringBuilder();
             
             @Override
             public boolean processLine(final String line) {

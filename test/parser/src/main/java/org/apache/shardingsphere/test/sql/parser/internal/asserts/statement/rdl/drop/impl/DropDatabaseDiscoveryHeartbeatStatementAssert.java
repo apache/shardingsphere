@@ -46,7 +46,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("database discovery heartbeat assertion error: "), actual.getHeartbeatNames(), is(expected.getHeartbeats()));
+            assertThat(assertContext.getText("database discovery heartbeat assertion error: "), actual.getNames(), is(expected.getHeartbeats()));
             assertThat(assertContext.getText("database discovery heartbeat assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }

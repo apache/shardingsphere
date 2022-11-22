@@ -44,7 +44,7 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
             return;
         }
         String databaseName = database.getName();
-        Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getKeyGeneratorNames());
+        Collection<String> keyGeneratorNames = new LinkedList<>(sqlStatement.getNames());
         checkExist(databaseName, keyGeneratorNames, currentRuleConfig, sqlStatement);
         checkInUsed(databaseName, keyGeneratorNames, currentRuleConfig);
     }
@@ -77,13 +77,13 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getKeyGenerators().keySet().removeIf(sqlStatement.getKeyGeneratorNames()::contains);
+        currentRuleConfig.getKeyGenerators().keySet().removeIf(sqlStatement.getNames()::contains);
         return false;
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getKeyGenerators().keySet(), sqlStatement.getKeyGeneratorNames()).isEmpty();
+        return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getKeyGenerators().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

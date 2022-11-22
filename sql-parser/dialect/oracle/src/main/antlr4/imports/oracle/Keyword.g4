@@ -695,3 +695,59 @@ EVALNAME
 XMLEXISTS
     : X M L E X I S T S
     ;
+
+XMLFOREST
+    : X M L F O R E S T
+    ;
+
+XMLPARSE
+    : X M L P A R S E
+    ;
+
+DOCUMENT
+    : D O C U M E N T
+    ;
+
+CONTENT
+    : C O N T E N T
+    ;
+
+WELLFORMED
+    : W E L L F O R M E D
+    ;
+
+XMLPI
+    : X M L P I
+    ;
+
+XMLQUERY
+    : X M L Q U E R Y
+    ;
+
+XMLROOT
+    : X M L R O O T
+    ;
+
+STANDALONE
+    : S T A N D A L O N E
+    ;
+
+XMLSERIALIZE
+    : X M L S E R I A L I Z E
+    ;
+
+ENCODING
+    : E N C O D I N G
+    ;
+
+IDENT
+    : I D E N T
+    ;
+
+HIDE
+    : H I D E
+    ;
+
+SHOW
+    : S H O W
+    ;

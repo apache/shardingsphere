@@ -61,7 +61,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     
     private void checkIsExist(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toList());
-        Collection<String> notExistedRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException(RULE_TYPE, databaseName));
     }
     
@@ -74,13 +74,13 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
                     .map(each -> (Map<String, Map<String, String>>) each).orElse(Collections.emptyMap());
             readwriteRuleMap.values().stream().map(each -> each.get(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME)).forEach(rulesInUse::add);
         });
-        Collection<String> invalid = sqlStatement.getRuleNames().stream().filter(rulesInUse::contains).collect(Collectors.toList());
+        Collection<String> invalid = sqlStatement.getNames().stream().filter(rulesInUse::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, databaseName, invalid));
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        for (String each : sqlStatement.getRuleNames()) {
+        for (String each : sqlStatement.getNames()) {
             dropRule(currentRuleConfig, each);
         }
         return false;
@@ -95,7 +95,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         return isExistRuleConfig(currentRuleConfig)
                 && !getIdenticalData(currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getGroupName).collect(Collectors.toSet()),
-                        sqlStatement.getRuleNames()).isEmpty();
+                        sqlStatement.getNames()).isEmpty();
     }
     
     @Override

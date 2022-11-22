@@ -67,10 +67,10 @@ public final class CreateIndexStatementAssert {
     }
     
     private static void assertColumns(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
-        if (null == expected.getIndexColumns() || expected.getIndexColumns().getColumns().isEmpty()) {
+        if (null == expected.getColumns()) {
             assertTrue(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().isEmpty());
         } else {
-            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getIndexColumns().getColumns());
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
         }
     }
 }

@@ -28,10 +28,10 @@ import java.util.Collection;
 @Getter
 public final class DropBroadcastTableRuleStatement extends DropRuleStatement {
     
-    private final Collection<String> rules;
+    private final Collection<String> tables;
     
-    public DropBroadcastTableRuleStatement(final boolean ifExists, final Collection<String> rules) {
+    public DropBroadcastTableRuleStatement(final boolean ifExists, final Collection<String> tables) {
         super(ifExists);
-        this.rules = rules;
+        this.tables = tables;
     }
 }

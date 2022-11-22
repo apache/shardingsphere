@@ -19,12 +19,15 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumns;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.query.ExpectedPrepareStatementQuery;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Copy statement test case.
@@ -36,8 +39,9 @@ public final class CopyStatementTestCase extends SQLParserTestCase {
     @XmlElement
     private ExpectedSimpleTable table;
     
-    @XmlElement
-    private ExpectedColumns columns;
+    @XmlElementWrapper
+    @XmlElement(name = "column")
+    private List<ExpectedColumn> columns = new LinkedList<>();
     
     @XmlElement
     private ExpectedPrepareStatementQuery query;

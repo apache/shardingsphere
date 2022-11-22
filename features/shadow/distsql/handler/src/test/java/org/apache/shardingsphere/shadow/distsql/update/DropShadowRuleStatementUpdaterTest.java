@@ -24,7 +24,6 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleStatement;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -35,9 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShadowRuleStatementUpdaterTest {
@@ -45,40 +43,32 @@ public final class DropShadowRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @Mock
-    private ShadowRuleConfiguration currentConfig;
-    
-    private final DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();
-    
-    @Before
-    public void before() {
-        when(currentConfig.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("initRuleName", "ds", "ds_shadow")));
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckWithNullConfiguration() {
+        new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("anyRuleName"), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertExecuteWithoutRuleNameInMetaData() {
-        updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null);
+    public void assertCheckWithRuleNotExisted() {
+        new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExistedRuleName"), mock(ShadowRuleConfiguration.class));
     }
     
     @Test
-    public void assertExecuteWithIfExists() {
-        DropShadowRuleStatement sqlStatement = createSQLStatement(true, "ruleSegment");
-        updater.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
+    public void assertCheckWithIfExists() {
+        new DropShadowRuleStatementUpdater().checkSQLStatement(database, createSQLStatement(true, "notExistedRuleName"), mock(ShadowRuleConfiguration.class));
     }
     
     @Test
     public void assertUpdate() {
-        DropShadowRuleStatement sqlStatement = createSQLStatement(true, "ds_0");
+        DropShadowRuleStatement sqlStatement = createSQLStatement("shadow_group");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
+        ruleConfig.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
+        DropShadowRuleStatementUpdater updater = new DropShadowRuleStatementUpdater();
         updater.checkSQLStatement(database, sqlStatement, ruleConfig);
-        updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
-        assertFalse(ruleConfig.getTables().containsKey("ds_0"));
-    }
-    
-    @Test
-    public void assertExecuteSuccess() {
-        updater.checkSQLStatement(database, createSQLStatement("initRuleName"), currentConfig);
+        assertTrue(updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig));
+        assertTrue(ruleConfig.getDataSources().isEmpty());
+        assertTrue(ruleConfig.getTables().isEmpty());
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {
@@ -87,5 +77,9 @@ public final class DropShadowRuleStatementUpdaterTest {
     
     private DropShadowRuleStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
         return new DropShadowRuleStatement(ifExists, Arrays.asList(ruleName));
+    }
+    
+    private ShadowDataSourceConfiguration createShadowDataSourceConfiguration(final String ruleName) {
+        return new ShadowDataSourceConfiguration(ruleName, "production", "shadow");
     }
 }

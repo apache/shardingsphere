@@ -17,6 +17,14 @@
 
 name: pg_namespace
 columns:
+  oid:
+    caseSensitive: true
+    dataType: -5
+    generated: false
+    name: oid
+    primaryKey: true
+    unsigned: false
+    visible: true
   nspname:
     caseSensitive: true
     dataType: 12

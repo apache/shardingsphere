@@ -50,9 +50,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -282,7 +284,7 @@ public abstract class BaseITCase {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);
             Set<String> actualStatus = new HashSet<>();
-            List<Integer> incrementalIdleSecondsList = new ArrayList<>();
+            Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
                 assertTrue("error_message is not null", Strings.isNullOrEmpty(each.get("error_message").toString()));
                 actualStatus.add(each.get("status").toString());

@@ -20,10 +20,14 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.simple.ExpectedSubquery;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected common table expression clause.
@@ -35,8 +39,9 @@ public final class ExpectedCommonTableExpressionClause extends AbstractExpectedS
     @XmlAttribute
     private String name;
     
-    @XmlElement(name = "columns")
-    private ExpectedCommonTableExpressColumnsClause commonTableExpressColumns;
+    @XmlElementWrapper
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
     @XmlElement(name = "subquery-expression")
     private ExpectedSubquery subquery;

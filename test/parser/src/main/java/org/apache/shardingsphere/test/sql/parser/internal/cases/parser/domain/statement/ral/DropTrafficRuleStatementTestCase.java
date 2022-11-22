@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
 
 /**
@@ -31,6 +32,7 @@ import java.util.Collection;
 @Setter
 public final class DropTrafficRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "rule-name")
-    private Collection<String> ruleNames;
+    @XmlElementWrapper
+    @XmlElement(name = "name")
+    private Collection<String> names;
 }

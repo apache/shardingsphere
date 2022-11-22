@@ -46,12 +46,18 @@ public final class SQLValue {
         if (type.startsWith("enum#")) {
             return value;
         }
+        if ("null".equalsIgnoreCase(value)) {
+            return null;
+        }
         switch (type) {
             case "String":
             case "varchar":
             case "char":
                 return value;
+            case "tinyint":
+                return Byte.parseByte(value);
             case "smallint":
+                return Short.parseShort(value);
             case "int":
                 return Integer.parseInt(value);
             case "long":

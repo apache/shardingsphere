@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
+import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -38,39 +37,39 @@ public final class ComputeNodeStateChangedWatcherTest {
     
     @Test
     public void assertCreateEventWhenDisabled() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/127.0.0.1@3307",
-                YamlEngine.marshal(Collections.singleton(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
+        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", StateType.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((StateEvent) actual.get()).getStatus(), is(Collections.singleton(ComputeNodeStatus.CIRCUIT_BREAK.name())));
-        assertThat(((StateEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((StateEvent) actual.get()).getStatus(), is(StateType.CIRCUIT_BREAK.name()));
+        assertThat(((StateEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     
     @Test
-    public void assertCreateEventWhenDEnabled() {
+    public void assertCreateEventWhenEnabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/127.0.0.1@3307", "", Type.UPDATED));
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue(((StateEvent) actual.get()).getStatus().isEmpty());
-        assertThat(((StateEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((StateEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     
     @Test
     public void assertCreateAddLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/127.0.0.1@3307",
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
-        assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
     
     @Test
     public void assertCreateUpdateLabelsEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/127.0.0.1@3307",
+                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
-        assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
+        assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("foo_instance_id"));
     }
 }

@@ -59,13 +59,13 @@ public final class WithClauseAssert {
     }
     
     private static void assertCommonTableExpressionSegment(final SQLCaseAssertContext assertContext, final CommonTableExpressionSegment actual, final ExpectedCommonTableExpressionClause expected) {
-        if (null != expected.getCommonTableExpressColumns()) {
-            assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getCommonTableExpressColumns().getColumns().size()));
+        if (!expected.getColumns().isEmpty()) {
+            assertThat(assertContext.getText("Common table expression column size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
         }
         assertThat(assertContext.getText("Common table expression name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
         int count = 0;
         for (ColumnSegment each : actual.getColumns()) {
-            ColumnAssert.assertIs(assertContext, each, expected.getCommonTableExpressColumns().getColumns().get(count));
+            ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
             count++;
         }
         if (null != expected.getSubquery()) {

@@ -53,19 +53,19 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     private void checkIsExist(final String databaseName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> currentRuleNames = currentRuleConfig.getDiscoveryHeartbeats().keySet();
-        Collection<String> notExistedRuleNames = sqlStatement.getHeartbeatNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
+        Collection<String> notExistedRuleNames = sqlStatement.getNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistedRuleNames.isEmpty(), () -> new MissingRequiredRuleException(RULE_TYPE, databaseName, notExistedRuleNames));
     }
     
     private void checkIsInUse(final String databaseName, final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
         Collection<String> heartbeatInUse = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryHeartbeatName).collect(Collectors.toSet());
-        Collection<String> invalid = sqlStatement.getHeartbeatNames().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
+        Collection<String> invalid = sqlStatement.getNames().stream().filter(heartbeatInUse::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(invalid.isEmpty(), () -> new RuleInUsedException(RULE_TYPE, databaseName, invalid));
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        for (String each : sqlStatement.getHeartbeatNames()) {
+        for (String each : sqlStatement.getNames()) {
             dropRule(currentRuleConfig, each);
         }
         return false;
@@ -77,7 +77,7 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdater implements Rul
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropDatabaseDiscoveryHeartbeatStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getDiscoveryHeartbeats().keySet(), sqlStatement.getHeartbeatNames()).isEmpty();
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getDiscoveryHeartbeats().keySet(), sqlStatement.getNames()).isEmpty();
     }
     
     @Override

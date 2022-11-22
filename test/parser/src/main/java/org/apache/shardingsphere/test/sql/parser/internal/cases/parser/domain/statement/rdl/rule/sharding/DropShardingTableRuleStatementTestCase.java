@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.DropRuleStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import java.util.List;
 @Getter
 public final class DropShardingTableRuleStatementTestCase extends DropRuleStatementTestCase {
     
+    @XmlElementWrapper
     @XmlElement(name = "table")
     private final List<String> tables = new LinkedList<>();
 }

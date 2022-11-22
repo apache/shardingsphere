@@ -896,4 +896,60 @@
     <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id ASC, order_id ASC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order ORDER BY merchant_id DESC, order_id DESC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY order_id ASC" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY order_id DESC" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id ASC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS FIRST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT merchant_id, COUNT(1) AS count FROM t_order GROUP BY merchant_id ORDER BY merchant_id DESC NULLS LAST" db-types="PostgreSQL,openGauss,Oracle" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>

@@ -41,6 +41,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResponsePacketBuilder {
     
+    private static final String BINARY_COLUMN_TYPE_KEYWORD = "BINARY";
+    
+    private static final String BLOB_COLUMN_TYPE_KEYWORD = "BLOB";
+    
     /**
      * Build query response packets.
      * 
@@ -75,6 +79,9 @@ public final class ResponsePacketBuilder {
         }
         if (header.isAutoIncrement()) {
             result += MySQLColumnFieldDetailFlag.AUTO_INCREMENT.getValue();
+        }
+        if (header.getColumnTypeName().contains(BINARY_COLUMN_TYPE_KEYWORD) || header.getColumnTypeName().contains(BLOB_COLUMN_TYPE_KEYWORD)) {
+            result += MySQLColumnFieldDetailFlag.BINARY_COLLATION.getValue();
         }
         return result;
     }

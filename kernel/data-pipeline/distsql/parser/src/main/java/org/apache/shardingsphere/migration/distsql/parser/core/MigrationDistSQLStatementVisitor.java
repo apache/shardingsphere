@@ -64,8 +64,8 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -169,7 +169,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitRegisterMigrationSourceStorageUnit(final RegisterMigrationSourceStorageUnitContext ctx) {
-        Collection<DataSourceSegment> dataSources = new ArrayList<>();
+        Collection<DataSourceSegment> dataSources = new LinkedList<>();
         for (StorageUnitDefinitionContext each : ctx.storageUnitDefinition()) {
             dataSources.add((DataSourceSegment) visit(each));
         }

@@ -48,7 +48,7 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
             return;
         }
         Collection<String> currentRules = currentRuleConfig.getBroadcastTables();
-        Collection<String> notExistRules = sqlStatement.getRules().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
+        Collection<String> notExistRules = sqlStatement.getTables().stream().filter(each -> !containsIgnoreCase(currentRules, each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(notExistRules.isEmpty(), () -> new MissingRequiredRuleException("Broadcast", databaseName, notExistRules));
     }
     
@@ -62,12 +62,12 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getBroadcastTables(), sqlStatement.getRules()).isEmpty();
+        return isExistRuleConfig(currentRuleConfig) && !getIdenticalData(currentRuleConfig.getBroadcastTables(), sqlStatement.getTables()).isEmpty();
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getBroadcastTables().removeIf(each -> containsIgnoreCase(sqlStatement.getRules(), each));
+        currentRuleConfig.getBroadcastTables().removeIf(each -> containsIgnoreCase(sqlStatement.getTables(), each));
         return false;
     }
     
