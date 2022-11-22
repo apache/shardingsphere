@@ -24,5 +24,5 @@
         <column name="col_smallint" type="numeric" />
         <column name="col_tinyint" type="numeric" />
     </metadata>
-    <row data-node="tbl.t_single_table_integer" values="3, -1, -1, -1, 0, -1" />
+    <row data-node="tbl.t_single_table_integer" values="3, -1, -1, -1, 0, 0" />
 </dataset>

@@ -38,6 +38,7 @@
         <column name="status" type="varchar" />
     </metadata>
     <metadata data-nodes="tbl.t_single_table_integer">
+        <column name="id" type="numeric" />
         <column name="col_bigint" type="numeric" />
         <column name="col_int" type="numeric" />
         <column name="col_mediumint" type="numeric" />
