@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule.aware;
+package org.apache.shardingsphere.encrypt.rewrite.aware;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 
