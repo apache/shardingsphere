@@ -76,6 +76,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFor
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlQueryFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlRootFunctionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -571,7 +572,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         if (null != ctx.xmlPiFunction()) {
             return visit(ctx.xmlPiFunction());
         }
-        return visit(ctx.xmlQueryFunction());
+        if (null != ctx.xmlQueryFunction()) {
+            return visit(ctx.xmlQueryFunction());
+        }
+        return visit(ctx.xmlRootFunction());
     }
     
     @Override
@@ -624,6 +628,14 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         XmlQueryAndExistsFunctionSegment result =
                 new XmlQueryAndExistsFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLQUERY().getText(), ctx.STRING_().getText(), getOriginalText(ctx));
         Collection<ExpressionSegment> expressionSegments = ctx.xmlPassingClause().expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
+        result.getParameters().addAll(expressionSegments);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitXmlRootFunction(final XmlRootFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLROOT().getText(), getOriginalText(ctx));
+        Collection<ExpressionSegment> expressionSegments = ctx.expr().stream().map(each -> (ExpressionSegment) visit(each)).collect(Collectors.toList());
         result.getParameters().addAll(expressionSegments);
         return result;
     }

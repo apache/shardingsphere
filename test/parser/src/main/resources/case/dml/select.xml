@@ -4760,4 +4760,13 @@
             <simple-table name="x_table" start-index="102" stop-index="108" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlroot_function">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="XMLROOT(XMLType('143598'), VERSION '1.0', STANDALONE YES)" alias="XMLROOT" start-index="7" stop-index="76" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="83" stop-index="86" />
+        </from>
+    </select>
 </sql-parser-test-cases>

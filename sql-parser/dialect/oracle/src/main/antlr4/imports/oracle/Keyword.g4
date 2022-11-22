@@ -723,3 +723,11 @@ XMLPI
 XMLQUERY
     : X M L Q U E R Y
     ;
+
+XMLROOT
+    : X M L R O O T
+    ;
+
+STANDALONE
+    : S T A N D A L O N E
+    ;
