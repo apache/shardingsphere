@@ -42,7 +42,8 @@ Apache ShardingSphere wants to give the user choice of distributed transaction t
 
 * Support cross-database transactions after sharding;
 * Rollback transaction according to undo log;
-* Support recovery committing transaction automatically after the service is down.
+* Support recovery committing transaction automatically after the service is down;
+* Support DML operations across multiple shards, automatically enabling implicit commit transactions.
 
 ### Unsupported
 
