@@ -647,10 +647,10 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public ASTNode visitXmlSerializeFunction(final XmlSerializeFunctionContext ctx) {
-        final String dataType = null == ctx.dataType() ? null : ctx.dataType().getText();
-        final String encoding = null == ctx.STRING_() ? null : ctx.STRING_().getText();
-        final String version = null == ctx.stringLiterals() ? null : ctx.stringLiterals().getText();
-        final String identSize = null == ctx.INTEGER_() ? null : ctx.INTEGER_().getText();
+        String dataType = null == ctx.dataType() ? null : ctx.dataType().getText();
+        String encoding = null == ctx.STRING_() ? null : ctx.STRING_().getText();
+        String version = null == ctx.stringLiterals() ? null : ctx.stringLiterals().getText();
+        String identSize = null == ctx.INTEGER_() ? null : ctx.INTEGER_().getText();
         return new XmlSerializeFunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.XMLSERIALIZE().getText(), (ExpressionSegment) visit(ctx.expr()),
                 dataType, encoding, version, identSize, getOriginalText(ctx));
     }

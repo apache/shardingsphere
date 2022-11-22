@@ -761,7 +761,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         if (projection instanceof XmlSerializeFunctionSegment) {
             XmlSerializeFunctionSegment xmlSerializeFunctionSegment = (XmlSerializeFunctionSegment) projection;
             return new XmlSerializeFunctionSegment(xmlSerializeFunctionSegment.getStartIndex(), xmlSerializeFunctionSegment.getStopIndex(), xmlSerializeFunctionSegment.getFunctionName(),
-                    xmlSerializeFunctionSegment.getParameter(), xmlSerializeFunctionSegment.getDatatype(), xmlSerializeFunctionSegment.getEncoding(), xmlSerializeFunctionSegment.getVersion(),
+                    xmlSerializeFunctionSegment.getParameter(), xmlSerializeFunctionSegment.getDataType(), xmlSerializeFunctionSegment.getEncoding(), xmlSerializeFunctionSegment.getVersion(),
                     xmlSerializeFunctionSegment.getIdentSize(), xmlSerializeFunctionSegment.getText());
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;

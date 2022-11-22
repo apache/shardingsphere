@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 /**
- * Xml Serialize Function segment.
+ * Xml serialize function segment.
  */
 @RequiredArgsConstructor
 @Getter
@@ -39,7 +39,7 @@ public final class XmlSerializeFunctionSegment implements ComplexExpressionSegme
     
     private final ExpressionSegment parameter;
     
-    private final String datatype;
+    private final String dataType;
     
     private final String encoding;
     
