@@ -1622,6 +1622,7 @@ xmlFunction
     | xmlParseFunction
     | xmlPiFunction
     | xmlQueryFunction
+    | xmlRootFunction
     ;
 
 xmlAggFunction
@@ -1654,4 +1655,8 @@ xmlQueryFunction
 
 xmlPassingClause
     : PASSING (BY VALUE)? expr (AS alias)? (COMMA_ expr (AS alias)?)*
+    ;
+
+xmlRootFunction
+    : XMLROOT LP_ expr COMMA_ VERSION (expr | NO VALUE) (COMMA_ STANDALONE (YES | NO | NO VALUE))? RP_
     ;
