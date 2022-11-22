@@ -14,10 +14,10 @@ weight = 4
 \<encrypt:rule />
 
 | *名称*                     | *类型* | *说明*                                               | *默认值* |
-| ------------------------- | ----- | ---------------------------------------------------- | ------- |
-| id                        | 属性  | Spring Bean Id                                        |         |
-| queryWithCipherColumn (?) | 属性  | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true   |
-| table (+)                 | 标签  | 加密表配置                                              |         |
+| ---------------------------- | ----- | ------------------------------------------------------ | ------- |
+| id                           | 属性  | Spring Bean Id                                          |         |
+| query-with-cipher-column (?) | 属性  | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true    |
+| table (+)                    | 标签  | 加密表配置                                                |         |
 
 \<encrypt:table />
 
@@ -29,13 +29,17 @@ weight = 4
 
 \<encrypt:column />
 
-| *名称*                    | *类型* | *说明*       |
-| ------------------------- | ----- | ----------- |
-| logic-column              | 属性  | 加密列逻辑名称 |
-| cipher-column             | 属性  | 加密列名称    |
-| assisted-query-column (?) | 属性  | 查询辅助列名称 |
-| plain-column (?)          | 属性  | 原文列名称    |
-| encrypt-algorithm-ref     | 属性  | 加密算法名称   |
+| *名称*                               | *类型* | *说明*                |
+| ------------------------------------ | ----- | -------------------- |
+| logic-column                         | 属性  | 加密列逻辑名称          |
+| cipher-column                        | 属性  | 加密列名称             |
+| assisted-query-column (?)            | 属性  | 查询辅助列名称          |
+| like-query-column (?)                | 属性  | 查询辅助列名称          |
+| plain-column (?)                     | 属性  | 原文列名称              |
+| encrypt-algorithm-ref                | 属性  | 密文列加密算法名称       |
+| assisted-query-encrypt-algorithm-ref | 属性  | 辅助查询列加密算法名称    |
+| like-query-encrypt-algorithm-ref     | 属性  | 模糊查询列加密算法名称    |
+| query-with-cipher-column(?)          | 属性  | 该列是否使用加密列进行查询 |
 
 \<encrypt:encrypt-algorithm />
 
@@ -86,12 +90,18 @@ weight = 4
             <prop key="aes-key-value">123456</prop>
         </props>
     </encrypt:encrypt-algorithm>
-    <encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
+    <encrypt:encrypt-algorithm id="pwd_encryptor" type="MD5" />
+    <encrypt:encrypt-algorithm id="pwd_assisted_encryptor" type="AES">
+        <props>
+            <prop key="aes-key-value">123456</prop>
+        </props>
+    </encrypt:encrypt-algorithm>
+    <encrypt:encrypt-algorithm id="like_query_encryptor" type="CHAR_DIGEST_LIKE" />
     
     <encrypt:rule id="encryptRule">
-        <encrypt:table name="t_user">
-            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
-            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
+        <encrypt:table name="t_user" query-with-cipher-column="false">
+            <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" query-with-cipher-column="true"/>
+            <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" like-query-column="like_query_pwd" encrypt-algorithm-ref="pwd_encryptor" assisted-query-encrypt-algorithm-ref="pwd_assisted_encryptor" like-query-encrypt-algorithm-ref="like_query_encryptor" query-with-cipher-column="true" />
         </encrypt:table>
     </encrypt:rule>
     
