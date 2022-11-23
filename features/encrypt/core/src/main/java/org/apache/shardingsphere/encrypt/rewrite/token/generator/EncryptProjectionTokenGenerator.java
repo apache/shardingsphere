@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -92,9 +92,9 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
             }
             if (projection instanceof ShorthandProjectionSegment) {
                 ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
-                Collection<ColumnProjection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns().values();
-                if (!actualColumns.isEmpty()) {
-                    result.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames));
+                Collection<ColumnProjection> columnProjections = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getColumnProjections();
+                if (!columnProjections.isEmpty()) {
+                    result.add(generateSQLToken(shorthandSegment, columnProjections, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames));
                 }
             }
         }
@@ -108,10 +108,10 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return new SubstitutableColumnNameToken(startIndex, stopIndex, projections);
     }
     
-    private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<ColumnProjection> actualColumns,
+    private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<ColumnProjection> columnProjections,
                                                           final DatabaseType databaseType, final SubqueryType subqueryType, final Map<String, String> columnTableNames) {
         List<ColumnProjection> projections = new LinkedList<>();
-        for (ColumnProjection each : actualColumns) {
+        for (ColumnProjection each : columnProjections) {
             String tableName = columnTableNames.get(each.getExpression());
             if (null == tableName || !encryptRule.findEncryptor(tableName, each.getName()).isPresent()) {
                 projections.add(new ColumnProjection(each.getOwner(), each.getName(), each.getAlias().orElse(null)));
@@ -136,7 +136,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 columns.add((ColumnProjection) projection);
             }
             if (projection instanceof ShorthandProjection) {
-                columns.addAll(((ShorthandProjection) projection).getActualColumns().values());
+                columns.addAll(((ShorthandProjection) projection).getColumnProjections());
             }
         }
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), databaseName);
