@@ -35,10 +35,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Schema table names loader.
+ * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaTableNamesLoader {
+public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
     
@@ -60,34 +60,24 @@ public final class SchemaTableNamesLoader {
     public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connectionAdapter, databaseType);
-            return loadSchemaTableNames(connectionAdapter, databaseName, databaseType, schemaNames);
-        }
-    }
-    
-    private static Map<String, Collection<String>> loadSchemaTableNames(final Connection connection, final String databaseName,
-                                                                        final DatabaseType databaseType, final Collection<String> schemaNames) throws SQLException {
-        Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1);
-        for (String each : schemaNames) {
-            String schemaName = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? each : databaseName;
-            result.put(schemaName, loadSchemaTableNames(connection, each));
-        }
-        return result;
-    }
-    
-    private static Collection<String> loadSchemaTableNames(final Connection connection, final String schemaName) throws SQLException {
-        Collection<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
-            while (resultSet.next()) {
-                String table = resultSet.getString(TABLE_NAME);
-                if (!isSystemTable(table)) {
-                    result.add(table);
-                }
+            Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1);
+            for (String each : schemaNames) {
+                String schemaName = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? each : databaseName;
+                result.put(schemaName, loadTableNames(connectionAdapter, each));
             }
+            return result;
         }
-        return result;
     }
     
-    private static Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
+    /**
+     * Load schema names.
+     *
+     * @param connection connection
+     * @param databaseType database type
+     * @return schema names collection
+     * @throws SQLException SQL exception
+     */
+    public static Collection<String> loadSchemaNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
         if (!(databaseType instanceof PostgreSQLDatabaseType) && !(databaseType instanceof OpenGaussDatabaseType)) {
             return Collections.singletonList(connection.getSchema());
         }
@@ -101,6 +91,19 @@ public final class SchemaTableNamesLoader {
             }
         }
         return result.isEmpty() ? Collections.singletonList(connection.getSchema()) : result;
+    }
+    
+    private static Collection<String> loadTableNames(final Connection connection, final String schemaName) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
+            while (resultSet.next()) {
+                String table = resultSet.getString(TABLE_NAME);
+                if (!isSystemTable(table)) {
+                    result.add(table);
+                }
+            }
+        }
+        return result;
     }
     
     private static boolean isSystemTable(final String table) {

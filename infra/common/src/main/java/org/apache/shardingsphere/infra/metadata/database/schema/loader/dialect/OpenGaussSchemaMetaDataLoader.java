@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -38,7 +39,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -61,56 +61,68 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Collection<String> schemaNames = loadSchemaNames(dataSource, DatabaseTypeFactory.getInstance(getType()));
-        Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(dataSource, schemaNames);
-        Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(dataSource, tables, schemaNames);
-        Collection<SchemaMetaData> result = new LinkedList<>();
-        for (String each : schemaNames) {
-            Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap)));
+        try (Connection connection = dataSource.getConnection()) {
+            Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, DatabaseTypeFactory.getInstance(getType()));
+            Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
+            Map<String, Multimap<String, ColumnMetaData>> schemaColumnMetaDataMap = loadColumnMetaDataMap(connection, tables, schemaNames);
+            Collection<SchemaMetaData> result = new LinkedList<>();
+            for (String each : schemaNames) {
+                Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
+                Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
+                result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap)));
+            }
+            return result;
         }
-        return result;
     }
     
-    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
-        Collection<TableMetaData> result = new LinkedList<>();
-        for (String each : tableColumnMetaDataMap.keySet()) {
-            Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
-            Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
-            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
-        }
-        return result;
-    }
-    
-    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables,
-                                                                                final Collection<String> schemaNames) throws SQLException {
-        Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables))) {
-            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("openGauss")).load(connection.getMetaData());
-            Set<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String tableName = resultSet.getString("table_name");
-                    String schemaName = resultSet.getString("table_schema");
-                    Multimap<String, ColumnMetaData> columnMetaDataMap = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
-                    columnMetaDataMap.put(tableName, loadColumnMetaData(dataTypes, primaryKeys, resultSet));
-                }
+    private Map<String, Multimap<String, IndexMetaData>> loadIndexMetaDataMap(final Connection connection, final Collection<String> schemaNames) throws SQLException {
+        Map<String, Multimap<String, IndexMetaData>> result = new LinkedHashMap<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(schemaNames)); ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String schemaName = resultSet.getString("schemaname");
+                String tableName = resultSet.getString("tablename");
+                String indexName = resultSet.getString("indexname");
+                Multimap<String, IndexMetaData> indexMetaDataMap = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
+                indexMetaDataMap.put(tableName, new IndexMetaData(indexName));
             }
         }
         return result;
     }
     
-    private Set<String> loadPrimaryKeys(final Connection connection, final Collection<String> schemaNames) throws SQLException {
-        Set<String> result = new HashSet<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(schemaNames))) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String schemaName = resultSet.getString("table_schema");
-                    String tableName = resultSet.getString("table_name");
-                    String columnName = resultSet.getString("column_name");
-                    result.add(schemaName + "," + tableName + "," + columnName);
-                }
+    private String getIndexMetaDataSQL(final Collection<String> schemaNames) {
+        return String.format(BASIC_INDEX_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private Map<String, Multimap<String, ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables,
+                                                                                final Collection<String> schemaNames) throws SQLException {
+        Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables)); ResultSet resultSet = preparedStatement.executeQuery()) {
+            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("openGauss")).load(connection.getMetaData());
+            Collection<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("table_name");
+                String schemaName = resultSet.getString("table_schema");
+                Multimap<String, ColumnMetaData> columnMetaDataMap = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
+                columnMetaDataMap.put(tableName, loadColumnMetaData(dataTypes, primaryKeys, resultSet));
+            }
+        }
+        return result;
+    }
+    
+    private String getColumnMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
+        String schemaNameParam = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam)
+                : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private Collection<String> loadPrimaryKeys(final Connection connection, final Collection<String> schemaNames) throws SQLException {
+        Collection<String> result = new HashSet<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(schemaNames)); ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                String schemaName = resultSet.getString("table_schema");
+                String tableName = resultSet.getString("table_name");
+                String columnName = resultSet.getString("column_name");
+                result.add(schemaName + "," + tableName + "," + columnName);
             }
         }
         return result;
@@ -120,7 +132,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
         return String.format(PRIMARY_KEY_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final Set<String> primaryKeys, final ResultSet resultSet) throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final Collection<String> primaryKeys, final ResultSet resultSet) throws SQLException {
         String schemaName = resultSet.getString("table_schema");
         String tableName = resultSet.getString("table_name");
         String columnName = resultSet.getString("column_name");
@@ -133,30 +145,14 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), isPrimaryKey, generated, caseSensitive, true, false);
     }
     
-    private String getColumnMetaDataSQL(final Collection<String> schemaNames, final Collection<String> tables) {
-        String schemaNameParam = schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(","));
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL_WITHOUT_TABLES, schemaNameParam)
-                : String.format(TABLE_META_DATA_SQL_WITH_TABLES, schemaNameParam, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    }
-    
-    private Map<String, Multimap<String, IndexMetaData>> loadIndexMetaDataMap(final DataSource dataSource, final Collection<String> schemaNames) throws SQLException {
-        Map<String, Multimap<String, IndexMetaData>> result = new LinkedHashMap<>();
-        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(schemaNames))) {
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String schemaName = resultSet.getString("schemaname");
-                    String tableName = resultSet.getString("tablename");
-                    String indexName = resultSet.getString("indexname");
-                    Multimap<String, IndexMetaData> indexMetaDataMap = result.computeIfAbsent(schemaName, key -> LinkedHashMultimap.create());
-                    indexMetaDataMap.put(tableName, new IndexMetaData(indexName));
-                }
-            }
+    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
+        Collection<TableMetaData> result = new LinkedList<>();
+        for (String each : tableColumnMetaDataMap.keySet()) {
+            Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
+            Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
+            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
         }
         return result;
-    }
-    
-    private String getIndexMetaDataSQL(final Collection<String> schemaNames) {
-        return String.format(BASIC_INDEX_META_DATA_SQL, schemaNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override
