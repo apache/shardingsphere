@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
 
 /**
@@ -36,7 +35,6 @@ public final class ExpectedAuditStrategy extends AbstractExpectedIdentifierSQLSe
     @XmlAttribute(name = "allow-hint-disable")
     private boolean allowHintDisable;
     
-    @XmlElementWrapper(name = "auditors")
     @XmlElement(name = "auditor")
     private Collection<ExpectedShardingAuditor> auditors;
 }

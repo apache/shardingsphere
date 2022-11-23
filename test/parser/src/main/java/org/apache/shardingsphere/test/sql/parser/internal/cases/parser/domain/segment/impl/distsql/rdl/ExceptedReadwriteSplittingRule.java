@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.List;
 
 /**
@@ -46,7 +45,6 @@ public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdenti
     @XmlAttribute(name = "load-balancer")
     private String loadBalancer;
     
-    @XmlElementWrapper
     @XmlElement(name = "property")
     private List<ExpectedProperty> properties;
 }
