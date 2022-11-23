@@ -126,10 +126,15 @@
                     </properties>
                 </table-strategy>
                 <key-generate-strategy algorithm-name="snowflake" />
-                <audit-strategy allow-hint-disable="true" >
-                    <algorithms>
-                        <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
-                    </algorithms>
+                <audit-strategy allow-hint-disable="true">
+                    <auditors>
+                        <auditor auditor-name = "t_order_dml_sharding_conditions_0">
+                            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                        </auditor>
+                        <auditor auditor-name = "t_order_dml_sharding_conditions_1">
+                            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                        </auditor>
+                    </auditors>
                 </audit-strategy>
             </rule>
         </rules>
@@ -298,9 +303,14 @@
                 </database-strategy>
                 <key-generate-strategy algorithm-name="snowflake" />
                 <audit-strategy allow-hint-disable="true">
-                    <algorithms>
-                        <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
-                    </algorithms>
+                    <auditors>
+                        <auditor auditor-name = "t_order_dml_sharding_conditions_0">
+                            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                        </auditor>
+                        <auditor auditor-name = "t_order_dml_sharding_conditions_1">
+                            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+                        </auditor>
+                    </auditors>
                 </audit-strategy>
             </rule>
         </rules>

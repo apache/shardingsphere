@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedAuditStrategy;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -48,5 +49,5 @@ public final class ExpectedAutoTableRule extends AbstractExpectedIdentifierSQLSe
     private ExpectedAlgorithm keyGenerateStrategy;
     
     @XmlElement(name = "audit-strategy")
-    private ExpectedAuditor auditStrategy;
+    private ExpectedAuditStrategy auditStrategy;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,16 +27,16 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
 
 /**
- * Expected SQL parser rule.
+ * Expected audit strategy.
  */
 @Getter
 @Setter
-public final class ExpectedAuditor extends AbstractExpectedIdentifierSQLSegment {
+public final class ExpectedAuditStrategy extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlAttribute(name = "allow-hint-disable")
     private boolean allowHintDisable;
     
-    @XmlElementWrapper
-    @XmlElement(name = "algorithms")
-    private Collection<ExpectedAlgorithm> algorithms;
+    @XmlElementWrapper(name = "auditors")
+    @XmlElement(name = "auditor")
+    private Collection<ExpectedShardingAuditor> auditors;
 }
