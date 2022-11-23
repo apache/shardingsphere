@@ -39,7 +39,7 @@ jobs:
           key: shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             shardingsphere-maven-third-party-
-      - name: Cache Maven Repos
+      - name: Run checkstyle
         uses: nikitasavinov/checkstyle-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
