@@ -50,6 +50,6 @@ public final class XmlTableSegment implements TableSegment {
     }
     
     @Override
-    public void setAlias(AliasSegment alias) {
+    public void setAlias(final AliasSegment alias) {
     }
 }
