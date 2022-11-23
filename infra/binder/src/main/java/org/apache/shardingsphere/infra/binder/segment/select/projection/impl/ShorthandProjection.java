@@ -25,7 +25,9 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -37,12 +39,12 @@ import java.util.Optional;
 public final class ShorthandProjection implements Projection {
     
     private final String owner;
-
-    private final Map<String, Projection> resultSetColumns = new LinkedHashMap<>();
-
+    
+    private final Map<String, Projection> actualColumns = new LinkedHashMap<>();
+    
     public ShorthandProjection(final String owner, final Collection<Projection> projections) {
         this.owner = owner;
-        projections.forEach(each -> resultSetColumns.put(each.getExpression().toLowerCase(), each));
+        projections.forEach(each -> actualColumns.put(each.getExpression().toLowerCase(), each));
     }
     
     @Override
@@ -68,19 +70,19 @@ public final class ShorthandProjection implements Projection {
     public Optional<String> getOwner() {
         return Optional.ofNullable(owner);
     }
-
+    
     /**
-     * get actualColumns, exclude ExpressionProjection.
+     * Get column projections.
      *
-     * @return actualColumns
+     * @return column projections
      */
-    public Map<String, ColumnProjection> getActualColumns() {
-        Map<String, ColumnProjection> actualColumns = new LinkedHashMap<>();
-        for (Map.Entry<String, Projection> entry : resultSetColumns.entrySet()) {
+    public Collection<ColumnProjection> getColumnProjections() {
+        Collection<ColumnProjection> result = new LinkedList<>();
+        for (Entry<String, Projection> entry : actualColumns.entrySet()) {
             if (entry.getValue() instanceof ColumnProjection) {
-                actualColumns.put(entry.getKey(), (ColumnProjection) entry.getValue());
+                result.add((ColumnProjection) entry.getValue());
             }
         }
-        return actualColumns;
+        return result;
     }
 }

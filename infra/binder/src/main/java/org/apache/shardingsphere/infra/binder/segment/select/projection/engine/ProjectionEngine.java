@@ -101,7 +101,6 @@ public final class ProjectionEngine {
         if (projectionSegment instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(createProjection((ParameterMarkerExpressionSegment) projectionSegment));
         }
-        // TODO subquery
         return Optional.empty();
     }
     
@@ -178,7 +177,7 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getResultSetProjections(projections);
+        return getProjections(projections);
     }
     
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
@@ -188,10 +187,10 @@ public final class ProjectionEngine {
         Collection<Projection> projections = new LinkedList<>();
         createProjection(((JoinTableSegment) table).getLeft(), projectionSegment).ifPresent(projections::add);
         createProjection(((JoinTableSegment) table).getRight(), projectionSegment).ifPresent(projections::add);
-        return getResultSetProjections(projections);
+        return getProjections(projections);
     }
     
-    private Collection<Projection> getResultSetProjections(final Collection<Projection> projections) {
+    private Collection<Projection> getProjections(final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
@@ -199,7 +198,7 @@ public final class ProjectionEngine {
             } else if (each instanceof ExpressionProjection) {
                 result.add(each);
             } else if (each instanceof ShorthandProjection) {
-                result.addAll(((ShorthandProjection) each).getResultSetColumns().values());
+                result.addAll(((ShorthandProjection) each).getActualColumns().values());
             }
         }
         return result;
