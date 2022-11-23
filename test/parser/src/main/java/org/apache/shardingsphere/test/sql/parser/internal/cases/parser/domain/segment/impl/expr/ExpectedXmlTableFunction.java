@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected tables.
+ * Expected xml table function.
  */
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedXmlTableFunction extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+    @XmlAttribute(name = "function-name")
+    private String functionName;
     
-    @XmlElement(name = "subquery-table")
-    private ExpectedSubqueryTable subqueryTable;
-    
-    @XmlElement(name = "join-table")
-    private ExpectedJoinTable joinTable;
-    
-    @XmlElement(name = "xml-table")
-    private ExpectedXmlTable xmlTable;
+    @XmlAttribute
+    private String text;
 }

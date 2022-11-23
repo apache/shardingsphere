@@ -1624,6 +1624,7 @@ xmlFunction
     | xmlQueryFunction
     | xmlRootFunction
     | xmlSerializeFunction
+    | xmlTableFunction
     ;
 
 xmlAggFunction
@@ -1664,4 +1665,20 @@ xmlRootFunction
 
 xmlSerializeFunction
     : XMLSERIALIZE LP_ (DOCUMENT | CONTENT) expr (AS dataType)? (ENCODING STRING_)? (VERSION stringLiterals)? (NO IDENT | IDENT (SIZE EQ_ INTEGER_)?)? ((HIDE | SHOW) DEFAULT)? RP_
+    ;
+
+xmlTableFunction
+    : XMLTABLE LP_ (xmlNameSpacesClause COMMA_)? STRING_ xmlTableOptions RP_
+    ;
+
+xmlNameSpacesClause
+    : XMLNAMESPACES LP_ (STRING_ AS identifier | DEFAULT STRING_) (COMMA_ (STRING_ AS identifier | DEFAULT STRING_))* RP_
+    ;
+
+xmlTableOptions
+    : xmlPassingClause? (RETURNING SEQUENCE BY REF)? (COLUMNS xmlTableColumn (COMMA_ xmlTableColumn)*)?
+    ;
+
+xmlTableColumn
+    : columnName (FOR ORDINALITY | (dataType | XMLTYPE (LP_ SEQUENCE RP_ BY REF)?) (PATH STRING_)? (DEFAULT expr)?)
     ;

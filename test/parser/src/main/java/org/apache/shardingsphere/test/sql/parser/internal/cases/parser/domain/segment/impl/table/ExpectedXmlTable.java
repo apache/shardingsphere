@@ -20,25 +20,27 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedDelimiterSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedXmlTableFunction;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected tables.
+ * Expected xml table.
  */
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+public final class ExpectedXmlTable extends AbstractExpectedDelimiterSQLSegment {
     
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+    @XmlAttribute(name = "table-name")
+    private String tableName;
     
-    @XmlElement(name = "subquery-table")
-    private ExpectedSubqueryTable subqueryTable;
+    @XmlAttribute(name = "table-alias")
+    private String tableAlias;
     
-    @XmlElement(name = "join-table")
-    private ExpectedJoinTable joinTable;
+    @XmlElement(name = "xml-table-function")
+    private ExpectedXmlTableFunction xmlTableFunction;
     
-    @XmlElement(name = "xml-table")
-    private ExpectedXmlTable xmlTable;
+    @XmlAttribute(name = "xml-table-function-alias")
+    private String xmlTableFunctionAlias;
 }

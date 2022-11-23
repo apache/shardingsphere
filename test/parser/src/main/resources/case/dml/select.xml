@@ -4778,4 +4778,21 @@
             <simple-table name="b" start-index="103" stop-index="103" />
         </from>
     </select>
+
+    <select sql-case-id="select_from_xmltable_function">
+        <projections start-index="7" stop-index="65">
+            <column-projection name="warehouse_name" alias="warehouse" start-index="7" stop-index="30" />
+            <column-projection name="Water" start-index="33" stop-index="48">
+                <owner name="warehouse2" start-index="33" stop-index="42" />
+            </column-projection>
+            <column-projection name="Rail" start-index="51" stop-index="65">
+                <owner name="warehouse2" start-index="51" stop-index="60" />
+            </column-projection>
+        </projections>
+        <from>
+            <xml-table table-name="warehouses" xml-table-function-alias="warehouse2" start-index="76" stop-index="238">
+                <xml-table-function function-name="XMLTABLE" text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')" start-index="88" stop-index="227" />
+            </xml-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

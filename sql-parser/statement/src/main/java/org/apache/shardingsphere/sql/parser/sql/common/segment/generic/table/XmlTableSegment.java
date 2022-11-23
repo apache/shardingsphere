@@ -15,30 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedDelimiterSQLSegment;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Optional;
 
-/**
- * Expected tables.
- */
+@RequiredArgsConstructor
 @Getter
 @Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+@ToString
+public final class XmlTableSegment implements TableSegment {
     
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+    private final int startIndex;
     
-    @XmlElement(name = "subquery-table")
-    private ExpectedSubqueryTable subqueryTable;
+    private final int stopIndex;
     
-    @XmlElement(name = "join-table")
-    private ExpectedJoinTable joinTable;
+    private final String tableName;
     
-    @XmlElement(name = "xml-table")
-    private ExpectedXmlTable xmlTable;
+    private final String tableNameAlias;
+    
+    private final XmlTableFunctionSegment xmlTableFunction;
+    
+    private final String xmlTableFunctionAlias;
+    
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public void setAlias(AliasSegment alias) {
+    }
 }

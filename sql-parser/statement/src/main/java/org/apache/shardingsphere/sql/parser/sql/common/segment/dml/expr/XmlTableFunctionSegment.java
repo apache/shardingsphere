@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedDelimiterSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 
 /**
- * Expected tables.
+ * Xml table function segment.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+@ToString
+public final class XmlTableFunctionSegment implements ComplexExpressionSegment, ProjectionSegment {
     
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+    private final int startIndex;
     
-    @XmlElement(name = "subquery-table")
-    private ExpectedSubqueryTable subqueryTable;
+    private final int stopIndex;
     
-    @XmlElement(name = "join-table")
-    private ExpectedJoinTable joinTable;
+    private final String functionName;
     
-    @XmlElement(name = "xml-table")
-    private ExpectedXmlTable xmlTable;
+    private final XmlNameSpacesClauseSegment xmlNameSpacesClause;
+    
+    private final String xQueryString;
+    
+    private final XmlTableOptionsSegment xmlTableOption;
+    
+    private final String text;
 }
