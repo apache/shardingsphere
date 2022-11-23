@@ -45,8 +45,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -76,7 +76,7 @@ public final class TableAssert {
                     String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
     }
-
+    
     /**
      * Assert actual xml table segment is correct with expected xml table.
      *
@@ -91,18 +91,6 @@ public final class TableAssert {
         assertThat(assertContext.getText("Xml table function alias assertion error"), actual.getXmlTableFunctionAlias(), is(expected.getXmlTableFunctionAlias()));
     }
 
-    /**
-     * Assert actual xml table function segment is correct with expected xml table function.
-     *
-     * @param assertContext assert context
-     * @param actual actual xml table function
-     * @param expected expected xml table function
-     */
-    private static void assertXmlTableFunction(final SQLCaseAssertContext assertContext, final XmlTableFunctionSegment actual, final ExpectedXmlTableFunction expected) {
-        assertThat(assertContext.getText("Function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
-        assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
-    }
-    
     /**
      * Assert actual table segment is correct with expected table.
      *
@@ -191,5 +179,17 @@ public final class TableAssert {
         } else {
             assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
         }
+    }
+
+    /**
+     * Assert actual xml table function segment is correct with expected xml table function.
+     *
+     * @param assertContext assert context
+     * @param actual actual xml table function
+     * @param expected expected xml table function
+     */
+    private static void assertXmlTableFunction(final SQLCaseAssertContext assertContext, final XmlTableFunctionSegment actual, final ExpectedXmlTableFunction expected) {
+        assertThat(assertContext.getText("Function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
     }
 }
