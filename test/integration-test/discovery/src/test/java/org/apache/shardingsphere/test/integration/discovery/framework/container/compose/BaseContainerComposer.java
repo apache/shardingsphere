@@ -42,26 +42,16 @@ public abstract class BaseContainerComposer implements Startable {
     /**
      * Get proxy data source.
      *
-     * @param databaseName database name
      * @return proxy data source
      */
-    public abstract DataSource getProxyDatasource(String databaseName);
-    
-    /**
-     * Get Datasource with storage container exposed port and network alias.
-     * 
-     * @param databaseName database name
-     * @return list of datasource
-     */
-    public abstract List<DataSource> getExposedDatasource(String databaseName);
+    public abstract DataSource getProxyDatasource();
     
     /**
      * Get Datasource with storage container mapped port and host.
      *
-     * @param databaseName database name
      * @return list of datasource
      */
-    public abstract List<DataSource> getMappedDatasource(String databaseName);
+    public abstract List<DataSource> getMappedDatasource();
     
     @Override
     public void start() {
