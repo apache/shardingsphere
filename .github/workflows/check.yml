@@ -20,24 +20,6 @@ name: Check
 on:
   push:
     branches: [ master, dev ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - '.github/workflows/checkstyle-and-license-check.yml'
-      - 'examples/shardingsphere-example-generator/**'
-      - '!examples/**'
-      - '!*.md'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - 'src/resources/**'
-      - '.github/workflows/checkstyle-and-license-check.yml'
-      - 'examples/shardingsphere-example-generator/**'
-      - 'test/integration-agent-test/plugins/**'
-      - '!examples/**'
-      - '!*.md'
   workflow_dispatch:
 
 concurrency:
@@ -58,7 +40,13 @@ jobs:
           restore-keys: |
             shardingsphere-maven-third-party-
       - name: Run checkstyle
-        run: ./mvnw checkstyle:check -T1C
+                - name: Run check style
+                uses: nikitasavinov/checkstyle-action@master
+                with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  checkstyle_config: src/resources/checkstyle-ci.xml
+                  reporter: 'github-pr-check'
+                  tool_name: 'testtool'
 
   check-license:
     name: Check - license
