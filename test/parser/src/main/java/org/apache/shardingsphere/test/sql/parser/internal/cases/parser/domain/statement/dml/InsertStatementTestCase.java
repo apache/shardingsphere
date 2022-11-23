@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedInsertMultiTableElement;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedInsertValuesClause;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedReturningClause;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.output.ExpectedOutputClause;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.set.ExpectedSetClause;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSimpleTable;
@@ -67,4 +68,7 @@ public final class InsertStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select-subquery")
     private SelectStatementTestCase selectSubquery;
+    
+    @XmlElement(name = "returning")
+    private ExpectedReturningClause returningClause;
 }

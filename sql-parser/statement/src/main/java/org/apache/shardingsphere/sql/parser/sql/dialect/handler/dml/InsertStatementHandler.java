@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -129,6 +130,22 @@ public final class InsertStatementHandler implements SQLStatementHandler {
     public static Optional<SubquerySegment> getSelectSubquery(final InsertStatement insertStatement) {
         if (insertStatement instanceof OracleStatement) {
             return ((OracleInsertStatement) insertStatement).getSelectSubquery();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get returning segment of insert statement.
+     *
+     * @param insertStatement insert statement
+     * @return returning segment
+     */
+    public static Optional<ReturningSegment> getReturningSegment(final InsertStatement insertStatement) {
+        if (insertStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLInsertStatement) insertStatement).getReturningSegment();
+        }
+        if (insertStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussInsertStatement) insertStatement).getReturningSegment();
         }
         return Optional.empty();
     }

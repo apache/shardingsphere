@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml
 
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -37,6 +38,8 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
     
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment;
     
+    private ReturningSegment returningSegment;
+    
     /**
      * Get with segment.
      *
@@ -53,5 +56,14 @@ public final class OpenGaussInsertStatement extends InsertStatement implements O
      */
     public Optional<OnDuplicateKeyColumnsSegment> getOnDuplicateKeyColumns() {
         return Optional.ofNullable(onDuplicateKeyColumnsSegment);
+    }
+    
+    /**
+     * Get returning segment.
+     *
+     * @return returning segment
+     */
+    public Optional<ReturningSegment> getReturningSegment() {
+        return Optional.ofNullable(returningSegment);
     }
 }
