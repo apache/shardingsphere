@@ -154,7 +154,7 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
         if (null != currentRuleConfig.getDefaultAuditStrategy()) {
             inUsedAuditors.addAll(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames());
         }
-        Collection<String> unusedAuditors = currentRuleConfig.getKeyGenerators().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
+        Collection<String> unusedAuditors = currentRuleConfig.getAuditors().keySet().stream().filter(each -> !inUsedAuditors.contains(each)).collect(Collectors.toSet());
         unusedAuditors.forEach(each -> currentRuleConfig.getAuditors().remove(each));
     }
     
