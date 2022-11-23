@@ -28,9 +28,7 @@
     <check-migration sql-case-id="check-migration-with-type">
         <job-id>123</job-id>
         <type-strategy algorithm-name="DEFAULT">
-            <properties>
-                <property key="test-property" value="4"/>
-            </properties>
+            <property key="test-property" value="4"/>
         </type-strategy>
     </check-migration>
     

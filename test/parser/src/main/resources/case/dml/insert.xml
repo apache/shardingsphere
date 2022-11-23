@@ -1536,10 +1536,8 @@
     <insert sql-case-id="insert_with_with_clause">
         <with start-index="0" stop-index="70">
             <common-table-expression name = "cte" start-index="5" stop-index="70">
-                <columns start-index="9" stop-index="27">
-                    <column name="order_id" start-index="10" stop-index="17"/>
-                    <column name="user_id" start-index="20" stop-index="26"/>
-                </columns>
+                <column name="order_id" start-index="10" stop-index="17"/>
+                <column name="user_id" start-index="20" stop-index="26"/>
                 <subquery-expression start-index="33" stop-index="69">
                     <select>
                         <from>

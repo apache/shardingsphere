@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,7 +44,6 @@ public final class ExpectedDatabaseDiscoveryDefinitionRule extends AbstractExpec
     @XmlElement(name = "discovery-type")
     private ExpectedAlgorithm discoveryType;
     
-    @XmlElementWrapper
     @XmlElement(name = "property")
     private List<ExpectedProperty> properties;
 }

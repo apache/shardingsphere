@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +38,6 @@ public final class CopyStatementTestCase extends SQLParserTestCase {
     @XmlElement
     private ExpectedSimpleTable table;
     
-    @XmlElementWrapper
     @XmlElement(name = "column")
     private List<ExpectedColumn> columns = new LinkedList<>();
     

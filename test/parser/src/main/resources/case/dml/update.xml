@@ -736,11 +736,9 @@
     <update sql-case-id="update_with_with_clause" parameters="1, 1">
         <with start-index="0" stop-index="86">
             <common-table-expression name = "cte" start-index="5" stop-index="86">
-                <columns start-index="9" stop-index="35">
-                    <column name="order_id" start-index="10" stop-index="17" />
-                    <column name="user_id" start-index="20" stop-index="26" />
-                    <column name="status" start-index="29" stop-index="34" />
-                </columns>
+                <column name="order_id" start-index="10" stop-index="17" />
+                <column name="user_id" start-index="20" stop-index="26" />
+                <column name="status" start-index="29" stop-index="34" />
                 <subquery-expression>
                     <select>
                         <from>
