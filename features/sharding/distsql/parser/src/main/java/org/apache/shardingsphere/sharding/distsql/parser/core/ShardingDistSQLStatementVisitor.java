@@ -184,7 +184,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitDropShardingTableRule(final DropShardingTableRuleContext ctx) {
         return new DropShardingTableRuleStatement(null != ctx.ifExists(),
-                ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()), null != ctx.withUnusedAlgorithmsClause());
+                ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override

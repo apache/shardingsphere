@@ -28,7 +28,7 @@ alterShardingTableRule
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
+    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)*
     ;
 
 createShardingTableReferenceRule
@@ -197,8 +197,4 @@ strategyType
 
 ifExists
     : IF EXISTS
-    ;
-
-withUnusedAlgorithmsClause
-    : WITH UNUSED ALGORITHMS
     ;
