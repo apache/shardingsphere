@@ -81,23 +81,15 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     }
     
     @Override
-    public DataSource getProxyDatasource(final String databaseName) {
-        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName),
+    public DataSource getProxyDatasource() {
+        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), ""),
                 ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     @Override
-    public List<DataSource> getExposedDatasource(final String databaseName) {
+    public List<DataSource> getMappedDatasource() {
         return getStorageContainers().stream()
-                .map(each -> DataSourceEnvironment.getURL(databaseType, each.getNetworkAliases().get(0), each.getExposedPort(), databaseName))
-                .map(each -> StorageContainerUtil.generateDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public List<DataSource> getMappedDatasource(final String databaseName) {
-        return getStorageContainers().stream()
-                .map(each -> DataSourceEnvironment.getURL(databaseType, each.getHost(), each.getMappedPort(), databaseName))
+                .map(each -> DataSourceEnvironment.getURL(databaseType, each.getHost(), each.getMappedPort(), ""))
                 .map(each -> StorageContainerUtil.generateDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
                 .collect(Collectors.toList());
     }

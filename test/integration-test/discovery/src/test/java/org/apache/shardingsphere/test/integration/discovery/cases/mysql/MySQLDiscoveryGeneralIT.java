@@ -57,7 +57,7 @@ public final class MySQLDiscoveryGeneralIT extends BaseITCase {
     }
     
     @Test
-    public void assertFindMasterSlaveRelation() throws SQLException {
+    public void assertMySQLMGRDiscovery() throws SQLException {
         new MySQLMGRBuilder(getMappedDataSources()).createDatabase();
         new DiscoveryRuleBuilder(getProxyDataSource());
         // TODO Add some assert
