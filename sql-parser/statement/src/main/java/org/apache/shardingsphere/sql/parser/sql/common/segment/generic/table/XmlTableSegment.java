@@ -26,6 +26,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 
 import java.util.Optional;
 
+/**
+ * XML table segment.
+ */
 @RequiredArgsConstructor
 @Getter
 @Setter
