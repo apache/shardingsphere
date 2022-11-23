@@ -43,7 +43,7 @@ jobs:
         uses: nikitasavinov/checkstyle-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          checkstyle_config: src/resources/checkstyle.xml
+          checkstyle_config: src/resources/checkstyle-ci.xml
           reporter: 'github-pr-check'
           tool_name: 'testtool'
             
