@@ -20,6 +20,7 @@ name: Check
 on:
   push:
     branches: [ master, dev ]
+  pull_request:
   workflow_dispatch:
 
 concurrency:
