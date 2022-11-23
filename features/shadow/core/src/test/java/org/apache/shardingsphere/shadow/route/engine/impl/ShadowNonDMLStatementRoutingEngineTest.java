@@ -64,7 +64,7 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     @Test
     public void assertRoute() {
         RouteContext routeContext = createRouteContext();
-        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        shadowRouteEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration(), "shadow_db"));
         Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
         RouteMapper dataSourceMapper = routeUnits.iterator().next().getDataSourceMapper();
         assertThat(dataSourceMapper.getLogicName(), is("logic_db"));

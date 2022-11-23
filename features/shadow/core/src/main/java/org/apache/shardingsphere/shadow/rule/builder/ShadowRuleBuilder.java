@@ -36,7 +36,7 @@ public final class ShadowRuleBuilder implements DatabaseRuleBuilder<ShadowRuleCo
     @Override
     public ShadowRule build(final ShadowRuleConfiguration config, final String databaseName,
                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new ShadowRule(config);
+        return new ShadowRule(config, databaseName);
     }
     
     @Override

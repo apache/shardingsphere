@@ -20,6 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -60,12 +62,15 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     @Getter
     private final RuleConfiguration configuration;
     
+    private final String databaseName;
+    
     private final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
-    public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
+    public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final String databaseName, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
+        this.databaseName = databaseName;
         ruleConfig.getDataSources().stream().filter(each -> null != ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))
                 .forEach(each -> loadBalancers.put(each.getName() + "." + each.getLoadBalancerName(),
                         ReadQueryLoadBalanceAlgorithmFactory.newInstance(ruleConfig.getLoadBalancers().get(each.getLoadBalancerName()))));
@@ -75,8 +80,9 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         }
     }
     
-    public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
+    public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig, final String databaseName, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
+        this.databaseName = databaseName;
         ruleConfig.getDataSources().stream().filter(each -> null != ruleConfig.getLoadBalanceAlgorithms().get(each.getLoadBalancerName()))
                 .forEach(each -> loadBalancers.put(each.getName() + "." + each.getLoadBalancerName(), ruleConfig.getLoadBalanceAlgorithms().get(each.getLoadBalancerName())));
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
@@ -164,6 +170,21 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingStrategy().getAllDataSources());
         }
+        return result;
+    }
+    
+    @Override
+    public Map<String, DataSourceState> calculateLogicalDataSourceStates() {
+        Map<String, DataSourceState> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
+        dataSourceRules.forEach((key, value) -> {
+            String writeDataSourceName = value.getReadwriteSplittingStrategy().getWriteDataSource();
+            if (DataSourceStateManager.getInstance().getLogicalState(databaseName, writeDataSourceName) != DataSourceState.DISABLED
+                    && DataSourceStateManager.getInstance().getPhysicalState(databaseName, writeDataSourceName) != DataSourceState.ERROR) {
+                result.put(key, DataSourceState.ENABLED);
+            } else {
+                result.put(key, DataSourceState.DISABLED);
+            }
+        });
         return result;
     }
     

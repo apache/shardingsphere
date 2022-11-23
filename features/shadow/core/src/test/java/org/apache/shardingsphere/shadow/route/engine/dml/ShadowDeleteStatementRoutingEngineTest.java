@@ -83,7 +83,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     public void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
-        shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration()));
+        shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration(), "shadow_db"));
         Optional<Collection<String>> sqlNotes = shadowDeleteStatementRoutingEngine.parseSQLComments();
         assertTrue(sqlNotes.isPresent());
         assertThat(sqlNotes.get().size(), is(2));

@@ -30,6 +30,8 @@ import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -156,6 +158,23 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.putAll(entry.getValue().getDataSourceMapper());
         }
+        return result;
+    }
+    
+    @Override
+    public Map<String, DataSourceState> calculateLogicalDataSourceStates() {
+        Map<String, DataSourceState> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
+        dataSourceRules.forEach((key, value) -> {
+            DataSourceState dataSourceState = DataSourceState.DISABLED;
+            for (String actualDataSourceName : value.getDataSourceNames()) {
+                if (DataSourceStateManager.getInstance().getLogicalState(databaseName, actualDataSourceName) != DataSourceState.DISABLED
+                        && DataSourceStateManager.getInstance().getPhysicalState(databaseName, actualDataSourceName) != DataSourceState.ERROR) {
+                    dataSourceState = DataSourceState.ENABLED;
+                    break;
+                }
+            }
+            result.put(key, dataSourceState);
+        });
         return result;
     }
     

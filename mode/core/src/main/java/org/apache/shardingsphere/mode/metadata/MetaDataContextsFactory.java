@@ -106,11 +106,11 @@ public final class MetaDataContextsFactory {
         return new DataSourceProvidedDatabaseConfiguration(effectiveDataSources, databaseRuleConfigs);
     }
     
-    private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, StorageNodeDataSource> storageNodes, final boolean force) {
+    private static void checkDataSourceStates(final Map<String, DatabaseConfiguration> databaseConfigs, final Map<String, StorageNodeDataSource> storageNodes, final boolean forceStart) {
         Map<String, DataSourceState> storageDataSourceStates = getStorageDataSourceStates(storageNodes);
         databaseConfigs.forEach((key, value) -> {
-            if (null != value.getDataSources() && !value.getDataSources().isEmpty()) {
-                DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), storageDataSourceStates, force);
+            if (!value.getDataSources().isEmpty()) {
+                DataSourceStateManager.getInstance().initStates(key, value.getDataSources(), storageDataSourceStates, forceStart);
             }
         });
     }

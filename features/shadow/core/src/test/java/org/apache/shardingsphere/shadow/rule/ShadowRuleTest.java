@@ -44,7 +44,7 @@ public final class ShadowRuleTest {
     
     @Before
     public void init() {
-        shadowRule = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration());
+        shadowRule = new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration(), "shadow_db");
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {

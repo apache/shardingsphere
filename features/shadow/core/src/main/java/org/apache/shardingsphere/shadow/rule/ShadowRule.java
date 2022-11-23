@@ -20,6 +20,8 @@ package org.apache.shardingsphere.shadow.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
@@ -48,6 +50,8 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final RuleConfiguration configuration;
     
+    private final String databaseName;
+    
     private final Collection<String> hintShadowAlgorithmNames = new LinkedList<>();
     
     private final Map<String, ShadowDataSourceRule> shadowDataSourceMappings = new LinkedHashMap<>();
@@ -58,8 +62,9 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final ShadowAlgorithm defaultShadowAlgorithm;
     
-    public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
+    public ShadowRule(final ShadowRuleConfiguration ruleConfig, final String databaseName) {
         configuration = ruleConfig;
+        this.databaseName = databaseName;
         initShadowDataSourceMappings(ruleConfig.getDataSources());
         initShadowAlgorithmConfigurations(ruleConfig.getShadowAlgorithms());
         defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
@@ -69,8 +74,9 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         initShadowTableRules(ruleConfig.getTables());
     }
     
-    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration ruleConfig) {
+    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration ruleConfig, final String databaseName) {
         configuration = ruleConfig;
+        this.databaseName = databaseName;
         initShadowDataSourceMappings(ruleConfig.getDataSources());
         initShadowAlgorithms(ruleConfig.getShadowAlgorithms());
         defaultShadowAlgorithm = shadowAlgorithms.get(ruleConfig.getDefaultShadowAlgorithmName());
@@ -260,6 +266,21 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         shadowDataSourceMappings.forEach((key, value) -> result.put(key, createShadowDataSources(value)));
+        return result;
+    }
+    
+    @Override
+    public Map<String, DataSourceState> calculateLogicalDataSourceStates() {
+        Map<String, DataSourceState> result = new LinkedHashMap<>(shadowDataSourceMappings.size(), 1);
+        shadowDataSourceMappings.forEach((key, value) -> {
+            String productionDataSourceName = value.getProductionDataSource();
+            if (DataSourceStateManager.getInstance().getLogicalState(databaseName, productionDataSourceName) != DataSourceState.DISABLED
+                    && DataSourceStateManager.getInstance().getPhysicalState(databaseName, productionDataSourceName) != DataSourceState.ERROR) {
+                result.put(key, DataSourceState.ENABLED);
+            } else {
+                result.put(key, DataSourceState.DISABLED);
+            }
+        });
         return result;
     }
     

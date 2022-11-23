@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
@@ -223,6 +224,11 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         @Override
         public Map<String, Collection<String>> getDataSourceMapper() {
             return Collections.singletonMap("logic_ds", null);
+        }
+        
+        @Override
+        public Map<String, DataSourceState> calculateLogicalDataSourceStates() {
+            return Collections.emptyMap();
         }
         
         @Override

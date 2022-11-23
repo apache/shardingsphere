@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: storage_unit_state
+name: data_source_state
 
 columns:
   database_name:
@@ -32,10 +32,17 @@ columns:
     name: data_source_name
     primaryKey: false
     visible: true
-  state:
+  logical_state:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: state
+    name: logical_state
+    primaryKey: false
+    visible: true
+  physical_state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: physical_state
     primaryKey: false
     visible: true

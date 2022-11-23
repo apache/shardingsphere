@@ -42,7 +42,9 @@ public final class DataSourceStateManager {
     
     private static final DataSourceStateManager INSTANCE = new DataSourceStateManager();
     
-    private final Map<String, DataSourceState> dataSourceStates = new ConcurrentHashMap<>();
+    private final Map<String, DataSourceState> physicalStates = new ConcurrentHashMap<>();
+    
+    private final Map<String, DataSourceState> logicalStates = new ConcurrentHashMap<>();
     
     private volatile boolean forceStart;
     
@@ -72,22 +74,31 @@ public final class DataSourceStateManager {
     }
     
     private void initState(final String databaseName, final Map<String, DataSourceState> storageDataSourceStates, final String actualDataSourceName, final DataSource dataSource) {
-        DataSourceState storageState = storageDataSourceStates.get(getCacheKey(databaseName, actualDataSourceName));
-        if (DataSourceState.DISABLED == storageState) {
-            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), storageState);
+        DataSourceState logicStorageState = storageDataSourceStates.get(getCacheKey(databaseName, actualDataSourceName));
+        if (DataSourceState.DISABLED == logicStorageState) {
+            setLogicalState(databaseName, actualDataSourceName, DataSourceState.DISABLED);
         } else {
-            checkState(databaseName, actualDataSourceName, dataSource);
+            setLogicalState(databaseName, actualDataSourceName, DataSourceState.ENABLED);
+            checkPhysicalState(databaseName, actualDataSourceName, dataSource);
         }
     }
     
-    private void checkState(final String databaseName, final String actualDataSourceName, final DataSource dataSource) {
+    private void setLogicalState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
+        logicalStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
+    }
+    
+    private void checkPhysicalState(final String databaseName, final String actualDataSourceName, final DataSource dataSource) {
         try (Connection ignored = dataSource.getConnection()) {
-            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ENABLED);
+            setPhysicalState(databaseName, actualDataSourceName, DataSourceState.OK);
         } catch (final SQLException ex) {
             ShardingSpherePreconditions.checkState(forceStart, UnavailableDataSourceException::new);
-            dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), DataSourceState.ERROR);
+            setPhysicalState(databaseName, actualDataSourceName, DataSourceState.ERROR);
             log.error("Data source unavailable, ignored with the -f parameter.", ex);
         }
+    }
+    
+    private void setPhysicalState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
+        physicalStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
     }
     
     /**
@@ -112,55 +123,75 @@ public final class DataSourceStateManager {
         if (dataSources.isEmpty() || !initialized) {
             return dataSources;
         }
-        Map<String, DataSource> result = filterDataSources(databaseName, dataSources);
-        checkForceConnection(result);
-        return result;
+        return filterDataSources(databaseName, dataSources);
     }
     
     private Map<String, DataSource> filterDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
         dataSources.forEach((key, value) -> {
-            DataSourceState dataSourceState = dataSourceStates.get(getCacheKey(databaseName, key));
-            if (DataSourceState.DISABLED != dataSourceState && DataSourceState.ERROR != dataSourceState) {
-                result.put(key, value);
-            }
+            filterDataSource(databaseName, result, key, value);
         });
         return result;
     }
     
-    private void checkForceConnection(final Map<String, DataSource> dataSources) {
+    private void filterDataSource(final String databaseName, final Map<String, DataSource> result, final String key, final DataSource value) {
         if (forceStart) {
-            dataSources.entrySet().removeIf(entry -> {
-                try (Connection ignored = entry.getValue().getConnection()) {
-                    return false;
-                } catch (final SQLException ex) {
-                    log.error("Data source state unavailable, ignored with the -f parameter.", ex);
-                    return true;
-                }
-            });
+            if (DataSourceState.DISABLED != getLogicalState(databaseName, key) && DataSourceState.ERROR != getPhysicalState(databaseName, key)) {
+                result.put(key, value);
+            }
+        } else {
+            if (DataSourceState.DISABLED != getLogicalState(databaseName, key)) {
+                result.put(key, value);
+            }
         }
     }
     
     /**
-     * Update data source state.
-     * 
+     * Update physical data source state.
+     *
      * @param databaseName database name
      * @param actualDataSourceName actual data source name
      * @param dataSourceState data source state
      */
-    public void updateState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
-        dataSourceStates.put(getCacheKey(databaseName, actualDataSourceName), dataSourceState);
+    public void updatePhysicalState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
+        if (!dataSourceState.equals(physicalStates.get(getCacheKey(databaseName, actualDataSourceName)))) {
+            setPhysicalState(databaseName, actualDataSourceName, dataSourceState);
+        }
     }
     
     /**
-     * Get data source state.
-     * 
-     * @param databaseName database name 
+     * Update logical data source state.
+     *
+     * @param databaseName database name
+     * @param actualDataSourceName actual data source name
+     * @param dataSourceState data source state
+     */
+    public void updateLogicalState(final String databaseName, final String actualDataSourceName, final DataSourceState dataSourceState) {
+        if (!dataSourceState.equals(logicalStates.get(getCacheKey(databaseName, actualDataSourceName)))) {
+            setLogicalState(databaseName, actualDataSourceName, dataSourceState);
+        }
+    }
+    
+    /**
+     * Get physical data source state.
+     *
+     * @param databaseName database name
      * @param actualDataSourceName actual data source name
      * @return data source state
      */
-    public DataSourceState getState(final String databaseName, final String actualDataSourceName) {
-        return dataSourceStates.get(getCacheKey(databaseName, actualDataSourceName));
+    public DataSourceState getPhysicalState(final String databaseName, final String actualDataSourceName) {
+        return physicalStates.get(getCacheKey(databaseName, actualDataSourceName));
+    }
+    
+    /**
+     * Get logical data source state.
+     *
+     * @param databaseName database name
+     * @param dataSourceName data source name
+     * @return data source state
+     */
+    public DataSourceState getLogicalState(final String databaseName, final String dataSourceName) {
+        return logicalStates.get(getCacheKey(databaseName, dataSourceName));
     }
     
     private String getCacheKey(final String databaseName, final String dataSourceName) {

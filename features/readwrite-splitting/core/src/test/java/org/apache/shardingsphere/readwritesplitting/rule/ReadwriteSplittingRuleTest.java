@@ -57,7 +57,7 @@ public final class ReadwriteSplittingRuleTest {
         ReadwriteSplittingDataSourceRuleConfiguration config =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), Collections.emptyList());
+                Collections.singleton(config), Collections.singletonMap("random", new AlgorithmConfiguration("RANDOM", new Properties()))), "readwrite_splitting_db", Collections.emptyList());
     }
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {

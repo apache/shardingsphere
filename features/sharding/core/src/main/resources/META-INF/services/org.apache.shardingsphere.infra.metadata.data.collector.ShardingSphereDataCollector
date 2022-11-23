@@ -16,4 +16,4 @@
 #
 
 org.apache.shardingsphere.sharding.metadata.data.ShardingStatisticsTableCollector
-org.apache.shardingsphere.sharding.metadata.data.StorageUnitStateTableCollector
+org.apache.shardingsphere.infra.datasource.state.metadata.data.DataSourceStateTableCollector

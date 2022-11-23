@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -33,4 +34,11 @@ public interface DataSourceContainedRule extends ShardingSphereRule {
      * @return data source mapper
      */
     Map<String, Collection<String>> getDataSourceMapper();
+    
+    /**
+     * Calculate logical data source states.
+     * 
+     * @return logical data source states
+     */
+    Map<String, DataSourceState> calculateLogicalDataSourceStates();
 }

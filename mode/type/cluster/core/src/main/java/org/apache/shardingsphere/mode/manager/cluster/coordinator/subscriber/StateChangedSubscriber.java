@@ -76,7 +76,7 @@ public final class StateChangedSubscriber {
                 .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
         staticDataSourceRule.ifPresent(optional -> ((StaticDataSourceContainedRule) optional)
                 .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
-        DataSourceStateManager.getInstance().updateState(
+        DataSourceStateManager.getInstance().updateLogicalState(
                 qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().toUpperCase()));
     }
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -680,23 +681,36 @@ public final class ContextManager implements AutoCloseable {
     private synchronized void alterTableData(final String databaseName, final String schemaName, final ShardingSphereTableData toBeChangedTable) {
         ShardingSphereDatabaseData database = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName);
         database.getSchemaData().get(schemaName).getTableData().put(toBeChangedTable.getName(), toBeChangedTable);
-        handleStorageUnitStateTableData(toBeChangedTable);
+        handleDataSourceStateTableData(toBeChangedTable);
     }
     
-    private void handleStorageUnitStateTableData(final ShardingSphereTableData toBeChangedTable) {
-        if (!"storage_unit_state".equals(toBeChangedTable.getName())) {
+    private void handleDataSourceStateTableData(final ShardingSphereTableData toBeChangedTable) {
+        if (!"data_source_state".equals(toBeChangedTable.getName())) {
             return;
         }
-        toBeChangedTable.getRows().forEach(each -> {
+        updateDataSourceStates(toBeChangedTable);
+    }
+    
+    private void updateDataSourceStates(final ShardingSphereTableData dataSourceStateTable) {
+        dataSourceStateTable.getRows().forEach(each -> {
             List<Object> rows = each.getRows();
-            Preconditions.checkArgument(3 == rows.size(), "Illegal data source state data.");
-            String databaseName = String.valueOf(rows.get(0));
-            String dataSourceName = String.valueOf(rows.get(1));
-            DataSourceState state = DataSourceState.valueOf(String.valueOf(rows.get(2)));
-            if (!state.equals(DataSourceStateManager.getInstance().getState(databaseName, dataSourceName))) {
-                DataSourceStateManager.getInstance().updateState(databaseName, dataSourceName, state);
+            Preconditions.checkArgument(4 == rows.size(), "Illegal data source state data.");
+            String databaseName = getRowData(rows, 0);
+            String dataSourceName = getRowData(rows, 1);
+            String logicalStateName = getRowData(rows, 2);
+            String physicalStateName = getRowData(rows, 3);
+            DataSourceStateManager stateManager = DataSourceStateManager.getInstance();
+            if (!Strings.isNullOrEmpty(logicalStateName)) {
+                stateManager.updateLogicalState(databaseName, dataSourceName, DataSourceState.valueOf(logicalStateName));
+            }
+            if (!Strings.isNullOrEmpty(physicalStateName)) {
+                stateManager.updatePhysicalState(databaseName, dataSourceName, DataSourceState.valueOf(physicalStateName));
             }
         });
+    }
+    
+    private String getRowData(final List<Object> rows, final int index) {
+        return String.valueOf(rows.get(index));
     }
     
     private synchronized void dropTableData(final String databaseName, final String schemaName, final String toBeDeletedTableName) {

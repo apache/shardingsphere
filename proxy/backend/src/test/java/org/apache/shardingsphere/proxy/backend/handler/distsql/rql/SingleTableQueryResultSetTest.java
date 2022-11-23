@@ -112,7 +112,7 @@ public final class SingleTableQueryResultSetTest {
     
     @Test
     public void assertGetRowDataWithOtherRules() {
-        addShardingSphereRule(new ShadowRule(mock(ShadowRuleConfiguration.class)));
+        addShardingSphereRule(new ShadowRule(mock(ShadowRuleConfiguration.class), "shadow_db"));
         DatabaseDistSQLResultSet resultSet = new SingleTableQueryResultSet();
         resultSet.init(database, mock(ShowSingleTableStatement.class));
         Collection<Object> actual = resultSet.getRowData();

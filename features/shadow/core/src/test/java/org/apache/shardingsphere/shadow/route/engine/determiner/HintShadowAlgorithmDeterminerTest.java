@@ -39,7 +39,8 @@ public final class HintShadowAlgorithmDeterminerTest {
     
     @Test
     public void assertIsShadow() {
-        assertTrue(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration())));
+        assertTrue(HintShadowAlgorithmDeterminer.isShadow(createHintShadowAlgorithm(), createShadowDetermineCondition(), 
+                new ShadowRule(createAlgorithmProvidedShadowRuleConfiguration(), "shadow_db")));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
