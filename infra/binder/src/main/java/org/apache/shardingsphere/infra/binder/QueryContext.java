@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,28 +37,22 @@ public final class QueryContext {
     
     private final List<Object> parameters;
     
-    private String sqlStatementDatabaseName;
-    
     private HintValueContext hintValueContext;
+    
+    private String sqlStatementDatabaseName;
     
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;
-        this.hintValueContext = SQLHintUtils.extractHint(sql);
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
         }
     }
     
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
-        this.sqlStatementContext = sqlStatementContext;
-        this.sql = sql;
-        parameters = params;
+        this(sqlStatementContext, sql, params);
         this.hintValueContext = hintValueContext;
-        if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
-        }
     }
     
     /**
