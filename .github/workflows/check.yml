@@ -46,8 +46,7 @@ jobs:
           checkstyle_config: src/resources/checkstyle-ci.xml
           reporter: 'github-pr-check'
           tool_name: 'testtool'
-            
-
+          
   check-license:
     name: Check - license
     timeout-minutes: 10
