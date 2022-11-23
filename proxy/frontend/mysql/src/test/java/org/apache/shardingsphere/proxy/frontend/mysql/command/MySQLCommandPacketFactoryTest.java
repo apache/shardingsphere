@@ -38,7 +38,6 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -76,7 +75,6 @@ public final class MySQLCommandPacketFactoryTest {
     }
     
     @Test
-    @Ignore
     public void assertNewInstanceWithComQueryPacket() {
         when(payload.readStringEOF()).thenReturn("SHOW TABLES");
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_QUERY, payload, connectionSession, false), instanceOf(MySQLComQueryPacket.class));
