@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.converter.ResourceSegmentsConverter;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterStorageUnitStatement;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHa
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sharding.distsql.handler.converter.ResourceSegmentsConverter;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

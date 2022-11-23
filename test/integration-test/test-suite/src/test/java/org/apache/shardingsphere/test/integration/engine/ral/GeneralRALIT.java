@@ -48,10 +48,24 @@ public final class GeneralRALIT extends BaseRALIT {
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (
-                    Statement statement = connection.createStatement();
-                    ResultSet resultSet = statement.executeQuery(getSQL())) {
-                assertResultSet(resultSet);
+                    Statement statement = connection.createStatement()) {
+                assertResultSet(statement);
             }
+        }
+    }
+    
+    private void assertResultSet(final Statement statement) throws SQLException, ParseException {
+        if (null == getAssertion().getAssertionSQL()) {
+            assertResultSet(statement, getSQL());
+        } else {
+            statement.execute(getSQL());
+            assertResultSet(statement, getAssertion().getAssertionSQL().getSql());
+        }
+    }
+    
+    private void assertResultSet(final Statement statement, final String sql) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(sql)) {
+            assertResultSet(resultSet);
         }
     }
 }

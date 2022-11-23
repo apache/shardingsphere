@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.type;
 import com.google.common.base.Preconditions;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 
 import java.util.HashMap;
 import java.util.Map;

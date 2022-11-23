@@ -17,18 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Optional;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -47,6 +36,18 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class TableExtractorTest {
     
@@ -86,7 +87,7 @@ public final class TableExtractorTest {
     public void assertExtractTablesFromInsert() {
         MySQLInsertStatement mySQLInsertStatement = new MySQLInsertStatement();
         mySQLInsertStatement.setTable(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
-        Collection<AssignmentSegment> assignmentSegments = new ArrayList<>();
+        Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
         assignmentSegments.add(new ColumnAssignmentSegment(130, 140, Collections.singletonList(columnSegment), new LiteralExpressionSegment(141, 142, 1)));

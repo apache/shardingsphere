@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingT
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -193,7 +192,7 @@ public final class ShardingTableRuleQueryResultSet implements DatabaseDistSQLRes
     
     private String getAuditorTypes(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
         Optional<ShardingAuditStrategyConfiguration> auditStrategyConfig = getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig);
-        Collection<String> auditorTypes = new ArrayList<>();
+        Collection<String> auditorTypes = new LinkedList<>();
         if (auditStrategyConfig.isPresent()) {
             for (String each : auditStrategyConfig.get().getAuditorNames()) {
                 auditorTypes.add(shardingRuleConfig.getAuditors().get(each).getType());

@@ -97,4 +97,5 @@ rules:
         type: SNOWFLAKE
 
 props:
-  sql-show: false
+  sql-show: true
+  sql-federation-type: ADVANCED

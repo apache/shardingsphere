@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.mysql.MySQLRevokeStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.sqlserver.SQLServerRevokeStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dcl.RevokeStatementTestCase;
 
 /**
  * Revoke statement assert.

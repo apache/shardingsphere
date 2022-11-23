@@ -24,7 +24,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;

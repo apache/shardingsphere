@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Insert
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.insert.ExpectedInsertColumnsClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedInsertColumnsClause;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

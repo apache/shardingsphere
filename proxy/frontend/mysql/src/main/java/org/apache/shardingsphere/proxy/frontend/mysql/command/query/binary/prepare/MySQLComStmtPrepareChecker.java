@@ -103,7 +103,7 @@ public final class MySQLComStmtPrepareChecker {
      * Judge if SQL statement is allowed.
      *
      * @param sqlStatement SQL statement
-     * @return sql statement is allowed or not
+     * @return SQL statement is allowed or not
      */
     public static boolean isStatementAllowed(final SQLStatement sqlStatement) {
         return SQL_STATEMENTS_ALLOWED.contains(sqlStatement.getClass());

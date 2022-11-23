@@ -195,7 +195,7 @@
             <column-projection name="job_id" start-index="264" stop-index="269" />
         </projections>
         <order-by>
-            <column-item name="order1" start-index="295" stop-index="300" />
+            <column-item name="order1" start-index="295" stop-index="300"  nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -247,7 +247,7 @@
             <column-projection name="is_cycle" start-index="367" stop-index="374" />
         </projections>
         <order-by>
-            <column-item name="order1" start-index="403" stop-index="408" />
+            <column-item name="order1" start-index="403" stop-index="408" nulls-order-type="LAST" />
         </order-by>
     </select>
 
@@ -284,10 +284,10 @@
             <column-projection name="salary" start-index="239" stop-index="244" />
         </projections>
         <group-by>
-            <column-item name="emp_last" start-index="270" stop-index="277" />
-            <column-item name="eid" start-index="280" stop-index="282" />
-            <column-item name="mgr_id" start-index="285" stop-index="290" />
-            <column-item name="salary" start-index="293" stop-index="298" />
+            <column-item name="emp_last" start-index="270" stop-index="277" nulls-order-type="LAST" />
+            <column-item name="eid" start-index="280" stop-index="282" nulls-order-type="LAST" />
+            <column-item name="mgr_id" start-index="285" stop-index="290" nulls-order-type="LAST" />
+            <column-item name="salary" start-index="293" stop-index="298" nulls-order-type="LAST" />
         </group-by>
         <having start-index="300" stop-index="320">
             <expr>
@@ -303,8 +303,8 @@
             </expr>
         </having>
         <order-by>
-            <column-item name="mgr_id" start-index="331" stop-index="336" />
-            <column-item name="emp_last" start-index="351" stop-index="358" />
+            <column-item name="mgr_id" start-index="331" stop-index="336" nulls-order-type="FIRST" />
+            <column-item name="emp_last" start-index="351" stop-index="358" nulls-order-type="LAST" />
         </order-by>
     </select>
 

@@ -56,13 +56,6 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     }
     
     @Override
-    protected void beforeTest() throws SQLException {
-        super.beforeTest();
-        Connection connection = getDataSource().getConnection();
-        executeWithLog(connection, "CREATE OR REPLACE VIEW t_order_view AS SELECT * FROM t_order;");
-    }
-    
-    @Override
     public void executeTest() throws SQLException {
         Connection connection = getDataSource().getConnection();
         broadcastTableCursorTest(connection);

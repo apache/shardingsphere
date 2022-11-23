@@ -83,10 +83,12 @@
     <sql-case id="select_where_with_subquery" value="SELECT last_name, department_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE last_name = 'Lorentz') ORDER BY last_name, department_id" db-types="Oracle" />
     <sql-case id="select_where_with_expr_with_not_in" value="SELECT * FROM employees WHERE department_id NOT IN (SELECT department_id FROM departments WHERE location_id = 1700) ORDER BY last_name" db-types="Oracle" />
     <sql-case id="select_projections_with_expr" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="MySQL" />
+    <sql-case id="select_projections_with_expr_for_postgres" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_projections_with_only_expr_for_postgres" value="SELECT CASE order_id WHEN 1 THEN '11' ELSE '00' END FROM t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_amp" value="select 1 &amp; 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_vertical_bar" value="select 1 | 1" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_with_abs_function" value="SELECT ABS(1) FROM t_order WHERE ABS(1) &gt; 1 GROUP BY ABS(1) ORDER BY ABS(1)" db-types="MySQL,Oracle" />
-    <sql-case id="select_with_regular_function" value="SELECT A(1) FROM t_order WHERE A(1) = 1 GROUP BY A(order_id) ORDER BY A(order_id)" db-types="MySQL,Oracle,SQLServer" />
+    <sql-case id="select_with_abs_function" value="SELECT ABS(1) FROM t_order WHERE ABS(1) &gt; 1 GROUP BY ABS(1) ORDER BY ABS(1)" db-types="Oracle" />
+    <sql-case id="select_with_regular_function" value="SELECT A(1) FROM t_order WHERE A(1) = 1 GROUP BY A(order_id) ORDER BY A(order_id)" db-types="MySQL,SQLServer" />
     <sql-case id="select_with_regular_function_for_sql92" value="SELECT A(1) FROM t_order WHERE A(1) = 1" db-types="MySQL,Oracle,SQLServer,H2,SQL92" />
     <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
     <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL" />

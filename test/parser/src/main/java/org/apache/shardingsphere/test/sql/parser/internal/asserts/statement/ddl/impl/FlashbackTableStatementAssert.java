@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleFlashbackTableStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table.TableAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ddl.FlashbackTableStatementTestCase;
 
 /**
  * Flashback table statement assert.

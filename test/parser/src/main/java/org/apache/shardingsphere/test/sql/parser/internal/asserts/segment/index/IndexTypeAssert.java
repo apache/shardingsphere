@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTy
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.index.ExpectedIndexType;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.index.ExpectedIndexType;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

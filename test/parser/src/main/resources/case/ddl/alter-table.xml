@@ -83,7 +83,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_integer_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -102,7 +102,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_integer_type_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -121,7 +121,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_integer_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -140,7 +140,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_fixed_point_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -154,7 +154,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_float_point_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -168,7 +168,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_float_point_type_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -182,7 +182,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_float_point_type_postgresql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -221,7 +221,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_bit_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -230,7 +230,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_date_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -258,6 +258,7 @@
             </column-definition>
         </add-column>
     </alter-table>
+    
     <alter-table sql-case-id="alter_table_add_columns_string_type_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -316,7 +317,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_string_type_postgresql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -330,7 +331,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_date_type">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -354,7 +355,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_columns_date_type_oracle">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -378,7 +379,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_column_with_first">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
@@ -521,7 +522,7 @@
             <column-definition type="VARCHAR" start-index="35" stop-index="53">
                 <column name="column4" start-index="35" stop-index="41" />
             </column-definition>
-            <previousColumn name="user_id" start-index="27" stop-index="33" />
+            <previous-column name="user_id" start-index="27" stop-index="33" />
         </change-column>
     </alter-table>
     
@@ -576,7 +577,7 @@
     <alter-table sql-case-id="alter_table_drop_primary_key">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <add-column>
@@ -585,7 +586,7 @@
             </column-definition>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_not_null_first">
         <table name="t1" start-index="12" stop-index="13" />
         <add-column>
@@ -595,7 +596,7 @@
             <column-position start-index="37" stop-index="41"/>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_not_null_after">
         <table name="t1" start-index="12" stop-index="13" />
         <add-column>
@@ -607,17 +608,17 @@
             </column-position>
         </add-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_change_unsigned_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <change-column>
             <column-definition type="real" start-index="25" stop-index="49">
                 <column name="c2" />
             </column-definition>
-            <previousColumn name="c1" start-index="22" stop-index="23" />
+            <previous-column name="c1" start-index="22" stop-index="23" />
         </change-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_modify_unsigned_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <modify-column>
@@ -626,7 +627,7 @@
             </column-definition>
         </modify-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_modify_unsigned_zerofill_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <modify-column>
@@ -635,21 +636,21 @@
             </column-definition>
         </modify-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_change_unsigned_zerofill_not_null">
         <table name="t1" start-index="12" stop-index="13" />
         <change-column>
             <column-definition type="real" start-index="25" stop-index="58">
                 <column name="c2" />
             </column-definition>
-            <previousColumn name="c1" start-index="22" stop-index="23" />
+            <previous-column name="c1" start-index="22" stop-index="23" />
         </change-column>
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_add_partition">
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>
-
+    
     <alter-table sql-case-id="alter_table_partition">
         <table name="t1" start-index="12" stop-index="13" />
     </alter-table>

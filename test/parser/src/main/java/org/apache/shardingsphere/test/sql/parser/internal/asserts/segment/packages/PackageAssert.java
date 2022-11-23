@@ -23,8 +23,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.Pack
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.packages.ExpectedPackage;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.packages.ExpectedPackage;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

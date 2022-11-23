@@ -171,7 +171,6 @@
                 </on-condition>
             </join-table>
         </from>
-
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
                 <owner name="i" start-index="7" stop-index="7" />
@@ -225,7 +224,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
+            <column-item name="item_id" order-direction="DESC" nulls-order-type="FIRST" start-index="165" stop-index="173" literal-start-index="166" literal-stop-index="174">
                 <owner name="i" start-index="165" stop-index="165" literal-start-index="166" literal-stop-index="166" />
             </column-item>
         </order-by>
@@ -333,7 +332,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="173" stop-index="181" literal-start-index="174" literal-stop-index="182">
+            <column-item name="item_id" order-direction="DESC" nulls-order-type="LAST" start-index="173" stop-index="181" literal-start-index="174" literal-stop-index="182">
                 <owner name="i" start-index="173" stop-index="173" literal-start-index="174" literal-stop-index="174" />
             </column-item>
         </order-by>
@@ -442,7 +441,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="item_id" order-direction="DESC" start-index="173" stop-index="181" literal-start-index="174" literal-stop-index="182">
+            <column-item name="item_id" order-direction="DESC" nulls-order-type="LAST" start-index="173" stop-index="181" literal-start-index="174" literal-stop-index="182">
                 <owner name="i" start-index="173" stop-index="173" literal-start-index="174" literal-stop-index="174" />
             </column-item>
         </order-by>
@@ -1975,7 +1974,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="order_id" start-index="49" stop-index="56" literal-start-index="50" literal-stop-index="57" />
+            <column-item name="order_id" start-index="49" stop-index="56" literal-start-index="50" literal-stop-index="57" nulls-order-type="LAST" />
         </order-by>
         <row-count value="20" parameter-index="0" />
     </select>
@@ -1988,7 +1987,7 @@
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <order-by>
-            <column-item name="order_id" start-index="31" stop-index="38" />
+            <column-item name="order_id" start-index="31" stop-index="38" nulls-order-type="LAST" />
         </order-by>
         <row-count value="5" start-index="52" stop-index="52"/>
     </select>

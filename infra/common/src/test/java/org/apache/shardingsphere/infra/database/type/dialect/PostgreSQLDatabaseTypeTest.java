@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;

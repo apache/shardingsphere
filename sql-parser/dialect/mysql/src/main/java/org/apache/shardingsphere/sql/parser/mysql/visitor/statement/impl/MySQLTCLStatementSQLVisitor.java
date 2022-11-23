@@ -32,9 +32,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTran
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionAccessType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OperationScope;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;

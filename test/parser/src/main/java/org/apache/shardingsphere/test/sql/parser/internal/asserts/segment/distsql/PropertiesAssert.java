@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.dists
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.ExpectedProperties;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.ExpectedProperty;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedProperty;
 
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
@@ -41,13 +41,13 @@ public final class PropertiesAssert {
      * @param actual actual properties
      * @param expected expected properties test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final ExpectedProperties expected) {
-        if (null == expected || null == expected.getProperties()) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final List<ExpectedProperty> expected) {
+        if (null == expected) {
             assertTrue(assertContext.getText("Actual properties should not exist."), actual.isEmpty());
         } else {
             assertNotNull(assertContext.getText("Actual properties should exist."), actual);
-            for (ExpectedProperty expectedProperty : expected.getProperties()) {
-                PropertyAssert.assertIs(assertContext, actual, expectedProperty);
+            for (ExpectedProperty each : expected) {
+                PropertyAssert.assertIs(assertContext, actual, each);
             }
         }
     }

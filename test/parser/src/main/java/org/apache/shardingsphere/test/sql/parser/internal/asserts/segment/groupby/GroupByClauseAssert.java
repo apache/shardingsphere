@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.orderby.OrderByItemAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.ExpectedOrderByClause;
 
 /**
  * Group by clause assert.

@@ -14,13 +14,13 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+ALTER USER test_user NOSUPERUSER;
+ALTER USER test_user REPLICATION;
 CREATE DATABASE scaling_it_0;
 CREATE DATABASE scaling_it_1;
 CREATE DATABASE scaling_it_2;
 CREATE DATABASE scaling_it_3;
 CREATE DATABASE scaling_it_4;
-CREATE DATABASE scaling;
-
 GRANT CREATE, CONNECT ON DATABASE scaling_it_0 TO test_user;
 GRANT CREATE, CONNECT ON DATABASE scaling_it_1 TO test_user;
 GRANT CREATE, CONNECT ON DATABASE scaling_it_2 TO test_user;

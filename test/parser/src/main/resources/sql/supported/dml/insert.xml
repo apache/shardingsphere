@@ -21,7 +21,7 @@
     <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />
     <sql-case id="insert_without_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" />
     <sql-case id="insert_with_special_characters" value="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
-    <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id" db-types="PostgreSQL,openGauss" />
+    <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id, *, t_order.*, user_id u, t_order.status as s, 'OK' result" db-types="PostgreSQL,openGauss" />
     <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" />
     <sql-case id="insert_without_columns_with_all_placeholders" value="INSERT INTO t_order VALUES (?, ?, ?)" />
     <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
@@ -87,4 +87,5 @@
     <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
     <sql-case id="insert_on_duplicate_key_update_multi_column" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE user_id = user_id + 1, status='update'" db-types="MySQL,openGauss" />
     <sql-case id="insert_with_negative_value" value="insert into t_order (order_id, user_id, status) values (?, ?, ?)" />
+    <sql-case id="insert_datetime_literals" value="INSERT INTO date_tab VALUES ( TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00');" db-types="Oracle" />
 </sql-cases>

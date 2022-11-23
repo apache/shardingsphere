@@ -52,7 +52,7 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     }
     
     private void checkAlgorithm(final String databaseName, final ShardingRuleConfiguration currentRuleConfig, final AlterDefaultShardingStrategyStatement sqlStatement) {
-        ShardingSpherePreconditions.checkState(ShardingStrategyType.contain(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
+        ShardingSpherePreconditions.checkState(ShardingStrategyType.contains(sqlStatement.getStrategyType()), () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkState(ShardingStrategyType.getValueOf(sqlStatement.getStrategyType()).isValid(sqlStatement.getShardingColumn()),
                 () -> new InvalidAlgorithmConfigurationException(sqlStatement.getStrategyType()));
         ShardingSpherePreconditions.checkState(isAlgorithmDefinitionExists(sqlStatement), MissingRequiredAlgorithmException::new);

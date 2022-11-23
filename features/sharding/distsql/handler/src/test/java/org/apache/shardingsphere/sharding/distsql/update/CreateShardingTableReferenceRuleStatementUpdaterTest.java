@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableReferenceRuleStatementUpdater;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.TableReferenceRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableReferenceRuleStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;

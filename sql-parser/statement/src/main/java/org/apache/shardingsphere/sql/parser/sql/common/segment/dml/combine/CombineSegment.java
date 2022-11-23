@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 

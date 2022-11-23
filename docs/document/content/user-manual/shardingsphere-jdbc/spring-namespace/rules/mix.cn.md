@@ -58,12 +58,18 @@ ShardingSphere 涵盖了很多功能，例如，分库分片、读写分离、�
         <prop key="aes-key-value">123456</prop>
     </props>
 </encrypt:encrypt-algorithm>
-<encrypt:encrypt-algorithm id="pwd_encryptor" type="assistedTest" />
+<encrypt:encrypt-algorithm id="pwd_encryptor" type="MD5" />
+<encrypt:encrypt-algorithm id="pwd_assisted_encryptor" type="AES">
+    <props>
+        <prop key="aes-key-value">123456</prop>
+    </props>
+</encrypt:encrypt-algorithm>
+<encrypt:encrypt-algorithm id="like_query_encryptor" type="CHAR_DIGEST_LIKE" />
 
 <encrypt:rule id="encryptRule">
-    <encrypt:table name="t_user">
-        <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" />
-        <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" encrypt-algorithm-ref="pwd_encryptor" />
+    <encrypt:table name="t_user" query-with-cipher-column="false">
+        <encrypt:column logic-column="username" cipher-column="username" plain-column="username_plain" encrypt-algorithm-ref="name_encryptor" query-with-cipher-column="true"/>
+        <encrypt:column logic-column="pwd" cipher-column="pwd" assisted-query-column="assisted_query_pwd" like-query-column="like_query_pwd" encrypt-algorithm-ref="pwd_encryptor" assisted-query-encrypt-algorithm-ref="pwd_assisted_encryptor" like-query-encrypt-algorithm-ref="like_query_encryptor" query-with-cipher-column="true" />
     </encrypt:table>
 </encrypt:rule>
 ```

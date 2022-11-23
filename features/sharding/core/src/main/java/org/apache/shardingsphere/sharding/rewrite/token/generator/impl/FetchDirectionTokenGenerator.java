@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTo
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.FetchDirectionToken;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;

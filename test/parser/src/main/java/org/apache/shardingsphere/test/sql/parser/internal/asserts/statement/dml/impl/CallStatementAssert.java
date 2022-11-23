@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.call.ExpectedCallParameter;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.statement.dml.CallStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.call.ExpectedCallParameter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.CallStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

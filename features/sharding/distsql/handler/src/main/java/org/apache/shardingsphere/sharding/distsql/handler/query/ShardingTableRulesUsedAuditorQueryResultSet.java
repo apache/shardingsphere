@@ -24,13 +24,11 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingT
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.LinkedList;
 
 /**
  * Query result set for show sharding table rules used auditor.
@@ -42,13 +40,12 @@ public final class ShardingTableRulesUsedAuditorQueryResultSet implements Databa
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowShardingTableRulesUsedAuditorStatement statement = (ShowShardingTableRulesUsedAuditorStatement) sqlStatement;
-        List<Collection<Object>> result = new ArrayList<>();
-        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        rule.ifPresent(optional -> requireResult(statement, result, optional));
+        Collection<Collection<Object>> result = new LinkedList<>();
+        database.getRuleMetaData().findSingleRule(ShardingRule.class).ifPresent(optional -> requireResult(statement, result, optional));
         data = result.iterator();
     }
     
-    private void requireResult(final ShowShardingTableRulesUsedAuditorStatement statement, final List<Collection<Object>> result, final ShardingRule rule) {
+    private void requireResult(final ShowShardingTableRulesUsedAuditorStatement statement, final Collection<Collection<Object>> result, final ShardingRule rule) {
         if (!statement.getAuditorName().isPresent()) {
             return;
         }

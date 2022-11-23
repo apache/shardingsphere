@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableDat
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -113,7 +112,7 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
             return new BigDecimal(data.toString());
         }
         if (Types.BIGINT == dataType) {
-            return new BigInteger(data.toString());
+            return Long.valueOf(data.toString());
         }
         if (Types.REAL == dataType || Types.FLOAT == dataType) {
             return Float.parseFloat(data.toString());

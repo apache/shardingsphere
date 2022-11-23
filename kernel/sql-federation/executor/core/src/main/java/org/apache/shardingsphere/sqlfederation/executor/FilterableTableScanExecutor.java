@@ -122,6 +122,9 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
+        if (databaseType.getSystemSchemas().contains(schemaName)) {
+            return executeByShardingSphereData(databaseName, schemaName, table);
+        }
         SqlString sqlString = createSQLString(table, (FilterableScanNodeExecutorContext) scanContext, SQLDialectFactory.getSQLDialect(databaseType));
         SQLFederationExecutorContext federationContext = executorContext.getFederationContext();
         QueryContext queryContext = createQueryContext(federationContext.getMetaData(), sqlString, databaseType);
@@ -131,9 +134,6 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         if (federationContext.isPreview()) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
-        }
-        if (databaseType.getSystemSchemas().contains(schemaName)) {
-            return executeByShardingSphereData(databaseName, schemaName, table);
         }
         return execute(databaseType, queryContext, database, context);
     }

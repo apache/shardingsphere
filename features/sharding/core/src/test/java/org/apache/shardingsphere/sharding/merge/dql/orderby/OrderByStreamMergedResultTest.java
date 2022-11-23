@@ -33,7 +33,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
@@ -69,8 +70,8 @@ public final class OrderByStreamMergedResultTest {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         selectStatement.setProjections(projectionsSegment);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Arrays.asList(
-                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, OrderDirection.ASC),
-                new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, OrderDirection.ASC))));
+                new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.FIRST),
+                new IndexOrderByItemSegment(0, 0, 2, OrderDirection.ASC, NullsOrderType.FIRST))));
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatementContext = new SelectStatementContext(

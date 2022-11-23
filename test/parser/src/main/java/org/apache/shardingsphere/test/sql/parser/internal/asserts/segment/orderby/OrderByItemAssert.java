@@ -26,19 +26,19 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.value.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.ExpectedOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.impl.ExpectedColumnOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.impl.ExpectedExpressionOrderByItem;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.orderby.item.impl.ExpectedIndexOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.ExpectedOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.impl.ExpectedColumnOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.impl.ExpectedExpressionOrderByItem;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.orderby.item.impl.ExpectedIndexOrderByItem;
 
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -85,8 +85,8 @@ public final class OrderByItemAssert {
     }
     
     private static void assertOrderInfo(final SQLCaseAssertContext assertContext, final OrderByItemSegment actual, final ExpectedOrderByItem expected, final String type) {
-        assertThat(assertContext.getText(String.format("%s item order direction assertion error: ", type)),
-                null != actual.getOrderDirection() ? actual.getOrderDirection().name() : actual.getNullOrderDirection().name(), is(expected.getOrderDirection()));
+        assertThat(assertContext.getText(String.format("%s item order direction assertion error: ", type)), actual.getOrderDirection().name(), is(expected.getOrderDirection()));
+        assertThat(assertContext.getText(String.format("%s item nulls order type assertion error: ", type)), actual.getNullsOrderType().name(), is(expected.getNullsOrderType()));
     }
     
     private static void assertColumnOrderByItem(final SQLCaseAssertContext assertContext,

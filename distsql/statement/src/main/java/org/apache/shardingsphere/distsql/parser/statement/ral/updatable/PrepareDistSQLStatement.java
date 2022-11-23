@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Prepare dist sql statement.
+ * Prepare Dist SQL statement.
  */
 public final class PrepareDistSQLStatement extends UpdatableRALStatement {
 }

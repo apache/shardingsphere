@@ -28,7 +28,7 @@
             <column-item name="order_id" start-index="33" stop-index="42">
                 <owner name="o" start-index="33" stop-index="33" />
             </column-item>
-            <index-item index="2" order-direction="DESC" start-index="45" stop-index="45" />
+            <index-item index="2" order-direction="DESC" nulls-order-type="LAST" start-index="45" stop-index="45" />
         </order-by>
     </select>
 
@@ -84,7 +84,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="order_id" order-direction="DESC" start-index="103" stop-index="112">
+            <column-item name="order_id" order-direction="DESC" nulls-order-type="LAST" start-index="103" stop-index="112">
                 <owner name="o" start-index="103" stop-index="103" />
             </column-item>
             <index-item index="1" start-index="120" stop-index="120" />
@@ -159,10 +159,10 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="creation_date" order-direction="DESC" start-index="103" stop-index="117">
+            <column-item name="creation_date" order-direction="DESC" nulls-order-type="LAST" start-index="103" stop-index="117">
                 <owner name="i" start-index="103" stop-index="103" />
             </column-item>
-            <column-item name="order_id" order-direction="DESC" start-index="125" stop-index="134">
+            <column-item name="order_id" order-direction="DESC" nulls-order-type="LAST" start-index="125" stop-index="134">
                 <owner name="o" start-index="125" stop-index="125" />
             </column-item>
             <column-item name="item_id" start-index="142" stop-index="150">
@@ -171,7 +171,6 @@
         </order-by>
     </select>
 
-    <!-- //TODO add order-by-null-type -->
     <select sql-case-id="select_order_by_for_nulls_first">
         <from>
             <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
@@ -182,13 +181,12 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="order_id" start-index="59" stop-index="68">
+            <column-item name="order_id" start-index="59" stop-index="68" order-direction="ASC" nulls-order-type="FIRST">
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
     </select>
 
-    <!-- //TODO add order-by-null-type -->
     <select sql-case-id="select_order_by_for_nulls_last">
         <from>
             <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
@@ -199,7 +197,7 @@
             </column-projection>
         </projections>
         <order-by>
-            <column-item name="order_id" start-index="59" stop-index="68">
+            <column-item name="order_id" start-index="59" stop-index="68" order-direction="ASC" nulls-order-type="LAST">
                 <owner name="o" start-index="59" stop-index="59" />
             </column-item>
         </order-by>
@@ -217,7 +215,7 @@
             <column-projection name="order_id" start-index="10" stop-index="17" />
         </projections>
         <order-by>
-            <column-item name="order_id" start-index="48" stop-index="57">
+            <column-item name="order_id" start-index="48" stop-index="57" nulls-order-type="LAST">
                 <owner name="o" start-index="48" stop-index="48" />
             </column-item>
         </order-by>
@@ -257,7 +255,7 @@
             <column-projection name="last_name" start-index="15" stop-index="23" />
         </projections>
         <order-by>
-            <column-item name="salary" order-direction="ASC" start-index="49" stop-index="54" />
+            <column-item name="salary" order-direction="ASC" start-index="49" stop-index="54" nulls-order-type="LAST" />
             <column-item name="last_name" order-direction="DESC" start-index="61" stop-index="69" />
         </order-by>
     </select>
