@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.discovery.framework.container.config.mysql;
+package org.apache.shardingsphere.test.integration.discovery.framework.container.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -20,12 +20,13 @@ package org.apache.shardingsphere.test.integration.discovery.framework.container
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.discovery.framework.container.config.mysql.MySQLContainerConfigurationFactory;
+import org.apache.shardingsphere.test.integration.discovery.framework.container.config.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
+import org.apache.shardingsphere.test.integration.env.container.atomic.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.StorageContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
@@ -82,7 +83,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     @Override
     public DataSource getProxyDatasource(final String databaseName) {
         return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName),
-                StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD);
+                ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
     @Override
