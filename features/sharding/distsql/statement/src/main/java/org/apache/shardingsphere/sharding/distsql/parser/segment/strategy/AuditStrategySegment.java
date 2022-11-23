@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Audit strategy segment.
@@ -31,13 +30,7 @@ import java.util.Collections;
 @Getter
 public final class AuditStrategySegment implements ASTNode {
     
-    private final Collection<String> auditorNames;
-    
     private final Collection<ShardingAuditorSegment> auditorSegments;
     
     private final boolean allowHintDisable;
-    
-    public AuditStrategySegment(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        this(auditorNames, Collections.emptyList(), allowHintDisable);
-    }
 }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.rdl.AuditStrategyAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedTableRule;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -66,6 +67,7 @@ public final class TableRuleAssert {
                 assertThat(assertContext.getText(String.format("`%s`'s table rule segment assertion error: ", actual.getClass().getSimpleName())),
                         actual.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is(expected.getKeyGenerateStrategyColumn()));
             }
+            AuditStrategyAssert.assertIs(assertContext, actual.getAuditStrategySegment(), expected.getAuditStrategy());
         }
     }
 }
