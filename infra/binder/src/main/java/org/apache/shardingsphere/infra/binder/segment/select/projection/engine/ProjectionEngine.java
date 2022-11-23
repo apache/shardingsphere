@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -49,8 +50,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -177,7 +180,7 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getProjections(projections);
+        return getActualColumns(projections, Collections.emptyMap());
     }
     
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
@@ -185,23 +188,46 @@ public final class ProjectionEngine {
             return Collections.emptyList();
         }
         Collection<Projection> projections = new LinkedList<>();
-        createProjection(((JoinTableSegment) table).getLeft(), projectionSegment).ifPresent(projections::add);
-        createProjection(((JoinTableSegment) table).getRight(), projectionSegment).ifPresent(projections::add);
-        return getProjections(projections);
+        JoinTableSegment joinTable = (JoinTableSegment) table;
+        createProjection(joinTable.getLeft(), projectionSegment).ifPresent(projections::add);
+        createProjection(joinTable.getRight(), projectionSegment).ifPresent(projections::add);
+        return getActualColumns(projections, getUsingColumnExistFlags(joinTable.getUsing()));
     }
     
-    private Collection<Projection> getProjections(final Collection<Projection> projections) {
+    private Map<String, Boolean> getUsingColumnExistFlags(final List<ColumnSegment> usingColumns) {
+        Map<String, Boolean> result = new HashMap<>(usingColumns.size(), 1);
+        for (ColumnSegment each : usingColumns) {
+            result.put(each.getIdentifier().getValue().toLowerCase(), false);
+        }
+        return result;
+    }
+    
+    private Collection<Projection> getActualColumns(final Collection<Projection> projections, final Map<String, Boolean> usingColumnExistFlags) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
+            if (compareAndSetExistFlag(usingColumnExistFlags, each)) {
+                continue;
+            }
             if (each instanceof ColumnProjection) {
                 result.add(each);
             } else if (each instanceof ExpressionProjection) {
                 result.add(each);
             } else if (each instanceof ShorthandProjection) {
-                result.addAll(((ShorthandProjection) each).getActualColumns().values());
+                result.addAll(getActualColumns(((ShorthandProjection) each).getActualColumns().values(), usingColumnExistFlags));
             }
         }
         return result;
+    }
+    
+    private boolean compareAndSetExistFlag(final Map<String, Boolean> usingColumnExistFlags, final Projection projection) {
+        Boolean exitFlag = usingColumnExistFlags.get(projection.getColumnLabel());
+        if (null != exitFlag && exitFlag) {
+            return true;
+        }
+        if (null != exitFlag && !exitFlag) {
+            usingColumnExistFlags.put(projection.getColumnLabel(), true);
+        }
+        return false;
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {
