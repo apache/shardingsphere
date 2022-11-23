@@ -56,7 +56,7 @@ import java.util.function.BiPredicate;
 public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
-    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule rule) {
+    public boolean check(  String databaseName ,   Grantee grantee, final AuthorityRule rule) {
         return null == grantee || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
     }
     
