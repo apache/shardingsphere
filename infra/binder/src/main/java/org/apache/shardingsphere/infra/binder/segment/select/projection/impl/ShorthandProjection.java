@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -77,7 +78,7 @@ public final class ShorthandProjection implements Projection {
      */
     public Collection<ColumnProjection> getColumnProjections() {
         Collection<ColumnProjection> result = new LinkedList<>();
-        for (Map.Entry<String, Projection> entry : actualColumns.entrySet()) {
+        for (Entry<String, Projection> entry : actualColumns.entrySet()) {
             if (entry.getValue() instanceof ColumnProjection) {
                 result.add((ColumnProjection) entry.getValue());
             }
