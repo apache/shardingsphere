@@ -25,11 +25,14 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cal
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CopyContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ReturningClauseContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCallStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCheckpointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCheckpointStatement;
 
 import java.util.Properties;
 
@@ -65,5 +68,10 @@ public final class OpenGaussDMLStatementSQLVisitor extends OpenGaussStatementSQL
     @Override
     public ASTNode visitCheckpoint(final CheckpointContext ctx) {
         return new OpenGaussCheckpointStatement();
+    }
+    
+    @Override
+    public ASTNode visitReturningClause(final ReturningClauseContext ctx) {
+        return new ReturningSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ProjectionsSegment) visit(ctx.targetList()));
     }
 }

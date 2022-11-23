@@ -144,6 +144,9 @@ public final class InsertStatementHandler implements SQLStatementHandler {
         if (insertStatement instanceof PostgreSQLStatement) {
             return ((PostgreSQLInsertStatement) insertStatement).getReturningSegment();
         }
+        if (insertStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussInsertStatement) insertStatement).getReturningSegment();
+        }
         return Optional.empty();
     }
 }
