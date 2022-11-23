@@ -41,7 +41,7 @@ jobs:
           restore-keys: |
             shardingsphere-maven-third-party-
       - name: Run checkstyle
-        uses: nikitasavinov/checkstyle-action@master
+        uses: nikitasavinov/checkstyle-action@0.6.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           checkstyle_config: src/resources/checkstyle-ci.xml
