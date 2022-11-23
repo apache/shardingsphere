@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaTableNamesLoaderTest {
+public final class SchemaMetaDataLoaderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
