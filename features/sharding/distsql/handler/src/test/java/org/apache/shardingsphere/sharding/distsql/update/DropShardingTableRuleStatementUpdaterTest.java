@@ -101,6 +101,8 @@ public final class DropShardingTableRuleStatementUpdaterTest {
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
+        assertThat(currentRuleConfig.getKeyGenerators().size(), is(0));
+        assertThat(currentRuleConfig.getAuditors().size(), is(0));
     }
     
     private DropShardingTableRuleStatement createSQLStatement(final String tableName) {
@@ -118,6 +120,8 @@ public final class DropShardingTableRuleStatementUpdaterTest {
         result.getShardingAlgorithms().put("unused_algorithm", null);
         result.getShardingAlgorithms().put("t_order_item_algorithm", null);
         result.getShardingAlgorithms().put("default_table_strategy", null);
+        result.getKeyGenerators().put("unused_key_generator", null);
+        result.getAuditors().put("unused_auditor", null);
         return result;
     }
     
