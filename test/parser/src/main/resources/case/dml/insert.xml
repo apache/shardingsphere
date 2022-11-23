@@ -199,6 +199,20 @@
             </value>
         </values>
         <comment start-index="7" stop-index="26" text="/*+ index(field1) */"/>
+        <returning>
+            <projections start-index="103" stop-index="169">
+                <column-projection name="order_id" start-index="103" stop-index="110" />
+                <shorthand-projection start-index="113" stop-index="113" />
+                <shorthand-projection start-index="116" stop-index="124">
+                    <owner name="t_order" start-index="116" stop-index="122"/>
+                </shorthand-projection>
+                <column-projection name="user_id" alias="u" start-index="127" stop-index="135" />
+                <column-projection name="status" alias="s" start-index="138" stop-index="156">
+                    <owner name="t_order" start-index="138" stop-index="144"/>
+                </column-projection>
+                <expression-projection text="'OK'" alias="result" start-index="159" stop-index="169" />
+            </projections>
+        </returning>
     </insert>
 
     <insert sql-case-id="insert_with_all_placeholders_for_table_identifier" parameters="1, 1, 'init'">
