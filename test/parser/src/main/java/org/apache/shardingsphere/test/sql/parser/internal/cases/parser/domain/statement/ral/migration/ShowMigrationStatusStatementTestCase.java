@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ import java.util.List;
 public final class ShowMigrationStatusStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
-    private final List<String> jobIds = new LinkedList<>();
+    private String jobId;
     
     @XmlElement(name = "type-strategy")
     private List<ExpectedAlgorithm> tableStrategies;

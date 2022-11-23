@@ -19,10 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 
 import org.apache.shardingsphere.migration.distsql.statement.StopMigrationCheckStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.StopMigrationCheckStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -43,16 +42,7 @@ public final class StopMigrationCheckStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertJobIds(assertContext, actual.getJobId(), expected.getJobId());
-        }
-    }
-    
-    private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final String expected) {
-        if (expected.isEmpty()) {
-            assertNull(assertContext.getText("Actual job id should not exist."), actual);
-        } else {
-            assertNotNull(assertContext.getText("Actual job id should exist."), actual);
-            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected));
+            JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
         }
     }
 }

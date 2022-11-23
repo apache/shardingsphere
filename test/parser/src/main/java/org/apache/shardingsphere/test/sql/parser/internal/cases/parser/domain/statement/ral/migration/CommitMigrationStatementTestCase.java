@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Commit migration statement test case.
  */
 @Getter
+@Setter
 public final class CommitMigrationStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
-    private final List<String> jobIds = new LinkedList<>();
+    private String jobId;
 }
