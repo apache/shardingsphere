@@ -79,7 +79,7 @@ public final class DropDefaultStrategyStatementUpdater extends AbstractDropShard
         } else {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
-        dropUnusedAlgorithms(currentRuleConfig);
+        dropUnusedAlgorithm(currentRuleConfig);
         return false;
     }
     

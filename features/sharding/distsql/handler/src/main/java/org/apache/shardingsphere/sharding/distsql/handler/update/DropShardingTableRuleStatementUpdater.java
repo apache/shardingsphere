@@ -114,7 +114,7 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
     public boolean updateCurrentRuleConfiguration(final DropShardingTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> toBeDroppedShardingTableNames = getToBeDroppedShardingTableNames(sqlStatement);
         toBeDroppedShardingTableNames.forEach(each -> dropShardingTable(currentRuleConfig, each));
-        dropUnusedAlgorithms(currentRuleConfig);
+        dropUnusedAlgorithm(currentRuleConfig);
         dropUnusedKeyGenerator(currentRuleConfig);
         dropUnusedAuditor(currentRuleConfig);
         return false;

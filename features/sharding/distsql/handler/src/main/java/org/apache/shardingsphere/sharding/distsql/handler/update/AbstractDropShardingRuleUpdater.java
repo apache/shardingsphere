@@ -31,11 +31,11 @@ import java.util.stream.Collectors;
 public abstract class AbstractDropShardingRuleUpdater {
     
     /**
-     * Drop unused algorithms.
+     * Drop unused algorithm.
      * 
      * @param currentRuleConfig current sharding rule configuration
      */
-    public void dropUnusedAlgorithms(final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropUnusedAlgorithm(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().map(each -> Arrays.asList(each.getTableShardingStrategy(), each.getDatabaseShardingStrategy()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).map(ShardingStrategyConfiguration::getShardingAlgorithmName).collect(Collectors.toSet());
         inUsedAlgorithms.addAll(currentRuleConfig.getAutoTables().stream().map(each -> each.getShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
