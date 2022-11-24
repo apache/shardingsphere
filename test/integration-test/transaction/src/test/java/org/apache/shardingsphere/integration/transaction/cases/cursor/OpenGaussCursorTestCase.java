@@ -58,11 +58,47 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     @Override
     public void executeTest() throws SQLException {
         Connection connection = getDataSource().getConnection();
+        singleTableCursorTest(connection);
+        singleTableCursorOrderByTest(connection);
         broadcastTableCursorTest(connection);
         broadcastTableCursorTest2(connection);
         broadcastAndSingleTablesCursorTest(connection);
         broadcastAndSingleTablesCursorTest2(connection);
         viewCursorTest(connection);
+    }
+
+    private void singleTableCursorTest(final Connection connection) throws SQLException {
+        executeWithLog(connection, "start transaction;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        executeWithLog(connection, "close test;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        fetch(connection, 1);
+        fetch(connection, 2);
+        fetch(connection, 3);
+        fetch(connection, 4);
+        fetchOver(connection);
+        fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
+        executeWithLog(connection, "rollback;");
+    }
+
+    private void singleTableCursorOrderByTest(final Connection connection) throws SQLException {
+        executeWithLog(connection, "start transaction;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        executeWithLog(connection, "close test;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        fetch(connection, 4);
+        fetch(connection, 3);
+        fetch(connection, 2);
+        fetch(connection, 1);
+        fetchOver(connection);
+        fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
+        executeWithLog(connection, "rollback;");
     }
     
     private void broadcastTableCursorTest(final Connection connection) throws SQLException {
@@ -76,6 +112,9 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10202);
         fetchOver(connection);
         fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -90,6 +129,9 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10202);
         fetchOver(connection);
         fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -104,6 +146,9 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 4);
         fetchOver(connection);
         fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -132,6 +177,9 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 4);
         fetchOver(connection);
         fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -145,6 +193,20 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     private void fetchOver(final Connection connection) throws SQLException {
         ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
+        while (resultSet.next()) {
+            fail("Expected fetch nothing.");
+        }
+    }
+    
+    private void fetchForwardOver(final Connection connection) throws SQLException {
+        ResultSet resultSet = executeQueryWithLog(connection, "fetch forward from test;");
+        while (resultSet.next()) {
+            fail("Expected fetch nothing.");
+        }
+    }
+    
+    private void fetchForwardAllOver(final Connection connection) throws SQLException {
+        ResultSet resultSet = executeQueryWithLog(connection, "fetch forward all from test;");
         while (resultSet.next()) {
             fail("Expected fetch nothing.");
         }
