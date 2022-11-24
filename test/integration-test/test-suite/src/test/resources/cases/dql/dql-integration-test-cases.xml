@@ -722,7 +722,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE m.country_id = 1 ORDER BY m.merchant_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -742,7 +742,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m USING(merchant_id) WHERE m.country_id = 1 ORDER BY m.merchant_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o RIGHT JOIN t_merchant m USING(merchant_id) WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
