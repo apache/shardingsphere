@@ -32,7 +32,7 @@ public final class DiscoveryDistSQLCommand {
     
     @XmlElement(name = "register-storage-unit")
     @Getter
-   private String registerStorageUnit;
+    private String registerStorageUnit;
     
     @XmlElement(name = "create-discovery-rule")
     @Getter

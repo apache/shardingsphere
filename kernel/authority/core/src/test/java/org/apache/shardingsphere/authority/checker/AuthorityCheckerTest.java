@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatement
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.executor.check.SQLChecker;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckerFactory;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLCheckerFactory;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
