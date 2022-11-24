@@ -161,7 +161,7 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 <hr>
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_cn.png)
 
 ##
 
