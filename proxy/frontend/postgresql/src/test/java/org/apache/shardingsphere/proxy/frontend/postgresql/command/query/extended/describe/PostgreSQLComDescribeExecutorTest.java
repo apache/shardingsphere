@@ -254,7 +254,8 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         when(packet.getType()).thenReturn('S');
         final String statementId = "S_2";
         when(packet.getName()).thenReturn(statementId);
-        String sql = "insert into t_order (k, c, pad) values (?, ?, ?) returning id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*";
+        String sql = "insert into t_order (k, c, pad) values (?, ?, ?) "
+                + "returning id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
