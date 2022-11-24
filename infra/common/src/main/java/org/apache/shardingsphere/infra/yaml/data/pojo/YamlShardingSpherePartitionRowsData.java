@@ -20,21 +20,15 @@ package org.apache.shardingsphere.infra.yaml.data.pojo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * ShardingSphere table data.
+ * Yaml ShardingSphere partition rows data.
  */
 @Getter
 @Setter
-public final class YamlShardingSphereTableData implements YamlConfiguration {
+public final class YamlShardingSpherePartitionRowsData implements YamlConfiguration {
     
-    private String name;
-    
-    private List<YamlShardingSphereColumn> columns;
-    
-    private Map<Integer, YamlShardingSpherePartitionRowsData> partitionRows;
+    private List<YamlShardingSphereRowData> partitionRows;
 }

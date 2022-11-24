@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.data.pojo;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * ShardingSphere table data.
+ * Row data added event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlShardingSphereTableData implements YamlConfiguration {
+public final class ShardingSphereRowDataAddedEvent implements GovernanceEvent {
     
-    private String name;
+    private final String databaseName;
     
-    private List<YamlShardingSphereColumn> columns;
+    private final String schemaName;
     
-    private Map<Integer, YamlShardingSpherePartitionRowsData> partitionRows;
+    private final String tableName;
+    
+    private final List<YamlShardingSphereRowData> yamlRowData;
 }
