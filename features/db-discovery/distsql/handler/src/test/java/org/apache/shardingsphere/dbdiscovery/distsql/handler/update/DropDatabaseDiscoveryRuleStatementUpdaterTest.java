@@ -107,8 +107,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
         DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(), databaseDiscoveryRuleConfig);
         assertTrue(databaseDiscoveryRuleConfig.getDataSources().isEmpty());
-        assertThat(databaseDiscoveryRuleConfig.getDiscoveryTypes().size(), is(0));
-        assertThat(databaseDiscoveryRuleConfig.getDiscoveryHeartbeats().size(), is(0));
+        assertTrue(databaseDiscoveryRuleConfig.getDiscoveryTypes().isEmpty());
+        assertTrue(databaseDiscoveryRuleConfig.getDiscoveryHeartbeats().isEmpty());
     }
     
     @Test
@@ -141,8 +141,8 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
         Map<String, AlgorithmConfiguration> discoveryTypes = new LinkedHashMap<>(1, 1);
         discoveryTypes.put("readwrite_ds_MGR", new AlgorithmConfiguration("readwrite_ds_MGR", new Properties()));
         Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats = new LinkedHashMap<>(1, 1);
-        discoveryTypes.put("unused_heartbeat", new AlgorithmConfiguration("heartbeat", new Properties()));
-        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap(), discoveryTypes);
+        discoveryHeartbeats.put("unused_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties()));
+        return new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), discoveryHeartbeats, discoveryTypes);
     }
     
     private DatabaseDiscoveryRuleConfiguration createMultipleCurrentRuleConfigurations() {
