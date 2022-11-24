@@ -37,8 +37,8 @@ public final class ExpectedLoadTableIndex extends AbstractExpectedIdentifierSQLS
     private ExpectedSimpleTable table;
     
     @XmlElement(name = "index")
-    private List<ExpectedIndex> indexNames = new LinkedList<>();
+    private final List<ExpectedIndex> indexNames = new LinkedList<>();
     
     @XmlElement(name = "partition")
-    private List<ExpectedPartition> partitions = new LinkedList<>();
+    private final List<ExpectedPartition> partitions = new LinkedList<>();
 }
