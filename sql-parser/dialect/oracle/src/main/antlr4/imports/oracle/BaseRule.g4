@@ -1672,7 +1672,15 @@ xmlTableFunction
     ;
 
 xmlNameSpacesClause
-    : XMLNAMESPACES LP_ (STRING_ AS identifier | DEFAULT STRING_) (COMMA_ (STRING_ AS identifier | DEFAULT STRING_))* RP_
+    : XMLNAMESPACES LP_ (defaultString COMMA_)? (xmlNameSpaceStringAsIdentifier | defaultString) (COMMA_ (xmlNameSpaceStringAsIdentifier | defaultString))* RP_
+    ;
+
+xmlNameSpaceStringAsIdentifier
+    : STRING_ AS identifier
+    ;
+
+defaultString
+    : DEFAULT STRING_
     ;
 
 xmlTableOptions

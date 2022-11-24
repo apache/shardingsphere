@@ -69,19 +69,20 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNa
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlAggFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlColattvalFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlExistsFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlForestFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpacesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlParseFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlPiFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlQueryFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlRootFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlSerializeFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableFunctionContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpacesClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableOptionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlTableOptionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.XmlNameSpaceStringAsIdentifierContext;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
@@ -101,9 +102,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Function
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpaceStringAsIdentifierSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlNameSpacesClauseSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlPiFunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlQueryAndExistsFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlSerializeFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
@@ -675,20 +677,20 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     
     @Override
     public ASTNode visitXmlNameSpacesClause(final XmlNameSpacesClauseContext ctx) {
-        XmlNameSpacesClauseSegment result = new XmlNameSpacesClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
-        for (int i = 0; i < ctx.STRING_().stream().count(); i++) {
-            result.getNameSpacesString().add(ctx.STRING_(i).getText());
-        }
-        if (null != ctx.identifier()) {
-            for (int i = 0; i < ctx.identifier().stream().count(); i++) {
-                result.getNameSpacesIdentifier().add(ctx.identifier(i).getText());
-            }
-        } else {
-            result.getNameSpacesIdentifier().addAll(Collections.emptyList());
-        }
+        // TODO : throw exception if more than one defaultString exists in a xml name space clause
+        String defaultString = null == ctx.defaultString() ? null : ctx.defaultString(0).STRING_().getText();
+        Collection<XmlNameSpaceStringAsIdentifierSegment> xmlNameSpaceStringAsIdentifierSegments = null == ctx.xmlNameSpaceStringAsIdentifier() ? Collections.emptyList()
+                : ctx.xmlNameSpaceStringAsIdentifier().stream().map(each ->(XmlNameSpaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
+        XmlNameSpacesClauseSegment result = new XmlNameSpacesClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), defaultString, getOriginalText(ctx));
+        result.getStringAsIdentifier().addAll(xmlNameSpaceStringAsIdentifierSegments);
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitXmlNameSpaceStringAsIdentifier(final XmlNameSpaceStringAsIdentifierContext ctx) {
+        return new XmlNameSpaceStringAsIdentifierSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.STRING_().getText(), ctx.identifier().getText(), getOriginalText(ctx));
+    }
+
     @Override
     public ASTNode visitXmlTableOptions(final XmlTableOptionsContext ctx) {
         XmlTableOptionsSegment result = new XmlTableOptionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));

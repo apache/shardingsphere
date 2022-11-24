@@ -22,24 +22,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 /**
  * Xml name spaces segment.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class XmlNameSpacesClauseSegment implements ComplexExpressionSegment {
+public final class XmlNameSpaceStringAsIdentifierSegment implements ComplexExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final String defaultString;
+    private final String xmlNameSpaceString;
     
-    private final Collection<XmlNameSpaceStringAsIdentifierSegment> StringAsIdentifier = new LinkedList<>();
+    private final String xmlNameSpaceIdentifier;
     
     private final String text;
 }
