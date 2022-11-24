@@ -69,13 +69,13 @@ public final class DropEncryptRuleStatementUpdater implements RuleDefinitionDrop
     }
     
     private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedEncryptor = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getEncryptorName)
+        Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getEncryptorName)
                 .collect(Collectors.toSet());
-        inUsedEncryptor.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName)
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName)
                 .collect(Collectors.toSet()));
-        inUsedEncryptor.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName)
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName)
                 .collect(Collectors.toSet()));
-        Collection<String> unusedEncryptors = currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptor.contains(each)).collect(Collectors.toSet());
+        Collection<String> unusedEncryptors = currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptors.contains(each)).collect(Collectors.toSet());
         unusedEncryptors.forEach(each -> currentRuleConfig.getEncryptors().remove(each));
     }
     
