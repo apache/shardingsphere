@@ -73,7 +73,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
                 () -> new SQLCheckException(String.format("Unknown database '%s'", currentDatabase)));
         PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
         boolean hasPrivileges = privileges.get().hasPrivileges(Collections.singletonList(privilegeType));
-        ShardingSpherePreconditions.checkState(!hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s.", null == privilegeType ? "" : privilegeType.name())));
+        ShardingSpherePreconditions.checkState(hasPrivileges, () -> new SQLCheckException(String.format("Access denied for operation %s.", null == privilegeType ? "" : privilegeType.name())));
     }
     
     @Override

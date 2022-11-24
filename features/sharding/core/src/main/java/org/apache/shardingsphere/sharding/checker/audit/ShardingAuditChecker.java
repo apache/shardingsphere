@@ -45,7 +45,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     
     @Override
     public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee,
-                                final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
+                      final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
         Collection<ShardingAuditStrategyConfiguration> auditStrategies = getShardingAuditStrategies(sqlStatementContext, rule);
         if (auditStrategies.isEmpty()) {
             return;
