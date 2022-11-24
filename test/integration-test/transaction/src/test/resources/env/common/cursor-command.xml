@@ -16,6 +16,17 @@
   -->
 
 <command>
+    <single-table-cursor>
+        cursor test for
+        select * from t_product;
+    </single-table-cursor>
+    
+    <single-table-cursor-order-by>
+        cursor test for
+        select * from t_product
+        order by product_id desc;
+    </single-table-cursor-order-by>
+    
     <broadcast-tables-cursor>
         cursor test for
         select t_province.province_id, t_province.province_name, t_city.city_id as id, t_city.city_name

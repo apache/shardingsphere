@@ -133,8 +133,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     }
     
     private boolean isEmptyOrderByValue(final OrderByValue orderByValue) {
-        return orderByValue.getQueryResult() instanceof JDBCMemoryQueryResult
-                && 0 == ((JDBCMemoryQueryResult) orderByValue.getQueryResult()).getRowCount() && ((JDBCMemoryQueryResult) orderByValue.getQueryResult()).wasNull();
+        return orderByValue.getQueryResult() instanceof JDBCMemoryQueryResult && 0 == ((JDBCMemoryQueryResult) orderByValue.getQueryResult()).getRowCount();
     }
     
     private void addOrderedResultSetsToQueue(final List<FetchOrderByValueGroup> fetchOrderByValueGroups, final List<QueryResult> queryResults) {
