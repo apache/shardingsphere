@@ -66,7 +66,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         broadcastAndSingleTablesCursorTest2(connection);
         viewCursorTest(connection);
     }
-
+    
     private void singleTableCursorTest(final Connection connection) throws SQLException {
         executeWithLog(connection, "start transaction;");
         executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
@@ -76,28 +76,28 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 2);
         fetch(connection, 3);
         fetch(connection, 4);
+        fetchOverTest(connection);
+        executeWithLog(connection, "rollback;");
+    }
+    
+    private void fetchOverTest(final Connection connection) throws SQLException {
         fetchOver(connection);
         fetchOver(connection);
         fetchForwardOver(connection);
         fetchForwardAllOver(connection);
         fetchForwardOver(connection);
-        executeWithLog(connection, "rollback;");
     }
-
+    
     private void singleTableCursorOrderByTest(final Connection connection) throws SQLException {
         executeWithLog(connection, "start transaction;");
-        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursorOrderBy());
         executeWithLog(connection, "close test;");
-        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursorOrderBy());
         fetch(connection, 4);
         fetch(connection, 3);
         fetch(connection, 2);
         fetch(connection, 1);
-        fetchOver(connection);
-        fetchOver(connection);
-        fetchForwardOver(connection);
-        fetchForwardAllOver(connection);
-        fetchForwardOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -110,11 +110,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10102);
         fetch(connection, 10201);
         fetch(connection, 10202);
-        fetchOver(connection);
-        fetchOver(connection);
-        fetchForwardOver(connection);
-        fetchForwardAllOver(connection);
-        fetchForwardOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -127,11 +123,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10102);
         fetch(connection, 10201);
         fetch(connection, 10202);
-        fetchOver(connection);
-        fetchOver(connection);
-        fetchForwardOver(connection);
-        fetchForwardAllOver(connection);
-        fetchForwardOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -144,11 +136,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 2);
         fetch(connection, 3);
         fetch(connection, 4);
-        fetchOver(connection);
-        fetchOver(connection);
-        fetchForwardOver(connection);
-        fetchForwardAllOver(connection);
-        fetchForwardOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -161,8 +149,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10102);
         fetch(connection, 10201);
         fetch(connection, 10202);
-        fetchOver(connection);
-        fetchOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -175,11 +162,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 2);
         fetch(connection, 3);
         fetch(connection, 4);
-        fetchOver(connection);
-        fetchOver(connection);
-        fetchForwardOver(connection);
-        fetchForwardAllOver(connection);
-        fetchForwardOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
