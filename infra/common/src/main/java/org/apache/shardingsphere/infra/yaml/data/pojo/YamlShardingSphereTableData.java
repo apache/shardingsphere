@@ -36,5 +36,5 @@ public final class YamlShardingSphereTableData implements YamlConfiguration {
     
     private List<YamlShardingSphereColumn> columns;
     
-    private Map<Integer, YamlShardingSpherePartitionRowsData> partitionRows;
+    private Map<Integer, YamlShardingSpherePartitionRowData> partitionRows;
 }

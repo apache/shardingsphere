@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSpherePartitionRowsData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSpherePartitionRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereTableDataSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.node.ShardingSphereDataNode;
@@ -93,10 +93,10 @@ public final class ShardingSphereDataPersistService {
     private ShardingSphereTableData loadTableData(final String databaseName, final String schemaName, final String tableName) {
         String tableData = repository.getDirectly(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName));
         YamlShardingSphereTableData yamlTableData = YamlEngine.unmarshal(tableData, YamlShardingSphereTableData.class);
-        Map<Integer, YamlShardingSpherePartitionRowsData> partitionRowsData = new TreeMap<>();
+        Map<Integer, YamlShardingSpherePartitionRowData> partitionRowsData = new TreeMap<>();
         for (String each : repository.getChildrenKeys(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName))) {
             String partitionRows = repository.getDirectly(ShardingSphereDataNode.getTablePartitionRowsPath(databaseName, schemaName, tableName, each));
-            partitionRowsData.put(Integer.parseInt(each), YamlEngine.unmarshal(partitionRows, YamlShardingSpherePartitionRowsData.class));
+            partitionRowsData.put(Integer.parseInt(each), YamlEngine.unmarshal(partitionRows, YamlShardingSpherePartitionRowData.class));
         }
         yamlTableData.setPartitionRows(partitionRowsData);
         return new YamlShardingSphereTableDataSwapper().swapToObject(yamlTableData);

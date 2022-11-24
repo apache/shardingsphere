@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import java.util.List;
 
 /**
- * Yaml ShardingSphere partition rows data.
+ * Yaml ShardingSphere partition row data.
  */
 @Getter
 @Setter
-public final class YamlShardingSpherePartitionRowsData implements YamlConfiguration {
+public final class YamlShardingSpherePartitionRowData implements YamlConfiguration {
     
     private List<YamlShardingSphereRowData> partitionRows;
 }
