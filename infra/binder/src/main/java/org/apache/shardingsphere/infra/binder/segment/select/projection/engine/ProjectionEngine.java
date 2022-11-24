@@ -119,7 +119,7 @@ public final class ProjectionEngine {
         Collection<Projection> projections = new LinkedHashSet<>();
         projections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
         projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
-        projections.addAll(getShorthandColumnsFromJoinTableSegment(table, projectionSegment));
+        projections.addAll(getShorthandColumnsFromJoinTableSegment(table, owner, projectionSegment));
         return new ShorthandProjection(owner, projections);
     }
     
@@ -182,7 +182,7 @@ public final class ProjectionEngine {
         return getActualProjections(projections);
     }
     
-    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
+    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final String owner, final ProjectionSegment projectionSegment) {
         if (!(table instanceof JoinTableSegment)) {
             return Collections.emptyList();
         }
@@ -190,7 +190,15 @@ public final class ProjectionEngine {
         Collection<Projection> projections = new LinkedList<>();
         createProjection(joinTable.getLeft(), projectionSegment).ifPresent(projections::add);
         createProjection(joinTable.getRight(), projectionSegment).ifPresent(projections::add);
-        return joinTable.getUsing().isEmpty() ? getActualProjections(projections) : getJoinUsingActualProjections(projections, joinTable.getUsing());
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (joinTable.getUsing().isEmpty() || (null != owner && each.getExpression().contains(owner))) {
+                result.addAll(getActualProjections(Collections.singletonList(each)));
+            } else {
+                result.addAll(getJoinUsingActualProjections(projections, joinTable.getUsing()));
+            }
+        }
+        return result;
     }
     
     private Collection<Projection> getActualProjections(final Collection<Projection> projections) {

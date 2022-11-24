@@ -248,10 +248,23 @@ public final class ProjectionEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(10));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateActualColumns()));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithoutOwner()));
     }
     
-    private static JoinTableSegment createJoinTableSegment() {
+    @Test
+    public void assertCreateProjectionWhenShorthandProjectionContainsJoinUsingColumnAndOwner() {
+        when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
+        ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
+        projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(createJoinTableSegment(), projectionSegment);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ShorthandProjection.class));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner()));
+    }
+    
+    private JoinTableSegment createJoinTableSegment() {
         SimpleTableSegment left = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         left.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
         SimpleTableSegment right = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
@@ -264,7 +277,7 @@ public final class ProjectionEngineTest {
         return result;
     }
     
-    private static Map<String, Projection> crateActualColumns() {
+    private Map<String, Projection> crateExpectedColumnsWithoutOwner() {
         Map<String, Projection> result = new LinkedHashMap<>();
         result.put("o.user_id", new ColumnProjection("o", "user_id", null));
         result.put("o.order_id", new ColumnProjection("o", "order_id", null));
@@ -276,6 +289,17 @@ public final class ProjectionEngineTest {
         result.put("i.product_id", new ColumnProjection("i", "product_id", null));
         result.put("i.quantity", new ColumnProjection("i", "quantity", null));
         result.put("i.creation_date", new ColumnProjection("i", "creation_date", null));
+        return result;
+    }
+    
+    private Map<String, Projection> crateExpectedColumnsWithOwner() {
+        Map<String, Projection> result = new LinkedHashMap<>();
+        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
+        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
+        result.put("o.status", new ColumnProjection("o", "status", null));
+        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
+        result.put("o.remark", new ColumnProjection("o", "remark", null));
+        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
         return result;
     }
 }
