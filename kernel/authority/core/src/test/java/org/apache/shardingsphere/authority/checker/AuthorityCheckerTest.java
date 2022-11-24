@@ -78,8 +78,8 @@ public final class AuthorityCheckerTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         CreateTableStatementContext createTableStatementContext = mock(CreateTableStatementContext.class);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
-        assertTrue(sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
-        assertTrue(sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
-        assertTrue(sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule).isPassed());
+        sqlChecker.check(selectStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(insertStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
+        sqlChecker.check(createTableStatementContext, Collections.emptyList(), new Grantee("root", "localhost"), "db0", Collections.emptyMap(), rule);
     }
 }
