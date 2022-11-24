@@ -179,7 +179,7 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getActualColumns(projections);
+        return getActualProjections(projections);
     }
     
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
@@ -190,10 +190,10 @@ public final class ProjectionEngine {
         Collection<Projection> projections = new LinkedList<>();
         createProjection(joinTable.getLeft(), projectionSegment).ifPresent(projections::add);
         createProjection(joinTable.getRight(), projectionSegment).ifPresent(projections::add);
-        return joinTable.getUsing().isEmpty() ? getActualColumns(projections) : getJoinUsingActualColumns(projections, joinTable.getUsing());
+        return joinTable.getUsing().isEmpty() ? getActualProjections(projections) : getJoinUsingActualProjections(projections, joinTable.getUsing());
     }
     
-    private Collection<Projection> getActualColumns(final Collection<Projection> projections) {
+    private Collection<Projection> getActualProjections(final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
@@ -207,9 +207,9 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getJoinUsingActualColumns(final Collection<Projection> projections, final List<ColumnSegment> usingColumns) {
+    private Collection<Projection> getJoinUsingActualProjections(final Collection<Projection> projections, final List<ColumnSegment> usingColumns) {
         Collection<Projection> result = new LinkedList<>();
-        Collection<Projection> actualColumns = getActualColumns(projections);
+        Collection<Projection> actualColumns = getActualProjections(projections);
         Collection<String> usingColumnNames = getUsingColumnNames(usingColumns);
         result.addAll(getJoinUsingColumns(actualColumns, usingColumnNames));
         result.addAll(getRemainingColumns(actualColumns, usingColumnNames));
