@@ -436,7 +436,11 @@ fromClauseOption
     ;
 
 xmlTable
-    : tableName alias? COMMA_ xmlTableFunction alias
+    : tableName alias? COMMA_ xmlTableFunction xmlTableFunctionAlias
+    ;
+
+xmlTableFunctionAlias
+    : alias
     ;
 
 selectTableReference
