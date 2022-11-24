@@ -31,7 +31,7 @@ import java.util.Optional;
 /**
  * Drop sharding table rule statement updater.
  */
-public final class DropDefaultStrategyStatementUpdater implements RuleDefinitionDropUpdater<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
+public final class DropDefaultStrategyStatementUpdater extends AbstractDropShardingRuleUpdater implements RuleDefinitionDropUpdater<DropDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,
@@ -79,6 +79,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
         } else {
             currentRuleConfig.setDefaultDatabaseShardingStrategy(null);
         }
+        dropUnusedAlgorithm(currentRuleConfig);
         return false;
     }
     
