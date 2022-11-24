@@ -247,7 +247,7 @@ public final class ProjectionEngineTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(createJoinTableSegment(), new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShorthandProjection.class));
-        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(11));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(10));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateActualColumns()));
     }
     
@@ -260,20 +260,19 @@ public final class ProjectionEngineTest {
         result.setLeft(left);
         result.setRight(right);
         result.setJoinType(JoinType.LEFT.name());
-        result.setUsing(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        result.setUsing(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         return result;
     }
     
     private static Map<String, Projection> crateActualColumns() {
         Map<String, Projection> result = new LinkedHashMap<>();
-        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
         result.put("o.user_id", new ColumnProjection("o", "user_id", null));
+        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
         result.put("o.status", new ColumnProjection("o", "status", null));
         result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
         result.put("o.remark", new ColumnProjection("o", "remark", null));
         result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
         result.put("i.item_id", new ColumnProjection("i", "item_id", null));
-        result.put("i.user_id", new ColumnProjection("i", "user_id", null));
         result.put("i.product_id", new ColumnProjection("i", "product_id", null));
         result.put("i.quantity", new ColumnProjection("i", "quantity", null));
         result.put("i.creation_date", new ColumnProjection("i", "creation_date", null));

@@ -50,7 +50,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -180,54 +179,73 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getActualColumns(projections, Collections.emptyMap());
+        return getActualColumns(projections);
     }
     
     private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
         if (!(table instanceof JoinTableSegment)) {
             return Collections.emptyList();
         }
-        Collection<Projection> projections = new LinkedList<>();
         JoinTableSegment joinTable = (JoinTableSegment) table;
+        Collection<Projection> projections = new LinkedList<>();
         createProjection(joinTable.getLeft(), projectionSegment).ifPresent(projections::add);
         createProjection(joinTable.getRight(), projectionSegment).ifPresent(projections::add);
-        return getActualColumns(projections, getUsingColumnExistFlags(joinTable.getUsing()));
+        return joinTable.getUsing().isEmpty() ? getActualColumns(projections) : getJoinUsingActualColumns(projections, joinTable.getUsing());
     }
     
-    private Map<String, Boolean> getUsingColumnExistFlags(final List<ColumnSegment> usingColumns) {
-        Map<String, Boolean> result = new HashMap<>(usingColumns.size(), 1);
-        for (ColumnSegment each : usingColumns) {
-            result.put(each.getIdentifier().getValue().toLowerCase(), false);
-        }
-        return result;
-    }
-    
-    private Collection<Projection> getActualColumns(final Collection<Projection> projections, final Map<String, Boolean> usingColumnExistFlags) {
+    private Collection<Projection> getActualColumns(final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
-            if (compareAndSetExistFlag(usingColumnExistFlags, each)) {
-                continue;
-            }
             if (each instanceof ColumnProjection) {
                 result.add(each);
             } else if (each instanceof ExpressionProjection) {
                 result.add(each);
             } else if (each instanceof ShorthandProjection) {
-                result.addAll(getActualColumns(((ShorthandProjection) each).getActualColumns().values(), usingColumnExistFlags));
+                result.addAll(((ShorthandProjection) each).getActualColumns().values());
             }
         }
         return result;
     }
     
-    private boolean compareAndSetExistFlag(final Map<String, Boolean> usingColumnExistFlags, final Projection projection) {
-        Boolean exitFlag = usingColumnExistFlags.get(projection.getColumnLabel());
-        if (null != exitFlag && exitFlag) {
-            return true;
+    private Collection<Projection> getJoinUsingActualColumns(final Collection<Projection> projections, final List<ColumnSegment> usingColumns) {
+        Collection<Projection> result = new LinkedList<>();
+        Collection<Projection> actualColumns = getActualColumns(projections);
+        Collection<String> usingColumnNames = getUsingColumnNames(usingColumns);
+        result.addAll(getJoinUsingColumns(actualColumns, usingColumnNames));
+        result.addAll(getRemainingColumns(actualColumns, usingColumnNames));
+        return result;
+    }
+    
+    private Collection<String> getUsingColumnNames(final List<ColumnSegment> usingColumns) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ColumnSegment each : usingColumns) {
+            result.add(each.getIdentifier().getValue().toLowerCase());
         }
-        if (null != exitFlag && !exitFlag) {
-            usingColumnExistFlags.put(projection.getColumnLabel(), true);
+        return result;
+    }
+    
+    private Collection<Projection> getJoinUsingColumns(final Collection<Projection> actualColumns, final Collection<String> usingColumnNames) {
+        Collection<Projection> result = new LinkedList<>();
+        for (String each : usingColumnNames) {
+            for (Projection projection : actualColumns) {
+                if (each.equals(projection.getColumnLabel().toLowerCase())) {
+                    result.add(projection);
+                    break;
+                }
+            }
         }
-        return false;
+        return result;
+    }
+    
+    private Collection<Projection> getRemainingColumns(final Collection<Projection> actualColumns, final Collection<String> usingColumnNames) {
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : actualColumns) {
+            if (usingColumnNames.contains(each.getColumnLabel().toLowerCase())) {
+                continue;
+            }
+            result.add(each);
+        }
+        return result;
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {
