@@ -18,6 +18,7 @@
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_order_item;
 DROP TABLE IF EXISTS t_single_table;
+DROP TABLE IF EXISTS t_single_table_integer;
 DROP TABLE IF EXISTS t_broadcast_table;
 DROP TABLE IF EXISTS t_order_federate_sharding;
 DROP TABLE IF EXISTS t_order_item_federate_sharding;
