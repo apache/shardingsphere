@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 
 /**
- * Xml name spaces segment.
+ * Xml name spaces string as identifier segment.
  */
 @RequiredArgsConstructor
 @Getter
