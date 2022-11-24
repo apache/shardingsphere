@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -51,6 +52,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -117,7 +119,7 @@ public final class ProjectionEngine {
         Collection<Projection> projections = new LinkedHashSet<>();
         projections.addAll(getShorthandColumnsFromSimpleTableSegment(table, owner));
         projections.addAll(getShorthandColumnsFromSubqueryTableSegment(table));
-        projections.addAll(getShorthandColumnsFromJoinTableSegment(table, projectionSegment));
+        projections.addAll(getShorthandColumnsFromJoinTableSegment(table, owner, projectionSegment));
         return new ShorthandProjection(owner, projections);
     }
     
@@ -177,20 +179,29 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        return getProjections(projections);
+        return getActualProjections(projections);
     }
     
-    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final ProjectionSegment projectionSegment) {
+    private Collection<Projection> getShorthandColumnsFromJoinTableSegment(final TableSegment table, final String owner, final ProjectionSegment projectionSegment) {
         if (!(table instanceof JoinTableSegment)) {
             return Collections.emptyList();
         }
+        JoinTableSegment joinTable = (JoinTableSegment) table;
         Collection<Projection> projections = new LinkedList<>();
-        createProjection(((JoinTableSegment) table).getLeft(), projectionSegment).ifPresent(projections::add);
-        createProjection(((JoinTableSegment) table).getRight(), projectionSegment).ifPresent(projections::add);
-        return getProjections(projections);
+        createProjection(joinTable.getLeft(), projectionSegment).ifPresent(projections::add);
+        createProjection(joinTable.getRight(), projectionSegment).ifPresent(projections::add);
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : projections) {
+            if (joinTable.getUsing().isEmpty() || (null != owner && each.getExpression().contains(owner))) {
+                result.addAll(getActualProjections(Collections.singletonList(each)));
+            } else {
+                result.addAll(getJoinUsingActualProjections(projections, joinTable.getUsing()));
+            }
+        }
+        return result;
     }
     
-    private Collection<Projection> getProjections(final Collection<Projection> projections) {
+    private Collection<Projection> getActualProjections(final Collection<Projection> projections) {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ColumnProjection) {
@@ -200,6 +211,47 @@ public final class ProjectionEngine {
             } else if (each instanceof ShorthandProjection) {
                 result.addAll(((ShorthandProjection) each).getActualColumns().values());
             }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> getJoinUsingActualProjections(final Collection<Projection> projections, final List<ColumnSegment> usingColumns) {
+        Collection<Projection> result = new LinkedList<>();
+        Collection<Projection> actualColumns = getActualProjections(projections);
+        Collection<String> usingColumnNames = getUsingColumnNames(usingColumns);
+        result.addAll(getJoinUsingColumns(actualColumns, usingColumnNames));
+        result.addAll(getRemainingColumns(actualColumns, usingColumnNames));
+        return result;
+    }
+    
+    private Collection<String> getUsingColumnNames(final List<ColumnSegment> usingColumns) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ColumnSegment each : usingColumns) {
+            result.add(each.getIdentifier().getValue().toLowerCase());
+        }
+        return result;
+    }
+    
+    private Collection<Projection> getJoinUsingColumns(final Collection<Projection> actualColumns, final Collection<String> usingColumnNames) {
+        Collection<Projection> result = new LinkedList<>();
+        for (String each : usingColumnNames) {
+            for (Projection projection : actualColumns) {
+                if (each.equals(projection.getColumnLabel().toLowerCase())) {
+                    result.add(projection);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> getRemainingColumns(final Collection<Projection> actualColumns, final Collection<String> usingColumnNames) {
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : actualColumns) {
+            if (usingColumnNames.contains(each.getColumnLabel().toLowerCase())) {
+                continue;
+            }
+            result.add(each);
         }
         return result;
     }

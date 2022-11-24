@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -211,7 +212,7 @@ public final class ProjectionEngineTest {
     }
     
     @Test
-    public void assertGetActualColumnsWhenShorthandProjectionContainsColumnProjectionAndExpressionProjection() {
+    public void assertCreateProjectionWhenShorthandProjectionContainsColumnProjectionAndExpressionProjection() {
         ProjectionsSegment subQuerySegment = new ProjectionsSegment(0, 0);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
         subQuerySegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
@@ -236,5 +237,69 @@ public final class ProjectionEngineTest {
         actualColumns.put("name", new ColumnProjection(null, "name", null));
         actualColumns.put("nvl(leave_date, '20991231')", new ExpressionProjection("nvl(leave_date, '20991231')", "leave_date"));
         assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(actualColumns));
+    }
+    
+    @Test
+    public void assertCreateProjectionWhenShorthandProjectionContainsJoinUsingColumn() {
+        when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
+        when(schema.getVisibleColumnNames("t_order_item")).thenReturn(Arrays.asList("item_id", "order_id", "user_id", "product_id", "quantity", "creation_date"));
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(createJoinTableSegment(), new ShorthandProjectionSegment(0, 0));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ShorthandProjection.class));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(10));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithoutOwner()));
+    }
+    
+    @Test
+    public void assertCreateProjectionWhenShorthandProjectionContainsJoinUsingColumnAndOwner() {
+        when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "user_id", "status", "merchant_id", "remark", "creation_date"));
+        ShorthandProjectionSegment projectionSegment = new ShorthandProjectionSegment(0, 0);
+        projectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
+        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(createJoinTableSegment(), projectionSegment);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(ShorthandProjection.class));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns().size(), is(6));
+        assertThat(((ShorthandProjection) actual.get()).getActualColumns(), is(crateExpectedColumnsWithOwner()));
+    }
+    
+    private JoinTableSegment createJoinTableSegment() {
+        SimpleTableSegment left = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        left.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment right = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
+        right.setAlias(new AliasSegment(0, 0, new IdentifierValue("i")));
+        JoinTableSegment result = new JoinTableSegment();
+        result.setLeft(left);
+        result.setRight(right);
+        result.setJoinType(JoinType.LEFT.name());
+        result.setUsing(Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        return result;
+    }
+    
+    private Map<String, Projection> crateExpectedColumnsWithoutOwner() {
+        Map<String, Projection> result = new LinkedHashMap<>();
+        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
+        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
+        result.put("o.status", new ColumnProjection("o", "status", null));
+        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
+        result.put("o.remark", new ColumnProjection("o", "remark", null));
+        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
+        result.put("i.item_id", new ColumnProjection("i", "item_id", null));
+        result.put("i.product_id", new ColumnProjection("i", "product_id", null));
+        result.put("i.quantity", new ColumnProjection("i", "quantity", null));
+        result.put("i.creation_date", new ColumnProjection("i", "creation_date", null));
+        return result;
+    }
+    
+    private Map<String, Projection> crateExpectedColumnsWithOwner() {
+        Map<String, Projection> result = new LinkedHashMap<>();
+        result.put("o.order_id", new ColumnProjection("o", "order_id", null));
+        result.put("o.user_id", new ColumnProjection("o", "user_id", null));
+        result.put("o.status", new ColumnProjection("o", "status", null));
+        result.put("o.merchant_id", new ColumnProjection("o", "merchant_id", null));
+        result.put("o.remark", new ColumnProjection("o", "remark", null));
+        result.put("o.creation_date", new ColumnProjection("o", "creation_date", null));
+        return result;
     }
 }
