@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,5 +38,5 @@ public final class ExpectedDatabaseDiscoveryHeartbeat extends AbstractExpectedId
     private String name;
     
     @XmlElement(name = "property")
-    private List<ExpectedProperty> properties;
+    private final List<ExpectedProperty> properties = new LinkedList<>();
 }
