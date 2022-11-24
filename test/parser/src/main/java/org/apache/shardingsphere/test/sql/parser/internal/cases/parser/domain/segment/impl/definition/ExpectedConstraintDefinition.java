@@ -39,10 +39,10 @@ public final class ExpectedConstraintDefinition extends AbstractExpectedSQLSegme
     private ExpectedSimpleTable referencedTable;
     
     @XmlElement(name = "primary-key-column")
-    private List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();
+    private final List<ExpectedColumn> primaryKeyColumns = new LinkedList<>();
     
     @XmlElement(name = "index-column")
-    private List<ExpectedColumn> indexColumns = new LinkedList<>();
+    private final List<ExpectedColumn> indexColumns = new LinkedList<>();
     
     @XmlAttribute(name = "constraint-name")
     private String constraintName;

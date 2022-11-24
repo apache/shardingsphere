@@ -42,5 +42,5 @@ public final class CreateIndexStatementTestCase extends SQLParserTestCase {
     private ExpectedTable table;
     
     @XmlElement(name = "column")
-    private List<ExpectedColumn> columns = new LinkedList<>();
+    private final List<ExpectedColumn> columns = new LinkedList<>();
 }

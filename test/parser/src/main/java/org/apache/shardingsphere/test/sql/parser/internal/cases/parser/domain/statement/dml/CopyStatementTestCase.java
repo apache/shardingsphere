@@ -39,7 +39,7 @@ public final class CopyStatementTestCase extends SQLParserTestCase {
     private ExpectedSimpleTable table;
     
     @XmlElement(name = "column")
-    private List<ExpectedColumn> columns = new LinkedList<>();
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
     @XmlElement
     private ExpectedPrepareStatementQuery query;

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.with;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -29,9 +28,8 @@ import java.util.List;
  * Expected withs clause.
  */
 @Getter
-@Setter
 public final class ExpectedWithClause extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "common-table-expression")
-    private List<ExpectedCommonTableExpressionClause> commonTableExpressions = new LinkedList<>();
+    private final List<ExpectedCommonTableExpressionClause> commonTableExpressions = new LinkedList<>();
 }

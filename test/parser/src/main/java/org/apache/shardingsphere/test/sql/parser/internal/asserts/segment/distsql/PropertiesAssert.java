@@ -42,7 +42,7 @@ public final class PropertiesAssert {
      * @param expected expected properties test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final List<ExpectedProperty> expected) {
-        if (null == expected) {
+        if (expected.isEmpty()) {
             assertTrue(assertContext.getText("Actual properties should not exist."), actual.isEmpty());
         } else {
             assertNotNull(assertContext.getText("Actual properties should exist."), actual);
