@@ -376,7 +376,8 @@
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="MySQL,PostgreSQL" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <!-- TODO support mysql using condition -->
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i USING(order_id) WHERE o.order_id = ?" db-types="PostgreSQL" scenario-types="tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
