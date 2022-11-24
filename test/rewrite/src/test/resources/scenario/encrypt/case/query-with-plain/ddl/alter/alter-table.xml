@@ -19,32 +19,32 @@
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-plain.yaml">
     <rewrite-assertion id="alter_table_add_column_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak ADD COLUMN id INT NOT NULL, ADD COLUMN password VARCHAR(255) NOT NULL DEFAULT ''" />
-        <output sql="ALTER TABLE t_account_bak ADD COLUMN id INT NOT NULL, ADD COLUMN cipher_password VARCHAR(255) NOT NULL DEFAULT '', ADD COLUMN assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', ADD COLUMN plain_password VARCHAR(255) NOT NULL DEFAULT ''" />
+        <output sql="ALTER TABLE t_account_bak ADD COLUMN id INT NOT NULL, ADD COLUMN cipher_password VARCHAR(255) NOT NULL DEFAULT '', ADD COLUMN assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', ADD COLUMN like_query_password VARCHAR(255) NOT NULL DEFAULT '', ADD COLUMN plain_password VARCHAR(255) NOT NULL DEFAULT ''" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_modify_column_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak MODIFY COLUMN password VARCHAR(255) NOT NULL DEFAULT ''" />
-        <output sql="ALTER TABLE t_account_bak MODIFY COLUMN cipher_password VARCHAR(255) NOT NULL DEFAULT '', MODIFY COLUMN assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', MODIFY COLUMN plain_password VARCHAR(255) NOT NULL DEFAULT ''" />
+        <output sql="ALTER TABLE t_account_bak MODIFY COLUMN cipher_password VARCHAR(255) NOT NULL DEFAULT '', MODIFY COLUMN assisted_query_password VARCHAR(255) NOT NULL DEFAULT '', MODIFY COLUMN like_query_password VARCHAR(255) NOT NULL DEFAULT '', MODIFY COLUMN plain_password VARCHAR(255) NOT NULL DEFAULT ''" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_change_column_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak CHANGE COLUMN password password_new VARCHAR(255) NOT NULL DEFAULT ''" />
-        <output sql="ALTER TABLE t_account_bak CHANGE COLUMN cipher_password password_new_cipher VARCHAR(255) NOT NULL DEFAULT '', CHANGE COLUMN assisted_query_password password_new_assisted VARCHAR(255) NOT NULL DEFAULT '', CHANGE COLUMN plain_password password_new_plain VARCHAR(255) NOT NULL DEFAULT ''" />
+        <output sql="ALTER TABLE t_account_bak CHANGE COLUMN cipher_password password_new_cipher VARCHAR(255) NOT NULL DEFAULT '', CHANGE COLUMN assisted_query_password password_new_assisted VARCHAR(255) NOT NULL DEFAULT '', CHANGE COLUMN like_query_password password_new_like VARCHAR(255) NOT NULL DEFAULT '', CHANGE COLUMN plain_password password_new_plain VARCHAR(255) NOT NULL DEFAULT ''" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_drop_column_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password" />
-        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN plain_password" />
+        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN like_query_password, DROP COLUMN plain_password" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_drop_columns_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password, DROP COLUMN amount" />
-        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN plain_password, DROP COLUMN cipher_amount, DROP COLUMN plain_amount" />
+        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN like_query_password, DROP COLUMN plain_password, DROP COLUMN cipher_amount, DROP COLUMN plain_amount" />
     </rewrite-assertion>
     
     <rewrite-assertion id="alter_table_drop_mix_columns_for_plain" db-types="MySQL">
         <input sql="ALTER TABLE t_account_bak DROP COLUMN password, DROP COLUMN id" />
-        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN plain_password, DROP COLUMN id" />
+        <output sql="ALTER TABLE t_account_bak DROP COLUMN cipher_password, DROP COLUMN assisted_query_password, DROP COLUMN like_query_password, DROP COLUMN plain_password, DROP COLUMN id" />
     </rewrite-assertion>
 
     <rewrite-assertion id="alter_table_add_index_for_plain" db-types="MySQL">
