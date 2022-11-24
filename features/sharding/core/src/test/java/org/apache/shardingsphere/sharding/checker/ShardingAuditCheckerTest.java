@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.sharding.checker;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,30 +75,27 @@ public final class ShardingAuditCheckerTest {
     
     @Test
     public void assertCheckSQLStatementPass() {
-        when(rule.getAuditors().get("auditor_1").check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"))).thenReturn(new SQLCheckResult(true, ""));
-        assertCheckResult(new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), true, "");
+        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule);
         verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
     }
     
     @Test
     public void assertSQCheckPassByDisableAuditNames() {
-        when(rule.getAuditors().get("auditor_1").check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"))).thenReturn(new SQLCheckResult(false, ""));
         when(auditStrategy.isAllowHintDisable()).thenReturn(true);
-        assertCheckResult(new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), true, "");
+        new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule);
         verify(rule.getAuditors().get("auditor_1"), times(0)).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
     }
     
     @Test
     public void assertSQLCheckNotPass() {
-        when(rule.getAuditors().get("auditor_1").check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db")))
-                .thenReturn(new SQLCheckResult(false, "Not allow DML operation without sharding conditions"));
-        assertCheckResult(new ShardingAuditChecker().check(
-                sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), false, "Not allow DML operation without sharding conditions");
+        ShardingAuditAlgorithm auditAlgorithm = rule.getAuditors().get("auditor_1");
+        doThrow(new SQLCheckException("Not allow DML operation without sharding conditions"))
+                .when(auditAlgorithm).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
+        try {
+            new ShardingAuditChecker().check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule);
+        } catch (final SQLCheckException ex) {
+            assertThat(ex.getMessage(), is("SQL check failed, error message: Not allow DML operation without sharding conditions."));
+        }
         verify(rule.getAuditors().get("auditor_1"), times(1)).check(sqlStatementContext, Collections.emptyList(), grantee, databases.get("foo_db"));
-    }
-    
-    private void assertCheckResult(final SQLCheckResult checkResult, final boolean isPassed, final String errorMessage) {
-        assertThat(checkResult.isPassed(), is(isPassed));
-        assertThat(checkResult.getErrorMessage(), is(errorMessage));
     }
 }

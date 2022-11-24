@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check;
+package org.apache.shardingsphere.infra.executor.check.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * SQL check result.
+ * SQL check exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLCheckResult {
+public final class SQLCheckException extends KernelSQLException {
     
-    private final boolean isPassed;
+    private static final long serialVersionUID = 4183020614721058122L;
     
-    private final String errorMessage;
+    private static final int KERNEL_CODE = 6;
+    
+    public SQLCheckException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 0, "SQL check failed, error message: %s.", errorMessage);
+    }
 }

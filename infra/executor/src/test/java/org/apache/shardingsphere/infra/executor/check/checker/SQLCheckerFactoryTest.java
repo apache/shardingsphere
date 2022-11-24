@@ -15,35 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.check;
+package org.apache.shardingsphere.infra.executor.check.checker;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.executor.check.checker.fixture.SQLCheckerFixture;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
+import org.junit.Test;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
-/**
- * SQL checker factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLCheckerFactory {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public final class SQLCheckerFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(SQLChecker.class);
-    }
-    
-    /**
-     * Get instance of SQL checker.
-     * 
-     * @param rules rules
-     * @return got instance
-     */
     @SuppressWarnings("rawtypes")
-    public static Map<ShardingSphereRule, SQLChecker> getInstance(final Collection<ShardingSphereRule> rules) {
-        return OrderedSPIRegistry.getRegisteredServices(SQLChecker.class, rules);
+    @Test
+    public void assertGetInstance() {
+        MockedRule rule = mock(MockedRule.class);
+        Map<ShardingSphereRule, SQLChecker> actual = SQLCheckerFactory.getInstance(Collections.singleton(rule));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(rule), instanceOf(SQLCheckerFixture.class));
     }
 }

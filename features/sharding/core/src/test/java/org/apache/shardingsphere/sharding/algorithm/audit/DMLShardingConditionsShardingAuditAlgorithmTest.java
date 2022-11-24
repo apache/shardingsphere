@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -34,8 +34,6 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -64,7 +62,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     @Test
     public void assertNotDMLStatementCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
-        assertCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), true, "");
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
         verify(database, times(0)).getRuleMetaData();
     }
     
@@ -73,7 +71,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(true);
-        assertCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), true, "");
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
     }
     
     @Test
@@ -81,20 +79,15 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
-        assertCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), true, "");
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
     }
     
-    @Test
+    @Test(expected = SQLCheckException.class)
     public void assertEmptyShardingConditionsCheck() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DMLStatement.class));
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(rule)));
         when(rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
         when(rule.isShardingTable("t_order")).thenReturn(true);
-        assertCheckResult(shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database), false, "Not allow DML operation without sharding conditions");
-    }
-    
-    private void assertCheckResult(final SQLCheckResult checkResult, final boolean isPassed, final String errorMessage) {
-        assertThat(checkResult.isPassed(), is(isPassed));
-        assertThat(checkResult.getErrorMessage(), is(errorMessage));
+        shardingAuditAlgorithm.check(sqlStatementContext, Collections.emptyList(), mock(Grantee.class), database);
     }
 }
