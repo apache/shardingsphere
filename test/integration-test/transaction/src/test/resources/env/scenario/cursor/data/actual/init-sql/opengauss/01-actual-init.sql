@@ -40,7 +40,7 @@ GRANT ALL PRIVILEGES ON DATABASE transaction_it_2 TO test_user;
 
 \c transaction_it_0;
 
-CREATE TABLE "t_product" ("product_id" INT NOT NULL, "address_id" INT, "product_name" varchar, "category_id" INT NOT NULL, "price" numeric NOT NULL, "status" varchar, "creation_date" date);
+CREATE TABLE "t_product" ("id" INT PRIMARY KEY, "product_id" INT NOT NULL, "address_id" INT, "product_name" varchar, "category_id" INT NOT NULL, "price" numeric NOT NULL, "status" varchar, "creation_date" date);
 CREATE TABLE "t_order_0" ("order_id" INT PRIMARY KEY, "address_id" INT, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
 CREATE TABLE "t_order_1" ("order_id" INT PRIMARY KEY, "address_id" INT, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
 CREATE TABLE "t_order_item_0" ("item_id" INT PRIMARY KEY, "order_id" int NOT NULL, "user_id" int NOT NULL, "status" varchar(50) DEFAULT NULL);
@@ -72,11 +72,12 @@ INSERT INTO "t_country" ("country_id", "country_name", "continent_name", "creati
 INSERT INTO "t_order_0" ("order_id", "address_id", "user_id", "status") VALUES (2, 1, 2, 'OK');
 INSERT INTO "t_order_1" ("order_id", "address_id", "user_id", "status") VALUES (1, 2, 2, 'OK');
 
-INSERT INTO "t_product" ("product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (1, 1, 'product1', 1, 1, 'OK', '2022-11-02');
-INSERT INTO "t_product" ("product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (2, 2, 'product2', 2, 2, 'OK', '2022-11-02');
-INSERT INTO "t_product" ("product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (3, 3, 'product3', 3, 3, 'OK', '2022-11-02');
-INSERT INTO "t_product" ("product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (4, 4, 'product4', 4, 4, 'OK', '2022-11-02');
+INSERT INTO "t_product" ("id", "product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (1, 1, 1, 'product1', 1, 1, 'OK', '2022-11-02');
+INSERT INTO "t_product" ("id", "product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (2, 2, 2, 'product2', 2, 2, 'OK', '2022-11-02');
+INSERT INTO "t_product" ("id", "product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (3, 3, 3, 'product3', 3, 3, 'OK', '2022-11-02');
+INSERT INTO "t_product" ("id", "product_id", "address_id", "product_name", "category_id", "price", "status", "creation_date") VALUES (4, 4, 4, 'product4', 4, 4, 'OK', '2022-11-02');
 
+\c
 \c transaction_it_1;
 
 CREATE TABLE "t_order_0" ("order_id" INT PRIMARY KEY, "address_id" INT, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);

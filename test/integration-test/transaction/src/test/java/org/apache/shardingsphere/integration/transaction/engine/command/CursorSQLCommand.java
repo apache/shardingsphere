@@ -31,6 +31,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Setter
 public final class CursorSQLCommand {
     
+    @XmlElement(name = "single-table-cursor")
+    private String singleTableCursor;
+    
+    @XmlElement(name = "single-table-cursor-order-by")
+    private String singleTableCursorOrderBy;
+    
     @XmlElement(name = "broadcast-tables-cursor")
     private String broadcastTablesCursor;
     
