@@ -205,7 +205,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 result.add(convertExpressionToDescription((ExpressionProjectionSegment) each));
             }
         }
-        return new PostgreSQLRowDescriptionPacket(result.size(), result);
+        return new PostgreSQLRowDescriptionPacket(result);
     }
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
@@ -293,6 +293,6 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
             columnDescriptions.add(new PostgreSQLColumnDescription(columnName, columnIndex, columnType, columnLength, columnTypeName));
         }
-        logicPreparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions));
+        logicPreparedStatement.setRowDescription(new PostgreSQLRowDescriptionPacket(columnDescriptions));
     }
 }
