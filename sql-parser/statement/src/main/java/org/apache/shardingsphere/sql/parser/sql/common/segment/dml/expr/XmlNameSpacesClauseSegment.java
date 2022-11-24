@@ -39,7 +39,7 @@ public final class XmlNameSpacesClauseSegment implements ComplexExpressionSegmen
     
     private final String defaultString;
     
-    private final Collection<XmlNameSpaceStringAsIdentifierSegment> StringAsIdentifier = new LinkedList<>();
+    private final Collection<XmlNameSpaceStringAsIdentifierSegment> stringAsIdentifier = new LinkedList<>();
     
     private final String text;
 }

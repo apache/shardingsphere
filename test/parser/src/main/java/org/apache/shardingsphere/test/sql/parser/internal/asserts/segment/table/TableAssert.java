@@ -90,7 +90,7 @@ public final class TableAssert {
         assertXmlTableFunction(assertContext, actual.getXmlTableFunction(), expected.getXmlTableFunction());
         assertThat(assertContext.getText("Xml table function alias assertion error"), actual.getXmlTableFunctionAlias(), is(expected.getXmlTableFunctionAlias()));
     }
-
+    
     /**
      * Assert actual table segment is correct with expected table.
      *
@@ -180,7 +180,7 @@ public final class TableAssert {
             assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
         }
     }
-
+    
     /**
      * Assert actual xml table function segment is correct with expected xml table function.
      *

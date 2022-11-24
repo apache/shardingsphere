@@ -680,17 +680,17 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
         // TODO : throw exception if more than one defaultString exists in a xml name space clause
         String defaultString = null == ctx.defaultString() ? null : ctx.defaultString(0).STRING_().getText();
         Collection<XmlNameSpaceStringAsIdentifierSegment> xmlNameSpaceStringAsIdentifierSegments = null == ctx.xmlNameSpaceStringAsIdentifier() ? Collections.emptyList()
-                : ctx.xmlNameSpaceStringAsIdentifier().stream().map(each ->(XmlNameSpaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
+                : ctx.xmlNameSpaceStringAsIdentifier().stream().map(each -> (XmlNameSpaceStringAsIdentifierSegment) visit(each)).collect(Collectors.toList());
         XmlNameSpacesClauseSegment result = new XmlNameSpacesClauseSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), defaultString, getOriginalText(ctx));
         result.getStringAsIdentifier().addAll(xmlNameSpaceStringAsIdentifierSegments);
         return result;
     }
-
+    
     @Override
     public ASTNode visitXmlNameSpaceStringAsIdentifier(final XmlNameSpaceStringAsIdentifierContext ctx) {
         return new XmlNameSpaceStringAsIdentifierSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.STRING_().getText(), ctx.identifier().getText(), getOriginalText(ctx));
     }
-
+    
     @Override
     public ASTNode visitXmlTableOptions(final XmlTableOptionsContext ctx) {
         XmlTableOptionsSegment result = new XmlTableOptionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
