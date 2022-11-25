@@ -201,7 +201,7 @@
         <module name="DesignForExtension" />
         <module name="FinalClass" />
         <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
-        <!--<module name="HideUtilityClassConstructor"/>-->
+        <!--<module name="HideUtilityClassConstructor" />-->
         <module name="OneTopLevelClass" />
         <module name="InterfaceIsType" />
         <module name="InnerTypeLast" />
@@ -251,7 +251,7 @@
         <module name="SummaryJavadoc" />
         <!--
         <module name="JavadocType">
-            <property name="scope" value="public"/>
+            <property name="scope" value="public" />
         </module>
         -->
         <module name="JavadocMethod">

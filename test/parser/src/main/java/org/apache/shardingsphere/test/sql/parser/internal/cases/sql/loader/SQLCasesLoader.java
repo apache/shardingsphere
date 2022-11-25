@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.RootSQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

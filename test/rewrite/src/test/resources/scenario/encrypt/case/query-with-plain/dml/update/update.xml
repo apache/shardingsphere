@@ -35,7 +35,7 @@
     
     <rewrite-assertion id="update_for_literals" db-types="MySQL">
         <input sql="UPDATE t_account SET account_id = 1, certificate_number = '111X', password = 'aaa', amount = 1000, status = 'OK' WHERE account_id = 1 AND certificate_number = '111X' AND password = 'aaa' AND password like 'aaa' AND amount = 1000 AND status = 'OK'" />
-        <output sql="UPDATE t_account SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'"/>
+        <output sql="UPDATE t_account SET account_id = 1, cipher_certificate_number = 'encrypt_111X', assisted_query_certificate_number = 'assisted_query_111X', like_query_certificate_number = 'like_query_111X', cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', like_query_password = 'like_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK' WHERE account_id = 1 AND assisted_query_certificate_number = 'assisted_query_111X' AND assisted_query_password = 'assisted_query_aaa' AND like_query_password like 'like_query_aaa' AND cipher_amount = 'encrypt_1000' AND status = 'OK'" />
     </rewrite-assertion>
     
 <!--    TODO FIX ME-->

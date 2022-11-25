@@ -34,6 +34,6 @@ public final class InternalSQLServerParserParameterizedIT extends InternalSQLPar
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("SQLServer");
+        return getTestParameters("SQLServer");
     }
 }

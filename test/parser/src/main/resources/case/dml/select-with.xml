@@ -132,10 +132,10 @@
                         <subquery start-index="276" stop-index="301">
                             <select>
                                 <from start-index="293" stop-index="300">
-                                    <simple-table name="avg_cost" start-index="293" stop-index="300"/>
+                                    <simple-table name="avg_cost" start-index="293" stop-index="300" />
                                 </from>
                                 <projections start-index="284" stop-index="286">
-                                    <column-projection name="avg" start-index="284" stop-index="286"/>
+                                    <column-projection name="avg" start-index="284" stop-index="286" />
                                 </projections>
                             </select>
                         </subquery>

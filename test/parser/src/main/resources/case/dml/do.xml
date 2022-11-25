@@ -19,46 +19,46 @@
 <sql-parser-test-cases>
     <do sql-case-id="do_constant">
         <parameter>
-            <literal-expression value="1" start-index="3" stop-index="3"/>
+            <literal-expression value="1" start-index="3" stop-index="3" />
         </parameter>
     </do>
     
     <do sql-case-id="do_sleep">
         <parameter>
-            <literal-expression value="SLEEP(1)" start-index="3" stop-index="10"/>
+            <literal-expression value="SLEEP(1)" start-index="3" stop-index="10" />
         </parameter>
     </do>
     
     <do sql-case-id="do_multiple_sleep">
         <parameter>
-            <literal-expression value="SLEEP(1)" start-index="3" stop-index="10"/>
+            <literal-expression value="SLEEP(1)" start-index="3" stop-index="10" />
         </parameter>
         <parameter>
-            <literal-expression value="SLEEP(2)" start-index="13" stop-index="20"/>
+            <literal-expression value="SLEEP(2)" start-index="13" stop-index="20" />
         </parameter>
     </do>
     
     <do sql-case-id="do_with_function_1">
         <parameter>
-            <literal-expression value="FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" start-index="3" stop-index="54"/>
+            <literal-expression value="FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" start-index="3" stop-index="54" />
         </parameter>
     </do>
     
     <do sql-case-id="do_with_function_2">
         <parameter>
-            <literal-expression value="FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))" start-index="3" stop-index="45"/>
+            <literal-expression value="FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))" start-index="3" stop-index="45" />
         </parameter>
     </do>
     
     <do sql-case-id="do_with_function_3">
         <parameter>
-            <literal-expression value="COUNT(DISTINCT ROUND(CAST(SLEEP(0) AS DECIMAL), NULL))" start-index="3" stop-index="56"/>
+            <literal-expression value="COUNT(DISTINCT ROUND(CAST(SLEEP(0) AS DECIMAL), NULL))" start-index="3" stop-index="56" />
         </parameter>
     </do>
     
     <do sql-case-id="do_with_crc32_function">
         <parameter>
-            <literal-expression value="CRC32(CHAR(1.134475E+308))" start-index="3" stop-index="28"/>
+            <literal-expression value="CRC32(CHAR(1.134475E+308))" start-index="3" stop-index="28" />
         </parameter>
     </do>
 </sql-parser-test-cases>

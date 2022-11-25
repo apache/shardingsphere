@@ -30,10 +30,10 @@
                 <expr>
                     <binary-operation-expression start-index="50" stop-index="64">
                         <left>
-                            <column name="kind" start-index="50" stop-index="53"/>
+                            <column name="kind" start-index="50" stop-index="53" />
                         </left>
                         <right>
-                            <literal-expression value="Comedy" start-index="57" stop-index="64"/>
+                            <literal-expression value="Comedy" start-index="57" stop-index="64" />
                         </right>
                         <operator>=</operator>
                     </binary-operation-expression>
@@ -55,10 +55,10 @@
                 <expr>
                     <binary-operation-expression start-index="63" stop-index="82">
                         <left>
-                            <column name="classification" start-index="63" stop-index="76"/>
+                            <column name="classification" start-index="63" stop-index="76" />
                         </left>
                         <right>
-                            <literal-expression value="U" start-index="80" stop-index="82"/>
+                            <literal-expression value="U" start-index="80" stop-index="82" />
                         </right>
                         <operator>=</operator>
                     </binary-operation-expression>
@@ -86,10 +86,10 @@
                         <expr>
                             <binary-operation-expression start-index="101" stop-index="107">
                                 <left>
-                                    <column name="n" start-index="101" stop-index="101"/>
+                                    <column name="n" start-index="101" stop-index="101" />
                                 </left>
                                 <right>
-                                    <literal-expression value="100" start-index="105" stop-index="107"/>
+                                    <literal-expression value="100" start-index="105" stop-index="107" />
                                 </right>
                                 <operator>=</operator>
                             </binary-operation-expression>

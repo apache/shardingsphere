@@ -17,11 +17,11 @@
 
 <dataset>
     <metadata>
-        <column name="name"/>
-        <column name="input"/>
-        <column name="output"/>
-        <column name="stream_channel"/>
-        <column name="completion_detector"/>
-        <column name="data_consistency_checker"/>
+        <column name="name" />
+        <column name="input" />
+        <column name="output" />
+        <column name="stream_channel" />
+        <column name="completion_detector" />
+        <column name="data_consistency_checker" />
     </metadata>
 </dataset>

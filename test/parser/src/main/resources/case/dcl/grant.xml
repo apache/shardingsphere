@@ -116,7 +116,7 @@
         <table name="t_order_item" start-index="31" stop-index="42" />
     </grant>
     
-    <grant sql-case-id="grant_select_on_all_tables"/>
+    <grant sql-case-id="grant_select_on_all_tables" />
     
     <grant sql-case-id="grant_all_column_on_table">
         <table name="t_order" start-index="41" stop-index="47" />

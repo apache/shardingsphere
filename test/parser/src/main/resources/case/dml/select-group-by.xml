@@ -120,7 +120,7 @@
                     <simple-table name="t_order" alias="o" start-index="36" stop-index="44" />
                 </left>
                 <right>
-                    <simple-table name="t_order_item" alias="i" start-index="51" stop-index="64"/>
+                    <simple-table name="t_order_item" alias="i" start-index="51" stop-index="64" />
                 </right>
                 <on-condition>
                     <binary-operation-expression start-index="69" stop-index="117">
@@ -368,7 +368,7 @@
                     </left>
                     <operator>&gt;</operator>
                     <right>
-                        <literal-expression start-index="100" stop-index="100" value="0"/>
+                        <literal-expression start-index="100" stop-index="100" value="0" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -394,7 +394,7 @@
                     </left>
                     <operator>&gt;</operator>
                     <right>
-                        <literal-expression start-index="87" stop-index="87" value="0"/>
+                        <literal-expression start-index="87" stop-index="87" value="0" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -556,7 +556,7 @@
                     </left>
                     <operator>&lt;</operator>
                     <right>
-                        <literal-expression value="5000" start-index="106" stop-index="109"/>
+                        <literal-expression value="5000" start-index="106" stop-index="109" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -589,24 +589,24 @@
                         <subquery start-index="121" stop-index="219">
                             <select>
                                 <from start-index="160" stop-index="170">
-                                    <simple-table name="employees" alias="x" start-index="160" stop-index="170"/>
+                                    <simple-table name="employees" alias="x" start-index="160" stop-index="170" />
                                 </from>
                                 <projections start-index="129" stop-index="153">
-                                    <column-projection name="department_id" start-index="129" stop-index="141"/>
-                                    <column-projection name="manager_id" start-index="144" stop-index="153"/>
+                                    <column-projection name="department_id" start-index="129" stop-index="141" />
+                                    <column-projection name="manager_id" start-index="144" stop-index="153" />
                                 </projections>
                                 <where start-index="172" stop-index="218">
                                     <expr>
                                         <binary-operation-expression start-index="178" stop-index="218">
                                             <left>
                                                 <column name="department_id" start-index="178" stop-index="192">
-                                                    <owner name="x" start-index="178" stop-index="178"/>
+                                                    <owner name="x" start-index="178" stop-index="178" />
                                                 </column>
                                             </left>
                                             <operator>=</operator>
                                             <right>
                                                 <column name="department_id" start-index="196" stop-index="218">
-                                                    <owner name="employees" start-index="196" stop-index="204"/>
+                                                    <owner name="employees" start-index="196" stop-index="204" />
                                                 </column>
                                             </right>
                                         </binary-operation-expression>

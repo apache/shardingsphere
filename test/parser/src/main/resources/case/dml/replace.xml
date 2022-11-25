@@ -214,7 +214,7 @@
                 <column name="order_id" start-index="25" stop-index="32" />
                 <assignment-value>
                     <parameter-marker-expression parameter-index="0" start-index="36" stop-index="36" />
-                    <literal-expression value="1" literal-start-index="36" literal-stop-index="36"/>
+                    <literal-expression value="1" literal-start-index="36" literal-stop-index="36" />
                 </assignment-value>
             </assignment>
             <assignment>
@@ -311,7 +311,7 @@
                     <literal-expression value="replace" start-index="94" stop-index="102" literal-start-index="102" literal-stop-index="110" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="2017-08-08" start-index="105" stop-index="116" literal-start-index="113" literal-stop-index="124"/>
+                    <literal-expression value="2017-08-08" start-index="105" stop-index="116" literal-start-index="113" literal-stop-index="124" />
                 </assignment-value>
             </value>
         </values>
@@ -410,7 +410,7 @@
             <assignment>
                 <column name="creation_date" start-index="77" stop-index="89" literal-start-index="81" literal-stop-index="93" />
                 <assignment-value>
-                    <literal-expression value="2017-08-08" start-index="91" stop-index="102" literal-start-index="95" literal-stop-index="106"/>
+                    <literal-expression value="2017-08-08" start-index="91" stop-index="102" literal-start-index="95" literal-stop-index="106" />
                 </assignment-value>
             </assignment>
         </set>
@@ -573,7 +573,7 @@
                     <literal-expression value="10" start-index="142" stop-index="143" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="replace" start-index="130" stop-index="138" literal-start-index="146" literal-stop-index="154"/>
+                    <literal-expression value="replace" start-index="130" stop-index="138" literal-start-index="146" literal-stop-index="154" />
                 </assignment-value>
                 <assignment-value>
                     <literal-expression value="2017-08-08" start-index="141" stop-index="152" literal-start-index="157" literal-stop-index="168" />
@@ -633,7 +633,7 @@
             <value>
                 <assignment-value>
                     <parameter-marker-expression parameter-index="0" start-index="33" stop-index="33" />
-                    <literal-expression value="10000" literal-start-index="33" literal-stop-index="37"/>
+                    <literal-expression value="10000" literal-start-index="33" literal-stop-index="37" />
                 </assignment-value>
                 <assignment-value>
                     <parameter-marker-expression parameter-index="1" start-index="36" stop-index="36" />
@@ -729,7 +729,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="_BINARY'This is a binary value.'" start-index="44" stop-index="75"/>
+                    <common-expression text="_BINARY'This is a binary value.'" start-index="44" stop-index="75" />
                 </assignment-value>
             </value>
         </values>
@@ -837,7 +837,7 @@
                             <function function-name="now" text="now()" start-index="71" stop-index="75" />
                         </parameter>
                         <parameter>
-                            <expression-projection text="interval ? second" literal-text="interval 1 second" start-index="77" stop-index="93"/>
+                            <expression-projection text="interval ? second" literal-text="interval 1 second" start-index="77" stop-index="93" />
                         </parameter>
                     </function>
                 </assignment-value>
