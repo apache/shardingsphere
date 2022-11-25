@@ -61,7 +61,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -694,14 +693,14 @@ public final class ContextManager implements AutoCloseable {
      * @param tableName table name
      * @param yamlRowData yaml row data
      */
-    public synchronized void alterRowsData(final String databaseName, final String schemaName, final String tableName, final List<YamlShardingSphereRowData> yamlRowData) {
+    public synchronized void alterRowsData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> yamlRowData) {
         if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().containsKey(tableName)) {
             return;
         }
         ShardingSphereTableData tableData = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().get(tableName);
-        List<ShardingSphereRowData> rowData = yamlRowData.stream().map(each -> new YamlShardingSphereRowDataSwapper(tableData.getColumns()).swapToObject(each)).collect(Collectors.toList());
+        Collection<ShardingSphereRowData> rowData = yamlRowData.stream().map(each -> new YamlShardingSphereRowDataSwapper(tableData.getColumns()).swapToObject(each)).collect(Collectors.toList());
         rowData.forEach(each -> {
             if (!tableData.getRows().contains(each)) {
                 tableData.getRows().add(each);

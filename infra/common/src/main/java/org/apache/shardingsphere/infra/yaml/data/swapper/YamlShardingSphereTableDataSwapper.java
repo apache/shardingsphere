@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +45,7 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
         Map<Integer, YamlShardingSpherePartitionRowData> yamlPartitionRows = new LinkedHashMap<>();
         int i = 0;
         for (List<ShardingSphereRowData> each : Lists.partition(data.getRows(), 100)) {
-            List<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
+            Collection<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
             each.forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(data.getColumns()).swapToYamlConfiguration(rowData)));
             YamlShardingSpherePartitionRowData partitionRowsData = new YamlShardingSpherePartitionRowData();
             partitionRowsData.setPartitionRows(yamlShardingSphereRowData);

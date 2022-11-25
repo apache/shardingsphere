@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,7 @@ public final class YamlShardingSphereRowDataSwapper implements YamlConfiguration
     @Override
     public YamlShardingSphereRowData swapToYamlConfiguration(final ShardingSphereRowData data) {
         YamlShardingSphereRowData result = new YamlShardingSphereRowData();
-        List<Object> rowData = null == data.getRows() ? Collections.emptyList() : data.getRows();
+        Collection<Object> rowData = null == data.getRows() ? Collections.emptyList() : data.getRows();
         List<Object> yamlRowData = new LinkedList<>();
         int count = 0;
         for (Object each : rowData) {
@@ -60,7 +61,7 @@ public final class YamlShardingSphereRowDataSwapper implements YamlConfiguration
     
     @Override
     public ShardingSphereRowData swapToObject(final YamlShardingSphereRowData yamlConfig) {
-        List<Object> yamlRow = null == yamlConfig.getRows() ? Collections.emptyList() : yamlConfig.getRows();
+        Collection<Object> yamlRow = null == yamlConfig.getRows() ? Collections.emptyList() : yamlConfig.getRows();
         List<Object> rowData = new LinkedList<>();
         int count = 0;
         for (Object each : yamlRow) {

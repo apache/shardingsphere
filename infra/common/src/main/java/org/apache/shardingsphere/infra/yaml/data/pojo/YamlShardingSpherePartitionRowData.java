@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Yaml ShardingSphere partition row data.
@@ -30,5 +30,5 @@ import java.util.List;
 @Setter
 public final class YamlShardingSpherePartitionRowData implements YamlConfiguration {
     
-    private List<YamlShardingSphereRowData> partitionRows;
+    private Collection<YamlShardingSphereRowData> partitionRows;
 }
