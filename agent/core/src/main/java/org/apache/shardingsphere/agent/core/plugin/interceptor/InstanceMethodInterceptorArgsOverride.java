@@ -27,7 +27,6 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
@@ -39,7 +38,7 @@ import java.lang.reflect.Method;
 @RequiredArgsConstructor
 public class InstanceMethodInterceptorArgsOverride {
     
-    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(InstanceMethodInterceptorArgsOverride.class);
     
     private final InstanceMethodAroundAdvice instanceMethodAroundAdvice;
     
