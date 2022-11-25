@@ -91,25 +91,6 @@ public final class ShowProcessListIT {
         executeSelectSleep.join();
     }
     
-    private void assertResultSet(final ResultSet resultSet) throws SQLException {
-        assertMetaData(resultSet.getMetaData());
-        assertRows(resultSet);
-    }
-    
-    private void assertMetaData(final ResultSetMetaData metaData) throws SQLException {
-        assertThat(metaData.getColumnCount(), is(8));
-    }
-    
-    private void assertRows(final ResultSet resultSet) throws SQLException {
-        int count = 0;
-        while (resultSet.next()) {
-            if (SELECT_SLEEP.equals(resultSet.getObject(8).toString())) {
-                count++;
-            }
-        }
-        assertThat(count, is(1));
-    }
-    
     private Runnable getExecuteSleepThread(final String targetContainer) {
         return () -> {
             try (
@@ -120,5 +101,34 @@ public final class ShowProcessListIT {
                 throw new RuntimeException(ex);
             }
         };
+    }
+    
+    private void assertResultSet(final ResultSet resultSet) throws SQLException {
+        assertMetaData(resultSet.getMetaData());
+        assertRows(resultSet);
+    }
+    
+    private void assertMetaData(final ResultSetMetaData metaData) throws SQLException {
+        assertThat(metaData.getColumnCount(), is(8));
+        assertThat(metaData.getColumnName(1), is("Id"));
+        assertThat(metaData.getColumnName(2), is("User"));
+        assertThat(metaData.getColumnName(3), is("Host"));
+        assertThat(metaData.getColumnName(4), is("db"));
+        assertThat(metaData.getColumnName(5), is("Command"));
+        assertThat(metaData.getColumnName(6), is("Time"));
+        assertThat(metaData.getColumnName(7), is("State"));
+        assertThat(metaData.getColumnName(8), is("Info"));
+    }
+    
+    private void assertRows(final ResultSet resultSet) throws SQLException {
+        int count = 0;
+        while (resultSet.next()) {
+            if (SELECT_SLEEP.equals(resultSet.getObject(8).toString())) {
+                assertThat(resultSet.getObject(5), is("Execute"));
+                assertThat(resultSet.getObject(7), is("Executing 0/1"));
+                count++;
+            }
+        }
+        assertThat(count, is(1));
     }
 }
