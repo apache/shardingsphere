@@ -37,5 +37,5 @@ public final class ExpectedCacheTableIndex extends AbstractExpectedIdentifierSQL
     private ExpectedSimpleTable table;
     
     @XmlElement(name = "index")
-    private List<ExpectedIndex> indexNames = new LinkedList<>();
+    private final List<ExpectedIndex> indexNames = new LinkedList<>();
 }

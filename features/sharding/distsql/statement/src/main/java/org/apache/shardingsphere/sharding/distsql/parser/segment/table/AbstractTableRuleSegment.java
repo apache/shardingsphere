@@ -43,14 +43,4 @@ public abstract class AbstractTableRuleSegment implements ASTNode {
     private KeyGenerateStrategySegment keyGenerateStrategySegment;
     
     private AuditStrategySegment auditStrategySegment;
-    
-    /**
-     * Empty table rule segment.
-     */
-    public static class EmptyTableRuleSegment extends AbstractTableRuleSegment {
-        
-        public EmptyTableRuleSegment() {
-            super(null, null);
-        }
-    }
 }

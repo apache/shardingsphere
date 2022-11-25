@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -29,7 +30,14 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDefaultShardingStrategyStatementUpdaterTest {
@@ -60,6 +68,15 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement("Database"), currentRuleConfig);
         assertNull(currentRuleConfig.getDefaultDatabaseShardingStrategy());
+        assertTrue(currentRuleConfig.getShardingAlgorithms().isEmpty());
+    }
+    
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithInUsedAlgorithm() {
+        ShardingRuleConfiguration currentRuleConfig = createMultipleCurrentRuleConfiguration();
+        updater.updateCurrentRuleConfiguration(createSQLStatement("Table"), currentRuleConfig);
+        assertNull(currentRuleConfig.getDefaultTableShardingStrategy());
+        assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(1));
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {
@@ -69,6 +86,19 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "algorithm_name"));
+        Map<String, AlgorithmConfiguration> stringAlgorithms = new LinkedHashMap<>();
+        stringAlgorithms.put("algorithm_name", new AlgorithmConfiguration("INLINE", new Properties()));
+        result.setShardingAlgorithms(stringAlgorithms);
+        return result;
+    }
+    
+    private ShardingRuleConfiguration createMultipleCurrentRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "algorithm_name"));
+        result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "algorithm_name"));
+        Map<String, AlgorithmConfiguration> stringAlgorithms = new LinkedHashMap<>();
+        stringAlgorithms.put("algorithm_name", new AlgorithmConfiguration("INLINE", new Properties()));
+        result.setShardingAlgorithms(stringAlgorithms);
         return result;
     }
 }

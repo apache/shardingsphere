@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.CheckMigrationStatementTestCase;
 
@@ -47,17 +48,8 @@ public final class CheckMigrationStatementAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertJobIds(assertContext, actual.getJobId(), expected.getJobIds());
+            JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
             assertTypeStrategy(assertContext, actual.getTypeStrategy(), expected.getTableStrategies());
-        }
-    }
-    
-    private static void assertJobIds(final SQLCaseAssertContext assertContext, final String actual, final List<String> expected) {
-        if (expected.isEmpty()) {
-            assertNull(assertContext.getText("Actual job id should not exist."), actual);
-        } else {
-            assertNotNull(assertContext.getText("Actual job id should exist."), actual);
-            assertThat(assertContext.getText("Job id assertion error"), actual, is(expected.iterator().next()));
         }
     }
     

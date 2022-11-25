@@ -4742,4 +4742,57 @@
             <simple-table name="DUAL" start-index="60" stop-index="63" />
         </from>
     </select>
+
+    <select sql-case-id="select_xmlpi_function">
+        <projections start-index="7" stop-index="89">
+            <expression-projection text="XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled')" alias="XMLPI" start-index="11" stop-index="78" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="96" stop-index="99" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlquery_function">
+        <projections start-index="7" stop-index="95">
+            <expression-projection text="XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY)" start-index="7" stop-index="95" />
+        </projections>
+        <from>
+            <simple-table name="x_table" start-index="102" stop-index="108" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlroot_function">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="XMLROOT(XMLType('143598'), VERSION '1.0', STANDALONE YES)" alias="XMLROOT" start-index="7" stop-index="76" />
+        </projections>
+        <from>
+            <simple-table name="DUAL" start-index="83" stop-index="86" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlserialize_function">
+        <projections start-index="7" stop-index="96">
+            <expression-projection text="XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' IDENT SIZE = 0 SHOW DEFAULT)" start-index="7" stop-index="96" />
+        </projections>
+        <from>
+            <simple-table name="b" start-index="103" stop-index="103" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_xmltable_function">
+        <projections start-index="7" stop-index="65">
+            <column-projection name="warehouse_name" alias="warehouse" start-index="7" stop-index="30" />
+            <column-projection name="Water" start-index="33" stop-index="48">
+                <owner name="warehouse2" start-index="33" stop-index="42" />
+            </column-projection>
+            <column-projection name="Rail" start-index="51" stop-index="65">
+                <owner name="warehouse2" start-index="51" stop-index="60" />
+            </column-projection>
+        </projections>
+        <from>
+            <xml-table table-name="warehouses" xml-table-function-alias="warehouse2" start-index="76" stop-index="238">
+                <xml-table-function function-name="XMLTABLE" text="XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess')" start-index="88" stop-index="227" />
+            </xml-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

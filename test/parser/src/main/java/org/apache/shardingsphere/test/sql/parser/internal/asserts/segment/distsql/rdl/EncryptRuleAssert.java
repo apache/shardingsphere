@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,11 +59,11 @@ public final class EncryptRuleAssert {
     }
     
     private static void assertEncryptColumns(final SQLCaseAssertContext assertContext, final Collection<EncryptColumnSegment> actual, final List<ExpectedEncryptColumn> expected) {
-        if (null == expected) {
+        if (expected.isEmpty()) {
             assertNull(assertContext.getText("Actual encrypt column should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual encrypt column should exist."), actual);
-            assertThat(assertContext.getText(String.format("Actual encrypt column size should be %s , but it was %s", expected.size(), actual.size())), actual.size(), is(expected.size()));
+            assertFalse(assertContext.getText("Actual encrypt column should exist."), actual.isEmpty());
+            assertThat(assertContext.getText(String.format("Actual encrypt column size should be %s, but it was %s.", expected.size(), actual.size())), actual.size(), is(expected.size()));
             int count = 0;
             for (EncryptColumnSegment encryptColumnSegment : actual) {
                 ExpectedEncryptColumn expectedEncryptColumn = expected.get(count);

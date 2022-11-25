@@ -36,10 +36,10 @@ public final class ExpectedCaseWhenExpression extends AbstractExpectedSQLSegment
     private ExpectedExpression caseArg;
     
     @XmlElement(name = "when-list")
-    private List<ExpectedExpression> whenList = new LinkedList<>();
+    private final List<ExpectedExpression> whenList = new LinkedList<>();
     
     @XmlElement(name = "then-list")
-    private List<ExpectedExpression> thenList = new LinkedList<>();
+    private final List<ExpectedExpression> thenList = new LinkedList<>();
     
     @XmlElement(name = "else-expression")
     private ExpectedExpression elseExpr;

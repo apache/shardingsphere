@@ -92,7 +92,7 @@ public final class ShardingSphereDataScheduleCollector {
             try {
                 tableData = shardingSphereDataCollector.get().collect(databaseName, table, databases);
             } catch (SQLException ex) {
-                log.error("Collect data for sharding_table_statistics error!", ex);
+                log.error("Collect data failed!", ex);
             }
             tableData.ifPresent(shardingSphereTableData -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
                     .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), shardingSphereTableData));

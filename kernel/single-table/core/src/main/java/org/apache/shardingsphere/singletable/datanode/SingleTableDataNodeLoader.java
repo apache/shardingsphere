@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaTableNamesLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaMetaDataLoader;
 import org.apache.shardingsphere.singletable.exception.SingleTablesLoadingException;
 
 import javax.sql.DataSource;
@@ -85,7 +85,7 @@ public final class SingleTableDataNodeLoader {
     
     private static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource, final String dataSourceName) {
         try {
-            return SchemaTableNamesLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
+            return SchemaMetaDataLoader.loadSchemaTableNames(databaseName, databaseType, dataSource);
         } catch (final SQLException ex) {
             throw new SingleTablesLoadingException(databaseName, dataSourceName, ex);
         }

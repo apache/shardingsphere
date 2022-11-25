@@ -179,9 +179,7 @@
                         </where>
                     </select>
                 </subquery-expression>
-                <columns start-index="219" stop-index="224">
-                    <column name="order1" start-index="219" stop-index="224" />
-                </columns>
+                <column name="order1" start-index="219" stop-index="224" />
             </common-table-expression>
         </with>
         <from>
@@ -230,9 +228,7 @@
                         </where>
                     </select>
                 </subquery-expression>
-                <columns start-index="229" stop-index="234">
-                    <column name="order1" start-index="229" stop-index="234" />
-                </columns>
+                <column name="order1" start-index="229" stop-index="234" />
             </common-table-expression>
         </with>
         <from>
@@ -269,9 +265,7 @@
                         </projections>
                     </select>
                 </subquery-expression>
-                <columns start-index="202" stop-index="207">
-                    <column name="order1" start-index="202" stop-index="207" />
-                </columns>
+                <column name="order1" start-index="202" stop-index="207" />
             </common-table-expression>
         </with>
         <from>
@@ -322,10 +316,8 @@
                         </projections>
                     </select>
                 </subquery-expression>
-                <columns start-index="10" stop-index="24">
-                    <column name="status" start-index="10" stop-index="15" />
-                    <column name="user_id" start-index="18" stop-index="24" />
-                </columns>
+                <column name="status" start-index="10" stop-index="15" />
+                <column name="user_id" start-index="18" stop-index="24" />
             </common-table-expression>
             <common-table-expression name="cte2" start-index="69" stop-index="119">
                 <subquery-expression start-index="87" stop-index="118">
@@ -338,9 +330,7 @@
                         </projections>
                     </select>
                 </subquery-expression>
-                <columns start-index="74" stop-index="80">
-                    <column name="item_id" start-index="74" stop-index="80" />
-                </columns>
+                <column name="item_id" start-index="74" stop-index="80" />
             </common-table-expression>
         </with>
         <from>

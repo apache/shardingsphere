@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.executor.check.exception.SQLCheckException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -46,19 +47,17 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
+    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
             if (rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())
                     || sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(rule::isShardingTable)) {
-                return new SQLCheckResult(true, "");
+                return;
             }
             ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(sqlStatementContext, database, rule);
-            if (shardingConditionEngine.createShardingConditions(sqlStatementContext, params).isEmpty()) {
-                return new SQLCheckResult(false, "Not allow DML operation without sharding conditions");
-            }
+            ShardingSpherePreconditions.checkState(!shardingConditionEngine.createShardingConditions(sqlStatementContext, params).isEmpty(),
+                    () -> new SQLCheckException("Not allow DML operation without sharding conditions"));
         }
-        return new SQLCheckResult(true, "");
     }
     
     @Override

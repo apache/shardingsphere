@@ -42,6 +42,7 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     
     private final Iterator<MemoryQueryResultDataRow> rows;
     
+    @Getter
     private MemoryQueryResultDataRow currentRow;
     
     @Getter

@@ -19,11 +19,13 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.call.ExpectedCallParameter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.call.ExpectedProcedureName;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.call.ExpectedProcedureParameters;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Call statement test case.
@@ -35,6 +37,6 @@ public final class CallStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "procedure-name")
     private ExpectedProcedureName procedureName;
     
-    @XmlElement(name = "parameters")
-    private ExpectedProcedureParameters procedureParameters;
+    @XmlElement(name = "procedure-parameter")
+    private final List<ExpectedCallParameter> procedureParameters = new LinkedList<>();
 }

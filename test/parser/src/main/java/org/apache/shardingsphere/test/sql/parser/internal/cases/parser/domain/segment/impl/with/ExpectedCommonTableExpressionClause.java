@@ -25,7 +25,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.se
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +38,6 @@ public final class ExpectedCommonTableExpressionClause extends AbstractExpectedS
     @XmlAttribute
     private String name;
     
-    @XmlElementWrapper
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();
     

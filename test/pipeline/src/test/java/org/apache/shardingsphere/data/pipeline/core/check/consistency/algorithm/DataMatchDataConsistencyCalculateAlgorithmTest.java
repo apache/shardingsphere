@@ -37,7 +37,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public final class DataMatchDataConsistencyCalculateAlgorithmTest {
@@ -94,7 +93,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
         assertTrue(targetCalculateResult.get().getMaxUniqueKeyValue().isPresent());
         assertThat(sourceCalculateResult.get().getMaxUniqueKeyValue().get(), is(targetCalculateResult.get().getMaxUniqueKeyValue().get()));
         assertThat(targetCalculateResult.get().getMaxUniqueKeyValue().get(), is(5L));
-        assertEquals(sourceCalculateResult.get(), targetCalculateResult.get());
+        assertThat(sourceCalculateResult.get(), is(targetCalculateResult.get()));
     }
     
     @Test
@@ -111,7 +110,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
         assertTrue(targetCalculateResult.get().getMaxUniqueKeyValue().isPresent());
         assertThat(sourceCalculateResult.get().getMaxUniqueKeyValue().get(), is(targetCalculateResult.get().getMaxUniqueKeyValue().get()));
         assertThat(targetCalculateResult.get().getMaxUniqueKeyValue().get(), is(10L));
-        assertEquals(sourceCalculateResult.get(), targetCalculateResult.get());
+        assertThat(sourceCalculateResult.get(), is(targetCalculateResult.get()));
     }
     
     private DataConsistencyCalculateParameter generateParameter(final PipelineDataSourceWrapper dataSource, final String logicTableName, final Object dataCheckPositionValue) {

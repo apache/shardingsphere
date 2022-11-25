@@ -73,9 +73,7 @@
     
     <copy sql-case-id="copy_table_with_columns_to_file">
         <table name="t_order" start-index="5" stop-index="11" />
-        <columns start-index="13" stop-index="20">
-            <column name="id" start-index="13" stop-index="14" />
-            <column name="name" start-index="17" stop-index="20" />
-        </columns>
+        <column name="id" start-index="13" stop-index="14" />
+        <column name="name" start-index="17" stop-index="20" />
     </copy>
 </sql-parser-test-cases>

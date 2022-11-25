@@ -34,8 +34,8 @@ import java.util.List;
 public final class ShowMigrationStatusStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "job-id")
-    private final List<String> jobIds = new LinkedList<>();
+    private String jobId;
     
     @XmlElement(name = "type-strategy")
-    private List<ExpectedAlgorithm> tableStrategies;
+    private final List<ExpectedAlgorithm> tableStrategies = new LinkedList<>();
 }

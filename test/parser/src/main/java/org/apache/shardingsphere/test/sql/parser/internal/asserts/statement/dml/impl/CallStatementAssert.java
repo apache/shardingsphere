@@ -56,20 +56,20 @@ public final class CallStatementAssert {
         if (actual instanceof MySQLCallStatement) {
             MySQLCallStatement actualStatement = (MySQLCallStatement) actual;
             if (null != actualStatement.getParameters() && null != expected.getProcedureParameters()) {
-                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().size()));
                 int count = 0;
                 for (ExpressionSegment each : actualStatement.getParameters()) {
-                    assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
+                    assertParameter(assertContext, each, expected.getProcedureParameters().get(count));
                     count++;
                 }
             }
         } else if (actual instanceof PostgreSQLCallStatement) {
             PostgreSQLCallStatement actualStatement = (PostgreSQLCallStatement) actual;
             if (null != expected.getProcedureParameters()) {
-                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().size()));
                 int count = 0;
                 for (ExpressionSegment each : actualStatement.getParameters()) {
-                    assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
+                    assertParameter(assertContext, each, expected.getProcedureParameters().get(count));
                     count++;
                 }
             }

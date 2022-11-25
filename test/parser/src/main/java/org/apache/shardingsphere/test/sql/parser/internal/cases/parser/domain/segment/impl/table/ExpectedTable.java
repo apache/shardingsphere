@@ -38,4 +38,7 @@ public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
     
     @XmlElement(name = "join-table")
     private ExpectedJoinTable joinTable;
+    
+    @XmlElement(name = "xml-table")
+    private ExpectedXmlTable xmlTable;
 }

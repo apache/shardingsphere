@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.discovery.cases.base;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.discovery.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.discovery.framework.container.compose.BaseContainerComposer;
@@ -39,35 +38,19 @@ public abstract class BaseITCase {
     
     protected static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    protected static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
-    
-    private final String databaseName;
-    
     private final BaseContainerComposer containerComposer;
     
     private final DatabaseType databaseType;
     
-    private List<DataSource> exposedDataSources;
+    private final List<DataSource> mappedDataSources;
     
-    private List<DataSource> mappedDataSources;
-    
-    private DataSource proxyDataSource;
+    private final DataSource proxyDataSource;
     
     public BaseITCase(final DiscoveryParameterized discoveryParameterized) {
         databaseType = discoveryParameterized.getDatabaseType();
         containerComposer = new DockerContainerComposer(discoveryParameterized.getScenario(), discoveryParameterized.getDatabaseType(), discoveryParameterized.getStorageContainerImage());
         containerComposer.start();
-        databaseName = "";
-        initStorageDataSources();
-        initProxyDataSource();
-    }
-    
-    private void initStorageDataSources() {
-        exposedDataSources = containerComposer.getExposedDatasource(databaseName);
-        mappedDataSources = containerComposer.getMappedDatasource(databaseName);
-    }
-    
-    private void initProxyDataSource() {
-        proxyDataSource = containerComposer.getProxyDatasource(databaseName);
+        mappedDataSources = containerComposer.getMappedDatasource();
+        proxyDataSource = containerComposer.getProxyDatasource();
     }
 }

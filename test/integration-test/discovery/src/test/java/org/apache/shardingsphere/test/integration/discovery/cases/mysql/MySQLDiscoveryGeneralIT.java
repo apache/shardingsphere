@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.integration.discovery.cases.mysql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.test.integration.discovery.build.DiscoveryRuleBuilder;
+import org.apache.shardingsphere.test.integration.discovery.build.MySQLMGRBuilder;
 import org.apache.shardingsphere.test.integration.discovery.cases.base.BaseITCase;
 import org.apache.shardingsphere.test.integration.discovery.framework.parameter.DiscoveryParameterized;
 import org.junit.Test;
@@ -26,10 +28,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * MySQL Discovery Integration Test.
@@ -50,17 +51,15 @@ public final class MySQLDiscoveryGeneralIT extends BaseITCase {
         Collection<DiscoveryParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listStorageContainerImages(databaseType)) {
-            result.add(new DiscoveryParameterized(databaseType, each, "mysql_discovery"));
+            result.add(new DiscoveryParameterized(databaseType, each, "discovery"));
         }
         return result;
     }
     
     @Test
-    public void assertProxyJdbcConnection() {
-        List<DataSource> mappedDataSources = getMappedDataSources();
-        List<DataSource> exposedDataSources = getExposedDataSources();
-        // TODO add the MySQL Discovery logic here.
-        mappedDataSources.forEach(each -> log.info(each.toString()));
-        exposedDataSources.forEach(each -> log.info(each.toString()));
+    public void assertMySQLMGRDiscovery() throws SQLException {
+        new MySQLMGRBuilder(getMappedDataSources()).createDatabase();
+        new DiscoveryRuleBuilder(getProxyDataSource());
+        // TODO Add some assert
     }
 }

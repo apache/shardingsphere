@@ -42,7 +42,7 @@ public final class AssignmentAssert {
      * @param expected expected assignment
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
-        if (null == expected.getColumns()) {
+        if (expected.getColumns().isEmpty()) {
             ColumnAssert.assertIs(assertContext, actual.getColumns().get(0), expected.getColumn());
         } else {
             assertThat(assertContext.getText("Assignment columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));

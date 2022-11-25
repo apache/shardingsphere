@@ -186,7 +186,7 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 <hr>
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_en.png)
 
 ##
 

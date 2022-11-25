@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.s
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedAuditStrategy;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.rdl.ExpectedShardingStrategy;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -47,4 +48,7 @@ public final class ExpectedTableRule extends AbstractExpectedIdentifierSQLSegmen
     
     @XmlElement(name = "key-generate-strategy")
     private ExpectedAlgorithm keyGenerateStrategy;
+    
+    @XmlElement(name = "audit-strategy")
+    private ExpectedAuditStrategy auditStrategy;
 }

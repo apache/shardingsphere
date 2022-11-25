@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -80,15 +81,30 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropDatabaseDiscoveryRuleStatement sqlStatement, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
-        for (String each : sqlStatement.getNames()) {
-            dropRule(currentRuleConfig, each);
-        }
+        sqlStatement.getNames().forEach(each -> dropRule(currentRuleConfig, each));
+        dropUnusedType(currentRuleConfig);
+        dropUnusedHeartbeat(currentRuleConfig);
         return false;
     }
     
     private void dropRule(final DatabaseDiscoveryRuleConfiguration currentRuleConfig, final String ruleName) {
         Optional<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfig = currentRuleConfig.getDataSources().stream().filter(each -> each.getGroupName().equals(ruleName)).findAny();
         dataSourceRuleConfig.ifPresent(optional -> currentRuleConfig.getDataSources().remove(dataSourceRuleConfig.get()));
+    }
+    
+    private void dropUnusedType(final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        Collection<String> inUsedDiscoveryTypes = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryTypeName).filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Collection<String> unusedDiscoveryTypes = currentRuleConfig.getDiscoveryTypes().keySet().stream().filter(each -> !inUsedDiscoveryTypes.contains(each)).collect(Collectors.toSet());
+        unusedDiscoveryTypes.forEach(each -> currentRuleConfig.getDiscoveryTypes().remove(each));
+    }
+    
+    private void dropUnusedHeartbeat(final DatabaseDiscoveryRuleConfiguration currentRuleConfig) {
+        Collection<String> inUsedDiscoveryHeartbeats = currentRuleConfig.getDataSources().stream().map(DatabaseDiscoveryDataSourceRuleConfiguration::getDiscoveryHeartbeatName)
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+        Collection<String> unusedDiscoveryHeartbeats = currentRuleConfig.getDiscoveryHeartbeats().keySet().stream().filter(each -> !inUsedDiscoveryHeartbeats.contains(each))
+                .collect(Collectors.toSet());
+        unusedDiscoveryHeartbeats.forEach(each -> currentRuleConfig.getDiscoveryHeartbeats().remove(each));
     }
     
     @Override
