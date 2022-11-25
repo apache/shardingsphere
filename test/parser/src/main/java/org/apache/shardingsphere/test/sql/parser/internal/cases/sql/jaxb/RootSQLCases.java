@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb;
 
 import lombok.Getter;
 
