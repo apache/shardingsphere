@@ -46,7 +46,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.generi
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedBetweenExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedBinaryOperationExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedCaseWhenExpression;

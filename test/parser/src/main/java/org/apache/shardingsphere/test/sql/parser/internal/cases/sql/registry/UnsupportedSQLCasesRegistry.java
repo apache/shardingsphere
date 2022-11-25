@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
 
 /**
  * Unsupported SQL cases registry.
  */
+@Getter
 public final class UnsupportedSQLCasesRegistry {
     
     private static final UnsupportedSQLCasesRegistry INSTANCE = new UnsupportedSQLCasesRegistry();
     
-    @Getter
-    private final SQLCasesLoader sqlCasesLoader;
+    private final SQLCases cases;
     
     private UnsupportedSQLCasesRegistry() {
-        sqlCasesLoader = new SQLCasesLoader("sql/unsupported/");
+        cases = new SQLCases(new SQLCasesLoader().load("sql/unsupported/"));
     }
     
     /**

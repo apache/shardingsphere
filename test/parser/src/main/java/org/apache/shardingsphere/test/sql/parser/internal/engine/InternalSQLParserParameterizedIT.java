@@ -25,12 +25,12 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.SQLStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -41,7 +41,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public abstract class InternalSQLParserParameterizedIT {
     
-    private static final SQLCasesLoader SQL_CASES_LOADER = SQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
@@ -53,7 +53,7 @@ public abstract class InternalSQLParserParameterizedIT {
     
     protected static Collection<Object[]> getTestParameters(final String... databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : SQL_CASES_LOADER.getTestParameters(Arrays.asList(databaseTypes))) {
+        for (Object[] each : SQL_CASES.getTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each)) {
                 result.add(each);
             }
@@ -68,9 +68,9 @@ public abstract class InternalSQLParserParameterizedIT {
     @Test
     public final void assertSupportedSQL() {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
-        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES_LOADER, sqlCaseId, sqlCaseType), actual, expected);
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES, sqlCaseId, sqlCaseType), actual, expected);
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {

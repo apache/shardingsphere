@@ -30,7 +30,7 @@ import java.util.List;
  */
 @XmlRootElement(name = "sql-cases")
 @Getter
-public final class SQLCases {
+public final class RootSQLCases {
     
     @XmlAttribute(name = "db-types")
     private String databaseTypes;
