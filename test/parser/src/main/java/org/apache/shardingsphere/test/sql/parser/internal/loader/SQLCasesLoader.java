@@ -96,10 +96,9 @@ public final class SQLCasesLoader {
      * @param sqlCaseId SQL case id
      * @param sqlCaseType SQL case type
      * @param params parameters
-     * @param databaseType database type
      * @return SQL case value
      */
-    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> params, final String databaseType) {
+    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> params) {
         switch (sqlCaseType) {
             case Literal:
                 return getLiteralSQL(getSQLFromMap(sqlCaseId, getCases()), params);
