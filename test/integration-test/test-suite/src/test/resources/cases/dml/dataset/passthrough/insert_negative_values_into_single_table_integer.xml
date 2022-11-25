@@ -16,7 +16,7 @@
   -->
 
 <dataset update-count="1">
-    <metadata data-nodes="tbl.t_single_table_integer">
+    <metadata data-nodes="passthrough.t_data_type_integer">
         <column name="id" type="numeric" />
         <column name="col_bigint" type="numeric" />
         <column name="col_int" type="numeric" />
@@ -24,5 +24,5 @@
         <column name="col_smallint" type="numeric" />
         <column name="col_tinyint" type="numeric" />
     </metadata>
-    <row data-node="tbl.t_single_table_integer" values="1, 9223372036854775807, 2147483647, 8388607, 32767, 127" />
+    <row data-node="passthrough.t_data_type_integer" values="3, -1, -1, -1, -1, -1" />
 </dataset>

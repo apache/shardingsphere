@@ -41,7 +41,6 @@ DROP TABLE IF EXISTS t_order_9;
 DROP TABLE IF EXISTS t_order_item_9;
 DROP TABLE IF EXISTS t_broadcast_table;
 DROP TABLE IF EXISTS t_single_table;
-DROP TABLE IF EXISTS t_single_table_integer;
 
 CREATE TABLE t_order_0(order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item_0(item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -90,4 +89,3 @@ CREATE INDEX order_index_t_order_9 ON t_order_9 (order_id);
 CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
 
 CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-CREATE TABLE t_single_table_integer (id INT PRIMARY KEY, col_bigint BIGINT NOT NULL, col_int INT NOT NULL, col_mediumint MEDIUMINT NOT NULL, col_smallint SMALLINT NOT NULL, col_tinyint TINYINT NOT NULL);
