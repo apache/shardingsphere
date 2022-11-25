@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * SQL check result.
+ * Xml name spaces segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLCheckResult {
+@ToString
+public final class XmlNameSpacesClauseSegment implements ComplexExpressionSegment {
     
-    private final boolean isPassed;
+    private final int startIndex;
     
-    private final String errorMessage;
+    private final int stopIndex;
+    
+    private final String defaultString;
+    
+    private final Collection<XmlNameSpaceStringAsIdentifierSegment> stringAsIdentifier = new LinkedList<>();
+    
+    private final String text;
 }

@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.check.fixture;
+package org.apache.shardingsphere.infra.executor.check.checker.fixture;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
-import org.apache.shardingsphere.infra.executor.check.SQLChecker;
-import org.apache.shardingsphere.test.fixture.rule.MockedRule;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 
 import java.util.List;
 import java.util.Map;
@@ -36,9 +35,8 @@ public final class SQLCheckerFixture implements SQLChecker<MockedRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final String currentDatabase,
-                                final Map<String, ShardingSphereDatabase> databases, final MockedRule rule) {
-        return null;
+    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Grantee grantee, final String currentDatabase,
+                      final Map<String, ShardingSphereDatabase> databases, final MockedRule rule) {
     }
     
     @Override

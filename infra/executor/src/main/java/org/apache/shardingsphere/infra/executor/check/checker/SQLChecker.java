@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.check;
+package org.apache.shardingsphere.infra.executor.check.checker;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -54,9 +53,8 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @param currentDatabase current database
      * @param databases databases
      * @param rule rule
-     * @return SQL check result
      */
-    SQLCheckResult check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databases, T rule);
+    void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databases, T rule);
     
     /**
      * Check User.
