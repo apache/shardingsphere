@@ -34,6 +34,6 @@ public final class InternalSQL92ParserParameterizedIT extends InternalSQLParserP
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("SQL92");
+        return getTestParameters("SQL92");
     }
 }

@@ -34,6 +34,6 @@ public final class InternalDistSQLParserParameterizedIT extends InternalSQLParse
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("ShardingSphere");
+        return getTestParameters("ShardingSphere");
     }
 }

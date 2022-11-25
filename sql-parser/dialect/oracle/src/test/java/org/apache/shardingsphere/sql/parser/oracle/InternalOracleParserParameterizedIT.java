@@ -34,6 +34,6 @@ public final class InternalOracleParserParameterizedIT extends InternalSQLParser
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("Oracle");
+        return getTestParameters("Oracle");
     }
 }

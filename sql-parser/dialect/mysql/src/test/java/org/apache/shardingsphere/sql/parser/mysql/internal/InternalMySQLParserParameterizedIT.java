@@ -34,6 +34,6 @@ public final class InternalMySQLParserParameterizedIT extends InternalSQLParserP
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("MySQL", "H2");
+        return getTestParameters("MySQL", "H2");
     }
 }

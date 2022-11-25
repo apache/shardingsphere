@@ -34,6 +34,6 @@ public final class InternalOpenGaussParserParameterizedIT extends InternalSQLPar
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("openGauss");
+        return getTestParameters("openGauss");
     }
 }

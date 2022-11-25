@@ -34,6 +34,6 @@ public final class InternalPostgreSQLParserParameterizedIT extends InternalSQLPa
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("PostgreSQL");
+        return getTestParameters("PostgreSQL");
     }
 }
