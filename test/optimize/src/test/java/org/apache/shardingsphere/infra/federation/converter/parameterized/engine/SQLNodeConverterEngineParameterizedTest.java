@@ -156,7 +156,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private static Collection<Object[]> getTestParameters(final String... databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : SQL_CASES.getTestParameters(Arrays.asList(databaseTypes))) {
+        for (Object[] each : SQL_CASES.generateTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
                 result.add(each);
             }
