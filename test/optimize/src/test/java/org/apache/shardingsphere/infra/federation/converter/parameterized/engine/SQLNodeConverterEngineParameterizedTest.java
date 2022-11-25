@@ -40,8 +40,8 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConver
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -140,6 +140,11 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by_limit");
         SUPPORTED_SQL_CASE_IDS.add("select_projections_with_only_expr_for_postgres");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_inner_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_left_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_right_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_full_join");
     }
     // CHECKSTYLE:ON
     
