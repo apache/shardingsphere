@@ -58,11 +58,12 @@ public class LoggerFactory {
         CodeSource codeSource = LoggerFactory.class.getProtectionDomain().getCodeSource();
         try {
             File agentFle = new File(codeSource.getLocation().toURI());
-            if (!agentFle.isFile() && !agentFle.getName().endsWith(".jar")) {
-                classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
+            if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
+                PluginJar pluginJar = new PluginJar(new JarFile(agentFle, true), agentFle);
+                classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(pluginJar));
+                return classLoader;
             }
-            PluginJar pluginJar = new PluginJar(new JarFile(agentFle, true), agentFle);
-            classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(pluginJar));
+            classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
         } catch (final URISyntaxException | IOException ignored) {
         }
         return classLoader;
