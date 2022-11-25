@@ -134,6 +134,7 @@ public final class TableAssert {
         assertIs(assertContext, actual.getRight(), expected.getRight());
         ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
         assertJoinType(assertContext, actual.getJoinType(), expected.getJoinType());
+        assertThat(assertContext.getText("Natural should be the same."), actual.isNatural(), is(expected.isNatural()));
         assertThat(assertContext.getText("Column size assertion error: "), actual.getUsing().size(), is(expected.getUsingColumns().size()));
         int count = 0;
         for (ExpectedColumn each : expected.getUsingColumns()) {

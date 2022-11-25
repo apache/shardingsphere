@@ -29,10 +29,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Sho
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.SubqueryProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
@@ -52,7 +54,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -187,17 +188,29 @@ public final class ProjectionEngine {
             return Collections.emptyList();
         }
         JoinTableSegment joinTable = (JoinTableSegment) table;
-        Collection<Projection> projections = new LinkedList<>();
-        createProjection(joinTable.getLeft(), projectionSegment).ifPresent(projections::add);
-        createProjection(joinTable.getRight(), projectionSegment).ifPresent(projections::add);
         Collection<Projection> result = new LinkedList<>();
-        for (Projection each : projections) {
+        Collection<Projection> remainingProjections = new LinkedList<>();
+        for (Projection each : getOriginalProjections(joinTable, projectionSegment)) {
+            Collection<Projection> actualProjections = getActualProjections(Collections.singletonList(each));
             if (joinTable.getUsing().isEmpty() || (null != owner && each.getExpression().contains(owner))) {
-                result.addAll(getActualProjections(Collections.singletonList(each)));
+                result.addAll(actualProjections);
             } else {
-                result.addAll(getJoinUsingActualProjections(projections, joinTable.getUsing()));
+                remainingProjections.addAll(actualProjections);
             }
         }
+        result.addAll(getUsingActualProjections(remainingProjections, joinTable.getUsing()));
+        return result;
+    }
+    
+    private Collection<Projection> getOriginalProjections(final JoinTableSegment joinTable, final ProjectionSegment projectionSegment) {
+        Collection<Projection> result = new LinkedList<>();
+        if (databaseType instanceof MySQLDatabaseType && !joinTable.getUsing().isEmpty() && JoinType.RIGHT.name().equalsIgnoreCase(joinTable.getJoinType())) {
+            createProjection(joinTable.getRight(), projectionSegment).ifPresent(result::add);
+            createProjection(joinTable.getLeft(), projectionSegment).ifPresent(result::add);
+            return result;
+        }
+        createProjection(joinTable.getLeft(), projectionSegment).ifPresent(result::add);
+        createProjection(joinTable.getRight(), projectionSegment).ifPresent(result::add);
         return result;
     }
     
@@ -215,16 +228,22 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getJoinUsingActualProjections(final Collection<Projection> projections, final List<ColumnSegment> usingColumns) {
-        Collection<Projection> result = new LinkedList<>();
-        Collection<Projection> actualColumns = getActualProjections(projections);
+    private Collection<Projection> getUsingActualProjections(final Collection<Projection> actualProjections, final Collection<ColumnSegment> usingColumns) {
+        if (usingColumns.isEmpty()) {
+            return Collections.emptyList();
+        }
         Collection<String> usingColumnNames = getUsingColumnNames(usingColumns);
-        result.addAll(getJoinUsingColumns(actualColumns, usingColumnNames));
-        result.addAll(getRemainingColumns(actualColumns, usingColumnNames));
+        Collection<Projection> result = new LinkedList<>();
+        if (databaseType instanceof MySQLDatabaseType) {
+            result.addAll(getJoinUsingColumnsByOriginalColumnSequence(actualProjections, usingColumnNames));
+        } else {
+            result.addAll(getJoinUsingColumnsByUsingColumnSequence(actualProjections, usingColumnNames));
+        }
+        result.addAll(getRemainingColumns(actualProjections, usingColumnNames));
         return result;
     }
     
-    private Collection<String> getUsingColumnNames(final List<ColumnSegment> usingColumns) {
+    private Collection<String> getUsingColumnNames(final Collection<ColumnSegment> usingColumns) {
         Collection<String> result = new LinkedHashSet<>();
         for (ColumnSegment each : usingColumns) {
             result.add(each.getIdentifier().getValue().toLowerCase());
@@ -232,10 +251,23 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getJoinUsingColumns(final Collection<Projection> actualColumns, final Collection<String> usingColumnNames) {
+    private Collection<Projection> getJoinUsingColumnsByOriginalColumnSequence(final Collection<Projection> actualProjections, final Collection<String> usingColumnNames) {
+        Collection<Projection> result = new LinkedList<>();
+        for (Projection each : actualProjections) {
+            if (result.size() == usingColumnNames.size()) {
+                return result;
+            }
+            if (usingColumnNames.contains(each.getColumnLabel().toLowerCase())) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Projection> getJoinUsingColumnsByUsingColumnSequence(final Collection<Projection> actualProjections, final Collection<String> usingColumnNames) {
         Collection<Projection> result = new LinkedList<>();
         for (String each : usingColumnNames) {
-            for (Projection projection : actualColumns) {
+            for (Projection projection : actualProjections) {
                 if (each.equals(projection.getColumnLabel().toLowerCase())) {
                     result.add(projection);
                     break;
@@ -245,9 +277,9 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getRemainingColumns(final Collection<Projection> actualColumns, final Collection<String> usingColumnNames) {
+    private Collection<Projection> getRemainingColumns(final Collection<Projection> actualProjections, final Collection<String> usingColumnNames) {
         Collection<Projection> result = new LinkedList<>();
-        for (Projection each : actualColumns) {
+        for (Projection each : actualProjections) {
             if (usingColumnNames.contains(each.getColumnLabel().toLowerCase())) {
                 continue;
             }
