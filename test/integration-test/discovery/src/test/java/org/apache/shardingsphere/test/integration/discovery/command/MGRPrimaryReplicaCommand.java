@@ -32,7 +32,7 @@ public final class MGRPrimaryReplicaCommand {
     
     @XmlElement(name = "build-primary-node-sql")
     @Getter
-   private String buildPrimaryNodeSQL;
+    private String buildPrimaryNodeSQL;
     
     @XmlElement(name = "build-replica-node-sql")
     @Getter

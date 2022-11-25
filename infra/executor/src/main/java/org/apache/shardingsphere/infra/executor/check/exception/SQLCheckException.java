@@ -15,30 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table;
+package org.apache.shardingsphere.infra.executor.check.exception;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.AbstractExpectedDelimiterSQLSegment;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Expected tables.
+ * SQL check exception.
  */
-@Getter
-@Setter
-public final class ExpectedTable extends AbstractExpectedDelimiterSQLSegment {
+public final class SQLCheckException extends KernelSQLException {
     
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable simpleTable;
+    private static final long serialVersionUID = 4183020614721058122L;
     
-    @XmlElement(name = "subquery-table")
-    private ExpectedSubqueryTable subqueryTable;
+    private static final int KERNEL_CODE = 6;
     
-    @XmlElement(name = "join-table")
-    private ExpectedJoinTable joinTable;
-    
-    @XmlElement(name = "xml-table")
-    private ExpectedXmlTable xmlTable;
+    public SQLCheckException(final String errorMessage) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, KERNEL_CODE, 0, "SQL check failed, error message: %s.", errorMessage);
+    }
 }

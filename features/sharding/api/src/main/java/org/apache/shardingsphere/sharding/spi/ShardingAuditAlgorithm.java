@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.spi;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -37,7 +36,6 @@ public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
      * @param params SQL parameters
      * @param grantee grantee
      * @param database database
-     * @return SQL check result
      */
-    SQLCheckResult check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereDatabase database);
+    void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereDatabase database);
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.executor.check;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.check.SQLCheckException;
-import org.apache.shardingsphere.infra.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLChecker;
+import org.apache.shardingsphere.infra.executor.check.checker.SQLCheckerFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -71,10 +71,7 @@ public final class SQLCheckEngine {
     public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params, final Collection<ShardingSphereRule> rules,
                              final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
-            SQLCheckResult checkResult = entry.getValue().check(sqlStatementContext, params, grantee, currentDatabase, databases, entry.getKey());
-            if (!checkResult.isPassed()) {
-                throw new SQLCheckException(checkResult.getErrorMessage());
-            }
+            entry.getValue().check(sqlStatementContext, params, grantee, currentDatabase, databases, entry.getKey());
         }
     }
     

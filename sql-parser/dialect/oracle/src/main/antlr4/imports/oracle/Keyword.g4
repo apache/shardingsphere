@@ -751,3 +751,19 @@ HIDE
 SHOW
     : S H O W
     ;
+
+XMLTABLE
+    : X M L T A B L E
+    ;
+
+XMLNAMESPACES
+    : X M L N A M E S P A C E S
+    ;
+
+ORDINALITY
+    : O R D I N A L I T Y
+    ;
+
+PATH
+    : P A T H
+    ;

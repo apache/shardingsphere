@@ -20,29 +20,33 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.table
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.XmlTableFunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.XmlTableSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedXmlTableFunction;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedJoinTable;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSubqueryTable;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedXmlTable;
 
 import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -65,10 +69,26 @@ public final class TableAssert {
             assertIs(assertContext, (SimpleTableSegment) actual, expected.getSimpleTable());
         } else if (actual instanceof SubqueryTableSegment) {
             assertIs(assertContext, (SubqueryTableSegment) actual, expected.getSubqueryTable());
+        } else if (actual instanceof XmlTableSegment) {
+            assertIs(assertContext, (XmlTableSegment) actual, expected.getXmlTable());
         } else {
             throw new UnsupportedOperationException(
                     String.format("Unsupported table segment type `%s`.", actual.getClass()));
         }
+    }
+    
+    /**
+     * Assert actual xml table segment is correct with expected xml table.
+     *
+     * @param assertContext assert context
+     * @param actual actual xml table
+     * @param expected expected xml table
+     */
+    private static void assertIs(final SQLCaseAssertContext assertContext, final XmlTableSegment actual, final ExpectedXmlTable expected) {
+        assertThat(assertContext.getText("Table name assertion error"), actual.getTableName(), is(expected.getTableName()));
+        assertThat(assertContext.getText("Table name alias assertion error"), actual.getTableNameAlias(), is(expected.getTableAlias()));
+        assertXmlTableFunction(assertContext, actual.getXmlTableFunction(), expected.getXmlTableFunction());
+        assertThat(assertContext.getText("Xml table function alias assertion error"), actual.getXmlTableFunctionAlias(), is(expected.getXmlTableFunctionAlias()));
     }
     
     /**
@@ -159,5 +179,17 @@ public final class TableAssert {
         } else {
             assertThat(assertContext.getText("Actual join-type should exist."), actual, is(expected));
         }
+    }
+    
+    /**
+     * Assert actual xml table function segment is correct with expected xml table function.
+     *
+     * @param assertContext assert context
+     * @param actual actual xml table function
+     * @param expected expected xml table function
+     */
+    private static void assertXmlTableFunction(final SQLCaseAssertContext assertContext, final XmlTableFunctionSegment actual, final ExpectedXmlTableFunction expected) {
+        assertThat(assertContext.getText("Function name assertion error"), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertThat(assertContext.getText("Function text assert error"), actual.getText(), is(expected.getText()));
     }
 }
