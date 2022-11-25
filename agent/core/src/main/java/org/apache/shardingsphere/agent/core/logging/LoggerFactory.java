@@ -55,21 +55,17 @@ public class LoggerFactory {
         if (Objects.nonNull(classLoader)) {
             return classLoader;
         }
-        try {
-            classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(getAgentJar()));
-        } catch (final IOException ignored) {
-        }
-        return classLoader;
-    }
-    
-    private static PluginJar getAgentJar() throws IOException {
         CodeSource codeSource = LoggerFactory.class.getProtectionDomain().getCodeSource();
         try {
             File agentFle = new File(codeSource.getLocation().toURI());
-            return new PluginJar(new JarFile(agentFle, true), agentFle);
-        } catch (final URISyntaxException ignored) {
+            if (!agentFle.isFile() && !agentFle.getName().endsWith(".jar")) {
+                classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
+            }
+            PluginJar pluginJar = new PluginJar(new JarFile(agentFle, true), agentFle);
+            classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(pluginJar));
+        } catch (final URISyntaxException | IOException ignored) {
         }
-        return null;
+        return classLoader;
     }
     
     /**
