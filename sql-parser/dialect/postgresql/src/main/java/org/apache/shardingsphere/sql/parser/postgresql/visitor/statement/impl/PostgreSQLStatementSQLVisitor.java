@@ -1125,6 +1125,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         TableSegment right = (TableSegment) visit(ctx.tableReference());
         tableSegment.setRight(right);
         tableSegment.setJoinType(getJoinType(ctx));
+        tableSegment.setNatural(null != ctx.naturalJoinType());
         return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
     }
     
@@ -1154,7 +1155,10 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
         }
-        return JoinType.RIGHT.name();
+        if (null != ctx.RIGHT()) {
+            return JoinType.RIGHT.name();
+        }
+        return JoinType.INNER.name();
     }
     
     private static String getOutJoinType(final OuterJoinTypeContext ctx) {
