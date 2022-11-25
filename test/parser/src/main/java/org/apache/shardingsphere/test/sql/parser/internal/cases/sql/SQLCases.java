@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 
 import java.util.Arrays;
 import java.util.Collection;
