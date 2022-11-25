@@ -395,4 +395,164 @@
             </column-item>
         </order-by>
     </select>
+
+    <select sql-case-id="select_natural_join" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="INNER" natural="true">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="37" stop-index="50" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="52" stop-index="71">
+            <expr>
+                <binary-operation-expression start-index="58" stop-index="71">
+                    <left>
+                        <column name="order_id" start-index="58" stop-index="67">
+                            <owner name="o" start-index="58" stop-index="58" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="71" stop-index="71" />
+                        <parameter-marker-expression parameter-index="0" start-index="71" stop-index="71" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_natural_inner_join" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="INNER" natural="true">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="43" stop-index="56" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="58" stop-index="77">
+            <expr>
+                <binary-operation-expression start-index="64" stop-index="77">
+                    <left>
+                        <column name="order_id" start-index="64" stop-index="73">
+                            <owner name="o" start-index="64" stop-index="64" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="77" stop-index="77" />
+                        <parameter-marker-expression parameter-index="0" start-index="77" stop-index="77" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_natural_left_join" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT" natural="true">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="42" stop-index="55" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="57" stop-index="76">
+            <expr>
+                <binary-operation-expression start-index="63" stop-index="76">
+                    <left>
+                        <column name="order_id" start-index="63" stop-index="72">
+                            <owner name="o" start-index="63" stop-index="63" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                        <parameter-marker-expression parameter-index="0" start-index="76" stop-index="76" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_natural_right_join" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="RIGHT" natural="true">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="43" stop-index="56" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="58" stop-index="77">
+            <expr>
+                <binary-operation-expression start-index="64" stop-index="77">
+                    <left>
+                        <column name="order_id" start-index="64" stop-index="73">
+                            <owner name="o" start-index="64" stop-index="64" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="77" stop-index="77" />
+                        <parameter-marker-expression parameter-index="0" start-index="77" stop-index="77" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_natural_full_join" parameters="1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="FULL" natural="true">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="42" stop-index="55" />
+                </right>
+            </join-table>
+        </from>
+        <where start-index="57" stop-index="76">
+            <expr>
+                <binary-operation-expression start-index="63" stop-index="76">
+                    <left>
+                        <column name="order_id" start-index="63" stop-index="72">
+                            <owner name="o" start-index="63" stop-index="63" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="76" stop-index="76" />
+                        <parameter-marker-expression parameter-index="0" start-index="76" stop-index="76" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

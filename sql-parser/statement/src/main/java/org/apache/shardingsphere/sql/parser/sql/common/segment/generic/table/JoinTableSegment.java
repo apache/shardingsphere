@@ -41,6 +41,8 @@ public final class JoinTableSegment implements TableSegment {
     
     private TableSegment left;
     
+    private boolean natural;
+    
     private String joinType;
     
     private TableSegment right;
