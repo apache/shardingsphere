@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.loader;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
