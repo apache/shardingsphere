@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.internal.loader;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCase;
@@ -46,7 +45,6 @@ import java.util.regex.Pattern;
 /**
  * SQL cases loader.
  */
-@Getter
 public final class SQLCasesLoader {
     
     private static final Pattern PARAMETER_MARKER = Pattern.compile("\\?|\\$[0-9]+");
@@ -73,7 +71,7 @@ public final class SQLCasesLoader {
     
     private Map<String, SQLCase> loadFromTargetDirectory(final String path) throws JAXBException, FileNotFoundException {
         Map<String, SQLCase> result = new TreeMap<>();
-        for (File each : SQLCaseFileLoader.loadFilesFromTargetDirectory(path)) {
+        for (File each : SQLCaseFileLoader.loadFilesFromDirectory(path)) {
             buildCaseMap(result, new FileInputStream(each));
         }
         return result;
@@ -91,37 +89,23 @@ public final class SQLCasesLoader {
     }
     
     /**
-     * Get SQL case value.
+     * Get SQL.
      * 
-     * @param sqlCaseId SQL case id
-     * @param sqlCaseType SQL case type
+     * @param caseId SQL case ID
+     * @param caseType SQL case type
      * @param params parameters
-     * @param databaseType database type
-     * @return SQL case value
+     * @return got SQL
      */
-    public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> params, final String databaseType) {
-        switch (sqlCaseType) {
-            case Literal:
-                return getLiteralSQL(getSQLFromMap(sqlCaseId, getCases()), params);
+    public String getSQL(final String caseId, final SQLCaseType caseType, final List<?> params) {
+        String sql = getSQLFromMap(caseId, cases);
+        switch (caseType) {
             case Placeholder:
-                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, getCases()));
+                return getPlaceholderSQL(sql);
+            case Literal:
+                return getLiteralSQL(sql, params);
             default:
-                throw new UnsupportedOperationException(sqlCaseType.name());
+                throw new UnsupportedOperationException(caseType.name());
         }
-    }
-    
-    /**
-     * Get test parameters.
-     * 
-     * @param databaseTypes database types
-     * @return test parameters
-     */
-    public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (SQLCase each : getCases().values()) {
-            result.addAll(getSQLTestParameters(databaseTypes, each));
-        }
-        return result;
     }
     
     private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
@@ -135,10 +119,43 @@ public final class SQLCasesLoader {
     }
     
     private String getLiteralSQL(final String sql, final List<?> params) {
-        if (null == params || params.isEmpty()) {
-            return sql;
+        return params.isEmpty() ? sql : replace(sql, params);
+    }
+    
+    private static String replace(final String sql, final List<?> params) {
+        Matcher matcher = PARAMETER_MARKER.matcher(sql);
+        int found = 0;
+        StringBuffer buffer = new StringBuffer();
+        while (matcher.find()) {
+            String group = matcher.group();
+            if (ParameterMarkerType.QUESTION.getMarker().equals(group)) {
+                appendReplacement(++found, params, matcher, buffer);
+            } else {
+                int dollarMarker = Integer.parseInt(group.replace(ParameterMarkerType.DOLLAR.getMarker(), ""));
+                appendReplacement(dollarMarker, params, matcher, buffer);
+            }
         }
-        return replace(sql, params.toArray());
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+    
+    private static void appendReplacement(final int markerIndex, final List<?> params, final Matcher matcher, final StringBuffer buffer) {
+        Preconditions.checkArgument(markerIndex <= params.size(), "Missing replacement for `%s` at index `%s`.", PARAMETER_MARKER.pattern(), markerIndex);
+        matcher.appendReplacement(buffer, Matcher.quoteReplacement(params.get(markerIndex - 1).toString()));
+    }
+    
+    /**
+     * Get test parameters.
+     *
+     * @param databaseTypes database types
+     * @return test parameters
+     */
+    public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
+        Collection<Object[]> result = new LinkedList<>();
+        for (SQLCase each : cases.values()) {
+            result.addAll(getSQLTestParameters(databaseTypes, each));
+        }
+        return result;
     }
     
     private Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
@@ -169,30 +186,5 @@ public final class SQLCasesLoader {
     
     private static Collection<String> getAllDatabaseTypes() {
         return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
-    }
-    
-    private static String replace(final String source, final Object... replacements) {
-        if (null == source || null == replacements) {
-            return source;
-        }
-        Matcher matcher = PARAMETER_MARKER.matcher(source);
-        int found = 0;
-        StringBuffer buffer = new StringBuffer();
-        while (matcher.find()) {
-            String group = matcher.group();
-            if (ParameterMarkerType.QUESTION.getMarker().equals(group)) {
-                appendReplacement(++found, replacements, matcher, buffer);
-            } else {
-                int dollarMarker = Integer.parseInt(group.replace(ParameterMarkerType.DOLLAR.getMarker(), ""));
-                appendReplacement(dollarMarker, replacements, matcher, buffer);
-            }
-        }
-        matcher.appendTail(buffer);
-        return buffer.toString();
-    }
-    
-    private static void appendReplacement(final int markerIndex, final Object[] replacements, final Matcher matcher, final StringBuffer buffer) {
-        Preconditions.checkArgument(markerIndex <= replacements.length, "Missing replacement for `%s` at index `%s`", PARAMETER_MARKER.pattern(), markerIndex);
-        matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacements[markerIndex - 1].toString()));
     }
 }

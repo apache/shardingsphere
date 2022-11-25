@@ -49,4 +49,7 @@ public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment
     
     @XmlAttribute(name = "join-type")
     private String joinType;
+    
+    @XmlAttribute(name = "natural")
+    private boolean natural;
 }

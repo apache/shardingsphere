@@ -50,10 +50,8 @@ algorithmProperty: key=value
 
 - Duplicate `ruleName` cannot be created
 - `storageUnitMapping` specifies the mapping relationship between the source database and the shadow library. You need to use the `storage unit` managed by RDL, please refer to [storage unit](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)
-- `shadowAlgorithm` can act on multiple `shadowTableRule` at the same time
 - `shadowAlgorithmType` currently supports `VALUE_MATCH`, `REGEX_MATCH` and `SIMPLE_HINT`
-- `shadowTableRule` can be reused by different `shadowRuleDefinition`, so when executing `DROP SHADOW RULE`, the corresponding `shadowTableRule` will not be removed
-- `shadowAlgorithm` can be reused by different `shadowTableRule`, so when executing `ALTER SHADOW RULE`, the corresponding `shadowAlgorithm` will not be removed
+- When executing `ALTER SHADOW RULE`, the corresponding `shadowAlgorithm` will not be removed
 - When creating shadow rule, `algorithmName` will be automatically generated according to `ruleName`, `tableName`, `shadowAlgorithmType` and algorithm collection index. The default name is `default_shadow_algorithm`.
 
 

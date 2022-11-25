@@ -63,7 +63,7 @@ public final class SQLParserTestCasesRegistry {
     
     private Map<String, SQLParserTestCase> loadFromTargetDirectory(final String directory) throws IOException, JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (File each : SQLCaseFileLoader.loadFilesFromTargetDirectory(directory)) {
+        for (File each : SQLCaseFileLoader.loadFilesFromDirectory(directory)) {
             try (FileInputStream fileInputStream = new FileInputStream(each)) {
                 Map<String, SQLParserTestCase> sqlParserTestCaseMap = createSQLParserTestCases(fileInputStream);
                 checkDuplicate(result, sqlParserTestCaseMap);

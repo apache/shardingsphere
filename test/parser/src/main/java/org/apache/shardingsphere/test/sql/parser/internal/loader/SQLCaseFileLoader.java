@@ -69,13 +69,13 @@ public final class SQLCaseFileLoader {
     }
     
     /**
-     * Load test case files from target directory.
+     * Load test case files from directory.
      *
      * @param path test cases path
      * @return test case files
      */
     @SneakyThrows({URISyntaxException.class, IOException.class})
-    public static Collection<File> loadFilesFromTargetDirectory(final String path) {
+    public static Collection<File> loadFilesFromDirectory(final String path) {
         URL url = SQLCaseFileLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return Collections.emptyList();

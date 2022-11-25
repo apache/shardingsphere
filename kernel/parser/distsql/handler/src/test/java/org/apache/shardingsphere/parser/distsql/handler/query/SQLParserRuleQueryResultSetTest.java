@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -51,11 +50,9 @@ public final class SQLParserRuleQueryResultSetTest {
         assertThat(rowData.next(), is(Boolean.TRUE.toString()));
         String parseTreeCache = (String) rowData.next();
         assertFalse(resultSet.next());
-        assertThat(parseTreeCache, containsString("initialCapacity: 128"));
-        assertThat(parseTreeCache, containsString("maximumSize: 1024"));
+        assertThat(parseTreeCache, is("initialCapacity: 128, maximumSize: 1024"));
         String sqlStatementCache = (String) rowData.next();
-        assertThat(sqlStatementCache, containsString("initialCapacity: 2000"));
-        assertThat(sqlStatementCache, containsString("maximumSize: 65535"));
+        assertThat(sqlStatementCache, is("initialCapacity: 2000, maximumSize: 65535"));
     }
     
     @Test

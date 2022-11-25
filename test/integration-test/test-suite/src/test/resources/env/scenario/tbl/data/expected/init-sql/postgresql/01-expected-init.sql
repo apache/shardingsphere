@@ -28,7 +28,6 @@ DROP TABLE IF EXISTS t_single_table;
 DROP TABLE IF EXISTS t_broadcast_table;
 DROP TABLE IF EXISTS t_order_federate_sharding;
 DROP TABLE IF EXISTS t_order_item_federate_sharding;
-DROP TABLE IF EXISTS t_single_table_integer;
 
 CREATE TABLE t_order(order_id INT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(50) NOT NULL, merchant_id INT NOT NULL, remark VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_order_item(item_id INT PRIMARY KEY, order_id INT NOT NULL, user_id INT NOT NULL, product_id INT NOT NULL, quantity INT NOT NULL, creation_date DATE NOT NULL);
@@ -38,4 +37,3 @@ CREATE TABLE t_order_federate_sharding (order_id_sharding INT NOT NULL, user_id 
 CREATE TABLE t_order_item_federate_sharding (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
 
 CREATE INDEX order_index_t_order ON t_order (order_id);
-CREATE TABLE t_single_table_integer (id INT PRIMARY KEY, col_bigint BIGINT NOT NULL, col_int INT NOT NULL, col_mediumint INT4 NOT NULL, col_smallint SMALLINT NOT NULL, col_tinyint INT2 NOT NULL);

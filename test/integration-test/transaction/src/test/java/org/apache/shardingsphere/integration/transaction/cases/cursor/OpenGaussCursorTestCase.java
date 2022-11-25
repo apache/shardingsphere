@@ -33,9 +33,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-import static org.junit.Assert.fail;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * OpenGauss cursor transaction integration test.
@@ -53,6 +53,12 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     private CursorSQLCommand loadCursorSQLCommand() {
         return JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/cursor-command.xml")), CursorSQLCommand.class);
+    }
+    
+    @Override
+    protected void beforeTest() throws SQLException {
+        Connection connection = getDataSource().getConnection();
+        assertTableRowCount(connection, "t_order", 4);
     }
     
     @Override
@@ -159,18 +165,20 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         executeWithLog(connection, "close test;");
         executeWithLog(connection, cursorSQLCommand.getViewCursor());
         fetch(connection, 1);
+        fetch(connection, 1);
         fetch(connection, 2);
-        fetch(connection, 3);
-        fetch(connection, 4);
+        fetch(connection, 2);
         fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
     private void fetch(final Connection connection, final int expectedId) throws SQLException {
         ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
-        while (resultSet.next()) {
+        if (resultSet.next()) {
             int id = resultSet.getInt("id");
             assertThat(id, is(expectedId));
+        } else {
+            fail("Expected has result.");
         }
     }
     

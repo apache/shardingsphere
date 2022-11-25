@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,14 +16,6 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="1">
-    <metadata data-nodes="tbl.t_single_table_integer">
-        <column name="id" type="numeric" />
-        <column name="col_bigint" type="numeric" />
-        <column name="col_int" type="numeric" />
-        <column name="col_mediumint" type="numeric" />
-        <column name="col_smallint" type="numeric" />
-        <column name="col_tinyint" type="numeric" />
-    </metadata>
-    <row data-node="tbl.t_single_table_integer" values="3, -1, -1, -1, 0, -1" />
-</dataset>
+<databases>
+    <database>passthrough</database>
+</databases>

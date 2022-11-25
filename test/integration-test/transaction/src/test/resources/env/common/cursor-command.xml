@@ -72,6 +72,6 @@
     </broadcast-and-single-tables-cursor2>
     
     <view-cursor>
-        cursor test for select * from t_order_view;
+        cursor test for select * from t_order_view order by id;
     </view-cursor>
 </command>
