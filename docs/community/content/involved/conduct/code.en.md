@@ -75,15 +75,13 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Error: Error value test, test for error input, exception to get expect result.
  - Without particular reasons, test cases should be fully covered.
  - Test cases should be fully covered expect simply `getter /setter` methods, and declared static codes of SPI, such as: `getType / getOrder`.
- - Every test case need precised assertion.
+ - Every test case need precised assertion, try not to use `not`, `containsString` to make assertions.
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to `Mockito`, junit `Assert`, hamcrest `CoreMatchers` and `MatcherAssert` can use static import.
- - For single parameter asserts, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull` should be used.
- - For multiple parameter asserts, `assertThat` should be used.
- - For accurate asserts, try not to use `not`, `containsString` to make assertions.
+ - Usage of assertion methods: for boolean type asserts, `assertTrue` and `assertFalse` should be used, `assertNull` and `assertNotNull` should be used to assert whether the assertion is null, and `assertThat` should be used for other scenarios.
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
- - Mockito mockStatic and mockConstruction methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
+ - Mockito `mockStatic` and `mockConstruction` methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
 
 ## Contributor Covenant G4 Code of Conduct
 

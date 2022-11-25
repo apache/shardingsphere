@@ -77,15 +77,13 @@ chapter = true
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
  - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
- - 每个测试用例需精确断言。
+ - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assert`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
- - 单数据断言，应使用 `assertTrue`，`assertFalse`，`assertNull` 和 `assertNotNull`。
- - 多数据断言，应使用 `assertThat`。
- - 精确断言，尽量不使用 `not`，`containsString` 断言。
- - 测试用例的真实值应命名为 actual XXX，期望值应命名为 expected XXX。
+ - 数据断言方法的使用：对于 boolean 类型的断言应使用 `assertTrue` 和 `assertFalse`，断言是否为空应使用 `assertNull` 和 `assertNotNull`，其他场景应使用 `assertThat`。
+ - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
- - 使用 Mockito mockStatic 和 mockConstruction 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
+ - 使用 Mockito `mockStatic` 和 `mockConstruction` 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
 
 ## G4 编码规范
 
