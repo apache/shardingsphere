@@ -25,6 +25,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
@@ -65,8 +66,8 @@ public final class AgentPluginLoader implements PluginLoader {
      */
     public void load() throws IOException {
         loadPluginJars();
-        AgentPluginClassLoader.initDefaultPluginClassLoader(pluginJars);
-        loadAllPluginInterceptorPoint(AgentPluginClassLoader.getDefaultPluginClassloader());
+        AgentClassLoader.initDefaultPluginClassLoader(pluginJars);
+        loadAllPluginInterceptorPoint(AgentClassLoader.getDefaultPluginClassloader());
     }
     
     private void loadPluginJars() throws IOException {

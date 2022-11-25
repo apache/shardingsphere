@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.common;
 
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
+import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -34,20 +36,20 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- *  Agent plugin classloader.
+ *  Agent class classloader.
  */
-public final class AgentPluginClassLoader extends ClassLoader {
+public final class AgentClassLoader extends ClassLoader {
     
     static {
         registerAsParallelCapable();
     }
     
     @Getter
-    private static volatile AgentPluginClassLoader defaultPluginClassloader;
+    private static volatile AgentClassLoader defaultPluginClassloader;
     
     private final Collection<PluginJar> pluginJars;
     
-    public AgentPluginClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
+    public AgentClassLoader(final ClassLoader classLoader, final Collection<PluginJar> pluginJars) {
         super(classLoader);
         this.pluginJars = pluginJars;
     }
@@ -59,9 +61,9 @@ public final class AgentPluginClassLoader extends ClassLoader {
      */
     public static void initDefaultPluginClassLoader(final Collection<PluginJar> pluginJars) {
         if (defaultPluginClassloader == null) {
-            synchronized (AgentPluginClassLoader.class) {
+            synchronized (AgentClassLoader.class) {
                 if (null == defaultPluginClassloader) {
-                    defaultPluginClassloader = new AgentPluginClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);
+                    defaultPluginClassloader = new AgentClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);
                 }
             }
         }

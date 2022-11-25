@@ -46,9 +46,9 @@ public class InstanceMethodAroundInterceptor {
     /**
      * Only intercept instance method.
      *
-     * @param target   the target object
-     * @param method   the intercepted method
-     * @param args     the all arguments of method
+     * @param target the target object
+     * @param method the intercepted method
+     * @param args the all arguments of method
      * @param callable the origin method invocation
      * @return the return value of target invocation
      */

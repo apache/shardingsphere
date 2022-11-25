@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.agent.core.plugin;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  *  Plugin jar holder.
  */
 public class PluginJarHolder {
     
-    private static volatile Collection<PluginJar> pluginJars;
+    private static volatile Collection<PluginJar> pluginJars = new LinkedList<>();
     
     /**
      * Get plugin jars.

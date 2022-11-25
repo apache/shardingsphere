@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.core.plugin;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 
 import java.util.HashMap;
@@ -43,14 +44,14 @@ public final class AdviceInstanceLoader {
     /**
      * Load instance of advice class.
      *
-     * @param <T>                expected type
-     * @param className          class name
-     * @param classLoader        classloader
+     * @param <T> expected type
+     * @param className class name
+     * @param classLoader classloader
      * @param isEnhancedForProxy is enhanced for proxy
      * @return the type reference
      */
     public static <T> T loadAdviceInstance(final String className, final ClassLoader classLoader, final boolean isEnhancedForProxy) {
-        return isEnhancedForProxy ? loadAdviceInstanceForProxy(className) : loadAdviceInstanceForDriver(className, classLoader);
+        return isEnhancedForProxy ? loadAdviceInstanceForProxy(className) : loadAdviceInstanceForJdbc(className, classLoader);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -64,7 +65,7 @@ public final class AdviceInstanceLoader {
             INIT_INSTANCE_LOCK.lock();
             adviceInstance = ADVICE_INSTANCE_CACHE.get(className);
             if (Objects.isNull(adviceInstance)) {
-                adviceInstance = Class.forName(className, true, AgentPluginClassLoader.getDefaultPluginClassloader()).getDeclaredConstructor().newInstance();
+                adviceInstance = Class.forName(className, true, AgentClassLoader.getDefaultPluginClassloader()).getDeclaredConstructor().newInstance();
                 ADVICE_INSTANCE_CACHE.put(className, adviceInstance);
             }
             return (T) adviceInstance;
@@ -75,7 +76,7 @@ public final class AdviceInstanceLoader {
     
     @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    private static <T> T loadAdviceInstanceForDriver(final String className, final ClassLoader classLoader) {
+    private static <T> T loadAdviceInstanceForJdbc(final String className, final ClassLoader classLoader) {
         String adviceInstanceCacheKey = String.format("%s_%s@%s", className, classLoader.getClass().getName(), Integer.toHexString(classLoader.hashCode()));
         Object adviceInstance = ADVICE_INSTANCE_CACHE.get(adviceInstanceCacheKey);
         if (Objects.nonNull(adviceInstance)) {
@@ -87,7 +88,7 @@ public final class AdviceInstanceLoader {
             ClassLoader pluginClassLoader = PLUGIN_CLASSLOADERS.get(classLoader);
             if (Objects.isNull(adviceInstance)) {
                 if (Objects.isNull(pluginClassLoader)) {
-                    pluginClassLoader = new AgentPluginClassLoader(classLoader, PluginJarHolder.getPluginJars());
+                    pluginClassLoader = new AgentClassLoader(classLoader, PluginJarHolder.getPluginJars());
                     PLUGIN_CLASSLOADERS.put(classLoader, pluginClassLoader);
                 }
                 adviceInstance = Class.forName(className, true, pluginClassLoader).getDeclaredConstructor().newInstance();
@@ -104,14 +105,10 @@ public final class AdviceInstanceLoader {
         if (isStarted) {
             return;
         }
-        AgentConfiguration agentConfig = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class);
-        ClassLoader backupClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(classLoader);
-            PluginBootServiceManager.startAllServices(agentConfig.getPlugins());
+            PluginBootServiceManager.startAllServices(AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getPlugins(), classLoader);
             Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
         } finally {
-            Thread.currentThread().setContextClassLoader(backupClassLoader);
             isStarted = true;
         }
     }

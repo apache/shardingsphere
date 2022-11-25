@@ -40,19 +40,26 @@ public final class PluginBootServiceManager {
      * Start all services.
      *
      * @param pluginConfigurationMap plugin configuration map
+     * @param classLoader classLoader
      */
-    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
-        for (Entry<String, PluginConfiguration> entry : pluginConfigurationMap.entrySet()) {
-            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
-                try {
-                    LOGGER.info("Start plugin: {}", optional.getType());
-                    optional.start(entry.getValue());
-                    // CHECKSTYLE:OFF
-                } catch (final Throwable ex) {
-                    // CHECKSTYLE:ON
-                    LOGGER.error("Failed to start service", ex);
-                }
-            });
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap, final ClassLoader classLoader) {
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(classLoader);
+            for (Entry<String, PluginConfiguration> entry : pluginConfigurationMap.entrySet()) {
+                AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(optional -> {
+                    try {
+                        LOGGER.info("Start plugin: {}", optional.getType());
+                        optional.start(entry.getValue());
+                        // CHECKSTYLE:OFF
+                    } catch (final Throwable ex) {
+                        // CHECKSTYLE:ON
+                        LOGGER.error("Failed to start service", ex);
+                    }
+                });
+            }
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
     }
     
@@ -69,7 +76,7 @@ public final class PluginBootServiceManager {
                 LOGGER.error("Failed to close service", ex);
             }
         });
-        PluginJarHolder.getPluginJars().stream().forEach(each -> {
+        PluginJarHolder.getPluginJars().forEach(each -> {
             try {
                 each.getJarFile().close();
             } catch (final IOException ex) {

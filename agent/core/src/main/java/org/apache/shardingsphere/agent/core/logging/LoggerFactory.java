@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.logging;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginJar;
 
 import java.io.File;
@@ -35,10 +36,11 @@ import java.util.jar.JarFile;
  */
 public class LoggerFactory {
     
-    private static AgentPluginClassLoader classLoader;
+    private static AgentClassLoader classLoader;
     
     /**
-     *  Get logger.
+     * Get logger.
+     * 
      * @param clazz Class
      * @return logger
      */
@@ -51,7 +53,7 @@ public class LoggerFactory {
         return new Logger(log);
     }
     
-    private static AgentPluginClassLoader getClassLoader() {
+    private static AgentClassLoader getClassLoader() {
         if (Objects.nonNull(classLoader)) {
             return classLoader;
         }
@@ -60,10 +62,10 @@ public class LoggerFactory {
             File agentFle = new File(codeSource.getLocation().toURI());
             if (agentFle.isFile() && agentFle.getName().endsWith(".jar")) {
                 PluginJar pluginJar = new PluginJar(new JarFile(agentFle, true), agentFle);
-                classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(pluginJar));
+                classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(pluginJar));
                 return classLoader;
             }
-            classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
+            classLoader = new AgentClassLoader(LoggerFactory.class.getClassLoader(), Collections.emptyList());
         } catch (final URISyntaxException | IOException ignored) {
         }
         return classLoader;
@@ -72,13 +74,10 @@ public class LoggerFactory {
     /**
      * Logger.
      */
+    @RequiredArgsConstructor
     public static class Logger {
         
         private final Object logger;
-        
-        public Logger(final Object logger) {
-            this.logger = logger;
-        }
         
         /**
          * Info.
@@ -91,6 +90,7 @@ public class LoggerFactory {
         
         /**
          * Info.
+         * 
          * @param format format
          * @param arguments arguments
          */

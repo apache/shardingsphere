@@ -32,7 +32,7 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
 import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -66,7 +66,7 @@ public final class ShardingSphereTransformerTest {
     @SuppressWarnings("unchecked")
     public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
-        AgentPluginClassLoader.initDefaultPluginClassLoader(Collections.emptyList());
+        AgentClassLoader.initDefaultPluginClassLoader(Collections.emptyList());
         FieldReader objectPoolReader = new FieldReader(INSTANCE_LOADER, INSTANCE_LOADER.getClass().getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());

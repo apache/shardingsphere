@@ -29,7 +29,7 @@ import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphereTransformer;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
 
@@ -46,7 +46,7 @@ public final class ShardingSphereAgent {
     /**
      * Premain for instrumentation.
      *
-     * @param args            arguments
+     * @param args arguments
      * @param instrumentation instrumentation
      * @throws IOException IO exception
      */
@@ -79,14 +79,8 @@ public final class ShardingSphereAgent {
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigs) {
-        ClassLoader backupClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(AgentPluginClassLoader.getDefaultPluginClassloader());
-            PluginBootServiceManager.startAllServices(pluginConfigs);
-            Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
-        } finally {
-            Thread.currentThread().setContextClassLoader(backupClassLoader);
-        }
+        PluginBootServiceManager.startAllServices(pluginConfigs, AgentClassLoader.getDefaultPluginClassloader());
+        Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     
     private static boolean isEnhancedForProxy() {
