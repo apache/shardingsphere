@@ -165,6 +165,10 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         executeWithLog(connection, "close test;");
         executeWithLog(connection, cursorSQLCommand.getViewCursor());
         fetch(connection, 1);
+        fetch(connection, 1);
+        fetch(connection, 2);
+        fetch(connection, 2);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
