@@ -176,7 +176,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     @Test
     public void assertConvert() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convert(sqlStatement);
         SqlNode expected = parseSqlNode(databaseType, sql);

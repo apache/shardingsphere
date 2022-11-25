@@ -64,13 +64,13 @@ public final class SQLCaseAssertContext {
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(sqlCasesLoader.getCaseValue(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
             builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
             builder.append(System.lineSeparator());
         } else {
-            builder.append(sqlCasesLoader.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
+            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
         }
     }
     
