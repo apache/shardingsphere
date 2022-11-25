@@ -22,5 +22,5 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain;
  */
 public enum SQLCaseType {
     
-    Literal, Placeholder
+    Placeholder, Literal
 }
