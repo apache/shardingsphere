@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCases;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.RootSQLParserTestCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader.SQLCaseFileLoader;
 
 import javax.xml.bind.JAXBContext;
@@ -74,7 +74,7 @@ public final class SQLParserTestCasesRegistry {
     }
     
     private Map<String, SQLParserTestCase> createSQLParserTestCases(final InputStream inputStream) throws JAXBException {
-        return ((SQLParserTestCases) JAXBContext.newInstance(SQLParserTestCases.class).createUnmarshaller().unmarshal(inputStream)).getAllSQLParserTestCases();
+        return ((RootSQLParserTestCases) JAXBContext.newInstance(RootSQLParserTestCases.class).createUnmarshaller().unmarshal(inputStream)).getAllSQLParserTestCases();
     }
     
     private void checkDuplicate(final Map<String, SQLParserTestCase> existedSQLParserTestCaseMap, final Map<String, SQLParserTestCase> newSQLParserTestCaseMap) {

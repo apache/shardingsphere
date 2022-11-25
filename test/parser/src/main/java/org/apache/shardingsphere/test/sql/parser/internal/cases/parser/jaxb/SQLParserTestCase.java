@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rul.impl.sql.FormatSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rul.impl.sql.ParseStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rul.impl.sql.PreviewStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rul.FormatSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rul.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rul.PreviewStatementTestCase;

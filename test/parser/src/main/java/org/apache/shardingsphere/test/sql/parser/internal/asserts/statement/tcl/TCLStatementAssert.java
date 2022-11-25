@@ -41,7 +41,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.impl.SetConstraintsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.impl.SetTransactionStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.tcl.impl.UnlockStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.tcl.LockStatementTestCase;

@@ -57,7 +57,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.SetPasswordStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.SetRoleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dcl.impl.sqlserver.SQLServerSetUserStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dcl.AlterUserStatementTestCase;
