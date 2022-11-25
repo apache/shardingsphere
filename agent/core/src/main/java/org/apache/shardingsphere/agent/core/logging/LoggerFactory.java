@@ -141,7 +141,7 @@ public class LoggerFactory {
         private void invokeMethod(final String methodName, final String msg) {
             Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
             Method method = logicLogger.getMethod(methodName, String.class);
-            method.invoke(this.logger, msg);
+            method.invoke(logger, msg);
         }
         
         @SneakyThrows(ReflectiveOperationException.class)
@@ -149,7 +149,7 @@ public class LoggerFactory {
         private void invokeMethod(final String methodName, final String msg, final Object... arguments) {
             Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
             Method method = logicLogger.getMethod(methodName, String.class, Object[].class);
-            method.invoke(this.logger, msg, arguments);
+            method.invoke(logger, msg, arguments);
         }
     }
 }

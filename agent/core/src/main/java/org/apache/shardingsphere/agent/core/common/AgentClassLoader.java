@@ -60,7 +60,7 @@ public final class AgentClassLoader extends ClassLoader {
      * @param pluginJars plugin jars
      */
     public static void initDefaultPluginClassLoader(final Collection<PluginJar> pluginJars) {
-        if (defaultPluginClassloader == null) {
+        if (null == defaultPluginClassloader) {
             synchronized (AgentClassLoader.class) {
                 if (null == defaultPluginClassloader) {
                     defaultPluginClassloader = new AgentClassLoader(AgentPluginLoader.class.getClassLoader(), pluginJars);

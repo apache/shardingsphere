@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  *  Plugin jar holder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PluginJarHolder {
     
     private static volatile Collection<PluginJar> pluginJars = new LinkedList<>();
