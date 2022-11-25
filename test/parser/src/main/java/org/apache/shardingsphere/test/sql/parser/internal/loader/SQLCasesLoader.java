@@ -73,7 +73,7 @@ public final class SQLCasesLoader {
     
     private Map<String, SQLCase> loadFromTargetDirectory(final String path) throws JAXBException, FileNotFoundException {
         Map<String, SQLCase> result = new TreeMap<>();
-        for (File each : SQLCaseFileLoader.loadFilesFromTargetDirectory(path)) {
+        for (File each : SQLCaseFileLoader.loadFilesFromDirectory(path)) {
             buildCaseMap(result, new FileInputStream(each));
         }
         return result;
