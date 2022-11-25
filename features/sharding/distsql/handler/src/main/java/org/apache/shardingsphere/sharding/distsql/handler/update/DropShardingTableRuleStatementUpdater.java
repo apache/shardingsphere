@@ -119,7 +119,7 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
         dropUnusedAuditor(currentRuleConfig);
         return false;
     }
-
+    
     private void dropUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedKeyGenerators = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
                 .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
