@@ -20,40 +20,29 @@ package org.apache.shardingsphere.infra.hint;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Properties;
 
 /**
  * SQL hint extractor.
  */
 @Getter
+@RequiredArgsConstructor
 public final class SQLHintExtractor {
     
-    private static final SQLHintProperties DEFAULT_SQL_HINT_PROPS = new SQLHintProperties(new Properties());
-    
-    private final SQLHintProperties sqlHintProperties;
+    private final HintValueContext hintValueContext;
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
-        sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
-                ? extract((AbstractSQLStatement) sqlStatement)
-                : DEFAULT_SQL_HINT_PROPS;
+        hintValueContext = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
+                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
+                : new HintValueContext();
     }
     
     public SQLHintExtractor(final String sqlComment) {
-        sqlHintProperties = Strings.isNullOrEmpty(sqlComment) ? DEFAULT_SQL_HINT_PROPS : new SQLHintProperties(SQLHintUtils.getSQLHintProps(sqlComment));
-    }
-    
-    private SQLHintProperties extract(final AbstractSQLStatement statement) {
-        Properties props = new Properties();
-        for (CommentSegment each : statement.getCommentSegments()) {
-            props.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
-        }
-        return new SQLHintProperties(props);
+        hintValueContext = Strings.isNullOrEmpty(sqlComment) ? new HintValueContext() : SQLHintUtils.extractHint(sqlComment);
     }
     
     /**
@@ -62,7 +51,7 @@ public final class SQLHintExtractor {
      * @return whether is hint routed to write data source or not
      */
     public boolean isHintWriteRouteOnly() {
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY);
+        return hintValueContext.isWriteRouteOnly();
     }
     
     /**
@@ -71,7 +60,7 @@ public final class SQLHintExtractor {
      * @return whether hint skip encrypt rewrite or not
      */
     public boolean isHintSkipEncryptRewrite() {
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
+        return hintValueContext.isSkipEncryptRewrite();
     }
     
     /**
@@ -80,7 +69,7 @@ public final class SQLHintExtractor {
      * @return whether is hint routed to shadow data source or not
      */
     public boolean isShadow() {
-        return sqlHintProperties.getValue(SQLHintPropertiesKey.SHADOW_KEY);
+        return hintValueContext.isShadow();
     }
     
     /**
@@ -89,7 +78,7 @@ public final class SQLHintExtractor {
      * @return disable audit names
      */
     public Collection<String> findDisableAuditNames() {
-        return SQLHintUtils.getSplitterSQLHintValue(sqlHintProperties.getValue(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY));
+        return SQLHintUtils.getSplitterSQLHintValue(hintValueContext.getDisableAuditNames());
     }
     
     /**
@@ -98,12 +87,11 @@ public final class SQLHintExtractor {
      * @param tableName table name
      * @return sharding database value
      */
-    public Comparable<?> getHintShardingDatabaseValue(final String tableName) {
+    public Collection<Comparable<?>> getHintShardingDatabaseValue(final String tableName) {
         String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
-        Object result = sqlHintProperties.getProps().containsKey(key)
-                ? sqlHintProperties.getProps().get(key)
-                : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
-        return result instanceof Comparable ? (Comparable<?>) result : Objects.toString(result);
+        return hintValueContext.getShardingDatabaseValues().containsKey(key)
+                ? hintValueContext.getShardingDatabaseValues().get(key)
+                : hintValueContext.getShardingDatabaseValues().get(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
     }
     
     /**
@@ -114,7 +102,7 @@ public final class SQLHintExtractor {
      */
     public boolean containsHintShardingDatabaseValue(final String tableName) {
         String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
-        return sqlHintProperties.getProps().containsKey(key) || sqlHintProperties.getProps().containsKey(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
+        return hintValueContext.getShardingDatabaseValues().containsKey(key) || hintValueContext.getShardingDatabaseValues().containsKey(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey());
     }
     
     /**
@@ -123,12 +111,11 @@ public final class SQLHintExtractor {
      * @param tableName table name
      * @return sharding table value
      */
-    public Comparable<?> getHintShardingTableValue(final String tableName) {
+    public Collection<Comparable<?>> getHintShardingTableValue(final String tableName) {
         String key = String.join(".", tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
-        Object result = sqlHintProperties.getProps().containsKey(key)
-                ? sqlHintProperties.getProps().get(key)
-                : sqlHintProperties.getProps().get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
-        return result instanceof Comparable ? (Comparable<?>) result : Objects.toString(result);
+        return hintValueContext.getShardingTableValues().containsKey(key)
+                ? hintValueContext.getShardingTableValues().get(key)
+                : hintValueContext.getShardingTableValues().get(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
     }
     
     /**
@@ -139,6 +126,16 @@ public final class SQLHintExtractor {
      */
     public boolean containsHintShardingTableValue(final String tableName) {
         String key = Joiner.on(".").join(tableName.toUpperCase(), SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
-        return sqlHintProperties.getProps().containsKey(key) || sqlHintProperties.getProps().containsKey(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+        return hintValueContext.getShardingTableValues().containsKey(key) || hintValueContext.getShardingTableValues().containsKey(SQLHintPropertiesKey.SHARDING_TABLE_VALUE_KEY.getKey());
+    }
+    
+    /**
+     * Judge contains hint sharding value or not.
+     *
+     * @param tableName table name
+     * @return Contains hint sharding value or not
+     */
+    public boolean containsHintShardingValue(final String tableName) {
+        return containsHintShardingDatabaseValue(tableName) || containsHintShardingTableValue(tableName);
     }
 }

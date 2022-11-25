@@ -41,7 +41,7 @@ public final class HintValueContext {
     
     private boolean skipEncryptRewrite;
     
-    private String disableAuditNames;
+    private String disableAuditNames = "";
     
     private boolean shadow;
 }

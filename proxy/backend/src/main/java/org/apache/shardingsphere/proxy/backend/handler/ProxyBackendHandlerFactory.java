@@ -82,7 +82,7 @@ public final class ProxyBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
-        return newInstance(databaseType, sql, connectionSession, null);
+        return newInstance(databaseType, sql, connectionSession, new HintValueContext());
     }
     
     /**
@@ -117,7 +117,7 @@ public final class ProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
                                                   final ConnectionSession connectionSession) throws SQLException {
-        return newInstance(databaseType, sql, sqlStatement, connectionSession, null);
+        return newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
     }
     
     /**

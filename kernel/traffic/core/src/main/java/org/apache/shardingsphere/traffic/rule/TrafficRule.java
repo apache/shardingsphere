@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.hint.SQLHintProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -47,7 +47,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Traffic rule.
@@ -149,10 +148,10 @@ public final class TrafficRule implements GlobalRule {
             return matchTransactionTraffic((TransactionTrafficAlgorithm) trafficAlgorithm, inTransaction);
         }
         if (trafficAlgorithm instanceof HintTrafficAlgorithm) {
-            SQLHintProperties sqlHintProps = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
-                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getSqlHintProperties()
-                    : new SQLHintProperties(new Properties());
-            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, sqlHintProps);
+            HintValueContext hintValueContext = queryContext.getSqlStatementContext() instanceof CommonSQLStatementContext
+                    ? ((CommonSQLStatementContext) queryContext.getSqlStatementContext()).getSqlHintExtractor().getHintValueContext()
+                    : new HintValueContext();
+            return matchHintTraffic((HintTrafficAlgorithm) trafficAlgorithm, hintValueContext);
         }
         if (trafficAlgorithm instanceof SegmentTrafficAlgorithm) {
             SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
@@ -161,8 +160,8 @@ public final class TrafficRule implements GlobalRule {
         return false;
     }
     
-    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final SQLHintProperties sqlHintProps) {
-        HintTrafficValue hintTrafficValue = new HintTrafficValue(sqlHintProps);
+    private boolean matchHintTraffic(final HintTrafficAlgorithm trafficAlgorithm, final HintValueContext hintValueContext) {
+        HintTrafficValue hintTrafficValue = new HintTrafficValue(hintValueContext);
         return trafficAlgorithm.match(hintTrafficValue);
     }
     
