@@ -29,8 +29,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.st
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -67,10 +67,10 @@ public abstract class InternalSQLParserParameterizedIT {
     
     @Test
     public final void assertSupportedSQL() {
-        SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
         SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
-        SQLStatementAssert.assertIs(new SQLCaseAssertContext(SQL_CASES, sqlCaseId, sqlCaseType), actual, expected);
+        SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {

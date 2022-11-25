@@ -19,12 +19,9 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 
-import java.util.Collections;
+import java.util.List;
 
 /**
  * SQL case assert context.
@@ -32,20 +29,20 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class SQLCaseAssertContext {
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private final String caseId;
     
-    private final SQLCases sqlCasesRegistry;
+    private final String sql;
     
-    private final String sqlCaseId;
+    private final List<String> params;
     
     @Getter
-    private final SQLCaseType sqlCaseType;
+    private final SQLCaseType caseType;
     
     /**
      * Get message text.
      * 
      * @param failureMessage failure message
-     * @return message text
+     * @return got message text
      */
     public String getText(final String failureMessage) {
         StringBuilder result = new StringBuilder(System.lineSeparator());
@@ -57,20 +54,20 @@ public final class SQLCaseAssertContext {
     
     private void appendSQLCaseId(final StringBuilder builder) {
         builder.append("SQL Case ID : ");
-        builder.append(sqlCaseId);
+        builder.append(caseId);
         builder.append(System.lineSeparator());
     }
     
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
-        if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(sqlCasesRegistry.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+        if (SQLCaseType.Placeholder == caseType) {
+            builder.append(sql);
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
-            builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+            builder.append(params);
             builder.append(System.lineSeparator());
         } else {
-            builder.append(sqlCasesRegistry.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
+            builder.append(sql);
         }
     }
     
