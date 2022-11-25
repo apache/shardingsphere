@@ -80,7 +80,10 @@ chapter = true
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assert`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
- - 数据断言方法的使用：对于 boolean 类型的断言应使用 `assertTrue` 和 `assertFalse`，断言是否为空应使用 `assertNull` 和 `assertNotNull`，其他场景应使用 `assertThat`。
+ - 数据断言规范应遵循：
+    - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
+    - 空值断言应使用 `assertNull` 和 `assertNotNull`；
+    - 其他类型应使用 `assertThat`。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
  - 使用 Mockito `mockStatic` 和 `mockConstruction` 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
