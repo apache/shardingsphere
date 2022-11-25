@@ -62,6 +62,8 @@ public final class SQLValue {
                 return Integer.parseInt(value);
             case "long":
                 return Long.parseLong(value);
+            case "float":
+                return Float.parseFloat(value);
             case "double":
                 return Double.parseDouble(value);
             case "numeric":

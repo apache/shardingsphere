@@ -15,18 +15,11 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata data-nodes="expected_dataset.t_data_type_integer">
-        <column name="id" type="numeric" />
-        <column name="col_bigint" type="numeric" />
-        <column name="col_int" type="numeric" />
-        <column name="col_mediumint" type="numeric" />
-        <column name="col_smallint" type="numeric" />
-        <column name="col_tinyint" type="numeric" />
-    </metadata>
+<dataset update-count="1">
     <metadata data-nodes="passthrough.t_data_type_floating_point">
         <column name="id" type="numeric" />
         <column name="col_float" type="numeric" />
         <column name="col_double" type="numeric" />
     </metadata>
+    <row data-node="passthrough.t_data_type_floating_point" values="1, Infinity, Infinity" />
 </dataset>
