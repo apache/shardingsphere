@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 
 import java.util.Collections;
 
@@ -34,7 +34,7 @@ public final class SQLCaseAssertContext {
     
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
-    private final SQLCasesLoader sqlCasesLoader;
+    private final SQLCases sqlCasesRegistry;
     
     private final String sqlCaseId;
     
@@ -64,13 +64,13 @@ public final class SQLCaseAssertContext {
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
         if (SQLCaseType.Placeholder == sqlCaseType) {
-            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
+            builder.append(sqlCasesRegistry.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList()));
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");
             builder.append(SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
             builder.append(System.lineSeparator());
         } else {
-            builder.append(sqlCasesLoader.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
+            builder.append(sqlCasesRegistry.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters()));
         }
     }
     

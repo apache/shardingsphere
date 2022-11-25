@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.test.sql.parser.internal.loader;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.RootSQLCases;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,32 +29,24 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * SQL cases loader.
  */
 public final class SQLCasesLoader {
     
-    private static final Pattern PARAMETER_MARKER = Pattern.compile("\\?|\\$[0-9]+");
-    
-    private final Map<String, SQLCase> cases;
-    
-    public SQLCasesLoader(final String rootDirection) {
-        cases = load(rootDirection);
-    }
-    
+    /**
+     * Load SQL cases.
+     * 
+     * @param rootDirection SQL cases root direction
+     * @return loaded SQL cases
+     */
     @SneakyThrows({JAXBException.class, IOException.class})
-    private Map<String, SQLCase> load(final String path) {
+    public Map<String, SQLCase> load(final String rootDirection) {
         File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return file.isFile() ? loadFromJar(file, path) : loadFromTargetDirectory(path);
+        return file.isFile() ? loadFromJar(file, rootDirection) : loadFromTargetDirectory(rootDirection);
     }
     
     private Map<String, SQLCase> loadFromJar(final File file, final String path) throws JAXBException {
@@ -78,113 +66,13 @@ public final class SQLCasesLoader {
     }
     
     private void buildCaseMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
-        SQLCases sqlCases = (SQLCases) JAXBContext.newInstance(SQLCases.class).createUnmarshaller().unmarshal(inputStream);
-        for (SQLCase each : sqlCases.getSqlCases()) {
+        RootSQLCases root = (RootSQLCases) JAXBContext.newInstance(RootSQLCases.class).createUnmarshaller().unmarshal(inputStream);
+        for (SQLCase each : root.getSqlCases()) {
             if (null == each.getDatabaseTypes()) {
-                each.setDatabaseTypes(sqlCases.getDatabaseTypes());
+                each.setDatabaseTypes(root.getDatabaseTypes());
             }
             Preconditions.checkState(!sqlCaseMap.containsKey(each.getId()), "Find duplicated SQL Case ID: %s", each.getId());
             sqlCaseMap.put(each.getId(), each);
         }
-    }
-    
-    /**
-     * Get SQL.
-     * 
-     * @param caseId SQL case ID
-     * @param caseType SQL case type
-     * @param params parameters
-     * @return got SQL
-     */
-    public String getSQL(final String caseId, final SQLCaseType caseType, final List<?> params) {
-        String sql = getSQLFromMap(caseId, cases);
-        switch (caseType) {
-            case Placeholder:
-                return getPlaceholderSQL(sql);
-            case Literal:
-                return getLiteralSQL(sql, params);
-            default:
-                throw new UnsupportedOperationException(caseType.name());
-        }
-    }
-    
-    private String getSQLFromMap(final String id, final Map<String, SQLCase> sqlCaseMap) {
-        Preconditions.checkState(sqlCaseMap.containsKey(id), "Can't find SQL of ID: %s", id);
-        SQLCase statement = sqlCaseMap.get(id);
-        return statement.getValue();
-    }
-    
-    private String getPlaceholderSQL(final String sql) {
-        return sql;
-    }
-    
-    private String getLiteralSQL(final String sql, final List<?> params) {
-        return params.isEmpty() ? sql : replace(sql, params);
-    }
-    
-    private static String replace(final String sql, final List<?> params) {
-        Matcher matcher = PARAMETER_MARKER.matcher(sql);
-        int found = 0;
-        StringBuffer buffer = new StringBuffer();
-        while (matcher.find()) {
-            String group = matcher.group();
-            if (ParameterMarkerType.QUESTION.getMarker().equals(group)) {
-                appendReplacement(++found, params, matcher, buffer);
-            } else {
-                int dollarMarker = Integer.parseInt(group.replace(ParameterMarkerType.DOLLAR.getMarker(), ""));
-                appendReplacement(dollarMarker, params, matcher, buffer);
-            }
-        }
-        matcher.appendTail(buffer);
-        return buffer.toString();
-    }
-    
-    private static void appendReplacement(final int markerIndex, final List<?> params, final Matcher matcher, final StringBuffer buffer) {
-        Preconditions.checkArgument(markerIndex <= params.size(), "Missing replacement for `%s` at index `%s`.", PARAMETER_MARKER.pattern(), markerIndex);
-        matcher.appendReplacement(buffer, Matcher.quoteReplacement(params.get(markerIndex - 1).toString()));
-    }
-    
-    /**
-     * Get test parameters.
-     *
-     * @param databaseTypes database types
-     * @return test parameters
-     */
-    public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (SQLCase each : cases.values()) {
-            result.addAll(getSQLTestParameters(databaseTypes, each));
-        }
-        return result;
-    }
-    
-    private Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (SQLCaseType each : SQLCaseType.values()) {
-            result.addAll(getSQLTestParameters(databaseTypes, sqlCase, each));
-        }
-        return result;
-    }
-    
-    private static Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType sqlCaseType) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
-            if (databaseTypes.contains(each)) {
-                Object[] params = new Object[3];
-                params[0] = sqlCase.getId();
-                params[1] = each;
-                params[2] = sqlCaseType;
-                result.add(params);
-            }
-        }
-        return result;
-    }
-    
-    private static Collection<String> getDatabaseTypes(final String databaseTypes) {
-        return Strings.isNullOrEmpty(databaseTypes) ? getAllDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
-    }
-    
-    private static Collection<String> getAllDatabaseTypes() {
-        return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
     }
 }
