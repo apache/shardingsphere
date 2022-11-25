@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.SQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader.SQLCaseFileLoader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
