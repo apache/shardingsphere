@@ -43,28 +43,28 @@ public final class SQLCases {
     private final Map<String, SQLCase> cases;
     
     /**
-     * Get test parameters.
+     * Generate test parameters.
      *
-     * @param databaseTypes database types
-     * @return test parameters
+     * @param databaseTypes database types to be generated
+     * @return generated test parameters
      */
-    public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
+    public Collection<Object[]> generateTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCase each : cases.values()) {
-            result.addAll(getSQLTestParameters(databaseTypes, each));
+            result.addAll(generateTestParameters(databaseTypes, each));
         }
         return result;
     }
     
-    private Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
+    private Collection<Object[]> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
         Collection<Object[]> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
-            result.addAll(getSQLTestParameters(databaseTypes, sqlCase, each));
+            result.addAll(generateTestParameters(databaseTypes, sqlCase, each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getSQLTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType caseType) {
+    private Collection<Object[]> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each)) {
@@ -78,11 +78,11 @@ public final class SQLCases {
         return result;
     }
     
-    private static Collection<String> getDatabaseTypes(final String databaseTypes) {
+    private Collection<String> getDatabaseTypes(final String databaseTypes) {
         return Strings.isNullOrEmpty(databaseTypes) ? getAllDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
     
-    private static Collection<String> getAllDatabaseTypes() {
+    private Collection<String> getAllDatabaseTypes() {
         return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
     }
     
@@ -115,7 +115,7 @@ public final class SQLCases {
         return params.isEmpty() ? sql : replace(sql, params);
     }
     
-    private static String replace(final String sql, final List<?> params) {
+    private String replace(final String sql, final List<?> params) {
         Matcher matcher = PARAMETER_MARKER.matcher(sql);
         int found = 0;
         StringBuffer result = new StringBuffer();
@@ -132,7 +132,7 @@ public final class SQLCases {
         return result.toString();
     }
     
-    private static void appendReplacement(final int markerIndex, final List<?> params, final Matcher matcher, final StringBuffer buffer) {
+    private void appendReplacement(final int markerIndex, final List<?> params, final Matcher matcher, final StringBuffer buffer) {
         Preconditions.checkArgument(markerIndex <= params.size(), "Missing replacement for `%s` at index `%s`.", PARAMETER_MARKER.pattern(), markerIndex);
         matcher.appendReplacement(buffer, Matcher.quoteReplacement(params.get(markerIndex - 1).toString()));
     }

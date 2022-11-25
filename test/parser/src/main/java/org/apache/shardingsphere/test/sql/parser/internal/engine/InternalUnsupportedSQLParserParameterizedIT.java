@@ -44,7 +44,7 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     private final SQLCaseType sqlCaseType;
     
     protected static Collection<Object[]> getTestParameters(final String databaseType) {
-        return SQL_CASES.getTestParameters(Collections.singleton(databaseType));
+        return SQL_CASES.generateTestParameters(Collections.singleton(databaseType));
     }
     
     @Test(expected = Exception.class)

@@ -53,7 +53,7 @@ public abstract class InternalSQLParserParameterizedIT {
     
     protected static Collection<Object[]> getTestParameters(final String... databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : SQL_CASES.getTestParameters(Arrays.asList(databaseTypes))) {
+        for (Object[] each : SQL_CASES.generateTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each)) {
                 result.add(each);
             }
