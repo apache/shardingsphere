@@ -54,7 +54,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -199,7 +198,7 @@ public final class ProjectionEngine {
                 remainingProjections.addAll(actualProjections);
             }
         }
-        result.addAll(getUsingActualProjections(remainingProjections, getUsingColumnNames(joinTable.getUsing())));
+        result.addAll(getUsingActualProjections(remainingProjections, joinTable.getUsing()));
         return result;
     }
     
@@ -229,15 +228,11 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<String> getUsingColumnNames(final List<ColumnSegment> usingColumns) {
-        Collection<String> result = new LinkedHashSet<>();
-        for (ColumnSegment each : usingColumns) {
-            result.add(each.getIdentifier().getValue().toLowerCase());
+    private Collection<Projection> getUsingActualProjections(final Collection<Projection> actualProjections, final Collection<ColumnSegment> usingColumns) {
+        if (usingColumns.isEmpty()) {
+            return Collections.emptyList();
         }
-        return result;
-    }
-    
-    private Collection<Projection> getUsingActualProjections(final Collection<Projection> actualProjections, final Collection<String> usingColumnNames) {
+        Collection<String> usingColumnNames = getUsingColumnNames(usingColumns);
         Collection<Projection> result = new LinkedList<>();
         if (databaseType instanceof MySQLDatabaseType) {
             result.addAll(getJoinUsingColumnsByOriginalColumnSequence(actualProjections, usingColumnNames));
@@ -245,6 +240,14 @@ public final class ProjectionEngine {
             result.addAll(getJoinUsingColumnsByUsingColumnSequence(actualProjections, usingColumnNames));
         }
         result.addAll(getRemainingColumns(actualProjections, usingColumnNames));
+        return result;
+    }
+    
+    private Collection<String> getUsingColumnNames(final Collection<ColumnSegment> usingColumns) {
+        Collection<String> result = new LinkedHashSet<>();
+        for (ColumnSegment each : usingColumns) {
+            result.add(each.getIdentifier().getValue().toLowerCase());
+        }
         return result;
     }
     
