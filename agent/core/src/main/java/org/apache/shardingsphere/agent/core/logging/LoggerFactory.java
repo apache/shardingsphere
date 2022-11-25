@@ -1,0 +1,158 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.agent.core.logging;
+
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.core.plugin.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.plugin.PluginJar;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.jar.JarFile;
+
+/**
+ * Logger factory.
+ */
+public class LoggerFactory {
+    
+    private static AgentPluginClassLoader classLoader;
+    
+    /**
+     *  Get logger.
+     * @param clazz Class
+     * @return logger
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    @SuppressWarnings("unchecked")
+    public static Logger getLogger(final Class<?> clazz) {
+        Class<?> factoryClazz = getClassLoader().loadClass("org.slf4j.LoggerFactory");
+        Method method = factoryClazz.getMethod("getLogger", Class.class);
+        Object log = method.invoke(null, clazz);
+        return new Logger(log);
+    }
+    
+    private static AgentPluginClassLoader getClassLoader() {
+        if (Objects.nonNull(classLoader)) {
+            return classLoader;
+        }
+        try {
+            classLoader = new AgentPluginClassLoader(LoggerFactory.class.getClassLoader().getParent(), Collections.singleton(getAgentJar()));
+        } catch (final IOException ignored) {
+        }
+        return classLoader;
+    }
+    
+    private static PluginJar getAgentJar() throws IOException {
+        CodeSource codeSource = LoggerFactory.class.getProtectionDomain().getCodeSource();
+        try {
+            File agentFle = new File(codeSource.getLocation().toURI());
+            return new PluginJar(new JarFile(agentFle, true), agentFle);
+        } catch (final URISyntaxException ignored) {
+        }
+        return null;
+    }
+    
+    /**
+     * Logger.
+     */
+    public static class Logger {
+        
+        private final Object logger;
+        
+        public Logger(final Object logger) {
+            this.logger = logger;
+        }
+        
+        /**
+         * Info.
+         * 
+         * @param msg message
+         */
+        public void info(final String msg) {
+            invokeMethod("info", msg);
+        }
+        
+        /**
+         * Info.
+         * @param format format
+         * @param arguments arguments
+         */
+        public void info(final String format, final Object... arguments) {
+            invokeMethod("info", format, arguments);
+        }
+        
+        /**
+         * Debug.
+         * 
+         * @param format format
+         * @param arguments arguments
+         */
+        public void debug(final String format, final Object... arguments) {
+            invokeMethod("debug", format, arguments);
+        }
+        
+        /**
+         * Debug.
+         * 
+         * @param msg message
+         */
+        public void debug(final String msg) {
+            invokeMethod("debug", msg);
+        }
+        
+        /**
+         * Error.
+         * 
+         * @param format format
+         * @param arguments arguments
+         */
+        public void error(final String format, final Object... arguments) {
+            invokeMethod("error", format, arguments);
+        }
+        
+        /**
+         * Error.
+         * 
+         * @param msg message
+         */
+        public void error(final String msg) {
+            invokeMethod("error", msg);
+        }
+        
+        @SneakyThrows(ReflectiveOperationException.class)
+        @SuppressWarnings("unchecked")
+        private void invokeMethod(final String methodName, final String msg) {
+            Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
+            Method method = logicLogger.getMethod(methodName, String.class);
+            method.invoke(this.logger, msg);
+        }
+        
+        @SneakyThrows(ReflectiveOperationException.class)
+        @SuppressWarnings("unchecked")
+        private void invokeMethod(final String methodName, final String msg, final Object... arguments) {
+            Class<?> logicLogger = LoggerFactory.getClassLoader().loadClass("org.slf4j.Logger");
+            Method method = logicLogger.getMethod(methodName, String.class, Object[].class);
+            method.invoke(this.logger, msg, arguments);
+        }
+    }
+}

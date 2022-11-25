@@ -24,6 +24,7 @@ import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,7 +43,9 @@ import static org.junit.Assert.assertTrue;
 @Category(AgentPluginLoaderTest.class)
 public final class AgentPluginLoaderTest {
     
-    private static final AgentPluginLoader LOADER = AgentPluginLoader.getInstance();
+    private static final AdviceInstanceLoader INSTANCE_LOADER = new AdviceInstanceLoader();
+    
+    private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
     
     private static final TypePool POOL = TypePool.Default.ofSystemLoader();
     
@@ -53,7 +56,7 @@ public final class AgentPluginLoaderTest {
     @BeforeClass
     @SuppressWarnings("unchecked")
     public static void setup() throws NoSuchFieldException, IllegalAccessException {
-        FieldReader objectPoolReader = new FieldReader(LOADER, LOADER.getClass().getDeclaredField("objectPool"));
+        FieldReader objectPoolReader = new FieldReader(INSTANCE_LOADER, INSTANCE_LOADER.getClass().getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
@@ -70,23 +73,23 @@ public final class AgentPluginLoaderTest {
                 .build()
                 .install();
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(LOADER.getClass().getDeclaredField("interceptorPointMap"), LOADER, Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, Collections.singletonMap(interceptorPoint.getClassNameOfTarget(), interceptorPoint));
     }
     
     @Test
     public void assertTypeMatcher() {
-        assertTrue(LOADER.typeMatcher().matches(MATERIAL));
-        assertFalse(LOADER.typeMatcher().matches(FAKE));
+        assertTrue(PLUGIN_LOADER.typeMatcher().matches(MATERIAL));
+        assertFalse(PLUGIN_LOADER.typeMatcher().matches(FAKE));
     }
     
     @Test
     public void assertContainsType() {
-        assertTrue(LOADER.containsType(MATERIAL));
-        assertFalse(LOADER.containsType(FAKE));
+        assertTrue(PLUGIN_LOADER.containsType(MATERIAL));
+        assertFalse(PLUGIN_LOADER.containsType(FAKE));
     }
     
     @Test
     public void assertLoadPluginInterceptorPoint() {
-        assertNotNull(LOADER.loadPluginInterceptorPoint(MATERIAL));
+        assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
     }
 }

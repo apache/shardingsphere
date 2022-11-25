@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -28,6 +27,8 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.OverrideArgsInvoker;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 import java.lang.reflect.Method;
@@ -36,8 +37,9 @@ import java.lang.reflect.Method;
  * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method with args override.
  */
 @RequiredArgsConstructor
-@Slf4j
 public class InstanceMethodInterceptorArgsOverride {
+    
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(AgentPluginLoader.class);
     
     private final InstanceMethodAroundAdvice instanceMethodAroundAdvice;
     
@@ -63,7 +65,7 @@ public class InstanceMethodInterceptorArgsOverride {
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
+            LOGGER.error("Failed to execute the pre-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
         }
         try {
             if (methodResult.isRebased()) {
@@ -82,7 +84,7 @@ public class InstanceMethodInterceptorArgsOverride {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
+                LOGGER.error("Failed to execute the error handler of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
             throw ex;
         } finally {
@@ -93,7 +95,7 @@ public class InstanceMethodInterceptorArgsOverride {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
+                LOGGER.error("Failed to execute the post-method of method[{}] in class[{}]", method.getName(), target.getClass(), ex);
             }
         }
         return methodResult.isRebased() ? methodResult.getResult() : result;
