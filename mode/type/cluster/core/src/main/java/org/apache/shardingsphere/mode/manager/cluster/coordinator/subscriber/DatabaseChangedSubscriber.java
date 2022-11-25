@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataDeletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereRowDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.TableDataChangedEvent;
 
 /**
@@ -87,5 +88,15 @@ public final class DatabaseChangedSubscriber {
     public synchronized void renew(final TableDataChangedEvent event) {
         contextManager.alterSchemaData(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableData());
         contextManager.alterSchemaData(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
+    }
+    
+    /**
+     * Renew ShardingSphere data of row.
+     * 
+     * @param event ShardingSphere row data added event
+     */
+    @Subscribe
+    public synchronized void renew(final ShardingSphereRowDataAddedEvent event) {
+        contextManager.alterRowsData(event.getDatabaseName(), event.getSchemaName(), event.getTableName(), event.getYamlRowData());
     }
 }

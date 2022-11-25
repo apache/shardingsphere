@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.infra.yaml.data.swapper;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSpherePartitionRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
-import java.math.BigDecimal;
-import java.sql.Types;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * YAML ShardingSphere data swapper.
@@ -40,33 +42,20 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
     public YamlShardingSphereTableData swapToYamlConfiguration(final ShardingSphereTableData data) {
         YamlShardingSphereTableData result = new YamlShardingSphereTableData();
         result.setName(data.getName());
-        List<YamlShardingSphereRowData> rowData = new LinkedList<>();
-        data.getRows().forEach(each -> rowData.add(swapYamlRow(each, data.getColumns())));
-        result.setRows(rowData);
+        Map<Integer, YamlShardingSpherePartitionRowData> yamlPartitionRows = new LinkedHashMap<>();
+        int i = 0;
+        for (List<ShardingSphereRowData> each : Lists.partition(data.getRows(), 100)) {
+            Collection<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
+            each.forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(data.getColumns()).swapToYamlConfiguration(rowData)));
+            YamlShardingSpherePartitionRowData partitionRowsData = new YamlShardingSpherePartitionRowData();
+            partitionRowsData.setPartitionRows(yamlShardingSphereRowData);
+            yamlPartitionRows.put(i++, partitionRowsData);
+        }
+        result.setPartitionRows(yamlPartitionRows);
         List<YamlShardingSphereColumn> columns = new LinkedList<>();
         data.getColumns().forEach(each -> columns.add(swapYamlColumn(each)));
         result.setColumns(columns);
         return result;
-    }
-    
-    private YamlShardingSphereRowData swapYamlRow(final ShardingSphereRowData row, final List<ShardingSphereColumn> columns) {
-        YamlShardingSphereRowData result = new YamlShardingSphereRowData();
-        List<Object> rowData = null == row.getRows() ? Collections.emptyList() : row.getRows();
-        List<Object> yamlRowData = new LinkedList<>();
-        int count = 0;
-        for (Object each : rowData) {
-            yamlRowData.add(convertDataType(each, columns.get(count++).getDataType()));
-        }
-        result.setRows(yamlRowData);
-        return result;
-    }
-    
-    private Object convertDataType(final Object data, final int dataType) {
-        if (Types.DECIMAL == dataType || Types.BIGINT == dataType) {
-            return null == data ? null : data.toString();
-        }
-        // TODO use general type convertor
-        return data;
     }
     
     private YamlShardingSphereColumn swapYamlColumn(final ShardingSphereColumn column) {
@@ -87,38 +76,12 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
             yamlConfig.getColumns().forEach(each -> columns.add(swapColumn(each)));
         }
         ShardingSphereTableData result = new ShardingSphereTableData(yamlConfig.getName(), columns);
-        if (null != yamlConfig.getRows()) {
-            yamlConfig.getRows().forEach(each -> result.getRows().add(swapRow(each, yamlConfig.getColumns())));
+        if (null != yamlConfig.getPartitionRows()) {
+            for (YamlShardingSpherePartitionRowData each : yamlConfig.getPartitionRows().values()) {
+                each.getPartitionRows().forEach(yamlRowData -> result.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData)));
+            }
         }
         return result;
-    }
-    
-    private ShardingSphereRowData swapRow(final YamlShardingSphereRowData yamlRowData, final List<YamlShardingSphereColumn> columns) {
-        List<Object> yamlRow = null == yamlRowData.getRows() ? Collections.emptyList() : yamlRowData.getRows();
-        List<Object> rowData = new LinkedList<>();
-        int count = 0;
-        for (Object each : yamlRow) {
-            YamlShardingSphereColumn yamlColumn = columns.get(count++);
-            rowData.add(convertByDataType(each, yamlColumn.getDataType()));
-        }
-        return new ShardingSphereRowData(rowData);
-    }
-    
-    private Object convertByDataType(final Object data, final int dataType) {
-        if (null == data) {
-            return null;
-        }
-        if (Types.DECIMAL == dataType) {
-            return new BigDecimal(data.toString());
-        }
-        if (Types.BIGINT == dataType) {
-            return Long.valueOf(data.toString());
-        }
-        if (Types.REAL == dataType || Types.FLOAT == dataType) {
-            return Float.parseFloat(data.toString());
-        }
-        // TODO use general type convertor
-        return data;
     }
     
     private ShardingSphereColumn swapColumn(final YamlShardingSphereColumn column) {

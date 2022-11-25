@@ -51,10 +51,8 @@ algorithmProperty: key=value
 
 - 重复的`ruleName`无法被创建；
 - `storageUnitMapping` 指定源数据库和影子库的映射关系，需使用 RDL 管理的 `storage unit` ，请参考 [存储单元](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)；
-- `shadowAlgorithm` 可同时作用于多个 `shadowTableRule`；
 - `shadowAlgorithmType` 目前支持 `VALUE_MATCH`、`REGEX_MATCH` 和 `SIMPLE_HINT`；
-- `shadowTableRule` 能够被不同的 `shadowRuleDefinition` 复用，因此在执行 `DROP SHADOW RULE` 时，对应的 `shadowTableRule` 不会被移除；
-- `shadowAlgorithm` 能够被不同的 `shadowTableRule` 复用，因此在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除。
+- 在执行 `ALTER SHADOW RULE` 时，对应的 `shadowAlgorithm` 不会被移除。
 - 创建规则时，会根据 `ruleName`、`tableName` 和 `shadowAlgorithmType` 和算法集合下标自动生成 `algorithmName` 。默认算法名称为 `default_shadow_algorithm`。
 
 ## 示例
