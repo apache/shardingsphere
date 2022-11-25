@@ -33,7 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * SQL cases registry.
+ * SQL cases.
  */
 @RequiredArgsConstructor
 public final class SQLCases {
@@ -41,62 +41,6 @@ public final class SQLCases {
     private static final Pattern PARAMETER_MARKER = Pattern.compile("\\?|\\$[0-9]+");
     
     private final Map<String, SQLCase> cases;
-    
-    /**
-     * Get SQL.
-     * 
-     * @param caseId SQL case ID
-     * @param caseType SQL case type
-     * @param params parameters
-     * @return got SQL
-     */
-    public String getSQL(final String caseId, final SQLCaseType caseType, final List<?> params) {
-        String sql = getSQLFromMap(caseId, cases);
-        switch (caseType) {
-            case Placeholder:
-                return getPlaceholderSQL(sql);
-            case Literal:
-                return getLiteralSQL(sql, params);
-            default:
-                throw new UnsupportedOperationException(caseType.name());
-        }
-    }
-    
-    private String getSQLFromMap(final String caseId, final Map<String, SQLCase> sqlCaseMap) {
-        Preconditions.checkState(sqlCaseMap.containsKey(caseId), "Can't find SQL of ID: %s", caseId);
-        SQLCase statement = sqlCaseMap.get(caseId);
-        return statement.getValue();
-    }
-    
-    private String getPlaceholderSQL(final String sql) {
-        return sql;
-    }
-    
-    private String getLiteralSQL(final String sql, final List<?> params) {
-        return params.isEmpty() ? sql : replace(sql, params);
-    }
-    
-    private static String replace(final String sql, final List<?> params) {
-        Matcher matcher = PARAMETER_MARKER.matcher(sql);
-        int found = 0;
-        StringBuffer buffer = new StringBuffer();
-        while (matcher.find()) {
-            String group = matcher.group();
-            if (ParameterMarkerType.QUESTION.getMarker().equals(group)) {
-                appendReplacement(++found, params, matcher, buffer);
-            } else {
-                int dollarMarker = Integer.parseInt(group.replace(ParameterMarkerType.DOLLAR.getMarker(), ""));
-                appendReplacement(dollarMarker, params, matcher, buffer);
-            }
-        }
-        matcher.appendTail(buffer);
-        return buffer.toString();
-    }
-    
-    private static void appendReplacement(final int markerIndex, final List<?> params, final Matcher matcher, final StringBuffer buffer) {
-        Preconditions.checkArgument(markerIndex <= params.size(), "Missing replacement for `%s` at index `%s`.", PARAMETER_MARKER.pattern(), markerIndex);
-        matcher.appendReplacement(buffer, Matcher.quoteReplacement(params.get(markerIndex - 1).toString()));
-    }
     
     /**
      * Get test parameters.
@@ -140,5 +84,56 @@ public final class SQLCases {
     
     private static Collection<String> getAllDatabaseTypes() {
         return Arrays.asList("H2", "MySQL", "PostgreSQL", "Oracle", "SQLServer", "SQL92", "openGauss");
+    }
+    
+    /**
+     * Get SQL.
+     * 
+     * @param caseId SQL case ID
+     * @param caseType SQL case type
+     * @param params parameters
+     * @return got SQL
+     */
+    public String getSQL(final String caseId, final SQLCaseType caseType, final List<?> params) {
+        Preconditions.checkState(cases.containsKey(caseId), "Can not find SQL of ID: %s", caseId);
+        String sql = cases.get(caseId).getValue();
+        switch (caseType) {
+            case Placeholder:
+                return getPlaceholderSQL(sql);
+            case Literal:
+                return getLiteralSQL(sql, params);
+            default:
+                throw new UnsupportedOperationException(caseType.name());
+        }
+    }
+    
+    private String getPlaceholderSQL(final String sql) {
+        return sql;
+    }
+    
+    private String getLiteralSQL(final String sql, final List<?> params) {
+        return params.isEmpty() ? sql : replace(sql, params);
+    }
+    
+    private static String replace(final String sql, final List<?> params) {
+        Matcher matcher = PARAMETER_MARKER.matcher(sql);
+        int found = 0;
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            String group = matcher.group();
+            if (ParameterMarkerType.QUESTION.getMarker().equals(group)) {
+                appendReplacement(++found, params, matcher, result);
+            } else {
+                int dollarMarker = Integer.parseInt(group.replace(ParameterMarkerType.DOLLAR.getMarker(), ""));
+                appendReplacement(dollarMarker, params, matcher, result);
+            }
+        }
+        matcher.appendTail(result);
+        return result.toString();
+    }
+    
+    private static void appendReplacement(final int markerIndex, final List<?> params, final Matcher matcher, final StringBuffer buffer) {
+        Preconditions.checkArgument(markerIndex <= params.size(), "Missing replacement for `%s` at index `%s`.", PARAMETER_MARKER.pattern(), markerIndex);
+        matcher.appendReplacement(buffer, Matcher.quoteReplacement(params.get(markerIndex - 1).toString()));
     }
 }
