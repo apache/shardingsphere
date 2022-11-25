@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dcl;
 
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
  * Create role statement test case.

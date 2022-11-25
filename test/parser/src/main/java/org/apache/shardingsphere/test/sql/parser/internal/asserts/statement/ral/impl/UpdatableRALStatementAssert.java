@@ -41,7 +41,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.updatable.RefreshTableMetadataStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.updatable.SetDistVariableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.updatable.UnlabelComputeNodeStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterReadwriteSplittingStorageUnitStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLParserRuleStatementTestCase;

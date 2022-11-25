@@ -85,7 +85,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ddl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ddl.impl.SecurityLabelStmtStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ddl.impl.TruncateStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ddl.impl.UnlistenStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSessionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ddl.AlterSynonymStatementTestCase;

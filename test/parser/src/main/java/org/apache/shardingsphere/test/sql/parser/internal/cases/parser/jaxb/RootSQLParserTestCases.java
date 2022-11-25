@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dal.AlterResourceGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dal.BinlogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dal.CacheIndexStatementTestCase;
@@ -436,11 +435,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SQL parser test cases.
+ * Root SQL parser test cases.
  */
 @XmlRootElement(name = "sql-parser-test-cases")
 @Getter
-public final class SQLParserTestCases {
+public final class RootSQLParserTestCases {
     
     @XmlElement(name = "select")
     private final List<SelectStatementTestCase> selectTestCases = new LinkedList<>();
@@ -1666,7 +1665,7 @@ public final class SQLParserTestCases {
     @SneakyThrows(IllegalAccessException.class)
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
-        for (Field each : SQLParserTestCases.class.getDeclaredFields()) {
+        for (Field each : RootSQLParserTestCases.class.getDeclaredFields()) {
             if (isSQLParserTestCasesField(each)) {
                 each.setAccessible(true);
                 List<? extends SQLParserTestCase> testCases = (List<? extends SQLParserTestCase>) each.get(this);

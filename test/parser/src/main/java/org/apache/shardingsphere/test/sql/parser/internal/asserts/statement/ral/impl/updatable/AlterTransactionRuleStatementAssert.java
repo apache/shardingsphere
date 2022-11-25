@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.updatable;
 
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.updatable.AlterTransactionRuleStatement;
 
 import static org.junit.Assert.assertNotNull;

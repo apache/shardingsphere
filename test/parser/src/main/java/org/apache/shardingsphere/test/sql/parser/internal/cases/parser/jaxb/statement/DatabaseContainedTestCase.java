@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.sta
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.database.ExpectedDatabase;
 
 import javax.xml.bind.annotation.XmlElement;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration;
 
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
  * Show migration check algorithms statement test case.

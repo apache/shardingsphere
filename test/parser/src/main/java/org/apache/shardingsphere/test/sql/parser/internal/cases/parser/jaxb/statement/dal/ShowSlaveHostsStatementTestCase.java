@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dal;
 
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
  * Show slave hosts statement test case.

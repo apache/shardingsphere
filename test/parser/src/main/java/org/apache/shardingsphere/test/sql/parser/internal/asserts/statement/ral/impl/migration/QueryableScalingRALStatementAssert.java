@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationListStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationSourceStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationStatusStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowMigrationListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;

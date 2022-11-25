@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segm
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.packages.ExpectedPackage;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.type.ExpectedType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
