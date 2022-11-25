@@ -19,10 +19,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.shardingsphere.example.core.mybatis.repository.MybatisOrderRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.core.api.entity.Order">
-        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
-        <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="address_id" property="addressId" jdbcType="BIGINT"/>
-        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="address_id" property="addressId" jdbcType="BIGINT" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
     </resultMap>
 
     <update id="createTableIfNotExists">

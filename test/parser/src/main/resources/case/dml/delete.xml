@@ -129,17 +129,17 @@
                 <in-expression start-index="38" stop-index="211">
                     <not>false</not>
                     <left>
-                        <common-expression text="(product_id,currency_code,effective_from_date)" start-index="38" stop-index="85"/>
+                        <common-expression text="(product_id,currency_code,effective_from_date)" start-index="38" stop-index="85" />
                     </left>
                     <right>
                         <subquery start-index="90" stop-index="211">
                             <select>
                                 <from start-index="155" stop-index="175">
-                                    <simple-table name="product_price_history" start-index="155" stop-index="175"/>
+                                    <simple-table name="product_price_history" start-index="155" stop-index="175" />
                                 </from>
                                 <projections start-index="98" stop-index="148">
-                                    <column-projection name="product_id" start-index="98" stop-index="107"/>
-                                    <column-projection name="currency_code" start-index="110" stop-index="122"/>
+                                    <column-projection name="product_id" start-index="98" stop-index="107" />
+                                    <column-projection name="currency_code" start-index="110" stop-index="122" />
                                     <aggregation-projection type="MAX" inner-expression="(effective_from_date)" start-index="125" stop-index="148" />
                                 </projections>
                                 <group-by>
@@ -217,16 +217,16 @@
         <output start-index="20" stop-index="106">
             <output-columns start-index="27" stop-index="59">
                 <column-projection name="order_id" start-index="27" stop-index="42">
-                    <owner name="DELETED" start-index="27" stop-index="33"/>
+                    <owner name="DELETED" start-index="27" stop-index="33" />
                 </column-projection>
                 <column-projection name="user_id" start-index="45" stop-index="59">
-                    <owner name="DELETED" start-index="45" stop-index="51"/>
+                    <owner name="DELETED" start-index="45" stop-index="51" />
                 </column-projection>
             </output-columns>
-            <output-table name="@MyTableVar" start-index="66" stop-index="76"/>
+            <output-table name="@MyTableVar" start-index="66" stop-index="76" />
             <output-table-columns start-index="78" stop-index="106">
-                <column name="temp_order_id" start-index="79" stop-index="91"/>
-                <column name="temp_user_id" start-index="94" stop-index="105"/>
+                <column name="temp_order_id" start-index="79" stop-index="91" />
+                <column name="temp_user_id" start-index="94" stop-index="105" />
             </output-table-columns>
         </output>
         <where start-index="108" stop-index="125" literal-stop-index="128">
@@ -250,13 +250,13 @@
         <output start-index="20" stop-index="76">
             <output-columns start-index="27" stop-index="59">
                 <column-projection name="order_id" start-index="27" stop-index="42">
-                    <owner name="DELETED" start-index="27" stop-index="33"/>
+                    <owner name="DELETED" start-index="27" stop-index="33" />
                 </column-projection>
                 <column-projection name="user_id" start-index="45" stop-index="59">
-                    <owner name="DELETED" start-index="45" stop-index="51"/>
+                    <owner name="DELETED" start-index="45" stop-index="51" />
                 </column-projection>
             </output-columns>
-            <output-table name="@MyTableVar" start-index="66" stop-index="76"/>
+            <output-table name="@MyTableVar" start-index="66" stop-index="76" />
         </output>
         <where start-index="78" stop-index="95" literal-stop-index="98">
             <expr>
@@ -279,10 +279,10 @@
         <output start-index="20" stop-index="59">
             <output-columns start-index="27" stop-index="59">
                 <column-projection name="order_id" start-index="27" stop-index="42">
-                    <owner name="DELETED" start-index="27" stop-index="33"/>
+                    <owner name="DELETED" start-index="27" stop-index="33" />
                 </column-projection>
                 <column-projection name="user_id" start-index="45" stop-index="59">
-                    <owner name="DELETED" start-index="45" stop-index="51"/>
+                    <owner name="DELETED" start-index="45" stop-index="51" />
                 </column-projection>
             </output-columns>
         </output>
@@ -304,7 +304,7 @@
 
     <delete sql-case-id="delete_with_output_clause_column_shorthand" parameters="1000">
         <table name="t_order" start-index="12" stop-index="18" />
-        <output start-index="20" stop-index="35"/>
+        <output start-index="20" stop-index="35" />
         <where start-index="37" stop-index="54" literal-stop-index="57">
             <expr>
                 <binary-operation-expression start-index="43" stop-index="54" literal-stop-index="57">
@@ -360,8 +360,8 @@
     <delete sql-case-id="delete_with_with_clause">
         <with start-index="0" stop-index="70">
             <common-table-expression name = "cte" start-index="5" stop-index="70">
-                <column name="order_id" start-index="10" stop-index="17"/>
-                <column name="user_id" start-index="20" stop-index="26"/>
+                <column name="order_id" start-index="10" stop-index="17" />
+                <column name="user_id" start-index="20" stop-index="26" />
                 <subquery-expression start-index="33" stop-index="69">
                     <select>
                         <from>
@@ -468,8 +468,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
-        <table name="t_order" start-index="7" stop-index="13"/>
-        <table name="t_order_item" start-index="16" stop-index="27"/>
+        <table name="t_order" start-index="7" stop-index="13" />
+        <table name="t_order_item" start-index="16" stop-index="27" />
     </delete>
 
     <delete sql-case-id="delete_multi_tables_with_using" parameters="1">
@@ -489,8 +489,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
-        <table name="t_order" start-index="12" stop-index="18"/>
-        <table name="t_order_item" start-index="21" stop-index="32"/>
+        <table name="t_order" start-index="12" stop-index="18" />
+        <table name="t_order_item" start-index="21" stop-index="32" />
     </delete>
 
     <delete sql-case-id="delete_with_query_hint" parameters="1000">
@@ -533,10 +533,10 @@
             <subquery>
                 <select>
                     <from start-index="27" stop-index="35">
-                        <simple-table name="employees" start-index="27" stop-index="35"/>
+                        <simple-table name="employees" start-index="27" stop-index="35" />
                     </from>
                     <projections start-index="20" stop-index="20">
-                        <shorthand-projection start-index="20" stop-index="20"/>
+                        <shorthand-projection start-index="20" stop-index="20" />
                     </projections>
                 </select>
             </subquery>
@@ -547,11 +547,11 @@
                     <left>
                         <binary-operation-expression start-index="44" stop-index="60">
                             <left>
-                                <column name="job_id" start-index="44" stop-index="49"/>
+                                <column name="job_id" start-index="44" stop-index="49" />
                             </left>
                             <operator>=</operator>
                             <right>
-                                <literal-expression value="SA_REP" start-index="53" stop-index="60"/>
+                                <literal-expression value="SA_REP" start-index="53" stop-index="60" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -559,11 +559,11 @@
                     <right>
                         <binary-operation-expression start-index="66" stop-index="85">
                             <left>
-                                <column name="commission_pct" start-index="66" stop-index="79"/>
+                                <column name="commission_pct" start-index="66" stop-index="79" />
                             </left>
                             <operator>&lt;</operator>
                             <right>
-                                <literal-expression value="0.2" start-index="83" stop-index="85"/>
+                                <literal-expression value="0.2" start-index="83" stop-index="85" />
                             </right>
                         </binary-operation-expression>
                     </right>
@@ -577,10 +577,10 @@
             <subquery>
                 <select>
                     <from start-index="27" stop-index="35">
-                        <simple-table name="product_price_history" start-index="22" stop-index="42"/>
+                        <simple-table name="product_price_history" start-index="22" stop-index="42" />
                     </from>
                     <projections start-index="15" stop-index="15">
-                        <shorthand-projection start-index="15" stop-index="15"/>
+                        <shorthand-projection start-index="15" stop-index="15" />
                     </projections>
                 </select>
             </subquery>
@@ -589,11 +589,11 @@
             <expr>
                 <binary-operation-expression start-index="51" stop-index="71">
                     <left>
-                        <column name="currency_code" start-index="51" stop-index="63"/>
+                        <column name="currency_code" start-index="51" stop-index="63" />
                     </left>
                     <operator>=</operator>
                     <right>
-                        <literal-expression value="EUR" start-index="67" stop-index="71"/>
+                        <literal-expression value="EUR" start-index="67" stop-index="71" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -627,11 +627,11 @@
                     <left>
                         <binary-operation-expression start-index="28" stop-index="44">
                             <left>
-                                <column name="job_id" start-index="28" stop-index="33"/>
+                                <column name="job_id" start-index="28" stop-index="33" />
                             </left>
                             <operator>=</operator>
                             <right>
-                                <literal-expression value="SA_REP" start-index="37" stop-index="44"/>
+                                <literal-expression value="SA_REP" start-index="37" stop-index="44" />
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -641,13 +641,13 @@
                             <left>
                                 <binary-operation-expression start-index="50" stop-index="83">
                                     <left>
-                                        <column name="hire_date" start-index="50" stop-index="58"/>
+                                        <column name="hire_date" start-index="50" stop-index="58" />
                                     </left>
                                     <operator>+</operator>
                                     <right>
                                         <function function-name="TO_YMINTERVAL" text="TO_YMINTERVAL('01-00')" start-index="62" stop-index="83">
                                             <parameter>
-                                                <literal-expression value="01-00" start-index="76" stop-index="82"/>
+                                                <literal-expression value="01-00" start-index="76" stop-index="82" />
                                             </parameter>
                                         </function>
                                     </right>
@@ -655,7 +655,7 @@
                             </left>
                             <operator>&lt;</operator>
                             <right>
-                                <column name="SYSDATE" start-index="87" stop-index="93"/>
+                                <column name="SYSDATE" start-index="87" stop-index="93" />
                             </right>
                         </binary-operation-expression>
                     </right>

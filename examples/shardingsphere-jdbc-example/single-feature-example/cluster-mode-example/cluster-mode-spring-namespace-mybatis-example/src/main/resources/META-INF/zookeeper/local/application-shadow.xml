@@ -35,21 +35,21 @@
     <context:component-scan base-package="org.apache.shardingsphere.example.core.mybatis" />
     
     <bean id="shadow_demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shadow_demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/shadow_demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <shadow:rule id="shadowRule">
-        <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds" shadow-data-source-name="shadow_demo_ds"/>
+        <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds" shadow-data-source-name="shadow_demo_ds" />
         <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
             <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
             <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
@@ -102,12 +102,12 @@
     <tx:annotation-driven />
     
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="shadowDataSource"/>
-        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml"/>
+        <property name="dataSource" ref="shadowDataSource" />
+        <property name="mapperLocations" value="classpath*:META-INF/mappers/*.xml" />
     </bean>
     
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="org.apache.shardingsphere.example.core.mybatis.repository" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 </beans>

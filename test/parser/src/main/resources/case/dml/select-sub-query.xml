@@ -38,7 +38,7 @@
     <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
-                <owner start-index="7" stop-index="7" name="t"/>
+                <owner start-index="7" stop-index="7" name="t" />
             </shorthand-projection>
         </projections>
         <from>
@@ -49,7 +49,7 @@
                             <shorthand-projection start-index="24" stop-index="24" />
                         </projections>
                         <from>
-                            <simple-table start-index="31" stop-index="37" name="t_order"/>
+                            <simple-table start-index="31" stop-index="37" name="t_order" />
                         </from>
                         <where start-index="39" stop-index="62">
                             <expr>
@@ -231,7 +231,7 @@
                             <simple-table name="t_order" start-index="29" stop-index="35" />
                         </from>
                         <projections start-index="22" stop-index="22">
-                            <expression-projection start-index="22" stop-index="22" text="1"/>
+                            <expression-projection start-index="22" stop-index="22" text="1" />
                         </projections>
                     </select>
                 </subquery>
@@ -242,13 +242,13 @@
     <select sql-case-id="select_with_join_table_subquery">
         <projections start-index="7" stop-index="68">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="60" stop-index="68">
-                <owner start-index="60" stop-index="60" name="u"/>
+                <owner start-index="60" stop-index="60" name="u" />
             </column-projection>
         </projections>
         <from start-index="70" stop-index="90">
@@ -264,7 +264,7 @@
                                     <shorthand-projection start-index="101" stop-index="101" />
                                 </projections>
                                 <from>
-                                    <simple-table start-index="108" stop-index="118" name="t_user_info"/>
+                                    <simple-table start-index="108" stop-index="118" name="t_user_info" />
                                 </from>
                             </select>
                         </subquery>
@@ -277,13 +277,13 @@
                 <binary-operation-expression start-index="132" stop-index="167">
                     <left>
                         <column name="user_id" start-index="132" stop-index="155">
-                            <owner start-index="132" stop-index="147" name="t_order_federate"/>
+                            <owner start-index="132" stop-index="147" name="t_order_federate" />
                         </column>
                     </left>
                     <operator>=</operator>
                     <right>
                         <column name="user_id" start-index="159" stop-index="167">
-                            <owner start-index="159" stop-index="159" name="u"/>
+                            <owner start-index="159" stop-index="159" name="u" />
                         </column>
                     </right>
                 </binary-operation-expression>
@@ -294,10 +294,10 @@
     <select sql-case-id="select_with_projection_subquery">
         <projections start-index="7" stop-index="99">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
             <subquery-projection start-index="60" stop-index="99" text="(SELECT COUNT(user_id) FROM t_user_info)">
                 <subquery>
@@ -320,10 +320,10 @@
     <select sql-case-id="select_with_projection_subquery_and_multiple_parameters">
         <projections start-index="7" stop-index="110">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
             <subquery-projection start-index="60" stop-index="110" text="(SELECT CONCAT(order_id, user_id) FROM t_user_info)">
                 <subquery>
@@ -346,10 +346,10 @@
     <select sql-case-id="select_with_in_subquery_condition">
         <projections start-index="7" stop-index="57">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
         </projections>
         <from start-index="59" stop-index="79">
@@ -381,10 +381,10 @@
     <select sql-case-id="select_with_between_and_subquery_condition">
         <projections start-index="7" stop-index="57">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
         </projections>
         <from start-index="59" stop-index="79">
@@ -454,10 +454,10 @@
     <select sql-case-id="select_with_exist_subquery_condition">
         <projections start-index="7" stop-index="57">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
         </projections>
         <from start-index="59" stop-index="79">
@@ -479,13 +479,13 @@
                                     <binary-operation-expression start-index="127" stop-index="172">
                                         <left>
                                             <column name="user_id" start-index="127" stop-index="150">
-                                                <owner start-index="127" stop-index="142" name="t_order_federate"/>
+                                                <owner start-index="127" stop-index="142" name="t_order_federate" />
                                             </column>
                                         </left>
                                         <operator>=</operator>
                                         <right>
                                             <column name="user_id" start-index="154" stop-index="172">
-                                                <owner start-index="154" stop-index="164" name="t_user_info"/>
+                                                <owner start-index="154" stop-index="164" name="t_user_info" />
                                             </column>
                                         </right>
                                     </binary-operation-expression>
@@ -501,10 +501,10 @@
     <select sql-case-id="select_with_not_exist_subquery_condition">
         <projections start-index="7" stop-index="57">
             <column-projection name="order_id" start-index="7" stop-index="31">
-                <owner start-index="7" stop-index="22" name="t_order_federate"/>
+                <owner start-index="7" stop-index="22" name="t_order_federate" />
             </column-projection>
             <column-projection name="user_id" start-index="34" stop-index="57">
-                <owner start-index="34" stop-index="49" name="t_order_federate"/>
+                <owner start-index="34" stop-index="49" name="t_order_federate" />
             </column-projection>
         </projections>
         <from start-index="59" stop-index="79">
@@ -527,13 +527,13 @@
                                     <binary-operation-expression start-index="131" stop-index="176">
                                         <left>
                                             <column name="user_id" start-index="131" stop-index="154">
-                                                <owner start-index="131" stop-index="146" name="t_order_federate"/>
+                                                <owner start-index="131" stop-index="146" name="t_order_federate" />
                                             </column>
                                         </left>
                                         <operator>=</operator>
                                         <right>
                                             <column name="user_id" start-index="158" stop-index="176">
-                                                <owner start-index="158" stop-index="168" name="t_user_info"/>
+                                                <owner start-index="158" stop-index="168" name="t_user_info" />
                                             </column>
                                         </right>
                                     </binary-operation-expression>

@@ -216,12 +216,12 @@
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
                 <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc"/>
+                    <property key="aes-key-value" value="123456abc" />
                 </encryptor>
-                <like-query-encryptor algorithm-name="CHAR_DIGEST_LIKE"/>
+                <like-query-encryptor algorithm-name="CHAR_DIGEST_LIKE" />
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </alter-encrypt-rule>

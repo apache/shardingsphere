@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <notify sql-case-id="notify"/>
-    <notify sql-case-id="notify_low"/>
+    <notify sql-case-id="notify" />
+    <notify sql-case-id="notify_low" />
 </sql-parser-test-cases>

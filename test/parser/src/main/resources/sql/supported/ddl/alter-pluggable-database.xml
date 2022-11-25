@@ -17,14 +17,14 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_pluggable_database_unplug" value="ALTER PLUGGABLE DATABASE pdb1 UNPLUG INTO '/oracle/data/pdb1.xml';" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_storage" value="ALTER PLUGGABLE DATABASE pdb2 STORAGE (MAXSIZE 500M);" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_datafile_all_offline" value="ALTER PLUGGABLE DATABASE pdb3 DATAFILE ALL OFFLINE;" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_open_read_only" value="ALTER PLUGGABLE DATABASE pdb4 OPEN READ ONLY;" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_open_read_write_force" value="ALTER PLUGGABLE DATABASE pdb4 OPEN READ WRITE FORCE;" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_close" value="ALTER PLUGGABLE DATABASE pdb4 CLOSE;" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_open_read_only_restricted" value="ALTER PLUGGABLE DATABASE pdb4 OPEN READ ONLY RESTRICTED;" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_open_read_only_instance" value="ALTER PLUGGABLE DATABASE pdb5 OPEN READ WRITE INSTANCES = ('ORCLDB_1', 'ORCLDB_2');" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_close_relocate_to" value="ALTER PLUGGABLE DATABASE pdb6 CLOSE RELOCATE TO 'ORCLDB_3';" db-types="Oracle"/>
-    <sql-case id="alter_pluggable_database_all_open_read_only" value="ALTER PLUGGABLE DATABASE ALL OPEN READ ONLY;" db-types="Oracle"/>
+    <sql-case id="alter_pluggable_database_unplug" value="ALTER PLUGGABLE DATABASE pdb1 UNPLUG INTO '/oracle/data/pdb1.xml';" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_storage" value="ALTER PLUGGABLE DATABASE pdb2 STORAGE (MAXSIZE 500M);" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_datafile_all_offline" value="ALTER PLUGGABLE DATABASE pdb3 DATAFILE ALL OFFLINE;" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_open_read_only" value="ALTER PLUGGABLE DATABASE pdb4 OPEN READ ONLY;" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_open_read_write_force" value="ALTER PLUGGABLE DATABASE pdb4 OPEN READ WRITE FORCE;" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_close" value="ALTER PLUGGABLE DATABASE pdb4 CLOSE;" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_open_read_only_restricted" value="ALTER PLUGGABLE DATABASE pdb4 OPEN READ ONLY RESTRICTED;" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_open_read_only_instance" value="ALTER PLUGGABLE DATABASE pdb5 OPEN READ WRITE INSTANCES = ('ORCLDB_1', 'ORCLDB_2');" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_close_relocate_to" value="ALTER PLUGGABLE DATABASE pdb6 CLOSE RELOCATE TO 'ORCLDB_3';" db-types="Oracle" />
+    <sql-case id="alter_pluggable_database_all_open_read_only" value="ALTER PLUGGABLE DATABASE ALL OPEN READ ONLY;" db-types="Oracle" />
 </sql-cases>

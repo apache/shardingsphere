@@ -35,7 +35,7 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
                            ">
     <context:annotation-config />
-    <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa"/>
+    <context:component-scan base-package="org.apache.shardingsphere.example.core.jpa" />
     
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="shardingDataSource" />
@@ -55,10 +55,10 @@
     <tx:annotation-driven />
     
     <bean id="demo_ds" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
     </bean>
     
     <sharding:sharding-algorithm id="accountTableAlgorithm" type="T_ACCOUNT_SPI_BASED" />
@@ -84,10 +84,10 @@
             <sharding:table-rule logic-table="t_account" actual-data-nodes="demo_ds.t_account_${0..1}" table-strategy-ref="accountTableStrategy" key-generate-strategy-ref="accountKeyGenerator" />
         </sharding:table-rules>
         <sharding:binding-table-rules>
-            <sharding:binding-table-rule logic-tables="t_order,t_order_item"/>
+            <sharding:binding-table-rule logic-tables="t_order,t_order_item" />
         </sharding:binding-table-rules>
         <sharding:broadcast-table-rules>
-            <sharding:broadcast-table-rule table="t_address"/>
+            <sharding:broadcast-table-rule table="t_address" />
         </sharding:broadcast-table-rules>
     </sharding:rule>
     

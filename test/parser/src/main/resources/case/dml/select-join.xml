@@ -178,10 +178,10 @@
         </from>
         <projections start-index="7" stop-index="34">
             <column-projection name="department_id" start-index="7" stop-index="21">
-                <owner name="d" start-index="7" stop-index="7"/>
+                <owner name="d" start-index="7" stop-index="7" />
             </column-projection>
             <column-projection name="last_name" start-index="24" stop-index="34">
-                <owner name="e" start-index="24" stop-index="24"/>
+                <owner name="e" start-index="24" stop-index="24" />
             </column-projection>
         </projections>
         <order-by>
@@ -207,13 +207,13 @@
                     <binary-operation-expression start-index="87" stop-index="119">
                         <left>
                             <column name="department_id" start-index="87" stop-index="101">
-                                <owner name="d" start-index="87" stop-index="87"/>
+                                <owner name="d" start-index="87" stop-index="87" />
                             </column>
                         </left>
                         <operator>=</operator>
                         <right>
                             <column name="department_id" start-index="105" stop-index="119">
-                                <owner name="e" start-index="105" stop-index="105"/>
+                                <owner name="e" start-index="105" stop-index="105" />
                             </column>
                         </right>
                     </binary-operation-expression>
@@ -222,10 +222,10 @@
         </from>
         <projections start-index="7" stop-index="34">
             <column-projection name="department_id" start-index="7" stop-index="21">
-                <owner name="d" start-index="7" stop-index="7"/>
+                <owner name="d" start-index="7" stop-index="7" />
             </column-projection>
             <column-projection name="last_name" start-index="24" stop-index="34">
-                <owner name="e" start-index="24" stop-index="24"/>
+                <owner name="e" start-index="24" stop-index="24" />
             </column-projection>
         </projections>
         <order-by>
@@ -251,13 +251,13 @@
                     <binary-operation-expression start-index="129" stop-index="161">
                         <left>
                             <column name="department_id" start-index="129" stop-index="143">
-                                <owner name="d" start-index="129" stop-index="129"/>
+                                <owner name="d" start-index="129" stop-index="129" />
                             </column>
                         </left>
                         <operator>=</operator>
                         <right>
                             <column name="department_id" start-index="147" stop-index="161">
-                                <owner name="e" start-index="147" stop-index="147"/>
+                                <owner name="e" start-index="147" stop-index="147" />
                             </column>
                         </right>
                     </binary-operation-expression>
@@ -266,13 +266,13 @@
         </from>
         <projections start-index="7" stop-index="77">
             <column-projection name="department_id" alias="d_dept_id" start-index="7" stop-index="34">
-                <owner name="d" start-index="7" stop-index="7"/>
+                <owner name="d" start-index="7" stop-index="7" />
             </column-projection>
             <column-projection name="department_id" alias="e_dept_id" start-index="37" stop-index="64">
-                <owner name="e" start-index="37" stop-index="37"/>
+                <owner name="e" start-index="37" stop-index="37" />
             </column-projection>
             <column-projection name="last_name" start-index="67" stop-index="77">
-                <owner name="e" start-index="67" stop-index="67"/>
+                <owner name="e" start-index="67" stop-index="67" />
             </column-projection>
         </projections>
         <order-by>
@@ -298,9 +298,9 @@
             </join-table>
         </from>
         <projections start-index="7" stop-index="47">
-            <column-projection name="department_id" alias="d_e_dept_id" start-index="7" stop-index="34"/>
+            <column-projection name="department_id" alias="d_e_dept_id" start-index="7" stop-index="34" />
             <column-projection name="last_name" start-index="37" stop-index="47">
-                <owner name="e" start-index="37" stop-index="37"/>
+                <owner name="e" start-index="37" stop-index="37" />
             </column-projection>
         </projections>
         <order-by>
@@ -322,10 +322,10 @@
                         <subquery>
                             <select>
                                 <projections start-index="92" stop-index="92">
-                                    <shorthand-projection start-index="92" stop-index="92"/>
+                                    <shorthand-projection start-index="92" stop-index="92" />
                                 </projections>
                                 <from>
-                                    <simple-table name="employees" alias="e" start-index="99" stop-index="109"/>
+                                    <simple-table name="employees" alias="e" start-index="99" stop-index="109" />
                                 </from>
                                 <where start-index="111" stop-index="149">
                                     <expr>
@@ -352,13 +352,13 @@
         </from>
         <projections start-index="7" stop-index="51">
             <column-projection name="department_name" start-index="7" stop-index="23">
-                <owner name="d" start-index="7" stop-index="7"/>
+                <owner name="d" start-index="7" stop-index="7" />
             </column-projection>
             <column-projection name="employee_id" start-index="26" stop-index="38">
-                <owner name="v" start-index="26" stop-index="26"/>
+                <owner name="v" start-index="26" stop-index="26" />
             </column-projection>
             <column-projection name="last_name" start-index="41" stop-index="51">
-                <owner name="v" start-index="41" stop-index="41"/>
+                <owner name="v" start-index="41" stop-index="41" />
             </column-projection>
         </projections>
         <where start-index="154" stop-index="227">
