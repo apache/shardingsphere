@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
+import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -47,6 +48,8 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereRowDataSwapper;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -680,6 +683,29 @@ public final class ContextManager implements AutoCloseable {
     
     private synchronized void dropTableData(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
         metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().remove(toBeDeletedTableName);
+    }
+    
+    /**
+     * Alter ShardingSphere rows data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param yamlRowData yaml row data
+     */
+    public synchronized void alterRowsData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> yamlRowData) {
+        if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
+                || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)
+                || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().containsKey(tableName)) {
+            return;
+        }
+        ShardingSphereTableData tableData = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().get(tableName);
+        Collection<ShardingSphereRowData> rowData = yamlRowData.stream().map(each -> new YamlShardingSphereRowDataSwapper(tableData.getColumns()).swapToObject(each)).collect(Collectors.toList());
+        rowData.forEach(each -> {
+            if (!tableData.getRows().contains(each)) {
+                tableData.getRows().add(each);
+            }
+        });
     }
     
     @Override
