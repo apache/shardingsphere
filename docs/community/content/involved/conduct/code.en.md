@@ -79,6 +79,10 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to `Mockito`, junit `Assert`, hamcrest `CoreMatchers` and `MatcherAssert` can use static import.
  - Usage of assertion methods: for boolean type asserts, `assertTrue` and `assertFalse` should be used, `assertNull` and `assertNotNull` should be used to assert whether the assertion is null, and `assertThat` should be used for other scenarios.
+ - Usage of assertion methods:
+   - Use `assertTrue` and `assertFalse` for boolean value;
+   - Use `assertNull` and `assertNotNull` for null value;
+   - Use `assertThat` for other values.
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
  - Mockito `mockStatic` and `mockConstruction` methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
