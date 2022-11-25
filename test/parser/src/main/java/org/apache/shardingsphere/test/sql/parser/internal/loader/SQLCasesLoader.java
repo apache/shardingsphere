@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.internal.loader;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCase;
@@ -46,7 +45,6 @@ import java.util.regex.Pattern;
 /**
  * SQL cases loader.
  */
-@Getter
 public final class SQLCasesLoader {
     
     private static final Pattern PARAMETER_MARKER = Pattern.compile("\\?|\\$[0-9]+");
@@ -101,9 +99,9 @@ public final class SQLCasesLoader {
     public String getCaseValue(final String sqlCaseId, final SQLCaseType sqlCaseType, final List<?> params) {
         switch (sqlCaseType) {
             case Literal:
-                return getLiteralSQL(getSQLFromMap(sqlCaseId, getCases()), params);
+                return getLiteralSQL(getSQLFromMap(sqlCaseId, cases), params);
             case Placeholder:
-                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, getCases()));
+                return getPlaceholderSQL(getSQLFromMap(sqlCaseId, cases));
             default:
                 throw new UnsupportedOperationException(sqlCaseType.name());
         }
@@ -117,7 +115,7 @@ public final class SQLCasesLoader {
      */
     public Collection<Object[]> getTestParameters(final Collection<String> databaseTypes) {
         Collection<Object[]> result = new LinkedList<>();
-        for (SQLCase each : getCases().values()) {
+        for (SQLCase each : cases.values()) {
             result.addAll(getSQLTestParameters(databaseTypes, each));
         }
         return result;
