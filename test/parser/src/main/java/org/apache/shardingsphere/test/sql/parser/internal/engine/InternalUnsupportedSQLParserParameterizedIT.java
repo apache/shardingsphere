@@ -23,9 +23,9 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
-    private static final SQLCasesLoader SQL_CASES_LOADER = UnsupportedSQLCasesRegistry.getInstance().getSqlCasesLoader();
+    private static final SQLCases SQL_CASES = UnsupportedSQLCasesRegistry.getInstance().getCases();
     
     private final String sqlCaseId;
     
@@ -44,13 +44,13 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     private final SQLCaseType sqlCaseType;
     
     protected static Collection<Object[]> getTestParameters(final String databaseType) {
-        return SQL_CASES_LOADER.getTestParameters(Collections.singleton(databaseType));
+        return SQL_CASES.getTestParameters(Collections.singleton(databaseType));
     }
     
     @Test(expected = Exception.class)
     // TODO should expect SQLParsingException only
     public final void assertUnsupportedSQL() {
-        String sql = SQL_CASES_LOADER.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         CacheOption cacheOption = new CacheOption(128, 1024L);
         ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sql, false);
