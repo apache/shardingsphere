@@ -43,13 +43,13 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.create.CreateRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.drop.UnregisterStorageUnitStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.rdl.drop.DropRuleStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.encrypt.AlterEncryptRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.readwritesplitting.AlterReadwriteSplittingRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.resource.AlterStorageUnitStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingTableReferenceRulesStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.resource.UnregisterStorageUnitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.AlterEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.AlterReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.AlterStorageUnitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.AlterShardingTableReferenceRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.UnregisterStorageUnitStatementTestCase;
 
 /**
  * RDL statement assert.

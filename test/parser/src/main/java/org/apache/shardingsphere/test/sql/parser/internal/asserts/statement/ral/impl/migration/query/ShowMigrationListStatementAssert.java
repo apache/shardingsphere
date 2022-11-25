@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.ShowMigrationListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowMigrationListStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

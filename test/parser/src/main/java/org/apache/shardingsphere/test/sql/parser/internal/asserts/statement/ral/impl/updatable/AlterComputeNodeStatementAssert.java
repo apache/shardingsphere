@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.AlterComputeNodeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

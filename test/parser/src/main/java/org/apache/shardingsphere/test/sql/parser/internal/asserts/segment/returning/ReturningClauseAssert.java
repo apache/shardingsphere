@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegm
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.insert.ExpectedReturningClause;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedReturningClause;
 
 /**
  * Returning clause assert.

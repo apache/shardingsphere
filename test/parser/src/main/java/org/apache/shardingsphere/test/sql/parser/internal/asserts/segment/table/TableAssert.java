@@ -33,13 +33,13 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expres
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedXmlTableFunction;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedJoinTable;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedSubqueryTable;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedTable;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.table.ExpectedXmlTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedXmlTableFunction;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedJoinTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSubqueryTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedXmlTable;
 
 import java.util.Collection;
 import java.util.List;

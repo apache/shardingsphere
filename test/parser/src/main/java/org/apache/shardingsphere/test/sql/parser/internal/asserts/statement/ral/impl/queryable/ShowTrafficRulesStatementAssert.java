@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.ShowTrafficRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTrafficRulesStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.queryable.ShowTrafficRulesStatement;
 
 import static org.hamcrest.CoreMatchers.is;

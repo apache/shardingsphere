@@ -31,12 +31,12 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationListStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationSourceStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationStatusStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.ShowMigrationListStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.ShowMigrationStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowMigrationListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationStatusStatementTestCase;
 
 /**
  * Queryable RAL statement assert.

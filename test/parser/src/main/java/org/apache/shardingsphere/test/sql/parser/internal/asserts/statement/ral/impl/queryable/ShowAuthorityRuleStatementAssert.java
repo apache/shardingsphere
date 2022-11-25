@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 
 import org.apache.shardingsphere.authority.distsql.parser.statement.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.ShowAuthorityRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowAuthorityRuleStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

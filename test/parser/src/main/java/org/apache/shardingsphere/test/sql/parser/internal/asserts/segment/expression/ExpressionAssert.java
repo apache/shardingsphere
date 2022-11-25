@@ -47,20 +47,20 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedBetweenExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedBinaryOperationExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedCaseWhenExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedCollateExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedExistsSubquery;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedInExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedListExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.ExpectedNotExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.complex.ExpectedCommonExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.simple.ExpectedLiteralExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.expr.simple.ExpectedSubquery;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBetweenExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBinaryOperationExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCaseWhenExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCollateExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExistsSubquery;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedInExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
 
 import java.util.Iterator;
 

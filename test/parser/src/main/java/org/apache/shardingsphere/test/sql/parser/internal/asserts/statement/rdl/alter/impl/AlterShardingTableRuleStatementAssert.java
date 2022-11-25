@@ -25,11 +25,11 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.AlterSharding
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.AutoTableRuleAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.TableRuleAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedAutoTableRule;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedTableRule;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingAutoTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.rdl.rule.sharding.AlterShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAutoTableRule;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedTableRule;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.AlterShardingAutoTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.AlterShardingTableRuleStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;

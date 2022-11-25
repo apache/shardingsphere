@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.ShowTableMetadataStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetadataStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

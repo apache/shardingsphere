@@ -23,8 +23,8 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.DataSourceAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ExpectedDataSource;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.migration.RegisterMigrationSourceStorageUnitStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedDataSource;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.RegisterMigrationSourceStorageUnitStatementTestCase;
 
 import java.util.Collection;
 import java.util.List;
