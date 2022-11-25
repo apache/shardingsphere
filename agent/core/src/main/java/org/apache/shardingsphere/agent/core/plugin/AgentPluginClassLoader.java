@@ -43,7 +43,7 @@ public final class AgentPluginClassLoader extends ClassLoader {
     }
     
     @Getter
-    private static AgentPluginClassLoader defaultPluginClassloader;
+    private static volatile AgentPluginClassLoader defaultPluginClassloader;
     
     private final Collection<PluginJar> pluginJars;
     

@@ -76,7 +76,7 @@ public final class AgentPluginLoader implements PluginLoader {
         }
         for (File each : jarFiles) {
             pluginJars.add(new PluginJar(new JarFile(each, true), each));
-            LOGGER.info("Load jar:{}", each.getName());
+            LOGGER.info("Loaded jar:{}", each.getName());
         }
         PluginJarHolder.setPluginJars(pluginJars);
     }
