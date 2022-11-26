@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.RootSQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderCallback;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseLoaderCallback;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -35,15 +35,15 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * SQL parser test cases loader callback.
+ * SQL parser test case loader callback.
  */
-public final class SQLParserTestCasesLoaderCallback implements CasesLoaderCallback<SQLParserTestCase> {
+public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback<SQLParserTestCase> {
     
     @Override
-    public Map<String, SQLParserTestCase> loadFromJar(final String rootDirectory, final File jarFile) throws JAXBException {
+    public Map<String, SQLParserTestCase> loadFromJar(final File jarFile, final String rootDirectory) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
-            Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(SQLParserTestCasesLoaderCallback.class.getClassLoader().getResourceAsStream(each));
+            Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(SQLParserTestCaseLoaderCallback.class.getClassLoader().getResourceAsStream(each));
             checkDuplicate(result, sqlParserTestCases);
             result.putAll(sqlParserTestCases);
         }

@@ -50,17 +50,17 @@ public final class CaseFileLoader {
      * Load test case file names from jar.
      * 
      * @param jarFile jar file
-     * @param path test cases path
+     * @param rootDirectory root directory of test cases
      * @return test case file names
      */
     @SneakyThrows(IOException.class)
-    public static Collection<String> loadFileNamesFromJar(final File jarFile, final String path) {
+    public static Collection<String> loadFileNamesFromJar(final File jarFile, final String rootDirectory) {
         Collection<String> result = new LinkedList<>();
         try (JarFile jar = new JarFile(jarFile)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
-                if (name.startsWith(path) && name.endsWith(FILE_EXTENSION)) {
+                if (name.startsWith(rootDirectory) && name.endsWith(FILE_EXTENSION)) {
                     result.add(name);
                 }
             }
@@ -71,12 +71,12 @@ public final class CaseFileLoader {
     /**
      * Load test case files from directory.
      *
-     * @param path test cases path
+     * @param rootDirectory root directory of test cases
      * @return test case files
      */
     @SneakyThrows({URISyntaxException.class, IOException.class})
-    public static Collection<File> loadFilesFromDirectory(final String path) {
-        URL url = CaseFileLoader.class.getClassLoader().getResource(path);
+    public static Collection<File> loadFilesFromDirectory(final String rootDirectory) {
+        URL url = CaseFileLoader.class.getClassLoader().getResource(rootDirectory);
         if (null == url) {
             return Collections.emptyList();
         }

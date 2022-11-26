@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.SQLParserTestCases;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.loader.SQLParserTestCasesLoaderCallback;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderTemplate;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.loader.SQLParserTestCaseLoaderCallback;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseLoaderTemplate;
 
 /**
  * SQL parser test cases registry.
@@ -30,7 +30,11 @@ public final class SQLParserTestCasesRegistry {
     
     private static final SQLParserTestCasesRegistry INSTANCE = new SQLParserTestCasesRegistry();
     
-    private final SQLParserTestCases cases = new SQLParserTestCases(new CasesLoaderTemplate().load("case/", new SQLParserTestCasesLoaderCallback()));
+    private final SQLParserTestCases cases;
+    
+    private SQLParserTestCasesRegistry() {
+        cases = new SQLParserTestCases(CaseLoaderTemplate.load("case/", new SQLParserTestCaseLoaderCallback()));
+    }
     
     /**
      * Get instance.

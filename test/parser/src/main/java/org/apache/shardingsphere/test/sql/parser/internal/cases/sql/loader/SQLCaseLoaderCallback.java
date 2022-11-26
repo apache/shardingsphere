@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.RootSQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderCallback;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseLoaderCallback;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,15 +33,15 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * SQL cases loader callback.
+ * SQL case loader callback.
  */
-public final class SQLCasesLoaderCallback implements CasesLoaderCallback<SQLCase> {
+public final class SQLCaseLoaderCallback implements CaseLoaderCallback<SQLCase> {
     
     @Override
-    public Map<String, SQLCase> loadFromJar(final String rootDirectory, final File jarFile) throws JAXBException {
+    public Map<String, SQLCase> loadFromJar(final File jarFile, final String rootDirectory) throws JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
         for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
-            buildCaseMap(result, SQLCasesLoaderCallback.class.getClassLoader().getResourceAsStream(each));
+            buildCaseMap(result, SQLCaseLoaderCallback.class.getClassLoader().getResourceAsStream(each));
         }
         return result;
     }
