@@ -49,14 +49,14 @@ public final class CaseFileLoader {
     /**
      * Load test case file names from jar.
      * 
-     * @param file jar file
+     * @param jarFile jar file
      * @param path test cases path
      * @return test case file names
      */
     @SneakyThrows(IOException.class)
-    public static Collection<String> loadFileNamesFromJar(final File file, final String path) {
+    public static Collection<String> loadFileNamesFromJar(final File jarFile, final String path) {
         Collection<String> result = new LinkedList<>();
-        try (JarFile jar = new JarFile(file)) {
+        try (JarFile jar = new JarFile(jarFile)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
