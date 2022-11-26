@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader;
 
 import com.google.common.base.Preconditions;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.CaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderTemplate;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.RootSQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 
@@ -28,7 +28,6 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,21 +35,10 @@ import java.util.TreeMap;
 /**
  * SQL cases loader.
  */
-public final class SQLCasesLoader {
+public final class SQLCasesLoader extends CasesLoaderTemplate<SQLCase> {
     
-    /**
-     * Load SQL cases.
-     * 
-     * @param rootDirectory root directory
-     * @return loaded cases
-     */
-    @SneakyThrows({JAXBException.class, IOException.class})
-    public Map<String, SQLCase> load(final String rootDirectory) {
-        File file = new File(SQLCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return file.isFile() ? loadFromJar(rootDirectory, file) : loadFromDirectory(rootDirectory);
-    }
-    
-    private Map<String, SQLCase> loadFromJar(final String rootDirectory, final File file) throws JAXBException {
+    @Override
+    protected Map<String, SQLCase> loadFromJar(final String rootDirectory, final File file) throws JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
         for (String each : CaseFileLoader.loadFileNamesFromJar(file, rootDirectory)) {
             buildCaseMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(each));
@@ -58,7 +46,8 @@ public final class SQLCasesLoader {
         return result;
     }
     
-    private Map<String, SQLCase> loadFromDirectory(final String rootDirectory) throws JAXBException, FileNotFoundException {
+    @Override
+    protected Map<String, SQLCase> loadFromDirectory(final String rootDirectory) throws JAXBException, FileNotFoundException {
         Map<String, SQLCase> result = new TreeMap<>();
         for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
             buildCaseMap(result, new FileInputStream(each));
