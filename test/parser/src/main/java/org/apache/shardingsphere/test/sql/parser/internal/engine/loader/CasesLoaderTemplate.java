@@ -43,7 +43,7 @@ public abstract class CasesLoaderTemplate<T> {
         return file.isFile() ? loadFromJar(rootDirectory, file) : loadFromDirectory(rootDirectory);
     }
     
-    protected abstract Map<String, T> loadFromJar(final String rootDirectory, final File file) throws JAXBException;
+    protected abstract Map<String, T> loadFromJar(String rootDirectory, File file) throws JAXBException;
     
-    protected abstract Map<String, T> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException;
+    protected abstract Map<String, T> loadFromDirectory(String rootDirectory) throws IOException, JAXBException;
 }
