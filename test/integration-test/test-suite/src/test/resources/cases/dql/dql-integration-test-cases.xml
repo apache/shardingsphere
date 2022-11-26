@@ -659,6 +659,14 @@
     <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i USING(order_id) WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
     
     <test-case sql="SELECT MIN(o.order_id), MIN(o.merchant_id), i.product_id FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? GROUP BY i.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
@@ -707,6 +715,27 @@
     </test-case>
 
     <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL LEFT JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO support MySQL natural right join statement when calcite support natural right join -->
+    <test-case sql="SELECT * FROM t_order o NATURAL RIGHT JOIN t_order_item i WHERE i.user_id = ? ORDER BY i.item_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL FULL JOIN t_order_item i WHERE o.user_id = ? OR i.user_id = ? ORDER BY o.order_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int, 10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -759,6 +788,27 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
+    <test-case sql="SELECT * FROM t_order o NATURAL LEFT JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO support MySQL natural right join statement when calcite support natural right join -->
+    <test-case sql="SELECT * FROM t_order o NATURAL RIGHT JOIN t_merchant m WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_order o NATURAL FULL JOIN t_merchant m where o.user_id = ? OR m.country_id = 1 ORDER BY o.order_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id DESC" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p NATURAL JOIN t_product_detail d WHERE p.product_id > ? ORDER BY p.product_id DESC LIMIT 2, 5" db-types="MySQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
     <test-case sql="SELECT MIN(d.detail_id), MIN(p.category_id), p.product_id FROM t_product p INNER JOIN t_product_detail d ON p.product_id = d.product_id WHERE p.product_id = ? GROUP BY p.product_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -789,6 +839,19 @@
     </test-case>
 
     <test-case sql="SELECT * FROM t_product p FULL JOIN t_product_detail d USING(product_id) WHERE d.detail_id = ? OR p.category_id = 10 ORDER BY d.product_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p NATURAL LEFT JOIN t_product_detail d WHERE p.category_id = ? ORDER BY p.product_id, 7" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <!-- TODO support MySQL natural right join statement when calcite support natural right join -->
+    <test-case sql="SELECT * FROM t_product p NATURAL RIGHT JOIN t_product_detail d WHERE d.detail_id = ? ORDER BY d.product_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int" expected-data-source-name="read_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM t_product p NATURAL FULL JOIN t_product_detail d WHERE d.detail_id = ? OR p.category_id = 10 ORDER BY d.product_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     

@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -192,19 +193,19 @@ public final class ProjectionEngine {
         Collection<Projection> remainingProjections = new LinkedList<>();
         for (Projection each : getOriginalProjections(joinTable, projectionSegment)) {
             Collection<Projection> actualProjections = getActualProjections(Collections.singletonList(each));
-            if (joinTable.getUsing().isEmpty() || (null != owner && each.getExpression().contains(owner))) {
+            if ((joinTable.getUsing().isEmpty() && !joinTable.isNatural()) || (null != owner && each.getExpression().contains(owner))) {
                 result.addAll(actualProjections);
             } else {
                 remainingProjections.addAll(actualProjections);
             }
         }
-        result.addAll(getUsingActualProjections(remainingProjections, joinTable.getUsing()));
+        result.addAll(getUsingActualProjections(remainingProjections, joinTable.getUsing(), joinTable.isNatural()));
         return result;
     }
     
     private Collection<Projection> getOriginalProjections(final JoinTableSegment joinTable, final ProjectionSegment projectionSegment) {
         Collection<Projection> result = new LinkedList<>();
-        if (databaseType instanceof MySQLDatabaseType && !joinTable.getUsing().isEmpty() && JoinType.RIGHT.name().equalsIgnoreCase(joinTable.getJoinType())) {
+        if (databaseType instanceof MySQLDatabaseType && (!joinTable.getUsing().isEmpty() || joinTable.isNatural()) && JoinType.RIGHT.name().equalsIgnoreCase(joinTable.getJoinType())) {
             createProjection(joinTable.getRight(), projectionSegment).ifPresent(result::add);
             createProjection(joinTable.getLeft(), projectionSegment).ifPresent(result::add);
             return result;
@@ -228,11 +229,11 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Collection<Projection> getUsingActualProjections(final Collection<Projection> actualProjections, final Collection<ColumnSegment> usingColumns) {
-        if (usingColumns.isEmpty()) {
+    private Collection<Projection> getUsingActualProjections(final Collection<Projection> actualProjections, final Collection<ColumnSegment> usingColumns, final boolean natural) {
+        if (usingColumns.isEmpty() && !natural) {
             return Collections.emptyList();
         }
-        Collection<String> usingColumnNames = getUsingColumnNames(usingColumns);
+        Collection<String> usingColumnNames = usingColumns.isEmpty() ? getUsingColumnNamesByNaturalJoin(actualProjections) : getUsingColumnNames(usingColumns);
         Collection<Projection> result = new LinkedList<>();
         if (databaseType instanceof MySQLDatabaseType) {
             result.addAll(getJoinUsingColumnsByOriginalColumnSequence(actualProjections, usingColumnNames));
@@ -240,6 +241,18 @@ public final class ProjectionEngine {
             result.addAll(getJoinUsingColumnsByUsingColumnSequence(actualProjections, usingColumnNames));
         }
         result.addAll(getRemainingColumns(actualProjections, usingColumnNames));
+        return result;
+    }
+    
+    private Collection<String> getUsingColumnNamesByNaturalJoin(final Collection<Projection> actualProjections) {
+        Collection<String> result = new LinkedHashSet<>();
+        Map<String, Projection> uniqueProjections = new LinkedHashMap<>(actualProjections.size(), 1);
+        for (Projection each : actualProjections) {
+            Projection previousProjection = uniqueProjections.put(each.getColumnLabel().toLowerCase(), each);
+            if (null != previousProjection) {
+                result.add(previousProjection.getColumnLabel().toLowerCase());
+            }
+        }
         return result;
     }
     
