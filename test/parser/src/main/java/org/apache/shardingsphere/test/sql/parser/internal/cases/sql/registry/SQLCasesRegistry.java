@@ -19,7 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader.SQLCasesLoaderCallback;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderTemplate;
 
 /**
  * SQL cases registry.
@@ -32,7 +33,7 @@ public final class SQLCasesRegistry {
     private final SQLCases cases;
     
     private SQLCasesRegistry() {
-        cases = new SQLCases(new SQLCasesLoader().load("sql/supported/"));
+        cases = new SQLCases(new CasesLoaderTemplate().load("sql/supported/", new SQLCasesLoaderCallback()));
     }
     
     /**
