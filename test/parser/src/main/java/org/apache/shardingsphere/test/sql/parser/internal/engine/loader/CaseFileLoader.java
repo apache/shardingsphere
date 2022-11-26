@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases;
+package org.apache.shardingsphere.test.sql.parser.internal.engine.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

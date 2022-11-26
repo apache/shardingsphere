@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.SQLParserTestCases;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.load.SQLParserTestCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.loader.SQLParserTestCasesLoader;
 
 /**
  * SQL parser test cases registry.
