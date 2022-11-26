@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.discovery.build.DiscoveryRuleBuilder;
 import org.apache.shardingsphere.test.integration.discovery.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.integration.discovery.framework.container.compose.DockerContainerComposer;
@@ -65,6 +66,15 @@ public abstract class BaseITCase {
         containerComposer.start();
         mappedDataSources = containerComposer.getMappedDatasource();
         proxyDataSource = containerComposer.getProxyDatasource();
+    }
+    
+    /**
+     * Initialization discovery environment.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void initDiscoveryEnvironment() throws SQLException {
+        new DiscoveryRuleBuilder(proxyDataSource).buildDiscoveryEnvironment();
     }
     
     /**

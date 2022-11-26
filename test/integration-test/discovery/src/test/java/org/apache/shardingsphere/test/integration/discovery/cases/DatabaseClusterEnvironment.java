@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import java.util.List;
 
 /**
- * Database cluster environment
+ * Database cluster environment.
  */
 public interface DatabaseClusterEnvironment {
     

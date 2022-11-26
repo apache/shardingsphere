@@ -57,9 +57,9 @@ public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
     }
     
     @Test
-    public void assertMySQLMGRDiscovery() throws SQLException {
+    public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
         DatabaseClusterEnvironment MGREnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
-        new DiscoveryRuleBuilder(getProxyDataSource());
+        initDiscoveryEnvironment();
         String oldPrimaryDataSourceName = getPrimaryDataSourceName();
         closeDataSources(Collections.singletonList(MGREnvironment.getPrimaryDataSource()));
         assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, getPrimaryDataSourceName());
