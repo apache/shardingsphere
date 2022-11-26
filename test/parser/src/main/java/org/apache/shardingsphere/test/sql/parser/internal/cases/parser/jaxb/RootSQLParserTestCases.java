@@ -1689,19 +1689,19 @@ public final class RootSQLParserTestCases {
     private Map<String, SQLParserTestCase> getTestCaseMap(final List<? extends SQLParserTestCase> cases) {
         Map<String, SQLParserTestCase> result = new HashMap<>(cases.size(), 1);
         for (SQLParserTestCase each : cases) {
-            checkDuplicatedTestCase(result, each);
+            checkDuplicatedTestCase(each, result);
             result.put(each.getSqlCaseId(), each);
         }
         return result;
     }
     
-    private void checkDuplicatedTestCase(final Map<String, SQLParserTestCase> sources, final SQLParserTestCase target) {
-        Preconditions.checkState(!sources.containsKey(target.getSqlCaseId()), "Find duplicated SQL Case ID: %s.", target.getSqlCaseId());
+    private void checkDuplicatedTestCase(final SQLParserTestCase newTestCase, final Map<String, SQLParserTestCase> existedTestCases) {
+        Preconditions.checkState(!existedTestCases.containsKey(newTestCase.getSqlCaseId()), "Find duplicated SQL Case ID: %s.", newTestCase.getSqlCaseId());
     }
     
-    private void checkDuplicatedTestCases(final Map<String, SQLParserTestCase> source, final Map<String, SQLParserTestCase> target) {
-        Collection<String> caseIds = new HashSet<>(source.keySet());
-        caseIds.retainAll(target.keySet());
+    private void checkDuplicatedTestCases(final Map<String, SQLParserTestCase> newTestCases, final Map<String, SQLParserTestCase> existedTestCases) {
+        Collection<String> caseIds = new HashSet<>(newTestCases.keySet());
+        caseIds.retainAll(existedTestCases.keySet());
         Preconditions.checkState(caseIds.isEmpty(), "Find duplicated SQL Case IDs: %s.", caseIds);
     }
 }
