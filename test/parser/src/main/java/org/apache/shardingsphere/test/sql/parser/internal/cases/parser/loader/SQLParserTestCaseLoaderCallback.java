@@ -43,9 +43,9 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     public Map<String, SQLParserTestCase> loadFromJar(final File jarFile, final String rootDirectory) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
-            Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(SQLParserTestCaseLoaderCallback.class.getClassLoader().getResourceAsStream(each));
-            checkDuplicate(result, sqlParserTestCases);
-            result.putAll(sqlParserTestCases);
+            Map<String, SQLParserTestCase> testCases = createTestCases(SQLParserTestCaseLoaderCallback.class.getClassLoader().getResourceAsStream(each));
+            checkDuplicatedTestCases(testCases, result);
+            result.putAll(testCases);
         }
         return result;
     }
@@ -54,22 +54,22 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     public Map<String, SQLParserTestCase> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
-            try (FileInputStream fileInputStream = new FileInputStream(each)) {
-                Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(fileInputStream);
-                checkDuplicate(result, sqlParserTestCases);
-                result.putAll(sqlParserTestCases);
+            try (FileInputStream inputStream = new FileInputStream(each)) {
+                Map<String, SQLParserTestCase> testCases = createTestCases(inputStream);
+                checkDuplicatedTestCases(testCases, result);
+                result.putAll(testCases);
             }
         }
         return result;
     }
     
-    private Map<String, SQLParserTestCase> createSQLParserTestCases(final InputStream inputStream) throws JAXBException {
+    private Map<String, SQLParserTestCase> createTestCases(final InputStream inputStream) throws JAXBException {
         return ((RootSQLParserTestCases) JAXBContext.newInstance(RootSQLParserTestCases.class).createUnmarshaller().unmarshal(inputStream)).getAllCases();
     }
     
-    private void checkDuplicate(final Map<String, SQLParserTestCase> existedSQLParserTestCases, final Map<String, SQLParserTestCase> newSQLParserTestCases) {
-        Collection<String> existedSQLParserTestCaseIds = new HashSet<>(existedSQLParserTestCases.keySet());
-        existedSQLParserTestCaseIds.retainAll(newSQLParserTestCases.keySet());
-        Preconditions.checkState(existedSQLParserTestCaseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", existedSQLParserTestCaseIds);
+    private void checkDuplicatedTestCases(final Map<String, SQLParserTestCase> newTestCases, final Map<String, SQLParserTestCase> existedTestCases) {
+        Collection<String> caseIds = new HashSet<>(newTestCases.keySet());
+        caseIds.retainAll(existedTestCases.keySet());
+        Preconditions.checkState(caseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", caseIds);
     }
 }
