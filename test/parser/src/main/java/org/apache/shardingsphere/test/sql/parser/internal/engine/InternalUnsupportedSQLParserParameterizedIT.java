@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.junit.Test;
