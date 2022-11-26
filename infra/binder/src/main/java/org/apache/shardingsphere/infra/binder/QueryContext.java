@@ -42,17 +42,17 @@ public final class QueryContext {
     private String sqlStatementDatabaseName;
     
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
-        this.sqlStatementContext = sqlStatementContext;
-        this.sql = sql;
-        parameters = params;
-        if (sqlStatementContext instanceof TableAvailable) {
-            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
-        }
+        this(sqlStatementContext, sql, params, new HintValueContext());
     }
     
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
-        this(sqlStatementContext, sql, params);
+        this.sqlStatementContext = sqlStatementContext;
+        this.sql = sql;
+        parameters = params;
         this.hintValueContext = hintValueContext;
+        if (sqlStatementContext instanceof TableAvailable) {
+            ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(optional -> sqlStatementDatabaseName = optional);
+        }
     }
     
     /**

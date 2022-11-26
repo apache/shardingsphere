@@ -43,8 +43,8 @@ public final class SQLHintExtractor {
     
     public SQLHintExtractor(final SQLStatement sqlStatement, final HintValueContext hintValueContext) {
         this.hintValueContext = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
-            ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
-            : hintValueContext;
+                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
+                : hintValueContext;
     }
     
     /**
