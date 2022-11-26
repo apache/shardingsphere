@@ -91,6 +91,9 @@ public final class SQLOptimizeEngineTest {
         tables.put("t_user_info", createUserInfoTableMetaData());
         tables.put("t_order", createTOrderTableMetaData());
         tables.put("t_order_item", createTOrderItemTableMetaData());
+        tables.put("t_single_table", createTSingleTableMetaData());
+        tables.put("t_order_federate_sharding", createTOrderFederateShardingMetaData());
+        tables.put("t_order_item_federate_sharding", createTOrderItemFederateShardingMetaData());
         ShardingSphereSchema schema = new ShardingSphereSchema(tables, Collections.emptyMap());
         SqlToRelConverter converter = createSqlToRelConverter(schema);
         optimizeEngine = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
@@ -126,8 +129,30 @@ public final class SQLOptimizeEngineTest {
         ShardingSphereColumn productIdColumn = new ShardingSphereColumn("product_id", Types.INTEGER, false, false, false, true, false);
         ShardingSphereColumn quantityColumn = new ShardingSphereColumn("quantity", Types.INTEGER, false, false, false, true, false);
         ShardingSphereColumn creationDateColumn = new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false);
-        return new ShardingSphereTable("t_order", Arrays.asList(itemIdColumn, orderIdColumn, userIdColumn, productIdColumn, quantityColumn, creationDateColumn), Collections.emptyList(), Collections.emptyList());
-
+        return new ShardingSphereTable("t_order_item", Arrays.asList(itemIdColumn, orderIdColumn, userIdColumn, productIdColumn, quantityColumn, creationDateColumn), Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTSingleTableMetaData() {
+        ShardingSphereColumn singleIdColumn = new ShardingSphereColumn("single_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
+        return new ShardingSphereTable("t_single_table", Arrays.asList(singleIdColumn, idColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTOrderFederateShardingMetaData() {
+        ShardingSphereColumn orderIdShardingColumn = new ShardingSphereColumn("order_id_sharding", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
+        return new ShardingSphereTable("t_order_federate_sharding", Arrays.asList(orderIdShardingColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private ShardingSphereTable createTOrderItemFederateShardingMetaData() {
+        ShardingSphereColumn itemIdColumn = new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false);
+        ShardingSphereColumn orderIdColumn = new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);
+        ShardingSphereColumn remarksColumn = new ShardingSphereColumn("remarks", Types.VARCHAR, false, false, false, true, false);
+        return new ShardingSphereTable("t_order_item_federate_sharding", Arrays.asList(itemIdColumn, orderIdColumn, userIdColumn, statusColumn, remarksColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     private SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
