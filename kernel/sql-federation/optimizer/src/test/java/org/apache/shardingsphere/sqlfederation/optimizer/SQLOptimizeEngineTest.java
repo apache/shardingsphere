@@ -69,9 +69,9 @@ public final class SQLOptimizeEngineTest {
     
     private SQLOptimizeEngine optimizeEngine;
     
-    private String sql;
+    private final String sql;
     
-    private String expectedResult;
+    private final String expectedResult;
     
     public SQLOptimizeEngineTest(final TestCase testcase) {
         sql = testcase.getSql();

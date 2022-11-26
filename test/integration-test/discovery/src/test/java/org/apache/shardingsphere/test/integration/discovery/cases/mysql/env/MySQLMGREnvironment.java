@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.discovery.build;
+package org.apache.shardingsphere.test.integration.discovery.cases.mysql.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.discovery.cases.base.BaseITCase;
+import org.apache.shardingsphere.test.integration.discovery.cases.DatabaseClusterEnvironment;
 import org.apache.shardingsphere.test.integration.discovery.command.MGRPrimaryReplicaCommand;
 
 import javax.sql.DataSource;
@@ -31,9 +32,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Build MySQL MGR.
+ * Build MySQL MGR Environment.
  */
-public final class MySQLMGRBuilder {
+public final class MySQLMGREnvironment implements DatabaseClusterEnvironment {
     
     private final MGRPrimaryReplicaCommand mgrPrimaryReplicaCommand;
     
@@ -41,20 +42,21 @@ public final class MySQLMGRBuilder {
     private final DataSource primaryDataSource;
     
     @Getter
-    private final List<DataSource> replicaDataSources;
+    private final List<DataSource> replicationDataSources;
     
-    public MySQLMGRBuilder(final List<DataSource> dataSources) throws SQLException {
-        this.primaryDataSource = dataSources.get(0);
-        this.replicaDataSources = dataSources.subList(1, dataSources.size());
+    public MySQLMGREnvironment(final List<DataSource> dataSources) throws SQLException {
+        primaryDataSource = dataSources.get(0);
+        replicationDataSources = dataSources.subList(1, dataSources.size());
         mgrPrimaryReplicaCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/mgr-primary-replica-command.xml")),
                 MGRPrimaryReplicaCommand.class);
-        buildMGRPrimaryDataSource(primaryDataSource);
-        buildMGRReplicaDataSources(dataSources.subList(1, dataSources.size()));
+        buildMGRPrimaryDataSource();
+        buildMGRReplicaDataSources();
+        createDatabase();
     }
     
-    private void buildMGRPrimaryDataSource(final DataSource dataSource) throws SQLException {
+    private void buildMGRPrimaryDataSource() throws SQLException {
         try (
-                Connection connection = dataSource.getConnection();
+                Connection connection = primaryDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             buildMGRPrimaryDataSource(statement);
         }
@@ -66,8 +68,8 @@ public final class MySQLMGRBuilder {
         }
     }
     
-    private void buildMGRReplicaDataSources(final List<DataSource> dataSources) throws SQLException {
-        for (DataSource each : dataSources) {
+    private void buildMGRReplicaDataSources() throws SQLException {
+        for (DataSource each : replicationDataSources) {
             buildMGRReplicaDataSource(each);
         }
     }
@@ -86,11 +88,7 @@ public final class MySQLMGRBuilder {
         }
     }
     
-    /**
-     * Create database.
-     * @throws SQLException SQL exception
-     */
-    public void createDatabase() throws SQLException {
+    private void createDatabase() throws SQLException {
         try (
                 Connection connection = primaryDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
