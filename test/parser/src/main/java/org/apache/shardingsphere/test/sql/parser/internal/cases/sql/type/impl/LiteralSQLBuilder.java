@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.sql;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.impl;
+
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilder;
+
+import java.util.List;
 
 /**
- * SQL case type.
+ * Literal SQL builder.
  */
-public enum SQLCaseType {
+public final class LiteralSQLBuilder implements CaseTypedSQLBuilder {
     
-    Placeholder, Literal
+    @Override
+    public String build(final String sql, final List<?> params) {
+        StringBuilder result = new StringBuilder(sql);
+        int currentCharIndex = 0;
+        for (Object each : params) {
+            currentCharIndex = result.indexOf("?", currentCharIndex);
+            result.replace(currentCharIndex, ++currentCharIndex, each.toString());
+        }
+        return result.toString();
+    }
 }

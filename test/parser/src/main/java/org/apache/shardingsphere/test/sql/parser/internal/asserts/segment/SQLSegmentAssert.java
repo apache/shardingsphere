@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.ExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

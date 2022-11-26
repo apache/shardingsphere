@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.List;
 

@@ -45,7 +45,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segm
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.shorthand.ExpectedShorthandProjection;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.subquery.ExpectedSubqueryProjection;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.top.ExpectedTopProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.List;
 

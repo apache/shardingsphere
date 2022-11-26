@@ -15,32 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.List;
 
 /**
- * SQL test case for xml tag.
+ * Case typed SQL builder.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class SQLCase {
+public interface CaseTypedSQLBuilder {
     
-    @XmlAttribute
-    private String id;
-    
-    @XmlAttribute
-    private String value;
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
-    
-    @XmlAttribute(name = "case-types")
-    private String caseTypes;
+    /**
+     * Build SQL.
+     * 
+     * @param sql to be built SQL
+     * @param params SQL parameters
+     * @return built SQL
+     */
+    String build(String sql, List<?> params);
 }
