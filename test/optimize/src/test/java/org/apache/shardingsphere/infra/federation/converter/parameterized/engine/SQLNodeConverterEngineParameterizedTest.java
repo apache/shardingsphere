@@ -37,8 +37,8 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.SQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
@@ -62,7 +62,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCases SQL_PARSER_TEST_CASES = SQLParserTestCasesRegistry.getInstance().getCases();
     
     private static final String SELECT_STATEMENT_PREFIX = "SELECT";
     
@@ -170,7 +170,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     }
     
     private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
-        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParam[0].toString()).getParameters().isEmpty();
+        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES.get(sqlTestParam[0].toString()).getParameters().isEmpty();
     }
     
     private static boolean isSupportedSQLCase(final Object[] sqlTestParam) {
@@ -181,7 +181,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     @Test
     public void assertConvert() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convert(sqlStatement);
         SqlNode expected = parseSqlNode(databaseType, sql);

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.SQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.SQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistryFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
@@ -43,7 +43,7 @@ public abstract class InternalSQLParserParameterizedIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCases SQL_PARSER_TEST_CASES = SQLParserTestCasesRegistry.getInstance().getCases();
     
     private final String sqlCaseId;
     
@@ -62,14 +62,14 @@ public abstract class InternalSQLParserParameterizedIT {
     }
     
     private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
-        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParam[0].toString()).getParameters().isEmpty();
+        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES.get(sqlTestParam[0].toString()).getParameters().isEmpty();
     }
     
     @Test
     public final void assertSupportedSQL() {
-        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters());
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
-        SQLParserTestCase expected = SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId);
+        SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
     
