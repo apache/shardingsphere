@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.impl;
 
+import org.apache.shardingsphere.sql.parser.sql.common.enums.ParameterMarkerType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilder;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public final class LiteralSQLBuilder implements CaseTypedSQLBuilder {
         StringBuilder result = new StringBuilder(sql);
         int currentCharIndex = 0;
         for (Object each : params) {
-            currentCharIndex = result.indexOf("?", currentCharIndex);
+            currentCharIndex = result.indexOf(ParameterMarkerType.QUESTION.getMarker(), currentCharIndex);
             result.replace(currentCharIndex, ++currentCharIndex, each.toString());
         }
         return result.toString();

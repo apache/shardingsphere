@@ -1659,46 +1659,49 @@ public final class RootSQLParserTestCases {
     /**
      * Get all SQL parser test cases.
      *
-     * @return all SQL parser test cases
+     * @return got test cases
      */
     @SuppressWarnings("unchecked")
     @SneakyThrows(IllegalAccessException.class)
-    public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
+    public Map<String, SQLParserTestCase> getAllCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
         for (Field each : RootSQLParserTestCases.class.getDeclaredFields()) {
-            if (isSQLParserTestCasesField(each)) {
-                each.setAccessible(true);
-                List<? extends SQLParserTestCase> testCases = (List<? extends SQLParserTestCase>) each.get(this);
-                if (!testCases.isEmpty()) {
-                    putAll(testCases, result);
-                }
+            if (!isXmlElementField(each)) {
+                continue;
             }
+            each.setAccessible(true);
+            List<? extends SQLParserTestCase> cases = (List<? extends SQLParserTestCase>) each.get(this);
+            if (cases.isEmpty()) {
+                continue;
+            }
+            Map<String, SQLParserTestCase> caseMap = getTestCaseMap(cases);
+            checkDuplicatedTestCases(caseMap, result);
+            result.putAll(caseMap);
         }
         return result;
     }
     
-    private boolean isSQLParserTestCasesField(final Field field) {
-        if (field.isAnnotationPresent(XmlElement.class) && List.class == field.getType() && field.getGenericType() instanceof ParameterizedType) {
-            Class<?> actualTypeArgument = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-            return SQLParserTestCase.class.isAssignableFrom(actualTypeArgument);
-        }
-        return false;
+    private boolean isXmlElementField(final Field field) {
+        return field.isAnnotationPresent(XmlElement.class) && List.class == field.getType() && field.getGenericType() instanceof ParameterizedType
+                && SQLParserTestCase.class.isAssignableFrom((Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]);
     }
     
-    private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
-        Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);
-        Collection<String> sqlParserTestCaseIds = new HashSet<>(sqlParserTestCaseMap.keySet());
-        sqlParserTestCaseIds.retainAll(target.keySet());
-        Preconditions.checkState(sqlParserTestCaseIds.isEmpty(), "Find duplicated SQL Case IDs: %s", sqlParserTestCaseIds);
-        target.putAll(sqlParserTestCaseMap);
-    }
-    
-    private Map<String, SQLParserTestCase> getSQLParserTestCases(final List<? extends SQLParserTestCase> sqlParserTestCases) {
-        Map<String, SQLParserTestCase> result = new HashMap<>(sqlParserTestCases.size(), 1);
-        for (SQLParserTestCase each : sqlParserTestCases) {
-            Preconditions.checkState(!result.containsKey(each.getSqlCaseId()), "Find duplicated SQL Case ID: %s", each.getSqlCaseId());
+    private Map<String, SQLParserTestCase> getTestCaseMap(final List<? extends SQLParserTestCase> cases) {
+        Map<String, SQLParserTestCase> result = new HashMap<>(cases.size(), 1);
+        for (SQLParserTestCase each : cases) {
+            checkDuplicatedTestCase(result, each);
             result.put(each.getSqlCaseId(), each);
         }
         return result;
+    }
+    
+    private void checkDuplicatedTestCase(final Map<String, SQLParserTestCase> sources, final SQLParserTestCase target) {
+        Preconditions.checkState(!sources.containsKey(target.getSqlCaseId()), "Find duplicated SQL Case ID: %s.", target.getSqlCaseId());
+    }
+    
+    private void checkDuplicatedTestCases(final Map<String, SQLParserTestCase> source, final Map<String, SQLParserTestCase> target) {
+        Collection<String> caseIds = new HashSet<>(source.keySet());
+        caseIds.retainAll(target.keySet());
+        Preconditions.checkState(caseIds.isEmpty(), "Find duplicated SQL Case IDs: %s.", caseIds);
     }
 }

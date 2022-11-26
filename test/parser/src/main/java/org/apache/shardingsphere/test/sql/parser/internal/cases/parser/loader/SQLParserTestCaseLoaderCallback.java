@@ -64,7 +64,7 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     }
     
     private Map<String, SQLParserTestCase> createSQLParserTestCases(final InputStream inputStream) throws JAXBException {
-        return ((RootSQLParserTestCases) JAXBContext.newInstance(RootSQLParserTestCases.class).createUnmarshaller().unmarshal(inputStream)).getAllSQLParserTestCases();
+        return ((RootSQLParserTestCases) JAXBContext.newInstance(RootSQLParserTestCases.class).createUnmarshaller().unmarshal(inputStream)).getAllCases();
     }
     
     private void checkDuplicate(final Map<String, SQLParserTestCase> existedSQLParserTestCases, final Map<String, SQLParserTestCase> newSQLParserTestCases) {
