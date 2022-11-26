@@ -435,7 +435,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Root SQL parser test cases.
+ * SQL parser test cases for XML root tag.
  */
 @XmlRootElement(name = "sql-parser-test-cases")
 @Getter
