@@ -75,11 +75,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         this.shardingConditions = shardingConditions;
         this.sqlStatementContext = sqlStatementContext;
         this.props = props;
-        if (sqlStatementContext instanceof CommonSQLStatementContext) {
-            this.sqlHintExtractor = new SQLHintExtractor(sqlStatementContext.getSqlStatement());
-        } else {
-            this.sqlHintExtractor = new SQLHintExtractor(hintValueContext);
-        }
+        this.sqlHintExtractor = new SQLHintExtractor(sqlStatementContext.getSqlStatement(), hintValueContext);
     }
     
     @Override

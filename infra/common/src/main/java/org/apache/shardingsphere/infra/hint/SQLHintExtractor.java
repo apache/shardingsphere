@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.hint;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -30,19 +29,22 @@ import java.util.Collection;
  * SQL hint extractor.
  */
 @Getter
-@RequiredArgsConstructor
 public final class SQLHintExtractor {
     
     private final HintValueContext hintValueContext;
     
-    public SQLHintExtractor(final SQLStatement sqlStatement) {
-        hintValueContext = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
-                ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
-                : new HintValueContext();
-    }
-    
     public SQLHintExtractor(final String sqlComment) {
         hintValueContext = Strings.isNullOrEmpty(sqlComment) ? new HintValueContext() : SQLHintUtils.extractHint(sqlComment);
+    }
+    
+    public SQLHintExtractor(final SQLStatement sqlStatement) {
+        this(sqlStatement, new HintValueContext());
+    }
+    
+    public SQLHintExtractor(final SQLStatement sqlStatement, final HintValueContext hintValueContext) {
+        this.hintValueContext = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
+            ? SQLHintUtils.extractHint(((AbstractSQLStatement) sqlStatement).getCommentSegments().iterator().next().getText())
+            : hintValueContext;
     }
     
     /**
