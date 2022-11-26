@@ -58,10 +58,7 @@ public final class SQLCaseLoaderCallback implements CaseLoaderCallback<SQLCase> 
     private void buildCaseMap(final Map<String, SQLCase> sqlCaseMap, final InputStream inputStream) throws JAXBException {
         RootSQLCases root = (RootSQLCases) JAXBContext.newInstance(RootSQLCases.class).createUnmarshaller().unmarshal(inputStream);
         for (SQLCase each : root.getSqlCases()) {
-            if (null == each.getDatabaseTypes()) {
-                each.setDatabaseTypes(root.getDatabaseTypes());
-            }
-            Preconditions.checkState(!sqlCaseMap.containsKey(each.getId()), "Find duplicated SQL Case ID: %s", each.getId());
+            Preconditions.checkState(!sqlCaseMap.containsKey(each.getId()), "Find duplicated SQL Case ID: %s.", each.getId());
             sqlCaseMap.put(each.getId(), each);
         }
     }

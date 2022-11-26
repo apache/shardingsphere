@@ -19,21 +19,17 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb;
 
 import lombok.Getter;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * SQL test cases for xml root tag.
+ * SQL test cases for XML root tag.
  */
 @XmlRootElement(name = "sql-cases")
 @Getter
 public final class RootSQLCases {
-    
-    @XmlAttribute(name = "db-types")
-    private String databaseTypes;
     
     @XmlElement(name = "sql-case")
     private final List<SQLCase> sqlCases = new LinkedList<>();
