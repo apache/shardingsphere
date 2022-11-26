@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderTemplate;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.RootSQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderCallback;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,21 +33,21 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * SQL cases loader.
+ * SQL cases loader callback.
  */
-public final class SQLCasesLoader extends CasesLoaderTemplate<SQLCase> {
+public final class SQLCasesLoaderCallback implements CasesLoaderCallback<SQLCase> {
     
     @Override
-    protected Map<String, SQLCase> loadFromJar(final String rootDirectory, final File file) throws JAXBException {
+    public Map<String, SQLCase> loadFromJar(final String rootDirectory, final File jarFile) throws JAXBException {
         Map<String, SQLCase> result = new TreeMap<>();
-        for (String each : CaseFileLoader.loadFileNamesFromJar(file, rootDirectory)) {
-            buildCaseMap(result, SQLCasesLoader.class.getClassLoader().getResourceAsStream(each));
+        for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
+            buildCaseMap(result, SQLCasesLoaderCallback.class.getClassLoader().getResourceAsStream(each));
         }
         return result;
     }
     
     @Override
-    protected Map<String, SQLCase> loadFromDirectory(final String rootDirectory) throws JAXBException, FileNotFoundException {
+    public Map<String, SQLCase> loadFromDirectory(final String rootDirectory) throws JAXBException, FileNotFoundException {
         Map<String, SQLCase> result = new TreeMap<>();
         for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
             buildCaseMap(result, new FileInputStream(each));

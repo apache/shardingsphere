@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.loader;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
-import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderTemplate;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.RootSQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.loader.CasesLoaderCallback;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -35,15 +35,15 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * SQL parser test cases loader.
+ * SQL parser test cases loader callback.
  */
-public final class SQLParserTestCasesLoader extends CasesLoaderTemplate<SQLParserTestCase> {
+public final class SQLParserTestCasesLoaderCallback implements CasesLoaderCallback<SQLParserTestCase> {
     
     @Override
-    protected Map<String, SQLParserTestCase> loadFromJar(final String rootDirectory, final File file) throws JAXBException {
+    public Map<String, SQLParserTestCase> loadFromJar(final String rootDirectory, final File jarFile) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (String each : CaseFileLoader.loadFileNamesFromJar(file, rootDirectory)) {
-            Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(SQLParserTestCasesLoader.class.getClassLoader().getResourceAsStream(each));
+        for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
+            Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(SQLParserTestCasesLoaderCallback.class.getClassLoader().getResourceAsStream(each));
             checkDuplicate(result, sqlParserTestCases);
             result.putAll(sqlParserTestCases);
         }
@@ -51,7 +51,7 @@ public final class SQLParserTestCasesLoader extends CasesLoaderTemplate<SQLParse
     }
     
     @Override
-    protected Map<String, SQLParserTestCase> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException {
+    public Map<String, SQLParserTestCase> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
             try (FileInputStream fileInputStream = new FileInputStream(each)) {
