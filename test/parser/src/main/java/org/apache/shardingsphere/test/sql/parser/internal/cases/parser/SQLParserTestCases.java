@@ -15,26 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.parser;
 
-import lombok.Getter;
+import com.google.common.base.Preconditions;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import java.util.Map;
 
 /**
- * SQL parser test cases registry factory.
+ * SQL parser test cases.
  */
-public final class SQLParserTestCasesRegistryFactory {
+@RequiredArgsConstructor
+public final class SQLParserTestCases {
     
-    private static final SQLParserTestCasesRegistryFactory INSTANCE = new SQLParserTestCasesRegistryFactory();
-    
-    @Getter
-    private final SQLParserTestCasesRegistry registry = new SQLParserTestCasesRegistry("case/");
+    private final Map<String, SQLParserTestCase> cases;
     
     /**
-     * Get singleton instance.
+     * Get SQL parser test case.
      *
-     * @return singleton instance
+     * @param caseId SQL case ID
+     * @return got case
      */
-    public static SQLParserTestCasesRegistryFactory getInstance() {
-        return INSTANCE;
+    public SQLParserTestCase get(final String caseId) {
+        Preconditions.checkState(cases.containsKey(caseId), "Can not find SQL of ID: %s.", caseId);
+        return cases.get(caseId);
     }
 }
