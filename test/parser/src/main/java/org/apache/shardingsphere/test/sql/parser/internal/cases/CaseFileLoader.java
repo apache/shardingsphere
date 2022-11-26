@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader;
+package org.apache.shardingsphere.test.sql.parser.internal.cases;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,7 +42,7 @@ import java.util.jar.JarFile;
  * SQL case file loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLCaseFileLoader {
+public final class CaseFileLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
@@ -76,7 +76,7 @@ public final class SQLCaseFileLoader {
      */
     @SneakyThrows({URISyntaxException.class, IOException.class})
     public static Collection<File> loadFilesFromDirectory(final String path) {
-        URL url = SQLCaseFileLoader.class.getClassLoader().getResource(path);
+        URL url = CaseFileLoader.class.getClassLoader().getResource(path);
         if (null == url) {
             return Collections.emptyList();
         }

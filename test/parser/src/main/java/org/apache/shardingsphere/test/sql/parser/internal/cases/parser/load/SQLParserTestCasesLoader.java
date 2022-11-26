@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.RootSQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.loader.SQLCaseFileLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.CaseFileLoader;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -42,18 +42,18 @@ public final class SQLParserTestCasesLoader {
     /**
      * Load SQL parser test cases.
      * 
-     * @param rootDirection SQL parser test cases root direction
-     * @return loaded SQL parser test cases
+     * @param rootDirectory root directory
+     * @return loaded cases
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public Map<String, SQLParserTestCase> load(final String rootDirection) {
+    public Map<String, SQLParserTestCase> load(final String rootDirectory) {
         File file = new File(SQLParserTestCasesLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return file.isFile() ? loadFromJar(rootDirection, file) : loadFromDirectory(rootDirection);
+        return file.isFile() ? loadFromJar(rootDirectory, file) : loadFromDirectory(rootDirectory);
     }
     
-    private Map<String, SQLParserTestCase> loadFromJar(final String directory, final File file) throws JAXBException {
+    private Map<String, SQLParserTestCase> loadFromJar(final String rootDirectory, final File file) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (String each : SQLCaseFileLoader.loadFileNamesFromJar(file, directory)) {
+        for (String each : CaseFileLoader.loadFileNamesFromJar(file, rootDirectory)) {
             Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(SQLParserTestCasesLoader.class.getClassLoader().getResourceAsStream(each));
             checkDuplicate(result, sqlParserTestCases);
             result.putAll(sqlParserTestCases);
@@ -61,9 +61,9 @@ public final class SQLParserTestCasesLoader {
         return result;
     }
     
-    private Map<String, SQLParserTestCase> loadFromDirectory(final String directory) throws IOException, JAXBException {
+    private Map<String, SQLParserTestCase> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
-        for (File each : SQLCaseFileLoader.loadFilesFromDirectory(directory)) {
+        for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
             try (FileInputStream fileInputStream = new FileInputStream(each)) {
                 Map<String, SQLParserTestCase> sqlParserTestCases = createSQLParserTestCases(fileInputStream);
                 checkDuplicate(result, sqlParserTestCases);
