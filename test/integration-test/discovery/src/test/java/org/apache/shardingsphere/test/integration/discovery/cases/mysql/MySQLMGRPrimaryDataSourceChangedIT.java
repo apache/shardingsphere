@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.discovery.cases.mysql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.discovery.build.DiscoveryRuleBuilder;
 import org.apache.shardingsphere.test.integration.discovery.cases.DatabaseClusterEnvironment;
 import org.apache.shardingsphere.test.integration.discovery.cases.DatabaseClusterEnvironmentFactory;
 import org.apache.shardingsphere.test.integration.discovery.cases.base.BaseITCase;
@@ -58,10 +57,10 @@ public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
     
     @Test
     public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
-        DatabaseClusterEnvironment MGREnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
+        DatabaseClusterEnvironment mgrEnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
         initDiscoveryEnvironment();
         String oldPrimaryDataSourceName = getPrimaryDataSourceName();
-        closeDataSources(Collections.singletonList(MGREnvironment.getPrimaryDataSource()));
+        closeDataSources(Collections.singletonList(mgrEnvironment.getPrimaryDataSource()));
         assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, getPrimaryDataSourceName());
     }
 }

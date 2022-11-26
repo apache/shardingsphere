@@ -113,6 +113,8 @@ public abstract class BaseITCase {
     
     /**
      * Close data sources.
+     *
+     * @param dataSources data sources
      * @throws SQLException SQL exception
      */
     public void closeDataSources(final List<DataSource> dataSources) throws SQLException {

@@ -36,7 +36,8 @@ public final class DatabaseClusterEnvironmentFactory {
      *
      * @param environment environment
      * @param dataSources storage data sources
-     * @return dataSources data sources
+     * @return Database cluster environment instance
+     * @throws SQLException SQL exception
      */
     public static DatabaseClusterEnvironment newInstance(final String environment, final List<DataSource> dataSources) throws SQLException {
         if ("MySQL.MGR".equals(environment)) {
