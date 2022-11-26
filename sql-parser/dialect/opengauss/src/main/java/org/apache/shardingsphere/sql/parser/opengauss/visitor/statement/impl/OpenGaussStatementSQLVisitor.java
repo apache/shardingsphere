@@ -26,7 +26,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementBaseVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AliasClauseContext;
@@ -84,6 +83,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Rel
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectClauseNContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectFetchFirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectLimitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectLimitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectNoParensContext;
@@ -1276,7 +1276,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     @Override
-    public ASTNode visitSelectFetchFirstValue(OpenGaussStatementParser.SelectFetchFirstValueContext ctx) {
+    public ASTNode visitSelectFetchFirstValue(final SelectFetchFirstValueContext ctx) {
         ASTNode astNode = visit(ctx.cExpr());
         if (null != astNode) {
             if (astNode instanceof ParameterMarkerLimitValueSegment) {
