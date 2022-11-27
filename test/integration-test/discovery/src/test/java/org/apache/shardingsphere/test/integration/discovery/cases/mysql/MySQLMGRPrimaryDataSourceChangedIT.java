@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
-
 /**
  * MySQL MGR primary data source changed Integration Test.
  */
