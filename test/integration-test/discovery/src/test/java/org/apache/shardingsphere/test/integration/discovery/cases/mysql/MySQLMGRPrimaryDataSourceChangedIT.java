@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.discovery.cases.mysql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.discovery.build.DiscoveryRuleBuilder;
-import org.apache.shardingsphere.test.integration.discovery.build.MySQLMGRBuilder;
+import org.apache.shardingsphere.test.integration.discovery.cases.DatabaseClusterEnvironment;
+import org.apache.shardingsphere.test.integration.discovery.cases.DatabaseClusterEnvironmentFactory;
 import org.apache.shardingsphere.test.integration.discovery.cases.base.BaseITCase;
 import org.apache.shardingsphere.test.integration.discovery.framework.parameter.DiscoveryParameterized;
 import org.junit.Test;
@@ -30,20 +30,19 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
+
 /**
- * MySQL Discovery Integration Test.
+ * MySQL MGR primary data source changed Integration Test.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLDiscoveryGeneralIT extends BaseITCase {
+public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
     
-    private final DiscoveryParameterized discoveryParameterized;
-    
-    public MySQLDiscoveryGeneralIT(final DiscoveryParameterized discoveryParameterized) {
+    public MySQLMGRPrimaryDataSourceChangedIT(final DiscoveryParameterized discoveryParameterized) {
         super(discoveryParameterized);
-        this.discoveryParameterized = discoveryParameterized;
     }
     
     @Parameters(name = "{0}")
@@ -57,9 +56,11 @@ public final class MySQLDiscoveryGeneralIT extends BaseITCase {
     }
     
     @Test
-    public void assertMySQLMGRDiscovery() throws SQLException {
-        new MySQLMGRBuilder(getMappedDataSources()).createDatabase();
-        new DiscoveryRuleBuilder(getProxyDataSource());
-        // TODO Add some assert
+    public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
+        DatabaseClusterEnvironment mgrEnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
+        initDiscoveryEnvironment();
+        String oldPrimaryDataSourceName = getPrimaryDataSourceName();
+        closeDataSources(Collections.singletonList(mgrEnvironment.getPrimaryDataSource()));
+        assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, getPrimaryDataSourceName());
     }
 }

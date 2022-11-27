@@ -41,10 +41,14 @@ public final class DiscoveryRuleBuilder {
     public DiscoveryRuleBuilder(final DataSource proxyDataSource) throws SQLException {
         this.proxyDataSource = proxyDataSource;
         discoveryDistSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/discovery-command.xml")), DiscoveryDistSQLCommand.class);
-        buildDiscoveryEnvironment();
     }
     
-    private void buildDiscoveryEnvironment() throws SQLException {
+    /**
+     *  build Discovery Environment.
+     *
+     * @throws SQLException SQL exception
+     */
+    public void buildDiscoveryEnvironment() throws SQLException {
         try (
                 Connection connection = proxyDataSource.getConnection();
                 Statement statement = connection.createStatement()) {

@@ -22,19 +22,22 @@
         PORT=3306,
         DB="it_discovery_test",
         USER="test_user",
-        PASSWORD="Test@123"
+        PASSWORD="Test@123",
+        PROPERTIES("connectionTimeout"="8000")
         ),ds_1 (
         HOST="mysql_2",
         PORT=3306,
         DB="it_discovery_test",
         USER="test_user",
-        PASSWORD="Test@123"
+        PASSWORD="Test@123",
+        PROPERTIES("connectionTimeout"="8000")
         ),ds_2 (
         HOST="mysql_3",
         PORT=3306,
         DB="it_discovery_test",
         USER="test_user",
-        PASSWORD="Test@123"
+        PASSWORD="Test@123",
+        PROPERTIES("connectionTimeout"="8000")
         );
     </register-storage-unit>
 
