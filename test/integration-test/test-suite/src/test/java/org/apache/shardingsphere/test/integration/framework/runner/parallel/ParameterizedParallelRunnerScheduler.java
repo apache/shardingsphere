@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
 /**
  * Parameterized parallel runner scheduler.
  */
-public class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
+public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
     
     public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutorFactory<DatabaseType> executorFactory) {
         super(parallelLevel, executorFactory);
