@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.impl.CaseParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.impl.ScenarioParallelRunnerExecutor;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.DefaultParallelRunnerExecutorFactory;
+import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutorFactory;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 
 /**
