@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement parser engine for utility dist SQL.
+ * SQL statement parser engine for utility DistSQL.
  */
 public final class UtilityDistSQLStatementParserEngine {
     

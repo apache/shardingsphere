@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
 /**
- * Discard dist SQL statement handler.
+ * Discard DistSQL statement handler.
  */
 public final class DiscardDistSQLHandler extends UpdatableRALBackendHandler<DiscardDistSQLStatement> {
     

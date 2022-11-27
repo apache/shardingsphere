@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLS
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.kernel.KernelSQLException;
 
 /**
- * Dist SQL exception.
+ * DistSQL exception.
  */
 public abstract class DistSQLException extends KernelSQLException {
     

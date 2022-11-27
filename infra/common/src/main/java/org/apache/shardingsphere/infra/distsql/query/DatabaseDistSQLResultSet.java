@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL result set for database.
+ * DistSQL result set for database.
  */
 public interface DatabaseDistSQLResultSet extends DistSQLResultSet {
     

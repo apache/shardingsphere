@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * SQL statement visitor for SQL parser dist SQL.
+ * SQL statement visitor for SQL parser DistSQL.
  */
 public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
