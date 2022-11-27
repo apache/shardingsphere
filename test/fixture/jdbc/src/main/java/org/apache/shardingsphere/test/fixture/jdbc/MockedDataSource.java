@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.mock;
+package org.apache.shardingsphere.test.fixture.jdbc;
 
 import lombok.AccessLevel;
 import lombok.Getter;

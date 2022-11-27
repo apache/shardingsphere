@@ -19,10 +19,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            ">
-    <bean id="ds_0_write" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_0_read_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_0_read_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_write" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_read_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_read_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_0_write" class="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+    <bean id="ds_0_read_0" class="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+    <bean id="ds_0_read_1" class="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+    <bean id="ds_1_write" class="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+    <bean id="ds_1_read_0" class="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+    <bean id="ds_1_read_1" class="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
 </beans>
