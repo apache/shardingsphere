@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for SQL parser dist SQL.
+ * SQL parser for SQL parser DistSQL.
  */
 public final class SQLParserDistSQLParser extends SQLParserDistSQLStatementParser implements SQLParser {
     

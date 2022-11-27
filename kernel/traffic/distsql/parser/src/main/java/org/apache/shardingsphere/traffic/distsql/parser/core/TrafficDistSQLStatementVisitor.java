@@ -45,7 +45,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for traffic dist SQL.
+ * SQL statement visitor for traffic DistSQL.
  */
 public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

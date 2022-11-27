@@ -114,7 +114,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for kernel dist SQL.
+ * SQL statement visitor for kernel DistSQL.
  */
 public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

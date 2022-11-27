@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.distsql.parser.core.TransactionDist
 import org.apache.shardingsphere.transaction.distsql.parser.core.TransactionDistSQLStatementVisitor;
 
 /**
- * SQL parser facade for transaction dist SQL statement.
+ * SQL parser facade for transaction DistSQL statement.
  */
 public final class TransactionDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     

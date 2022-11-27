@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL parser for readwrite-splitting dist SQL.
+ * SQL parser for readwrite-splitting DistSQL.
  */
 public final class ReadwriteSplittingDistSQLParser extends ReadwriteSplittingDistSQLStatementParser implements SQLParser {
     
