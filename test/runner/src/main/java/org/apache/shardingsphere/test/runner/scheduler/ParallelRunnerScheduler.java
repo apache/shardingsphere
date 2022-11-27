@@ -41,7 +41,7 @@ public class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     @Override
-    public void finished() {
+    public final void finished() {
         executorFactory.getAllExecutors().forEach(each -> ((ParallelRunnerExecutor) each).finished());
     }
 }
