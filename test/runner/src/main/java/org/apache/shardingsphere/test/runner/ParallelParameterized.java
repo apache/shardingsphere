@@ -23,12 +23,12 @@ import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
 
 /**
- * ShardingSphere parallel test parameterized.
+ * Parallel parameterized.
  */
-public final class ShardingSphereParallelTestParameterized extends Parameterized {
+public final class ParallelParameterized extends Parameterized {
     
     // CHECKSTYLE:OFF
-    public ShardingSphereParallelTestParameterized(final Class<?> clazz) throws Throwable {
+    public ParallelParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
         setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new DefaultParallelRunnerExecutorFactory<>()));
@@ -36,6 +36,6 @@ public final class ShardingSphereParallelTestParameterized extends Parameterized
     
     private ParallelLevel getParallelLevel(final Class<?> clazz) {
         ParallelRunningStrategy strategy = clazz.getAnnotation(ParallelRunningStrategy.class);
-        return null == strategy ? ParallelLevel.DEFAULT : strategy.value();
+        return null == strategy ? ParallelLevel.NORMAL : strategy.value();
     }
 }
