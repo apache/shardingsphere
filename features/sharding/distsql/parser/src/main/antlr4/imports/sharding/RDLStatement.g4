@@ -193,6 +193,8 @@ shardingAlgorithmDefinition
 
 strategyType
     : STRING
+    | STANDARD
+    | COMPLEX
     ;
 
 ifExists

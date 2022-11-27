@@ -238,3 +238,79 @@ TRUE
 FALSE
     : F A L S E
     ;
+
+COSID_MOD
+    : C O S I D UL_ M O D
+    ;
+
+HASH_MOD
+    : H A S H UL_ M O D
+    ;
+
+VOLUME_RANGE
+    : V O L U M E UL_ R A N G E
+    ;
+
+BOUNDARY_RANGE
+    : B O U N D A R Y UL_ R A N G E
+    ;
+
+AUTO_INTERVAL
+    : A U T O UL_ I N T E R V A L
+    ;
+
+INLINE
+    : I N L I N E
+    ;
+
+INTERVAL
+    : I N T E R V A L
+    ;
+
+COSID_INTERVAL
+    : C O S I D UL_ I N T E R V A L
+    ;
+
+COSID_INTERVAL_SNOWFLAKE
+    : C O S I D UL_ I N T E R V A L UL_ S N O W F L A K E
+    ;
+
+COMPLEX_INLINE
+    : C O M P L E X UL_ I N L I N E
+    ;
+
+HINT_INLINE
+    : H I N T UL_ I N L I N E
+    ;
+
+CLASS_BASED
+    : C L A S S UL_ B A S E D
+    ;
+
+SNOWFLAKE
+    : S N O W F L A K E
+    ;
+
+NANOID
+    : N A N O I D
+    ;
+
+UUID
+    : U U I D
+    ;
+
+COSID
+    : C O S I D
+    ;
+
+COSID_SNOWFLAKE
+    : C O S I D UL_ S N O W F L A K E
+    ;
+
+STANDARD
+    : S T A N D A R D
+    ;
+
+COMPLEX
+    : C O M P L E X
+    ;
