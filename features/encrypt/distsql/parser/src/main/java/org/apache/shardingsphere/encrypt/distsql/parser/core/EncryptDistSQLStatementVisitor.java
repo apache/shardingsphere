@@ -53,7 +53,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for encrypt dist SQL.
+ * SQL statement visitor for encrypt DistSQL.
  */
 public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

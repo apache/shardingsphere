@@ -41,7 +41,7 @@ public final class DistSQLBackendHandlerFactory {
     /**
      * Create new instance of DistSQL backend handler.
      *
-     * @param sqlStatement dist SQL statement
+     * @param sqlStatement DistSQL statement
      * @param connectionSession connection session
      * @return proxy backend handler
      */

@@ -67,7 +67,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for shadow dist SQL.
+ * SQL statement visitor for shadow DistSQL.
  */
 public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

@@ -57,7 +57,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * SQL statement visitor for readwrite-splitting dist SQL.
+ * SQL statement visitor for readwrite-splitting DistSQL.
  */
 public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSplittingDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
