@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.runner.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.annotaion.ParallelRunningStrategy;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -32,7 +32,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
-@ParallelRuntimeStrategy(ParallelLevel.CASE)
+@ParallelRunningStrategy(ParallelLevel.CASE)
 public final class GeneralRQLIT extends BaseRQLIT {
     
     public GeneralRQLIT(final AssertionParameterizedArray parameterizedArray) {

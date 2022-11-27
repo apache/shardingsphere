@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.framework.param.array.Paramete
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.runner.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.annotaion.ParallelRunningStrategy;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -38,7 +38,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
+@ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {

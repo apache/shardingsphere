@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
     
     @Override
-    public ExecutorService getExecutorService(final ParameterizedArray key) {
+    protected ExecutorService getExecutorService(final ParameterizedArray key) {
         ScenarioKey scenarioKey = new ScenarioKey(key);
         if (getExecutorServiceMap().containsKey(scenarioKey)) {
             return getExecutorServiceMap().get(scenarioKey);

@@ -34,35 +34,6 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     
     private volatile ParallelRunnerExecutor defaultExecutor;
     
-    @Override
-    public ParallelRunnerExecutor getExecutor(final T key, final ParallelLevel parallelLevel) {
-        if (executors.containsKey(key)) {
-            return executors.get(key);
-        }
-        ParallelRunnerExecutor newExecutor = newInstance(parallelLevel);
-        if (null != executors.putIfAbsent(key, newExecutor)) {
-            newExecutor.finished();
-        }
-        return executors.get(key);
-    }
-    
-    /**
-     * Get parallel runner executor.
-     *
-     * @param parallelLevel parallel level
-     * @return parallel runner executor
-     */
-    public ParallelRunnerExecutor getExecutor(final ParallelLevel parallelLevel) {
-        if (null == defaultExecutor) {
-            synchronized (DefaultParallelRunnerExecutorFactory.class) {
-                if (null == defaultExecutor) {
-                    defaultExecutor = new DefaultParallelRunnerExecutor();
-                }
-            }
-        }
-        return defaultExecutor;
-    }
-    
     /**
      * Create executor instance by parallel level.
      *
@@ -73,12 +44,32 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
         return new DefaultParallelRunnerExecutor();
     }
     
-    /**
-     * Get all executors.
-     *
-     * @return all executors
-     */
-    public Collection<ParallelRunnerExecutor> getAllExecutors() {
+    @Override
+    public final ParallelRunnerExecutor getExecutor(final T key, final ParallelLevel parallelLevel) {
+        if (executors.containsKey(key)) {
+            return executors.get(key);
+        }
+        ParallelRunnerExecutor newExecutor = newInstance(parallelLevel);
+        if (null != executors.putIfAbsent(key, newExecutor)) {
+            newExecutor.finished();
+        }
+        return executors.get(key);
+    }
+    
+    @Override
+    public final ParallelRunnerExecutor getExecutor(final ParallelLevel parallelLevel) {
+        if (null == defaultExecutor) {
+            synchronized (DefaultParallelRunnerExecutorFactory.class) {
+                if (null == defaultExecutor) {
+                    defaultExecutor = new DefaultParallelRunnerExecutor();
+                }
+            }
+        }
+        return defaultExecutor;
+    }
+    
+    @Override
+    public final Collection<ParallelRunnerExecutor> getAllExecutors() {
         Collection<ParallelRunnerExecutor> result = new LinkedList<>(executors.values());
         if (null != defaultExecutor) {
             result.add(defaultExecutor);

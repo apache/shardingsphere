@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnv
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.runner.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.annotaion.ParallelRunningStrategy;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -39,7 +39,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
-@ParallelRuntimeStrategy(ParallelLevel.CASE)
+@ParallelRunningStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
     public AdditionalDQLIT(final AssertionParameterizedArray parameterizedArray) {
