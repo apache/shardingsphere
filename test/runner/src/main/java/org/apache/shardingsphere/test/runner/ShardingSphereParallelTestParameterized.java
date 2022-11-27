@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.runner;
 
 import org.apache.shardingsphere.test.runner.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.annotaion.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.runner.executor.DefaultParallelRunnerExecutorFactory;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
@@ -36,7 +36,7 @@ public final class ShardingSphereParallelTestParameterized extends Parameterized
     }
     
     private ParallelLevel getParallelLevel(final Class<?> clazz) {
-        ParallelRuntimeStrategy parallelRuntimeStrategy = clazz.getAnnotation(ParallelRuntimeStrategy.class);
-        return null == parallelRuntimeStrategy ? ParallelLevel.DEFAULT : parallelRuntimeStrategy.value();
+        ParallelRunningStrategy strategy = clazz.getAnnotation(ParallelRunningStrategy.class);
+        return null == strategy ? ParallelLevel.DEFAULT : strategy.value();
     }
 }
