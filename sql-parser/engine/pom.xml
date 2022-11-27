@@ -38,6 +38,7 @@
             <artifactId>shardingsphere-sql-parser-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>

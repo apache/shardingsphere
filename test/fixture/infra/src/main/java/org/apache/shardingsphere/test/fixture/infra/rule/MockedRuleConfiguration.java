@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.fixture.rule;
+package org.apache.shardingsphere.test.fixture.infra.rule;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import static org.mockito.Mockito.mock;
 
 /**
- * Mocked rule.
+ * Mocked rule configuration.
  */
-public final class MockedRule implements ShardingSphereRule {
+@RequiredArgsConstructor
+@Getter
+public final class MockedRuleConfiguration implements RuleConfiguration {
     
-    @Override
-    public RuleConfiguration getConfiguration() {
-        return mock(RuleConfiguration.class);
-    }
-    
-    @Override
-    public String getType() {
-        return MockedRule.class.getSimpleName();
-    }
+    private final String name;
 }

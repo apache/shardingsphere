@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.fixture;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
+import org.apache.shardingsphere.test.fixture.infra.database.type.MockedDatabaseType;
 
 import java.util.Collection;
 import java.util.Optional;
