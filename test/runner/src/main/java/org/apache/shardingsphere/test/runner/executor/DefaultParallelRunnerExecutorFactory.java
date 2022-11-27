@@ -34,12 +34,22 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     
     private volatile ParallelRunnerExecutor defaultExecutor;
     
+    /**
+     * Create executor instance by parallel level.
+     *
+     * @param parallelLevel parallel level
+     * @return executor by parallel level
+     */
+    public ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
+        return new DefaultParallelRunnerExecutor();
+    }
+    
     @Override
     public final ParallelRunnerExecutor getExecutor(final T key, final ParallelLevel parallelLevel) {
         if (executors.containsKey(key)) {
             return executors.get(key);
         }
-        ParallelRunnerExecutor newExecutor = new DefaultParallelRunnerExecutor();
+        ParallelRunnerExecutor newExecutor = newInstance(parallelLevel);
         if (null != executors.putIfAbsent(key, newExecutor)) {
             newExecutor.finished();
         }
