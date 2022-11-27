@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

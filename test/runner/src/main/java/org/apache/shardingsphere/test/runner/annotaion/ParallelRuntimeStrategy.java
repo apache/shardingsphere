@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.parallel.annotaion;
+package org.apache.shardingsphere.test.runner.annotaion;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
