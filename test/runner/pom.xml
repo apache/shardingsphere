@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-test</artifactId>
         <version>5.2.2-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-common</artifactId>
+    <artifactId>shardingsphere-test-runner</artifactId>
     <name>${project.artifactId}</name>
     
     <properties>
@@ -40,11 +40,6 @@
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
             <scope>compile</scope>
         </dependency>
     </dependencies>

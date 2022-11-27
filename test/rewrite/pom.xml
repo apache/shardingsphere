@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-common</artifactId>
+            <artifactId>shardingsphere-test-runner</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
