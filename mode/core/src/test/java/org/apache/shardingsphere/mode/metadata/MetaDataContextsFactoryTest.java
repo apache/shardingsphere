@@ -31,8 +31,8 @@ import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataP
 import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
-import org.apache.shardingsphere.test.fixture.rule.MockedRule;
-import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
@@ -92,7 +91,7 @@ public final class MetaDataContextsFactoryTest {
     public void setUp() {
         rules.add(new MockedRule());
         databases.put("foo_db", database);
-        when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), Mockito.anyMap())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
+        when(metaDataPersistService.getEffectiveDataSources(eq("foo_db"), anyMap())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseRulePersistService databaseRulePersistService = mockDatabaseRulePersistService();
         when(metaDataPersistService.getDatabaseRulePersistService()).thenReturn(databaseRulePersistService);
         GlobalRulePersistService globalRulePersistService = mockGlobalRulePersistService();

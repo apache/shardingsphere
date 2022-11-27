@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.fixture;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.prepare.ExecutionPrepareDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.test.fixture.rule.MockedRule;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
 
 import java.util.Collection;
 import java.util.Collections;

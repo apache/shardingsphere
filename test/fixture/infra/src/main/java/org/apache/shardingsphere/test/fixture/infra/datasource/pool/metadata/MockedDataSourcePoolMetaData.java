@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.fixture.datasource.pool.metadata;
+package org.apache.shardingsphere.test.fixture.infra.datasource.pool.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;

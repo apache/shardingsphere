@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge.engine;
 
 import org.apache.shardingsphere.infra.merge.fixture.ResultProcessEngineFixture;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.test.fixture.rule.MockedRule;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
 import org.junit.Test;
 
 import java.util.Collections;
