@@ -27,8 +27,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
+import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,6 +87,18 @@ public final class ProxyConfigurationLoader {
         result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
         if (null != result.getAuthority()) {
             result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
+        }
+        result.getRules().removeIf(each -> each instanceof YamlTransactionRuleConfiguration);
+        if (null != result.getTransaction()) {
+            result.getRules().add(result.getTransaction().convertToYamlTransactionRuleConfiguration());
+        }
+        result.getRules().removeIf(each -> each instanceof YamlSQLParserRuleConfiguration);
+        if (null != result.getSqlParser()) {
+            result.getRules().add(result.getSqlParser().convertToYamlSQLParserRuleConfiguration());
+        }
+        result.getRules().removeIf(each -> each instanceof YamlSQLTranslatorRuleConfiguration);
+        if (null != result.getSqlTranslator()) {
+            result.getRules().add(result.getSqlTranslator().convertToYamlSQLTranslatorRuleConfiguration());
         }
         return result;
     }
