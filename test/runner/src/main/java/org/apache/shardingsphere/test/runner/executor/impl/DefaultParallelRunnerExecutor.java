@@ -43,13 +43,17 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
     
     private volatile ExecutorService defaultExecutorService;
     
-    /**
-     * Get executor service by key.
-     *
-     * @param key key bind to the executor service
-     * @return executor service
-     */
-    public ExecutorService getExecutorService(final T key) {
+    @Override
+    public void execute(final T key, final Runnable childStatement) {
+        taskFeatures.add(getExecutorService(key).submit(childStatement));
+    }
+    
+    @Override
+    public void execute(final Runnable childStatement) {
+        taskFeatures.add(getExecutorService().submit(childStatement));
+    }
+    
+    protected ExecutorService getExecutorService(final T key) {
         if (executorServiceMap.containsKey(key)) {
             return executorServiceMap.get(key);
         }
@@ -60,16 +64,6 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
             executorService.shutdownNow();
         }
         return executorServiceMap.get(key);
-    }
-    
-    @Override
-    public void execute(final T key, final Runnable childStatement) {
-        taskFeatures.add(getExecutorService(key).submit(childStatement));
-    }
-    
-    @Override
-    public void execute(final Runnable childStatement) {
-        taskFeatures.add(getExecutorService().submit(childStatement));
     }
     
     private ExecutorService getExecutorService() {
