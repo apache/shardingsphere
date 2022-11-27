@@ -38,5 +38,5 @@ public @interface ParallelRuntimeStrategy {
      * 
      * @return value parallel level
      */
-    ParallelLevel value();
+    ParallelLevel value() default ParallelLevel.DEFAULT;
 }

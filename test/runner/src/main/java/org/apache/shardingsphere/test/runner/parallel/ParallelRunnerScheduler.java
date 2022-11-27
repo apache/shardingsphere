@@ -26,12 +26,11 @@ import org.junit.runners.model.RunnerScheduler;
  * Parallel runner scheduler.
  */
 @RequiredArgsConstructor
+@Getter
 public class ParallelRunnerScheduler implements RunnerScheduler {
     
-    @Getter
     private final ParallelLevel parallelLevel;
     
-    @Getter
     private final ParallelRunnerExecutorFactory executorFactory;
     
     @Override
