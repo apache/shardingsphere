@@ -83,6 +83,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Rel
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectClauseNContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectFetchFirstValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectLimitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectLimitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectNoParensContext;
@@ -1274,6 +1275,18 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
         return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
+    @Override
+    public ASTNode visitSelectFetchFirstValue(final SelectFetchFirstValueContext ctx) {
+        ASTNode astNode = visit(ctx.cExpr());
+        if (null != astNode) {
+            if (astNode instanceof ParameterMarkerLimitValueSegment) {
+                return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
+            }
+            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        }
+        return visit(ctx.NUMBER_());
+    }
+    
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
         ParseTree astNode0 = ctx.getChild(0);
         LimitValueSegment rowCount = null;
@@ -1299,10 +1312,18 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
                 LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
             }
+            if (null != ctx.limitClause().selectFetchFirstValue()) {
+                LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectFetchFirstValue());
+                return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+            }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
             return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
         }
-        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
+        if (null != ctx.offsetClause().selectOffsetValue()) {
+            LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
+            return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+        }
+        LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectFetchFirstValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
     }
     
