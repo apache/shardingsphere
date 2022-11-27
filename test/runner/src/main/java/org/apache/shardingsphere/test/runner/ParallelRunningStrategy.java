@@ -15,12 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.annotaion;
+package org.apache.shardingsphere.test.runner;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Parallel level.
+ * Parallel running strategy.
  */
-public enum ParallelLevel {
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface ParallelRunningStrategy {
     
-    CASE, SCENARIO, DEFAULT
+    /**
+     * Get parallel level.
+     * 
+     * @return value parallel level
+     */
+    ParallelLevel value() default ParallelLevel.DEFAULT;
+    
+    /**
+     * Parallel level.
+     */
+    enum ParallelLevel {
+        
+        CASE, SCENARIO, DEFAULT
+    }
 }

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
-import org.apache.shardingsphere.test.runner.annotaion.ParallelLevel;
 
 /**
  * Parameterized parallel runner scheduler.

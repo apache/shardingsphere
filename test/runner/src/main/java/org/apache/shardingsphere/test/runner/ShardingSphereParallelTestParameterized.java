@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.test.runner;
 
-import org.apache.shardingsphere.test.runner.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.annotaion.ParallelRunningStrategy;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.DefaultParallelRunnerExecutorFactory;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
