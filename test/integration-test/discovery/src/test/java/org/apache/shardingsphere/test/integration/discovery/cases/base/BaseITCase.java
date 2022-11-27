@@ -42,7 +42,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-
 /**
  * Base integration test.
  */
