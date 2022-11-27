@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.database.D
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

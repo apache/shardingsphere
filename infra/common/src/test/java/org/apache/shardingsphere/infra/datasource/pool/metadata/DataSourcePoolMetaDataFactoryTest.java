@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.fixture.MockedDataSourcePoolMetaData;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Optional;

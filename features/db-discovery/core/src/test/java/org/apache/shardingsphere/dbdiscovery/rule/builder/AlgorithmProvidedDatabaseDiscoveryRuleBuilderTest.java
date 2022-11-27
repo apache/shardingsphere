@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Collections;

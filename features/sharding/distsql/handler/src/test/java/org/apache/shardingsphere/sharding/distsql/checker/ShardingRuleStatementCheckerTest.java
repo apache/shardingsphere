@@ -39,7 +39,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.Shardi
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

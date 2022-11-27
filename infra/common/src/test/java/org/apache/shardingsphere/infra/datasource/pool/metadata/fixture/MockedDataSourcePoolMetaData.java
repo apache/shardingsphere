@@ -66,6 +66,6 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public String getType() {
-        return "org.apache.shardingsphere.test.mock.MockedDataSource";
+        return "org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource";
     }
 }

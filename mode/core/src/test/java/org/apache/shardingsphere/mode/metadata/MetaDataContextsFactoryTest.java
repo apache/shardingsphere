@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mode.metadata.persist.service.config.global.Glo
 import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRule;
 import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
