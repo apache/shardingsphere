@@ -48,8 +48,12 @@ public final class YamlSQLParserConfiguration implements YamlRuleConfiguration {
     public YamlSQLParserRuleConfiguration convertToYamlSQLParserRuleConfiguration() {
         YamlSQLParserRuleConfiguration result = new YamlSQLParserRuleConfiguration();
         result.setSqlCommentParseEnabled(sqlCommentParseEnabled);
-        result.setSqlStatementCache(sqlStatementCache.convertToYamlSQLParserCacheOptionRuleConfiguration());
-        result.setParseTreeCache(parseTreeCache.convertToYamlSQLParserCacheOptionRuleConfiguration());
+        if (null != sqlStatementCache) {
+            result.setSqlStatementCache(sqlStatementCache.convertToYamlSQLParserCacheOptionRuleConfiguration());
+        }
+        if (null != parseTreeCache) {
+            result.setParseTreeCache(parseTreeCache.convertToYamlSQLParserCacheOptionRuleConfiguration());
+        }
         return result;
     }
 }
