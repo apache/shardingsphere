@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.parallel.impl;
+package org.apache.shardingsphere.test.runner.executor.impl;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
-import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;

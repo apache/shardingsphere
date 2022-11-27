@@ -15,38 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.parallel;
-
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
-import java.util.Collection;
+package org.apache.shardingsphere.test.runner.executor;
 
 /**
- * Parallel Runner Executor factory.
- * @param <T> key type which bind to executor
+ * Parallel runner executor.
  */
-public interface ParallelRunnerExecutorFactory<T> {
+public interface ParallelRunnerExecutor<T> {
     
     /**
-     * Get executor factory by key and parallel level.
+     * Execute child statement.
      *
-     * @param key key bind to the factory
-     * @param parallelLevel parallel level
-     * @return executor by key and parallel level
+     * @param key executor key
+     * @param childStatement child statement
      */
-    ParallelRunnerExecutor getExecutor(T key, ParallelLevel parallelLevel);
+    void execute(T key, Runnable childStatement);
     
     /**
-     * Get factory by parallel level.
+     * Execute child statement.
      *
-     * @param parallelLevel parallel level
-     * @return executor by parallel level
+     * @param childStatement child statement
      */
-    ParallelRunnerExecutor getExecutor(ParallelLevel parallelLevel);
+    void execute(Runnable childStatement);
     
     /**
-     * Get all executors.
-     *
-     * @return all executors
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
      */
-    Collection<ParallelRunnerExecutor> getAllExecutors();
+    void finished();
 }
