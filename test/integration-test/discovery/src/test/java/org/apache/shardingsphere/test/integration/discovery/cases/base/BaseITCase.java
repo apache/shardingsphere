@@ -80,13 +80,13 @@ public abstract class BaseITCase {
     }
     
     /**
-     * Assert close primary data source
+     * Assert close primary data source.
      * @param mgrEnvironment mgr environment
      * @throws SQLException SQL Exception
      */
     public void assertClosePrimaryDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
         String oldPrimaryDataSourceName = getPrimaryDataSourceName();
-        closeDataSource((mgrEnvironment.getDataSources().get(oldPrimaryDataSourceName)));
+        closeDataSource(mgrEnvironment.getDataSources().get(oldPrimaryDataSourceName));
         String newPrimaryDataSourceName = getPrimaryDataSourceName();
         assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, newPrimaryDataSourceName);
         mgrEnvironment.getDataSources().remove(oldPrimaryDataSourceName);
@@ -133,7 +133,7 @@ public abstract class BaseITCase {
     }
     
     /**
-     * Assert close replication data source
+     * Assert close replication data source.
      * @param mgrEnvironment mgr environment
      * @throws SQLException SQL Exception
      */
@@ -167,14 +167,13 @@ public abstract class BaseITCase {
         }
     }
     
-    
     private void assertRouteDataSourceName(final String actualRouteDataSourceName, final String expectedRouteDataSourceName) {
         Preconditions.checkState(StringUtils.isNotBlank(actualRouteDataSourceName) && StringUtils.isNotBlank(expectedRouteDataSourceName));
         assertThat(actualRouteDataSourceName, is(expectedRouteDataSourceName));
     }
     
     /**
-     * Assert close all replication data source
+     * Assert close all replication data source.
      * @param mgrEnvironment mgr environment
      * @throws SQLException SQL Exception
      */

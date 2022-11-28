@@ -37,9 +37,9 @@ import java.util.LinkedList;
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class DiscoveryMySQLMGRIT extends BaseITCase {
+public final class DiscoveryMGRGeneralIT extends BaseITCase {
     
-    public DiscoveryMySQLMGRIT(final DiscoveryParameterized discoveryParameterized) {
+    public DiscoveryMGRGeneralIT(final DiscoveryParameterized discoveryParameterized) {
         super(discoveryParameterized);
     }
     
@@ -54,7 +54,7 @@ public final class DiscoveryMySQLMGRIT extends BaseITCase {
     }
     
     @Test
-    public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
+    public void assertDiscoveryMySQLMGR() throws SQLException {
         DatabaseClusterEnvironment mgrEnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
         initDiscoveryEnvironment();
         assertClosePrimaryDataSource(mgrEnvironment);
