@@ -21,8 +21,6 @@ import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLev
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,7 +60,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
         if (null == defaultExecutor) {
             synchronized (DefaultParallelRunnerExecutorFactory.class) {
                 if (null == defaultExecutor) {
-                    defaultExecutor = new DefaultParallelRunnerExecutor();
+                    defaultExecutor = new DefaultParallelRunnerExecutor<>();
                 }
             }
         }
@@ -70,11 +68,12 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     }
     
     @Override
-    public final Collection<ParallelRunnerExecutor> getAllExecutors() {
-        Collection<ParallelRunnerExecutor> result = new LinkedList<>(executors.values());
-        if (null != defaultExecutor) {
-            result.add(defaultExecutor);
+    public final void finishAllExecutors() {
+        for (ParallelRunnerExecutor<?> each : executors.values()) {
+            each.finished();
         }
-        return result;
+        if (null != defaultExecutor) {
+            defaultExecutor.finished();
+        }
     }
 }
