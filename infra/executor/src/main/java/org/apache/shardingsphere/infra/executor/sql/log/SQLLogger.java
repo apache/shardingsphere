@@ -44,7 +44,7 @@ public final class SQLLogger {
      */
     public static void logSQL(final QueryContext queryContext, final boolean showSimple, final ExecutionContext executionContext) {
         log("Logic SQL: {}", queryContext.getSql());
-        log("SQLStatement: {}", queryContext.getSqlStatementContext().getSqlStatement());
+        log.debug("SQLStatement: {}", queryContext.getSqlStatementContext().getSqlStatement());
         if (showSimple) {
             logSimpleMode(executionContext.getExecutionUnits());
         } else {
