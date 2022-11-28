@@ -49,7 +49,7 @@ public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
         Collection<DiscoveryParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listStorageContainerImages(databaseType)) {
-            result.add(new DiscoveryParameterized(databaseType, each, "mysql_mgr_discovery"));
+            result.add(new DiscoveryParameterized(databaseType, each, "discovery"));
         }
         return result;
     }
