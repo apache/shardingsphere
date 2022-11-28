@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
  */
 @RequiredArgsConstructor
 @Getter
-public class PluginJar {
+public final class PluginJar {
     
     private final JarFile jarFile;
     

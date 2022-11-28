@@ -34,7 +34,7 @@ import java.util.jar.JarFile;
 /**
  * Logger factory.
  */
-public class LoggerFactory {
+public final class LoggerFactory {
     
     private static AgentClassLoader classLoader;
     
@@ -75,7 +75,7 @@ public class LoggerFactory {
      * Logger.
      */
     @RequiredArgsConstructor
-    public static class Logger {
+    public static final class Logger {
         
         private final Object logger;
         

@@ -27,7 +27,7 @@ import java.util.LinkedList;
  *  Plugin jar holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PluginJarHolder {
+public final class PluginJarHolder {
     
     private static volatile Collection<PluginJar> pluginJars = new LinkedList<>();
     
