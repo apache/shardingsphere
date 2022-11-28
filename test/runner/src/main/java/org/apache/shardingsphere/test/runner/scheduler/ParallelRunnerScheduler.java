@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.parallel;
+package org.apache.shardingsphere.test.runner.scheduler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
 import org.junit.runners.model.RunnerScheduler;
 
 /**
@@ -39,7 +41,7 @@ public class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     @Override
-    public void finished() {
+    public final void finished() {
         executorFactory.getAllExecutors().forEach(each -> ((ParallelRunnerExecutor) each).finished());
     }
 }

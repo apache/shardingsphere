@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.infra.hint;
 
-import org.apache.shardingsphere.test.runner.parallel.DefaultParallelRunnerExecutorFactory;
-import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerScheduler;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.junit.runners.Parameterized;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * ShardingSphere integration test parameterized.
+ * Hint value context.
  */
-public final class ShardingSphereParallelTestParameterized extends Parameterized {
+@Getter
+@Setter
+public final class HintValueContext {
     
-    // CHECKSTYLE:OFF
-    public ShardingSphereParallelTestParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        setScheduler(new ParallelRunnerScheduler(clazz.getAnnotation(ParallelRuntimeStrategy.class).value(), new DefaultParallelRunnerExecutorFactory<>()));
-    }
+    private final Multimap<String, Comparable<?>> shardingDatabaseValues = ArrayListMultimap.create();
+    
+    private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
+    
+    private boolean databaseShardingOnly;
+    
+    private boolean writeRouteOnly;
+    
+    private boolean useTraffic;
+    
+    private boolean skipEncryptRewrite;
+    
+    private String disableAuditNames = "";
+    
+    private boolean shadow;
 }
