@@ -47,7 +47,7 @@ public class MySQLMGRAllReplicationDataSourceDisabledIT extends BaseITCase {
         Collection<DiscoveryParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listStorageContainerImages(databaseType)) {
-            result.add(new DiscoveryParameterized(databaseType, each, "discovery"));
+            result.add(new DiscoveryParameterized(databaseType, each, "disabled_all_replica_data_sources"));
         }
         return result;
     }
