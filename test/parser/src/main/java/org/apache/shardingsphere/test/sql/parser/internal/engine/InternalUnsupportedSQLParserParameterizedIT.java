@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.engine;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-@RequiredArgsConstructor
 public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
     private static final SQLCases SQL_CASES = UnsupportedSQLCasesRegistry.getInstance().getCases();
@@ -43,7 +42,13 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
     private final SQLCaseType sqlCaseType;
     
-    protected static Collection<Object[]> getTestParameters(final String databaseType) {
+    public InternalUnsupportedSQLParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {
+        sqlCaseId = parameterizedArray.getSqlCaseId();
+        databaseType = parameterizedArray.getDatabaseType();
+        sqlCaseType = parameterizedArray.getSqlCaseType();
+    }
+    
+    protected static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String databaseType) {
         return SQL_CASES.generateTestParameters(Collections.singleton(databaseType));
     }
     

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.external.loader;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.SQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.sql.parser.external.loader.summary.FileSummary;
@@ -48,24 +49,26 @@ public final class SQLCaseLoader {
      *
      * @param sqlCaseURI SQL case URI
      * @param resultURI result URI
+     * @param databaseType database type
+     * @param reportType report type
      *
      * @return loaded SQL cases
      */
-    public Collection<Object[]> load(final URI sqlCaseURI, final URI resultURI) {
+    public Collection<ExternalSQLParserParameterizedArray> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
         if (!SQLParserExternalITEnvironment.getInstance().isSqlParserITEnabled()) {
             return Collections.emptyList();
         }
-        Collection<Object[]> result = new LinkedList<>();
+        Collection<ExternalSQLParserParameterizedArray> result = new LinkedList<>();
         Map<String, FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         for (Entry<String, FileSummary> entry : sqlCaseFileSummaries.entrySet()) {
             String fileName = entry.getKey();
             String sqlCaseFileContent = loadContent(URI.create(entry.getValue().getAccessURI()));
             String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
-            result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent));
+            result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
         }
         if (result.isEmpty()) {
-            result.add(new Object[]{"", ""});
+            result.add(new ExternalSQLParserParameterizedArray("", "", databaseType, reportType));
         }
         return result;
     }
@@ -81,16 +84,17 @@ public final class SQLCaseLoader {
         }
     }
     
-    private Collection<Object[]> createSQLCases(final String sqlCaseFileName, final String sqlCaseFileContent, final String resultFileContent) {
-        Collection<Object[]> result = new LinkedList<>();
-        String[] rawsCaseLines = sqlCaseFileContent.split("\n");
+    private Collection<ExternalSQLParserParameterizedArray> createSQLCases(final String sqlCaseFileName,
+                                                                           final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
+        Collection<ExternalSQLParserParameterizedArray> result = new LinkedList<>();
+        String[] rawCaseLines = sqlCaseFileContent.split("\n");
         String[] rawResultLines = resultFileContent.split("\n");
         String completedSQL = "";
         int sqlCaseEnum = 1;
         int statementLines = 0;
         int resultIndex = 0;
         boolean inProcedure = false;
-        for (String each : rawsCaseLines) {
+        for (String each : rawCaseLines) {
             inProcedure = isInProcedure(inProcedure, each.trim());
             completedSQL = getStatement(completedSQL, each.trim(), inProcedure);
             statementLines = completedSQL.isEmpty() ? 0 : statementLines + 1;
@@ -98,7 +102,7 @@ public final class SQLCaseLoader {
                 resultIndex = searchInResultContent(resultIndex, rawResultLines, completedSQL, statementLines);
                 if (resultIndex >= rawResultLines.length || !rawResultLines[resultIndex].contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                    result.add(new Object[]{sqlCaseId, completedSQL});
+                    result.add(new ExternalSQLParserParameterizedArray(sqlCaseId, completedSQL, databaseType, reportType));
                     sqlCaseEnum++;
                 }
                 completedSQL = "";

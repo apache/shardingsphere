@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchITCase;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public final class BatchDMLIT extends BatchITCase {
     }
     
     @Parameters(name = "{0}")
-    public static Collection<ParameterizedArray> getParameters() {
+    public static Collection<ITParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML);
     }
     

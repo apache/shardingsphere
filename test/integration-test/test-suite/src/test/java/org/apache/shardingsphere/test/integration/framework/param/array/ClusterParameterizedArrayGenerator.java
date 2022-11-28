@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import java.util.Collection;
 
@@ -52,7 +52,7 @@ public final class ClusterParameterizedArrayGenerator {
      * @param sqlCommandType SQL commandEnvironmentConstants type
      * @return case parameterized array
      */
-    public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
+    public static Collection<ITParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
         return new ParameterizedArrayGenerator(ENV.getClusterEnvironment().getAdapters(), ENV.getScenarios(), EnvironmentConstants.CLUSTER_MODE,
                 ENV.getClusterEnvironment().getDatabaseTypes()).getCaseParameterized(sqlCommandType);
     }

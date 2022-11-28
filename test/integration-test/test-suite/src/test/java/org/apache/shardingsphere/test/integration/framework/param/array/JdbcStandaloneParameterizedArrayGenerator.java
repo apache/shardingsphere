@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.constants
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,7 +59,7 @@ public final class JdbcStandaloneParameterizedArrayGenerator {
      * @param sqlCommandType SQL command type
      * @return case parameterized array
      */
-    public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
+    public static Collection<ITParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
         return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), EnvironmentConstants.STANDALONE_MODE, DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }
