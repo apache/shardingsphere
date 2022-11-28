@@ -22,8 +22,11 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class OpenGaussPipelineSQLBuilderTest {
     
@@ -44,5 +47,24 @@ public final class OpenGaussPipelineSQLBuilderTest {
         result.addColumn(new Column("c2", "", true, false));
         result.addColumn(new Column("c3", "", true, false));
         return result;
+    }
+    
+    @Test
+    public void assertQuoteKeyword() {
+        String schemaName = "RECYCLEBIN";
+        Optional<String> actualCreateSchemaSql = sqlBuilder.buildCreateSchemaSQL(schemaName);
+        assertTrue(actualCreateSchemaSql.isPresent());
+        assertThat(actualCreateSchemaSql.get(), is(String.format("CREATE SCHEMA %s", sqlBuilder.quote(schemaName))));
+        String actualDropSQL = sqlBuilder.buildDropSQL(schemaName, "ALL");
+        String expectedDropSQL = String.format("DROP TABLE IF EXISTS %s", String.join(".", sqlBuilder.quote(schemaName), sqlBuilder.quote("ALL")));
+        assertThat(actualDropSQL, is(expectedDropSQL));
+    }
+    
+    @Test
+    public void assertQuoteNormal() {
+        String schemaName = "test_normal";
+        String actualDropSQL = sqlBuilder.buildDropSQL(schemaName, "t_order");
+        String expectedDropSQL = String.format("DROP TABLE IF EXISTS %s", String.join(".", schemaName, "t_order"));
+        assertThat(actualDropSQL, is(expectedDropSQL));
     }
 }

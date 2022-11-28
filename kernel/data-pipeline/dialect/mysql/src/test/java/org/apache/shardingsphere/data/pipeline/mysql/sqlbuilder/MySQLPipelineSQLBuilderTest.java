@@ -61,4 +61,20 @@ public final class MySQLPipelineSQLBuilderTest {
         result.addColumn(new Column("c3", "", true, false));
         return result;
     }
+    
+    @Test
+    public void assertQuoteKeyword() {
+        String tableName = "CASCADE";
+        String actualCountSql = sqlBuilder.buildCountSQL(null, tableName);
+        assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName))));
+        actualCountSql = sqlBuilder.buildCountSQL(null, tableName.toLowerCase());
+        assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName.toLowerCase()))));
+    }
+    
+    @Test
+    public void assertQuoteNormal() {
+        String actualCountSQL = sqlBuilder.buildCountSQL(null, "t_order");
+        String expectedDropSQL = String.format("SELECT COUNT(*) FROM %s", "t_order");
+        assertThat(actualCountSQL, is(expectedDropSQL));
+    }
 }
