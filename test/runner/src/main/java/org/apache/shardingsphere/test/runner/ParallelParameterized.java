@@ -17,23 +17,25 @@
 
 package org.apache.shardingsphere.test.runner;
 
-import org.apache.shardingsphere.test.runner.parallel.DefaultParallelRunnerExecutorFactory;
-import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerScheduler;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutorFactory;
+import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
 
 /**
- * ShardingSphere integration test parameterized.
+ * Parallel parameterized.
  */
-public final class ShardingSphereParallelTestParameterized extends Parameterized {
+public final class ParallelParameterized extends Parameterized {
     
     // CHECKSTYLE:OFF
-    public ShardingSphereParallelTestParameterized(final Class<?> clazz) throws Throwable {
+    public ParallelParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
-        ParallelRuntimeStrategy parallelRuntimeStrategy = clazz.getAnnotation(ParallelRuntimeStrategy.class);
-        ParallelLevel level = null != parallelRuntimeStrategy ? parallelRuntimeStrategy.value() : ParallelLevel.DEFAULT;
-        setScheduler(new ParallelRunnerScheduler(level, new DefaultParallelRunnerExecutorFactory<>()));
+        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new DefaultParallelRunnerExecutorFactory<>()));
+    }
+    
+    private ParallelLevel getParallelLevel(final Class<?> clazz) {
+        ParallelRunningStrategy strategy = clazz.getAnnotation(ParallelRunningStrategy.class);
+        return null == strategy ? ParallelLevel.NORMAL : strategy.value();
     }
 }

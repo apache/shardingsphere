@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
-import org.apache.shardingsphere.test.runner.parallel.impl.DefaultParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
 
 /**
  * Parallel runner executor with case.

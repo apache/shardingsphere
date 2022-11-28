@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.parallel;
+package org.apache.shardingsphere.test.runner.executor;
 
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+
 import java.util.Collection;
 
 /**
  * Parallel Runner Executor factory.
+ * 
  * @param <T> key type which bind to executor
  */
 public interface ParallelRunnerExecutorFactory<T> {
