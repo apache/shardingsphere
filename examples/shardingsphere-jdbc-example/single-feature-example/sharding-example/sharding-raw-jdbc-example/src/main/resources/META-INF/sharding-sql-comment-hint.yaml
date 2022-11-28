@@ -55,7 +55,7 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-sqlParser:
+- !SQL_PARSER
   sqlCommentParseEnabled: true
 props:
   sql-show: true

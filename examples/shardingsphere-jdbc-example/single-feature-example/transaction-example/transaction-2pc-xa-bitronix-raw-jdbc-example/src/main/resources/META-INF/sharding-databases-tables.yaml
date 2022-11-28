@@ -65,7 +65,7 @@ rules:
     snowflake:
       type: SNOWFLAKE
 
-transaction:
+- !TRANSACTION
   defaultType: XA
   providerType: Bitronix
 
