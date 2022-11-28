@@ -28,7 +28,7 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING | buildInShardingAlgorithmType | keyGeneratorType
+    : STRING | buildInShardingAlgorithmType | buildInkeyGeneratorType
     ;
 
 buildInShardingAlgorithmType
@@ -66,8 +66,8 @@ shardingAlgorithmName
     : IDENTIFIER | buildInShardingAlgorithmType
     ;
 
-keyGeneratorType
-    : STRING | buildInkeyGeneratorType
+keyGeneratorName
+    : IDENTIFIER | buildInkeyGeneratorType
     ;
 
 buildInkeyGeneratorType
