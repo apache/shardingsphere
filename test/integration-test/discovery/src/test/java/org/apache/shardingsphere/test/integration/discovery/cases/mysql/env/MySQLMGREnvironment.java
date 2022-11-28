@@ -67,8 +67,8 @@ public final class MySQLMGREnvironment implements DatabaseClusterEnvironment {
     
     private Map<String, DataSource> getReplicationDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
-        for (int i = 1; i < replicationDataSources.size(); i++) {
-            result.put("ds_" + i, replicationDataSources.get(i));
+        for (int i = 0; i < replicationDataSources.size(); i++) {
+            result.put("ds_" + (i + 1), replicationDataSources.get(i));
         }
         return result;
     }

@@ -125,7 +125,7 @@ public abstract class BaseITCase {
                 Statement statement = connection.createStatement()) {
             statement.execute("SHUTDOWN");
         }
-        ThreadUtil.sleep(25, TimeUnit.SECONDS);
+        ThreadUtil.sleep(30, TimeUnit.SECONDS);
     }
     
     private void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {
