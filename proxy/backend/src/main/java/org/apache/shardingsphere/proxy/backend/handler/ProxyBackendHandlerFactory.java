@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
@@ -81,12 +82,27 @@ public final class ProxyBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+        return newInstance(databaseType, sql, connectionSession, new HintValueContext());
+    }
+    
+    /**
+     * Create new instance of backend handler.
+     *
+     * @param databaseType database type
+     * @param sql SQL to be executed
+     * @param connectionSession connection session
+     * @param hintValueContext hint query context
+     * @return created instance
+     * @throws SQLException SQL exception
+     */
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession,
+                                                  final HintValueContext hintValueContext) throws SQLException {
         if (Strings.isNullOrEmpty(SQLUtil.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
         SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
-        return newInstance(databaseType, sql, sqlStatement, connectionSession);
+        return newInstance(databaseType, sql, sqlStatement, connectionSession, hintValueContext);
     }
     
     /**
@@ -101,6 +117,22 @@ public final class ProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
                                                   final ConnectionSession connectionSession) throws SQLException {
+        return newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
+    }
+    
+    /**
+     * Create new instance of backend handler.
+     *
+     * @param databaseType database type
+     * @param sql SQL to be executed
+     * @param sqlStatement SQL statement
+     * @param connectionSession connection session
+     * @param hintValueContext hint query context
+     * @return created instance
+     * @throws SQLException SQL exception
+     */
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
+                                                  final ConnectionSession connectionSession, final HintValueContext hintValueContext) throws SQLException {
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(sqlStatement);
         }
@@ -110,7 +142,7 @@ public final class ProxyBackendHandlerFactory {
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
         connectionSession.setQueryContext(queryContext);
         return newInstance(databaseType, queryContext, connectionSession, false);
     }

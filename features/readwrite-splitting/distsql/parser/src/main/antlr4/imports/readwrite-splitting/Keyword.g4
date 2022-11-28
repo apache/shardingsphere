@@ -139,3 +139,43 @@ TRUE
 FALSE
     : F A L S E
     ;
+
+ROUND_ROBIN
+    : R O U N D UL_ R O B I N
+    ;
+
+RANDOM
+    : R A N D O M
+    ;
+
+WEIGHT
+    : W E I G H T
+    ;
+
+TRANSACTION_RANDOM
+    : T R A N S A C T I O N UL_ R A N D O M
+    ;
+
+TRANSACTION_ROUND_ROBIN
+    : T R A N S A C T I O N UL_ R O U N D UL_ R O B I N
+    ;
+
+TRANSACTION_WEIGHT
+    : T R A N S A C T I O N UL_ W E I G H T
+    ;
+
+FIXED_REPLICA_RANDOM
+    : F I X E D UL_ R E P L I C A UL_ R A N D O M
+    ;
+
+FIXED_REPLICA_ROUND_ROBIN
+    : F I X E D UL_ R E P L I C A UL_ R O U N D UL_ R O B I N
+    ;
+
+FIXED_REPLICA_WEIGHT
+    : F I X E D UL_ R E P L I C A UL_ W E I G H T
+    ;
+
+FIXED_PRIMARY
+    : F I X E D UL_ P R I M A R Y
+    ;

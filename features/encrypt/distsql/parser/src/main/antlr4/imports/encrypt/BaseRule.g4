@@ -28,7 +28,16 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING
+    : buildinAlgorithmTypeName | STRING
+    ;
+
+buildinAlgorithmTypeName
+    : MD5
+    | AES
+    | RC4
+    | SM3
+    | SM4
+    | CHAR_DIGEST_LIKE
     ;
 
 propertiesDefinition

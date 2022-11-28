@@ -17,7 +17,7 @@
 
 lexer grammar Keyword;
 
-import Alphabet;
+import Alphabet, Symbol;
 
 WS
     : [ \t\r\n] + ->skip
@@ -101,4 +101,8 @@ EXISTS
 
 COUNT
     : C O U N T
+    ;
+
+MYSQLMGR
+    : M Y S Q L DOT M G R
     ;
