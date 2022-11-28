@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import com.google.common.base.Preconditions;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.hint.SQLHintExtractor;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -54,7 +54,6 @@ import java.util.Optional;
 /**
  * Sharding standard routing engine.
  */
-@RequiredArgsConstructor
 public final class ShardingStandardRoutingEngine implements ShardingRouteEngine {
     
     private final String logicTableName;
@@ -66,6 +65,17 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     private final ConfigurationProperties props;
     
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
+    
+    private SQLHintExtractor sqlHintExtractor;
+    
+    public ShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions, final SQLStatementContext<?> sqlStatementContext,
+                                         final HintValueContext hintValueContext, final ConfigurationProperties props) {
+        this.logicTableName = logicTableName;
+        this.shardingConditions = shardingConditions;
+        this.sqlStatementContext = sqlStatementContext;
+        this.props = props;
+        this.sqlHintExtractor = new SQLHintExtractor(sqlStatementContext.getSqlStatement(), hintValueContext);
+    }
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
@@ -99,12 +109,10 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private boolean isRoutingBySQLHint() {
-        if (sqlStatementContext instanceof CommonSQLStatementContext) {
-            Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-            for (String each : tableNames) {
-                if (((CommonSQLStatementContext<?>) sqlStatementContext).containsHintShardingValue(each)) {
-                    return true;
-                }
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : tableNames) {
+            if (sqlHintExtractor.containsHintShardingValue(each)) {
+                return true;
             }
         }
         return false;
@@ -191,12 +199,10 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private List<ShardingConditionValue> getDatabaseShardingValuesFromSQLHint() {
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
-        if (sqlStatementContext instanceof CommonSQLStatementContext) {
-            Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-            for (String each : tableNames) {
-                if (each.equals(logicTableName) && ((CommonSQLStatementContext<?>) sqlStatementContext).containsHintShardingDatabaseValue(each)) {
-                    shardingValues.add(((CommonSQLStatementContext<?>) sqlStatementContext).getHintShardingDatabaseValue(each));
-                }
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : tableNames) {
+            if (each.equals(logicTableName) && sqlHintExtractor.containsHintShardingDatabaseValue(each)) {
+                shardingValues.addAll(sqlHintExtractor.getHintShardingDatabaseValue(each));
             }
         }
         return getShardingConditions(shardingValues);
@@ -211,12 +217,10 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private List<ShardingConditionValue> getTableShardingValuesFromSQLHint() {
         Collection<Comparable<?>> shardingValues = new LinkedList<>();
-        if (sqlStatementContext instanceof CommonSQLStatementContext) {
-            Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-            for (String each : tableNames) {
-                if (each.equals(logicTableName) && ((CommonSQLStatementContext<?>) sqlStatementContext).containsHintShardingTableValue(each)) {
-                    shardingValues.add(((CommonSQLStatementContext<?>) sqlStatementContext).getHintShardingTableValue(each));
-                }
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        for (String each : tableNames) {
+            if (each.equals(logicTableName) && sqlHintExtractor.containsHintShardingTableValue(each)) {
+                shardingValues.addAll(sqlHintExtractor.getHintShardingTableValue(each));
             }
         }
         return getShardingConditions(shardingValues);

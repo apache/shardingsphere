@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.algorithm.traffic.hint;
+package org.apache.shardingsphere.infra.hint;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Getter;
-import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficAlgorithm;
-import org.apache.shardingsphere.traffic.api.traffic.hint.HintTrafficValue;
-
-import java.util.Properties;
+import lombok.Setter;
 
 /**
- * Simple hint traffic algorithm.
+ * Hint value context.
  */
 @Getter
-public final class SQLHintTrafficAlgorithm implements HintTrafficAlgorithm {
+@Setter
+public final class HintValueContext {
     
-    private Properties props;
+    private final Multimap<String, Comparable<?>> shardingDatabaseValues = ArrayListMultimap.create();
     
-    @Override
-    public void init(final Properties props) {
-        this.props = props;
-    }
+    private final Multimap<String, Comparable<?>> shardingTableValues = ArrayListMultimap.create();
     
-    @Override
-    public boolean match(final HintTrafficValue hintTrafficValue) {
-        return hintTrafficValue.getHintValueContext().isUseTraffic();
-    }
+    private boolean databaseShardingOnly;
     
-    @Override
-    public String getType() {
-        return "SQL_HINT";
-    }
+    private boolean writeRouteOnly;
+    
+    private boolean useTraffic;
+    
+    private boolean skipEncryptRewrite;
+    
+    private String disableAuditNames = "";
+    
+    private boolean shadow;
 }
