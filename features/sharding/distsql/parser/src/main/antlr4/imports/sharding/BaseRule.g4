@@ -28,29 +28,24 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING
-    | autoShardingAlgorithmName
-    | standardShardingAlgorithmName
-    | COMPLEX_INLINE
-    | HINT_INLINE
-    | keyGeneratorName
+    : STRING | buildInShardingAlgorithmType | keyGeneratorType
     ;
 
-autoShardingAlgorithmName
+buildInShardingAlgorithmType
     : MOD
     | COSID_MOD
     | HASH_MOD
     | VOLUME_RANGE
     | BOUNDARY_RANGE
     | AUTO_INTERVAL
-    ;
-
-standardShardingAlgorithmName
-    : INLINE
+    | INLINE
     | INTERVAL
     | COSID_INTERVAL
     | COSID_INTERVAL_SNOWFLAKE
+    | COMPLEX_INLINE
+    | HINT_INLINE
     ;
+
 propertiesDefinition
     : PROPERTIES LP properties? RP
     ;
@@ -68,14 +63,10 @@ tableName
     ;
 
 shardingAlgorithmName
-    : IDENTIFIER
-    | autoShardingAlgorithmName
-    | standardShardingAlgorithmName
-    | COMPLEX_INLINE
-    | HINT_INLINE
+    : IDENTIFIER | buildInShardingAlgorithmType
     ;
 
-keyGeneratorName
+keyGeneratorType
     : IDENTIFIER
     | CLASS_BASED
     | SNOWFLAKE
