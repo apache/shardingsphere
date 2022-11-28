@@ -39,3 +39,13 @@ rules:
           plainColumn: number_new_plain
           cipherColumn: number_new_cipher
           encryptorName: aes_encryptor
+    t_merchant:
+      columns:
+        business_code:
+          plainColumn: business_code_plain
+          cipherColumn: business_code_cipher
+          encryptorName: aes_encryptor
+        telephone:
+          plainColumn: telephone_plain
+          cipherColumn: telephone_cipher
+          encryptorName: aes_encryptor
