@@ -45,6 +45,6 @@ public final class ShardingSphereSchemaDataRegistrySubscriber {
     public void update(final ShardingSphereSchemaDataAlteredEvent event) {
         String databaseName = event.getDatabaseName();
         String schemaName = event.getSchemaName();
-        persistService.persistTables(databaseName, schemaName, event.getAlteredTables());
+        persistService.persistTables(databaseName, schemaName, event.getAlteredYamlTables());
     }
 }
