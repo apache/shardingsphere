@@ -25,6 +25,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.discovery.build.DiscoveryRuleBuilder;
+import org.apache.shardingsphere.test.integration.discovery.cases.DatabaseClusterEnvironment;
 import org.apache.shardingsphere.test.integration.discovery.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.discovery.framework.container.compose.BaseContainerComposer;
 import org.apache.shardingsphere.test.integration.discovery.framework.container.compose.DockerContainerComposer;
@@ -36,6 +37,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotEquals;
@@ -77,12 +80,19 @@ public abstract class BaseITCase {
     }
     
     /**
-     * Get primary data source name.
-     *
-     * @return primary data source name
-     * @throws SQLException SQL exception
+     * Assert close primary data source
+     * @param mgrEnvironment mgr environment
+     * @throws SQLException SQL Exception
      */
-    public String getPrimaryDataSourceName() throws SQLException {
+    public void assertClosePrimaryDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
+        String oldPrimaryDataSourceName = getPrimaryDataSourceName();
+        closeDataSource((mgrEnvironment.getDataSources().get(oldPrimaryDataSourceName)));
+        String newPrimaryDataSourceName = getPrimaryDataSourceName();
+        assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, newPrimaryDataSourceName);
+        mgrEnvironment.getDataSources().remove(oldPrimaryDataSourceName);
+    }
+    
+    private String getPrimaryDataSourceName() throws SQLException {
         try (
                 Connection connection = proxyDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -109,19 +119,7 @@ public abstract class BaseITCase {
         assertThat(actualPrimaryDataSourceName, is(expectedPrimaryDataSourceName));
     }
     
-    /**
-     * Close data sources.
-     *
-     * @param dataSources data sources
-     * @throws SQLException SQL exception
-     */
-    public void closeDataSources(final List<DataSource> dataSources) throws SQLException {
-        for (DataSource each : dataSources) {
-            close(each);
-        }
-    }
-    
-    private void close(final DataSource dataSource) throws SQLException {
+    private void closeDataSource(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -130,23 +128,32 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(25, TimeUnit.SECONDS);
     }
     
-    /**
-     * Assert primary data source changed.
-     *
-     * @param oldPrimaryDataSourceName old primary data source name
-     * @param newPrimaryDataSourceName new primary data source name
-     */
-    public void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {
+    private void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {
         assertNotEquals(oldPrimaryDataSourceName, newPrimaryDataSourceName);
     }
     
     /**
-     * Get route data source name.
-     *
-     * @return route data source name
-     * @throws SQLException SQL exception
+     * Assert close replication data source
+     * @param mgrEnvironment mgr environment
+     * @throws SQLException SQL Exception
      */
-    public String getRouteDataSourceName() throws SQLException {
+    public void assertCloseReplicationDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
+        mgrEnvironment.getDataSources().remove(getPrimaryDataSourceName());
+        String closedRoutingDataSourceName = getCloseReplicationDataSourceName(mgrEnvironment);
+        mgrEnvironment.getDataSources().remove(closedRoutingDataSourceName);
+        String routeDataSourceName = getRouteDataSourceName();
+        assertRouteDataSourceName(routeDataSourceName, Objects.requireNonNull(mgrEnvironment.getDataSources().entrySet().stream().findFirst().orElse(null)).getKey());
+    }
+    
+    private String getCloseReplicationDataSourceName(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
+        for (Map.Entry<String, DataSource> entry : mgrEnvironment.getDataSources().entrySet()) {
+            closeDataSource(mgrEnvironment.getDataSources().get(entry.getKey()));
+            return entry.getKey();
+        }
+        return null;
+    }
+    
+    private String getRouteDataSourceName() throws SQLException {
         try (
                 Connection connection = proxyDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -160,8 +167,19 @@ public abstract class BaseITCase {
         }
     }
     
-    public void assertRouteDataSourceName(final String actualRouteDataSourceName, final String expectedRouteDataSourceName) {
+    
+    private void assertRouteDataSourceName(final String actualRouteDataSourceName, final String expectedRouteDataSourceName) {
         Preconditions.checkState(StringUtils.isNotBlank(actualRouteDataSourceName) && StringUtils.isNotBlank(expectedRouteDataSourceName));
         assertThat(actualRouteDataSourceName, is(expectedRouteDataSourceName));
+    }
+    
+    /**
+     * Assert close all replication data source
+     * @param mgrEnvironment mgr environment
+     * @throws SQLException SQL Exception
+     */
+    public void assertCloseAllReplicationDataSource(final DatabaseClusterEnvironment mgrEnvironment) throws SQLException {
+        closeDataSource(Objects.requireNonNull(mgrEnvironment.getDataSources().values().stream().findFirst().orElse(null)));
+        assertRouteDataSourceName(getRouteDataSourceName(), getPrimaryDataSourceName());
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.discovery.cases;
 
 import javax.sql.DataSource;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Database cluster environment.
@@ -26,16 +26,9 @@ import java.util.List;
 public interface DatabaseClusterEnvironment {
     
     /**
-     * Get primary data source.
+     * Get data sources.
      *
-     * @return primary data source
+     * @return data sources
      */
-    DataSource getPrimaryDataSource();
-    
-    /**
-     * Get replication data sources.
-     *
-     * @return replication data sources
-     */
-    List<DataSource> getReplicationDataSources();
+    Map<String, DataSource> getDataSources();
 }

@@ -26,37 +26,39 @@ import org.apache.shardingsphere.test.integration.discovery.framework.parameter.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * MySQL MGR all Replication data source disabled Integration Test.
+ * Discovery MySQL MGR Integration Test.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public class MySQLMGRAllReplicationDataSourceDisabledIT extends BaseITCase {
+public final class DiscoveryMySQLMGRIT extends BaseITCase {
     
-    public MySQLMGRAllReplicationDataSourceDisabledIT(final DiscoveryParameterized discoveryParameterized) {
+    public DiscoveryMySQLMGRIT(final DiscoveryParameterized discoveryParameterized) {
         super(discoveryParameterized);
     }
     
-    @Parameterized.Parameters(name = "{0}")
+    @Parameters(name = "{0}")
     public static Collection<DiscoveryParameterized> getParameters() {
         Collection<DiscoveryParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listStorageContainerImages(databaseType)) {
-            result.add(new DiscoveryParameterized(databaseType, each, "disabled_all_replica_data_sources"));
+            result.add(new DiscoveryParameterized(databaseType, each, "mgr_discovery"));
         }
         return result;
     }
     
     @Test
-    public void assertMySQLMGRAllReplicationDataSourceDisabled() throws SQLException {
+    public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
         DatabaseClusterEnvironment mgrEnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
         initDiscoveryEnvironment();
-        closeDataSources(mgrEnvironment.getReplicationDataSources());
-        assertRouteDataSourceName(getRouteDataSourceName(), getPrimaryDataSourceName());
+        assertClosePrimaryDataSource(mgrEnvironment);
+        assertCloseReplicationDataSource(mgrEnvironment);
+        assertCloseAllReplicationDataSource(mgrEnvironment);
     }
 }
