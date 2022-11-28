@@ -198,6 +198,7 @@ strategyType
 buildInStrategyType
     : STANDARD
     | COMPLEX
+    | HINT
     ;
 
 ifExists
