@@ -12,7 +12,7 @@ This implementation has the following advantages:
 
 1. No impact on the original data during migration.
 2. No risk in case of migration failure.
-3. Free from sharding policy limitations.
+3. Freedom from sharding strategy limitations.
 
 The implementation has the following disadvantages:
 
@@ -43,10 +43,10 @@ Execute the stock data migration tasks that have been sharded during preparation
 Since the duration of stock data migration depends on factors such as data volume and parallelism, it is necessary to synchronize the data added to the business operations during this period.
 Different databases differ in technical details, but in general they are all based on replication protocols or WAL logs to achieve the capture of changed data.
 
-- MySQL: subscribe and parse binlog
+- MySQL: subscribe and parse binlog.
 - PostgreSQL: uses official logical replication [test_decoding](https://www.postgresql.org/docs/9.4/test-decoding.html).
 
-These incremental data captured are also written into the new data nodes by the data migration modules. When synchronization of  incremental data is basically completed (the incremental data flow is not interrupted since the business system is still in function), you can then move to the traffic switching stage.
+The incremental data captured is also written into the new data nodes by the data migration modules. When synchronization of incremental data is completed (the incremental data flow is not interrupted since the business system is still in function), you can then move to the traffic switching stage.
 
 ### Traffic Switching
 
@@ -58,4 +58,4 @@ Once confirmed, the data migration is complete. Users can then switch the read t
 
 ## References
 
-[Configurations of data migration ](/en/user-manual/shardingsphere-proxy/migration/)
+[Configurations of data migration](/en/user-manual/shardingsphere-proxy/migration/)
