@@ -63,11 +63,11 @@ tableName
     ;
 
 shardingAlgorithmName
-    : IDENTIFIER | buildInShardingAlgorithmType
+    : IDENTIFIER
     ;
 
 keyGeneratorName
-    : IDENTIFIER | buildInkeyGeneratorType
+    : IDENTIFIER
     ;
 
 buildInkeyGeneratorType
