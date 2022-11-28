@@ -28,7 +28,20 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING
+    : STRING | buildInAlgorithmTypeName
+    ;
+
+buildInAlgorithmTypeName
+    : ROUND_ROBIN
+    | RANDOM
+    | WEIGHT
+    | TRANSACTION_RANDOM
+    | TRANSACTION_ROUND_ROBIN
+    | TRANSACTION_WEIGHT
+    | FIXED_REPLICA_RANDOM
+    | FIXED_REPLICA_ROUND_ROBIN
+    | FIXED_REPLICA_WEIGHT
+    | FIXED_PRIMARY
     ;
 
 propertiesDefinition
