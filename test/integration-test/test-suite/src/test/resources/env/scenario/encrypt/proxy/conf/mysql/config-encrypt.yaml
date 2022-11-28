@@ -62,3 +62,4 @@ rules:
           plainColumn: telephone_plain
           cipherColumn: telephone_cipher
           encryptorName: aes_encryptor
+
