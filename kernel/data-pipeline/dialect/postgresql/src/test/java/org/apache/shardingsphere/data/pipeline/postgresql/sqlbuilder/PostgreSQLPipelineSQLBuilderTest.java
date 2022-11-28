@@ -24,8 +24,11 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class PostgreSQLPipelineSQLBuilderTest {
     
@@ -45,5 +48,22 @@ public final class PostgreSQLPipelineSQLBuilderTest {
         result.addColumn(new Column("user_id", 2, true, false));
         result.addColumn(new Column("status", "ok", true, false));
         return result;
+    }
+    
+    @Test
+    public void assertQuoteKeyword() {
+        String schemaName = "all";
+        Optional<String> actualCreateSchemaSql = sqlBuilder.buildCreateSchemaSQL(schemaName);
+        assertTrue(actualCreateSchemaSql.isPresent());
+        assertThat(actualCreateSchemaSql.get(), is(String.format("CREATE SCHEMA IF NOT EXISTS %s", sqlBuilder.quote(schemaName))));
+        String actualDropSQL = sqlBuilder.buildDropSQL(schemaName, "ALL");
+        String expectedDropSQL = String.format("DROP TABLE IF EXISTS %s", String.join(".", sqlBuilder.quote(schemaName), sqlBuilder.quote("ALL")));
+        assertThat(actualDropSQL, is(expectedDropSQL));
+    }
+    
+    @Test
+    public void assertBuilderDropSQLWithoutKeyword() {
+        String actualDropSQL = sqlBuilder.buildDropSQL("test_normal", "t_order");
+        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.t_order"));
     }
 }

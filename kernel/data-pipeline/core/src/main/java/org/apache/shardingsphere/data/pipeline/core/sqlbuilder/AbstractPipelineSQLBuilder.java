@@ -51,10 +51,24 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
      * @return add quote string
      */
     public String quote(final String item) {
-        // TODO quote by database type and keyword. need to compatible with case-sensitive table and column name
-        // return getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString();
-        return item;
+        return isKeyword(item) ? getLeftIdentifierQuoteString() + item + getRightIdentifierQuoteString() : item;
     }
+    
+    protected abstract boolean isKeyword(String item);
+    
+    /**
+     * Get left identifier quote string.
+     *
+     * @return string
+     */
+    protected abstract String getLeftIdentifierQuoteString();
+    
+    /**
+     * Get right identifier quote string.
+     *
+     * @return string
+     */
+    protected abstract String getRightIdentifierQuoteString();
     
     @Override
     public String buildDivisibleInventoryDumpSQL(final String schemaName, final String tableName, final String uniqueKey, final int uniqueKeyDataType, final boolean firstQuery) {

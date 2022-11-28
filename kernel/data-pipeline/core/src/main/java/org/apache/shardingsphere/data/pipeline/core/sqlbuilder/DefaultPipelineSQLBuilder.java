@@ -26,4 +26,19 @@ public final class DefaultPipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     public boolean isDefault() {
         return true;
     }
+    
+    @Override
+    protected boolean isKeyword(final String item) {
+        return false;
+    }
+    
+    @Override
+    protected String getLeftIdentifierQuoteString() {
+        return "";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "";
+    }
 }
