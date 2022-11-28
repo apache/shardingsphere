@@ -37,8 +37,7 @@ public final class ConvertYamlConfigurationStatementAssert {
      * @param actual actual convert yaml configuration statement
      * @param expected expected convert yaml configuration statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ConvertYamlConfigurationStatement actual,
-                                final ConvertYamlConfigurationStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ConvertYamlConfigurationStatement actual, final ConvertYamlConfigurationStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should no exist."), actual);
         } else {
