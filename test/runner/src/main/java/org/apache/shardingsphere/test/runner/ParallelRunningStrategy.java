@@ -44,7 +44,7 @@ public @interface ParallelRunningStrategy {
      * Parallel level.
      */
     enum ParallelLevel {
-    
+        
         NORMAL, CASE, SCENARIO
     }
 }
