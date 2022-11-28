@@ -67,9 +67,11 @@ shardingAlgorithmName
     ;
 
 keyGeneratorType
-    : IDENTIFIER
-    | CLASS_BASED
-    | SNOWFLAKE
+    : IDENTIFIER | buildInkeyGeneratorType
+    ;
+
+buildInkeyGeneratorType
+    : SNOWFLAKE
     | NANOID
     | UUID
     | COSID
