@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.executor;
+package org.apache.shardingsphere.test.runner.executor.impl;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
