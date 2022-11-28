@@ -22,10 +22,10 @@
 ######################################################################################################
 
 databaseName: sharding_db
+transaction:
+  defaultType: XA
+  providerType: Bitronix
 rules:
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Bitronix
   - !SHARDING
     tables:
       t_order:

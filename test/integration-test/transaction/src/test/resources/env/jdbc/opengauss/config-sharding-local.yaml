@@ -22,9 +22,9 @@
 ######################################################################################################
 
 databaseName: sharding_db
+transaction:
+  defaultType: LOCAL
 rules:
-  - !TRANSACTION
-    defaultType: LOCAL
   - !SHARDING
     tables:
       t_order:

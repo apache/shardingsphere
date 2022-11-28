@@ -65,7 +65,7 @@ rules:
     snowflake:
       type: SNOWFLAKE
 
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Narayana
 
