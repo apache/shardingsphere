@@ -36,7 +36,7 @@ public class ParallelRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void schedule(final Runnable childStatement) {
-        executorFactory.getExecutor(parallelLevel).execute(childStatement);
+        executorFactory.getExecutor("", parallelLevel).execute(childStatement);
     }
     
     @Override

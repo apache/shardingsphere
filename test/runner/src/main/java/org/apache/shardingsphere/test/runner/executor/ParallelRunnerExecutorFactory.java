@@ -27,21 +27,13 @@ import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLev
 public interface ParallelRunnerExecutorFactory<T> {
     
     /**
-     * Get executor factory by key and parallel level.
+     * Get executor.
      *
-     * @param key key bind to the factory
+     * @param key key bind to the executor
      * @param parallelLevel parallel level
-     * @return executor by key and parallel level
+     * @return got executor
      */
     ParallelRunnerExecutor getExecutor(T key, ParallelLevel parallelLevel);
-    
-    /**
-     * Get factory by parallel level.
-     *
-     * @param parallelLevel parallel level
-     * @return executor by parallel level
-     */
-    ParallelRunnerExecutor getExecutor(ParallelLevel parallelLevel);
     
     /**
      * Finish all executors.

@@ -31,8 +31,6 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     
     private final Map<T, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
-    private volatile ParallelRunnerExecutor defaultExecutor;
-    
     /**
      * Create executor instance by parallel level.
      *
@@ -40,7 +38,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
      * @return executor by parallel level
      */
     public ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
-        return new DefaultParallelRunnerExecutor();
+        return new DefaultParallelRunnerExecutor<>();
     }
     
     @Override
@@ -56,24 +54,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     }
     
     @Override
-    public final ParallelRunnerExecutor getExecutor(final ParallelLevel parallelLevel) {
-        if (null == defaultExecutor) {
-            synchronized (DefaultParallelRunnerExecutorFactory.class) {
-                if (null == defaultExecutor) {
-                    defaultExecutor = new DefaultParallelRunnerExecutor<>();
-                }
-            }
-        }
-        return defaultExecutor;
-    }
-    
-    @Override
     public final void finishAllExecutors() {
-        for (ParallelRunnerExecutor<?> each : executors.values()) {
-            each.finished();
-        }
-        if (null != defaultExecutor) {
-            defaultExecutor.finished();
-        }
+        executors.values().forEach(ParallelRunnerExecutor::finished);
     }
 }
