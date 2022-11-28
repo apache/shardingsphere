@@ -5,9 +5,9 @@ weight = 8
 
 ## Background
 
-ShardingSphere uses Logback for log management, and uses Java SPI internally to provide default log configuration. Users can use XML files to configure customized log output. Proxy will preferentially read the log configuration provided in `logback.xml` in the `/conf` directory.
+ShardingSphere uses Logback for log management, and the Java SPI internally to provide default log configuration. Users can use XML files to configure customized log output. Proxy will preferentially read the log configuration provided in `logback.xml` in the `/conf` directory.
 
-The following describes how to customize the log configuration.
+The following steps describe how to customize the log configuration.
 
 ## Procedure
 

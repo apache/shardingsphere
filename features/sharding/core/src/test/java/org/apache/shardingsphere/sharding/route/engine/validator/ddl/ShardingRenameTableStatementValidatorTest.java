@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.RenameTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -88,7 +89,7 @@ public final class ShardingRenameTableStatementValidatorTest {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        new ShardingRenameTableStatementValidator().postValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, props, routeContext);
+        new ShardingRenameTableStatementValidator().postValidate(shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext);
     }
     
     @Test
@@ -102,7 +103,7 @@ public final class ShardingRenameTableStatementValidatorTest {
         SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
-        new ShardingRenameTableStatementValidator().postValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, props, routeContext);
+        new ShardingRenameTableStatementValidator().postValidate(shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext);
     }
     
     private SQLStatementContext<RenameTableStatement> createRenameTableStatementContext(final String originTableName, final String newTableName) {

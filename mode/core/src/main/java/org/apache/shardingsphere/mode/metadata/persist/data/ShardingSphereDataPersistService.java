@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere data persist service.
@@ -104,16 +105,18 @@ public final class ShardingSphereDataPersistService {
     
     /**
      * Persist.
-     * 
+     *
      * @param databaseName database name
      * @param schemaName schema name
      * @param schemaData schema data
+     * @param rowsPartitionSize rows partition size
      */
-    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData) {
+    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, final int rowsPartitionSize) {
         if (schemaData.getTableData().isEmpty()) {
             repository.persist(ShardingSphereDataNode.getSchemaDataPath(databaseName, schemaName), "");
         } else {
-            persistTables(databaseName, schemaName, schemaData.getTableData().values());
+            persistTables(databaseName, schemaName, schemaData.getTableData().values().stream().map(each -> new YamlShardingSphereTableDataSwapper(rowsPartitionSize)
+                    .swapToYamlConfiguration(each)).collect(Collectors.toList()));
         }
     }
     
@@ -124,15 +127,14 @@ public final class ShardingSphereDataPersistService {
      * @param schemaName schema name
      * @param tables table data
      */
-    public void persistTables(final String databaseName, final String schemaName, final Collection<ShardingSphereTableData> tables) {
-        for (ShardingSphereTableData each : tables) {
+    public void persistTables(final String databaseName, final String schemaName, final Collection<YamlShardingSphereTableData> tables) {
+        for (YamlShardingSphereTableData each : tables) {
             repository.delete(ShardingSphereDataNode.getTablePath(databaseName, schemaName, each.getName().toLowerCase()));
-            YamlShardingSphereTableData yamlShardingSphereTableData = new YamlShardingSphereTableDataSwapper().swapToYamlConfiguration(each);
             YamlShardingSphereTableData yamlTableDataWithoutRows = new YamlShardingSphereTableData();
-            yamlTableDataWithoutRows.setName(yamlShardingSphereTableData.getName());
-            yamlTableDataWithoutRows.setColumns(yamlShardingSphereTableData.getColumns());
+            yamlTableDataWithoutRows.setName(each.getName());
+            yamlTableDataWithoutRows.setColumns(each.getColumns());
             repository.persist(ShardingSphereDataNode.getTablePath(databaseName, schemaName, each.getName().toLowerCase()), YamlEngine.marshal(yamlTableDataWithoutRows));
-            yamlShardingSphereTableData.getPartitionRows().forEach((key, value) -> repository.persist(ShardingSphereDataNode
+            each.getPartitionRows().forEach((key, value) -> repository.persist(ShardingSphereDataNode
                     .getTablePartitionRowsPath(databaseName, schemaName, each.getName().toLowerCase(), String.valueOf(key)), YamlEngine.marshal(value)));
         }
     }

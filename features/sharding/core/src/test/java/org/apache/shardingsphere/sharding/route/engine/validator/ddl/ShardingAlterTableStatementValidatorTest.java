@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -92,7 +93,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingDDLRouteException.class)
@@ -105,7 +106,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test
@@ -119,7 +120,7 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = ShardingDDLRouteException.class)
@@ -132,6 +133,6 @@ public final class ShardingAlterTableStatementValidatorTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_config", "t_config"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
         new ShardingAlterTableStatementValidator().postValidate(shardingRule, new AlterTableStatementContext(sqlStatement),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+                new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
     }
 }
