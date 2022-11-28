@@ -192,7 +192,13 @@ shardingAlgorithmDefinition
     ;
 
 strategyType
-    : STRING
+    : STRING | buildInStrategyType
+    ;
+
+buildInStrategyType
+    : STANDARD
+    | COMPLEX
+    | HINT
     ;
 
 ifExists

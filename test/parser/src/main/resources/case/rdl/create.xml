@@ -473,4 +473,21 @@
             <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
         </sharding-auditor>
     </create-sharding-auditor>
+
+    <create-sharding-table-rule sql-case-id="create-sharding-table-rule-without-quote-on-keyword">
+        <rule name="t_order_item" key-generate-strategy-column="another_id">
+            <data-node>ds_${0..1}.t_order_item_${0..1}</data-node>
+            <table-strategy type="standard" sharding-column="order_id">
+                <algorithm-segment algorithm-name="inline">
+                    <property key="algorithm-expression" value="t_order_${user_id % 2}" />
+                </algorithm-segment>
+            </table-strategy>
+            <database-strategy type="standard" sharding-column="user_id" >
+                <algorithm-segment algorithm-name="inline">
+                    <property key="algorithm-expression" value="ms_group_${order_id % 2}" />
+                </algorithm-segment>
+            </database-strategy>
+            <key-generate-strategy algorithm-name="snowflake" />
+        </rule>
+    </create-sharding-table-rule>
 </sql-parser-test-cases>
