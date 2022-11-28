@@ -648,7 +648,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i ON o.order_id = i.order_id WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -656,7 +656,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i USING(order_id) WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_order_item i USING(order_id) WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -664,7 +664,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_order_item i WHERE o.user_id = ? ORDER BY o.order_id, 7 LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -693,7 +693,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m ON o.merchant_id = m.merchant_id WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -714,7 +714,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o INNER JOIN t_merchant m USING(merchant_id) WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -735,7 +735,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order o NATURAL JOIN t_merchant m WHERE o.user_id = ? ORDER BY o.order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -983,7 +983,7 @@
         <assertion parameters="1000:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order_item_join_view LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_item_join_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -995,7 +995,7 @@
         <assertion parameters="1201:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_subquery_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -1007,7 +1007,7 @@
         <assertion parameters="8200:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order_aggregation_view LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_aggregation_view LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
@@ -1019,7 +1019,7 @@
         <assertion parameters="2500:long" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id LIMIT 1, 2" db-types="MySQL,openGauss" scenario-types="db">
+    <test-case sql="SELECT * FROM t_order_union_view ORDER BY order_id LIMIT 5, 2" db-types="MySQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 
