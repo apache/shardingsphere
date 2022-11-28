@@ -122,7 +122,7 @@ public final class ShardingSphereDataScheduleCollector {
             shardingSphereData.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
             ShardingSphereSchemaDataAlteredEvent event = new ShardingSphereSchemaDataAlteredEvent(databaseName, schemaName);
             event.getAlteredYamlTables().add(new YamlShardingSphereTableDataSwapper(contextManager.getMetaDataContexts().getMetaData().getProps()
-                    .getValue(ConfigurationPropertyKey.PROXY_METADATA_COLLECTOR_ROWS_PARTITION_SIZE)).swapToYamlConfiguration(changedTableData));
+                    .getValue(ConfigurationPropertyKey.METADATA_CHUNK_UNIT_ROWS)).swapToYamlConfiguration(changedTableData));
             contextManager.getInstanceContext().getEventBusContext().post(event);
         }
     }

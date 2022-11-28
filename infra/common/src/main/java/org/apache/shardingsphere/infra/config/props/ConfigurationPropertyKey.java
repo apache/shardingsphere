@@ -125,9 +125,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true),
     
     /**
-     * Proxy metadata collector rows partition size.
+     * Metadata chunk unit rows.
      */
-    PROXY_METADATA_COLLECTOR_ROWS_PARTITION_SIZE("proxy-metadata-collector-rows-partition-size", "100", int.class, true),
+    METADATA_CHUNK_UNIT_ROWS("metadata-chunk-unit-rows", "100", int.class, true),
     
     /**
      * Proxy metadata collector enabled.
