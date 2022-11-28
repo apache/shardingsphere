@@ -41,4 +41,3 @@ props:
   proxy-hint-enabled: true
   sql-show: false
   sql-federation-type: ADVANCED
-  proxy-metadata-collector-enabled: true
