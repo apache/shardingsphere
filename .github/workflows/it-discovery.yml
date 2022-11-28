@@ -85,4 +85,4 @@ jobs:
       - name: Build Discovery IT image
         run: ./mvnw -B clean install -am -pl test/integration-test/discovery -Pit.env.docker -DskipTests
       - name: Run MySQL Discovery Integration Test
-        run: ./mvnw -nsu -B install -f test/integration-test/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=${{ env.mysql_version }}
+        run: ./mvnw -nsu -B install -f test/integration-test/discovery/pom.xml -Dit.env.type=docker -Dit.docker.mysql.version=mysql:5.7
