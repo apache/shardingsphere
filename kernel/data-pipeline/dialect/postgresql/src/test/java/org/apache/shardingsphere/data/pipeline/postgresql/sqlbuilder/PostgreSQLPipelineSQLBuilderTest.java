@@ -62,10 +62,8 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     }
     
     @Test
-    public void assertQuoteNormal() {
-        String schemaName = "test_normal";
-        String actualDropSQL = sqlBuilder.buildDropSQL(schemaName, "t_order");
-        String expectedDropSQL = String.format("DROP TABLE IF EXISTS %s", String.join(".", schemaName, "t_order"));
-        assertThat(actualDropSQL, is(expectedDropSQL));
+    public void assertBuilderDropSQLWithoutKeyword() {
+        String actualDropSQL = sqlBuilder.buildDropSQL("test_normal", "t_order");
+        assertThat(actualDropSQL, is("DROP TABLE IF EXISTS test_normal.t_order"));
     }
 }

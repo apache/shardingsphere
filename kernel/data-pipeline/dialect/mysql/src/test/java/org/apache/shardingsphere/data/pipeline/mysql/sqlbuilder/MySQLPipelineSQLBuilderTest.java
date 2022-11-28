@@ -72,9 +72,8 @@ public final class MySQLPipelineSQLBuilderTest {
     }
     
     @Test
-    public void assertQuoteNormal() {
+    public void assertBuilderCountSQLWithoutKeyword() {
         String actualCountSQL = sqlBuilder.buildCountSQL(null, "t_order");
-        String expectedDropSQL = String.format("SELECT COUNT(*) FROM %s", "t_order");
-        assertThat(actualCountSQL, is(expectedDropSQL));
+        assertThat(actualCountSQL, is("SELECT COUNT(*) FROM t_order"));
     }
 }
