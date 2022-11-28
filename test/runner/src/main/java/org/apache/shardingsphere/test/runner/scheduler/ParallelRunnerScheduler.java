@@ -32,7 +32,7 @@ public class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
-    private final ParallelRunnerExecutorFactory<String> executorFactory;
+    private final ParallelRunnerExecutorFactory executorFactory;
     
     @Override
     public void schedule(final Runnable childStatement) {
