@@ -26,25 +26,23 @@ import org.apache.shardingsphere.test.integration.discovery.framework.parameter.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * MySQL MGR primary data source changed Integration Test.
+ * MySQL MGR all Replication data source disabled Integration Test.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
+public class MySQLMGRAllReplicationDataSourceDisabledIT extends BaseITCase {
     
-    public MySQLMGRPrimaryDataSourceChangedIT(final DiscoveryParameterized discoveryParameterized) {
+    public MySQLMGRAllReplicationDataSourceDisabledIT(final DiscoveryParameterized discoveryParameterized) {
         super(discoveryParameterized);
     }
     
-    @Parameters(name = "{0}")
+    @Parameterized.Parameters(name = "{0}")
     public static Collection<DiscoveryParameterized> getParameters() {
         Collection<DiscoveryParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
@@ -55,11 +53,10 @@ public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
     }
     
     @Test
-    public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
+    public void assertMySQLMGRAllReplicationDataSourceDisabled() throws SQLException {
         DatabaseClusterEnvironment mgrEnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
         initDiscoveryEnvironment();
-        String oldPrimaryDataSourceName = getPrimaryDataSourceName();
-        closeDataSources(Collections.singletonList(mgrEnvironment.getPrimaryDataSource()));
-        assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, getPrimaryDataSourceName());
+        closeDataSources(mgrEnvironment.getReplicationDataSources());
+        assertRouteDataSourceName(getRouteDataSourceName(), getPrimaryDataSourceName());
     }
 }

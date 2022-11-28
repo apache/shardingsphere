@@ -86,9 +86,8 @@ public abstract class BaseITCase {
         try (
                 Connection connection = proxyDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            String expectedPrimaryDataSourceName = getDiscoveryRulePrimaryDataSourceName(statement);
             String actualPrimaryDataSourceName = getReadwriteSplittingRulePrimaryDataSourceName(statement);
-            assertPrimaryDataSource(actualPrimaryDataSourceName, expectedPrimaryDataSourceName);
+            assertPrimaryDataSource(actualPrimaryDataSourceName, getDiscoveryRulePrimaryDataSourceName(statement));
             return actualPrimaryDataSourceName;
         }
     }
@@ -106,7 +105,7 @@ public abstract class BaseITCase {
     }
     
     private void assertPrimaryDataSource(final String actualPrimaryDataSourceName, final String expectedPrimaryDataSourceName) {
-        Preconditions.checkState(StringUtils.isNotBlank(expectedPrimaryDataSourceName) && StringUtils.isNotBlank(actualPrimaryDataSourceName));
+        Preconditions.checkState(StringUtils.isNotBlank(actualPrimaryDataSourceName) && StringUtils.isNotBlank(expectedPrimaryDataSourceName));
         assertThat(actualPrimaryDataSourceName, is(expectedPrimaryDataSourceName));
     }
     
@@ -120,7 +119,6 @@ public abstract class BaseITCase {
         for (DataSource each : dataSources) {
             close(each);
         }
-        ThreadUtil.sleep(20, TimeUnit.SECONDS);
     }
     
     private void close(final DataSource dataSource) throws SQLException {
@@ -129,6 +127,7 @@ public abstract class BaseITCase {
                 Statement statement = connection.createStatement()) {
             statement.execute("SHUTDOWN");
         }
+        ThreadUtil.sleep(25, TimeUnit.SECONDS);
     }
     
     /**
@@ -139,5 +138,30 @@ public abstract class BaseITCase {
      */
     public void assertPrimaryDataSourceChanged(final String oldPrimaryDataSourceName, final String newPrimaryDataSourceName) {
         assertNotEquals(oldPrimaryDataSourceName, newPrimaryDataSourceName);
+    }
+    
+    /**
+     * Get route data source name.
+     *
+     * @return route data source name
+     * @throws SQLException SQL exception
+     */
+    public String getRouteDataSourceName() throws SQLException {
+        try (
+                Connection connection = proxyDataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            return getRouteDataSourceName(statement);
+        }
+    }
+    
+    private String getRouteDataSourceName(final Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery("PREVIEW SELECT 1")) {
+            return resultSet.next() ? resultSet.getString("data_source_name") : "";
+        }
+    }
+    
+    public void assertRouteDataSourceName(final String actualRouteDataSourceName, final String expectedRouteDataSourceName) {
+        Preconditions.checkState(StringUtils.isNotBlank(actualRouteDataSourceName) && StringUtils.isNotBlank(expectedRouteDataSourceName));
+        assertThat(actualRouteDataSourceName, is(expectedRouteDataSourceName));
     }
 }
