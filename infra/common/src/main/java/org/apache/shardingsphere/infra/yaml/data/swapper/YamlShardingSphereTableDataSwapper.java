@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.data.swapper;
 
 import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
@@ -36,7 +37,14 @@ import java.util.Map;
 /**
  * YAML ShardingSphere data swapper.
  */
+@RequiredArgsConstructor
 public final class YamlShardingSphereTableDataSwapper implements YamlConfigurationSwapper<YamlShardingSphereTableData, ShardingSphereTableData> {
+    
+    private final int rowsPartitionSize;
+    
+    public YamlShardingSphereTableDataSwapper() {
+        this(100);
+    }
     
     @Override
     public YamlShardingSphereTableData swapToYamlConfiguration(final ShardingSphereTableData data) {
@@ -44,7 +52,7 @@ public final class YamlShardingSphereTableDataSwapper implements YamlConfigurati
         result.setName(data.getName());
         Map<Integer, YamlShardingSpherePartitionRowData> yamlPartitionRows = new LinkedHashMap<>();
         int i = 0;
-        for (List<ShardingSphereRowData> each : Lists.partition(data.getRows(), 100)) {
+        for (List<ShardingSphereRowData> each : Lists.partition(data.getRows(), rowsPartitionSize)) {
             Collection<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
             each.forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(data.getColumns()).swapToYamlConfiguration(rowData)));
             YamlShardingSpherePartitionRowData partitionRowsData = new YamlShardingSpherePartitionRowData();

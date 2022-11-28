@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
@@ -31,6 +32,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
@@ -47,6 +49,7 @@ public final class ShardingSphereDataCollectorTest {
         when(contextManager.getMetaDataContexts().getShardingSphereData()).thenReturn(shardingSphereData);
         ShardingSphereMetaData metaData = mockMetaData();
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         new ShardingSphereDataScheduleCollector(contextManager).start();
         Thread.sleep(100L);
         verify(contextManager, atLeastOnce()).getInstanceContext();
