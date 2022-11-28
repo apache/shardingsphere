@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
  */
 @Getter
 @Setter
-public class YamlSQLParserCacheOptionConfiguration implements YamlConfiguration {
+public final class YamlSQLParserCacheOptionConfiguration implements YamlConfiguration {
     
     private int initialCapacity;
     
