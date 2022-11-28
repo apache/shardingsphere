@@ -521,4 +521,17 @@
             <property key="keep-alive-cron" value="0/5 * * * * ?" />
         </rule>
     </create-database-discovery-definition-rule>
+
+    <create-shadow-rule sql-case-id="create-shadow-rule-without-quote-on-build-in-shadow-algorithm-name">
+        <rule rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
+            <table-rule table-name="t_order">
+                <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_0">
+                    <algorithm algorithm-name="SIMPLE_HINT">
+                        <property key="shadow" value="true" />
+                        <property key="foo" value="bar" />
+                    </algorithm>
+                </shadow-algorithm>
+            </table-rule>
+        </rule>
+    </create-shadow-rule>
 </sql-parser-test-cases>

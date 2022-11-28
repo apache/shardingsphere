@@ -28,7 +28,13 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING
+    : STRING | buildInAlgorithmTypeName
+    ;
+
+buildInAlgorithmTypeName
+    : VALUE_MATCH
+    | REGEX_MATCH
+    | SIMPLE_HINT
     ;
 
 propertiesDefinition
