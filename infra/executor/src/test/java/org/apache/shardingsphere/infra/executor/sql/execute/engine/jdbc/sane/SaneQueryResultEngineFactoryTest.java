@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc.sane;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.SaneQueryResultEngineFactory;
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureSaneQueryResultEngine;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
+import org.apache.shardingsphere.test.fixture.infra.database.type.MockedDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.internal;
 
-import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
+import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
-@RunWith(ShardingSphereParallelTestParameterized.class)
+@RunWith(ParallelParameterized.class)
 public final class InternalMySQLParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
     public InternalMySQLParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
@@ -34,6 +34,6 @@ public final class InternalMySQLParserParameterizedIT extends InternalSQLParserP
     
     @Parameters(name = "{0} ({2}) -> {1}")
     public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("MySQL", "H2");
+        return getTestParameters("MySQL", "H2");
     }
 }

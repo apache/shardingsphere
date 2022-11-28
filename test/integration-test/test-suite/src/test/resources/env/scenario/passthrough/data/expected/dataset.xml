@@ -24,4 +24,9 @@
         <column name="col_smallint" type="numeric" />
         <column name="col_tinyint" type="numeric" />
     </metadata>
+    <metadata data-nodes="passthrough.t_data_type_floating_point">
+        <column name="id" type="numeric" />
+        <column name="col_float" type="numeric" />
+        <column name="col_double" type="numeric" />
+    </metadata>
 </dataset>

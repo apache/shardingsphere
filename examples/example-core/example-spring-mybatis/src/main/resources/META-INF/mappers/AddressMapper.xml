@@ -19,8 +19,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.shardingsphere.example.core.mybatis.repository.MybatisAddressRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.core.api.entity.Address">
-        <result column="address_id" property="addressId" jdbcType="BIGINT"/>
-        <result column="address_name" property="addressName" jdbcType="VARCHAR"/>
+        <result column="address_id" property="addressId" jdbcType="BIGINT" />
+        <result column="address_name" property="addressName" jdbcType="VARCHAR" />
     </resultMap>
 
     <update id="createTableIfNotExists">

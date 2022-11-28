@@ -17,9 +17,9 @@
 
 dataSources:
   ds:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
   shadow_ds:
-    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    dataSourceClassName: org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource
 
 rules:
 - !SHADOW

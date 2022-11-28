@@ -31,7 +31,7 @@
     </register-storage-unit>
     
     <register-migration-source-storage-unit sql-case-id="single-register-migration-source-storage-unit">
-        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" url="jdbc:mysql://127.0.0.1:3306/test0"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" url="jdbc:mysql://127.0.0.1:3306/test0" />
     </register-migration-source-storage-unit>
 
     <register-storage-unit sql-case-id="register-storage-unit-with-quota">
@@ -59,12 +59,12 @@
     </register-storage-unit>
 
     <register-storage-unit sql-case-id="register-storage-unit-url-single-with-empty-properties">
-        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
     </register-storage-unit>
 
     <register-storage-unit sql-case-id="register-storage-unit-url-single-with-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
-            <property key="maxPoolSize" value="30"/>
+            <property key="maxPoolSize" value="30" />
         </data-source>
     </register-storage-unit>
     
@@ -73,7 +73,7 @@
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4"/>
+                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -84,7 +84,7 @@
             <data-source>ms_group_0</data-source>
             <data-source>ms_group_1</data-source>
             <table-strategy algorithm-name="hash_mod">
-                <property key="sharding-count" value="4"/>
+                <property key="sharding-count" value="4" />
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
         </rule>
@@ -314,17 +314,17 @@
             <data-source>ds_0</data-source>
             <data-source>ds_1</data-source>
             <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec"/>
+                <property key="groupName" value="92504d5b-6dec" />
             </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?"/>
+            <property key="keepAliveCron" value="0/5 * * * * ?" />
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
             <data-source>ds_2</data-source>
             <data-source>ds_3</data-source>
             <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2"/>
+                <property key="groupName" value="92504d5b-6dec-2" />
             </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?"/>
+            <property key="keepAliveCron" value="0/6 * * * * ?" />
         </rule>
     </create-database-discovery-definition-rule>
     
@@ -332,11 +332,11 @@
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc"/>
+                    <property key="aes-key-value" value="123456abc" />
                 </encryptor>
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </create-encrypt-rule>
@@ -345,11 +345,11 @@
         <rule name="encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc"/>
+                    <property key="aes-key-value" value="123456abc" />
                 </encryptor>
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </create-encrypt-rule>
@@ -358,12 +358,12 @@
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
                 <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc"/>
+                    <property key="aes-key-value" value="123456abc" />
                 </encryptor>
                 <assisted-query-encryptor algorithm-name="MD5" />
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </create-encrypt-rule>
@@ -372,12 +372,12 @@
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
                 <encryptor algorithm-name="AES">
-                    <property key="aes-key-value" value="123456abc"/>
+                    <property key="aes-key-value" value="123456abc" />
                 </encryptor>
                 <like-query-encryptor algorithm-name="CHAR_DIGEST_LIKE" />
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </create-encrypt-rule>
@@ -397,15 +397,15 @@
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
-                        <property key="operation" value="insert"/>
-                        <property key="column" value="user_id"/>
-                        <property key="regex" value="[1]"/>
+                        <property key="operation" value="insert" />
+                        <property key="column" value="user_id" />
+                        <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true"/>
-                        <property key="foo" value="bar"/>
+                        <property key="shadow" value="true" />
+                        <property key="foo" value="bar" />
                     </algorithm>
                 </shadow-algorithm>
             </table-rule>
@@ -417,15 +417,15 @@
             <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match_0">
                     <algorithm algorithm-name="REGEX_MATCH">
-                        <property key="operation" value="insert"/>
-                        <property key="column" value="user_id"/>
-                        <property key="regex" value="[1]"/>
+                        <property key="operation" value="insert" />
+                        <property key="column" value="user_id" />
+                        <property key="regex" value="[1]" />
                     </algorithm>
                 </shadow-algorithm>
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_simple_hint_1">
                     <algorithm algorithm-name="SIMPLE_HINT">
-                        <property key="shadow" value="true"/>
-                        <property key="foo" value="bar"/>
+                        <property key="shadow" value="true" />
+                        <property key="foo" value="bar" />
                     </algorithm>
                 </shadow-algorithm>
             </table-rule>
@@ -459,14 +459,14 @@
     <create-default-shadow-algorithm sql-case-id="create-default-shadow-algorithm">
         <shadow-algorithm algorithm-id="default">
             <algorithm algorithm-name="HINT">
-                <property key="shadow" value="true"/>
-                <property key="foo" value="bar"/>
+                <property key="shadow" value="true" />
+                <property key="foo" value="bar" />
             </algorithm>
         </shadow-algorithm>
     </create-default-shadow-algorithm>
     
-    <set-default-single-table-storage-unit sql-case-id="set-default-single-table-storage-unit" default-storage-unit="ds_0"/>
-    <set-default-single-table-storage-unit-random sql-case-id="set-default-single-table-storage-unit-random"/>
+    <set-default-single-table-storage-unit sql-case-id="set-default-single-table-storage-unit" default-storage-unit="ds_0" />
+    <set-default-single-table-storage-unit-random sql-case-id="set-default-single-table-storage-unit-random" />
     
     <create-sharding-auditor sql-case-id="create-sharding-auditor">
         <sharding-auditor auditor-name="sharding_key_required_auditor">

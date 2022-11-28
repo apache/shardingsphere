@@ -19,11 +19,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.shardingsphere.example.core.mybatis.repository.MybatisShadowUserRepository">
     <resultMap id="baseResultMap" type="org.apache.shardingsphere.example.core.api.entity.ShadowUser">
-        <result column="user_id" property="userId" jdbcType="INTEGER"/>
-        <result column="user_type" property="userType" jdbcType="INTEGER"/>
-        <result column="username" property="username" jdbcType="VARCHAR"/>
-        <result column="pwd" property="pwd" jdbcType="VARCHAR"/>
-        <result column="assisted_query_pwd" property="assistedQueryPwd" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="user_type" property="userType" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="VARCHAR" />
+        <result column="pwd" property="pwd" jdbcType="VARCHAR" />
+        <result column="assisted_query_pwd" property="assistedQueryPwd" jdbcType="VARCHAR" />
     </resultMap>
 
     <update id="createTableIfNotExistsNative">

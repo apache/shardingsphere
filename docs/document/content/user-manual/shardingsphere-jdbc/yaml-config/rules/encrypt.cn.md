@@ -16,10 +16,13 @@ rules:
     <table-name> (+): # 加密表名称
       columns:
         <column-name> (+): # 加密列名称
-          cipherColumn: # 密文列名称
-          assistedQueryColumn (?):  # 查询辅助列名称
           plainColumn (?): # 原文列名称
-          encryptorName: # 加密算法名称
+          cipherColumn: # 密文列名称
+          encryptorName: # 密文列加密算法名称
+          assistedQueryColumn (?):  # 查询辅助列名称
+          assistedQueryEncryptorName:  # 查询辅助列加密算法名称
+          likeQueryColumn (?):  # 模糊查询列名称
+          likeQueryEncryptorName:  # 模糊查询列加密算法名称
       queryWithCipherColumn(?): # 该表是否使用加密列进行查询
     
   # 加密算法配置
@@ -60,18 +63,30 @@ rules:
         username:
           plainColumn: username_plain
           cipherColumn: username
-          encryptorName: name-encryptor
+          encryptorName: name_encryptor
+          assistedQueryColumn: assisted_query_username
+          assistedQueryEncryptorName: assisted_encryptor
+          likeQueryColumn: like_query_username
+          likeQueryEncryptorName: like_encryptor
         pwd:
           cipherColumn: pwd
-          assistedQueryColumn: assisted_query_pwd
           encryptorName: pwd_encryptor
+          assistedQueryColumn: assisted_query_pwd
+          assistedQueryEncryptorName: assisted_encryptor
+      queryWithCipherColumn: true
   encryptors:
-    name-encryptor:
+    name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
+    assisted_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
     pwd_encryptor:
-      type: assistedTest
+      type: MD5
 ```
 
 然后通过 YamlShardingSphereDataSourceFactory 的 createDataSource 方法创建数据源。

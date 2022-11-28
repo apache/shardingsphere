@@ -35,7 +35,7 @@ import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.
 import java.util.Properties;
 
 /**
- * SQL statement visitor for transaction dist SQL.
+ * SQL statement visitor for transaction DistSQL.
  */
 public final class TransactionDistSQLStatementVisitor extends TransactionDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

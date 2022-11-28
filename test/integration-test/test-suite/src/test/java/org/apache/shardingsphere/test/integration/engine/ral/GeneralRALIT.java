@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.ral;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -32,7 +32,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.Collection;
 
-@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
+@ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralRALIT extends BaseRALIT {
     
     public GeneralRALIT(final AssertionParameterizedArray parameterizedArray) {

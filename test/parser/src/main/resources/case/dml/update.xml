@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <update sql-case-id="update_without_alias" parameters="'update', 1, 1">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="28" literal-stop-index="35">
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
@@ -167,7 +167,7 @@
 
     <update sql-case-id="update_equal_with_geography" parameters="'2017-06-07', 100, 200, '{&quot;rule2&quot;:&quot;null2&quot;}', 3, 5, 7, 200">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="168" literal-stop-index="201">
             <assignment start-index="19" stop-index="32" literal-stop-index="43">
@@ -188,7 +188,7 @@
                 <assignment-value>
                     <function function-name="ST_GeographyFromText" text="ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')')" literal-text="ST_GeographyFromText('SRID=4326;POINT('||100||' '||200||')')" start-index="61" stop-index="116" literal-start-index="72" literal-stop-index="131">
                         <parameter>
-                            <common-expression text="'SRID=4326;POINT('||?||' '||?||')'" literal-text="'SRID=4326;POINT('||100||' '||200||')'" literal-start-index="93" start-index="82" literal-stop-index="130" stop-index="115"/>
+                            <common-expression text="'SRID=4326;POINT('||?||' '||?||')'" literal-text="'SRID=4326;POINT('||100||' '||200||')'" literal-start-index="93" start-index="82" literal-stop-index="130" stop-index="115" />
                         </parameter>
                     </function>
                 </assignment-value>
@@ -250,7 +250,7 @@
 
     <update sql-case-id="update_without_condition">
         <table start-index="7" stop-index="15">
-            <simple-table name="t_order" alias="o" start-index="7" stop-index="15"/>
+            <simple-table name="t_order" alias="o" start-index="7" stop-index="15" />
         </table>
         <set start-index="17" stop-index="41">
             <assignment start-index="21" stop-index="41">
@@ -266,7 +266,7 @@
 
     <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">
         <table start-index="27" stop-index="33">
-            <simple-table name="t_order" start-index="27" stop-index="33"/>
+            <simple-table name="t_order" start-index="27" stop-index="33" />
         </table>
         <set start-index="35" stop-index="48" literal-stop-index="55">
             <assignment start-index="39" stop-index="48" literal-start-index="39" literal-stop-index="55">
@@ -312,7 +312,7 @@
 
     <update sql-case-id="update_with_special_character" parameters="'update', 1, 1">
         <table start-index="7" stop-index="15">
-            <simple-table name="t_order" start-delimiter="`" end-delimiter="`"  start-index="7" stop-index="15"/>
+            <simple-table name="t_order" start-delimiter="`" end-delimiter="`"  start-index="7" stop-index="15" />
         </table>
         <set start-index="17" stop-index="32" literal-stop-index="39">
             <assignment start-index="21" stop-index="32" literal-stop-index="39">
@@ -358,7 +358,7 @@
 
     <update sql-case-id="update_without_parameters">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="35">
             <assignment start-index="19" stop-index="35">
@@ -401,7 +401,7 @@
 
     <update sql-case-id="update_with_or" parameters="1000, 0, 10">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="35">
             <assignment start-index="19" stop-index="35">
@@ -463,13 +463,13 @@
 
     <update sql-case-id="update_with_set_calculation" parameters="1, 2, 3">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="37" literal-stop-index="37">
             <assignment start-index="19" stop-index="37" literal-stop-index="37">
                 <column name="status" start-index="19" stop-index="24" />
                 <assignment-value>
-                    <common-expression text="status - ?" literal-text="status - 1" start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37"/>
+                    <common-expression text="status - ?" literal-text="status - 1" start-index="28" stop-index="37" literal-start-index="28" literal-stop-index="37" />
                 </assignment-value>
             </assignment>
         </set>
@@ -508,7 +508,7 @@
 
     <update sql-case-id="update_with_where_calculation" parameters="1, 2, 3">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="28" literal-stop-index="28">
             <assignment start-index="19" stop-index="28" literal-stop-index="28">
@@ -563,20 +563,20 @@
 
     <update sql-case-id="update_with_column_equal_column" parameters="1">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="54" literal-stop-index="54">
             <assignment start-index="19" stop-index="37" literal-stop-index="37">
                 <column name="order_id" start-index="19" stop-index="26" />
                 <assignment-value>
-                    <common-expression text="order_id" literal-text="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37"/>
+                    <common-expression text="order_id" literal-text="order_id" start-index="30" stop-index="37" literal-start-index="30" literal-stop-index="37" />
                 </assignment-value>
             </assignment>
             <assignment start-index="40" stop-index="54" literal-stop-index="54">
                 <column name="status" start-index="40" stop-index="45" />
                 <assignment-value>
                     <literal-expression value="init" start-index="49" stop-index="54" />
-                    <common-expression text="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54"/>
+                    <common-expression text="init" start-index="49" stop-index="54" literal-start-index="49" literal-stop-index="54" />
                 </assignment-value>
             </assignment>
         </set>
@@ -614,25 +614,25 @@
 
     <update sql-case-id="update_with_case_when" parameters="3, 2, 4, 2, 10, 2, 3, 'll', 4, 'll', 10, 'll', 3, '2020-08-10T17:15:25.979+0800', 'jd'">
         <table start-index="7" stop-index="25">
-            <simple-table name="stock_freeze_detail" start-index="7" stop-index="25"/>
+            <simple-table name="stock_freeze_detail" start-index="7" stop-index="25" />
         </table>
         <set start-index="27" stop-index="230" literal-stop-index="270" literal-start-index="27" >
             <assignment start-index="31" stop-index="106" literal-start-index="31" literal-stop-index="107">
                 <column name="row_status" start-index="31" stop-index="40" />
                 <assignment-value>
-                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 2 WHEN (id=4) THEN 2 WHEN (id=10) THEN 2 end" start-index="42" stop-index="106" literal-start-index="42" literal-stop-index="107"/>
+                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 2 WHEN (id=4) THEN 2 WHEN (id=10) THEN 2 end" start-index="42" stop-index="106" literal-start-index="42" literal-stop-index="107" />
                 </assignment-value>
             </assignment>
             <assignment start-index="113" stop-index="189" literal-start-index="114" literal-stop-index="200">
-                <column name="update_user" start-index="113" stop-index="123" literal-start-index="114" literal-stop-index="124"/>
+                <column name="update_user" start-index="113" stop-index="123" literal-start-index="114" literal-stop-index="124" />
                 <assignment-value>
-                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 'll' WHEN (id=4) THEN 'll' WHEN (id=10) THEN 'll' end" start-index="125" stop-index="189" literal-start-index="126" literal-stop-index="200"/>
+                    <common-expression text="case WHEN (id=?) THEN ? WHEN (id=?) THEN ? WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN 'll' WHEN (id=4) THEN 'll' WHEN (id=10) THEN 'll' end" start-index="125" stop-index="189" literal-start-index="126" literal-stop-index="200" />
                 </assignment-value>
             </assignment>
             <assignment start-index="192" stop-index="230" literal-start-index="203" literal-stop-index="270">
                 <column name="update_time" start-index="192" stop-index="202" literal-start-index="203" literal-stop-index="213" />
                 <assignment-value>
-                    <common-expression text="case WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN '2020-08-10T17:15:25.979+0800' end" start-index="204" stop-index="230" literal-start-index="215" literal-stop-index="270"/>
+                    <common-expression text="case WHEN (id=?) THEN ? end" literal-text="case WHEN (id=3) THEN '2020-08-10T17:15:25.979+0800' end" start-index="204" stop-index="230" literal-start-index="215" literal-stop-index="270" />
                 </assignment-value>
             </assignment>
         </set>
@@ -640,7 +640,7 @@
             <expr>
                 <binary-operation-expression start-index="239" stop-index="251" literal-start-index="279" literal-stop-index="294">
                     <left>
-                        <column name="tenant_id" start-index="239" stop-index="247"  literal-start-index="279"  literal-stop-index="287"/>
+                        <column name="tenant_id" start-index="239" stop-index="247"  literal-start-index="279"  literal-stop-index="287" />
                     </left>
                     <operator>=</operator>
                     <right>
@@ -654,7 +654,7 @@
 
     <update sql-case-id="update_with_order_by_row_count" parameters="'update', 1, 1, 10">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="28" literal-stop-index="35">
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
@@ -697,7 +697,7 @@
             </expr>
         </where>
         <order-by>
-            <column-item name="order_id" start-index="74" stop-index="81" literal-start-index="81" literal-stop-index="88"/>
+            <column-item name="order_id" start-index="74" stop-index="81" literal-start-index="81" literal-stop-index="88" />
         </order-by>
         <limit start-index="83" stop-index="89" literal-start-index="90" literal-stop-index="97">
             <row-count value="10" parameter-index="3" start-index="89" stop-index="89" literal-start-index="96" literal-stop-index="97" />
@@ -706,7 +706,7 @@
 
     <update sql-case-id="update_with_number" parameters="1, 1">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="30" literal-stop-index="30">
             <assignment start-index="19" stop-index="30" literal-stop-index="30">
@@ -785,7 +785,7 @@
 
     <update sql-case-id="update_with_top" parameters="1, 1">
         <table start-index="15" stop-index="21">
-            <simple-table name="t_order" start-index="15" stop-index="21"/>
+            <simple-table name="t_order" start-index="15" stop-index="21" />
         </table>
         <set start-index="23" stop-index="38" literal-stop-index="38">
             <assignment start-index="27" stop-index="38" literal-stop-index="38">
@@ -814,7 +814,7 @@
 
     <update sql-case-id="update_with_top_percent" parameters="1, 1">
         <table start-index="23" stop-index="30">
-            <simple-table name="t_order" start-index="23" stop-index="29"/>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
         </table>
         <set start-index="31" stop-index="46" literal-stop-index="46">
             <assignment start-index="35" stop-index="46" literal-stop-index="46">
@@ -843,7 +843,7 @@
 
     <update sql-case-id="update_with_query_hint" parameters="'update', 1">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="15" stop-index="28" literal-stop-index="35">
             <assignment start-index="19" stop-index="28" literal-stop-index="35">
@@ -872,7 +872,7 @@
 
     <update sql-case-id="update_with_set_null">
         <table start-index="7" stop-index="13">
-            <simple-table name="employees" start-index="7" stop-index="15"/>
+            <simple-table name="employees" start-index="7" stop-index="15" />
         </table>
         <set start-index="17" stop-index="41">
             <assignment start-index="21" stop-index="41">
@@ -899,7 +899,7 @@
 
     <update sql-case-id="update_with_set_subquery">
         <table start-index="7" stop-index="17">
-            <simple-table name="employees" alias="a" start-index="7" stop-index="17"/>
+            <simple-table name="employees" alias="a" start-index="7" stop-index="17" />
         </table>
         <set start-index="19" stop-index="104">
             <assignment start-index="23" stop-index="104">
@@ -908,20 +908,20 @@
                     <subquery start-index="39" stop-index="104">
                         <select>
                             <from start-index="66" stop-index="76">
-                                <simple-table name="departments" start-index="66" stop-index="76"/>
+                                <simple-table name="departments" start-index="66" stop-index="76" />
                             </from>
                             <projections start-index="47" stop-index="59">
-                                <column-projection name="department_id" start-index="47" stop-index="59"/>
+                                <column-projection name="department_id" start-index="47" stop-index="59" />
                             </projections>
                             <where start-index="78" stop-index="103">
                                 <expr>
                                     <binary-operation-expression start-index="84" stop-index="103">
                                         <left>
-                                            <column name="location_id" start-index="84" stop-index="94"/>
+                                            <column name="location_id" start-index="84" stop-index="94" />
                                         </left>
                                         <operator>=</operator>
                                         <right>
-                                            <literal-expression value="2100" start-index="98" stop-index="103"/>
+                                            <literal-expression value="2100" start-index="98" stop-index="103" />
                                         </right>
                                     </binary-operation-expression>
                                 </expr>
@@ -935,7 +935,7 @@
 
     <update sql-case-id="update_with_multiple_set">
         <table start-index="7" stop-index="15">
-            <simple-table name="employees" start-index="7" stop-index="15"/>
+            <simple-table name="employees" start-index="7" stop-index="15" />
         </table>
         <set start-index="17" stop-index="73">
             <assignment start-index="21" stop-index="37">
@@ -974,7 +974,7 @@
 
     <update sql-case-id="update_with_set_value">
         <table start-index="7" stop-index="20">
-            <simple-table name="people_demo1" alias="p" start-index="7" stop-index="20"/>
+            <simple-table name="people_demo1" alias="p" start-index="7" stop-index="20" />
         </table>
         <set start-index="22" stop-index="113">
             <assignment start-index="26" stop-index="113">
@@ -983,23 +983,23 @@
                     <subquery start-index="37" stop-index="113">
                         <select>
                             <from start-index="59" stop-index="72">
-                                <simple-table name="people_demo2" alias="q" start-index="59" stop-index="72"/>
+                                <simple-table name="people_demo2" alias="q" start-index="59" stop-index="72" />
                             </from>
                             <projections start-index="45" stop-index="52">
-                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52"/>
+                                <expression-projection text="VALUE(q)" start-index="45" stop-index="52" />
                             </projections>
                             <where start-index="74" stop-index="112">
                                 <expr>
                                     <binary-operation-expression start-index="80" stop-index="112">
                                         <left>
                                             <column name="department_id" start-index="80" stop-index="94">
-                                                <owner name="p" start-index="80" stop-index="80"/>
+                                                <owner name="p" start-index="80" stop-index="80" />
                                             </column>
                                         </left>
                                         <operator>=</operator>
                                         <right>
                                             <column name="department_id" start-index="98" stop-index="112">
-                                                <owner name="q" start-index="98" stop-index="98"/>
+                                                <owner name="q" start-index="98" stop-index="98" />
                                             </column>
                                         </right>
                                     </binary-operation-expression>
@@ -1015,7 +1015,7 @@
                 <binary-operation-expression start-index="121" stop-index="140">
                     <left>
                         <column name="department_id" start-index="121" stop-index="135">
-                            <owner name="p" start-index="121" stop-index="121"/>
+                            <owner name="p" start-index="121" stop-index="121" />
                         </column>
                     </left>
                     <operator>=</operator>
@@ -1029,7 +1029,7 @@
 
     <update sql-case-id="update_with_multi_columns">
         <table start-index="7" stop-index="17">
-            <simple-table name="employees" alias="a" start-index="7" stop-index="17"/>
+            <simple-table name="employees" alias="a" start-index="7" stop-index="17" />
         </table>
         <set start-index="19" stop-index="239">
             <assignment start-index="23" stop-index="104">
@@ -1038,20 +1038,20 @@
                     <subquery start-index="39" stop-index="104">
                         <select>
                             <from start-index="66" stop-index="76">
-                                <simple-table name="departments" start-index="66" stop-index="76"/>
+                                <simple-table name="departments" start-index="66" stop-index="76" />
                             </from>
                             <projections start-index="47" stop-index="59">
-                                <column-projection name="department_id" start-index="47" stop-index="59"/>
+                                <column-projection name="department_id" start-index="47" stop-index="59" />
                             </projections>
                             <where start-index="78" stop-index="103">
                                 <expr>
                                     <binary-operation-expression start-index="84" stop-index="103">
                                         <left>
-                                            <column name="location_id" start-index="84" stop-index="94"/>
+                                            <column name="location_id" start-index="84" stop-index="94" />
                                         </left>
                                         <operator>=</operator>
                                         <right>
-                                            <literal-expression value="2100" start-index="98" stop-index="103"/>
+                                            <literal-expression value="2100" start-index="98" stop-index="103" />
                                         </right>
                                     </binary-operation-expression>
                                 </expr>
@@ -1061,17 +1061,17 @@
                 </assignment-value>
             </assignment>
             <assignment start-index="107" stop-index="239">
-                <columns name="salary" start-index="108" stop-index="113"/>
-                <columns name="commission_pct" start-index="116" stop-index="129"/>
+                <columns name="salary" start-index="108" stop-index="113" />
+                <columns name="commission_pct" start-index="116" stop-index="129" />
                 <assignment-value>
                     <subquery start-index="135" stop-index="238">
                         <select>
                             <from start-index="188" stop-index="198">
-                                <simple-table name="employees" alias="b" start-index="188" stop-index="198"/>
+                                <simple-table name="employees" alias="b" start-index="188" stop-index="198" />
                             </from>
                             <projections start-index="142" stop-index="181">
-                                <expression-projection text="1.1*AVG(salary)" start-index="142" stop-index="156"/>
-                                <expression-projection text="1.5*AVG(commission_pct)" start-index="159" stop-index="181"/>
+                                <expression-projection text="1.1*AVG(salary)" start-index="142" stop-index="156" />
+                                <expression-projection text="1.5*AVG(commission_pct)" start-index="159" stop-index="181" />
                             </projections>
                             <where start-index="200" stop-index="238">
                                 <expr>
@@ -1099,7 +1099,7 @@
 
     <update sql-case-id="update_with_force_index" parameters="'update', 1">
         <table start-index="7" stop-index="13">
-            <simple-table name="t_order" start-index="7" stop-index="13"/>
+            <simple-table name="t_order" start-index="7" stop-index="13" />
         </table>
         <set start-index="37" stop-index="50" literal-stop-index="57">
             <assignment start-index="41" stop-index="50" literal-stop-index="57">

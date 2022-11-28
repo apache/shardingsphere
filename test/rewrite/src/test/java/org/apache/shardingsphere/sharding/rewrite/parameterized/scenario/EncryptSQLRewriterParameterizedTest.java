@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;

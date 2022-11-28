@@ -57,7 +57,7 @@
     <sql-case id="alter_table_modify_column_with_first" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) AFTER order_id" db-types="MySQL" />
     <sql-case id="alter_table_modify_column_with_first_after" value="ALTER TABLE t_order MODIFY status VARCHAR(20) FIRST, MODIFY user_id INT AFTER status" db-types="MySQL" />
-    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL"/>
+    <sql-case id="alter_table_drop_column" value="ALTER TABLE t_order DROP COLUMN user_id" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_columns" value="ALTER TABLE t_order DROP user_id, DROP column5" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="alter_table_change_column" value="ALTER TABLE t_order CHANGE user_id column4 VARCHAR(10)" db-types="MySQL" />
     <sql-case id="alter_table_add_primary_key" value="ALTER TABLE t_order ADD CONSTRAINT pk_user_id PRIMARY KEY (user_id)" />

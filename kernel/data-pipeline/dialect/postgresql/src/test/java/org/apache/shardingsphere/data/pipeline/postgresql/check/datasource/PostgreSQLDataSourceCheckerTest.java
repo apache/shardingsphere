@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
@@ -34,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,7 +71,7 @@ public final class PostgreSQLDataSourceCheckerTest {
         when(resultSet.getString("rolreplication")).thenReturn("t");
         when(resultSet.getString("rolsuper")).thenReturn("f");
         dataSourceChecker.checkPrivilege(Collections.singletonList(dataSource));
-        verify(resultSet, Mockito.atLeastOnce()).getString("rolsuper");
+        verify(resultSet, atLeastOnce()).getString("rolsuper");
     }
     
     @Test
@@ -80,7 +80,7 @@ public final class PostgreSQLDataSourceCheckerTest {
         when(resultSet.getString("rolsuper")).thenReturn("t");
         when(resultSet.getString("rolreplication")).thenReturn("f");
         dataSourceChecker.checkPrivilege(Collections.singletonList(dataSource));
-        verify(resultSet, Mockito.atLeastOnce()).getString("rolreplication");
+        verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
     
     @Test(expected = PrepareJobWithoutEnoughPrivilegeException.class)
@@ -89,6 +89,6 @@ public final class PostgreSQLDataSourceCheckerTest {
         when(resultSet.getString("rolsuper")).thenReturn("f");
         when(resultSet.getString("rolreplication")).thenReturn("f");
         dataSourceChecker.checkPrivilege(Collections.singletonList(dataSource));
-        verify(resultSet, Mockito.atLeastOnce()).getString("rolreplication");
+        verify(resultSet, atLeastOnce()).getString("rolreplication");
     }
 }

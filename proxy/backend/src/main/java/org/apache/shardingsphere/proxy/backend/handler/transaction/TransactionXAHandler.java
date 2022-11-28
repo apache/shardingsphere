@@ -37,7 +37,7 @@ import java.util.Collections;
 
 /**
  * XA transaction handler.
- * TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from distSQL.
+ * TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
  */
 @RequiredArgsConstructor
 public final class TransactionXAHandler implements ProxyBackendHandler {

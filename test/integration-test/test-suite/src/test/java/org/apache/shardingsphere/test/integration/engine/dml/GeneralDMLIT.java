@@ -22,8 +22,8 @@ import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.framework.param.array.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -36,7 +36,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertFalse;
 
-@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
+@ParallelRunningStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
     
     public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {

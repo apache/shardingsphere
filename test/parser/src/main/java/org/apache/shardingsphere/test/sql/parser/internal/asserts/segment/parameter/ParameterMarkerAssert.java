@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.param
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +39,7 @@ public final class ParameterMarkerAssert {
      * @param expected expected parameter markers count
      */
     public static void assertCount(final SQLCaseAssertContext assertContext, final int actual, final int expected) {
-        if (SQLCaseType.Placeholder == assertContext.getSqlCaseType()) {
+        if (SQLCaseType.Placeholder == assertContext.getCaseType()) {
             assertThat(assertContext.getText("Parameter markers count assertion error: "), actual, is(expected));
         } else {
             assertThat(assertContext.getText("Parameter markers count assertion error: "), actual, is(0));

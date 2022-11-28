@@ -154,9 +154,9 @@
         <name>sharding_key_required_auditor</name>
     </drop-sharding-auditor>
     
-    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table"/>
+    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy" type="table" />
     
-    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" if-exists="true"/>
+    <drop-default-sharding-strategy sql-case-id="drop-default-sharding-strategy-if-exists" type="table" if-exists="true" />
     
     <drop-sharding-algorithm sql-case-id="drop-sharding-algorithm" if-exists="true">
         <name>t_order_hash_mod</name>

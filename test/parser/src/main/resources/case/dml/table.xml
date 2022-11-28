@@ -24,7 +24,7 @@
         </order-by>
         <limit start-index="32" stop-index="47">
             <offset value="2" literal-start-index="47" literal-stop-index="47" />
-            <row-count value="1" start-index="38" stop-index="38"/>
+            <row-count value="1" start-index="38" stop-index="38" />
         </limit>
     </select>
     

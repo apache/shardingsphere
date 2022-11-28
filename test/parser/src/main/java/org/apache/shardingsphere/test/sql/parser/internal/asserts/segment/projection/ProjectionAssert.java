@@ -36,16 +36,16 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expres
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.ExpectedProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.ExpectedProjections;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.column.ExpectedColumnProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.expression.ExpectedExpressionProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.shorthand.ExpectedShorthandProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.subquery.ExpectedSubqueryProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.projection.impl.top.ExpectedTopProjection;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.column.ExpectedColumnProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.expression.ExpectedExpressionProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.shorthand.ExpectedShorthandProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.subquery.ExpectedSubqueryProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.top.ExpectedTopProjection;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.List;
 
@@ -115,7 +115,7 @@ public final class ProjectionAssert {
     
     private static void assertSubqueryProjection(final SQLCaseAssertContext assertContext, final SubqueryProjectionSegment actual, final ExpectedSubqueryProjection expected) {
         assertThat(assertContext.getText("Subquery projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
-        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
+        String expectedText = SQLCaseType.Literal == assertContext.getCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
         assertThat(assertContext.getText("Subquery projection text assertion error: "), actual.getText(), is(expectedText));
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
     }
@@ -154,7 +154,7 @@ public final class ProjectionAssert {
     private static void assertExpressionProjection(final SQLCaseAssertContext assertContext, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
         assertThat(assertContext.getText("Expression projection alias assertion error: "),
                 actual.getAlias().orElse(null), is(expected.getAlias()));
-        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
+        String expectedText = SQLCaseType.Literal == assertContext.getCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText()
                 : expected.getText();
         assertThat(assertContext.getText("Expression projection text assertion error: "),

@@ -17,13 +17,13 @@
 
 <dataset>
     <metadata>
-        <column name="name"/>
-        <column name="type"/>
-        <column name="sharding_column"/>
-        <column name="sharding_algorithm_name"/>
-        <column name="sharding_algorithm_type"/>
-        <column name="sharding_algorithm_props"/>
+        <column name="name" />
+        <column name="type" />
+        <column name="sharding_column" />
+        <column name="sharding_algorithm_name" />
+        <column name="sharding_algorithm_type" />
+        <column name="sharding_algorithm_props" />
     </metadata>
-    <row values="TABLE| NONE| | | | "/>
-    <row values="DATABASE| NONE| | | | "/>
+    <row values="TABLE| NONE| | | | " />
+    <row values="DATABASE| NONE| | | | " />
 </dataset>
