@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
  */
 @RequiredArgsConstructor
-@Slf4j
 public class ConstructorInterceptor {
+    
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(ConstructorInterceptor.class);
     
     private final ConstructorAdvice constructorAdvice;
     
@@ -51,7 +52,7 @@ public class ConstructorInterceptor {
             // CHECKSTYLE:OFF
         } catch (final Throwable throwable) {
             // CHECKSTYLE:ON
-            log.error("Constructor advice execution error. class: {}", target.getClass().getTypeName(), throwable);
+            LOGGER.error("Constructor advice execution error. class: {}", target.getClass().getTypeName(), throwable);
         }
     }
 }

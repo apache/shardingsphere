@@ -15,33 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.spi;
+package org.apache.shardingsphere.agent.core.plugin;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.io.File;
+import java.util.jar.JarFile;
 
 /**
- * Plugin service loader.
+ *  Plugin jar.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PluginServiceLoader {
+@RequiredArgsConstructor
+@Getter
+public final class PluginJar {
     
-    /**
-     * New service instances.
-     *
-     * @param service service type
-     * @param <T> type of class
-     * @param classLoader class loader
-     * @return service instances
-     */
-    public static <T> Collection<T> newServiceInstances(final Class<T> service, final ClassLoader classLoader) {
-        List<T> result = new LinkedList<>();
-        ServiceLoader.load(service, classLoader).forEach(result::add);
-        return result;
-    }
+    private final JarFile jarFile;
+    
+    private final File sourcePath;
 }

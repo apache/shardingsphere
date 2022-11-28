@@ -15,33 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.spi;
+package org.apache.shardingsphere.agent.core.plugin;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.ServiceLoader;
 
 /**
- * Plugin service loader.
+ *  Plugin jar holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PluginServiceLoader {
+public final class PluginJarHolder {
+    
+    private static volatile Collection<PluginJar> pluginJars = new LinkedList<>();
     
     /**
-     * New service instances.
-     *
-     * @param service service type
-     * @param <T> type of class
-     * @param classLoader class loader
-     * @return service instances
+     * Get plugin jars.
+     * 
+     * @return plugin jars
      */
-    public static <T> Collection<T> newServiceInstances(final Class<T> service, final ClassLoader classLoader) {
-        List<T> result = new LinkedList<>();
-        ServiceLoader.load(service, classLoader).forEach(result::add);
-        return result;
+    public static Collection<PluginJar> getPluginJars() {
+        return pluginJars;
+    }
+    
+    /**
+     * Set plugin jars.
+     * 
+     * @param pluginJars plugin jars
+     */
+    public static void setPluginJars(final Collection<PluginJar> pluginJars) {
+        PluginJarHolder.pluginJars = pluginJars;
     }
 }

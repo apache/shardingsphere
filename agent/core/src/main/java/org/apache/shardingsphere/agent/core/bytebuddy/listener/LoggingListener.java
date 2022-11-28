@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.listener;
 
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.builder.AgentBuilder.Listener;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 
 /**
  * Logging listener for ByteBuddy lifecycle.
  */
-@Slf4j
 public final class LoggingListener implements Listener {
+    
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(LoggingListener.class);
     
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
@@ -35,7 +36,7 @@ public final class LoggingListener implements Listener {
     
     @Override
     public void onTransformation(final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final DynamicType dynamicType) {
-        log.debug("On transformation class {}", typeDescription.getTypeName());
+        LOGGER.debug("On transformation class {}", typeDescription.getTypeName());
     }
     
     @Override
@@ -44,7 +45,7 @@ public final class LoggingListener implements Listener {
     
     @Override
     public void onError(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded, final Throwable throwable) {
-        log.error("Failed to instrument {}", typeName, throwable);
+        LOGGER.error("Failed to instrument {}", typeName, throwable);
     }
     
     @Override
