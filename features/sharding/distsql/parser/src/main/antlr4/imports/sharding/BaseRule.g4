@@ -67,7 +67,7 @@ shardingAlgorithmName
     ;
 
 keyGeneratorType
-    : IDENTIFIER | buildInkeyGeneratorType
+    : STRING | buildInkeyGeneratorType
     ;
 
 buildInkeyGeneratorType
