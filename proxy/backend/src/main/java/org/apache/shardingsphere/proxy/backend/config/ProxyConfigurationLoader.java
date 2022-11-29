@@ -77,7 +77,6 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        // TODO authority will no longer be a global rule
         return null == result ? new YamlProxyServerConfiguration() : rebuildGlobalRuleConfiguration(result);
     }
     
