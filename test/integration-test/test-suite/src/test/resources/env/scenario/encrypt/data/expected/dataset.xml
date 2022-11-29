@@ -33,6 +33,14 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="expected_dataset.t_merchant">
+        <column name="merchant_id" type="numeric" />
+        <column name="country_id" type="numeric" />
+        <column name="merchant_name" type="varchar" />
+        <column name="business_code" type="varchar" />
+        <column name="telephone" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
     <row data-node="expected_dataset.t_single_table" values="1, 10, init" />
     <row data-node="expected_dataset.t_single_table" values="2, 11, init" />
     <row data-node="expected_dataset.t_single_table" values="3, 12, init" />
@@ -61,4 +69,24 @@
     <row data-node="expected_dataset.t_user_item" values="270000, 27, init, 2017-08-08" />
     <row data-node="expected_dataset.t_user_item" values="280000, 28, init, 2017-08-08" />
     <row data-node="expected_dataset.t_user_item" values="290000, 29, init, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="4, 86, alibaba, 86000004, 86100000004, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="5, 86, lenovo, 86000005, 86100000005, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="6, 86, moutai, 86000006, 86100000006, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="7, 86, baidu, 86000007, 86100000007, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="8, 86, xiaomi, 86000008, 86100000008, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="9, 86, vivo, 86000009, 86100000009, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="10, 86, oppo, 86000010, 86100000010, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="11, 1, google, 01000011, 01100000011, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="12, 1, walmart, 01000012, 01100000012, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="13, 1, amazon, 01000013, 01100000013, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="14, 1, apple, 01000014, 01100000014, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="15, 1, microsoft, 01000015, 01100000015, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="16, 1, dell, 01000016, 01100000016, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="17, 1, johnson, 01000017, 01100000017, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="18, 1, intel, 01000018, 01100000018, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="19, 1, hp, 01000019, 01100000019, 2017-08-08" />
+    <row data-node="expected_dataset.t_merchant" values="20, 1, tesla, 01000020, 01100000020, 2017-08-08" />
 </dataset>

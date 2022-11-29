@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.agent.core.config.yaml.engine;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.yaml.snakeyaml.Yaml;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * YAML engine.

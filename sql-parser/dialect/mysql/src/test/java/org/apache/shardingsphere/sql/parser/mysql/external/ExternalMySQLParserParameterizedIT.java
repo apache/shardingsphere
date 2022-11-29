@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.external;
 
+import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -30,13 +31,14 @@ import java.util.Collection;
 @RunWith(ParallelParameterized.class)
 public final class ExternalMySQLParserParameterizedIT extends ExternalSQLParserParameterizedIT {
     
-    public ExternalMySQLParserParameterizedIT(final String sqlCaseId, final String sql) {
-        super(sqlCaseId, sql, "MySQL", "CSV");
+    public ExternalMySQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
-    @Parameters(name = "{0} (MySQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(
-                URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t"), URI.create("https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r"));
+    @Parameters(name = "{0}")
+    public static Collection<ExternalSQLParserParameterizedArray> getTestParameters() {
+        String caseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
+        String resultURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
+        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "MySQL", "CSV");
     }
 }

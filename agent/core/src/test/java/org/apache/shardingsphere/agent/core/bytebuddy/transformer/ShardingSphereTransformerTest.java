@@ -31,6 +31,8 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAround
 import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
 import org.apache.shardingsphere.agent.core.mock.material.Material;
 import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
+import org.apache.shardingsphere.agent.core.plugin.AdviceInstanceLoader;
+import org.apache.shardingsphere.agent.core.common.AgentClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,18 +42,21 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.plugins.MemberAccessor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertArrayEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 
 public final class ShardingSphereTransformerTest {
     
-    private static final AgentPluginLoader LOADER = AgentPluginLoader.getInstance();
+    private static final AdviceInstanceLoader INSTANCE_LOADER = new AdviceInstanceLoader();
+    
+    private static final AgentPluginLoader PLUGIN_LOADER = new AgentPluginLoader();
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
@@ -61,7 +66,8 @@ public final class ShardingSphereTransformerTest {
     @SuppressWarnings("unchecked")
     public static void setup() throws ReflectiveOperationException {
         ByteBuddyAgent.install();
-        FieldReader objectPoolReader = new FieldReader(LOADER, LOADER.getClass().getDeclaredField("objectPool"));
+        AgentClassLoader.initDefaultPluginClassLoader(Collections.emptyList());
+        FieldReader objectPoolReader = new FieldReader(INSTANCE_LOADER, INSTANCE_LOADER.getClass().getDeclaredField("ADVICE_INSTANCE_CACHE"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
@@ -89,14 +95,14 @@ public final class ShardingSphereTransformerTest {
                 .install();
         interceptorPointMap.put(interceptorPointInTwice.getClassNameOfTarget(), interceptorPointInTwice);
         MemberAccessor accessor = Plugins.getMemberAccessor();
-        accessor.set(LOADER.getClass().getDeclaredField("interceptorPointMap"), LOADER, interceptorPointMap);
+        accessor.set(PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), PLUGIN_LOADER, interceptorPointMap);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
                         .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
-                .type(LOADER.typeMatcher())
-                .transform(new ShardingSphereTransformer(LOADER))
+                .type(PLUGIN_LOADER.typeMatcher())
+                .transform(new ShardingSphereTransformer(PLUGIN_LOADER))
                 .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }

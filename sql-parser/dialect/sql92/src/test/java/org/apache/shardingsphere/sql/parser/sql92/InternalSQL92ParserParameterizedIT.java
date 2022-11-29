@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql92;
 
 import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -28,12 +28,12 @@ import java.util.Collection;
 @RunWith(ParallelParameterized.class)
 public final class InternalSQL92ParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
-    public InternalSQL92ParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
-        super(sqlCaseId, databaseType, sqlCaseType);
+    public InternalSQL92ParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
-    @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
+    @Parameters(name = "{0}")
+    public static Collection<InternalSQLParserParameterizedArray> getTestParameters() {
         return getTestParameters("SQL92");
     }
 }

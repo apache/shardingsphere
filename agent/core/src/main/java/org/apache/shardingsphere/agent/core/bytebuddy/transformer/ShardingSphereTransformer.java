@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.MethodDescription.InDefinedShape;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.agent.api.point.ClassStaticMethodPoint;
 import org.apache.shardingsphere.agent.api.point.ConstructorPoint;
 import org.apache.shardingsphere.agent.api.point.InstanceMethodPoint;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.core.logging.LoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodAroundInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodInterceptorArgsOverride;
@@ -62,8 +62,9 @@ import java.util.stream.Collectors;
  * ShardingSphere transformer.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ShardingSphereTransformer implements Transformer {
+    
+    private static final LoggerFactory.Logger LOGGER = LoggerFactory.getLogger(ShardingSphereTransformer.class);
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -76,16 +77,16 @@ public final class ShardingSphereTransformer implements Transformer {
         }
         Builder<?> result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE).implement(AdviceTargetObject.class).intercept(FieldAccessor.ofField(EXTRA_DATA));
         PluginInterceptorPoint pluginInterceptorPoint = pluginLoader.loadPluginInterceptorPoint(typeDescription);
-        result = interceptorConstructorPoint(typeDescription, pluginInterceptorPoint.getConstructorPoints(), result);
-        result = interceptorClassStaticMethodPoint(typeDescription, pluginInterceptorPoint.getClassStaticMethodPoints(), result);
-        result = interceptorInstanceMethodPoint(typeDescription, pluginInterceptorPoint.getInstanceMethodPoints(), result);
+        result = interceptorConstructorPoint(typeDescription, pluginInterceptorPoint.getConstructorPoints(), result, classLoader);
+        result = interceptorClassStaticMethodPoint(typeDescription, pluginInterceptorPoint.getClassStaticMethodPoints(), result, classLoader);
+        result = interceptorInstanceMethodPoint(typeDescription, pluginInterceptorPoint.getInstanceMethodPoints(), result, classLoader);
         return result;
     }
     
-    private Builder<?> interceptorConstructorPoint(final TypeDescription description, final Collection<ConstructorPoint> constructorPoints, final Builder<?> builder) {
+    private Builder<?> interceptorConstructorPoint(final TypeDescription description, final Collection<ConstructorPoint> constructorPoints, final Builder<?> builder, final ClassLoader classLoader) {
         Collection<ShardingSphereTransformationPoint<? extends ConstructorInterceptor>> constructorAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(MethodDescription::isConstructor)
-                .map(each -> getMatchedTransformationPoint(constructorPoints, each))
+                .map(each -> getMatchedTransformationPoint(constructorPoints, each, classLoader))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -96,32 +97,34 @@ public final class ShardingSphereTransformer implements Transformer {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class: {}", description.getTypeName(), ex);
+                LOGGER.error("Failed to load advice class: {}", description.getTypeName(), ex);
             }
         }
         return result;
     }
     
     private ShardingSphereTransformationPoint<? extends ConstructorInterceptor> getMatchedTransformationPoint(final Collection<ConstructorPoint> constructorPoints,
-                                                                                                              final InDefinedShape methodDescription) {
+                                                                                                              final InDefinedShape methodDescription,
+                                                                                                              final ClassLoader classLoader) {
         List<ConstructorPoint> matchedConstructorPoints = constructorPoints.stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
         if (matchedConstructorPoints.isEmpty()) {
             return null;
         }
         if (1 == matchedConstructorPoints.size()) {
-            return new ShardingSphereTransformationPoint<>(methodDescription, new ConstructorInterceptor(pluginLoader.getOrCreateInstance(matchedConstructorPoints.get(0).getAdvice())));
+            return new ShardingSphereTransformationPoint<>(methodDescription, new ConstructorInterceptor(pluginLoader.getOrCreateInstance(matchedConstructorPoints.get(0).getAdvice(), classLoader)));
         }
         Collection<ConstructorAdvice> constructorAdvices = matchedConstructorPoints.stream()
                 .map(ConstructorPoint::getAdvice)
-                .map(each -> (ConstructorAdvice) pluginLoader.getOrCreateInstance(each))
+                .map(each -> (ConstructorAdvice) pluginLoader.getOrCreateInstance(each, classLoader))
                 .collect(Collectors.toList());
         return new ShardingSphereTransformationPoint<>(methodDescription, new ComposeConstructorInterceptor(constructorAdvices));
     }
     
-    private Builder<?> interceptorClassStaticMethodPoint(final TypeDescription description, final Collection<ClassStaticMethodPoint> staticMethodAroundPoints, final Builder<?> builder) {
+    private Builder<?> interceptorClassStaticMethodPoint(final TypeDescription description, final Collection<ClassStaticMethodPoint> staticMethodAroundPoints,
+                                                         final Builder<?> builder, final ClassLoader classLoader) {
         Collection<ShardingSphereTransformationPoint<?>> classStaticMethodAdvicePoints = description.getDeclaredMethods().stream()
                 .filter(each -> each.isStatic() && !(each.isAbstract() || each.isSynthetic()))
-                .map(each -> getMatchedStaticMethodPoint(staticMethodAroundPoints, each))
+                .map(each -> getMatchedStaticMethodPoint(staticMethodAroundPoints, each, classLoader))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -137,31 +140,33 @@ public final class ShardingSphereTransformer implements Transformer {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class: {}", description.getTypeName(), ex);
+                LOGGER.error("Failed to load advice class: {}", description.getTypeName(), ex);
             }
         }
         return result;
     }
     
-    private ShardingSphereTransformationPoint<?> getMatchedStaticMethodPoint(final Collection<ClassStaticMethodPoint> staticMethodAroundPoints, final InDefinedShape methodDescription) {
+    private ShardingSphereTransformationPoint<?> getMatchedStaticMethodPoint(final Collection<ClassStaticMethodPoint> staticMethodAroundPoints,
+                                                                             final InDefinedShape methodDescription, final ClassLoader classLoader) {
         List<ClassStaticMethodPoint> staticMethodPoints = staticMethodAroundPoints.stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
         if (staticMethodPoints.isEmpty()) {
             return null;
         }
         if (1 == staticMethodPoints.size()) {
-            return getSingleStaticMethodPoint(methodDescription, staticMethodPoints.get(0));
+            return getSingleStaticMethodPoint(methodDescription, staticMethodPoints.get(0), classLoader);
         }
-        return getComposeStaticMethodPoint(methodDescription, staticMethodPoints);
+        return getComposeStaticMethodPoint(methodDescription, staticMethodPoints, classLoader);
     }
     
-    private ShardingSphereTransformationPoint<?> getSingleStaticMethodPoint(final InDefinedShape methodDescription, final ClassStaticMethodPoint staticMethodPoint) {
-        ClassStaticMethodAroundAdvice staticMethodAroundAdvice = pluginLoader.getOrCreateInstance(staticMethodPoint.getAdvice());
+    private ShardingSphereTransformationPoint<?> getSingleStaticMethodPoint(final InDefinedShape methodDescription, final ClassStaticMethodPoint staticMethodPoint, final ClassLoader classLoader) {
+        ClassStaticMethodAroundAdvice staticMethodAroundAdvice = pluginLoader.getOrCreateInstance(staticMethodPoint.getAdvice(), classLoader);
         return staticMethodPoint.isOverrideArgs()
                 ? new ShardingSphereTransformationPoint<>(methodDescription, new ClassStaticMethodInterceptorArgsOverride(staticMethodAroundAdvice))
                 : new ShardingSphereTransformationPoint<>(methodDescription, new ClassStaticMethodAroundInterceptor(staticMethodAroundAdvice));
     }
     
-    private ShardingSphereTransformationPoint<?> getComposeStaticMethodPoint(final InDefinedShape methodDescription, final Collection<ClassStaticMethodPoint> staticMethodPoints) {
+    private ShardingSphereTransformationPoint<?> getComposeStaticMethodPoint(final InDefinedShape methodDescription,
+                                                                             final Collection<ClassStaticMethodPoint> staticMethodPoints, final ClassLoader classLoader) {
         Collection<ClassStaticMethodAroundAdvice> classStaticMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
         for (ClassStaticMethodPoint each : staticMethodPoints) {
@@ -169,17 +174,18 @@ public final class ShardingSphereTransformer implements Transformer {
                 isArgsOverride = true;
             }
             if (null != each.getAdvice()) {
-                classStaticMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(each.getAdvice()));
+                classStaticMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(each.getAdvice(), classLoader));
             }
         }
         return isArgsOverride ? new ShardingSphereTransformationPoint<>(methodDescription, new ComposeClassStaticMethodInterceptorArgsOverride(classStaticMethodAroundAdvices))
                 : new ShardingSphereTransformationPoint<>(methodDescription, new ComposeClassStaticMethodAroundInterceptor(classStaticMethodAroundAdvices));
     }
     
-    private Builder<?> interceptorInstanceMethodPoint(final TypeDescription description, final Collection<InstanceMethodPoint> instanceMethodAroundPoints, final Builder<?> builder) {
+    private Builder<?> interceptorInstanceMethodPoint(final TypeDescription description, final Collection<InstanceMethodPoint> instanceMethodAroundPoints,
+                                                      final Builder<?> builder, final ClassLoader classLoader) {
         Collection<ShardingSphereTransformationPoint<?>> instanceMethodAdviceComposePoints = description.getDeclaredMethods().stream()
                 .filter(each -> !(each.isAbstract() || each.isSynthetic()))
-                .map(each -> getMatchedInstanceMethodPoint(instanceMethodAroundPoints, each))
+                .map(each -> getMatchedInstanceMethodPoint(instanceMethodAroundPoints, each, classLoader))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         Builder<?> result = builder;
@@ -195,31 +201,33 @@ public final class ShardingSphereTransformer implements Transformer {
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class `{}`", description.getTypeName(), ex);
+                LOGGER.error("Failed to load advice class `{}`", description.getTypeName(), ex);
             }
         }
         return result;
     }
     
-    private ShardingSphereTransformationPoint<?> getMatchedInstanceMethodPoint(final Collection<InstanceMethodPoint> instanceMethodAroundPoints, final InDefinedShape methodDescription) {
+    private ShardingSphereTransformationPoint<?> getMatchedInstanceMethodPoint(final Collection<InstanceMethodPoint> instanceMethodAroundPoints,
+                                                                               final InDefinedShape methodDescription, final ClassLoader classLoader) {
         List<InstanceMethodPoint> instanceMethodPoints = instanceMethodAroundPoints.stream().filter(each -> each.getMatcher().matches(methodDescription)).collect(Collectors.toList());
         if (instanceMethodPoints.isEmpty()) {
             return null;
         }
         if (1 == instanceMethodPoints.size()) {
-            return getSingleInstanceMethodPoint(methodDescription, instanceMethodPoints.get(0));
+            return getSingleInstanceMethodPoint(methodDescription, instanceMethodPoints.get(0), classLoader);
         }
-        return getComposeInstanceMethodPoint(methodDescription, instanceMethodPoints);
+        return getComposeInstanceMethodPoint(methodDescription, instanceMethodPoints, classLoader);
     }
     
-    private ShardingSphereTransformationPoint<?> getSingleInstanceMethodPoint(final InDefinedShape methodDescription, final InstanceMethodPoint instanceMethodPoint) {
-        InstanceMethodAroundAdvice instanceMethodAroundAdvice = pluginLoader.getOrCreateInstance(instanceMethodPoint.getAdvice());
+    private ShardingSphereTransformationPoint<?> getSingleInstanceMethodPoint(final InDefinedShape methodDescription, final InstanceMethodPoint instanceMethodPoint, final ClassLoader classLoader) {
+        InstanceMethodAroundAdvice instanceMethodAroundAdvice = pluginLoader.getOrCreateInstance(instanceMethodPoint.getAdvice(), classLoader);
         return instanceMethodPoint.isOverrideArgs()
                 ? new ShardingSphereTransformationPoint<>(methodDescription, new InstanceMethodInterceptorArgsOverride(instanceMethodAroundAdvice))
                 : new ShardingSphereTransformationPoint<>(methodDescription, new InstanceMethodAroundInterceptor(instanceMethodAroundAdvice));
     }
     
-    private ShardingSphereTransformationPoint<?> getComposeInstanceMethodPoint(final InDefinedShape methodDescription, final Collection<InstanceMethodPoint> instanceMethodPoints) {
+    private ShardingSphereTransformationPoint<?> getComposeInstanceMethodPoint(final InDefinedShape methodDescription,
+                                                                               final Collection<InstanceMethodPoint> instanceMethodPoints, final ClassLoader classLoader) {
         Collection<InstanceMethodAroundAdvice> instanceMethodAroundAdvices = new LinkedList<>();
         boolean isArgsOverride = false;
         for (InstanceMethodPoint each : instanceMethodPoints) {
@@ -227,7 +235,7 @@ public final class ShardingSphereTransformer implements Transformer {
                 isArgsOverride = true;
             }
             if (null != each.getAdvice()) {
-                instanceMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(each.getAdvice()));
+                instanceMethodAroundAdvices.add(pluginLoader.getOrCreateInstance(each.getAdvice(), classLoader));
             }
         }
         return isArgsOverride

@@ -19,11 +19,12 @@ package org.apache.shardingsphere.test.integration.framework.param.model;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
- * Parameterized array.
+ * IT parameterized array.
  */
-public interface ParameterizedArray {
+public interface ITParameterizedArray extends ParameterizedArray {
     
     /**
      * Get test case context.

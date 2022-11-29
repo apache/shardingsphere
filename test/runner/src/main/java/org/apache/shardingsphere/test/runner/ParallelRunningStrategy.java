@@ -36,7 +36,7 @@ public @interface ParallelRunningStrategy {
     /**
      * Get parallel level.
      * 
-     * @return value parallel level
+     * @return parallel level
      */
     ParallelLevel value() default ParallelLevel.NORMAL;
     
@@ -45,6 +45,6 @@ public @interface ParallelRunningStrategy {
      */
     enum ParallelLevel {
         
-        CASE, SCENARIO, NORMAL
+        NORMAL, CASE, SCENARIO
     }
 }

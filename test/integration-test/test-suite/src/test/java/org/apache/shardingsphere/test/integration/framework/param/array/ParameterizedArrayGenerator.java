@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -139,16 +139,16 @@ public final class ParameterizedArrayGenerator {
      * @param sqlCommandType SQL command type
      * @return case parameterized array
      */
-    public Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+    public Collection<ITParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
+        Collection<ITParameterizedArray> result = new LinkedList<>();
         for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
             result.addAll(getCaseParameterizedArray(each));
         }
         return result;
     }
     
-    private Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+    private Collection<ITParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext) {
+        Collection<ITParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
             if (envDatabaseTypes.contains(each)) {
                 result.addAll(getCaseParameterizedArray(testCaseContext, each));
@@ -157,15 +157,15 @@ public final class ParameterizedArrayGenerator {
         return result;
     }
     
-    private Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final DatabaseType databaseType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+    private Collection<ITParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final DatabaseType databaseType) {
+        Collection<ITParameterizedArray> result = new LinkedList<>();
         for (String adapter : envAdapters) {
             result.addAll(getCaseParameterizedArray(testCaseContext, adapter, databaseType));
         }
         return result;
     }
     
-    private Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final String adapter, final DatabaseType databaseType) {
+    private Collection<ITParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final String adapter, final DatabaseType databaseType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new CaseParameterizedArray(testCaseContext, adapter, each, envMode, databaseType)).collect(Collectors.toList());

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLev
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,8 +31,6 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     
     private final Map<T, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
-    private volatile ParallelRunnerExecutor defaultExecutor;
-    
     /**
      * Create executor instance by parallel level.
      *
@@ -42,7 +38,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
      * @return executor by parallel level
      */
     public ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
-        return new DefaultParallelRunnerExecutor();
+        return new DefaultParallelRunnerExecutor<>();
     }
     
     @Override
@@ -58,23 +54,7 @@ public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerEx
     }
     
     @Override
-    public final ParallelRunnerExecutor getExecutor(final ParallelLevel parallelLevel) {
-        if (null == defaultExecutor) {
-            synchronized (DefaultParallelRunnerExecutorFactory.class) {
-                if (null == defaultExecutor) {
-                    defaultExecutor = new DefaultParallelRunnerExecutor();
-                }
-            }
-        }
-        return defaultExecutor;
-    }
-    
-    @Override
-    public final Collection<ParallelRunnerExecutor> getAllExecutors() {
-        Collection<ParallelRunnerExecutor> result = new LinkedList<>(executors.values());
-        if (null != defaultExecutor) {
-            result.add(defaultExecutor);
-        }
-        return result;
+    public final void finishAllExecutors() {
+        executors.values().forEach(ParallelRunnerExecutor::finished);
     }
 }
