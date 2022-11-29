@@ -15,30 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.yaml.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-
-import java.util.Properties;
+package org.apache.shardingsphere.infra.yaml.config.pojo.rule;
 
 /**
- * Transaction rule configuration for YAML.
+ * YAML global rule configuration.
  */
-@Getter
-@Setter
-public final class YamlTransactionRuleConfiguration implements YamlGlobalRuleConfiguration {
-    
-    private String defaultType;
-    
-    private String providerType;
-    
-    private Properties props;
-    
-    @Override
-    public Class<TransactionRuleConfiguration> getRuleConfigurationType() {
-        return TransactionRuleConfiguration.class;
-    }
+public interface YamlGlobalRuleConfiguration extends YamlRuleConfiguration {
 }

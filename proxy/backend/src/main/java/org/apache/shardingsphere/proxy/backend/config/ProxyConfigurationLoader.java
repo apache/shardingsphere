@@ -21,9 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
@@ -77,15 +77,27 @@ public final class ProxyConfigurationLoader {
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
-        if (null == result) {
-            return new YamlProxyServerConfiguration();
+        return null == result ? new YamlProxyServerConfiguration() : rebuildGlobalRuleConfiguration(result);
+    }
+    
+    private static YamlProxyServerConfiguration rebuildGlobalRuleConfiguration(final YamlProxyServerConfiguration serverConfiguration) {
+        serverConfiguration.getRules().removeIf(each -> each instanceof YamlGlobalRuleConfiguration);
+        if (null != serverConfiguration.getAuthority()) {
+            serverConfiguration.getRules().add(serverConfiguration.getAuthority().convertToYamlAuthorityRuleConfiguration());
         }
-        // TODO authority will no longer be a global rule
-        result.getRules().removeIf(each -> each instanceof YamlAuthorityRuleConfiguration);
-        if (null != result.getAuthority()) {
-            result.getRules().add(result.getAuthority().convertToYamlAuthorityRuleConfiguration());
+        if (null != serverConfiguration.getTransaction()) {
+            serverConfiguration.getRules().add(serverConfiguration.getTransaction());
         }
-        return result;
+        if (null != serverConfiguration.getSqlParser()) {
+            serverConfiguration.getRules().add(serverConfiguration.getSqlParser());
+        }
+        if (null != serverConfiguration.getSqlTranslator()) {
+            serverConfiguration.getRules().add(serverConfiguration.getSqlTranslator());
+        }
+        if (null != serverConfiguration.getTraffic()) {
+            serverConfiguration.getRules().add(serverConfiguration.getTraffic());
+        }
+        return serverConfiguration;
     }
     
     private static Collection<YamlProxyDatabaseConfiguration> loadDatabaseConfigurations(final File configPath) throws IOException {
