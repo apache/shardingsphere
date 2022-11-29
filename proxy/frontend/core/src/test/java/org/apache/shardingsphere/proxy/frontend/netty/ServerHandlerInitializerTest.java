@@ -21,7 +21,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
+import org.apache.shardingsphere.test.fixture.infra.database.type.MockedDatabaseType;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
 

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLCallStatement;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.call.ExpectedCallParameter;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.dml.CallStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.call.ExpectedCallParameter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.dml.CallStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -56,20 +56,20 @@ public final class CallStatementAssert {
         if (actual instanceof MySQLCallStatement) {
             MySQLCallStatement actualStatement = (MySQLCallStatement) actual;
             if (null != actualStatement.getParameters() && null != expected.getProcedureParameters()) {
-                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().size()));
                 int count = 0;
                 for (ExpressionSegment each : actualStatement.getParameters()) {
-                    assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
+                    assertParameter(assertContext, each, expected.getProcedureParameters().get(count));
                     count++;
                 }
             }
         } else if (actual instanceof PostgreSQLCallStatement) {
             PostgreSQLCallStatement actualStatement = (PostgreSQLCallStatement) actual;
             if (null != expected.getProcedureParameters()) {
-                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().getParameters().size()));
+                assertThat(assertContext.getText("Procedure parameters assertion error: "), actualStatement.getParameters().size(), is(expected.getProcedureParameters().size()));
                 int count = 0;
                 for (ExpressionSegment each : actualStatement.getParameters()) {
-                    assertParameter(assertContext, each, expected.getProcedureParameters().getParameters().get(count));
+                    assertParameter(assertContext, each, expected.getProcedureParameters().get(count));
                     count++;
                 }
             }

@@ -106,6 +106,7 @@ public final class EncryptSpringNamespaceTest extends AbstractJUnit4SpringContex
         assertThat(columnRuleConfig.getLikeQueryColumn(), is("credit_card_like_query"));
         assertThat(columnRuleConfig.getPlainColumn(), is("credit_card_plain"));
         assertThat(columnRuleConfig.getEncryptorName(), is("md5Encryptor"));
+        assertThat(columnRuleConfig.getAssistedQueryEncryptorName(), is("aesEncryptor"));
         assertThat(columnRuleConfig.getLikeQueryEncryptorName(), is("likeQueryEncryptor"));
         assertFalse(columnRuleConfig.getQueryWithCipherColumn());
     }

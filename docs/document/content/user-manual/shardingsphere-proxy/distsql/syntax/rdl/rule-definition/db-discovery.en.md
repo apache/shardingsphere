@@ -51,7 +51,6 @@ property:
 - Duplicate `ruleName` will not be created
 - The `discoveryType` and `discoveryHeartbeat` being used cannot be deleted
 - Names with `-` need to use `" "` when changing
-- When removing the `discoveryRule`, the `discoveryType` and `discoveryHeartbeat` used by the `discoveryRule` will not be removed
 
 ## Example
 

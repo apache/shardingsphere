@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import java.util.Collection;
 
 /**
- * Featured dist SQL statement parser facade factory.
+ * Featured DistSQL statement parser facade factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FeaturedDistSQLStatementParserFacadeFactory {
@@ -36,7 +36,7 @@ public final class FeaturedDistSQLStatementParserFacadeFactory {
     }
     
     /**
-     * Get instance of featured dist SQL statement parser facade.
+     * Get instance of featured DistSQL statement parser facade.
      * 
      * @param type feature type
      * @return got instance
@@ -46,7 +46,7 @@ public final class FeaturedDistSQLStatementParserFacadeFactory {
     }
     
     /**
-     * Get all instances of featured dist SQL statement parser facade.
+     * Get all instances of featured DistSQL statement parser facade.
      * 
      * @return got instances
      */

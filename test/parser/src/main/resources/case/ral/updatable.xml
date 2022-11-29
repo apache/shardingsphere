@@ -33,49 +33,48 @@
     </alter-sql-parser-rule>
     <alter-local-transaction-rule sql-case-id="alter-local-transaction-rule" />
     <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
+    <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule-without-quote-on-build-in-default-type-name-and-provider-type-name" />
    
     <create-traffic-rule sql-case-id="create-traffic-rule">
-        <rules>
-            <rule name="sql_match_traffic">
-                <label>OLTP</label>
-                <traffic-algorithm algorithm-name="SQL_MATCH">
-                    <properties>
-                        <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-                    </properties>
-                </traffic-algorithm>
-                <load-balancer algorithm-name="RANDOM">
-                    <properties>
-                        <property key="key" value="value" />
-                    </properties>
-                </load-balancer>
-            </rule>
-        </rules>
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <property key="key" value="value" />
+            </load-balancer>
+        </rule>
     </create-traffic-rule>
     
     <alter-traffic-rule sql-case-id="alter-traffic-rule">
-        <rules>
-            <rule name="sql_match_traffic">
-                <label>OLTP</label>
-                <traffic-algorithm algorithm-name="SQL_MATCH">
-                    <properties>
-                        <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
-                    </properties>
-                </traffic-algorithm>
-                <load-balancer algorithm-name="RANDOM">
-                    <properties>
-                        <property key="key" value="value" />
-                    </properties>
-                </load-balancer>
-            </rule>
-        </rules>
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <property key="key" value="value" />
+            </load-balancer>
+        </rule>
     </alter-traffic-rule>
     
     <drop-traffic-rule sql-case-id="drop-traffic-rule">
-        <names>
-            <name>rule_name</name>
-        </names>
+        <name>rule_name</name>
     </drop-traffic-rule>
-    
+
+    <create-traffic-rule sql-case-id="create-traffic-rule-without-quote-on-build-in-traffic-algorithm-type-name-and-load-balancer-type-name">
+        <rule name="sql_match_traffic">
+            <label>OLTP</label>
+            <traffic-algorithm algorithm-name="SQL_MATCH">
+                <property key="sql" value="SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;" />
+            </traffic-algorithm>
+            <load-balancer algorithm-name="RANDOM">
+                <property key="key" value="value" />
+            </load-balancer>
+        </rule>
+    </create-traffic-rule>
+
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
     
@@ -102,10 +101,10 @@
     </import-database-config>
     
     <alter-readwrite-splitting-storage-unit-status-enable sql-case-id="alter-readwrite-splitting-storage-unit-status-enable" group-name="group_1" storage-unit-name="read_ds_0" status="ENABLE">
-        <database name="read_write" start-index="61" stop-index="70"/>
+        <database name="read_write" start-index="61" stop-index="70" />
     </alter-readwrite-splitting-storage-unit-status-enable>
     
     <alter-readwrite-splitting-storage-unit-status-disable sql-case-id="alter-readwrite-splitting-storage-unit-status-disable" group-name="group_1" storage-unit-name="read_ds_0" status="DISABLE">
-        <database name="read_write" start-index="62" stop-index="71"/>
+        <database name="read_write" start-index="62" stop-index="71" />
     </alter-readwrite-splitting-storage-unit-status-disable>
 </sql-parser-test-cases>

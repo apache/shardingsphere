@@ -719,3 +719,51 @@ WELLFORMED
 XMLPI
     : X M L P I
     ;
+
+XMLQUERY
+    : X M L Q U E R Y
+    ;
+
+XMLROOT
+    : X M L R O O T
+    ;
+
+STANDALONE
+    : S T A N D A L O N E
+    ;
+
+XMLSERIALIZE
+    : X M L S E R I A L I Z E
+    ;
+
+ENCODING
+    : E N C O D I N G
+    ;
+
+IDENT
+    : I D E N T
+    ;
+
+HIDE
+    : H I D E
+    ;
+
+SHOW
+    : S H O W
+    ;
+
+XMLTABLE
+    : X M L T A B L E
+    ;
+
+XMLNAMESPACES
+    : X M L N A M E S P A C E S
+    ;
+
+ORDINALITY
+    : O R D I N A L I T Y
+    ;
+
+PATH
+    : P A T H
+    ;

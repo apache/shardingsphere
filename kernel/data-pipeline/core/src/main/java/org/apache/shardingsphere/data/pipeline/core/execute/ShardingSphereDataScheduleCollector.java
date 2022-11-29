@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDat
 import org.apache.shardingsphere.infra.metadata.data.event.ShardingSphereSchemaDataAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereTableDataSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.sql.SQLException;
@@ -92,7 +94,7 @@ public final class ShardingSphereDataScheduleCollector {
             try {
                 tableData = shardingSphereDataCollector.get().collect(databaseName, table, databases);
             } catch (SQLException ex) {
-                log.error("Collect data for sharding_table_statistics error!", ex);
+                log.error("Collect data failed!", ex);
             }
             tableData.ifPresent(shardingSphereTableData -> changedShardingSphereData.getDatabaseData().computeIfAbsent(databaseName.toLowerCase(), key -> new ShardingSphereDatabaseData())
                     .getSchemaData().computeIfAbsent(schemaName, key -> new ShardingSphereSchemaData()).getTableData().put(table.getName().toLowerCase(), shardingSphereTableData));
@@ -119,7 +121,8 @@ public final class ShardingSphereDataScheduleCollector {
             }
             shardingSphereData.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
             ShardingSphereSchemaDataAlteredEvent event = new ShardingSphereSchemaDataAlteredEvent(databaseName, schemaName);
-            event.getAlteredTables().add(changedTableData);
+            event.getAlteredYamlTables().add(new YamlShardingSphereTableDataSwapper(contextManager.getMetaDataContexts().getMetaData().getProps()
+                    .getValue(ConfigurationPropertyKey.METADATA_CHUNK_UNIT_ROWS)).swapToYamlConfiguration(changedTableData));
             contextManager.getInstanceContext().getEventBusContext().post(event);
         }
     }

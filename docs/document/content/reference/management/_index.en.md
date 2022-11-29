@@ -6,7 +6,7 @@ weight = 3
 
 ## Data Structure in Registry Center
 
-Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML, modifying nodes can dynamically refresh configurations. `nodes` node persist the runtime node of database access object, to distinguish different database access instances.
+Under defined namespace, `rules`, `props` and `metadata` nodes persist in YAML. Modifying nodes can dynamically refresh configurations. `nodes` node persist the runtime node of database access object, to distinguish different database access instances.
 
 ```
 namespace
@@ -70,7 +70,7 @@ Global rule configuration, which can include transaction configuration, SQL pars
 
 ### /props
 
-Properties configuration. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
+Properties configuration. Please refer to the [Configuration Manual](/en/user-manual/shardingsphere-jdbc/props/) for more details.
 
 ```yaml
 kernel-executor-size: 20
@@ -79,7 +79,7 @@ sql-show: true
 
 ### /metadata/${databaseName}/versions/${versionNumber}/dataSources
 
-A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by users themselves.
+A collection of multiple database connection pools, whose properties (e.g. DBCP, C3P0, Druid and HikariCP) are configured by the users themselves.
 
 ```yaml
 ds_0:
@@ -114,7 +114,7 @@ ds_1:
 
 ### /metadata/${databaseName}/versions/${versionNumber}/rules
 
-Rule configurations, including sharding, readwrite-splitting, data encryption, shadow DB configurations.
+Rule configurations, including sharding, read/write splitting, data encryption, and shadow DB configurations.
 
 ```yaml
 - !SHARDING
@@ -153,8 +153,10 @@ indexs:                                   # Index
 
 ### /nodes/compute_nodes
 
-It includes running instance information of database access object, with sub-nodes as the identifiers of currently running instance, which is automatically generated at each startup using UUID. Those identifiers are temporary nodes, which are registered when instances are on-line and cleared when instances are off-line. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
+It includes running instance information of database access object, with sub-nodes as the identifiers of theh currently running instance, which is automatically generated at each startup using UUID. 
+
+The identifiers are temporary nodes, which are registered when instances are online and cleared when instances are offline. The registry center monitors the change of those nodes to govern the database access of running instances and other things.
 
 ### /nodes/storage_nodes
 
-It is able to orchestrate replica database, delete or disable data dynamically.
+It can orchestrate replica database, and delete or disable data dynamically.

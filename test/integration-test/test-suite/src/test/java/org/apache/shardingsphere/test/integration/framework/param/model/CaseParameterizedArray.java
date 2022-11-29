@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseConte
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseParameterizedArray implements ParameterizedArray {
+public final class CaseParameterizedArray implements ITParameterizedArray {
     
     private final IntegrationTestCaseContext testCaseContext;
     

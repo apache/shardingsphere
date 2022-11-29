@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.data.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -35,5 +35,5 @@ public final class ShardingSphereSchemaDataAlteredEvent {
     
     private final String schemaName;
     
-    private final Collection<ShardingSphereTableData> alteredTables = new LinkedList<>();
+    private final Collection<YamlShardingSphereTableData> alteredYamlTables = new LinkedList<>();
 }

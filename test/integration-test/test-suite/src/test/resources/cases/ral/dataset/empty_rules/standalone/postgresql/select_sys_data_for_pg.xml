@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="Schema"/>
+        <column name="Schema" />
         <column name="Name" />
         <column name="Type" />
         <column name="Owner" />

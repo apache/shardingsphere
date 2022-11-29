@@ -1588,6 +1588,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         result.setStartIndex(tableSegment.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
         result.setJoinType(getJoinType(ctx));
+        result.setNatural(null != ctx.naturalJoinType());
         TableSegment right = null != ctx.tableFactor() ? (TableSegment) visit(ctx.tableFactor()) : (TableSegment) visit(ctx.tableReference());
         result.setRight(right);
         return null != ctx.joinSpecification() ? visitJoinSpecification(ctx.joinSpecification(), result) : result;

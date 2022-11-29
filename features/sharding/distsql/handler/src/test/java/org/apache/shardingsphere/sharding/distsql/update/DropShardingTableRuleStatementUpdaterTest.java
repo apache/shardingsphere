@@ -50,37 +50,37 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         new DropShardingTableRuleStatementUpdater().checkSQLStatement(
-                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), new DropShardingTableRuleStatement(false, Collections.emptyList(), false), null);
+                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), new DropShardingTableRuleStatement(false, Collections.emptyList()), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckSQLStatementWithoutExistedTableRule() throws RuleDefinitionViolationException {
         new DropShardingTableRuleStatementUpdater().checkSQLStatement(
-                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), createSQLStatement("t_order", false), new ShardingRuleConfiguration());
+                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementIfExistsWithNullCurrentRuleConfiguration() throws RuleDefinitionViolationException {
-        DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))), false);
+        DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
         new DropShardingTableRuleStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), statement, null);
     }
     
     @Test
     public void assertCheckSQLStatementIfExists() throws RuleDefinitionViolationException {
-        DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))), false);
+        DropShardingTableRuleStatement statement = new DropShardingTableRuleStatement(true, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue("t_order_if_exists"))));
         new DropShardingTableRuleStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), statement, new ShardingRuleConfiguration());
     }
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
         new DropShardingTableRuleStatementUpdater().checkSQLStatement(
-                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), createSQLStatement("t_order_item", false), createCurrentRuleConfiguration());
+                mock(ShardingSphereDatabase.class, Answers.RETURNS_DEEP_STUBS), createSQLStatement("t_order_item"), createCurrentRuleConfiguration());
     }
     
     @Test
     public void assertUpdate() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("t_order", false), currentRuleConfig);
+        new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("t_order"), currentRuleConfig);
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
     }
@@ -88,7 +88,7 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertUpdateWithDifferentCase() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("T_ORDER", false), currentRuleConfig);
+        new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(createSQLStatement("T_ORDER"), currentRuleConfig);
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
     }
@@ -96,15 +96,17 @@ public final class DropShardingTableRuleStatementUpdaterTest {
     @Test
     public void assertDropRuleAndUnusedAlgorithm() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        DropShardingTableRuleStatement sqlStatement = createSQLStatement("t_order", true);
+        DropShardingTableRuleStatement sqlStatement = createSQLStatement("t_order");
         new DropShardingTableRuleStatementUpdater().updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertFalse(getShardingTables(currentRuleConfig).contains("t_order"));
         assertTrue(getBindingTables(currentRuleConfig).contains("t_order_item"));
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(2));
+        assertThat(currentRuleConfig.getKeyGenerators().size(), is(0));
+        assertThat(currentRuleConfig.getAuditors().size(), is(0));
     }
     
-    private DropShardingTableRuleStatement createSQLStatement(final String tableName, final boolean dropUnusedAlgorithms) {
-        return new DropShardingTableRuleStatement(false, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue(tableName))), dropUnusedAlgorithms);
+    private DropShardingTableRuleStatement createSQLStatement(final String tableName) {
+        return new DropShardingTableRuleStatement(false, Collections.singleton(new TableNameSegment(0, 3, new IdentifierValue(tableName))));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
@@ -118,6 +120,8 @@ public final class DropShardingTableRuleStatementUpdaterTest {
         result.getShardingAlgorithms().put("unused_algorithm", null);
         result.getShardingAlgorithms().put("t_order_item_algorithm", null);
         result.getShardingAlgorithms().put("default_table_strategy", null);
+        result.getKeyGenerators().put("unused_key_generator", null);
+        result.getAuditors().put("unused_auditor", null);
         return result;
     }
     

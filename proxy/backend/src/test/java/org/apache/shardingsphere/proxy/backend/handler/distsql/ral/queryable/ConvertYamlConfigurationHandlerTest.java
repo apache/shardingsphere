@@ -47,6 +47,8 @@ public final class ConvertYamlConfigurationHandlerTest {
     
     private final String shardingConfigFilePath = "/conf/convert/config-sharding.yaml";
     
+    private final String shardingAutoTablesConfigFilePath = "/conf/convert/config-sharding-auto-tables.yaml";
+    
     private final String readWriteSplittingConfigFilePath = "/conf/convert/config-readwrite-splitting.yaml";
     
     private final String databaseDiscoveryConfigFilePath = "/conf/convert/config-database-discovery.yaml";
@@ -58,6 +60,8 @@ public final class ConvertYamlConfigurationHandlerTest {
     private final String mixConfigFilePath = "/conf/convert/config-mix.yaml";
     
     private final String shardingExpectedFilePath = "/expected/convert-sharding.yaml";
+    
+    private final String shardingAutoTablesExpectedFilePath = "/expected/convert-sharding-auto-tables.yaml";
     
     private final String readWriteSplittingExpectedFilePath = "/expected/convert-readwrite-splitting.yaml";
     
@@ -74,6 +78,11 @@ public final class ConvertYamlConfigurationHandlerTest {
     @Test
     public void assertExecuteWithSharding() throws SQLException {
         assertExecute(shardingConfigFilePath, shardingExpectedFilePath);
+    }
+    
+    @Test
+    public void assertExecuteWithShardingAutoTables() throws SQLException {
+        assertExecute(shardingAutoTablesConfigFilePath, shardingAutoTablesExpectedFilePath);
     }
     
     @Test

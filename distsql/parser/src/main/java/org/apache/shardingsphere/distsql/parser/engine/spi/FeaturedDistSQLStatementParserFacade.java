@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
 /**
- * Featured dist SQL statement parser facade.
+ * Featured DistSQL statement parser facade.
  */
 @SingletonSPI
 public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {

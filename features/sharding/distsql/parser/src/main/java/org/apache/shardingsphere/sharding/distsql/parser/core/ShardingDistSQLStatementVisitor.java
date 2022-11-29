@@ -27,9 +27,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableReferenceRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AuditDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AuditStrategyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AuditorDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AuditorNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AutoShardingColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ClearShardingHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CountShardingRuleContext;
@@ -81,7 +79,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.KeyGen
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingAuditorSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.strategy.ShardingStrategySegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment;
-import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractTableRuleSegment.EmptyTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableReferenceRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
@@ -145,7 +142,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitCreateShardingTableRule(final CreateShardingTableRuleContext ctx) {
         Collection<AbstractTableRuleSegment> tableRuleSegments = ctx.shardingTableRuleDefinition().stream()
                 .map(each -> (AbstractTableRuleSegment) visit(each)).filter(Objects::nonNull).collect(Collectors.toList());
-        return tableRuleSegments.isEmpty() ? new EmptyTableRuleSegment() : new CreateShardingTableRuleStatement(tableRuleSegments);
+        return new CreateShardingTableRuleStatement(tableRuleSegments);
     }
     
     @Override
@@ -167,7 +164,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitAlterShardingTableRule(final AlterShardingTableRuleContext ctx) {
         List<AbstractTableRuleSegment> tableRuleSegments = ctx.shardingTableRuleDefinition().stream()
                 .map(each -> (AbstractTableRuleSegment) visit(each)).filter(Objects::nonNull).collect(Collectors.toList());
-        return tableRuleSegments.isEmpty() ? new EmptyTableRuleSegment() : new AlterShardingTableRuleStatement(tableRuleSegments);
+        return new AlterShardingTableRuleStatement(tableRuleSegments);
     }
     
     @Override
@@ -187,7 +184,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitDropShardingTableRule(final DropShardingTableRuleContext ctx) {
         return new DropShardingTableRuleStatement(null != ctx.ifExists(),
-                ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()), null != ctx.withUnusedAlgorithmsClause());
+                ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -286,11 +283,25 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitShardingTableRule(final ShardingTableRuleContext ctx) {
         KeyGenerateStrategySegment keyGenerateSegment = null == ctx.keyGenerateDefinition() ? null : (KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition());
-        AuditStrategySegment auditStrategySegment = null == ctx.auditDeclaration() ? null : (AuditStrategySegment) visit(ctx.auditDeclaration());
+        AuditStrategySegment auditStrategySegment = null == ctx.auditDefinition() ? null : (AuditStrategySegment) visitAuditDefinition(getIdentifierValue(ctx.tableName()), ctx.auditDefinition());
         TableRuleSegment result = new TableRuleSegment(getIdentifierValue(ctx.tableName()), getDataNodes(ctx.dataNodes()), keyGenerateSegment, auditStrategySegment);
         Optional.ofNullable(ctx.tableStrategy()).ifPresent(optional -> result.setTableStrategySegment((ShardingStrategySegment) visit(ctx.tableStrategy().shardingStrategy())));
         Optional.ofNullable(ctx.databaseStrategy()).ifPresent(optional -> result.setDatabaseStrategySegment((ShardingStrategySegment) visit(ctx.databaseStrategy().shardingStrategy())));
         return result;
+    }
+    
+    private ASTNode visitAuditDefinition(final String tableName, final AuditDefinitionContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        Collection<ShardingAuditorSegment> shardingAuditorSegments = new LinkedList<>();
+        int index = 0;
+        for (SingleAuditDefinitionContext each : ctx.multiAuditDefinition().singleAuditDefinition()) {
+            String algorithmTypeName = getIdentifierValue(each.algorithmDefinition().algorithmTypeName());
+            String auditorName = String.format("%s_%s_%s", tableName, algorithmTypeName, index++).toLowerCase();
+            shardingAuditorSegments.add(new ShardingAuditorSegment(auditorName, (AlgorithmSegment) visit(each.algorithmDefinition())));
+        }
+        return new AuditStrategySegment(shardingAuditorSegments, Boolean.parseBoolean(getIdentifierValue(ctx.auditAllowHintDisable())));
     }
     
     @Override
@@ -303,7 +314,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShardingAutoTableRule(final ShardingAutoTableRuleContext ctx) {
         AutoTableRuleSegment result = new AutoTableRuleSegment(getIdentifierValue(ctx.tableName()), getResources(ctx.storageUnits()));
         Optional.ofNullable(ctx.keyGenerateDefinition()).ifPresent(optional -> result.setKeyGenerateStrategySegment((KeyGenerateStrategySegment) visit(ctx.keyGenerateDefinition())));
-        Optional.ofNullable(ctx.auditDeclaration()).ifPresent(optional -> result.setAuditStrategySegment((AuditStrategySegment) visit(ctx.auditDeclaration())));
+        Optional.ofNullable(ctx.auditDefinition()).ifPresent(optional -> result.setAuditStrategySegment((AuditStrategySegment) visitAuditDefinition(getIdentifierValue(ctx.tableName()),
+                ctx.auditDefinition())));
         Optional.ofNullable(ctx.autoShardingColumnDefinition()).ifPresent(optional -> result.setShardingColumn(buildShardingColumn(ctx.autoShardingColumnDefinition())));
         Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(optional -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
         return result;
@@ -312,33 +324,6 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitKeyGenerateDefinition(final KeyGenerateDefinitionContext ctx) {
         return null == ctx ? null : new KeyGenerateStrategySegment(getIdentifierValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
-    }
-    
-    @Override
-    public ASTNode visitAuditStrategy(final AuditStrategyContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        Collection<String> auditorNames = new LinkedList<>();
-        for (AuditorNameContext each : ctx.auditorNames().auditorName()) {
-            auditorNames.add(getIdentifierValue(each));
-        }
-        return new AuditStrategySegment(auditorNames, Boolean.parseBoolean(getIdentifierValue(ctx.auditAllowHintDisable())));
-    }
-    
-    @Override
-    public ASTNode visitAuditDefinition(final AuditDefinitionContext ctx) {
-        if (null == ctx) {
-            return null;
-        }
-        Collection<String> auditorNames = new LinkedList<>();
-        Collection<ShardingAuditorSegment> shardingAuditorSegments = new LinkedList<>();
-        for (SingleAuditDefinitionContext each : ctx.multiAuditDefinition().singleAuditDefinition()) {
-            String auditorName = getIdentifierValue(each.auditorName());
-            auditorNames.add(auditorName);
-            shardingAuditorSegments.add(new ShardingAuditorSegment(auditorName, (AlgorithmSegment) visit(each.algorithmDefinition())));
-        }
-        return new AuditStrategySegment(auditorNames, shardingAuditorSegments, Boolean.parseBoolean(getIdentifierValue(ctx.auditAllowHintDisable())));
     }
     
     @Override

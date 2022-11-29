@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.metadata.EngagedViewException;
@@ -91,7 +92,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     public void assertPostValidateCreateView() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
+        new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class),
                 mock(ConfigurationProperties.class), routeContext);
     }
     
@@ -101,7 +102,7 @@ public final class ShardingCreateViewStatementValidatorTest {
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         new ShardingCreateViewStatementValidator().postValidate(
-                shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext);
+                shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext);
     }
     
     @Test(expected = EngagedViewException.class)

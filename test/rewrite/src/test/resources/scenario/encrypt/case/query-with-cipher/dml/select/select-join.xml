@@ -18,13 +18,13 @@
 
 <rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_join_with_alias_for_cipher" db-types="MySQL">
-        <input sql="SELECT a.password from t_account a, t_account_bak b where a.account_id = b.account_id"/>
-        <output sql="SELECT a.cipher_password AS password from t_account a, t_account_bak b where a.account_id = b.account_id"/>
+        <input sql="SELECT a.password from t_account a, t_account_bak b where a.account_id = b.account_id" />
+        <output sql="SELECT a.cipher_password AS password from t_account a, t_account_bak b where a.account_id = b.account_id" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_join_with_table_name_for_cipher" db-types="MySQL">
-        <input sql="SELECT t_account.password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id"/>
-        <output sql="SELECT t_account.cipher_password AS password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id"/>
+        <input sql="SELECT t_account.password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id" />
+        <output sql="SELECT t_account.cipher_password AS password from t_account, t_account_bak where t_account.account_id = t_account_bak.account_id" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_unqualified_shorthand_projection_with_join" db-types="MySQL">

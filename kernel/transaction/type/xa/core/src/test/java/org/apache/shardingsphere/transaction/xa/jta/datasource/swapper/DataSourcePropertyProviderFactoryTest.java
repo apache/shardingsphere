@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.DefaultDataSourcePropertyProvider;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.HikariCPPropertyProvider;
 import org.junit.Test;

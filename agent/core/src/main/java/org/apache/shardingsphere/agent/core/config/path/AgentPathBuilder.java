@@ -40,9 +40,13 @@ public final class AgentPathBuilder {
     @Getter
     private static File pluginPath;
     
+    @Getter
+    private static File configPath;
+    
     static {
         agentPath = buildAgentPath();
         pluginPath = buildAgentPluginPath();
+        configPath = buildAgentConfigPath();
     }
     
     private static File buildAgentPath() {
@@ -74,4 +78,9 @@ public final class AgentPathBuilder {
     private static File buildAgentPluginPath() {
         return new File(String.join("/", agentPath.getPath(), "plugins"));
     }
+    
+    private static File buildAgentConfigPath() {
+        return new File(String.join("/", agentPath.getPath(), "conf"));
+    }
+    
 }

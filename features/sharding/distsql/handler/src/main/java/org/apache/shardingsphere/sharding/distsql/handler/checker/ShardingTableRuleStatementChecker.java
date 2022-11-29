@@ -258,12 +258,6 @@ public final class ShardingTableRuleStatementChecker {
     
     private static void checkAuditors(final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) {
         Collection<AuditStrategySegment> auditStrategySegments = rules.stream().map(AbstractTableRuleSegment::getAuditStrategySegment).filter(Objects::nonNull).collect(Collectors.toList());
-        Collection<String> auditorNames = new LinkedList<>();
-        for (AuditStrategySegment each : auditStrategySegments) {
-            auditorNames.addAll(each.getAuditorNames());
-        }
-        Collection<String> notExistAuditors = auditorNames.stream().filter(each -> null == currentRuleConfig || !currentRuleConfig.getAuditors().containsKey(each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(notExistAuditors.isEmpty(), () -> new MissingRequiredAlgorithmException("auditor", notExistAuditors));
         Set<String> requiredAuditors = new LinkedHashSet<>();
         for (AuditStrategySegment each : auditStrategySegments) {
             requiredAuditors.addAll(each.getAuditorSegments().stream()

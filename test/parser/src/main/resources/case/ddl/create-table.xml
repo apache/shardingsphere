@@ -546,7 +546,7 @@
             <column name="column3" />
         </column-definition>
         <constraint-definition constraint-name="uk_order_id" index-name="order_id_index" start-index="132" stop-index="190">
-            <index-column name="order_id" start-index="182" stop-index="189"/>
+            <index-column name="order_id" start-index="182" stop-index="189" />
         </constraint-definition>
     </create-table>
     
@@ -653,7 +653,7 @@
         <column-definition type="VARCHAR" start-index="111" stop-index="129">
             <column name="column3" />
         </column-definition>
-        <constraint-definition start-index="132" stop-index="151"/>
+        <constraint-definition start-index="132" stop-index="151" />
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_constraints">
@@ -683,12 +683,12 @@
             <primary-key-column name="item_id" start-index="163" stop-index="169" />
         </constraint-definition>
         <constraint-definition start-index="173" stop-index="188">
-            <index-column name="item_id" start-index="181" stop-index="187"/>
+            <index-column name="item_id" start-index="181" stop-index="187" />
         </constraint-definition>
         <constraint-definition start-index="191" stop-index="278">
             <referenced-table name="t_order" start-index="225" stop-index="231" />
         </constraint-definition>
-        <constraint-definition start-index="281" stop-index="299"/>
+        <constraint-definition start-index="281" stop-index="299" />
     </create-table>
     
     <create-table sql-case-id="create_table_with_out_of_line_index">
@@ -764,7 +764,7 @@
             <column name="column3" />
         </column-definition>
         <constraint-definition index-name="order_index" start-index="132" stop-index="171">
-            <index-column name="order_id" start-index="151" stop-index="158"/>
+            <index-column name="order_id" start-index="151" stop-index="158" />
         </constraint-definition>
     </create-table>
     
@@ -1064,7 +1064,7 @@
             <column name="column3" />
         </column-definition>
         <constraint-definition start-index="175" stop-index="195">
-            <primary-key-column name="item_id" start-index="188" stop-index="194"/>
+            <primary-key-column name="item_id" start-index="188" stop-index="194" />
         </constraint-definition>
         <constraint-definition start-index="198" stop-index="213">
             <index-column name="item_id" start-index="206" stop-index="212" />
@@ -1604,10 +1604,10 @@
         <table name="t_order_new" start-index="13" stop-index="23" />
         <select>
             <from>
-                <simple-table name="t_order" start-index="178" stop-index="184"/>
+                <simple-table name="t_order" start-index="178" stop-index="184" />
             </from>
             <projections start-index="171" stop-index="171">
-                <shorthand-projection start-index="171" stop-index="171"/>
+                <shorthand-projection start-index="171" stop-index="171" />
             </projections>
         </select>
     </create-table>
@@ -1618,18 +1618,18 @@
         <column name="user_id_new" start-index="40" stop-index="50" />
         <select>
             <from>
-                <simple-table name="t_order" start-index="222" stop-index="228"/>
+                <simple-table name="t_order" start-index="222" stop-index="228" />
             </from>
             <projections start-index="199" stop-index="215">
-                <column-projection name="order_id" start-index="199" stop-index="206"/>
-                <column-projection name="user_id" start-index="209" stop-index="215"/>
+                <column-projection name="order_id" start-index="199" stop-index="206" />
+                <column-projection name="user_id" start-index="209" stop-index="215" />
             </projections>
         </select>
     </create-table>
 
     <create-table sql-case-id="create_table_as_select_with_query_hint">
         <table name="t_order_new" start-index="13" stop-index="27" >
-            <owner name="dbo" start-index="13" stop-index="15"/>
+            <owner name="dbo" start-index="13" stop-index="15" />
         </table>
         <select>
             <from>

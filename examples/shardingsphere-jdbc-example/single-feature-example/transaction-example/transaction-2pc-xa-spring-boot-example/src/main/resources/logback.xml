@@ -28,9 +28,9 @@
         </encoder>
     </appender>
     
-    <logger name="com.atomikos" level="debug"/>
-    <logger name="org.springframework" level="off"/>
-    <logger name="com.zaxxer.hikari" level="off"/>
+    <logger name="com.atomikos" level="debug" />
+    <logger name="org.springframework" level="off" />
+    <logger name="com.zaxxer.hikari" level="off" />
     
     <root>
         <level value="INFO" />

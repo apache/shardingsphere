@@ -82,13 +82,15 @@ rules:
     tables:
       <table-name>: # 加密表名称
         columns:
-          <column-name>: # 加密列名称
-            plainColumn: # 原文列名称
+          <column-name> (+): # 加密列名称
+            plainColumn (?): # 原文列名称
             cipherColumn: # 密文列名称
-            encryptorName: # 加密算法名称
-          <column-name>: # 加密列名称
-            cipherColumn: # 密文列名称
-            encryptorName:  # 加密算法名称
+            encryptorName: # 密文列加密算法名称
+            assistedQueryColumn (?):  # 查询辅助列名称
+            assistedQueryEncryptorName:  # 查询辅助列加密算法名称
+            likeQueryColumn (?):  # 模糊查询列名称
+            likeQueryEncryptorName:  # 模糊查询列加密算法名称
+        queryWithCipherColumn(?): # 该表是否使用加密列进行查询
 ```
 
 ## 配置示例
@@ -167,6 +169,8 @@ rules:
           aes-key-value: 123456abc
       md5_encryptor:
         type: MD5
+      like_encryptor:
+        type: CHAR_DIGEST_LIKE
     tables:
       t_encrypt:
         columns:
@@ -174,7 +178,12 @@ rules:
             plainColumn: user_plain
             cipherColumn: user_cipher
             encryptorName: aes_encryptor
+            assistedQueryColumn: assisted_query_user
+            assistedQueryEncryptorName: aes_encryptor
+            likeQueryColumn: like_query_user
+            likeQueryEncryptorName: like_encryptor
           order_id:
             cipherColumn: order_cipher
             encryptorName: md5_encryptor
+        queryWithCipherColumn: true
 ```

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposer;
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
@@ -76,7 +76,7 @@ public abstract class BaseITCase {
     
     private Map<String, DataSource> expectedDataSourceMap;
     
-    public BaseITCase(final ParameterizedArray parameterizedArray) {
+    public BaseITCase(final ITParameterizedArray parameterizedArray) {
         mode = parameterizedArray.getMode();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();

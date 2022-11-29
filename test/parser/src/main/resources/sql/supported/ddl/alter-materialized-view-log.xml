@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_materialized_view_log_add_rowId" value="ALTER MATERIALIZED VIEW LOG ON order_items ADD ROWID;" db-types="Oracle"/>
+    <sql-case id="alter_materialized_view_log_add_rowId" value="ALTER MATERIALIZED VIEW LOG ON order_items ADD ROWID;" db-types="Oracle" />
     <sql-case id="alter_materialized_view_log_excluding_new_value" value="ALTER MATERIALIZED VIEW LOG ON employees
                                                         ADD (commission_pct)
-                                                        EXCLUDING NEW VALUES;" db-types="Oracle"/>
+                                                        EXCLUDING NEW VALUES;" db-types="Oracle" />
 </sql-cases>

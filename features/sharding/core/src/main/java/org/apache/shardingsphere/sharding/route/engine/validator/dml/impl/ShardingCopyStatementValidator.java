@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
@@ -43,7 +44,7 @@ public final class ShardingCopyStatementValidator extends ShardingDMLStatementVa
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext, final HintValueContext hintValueContext,
                              final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

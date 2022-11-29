@@ -19,10 +19,10 @@
 <sql-parser-test-cases>
     <select sql-case-id="select_into_before_from" parameters="1">
         <from start-index="30" stop-index="36">
-            <simple-table name="t_order" start-index="30" stop-index="36"/>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="12">
-            <column-projection name="status" start-index="7" stop-index="12"/>
+            <column-projection name="status" start-index="7" stop-index="12" />
         </projections>
         <where start-index="38" stop-index="55">
             <expr>
@@ -42,10 +42,10 @@
 
     <select sql-case-id="select_into_after_from" parameters="1">
         <from start-index="19" stop-index="25">
-            <simple-table name="t_order" start-index="19" stop-index="25"/>
+            <simple-table name="t_order" start-index="19" stop-index="25" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="12">
-            <column-projection name="status" start-index="7" stop-index="12"/>
+            <column-projection name="status" start-index="7" stop-index="12" />
         </projections>
         <where start-index="27" stop-index="44">
             <expr>
@@ -65,11 +65,11 @@
 
     <select sql-case-id="select_into_multi_variable" parameters="1">
         <from start-index="28" stop-index="34">
-            <simple-table name="t_order" start-index="28" stop-index="34"/>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="21">
-            <column-projection name="user_id" start-index="7" stop-index="13"/>
-            <column-projection name="status" start-index="16" stop-index="21"/>
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <column-projection name="status" start-index="16" stop-index="21" />
         </projections>
         <where start-index="36" stop-index="53">
             <expr>
@@ -89,71 +89,71 @@
 
     <select sql-case-id="select_into_out_file" parameters="2">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <limit start-index="22" stop-index="28">
-            <row-count value="2" parameter-index="0" start-index="28" stop-index="28"/>
+            <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
     </select>
 
     <select sql-case-id="select_into_out_file_with_charset" parameters="2">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <limit start-index="22" stop-index="28">
-            <row-count value="2" parameter-index="0" start-index="28" stop-index="28"/>
+            <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
     </select>
 
     <select sql-case-id="select_into_out_file_with_fields" parameters="2">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <limit start-index="22" stop-index="28">
-            <row-count value="2" parameter-index="0" start-index="28" stop-index="28"/>
+            <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
     </select>
 
     <select sql-case-id="select_into_out_file_with_fields_and_escaped" parameters="2">
         <from start-index="28" stop-index="34">
-            <simple-table name="t_order" start-index="28" stop-index="34"/>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="21">
-            <column-projection name="user_id" start-index="7" stop-index="13"/>
-            <column-projection name="status" start-index="16" stop-index="21"/>
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <column-projection name="status" start-index="16" stop-index="21" />
         </projections>
         <limit start-index="36" stop-index="42">
-            <row-count value="2" parameter-index="0" start-index="42" stop-index="42"/>
+            <row-count value="2" parameter-index="0" start-index="42" stop-index="42" />
         </limit>
     </select>
 
     <select sql-case-id="select_into_out_file_with_lines" parameters="2">
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <limit start-index="22" stop-index="28">
-            <row-count value="2" parameter-index="0" start-index="28" stop-index="28"/>
+            <row-count value="2" parameter-index="0" start-index="28" stop-index="28" />
         </limit>
     </select>
 
     <select sql-case-id="select_into_with_lock_after_into" parameters="1">
         <from start-index="19" stop-index="25">
-            <simple-table name="t_order" start-index="19" stop-index="25"/>
+            <simple-table name="t_order" start-index="19" stop-index="25" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="12">
-            <column-projection name="status" start-index="7" stop-index="12"/>
+            <column-projection name="status" start-index="7" stop-index="12" />
         </projections>
         <where start-index="27" stop-index="44">
             <expr>
@@ -169,15 +169,15 @@
                 </binary-operation-expression>
             </expr>
         </where>
-        <lock start-index="57" stop-index="66"/>
+        <lock start-index="57" stop-index="66" />
     </select>
 
     <select sql-case-id="select_into_with_lock_before_into" parameters="1">
         <from start-index="19" stop-index="25">
-            <simple-table name="t_order" start-index="19" stop-index="25"/>
+            <simple-table name="t_order" start-index="19" stop-index="25" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="12">
-            <column-projection name="status" start-index="7" stop-index="12"/>
+            <column-projection name="status" start-index="7" stop-index="12" />
         </projections>
         <where start-index="27" stop-index="44">
             <expr>
@@ -193,7 +193,7 @@
                 </binary-operation-expression>
             </expr>
         </where>
-        <lock start-index="46" stop-index="55"/>
+        <lock start-index="46" stop-index="55" />
     </select>
     
     <select sql-case-id="select_into_param_without_at">

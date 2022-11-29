@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.oracle;
 
-import org.apache.shardingsphere.test.runner.ShardingSphereParallelTestParameterized;
+import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.domain.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
-@RunWith(ShardingSphereParallelTestParameterized.class)
+@RunWith(ParallelParameterized.class)
 public final class InternalOracleParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
-    public InternalOracleParserParameterizedIT(final String sqlCaseId, final String databaseType, final SQLCaseType sqlCaseType) {
-        super(sqlCaseId, databaseType, sqlCaseType);
+    public InternalOracleParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
-    @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
-        return InternalSQLParserParameterizedIT.getTestParameters("Oracle");
+    @Parameters(name = "{0}")
+    public static Collection<InternalSQLParserParameterizedArray> getTestParameters() {
+        return getTestParameters("Oracle");
     }
 }

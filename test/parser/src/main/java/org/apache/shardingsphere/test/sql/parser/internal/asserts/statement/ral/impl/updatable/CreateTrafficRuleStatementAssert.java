@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.ral
 
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.distsql.AlgorithmAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.segment.impl.distsql.ral.ExpectedTrafficRule;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.domain.statement.ral.CreateTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ral.ExpectedTrafficRule;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.CreateTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.CreateTrafficRuleStatement;
 

@@ -33,12 +33,12 @@
             </expr>
         </where>
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <lock start-index="41" stop-index="58"/>
+        <lock start-index="41" stop-index="58" />
     </select>
 
     <select sql-case-id="select_lock_with_for_update" parameters="1">
@@ -57,12 +57,12 @@
             </expr>
         </where>
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <lock start-index="41" stop-index="50"/>
+        <lock start-index="41" stop-index="50" />
     </select>
 
     <select sql-case-id="select_lock_with_for_share" parameters="1">
@@ -81,12 +81,12 @@
             </expr>
         </where>
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <lock start-index="41" stop-index="49"/>
+        <lock start-index="41" stop-index="49" />
     </select>
 
     <select sql-case-id="select_lock_with_nowait" parameters="1">
@@ -105,12 +105,12 @@
             </expr>
         </where>
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <lock start-index="41" stop-index="57"/>
+        <lock start-index="41" stop-index="57" />
     </select>
 
     <select sql-case-id="select_lock_with_skip_locked" parameters="1">
@@ -129,12 +129,12 @@
             </expr>
         </where>
         <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20"/>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
-        <lock start-index="41" stop-index="62"/>
+        <lock start-index="41" stop-index="62" />
     </select>
 
     <select sql-case-id="select_lock_with_of" parameters="1">
@@ -177,19 +177,19 @@
         <from start-index="14" stop-index="34">
             <join-table start-index="14" stop-index="34" join-type="COMMA">
                 <left start-index="14" stop-index="20">
-                    <simple-table name="t_order" start-index="14" stop-index="20"/>
+                    <simple-table name="t_order" start-index="14" stop-index="20" />
                 </left>
                 <right start-index="23" stop-index="34">
-                    <simple-table name="t_order_item" start-index="23" stop-index="34"/>
+                    <simple-table name="t_order_item" start-index="23" stop-index="34" />
                 </right>
             </join-table>
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <lock start-index="108" stop-index="154">
-            <table name="t_order" start-index="122" stop-index="128"/>
-            <table name="t_order_item" start-index="143" stop-index="154"/>
+            <table name="t_order" start-index="122" stop-index="128" />
+            <table name="t_order_item" start-index="143" stop-index="154" />
         </lock>
     </select>
 
@@ -255,50 +255,50 @@
                 <left start-index="14" stop-index="34">
                     <join-table start-index="14" stop-index="34" join-type="COMMA">
                         <left start-index="14" stop-index="20">
-                            <simple-table name="t_order" start-index="14" stop-index="20"/>
+                            <simple-table name="t_order" start-index="14" stop-index="20" />
                         </left>
                         <right start-index="23" stop-index="34">
-                            <simple-table name="t_order_item" start-index="23" stop-index="34"/>
+                            <simple-table name="t_order_item" start-index="23" stop-index="34" />
                         </right>
                     </join-table>
                 </left>
                 <right start-index="37" stop-index="42">
-                    <simple-table name="t_user" start-index="37" stop-index="42"/>
+                    <simple-table name="t_user" start-index="37" stop-index="42" />
                 </right>
             </join-table>
         </from>
         <projections distinct-row="false" start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7"/>
+            <shorthand-projection start-index="7" stop-index="7" />
         </projections>
         <lock start-index="153" stop-index="207">
-            <table name="t_order" start-index="167" stop-index="173"/>
-            <table name="t_order_item" start-index="176" stop-index="187"/>
-            <table name="t_user" start-index="202" stop-index="207"/>
+            <table name="t_order" start-index="167" stop-index="173" />
+            <table name="t_order_item" start-index="176" stop-index="187" />
+            <table name="t_user" start-index="202" stop-index="207" />
         </lock>
     </select>
 
     <select sql-case-id="select_lock_with_for_update_column">
         <projections start-index="7" stop-index="14">
-            <column-projection name="order_id" start-index="7" stop-index="14"/>
+            <column-projection name="order_id" start-index="7" stop-index="14" />
         </projections>
         <from start-index="21" stop-index="27">
-            <simple-table name="t_order" start-index="21" stop-index="27"/>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <lock start-index="29" stop-index="50" >
-            <column name="order_id" start-index="43" stop-index="50"/>
+            <column name="order_id" start-index="43" stop-index="50" />
         </lock>
     </select>
     
     <select sql-case-id="select_lock_with_for_update_table_column">
         <projections start-index="7" stop-index="14">
-            <column-projection name="order_id" start-index="7" stop-index="14"/>
+            <column-projection name="order_id" start-index="7" stop-index="14" />
         </projections>
         <from start-index="21" stop-index="27">
-            <simple-table name="t_order" start-index="21" stop-index="27"/>
+            <simple-table name="t_order" start-index="21" stop-index="27" />
         </from>
         <lock start-index="29" stop-index="58" >
-            <table name="t_order" start-index="43" stop-index="49"/>
-            <column name="order_id" start-index="51" stop-index="58"/>
+            <table name="t_order" start-index="43" stop-index="49" />
+            <column name="order_id" start-index="51" stop-index="58" />
         </lock>
     </select>
 </sql-parser-test-cases>

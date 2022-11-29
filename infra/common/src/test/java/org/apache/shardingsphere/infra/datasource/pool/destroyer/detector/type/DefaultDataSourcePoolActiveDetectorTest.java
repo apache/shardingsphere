@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

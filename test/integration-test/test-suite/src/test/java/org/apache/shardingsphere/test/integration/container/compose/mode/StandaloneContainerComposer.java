@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.A
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -42,7 +42,7 @@ public final class StandaloneContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public StandaloneContainerComposer(final ParameterizedArray parameterizedArray) {
+    public StandaloneContainerComposer(final ITParameterizedArray parameterizedArray) {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
         // TODO add more version of databases
