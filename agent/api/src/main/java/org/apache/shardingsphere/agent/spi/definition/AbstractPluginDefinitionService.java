@@ -33,11 +33,12 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     /**
      * Install to collection of plugin interceptor point.
-     *
+     * 
+     * @param isEnhancedForProxy is enhanced for proxy
      * @return collection of plugin interceptor point
      */
-    public final Collection<PluginInterceptorPoint> install() {
-        if (isRunWithProxy()) {
+    public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
+        if (isEnhancedForProxy) {
             defineProxyInterceptors();
         } else {
             defineJdbcInterceptors();
@@ -62,14 +63,5 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         PluginInterceptorPoint.Builder builder = PluginInterceptorPoint.intercept(classNameOfTarget);
         interceptorPointMap.put(classNameOfTarget, builder);
         return builder;
-    }
-    
-    private boolean isRunWithProxy() {
-        try {
-            Class.forName("org.apache.shardingsphere.proxy.Bootstrap");
-        } catch (final ClassNotFoundException ignored) {
-            return false;
-        }
-        return true;
     }
 }
