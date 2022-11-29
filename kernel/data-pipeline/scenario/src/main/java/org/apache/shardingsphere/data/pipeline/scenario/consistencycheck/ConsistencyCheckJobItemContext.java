@@ -60,7 +60,7 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private final long checkBeginTimeMillis;
     
-    private Long checkEndTimeMillis;
+    private volatile Long checkEndTimeMillis;
     
     private final Map<String, Object> tableCheckPositions = new ConcurrentHashMap<>();
     
