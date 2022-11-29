@@ -23,29 +23,36 @@
         DB="it_discovery_test",
         USER="test_user",
         PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="8000")
+        PROPERTIES("connectionTimeout"="5000")
         ),ds_1 (
         HOST="mysql_2",
         PORT=3306,
         DB="it_discovery_test",
         USER="test_user",
         PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="8000")
+        PROPERTIES("connectionTimeout"="5000")
         ),ds_2 (
         HOST="mysql_3",
         PORT=3306,
         DB="it_discovery_test",
         USER="test_user",
         PASSWORD="Test@123",
-        PROPERTIES("connectionTimeout"="8000")
+        PROPERTIES("connectionTimeout"="5000")
+        ),ds_3 (
+        HOST="mysql_4",
+        PORT=3306,
+        DB="it_discovery_test",
+        USER="test_user",
+        PASSWORD="Test@123",
+        PROPERTIES("connectionTimeout"="5000")
         );
     </register-storage-unit>
 
     <create-discovery-rule>
         CREATE DB_DISCOVERY RULE replica_ds (
-        STORAGE_UNITS(ds_0, ds_1, ds_2),
+        STORAGE_UNITS(ds_0, ds_1, ds_2, ds_3),
         TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='558edd3c-02ec-11ea-9bb3-080027e39bd2')),
-        HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
+        HEARTBEAT(PROPERTIES('keep-alive-cron'='0/2 * * * * ?'))
         );
     </create-discovery-rule>
 
