@@ -31,11 +31,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Default parallel runner executor.
- * 
- * @param <T> key type bind to parallel executor
+ * Normal parallel runner executor.
  */
-public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T> {
+public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
     
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
@@ -45,7 +43,7 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
     private volatile ExecutorService defaultExecutorService;
     
     @Override
-    public void execute(final T key, final Runnable childStatement) {
+    public <T> void execute(final T key, final Runnable childStatement) {
         taskFeatures.add(getExecutorService(key).submit(childStatement));
     }
     
@@ -54,7 +52,7 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
         taskFeatures.add(getExecutorService().submit(childStatement));
     }
     
-    protected ExecutorService getExecutorService(final T key) {
+    protected <T> ExecutorService getExecutorService(final T key) {
         if (executorServiceMap.containsKey(key)) {
             return executorServiceMap.get(key);
         }
@@ -69,7 +67,7 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
     
     private ExecutorService getExecutorService() {
         if (null == defaultExecutorService) {
-            synchronized (DefaultParallelRunnerExecutor.class) {
+            synchronized (NormalParallelRunnerExecutor.class) {
                 if (null == defaultExecutorService) {
                     defaultExecutorService = Executors.newFixedThreadPool(
                             Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-ParallelTestThread-%d").build());

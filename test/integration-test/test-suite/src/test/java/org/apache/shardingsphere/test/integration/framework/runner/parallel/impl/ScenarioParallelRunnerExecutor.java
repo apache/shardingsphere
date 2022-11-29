@@ -21,18 +21,18 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ITParameterizedArray> {
+public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerExecutor {
     
     @Override
-    protected ExecutorService getExecutorService(final ITParameterizedArray key) {
-        ScenarioKey scenarioKey = new ScenarioKey(key);
+    protected ExecutorService getExecutorService(final Object key) {
+        ScenarioKey scenarioKey = new ScenarioKey((ITParameterizedArray) key);
         if (getExecutorServiceMap().containsKey(scenarioKey)) {
             return getExecutorServiceMap().get(scenarioKey);
         }

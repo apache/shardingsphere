@@ -24,12 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Parallel runner executors.
- * 
- * @param <T> key type which bind to executor
  */
-public final class ParallelRunnerExecutors<T> {
+public final class ParallelRunnerExecutors {
     
-    private final Map<T, ParallelRunnerExecutor<T>> executors = new ConcurrentHashMap<>();
+    private final Map<String, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
     /**
      * Get executor.
@@ -38,12 +36,11 @@ public final class ParallelRunnerExecutors<T> {
      * @param parallelLevel parallel level
      * @return got executor
      */
-    @SuppressWarnings("unchecked")
-    public ParallelRunnerExecutor<T> getExecutor(final T key, final ParallelLevel parallelLevel) {
+    public ParallelRunnerExecutor getExecutor(final String key, final ParallelLevel parallelLevel) {
         if (executors.containsKey(key)) {
             return executors.get(key);
         }
-        ParallelRunnerExecutor<T> newExecutor = ParallelRunnerExecutorFactory.newInstance(parallelLevel);
+        ParallelRunnerExecutor newExecutor = ParallelRunnerExecutorFactory.newInstance(parallelLevel);
         if (null != executors.putIfAbsent(key, newExecutor)) {
             newExecutor.finished();
         }
