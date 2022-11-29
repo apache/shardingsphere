@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ParallelRunnerExecutors<T> {
     
-    private final Map<T, ParallelRunnerExecutor<T>> executors = new ConcurrentHashMap<>();
+    private final Map<String, ParallelRunnerExecutor<T>> executors = new ConcurrentHashMap<>();
     
     /**
      * Get executor.
@@ -39,7 +39,7 @@ public final class ParallelRunnerExecutors<T> {
      * @return got executor
      */
     @SuppressWarnings("unchecked")
-    public ParallelRunnerExecutor<T> getExecutor(final T key, final ParallelLevel parallelLevel) {
+    public ParallelRunnerExecutor<T> getExecutor(final String key, final ParallelLevel parallelLevel) {
         if (executors.containsKey(key)) {
             return executors.get(key);
         }

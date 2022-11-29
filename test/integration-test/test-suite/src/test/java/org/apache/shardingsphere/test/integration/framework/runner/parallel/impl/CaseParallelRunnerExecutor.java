@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerExecutor;
 
 /**
  * Parallel runner executor with case.
  */
-public final class CaseParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ITParameterizedArray> {
+public final class CaseParallelRunnerExecutor extends NormalParallelRunnerExecutor<ITParameterizedArray> {
     
     @Override
     public void execute(final ITParameterizedArray parameterizedArray, final Runnable childStatement) {

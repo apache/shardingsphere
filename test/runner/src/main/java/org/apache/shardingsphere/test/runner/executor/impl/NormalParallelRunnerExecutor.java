@@ -31,11 +31,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Default parallel runner executor.
+ * Normal parallel runner executor.
  * 
  * @param <T> key type bind to parallel executor
  */
-public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T> {
+public class NormalParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T> {
     
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
@@ -69,7 +69,7 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
     
     private ExecutorService getExecutorService() {
         if (null == defaultExecutorService) {
-            synchronized (DefaultParallelRunnerExecutor.class) {
+            synchronized (NormalParallelRunnerExecutor.class) {
                 if (null == defaultExecutorService) {
                     defaultExecutorService = Executors.newFixedThreadPool(
                             Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-ParallelTestThread-%d").build());
