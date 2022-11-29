@@ -53,7 +53,7 @@ public final class ParallelRunnerExecutors<T> {
     /**
      * Finish all executors.
      */
-    public void finishAllExecutors() {
+    public void finishAll() {
         executors.values().forEach(ParallelRunnerExecutor::finished);
     }
 }
