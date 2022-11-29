@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
-
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
 
 /**
@@ -29,5 +29,10 @@ public final class CaseParallelRunnerExecutor extends DefaultParallelRunnerExecu
     @Override
     public void execute(final ITParameterizedArray parameterizedArray, final Runnable childStatement) {
         execute(childStatement);
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.CASE;
     }
 }

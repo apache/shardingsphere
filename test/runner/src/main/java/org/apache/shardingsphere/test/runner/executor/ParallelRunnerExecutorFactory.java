@@ -17,26 +17,37 @@
 
 package org.apache.shardingsphere.test.runner.executor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+
 /**
- * Parallel Runner Executor factory.
- * 
- * @param <T> key type which bind to executor
+ * Parallel runner executor factory.
  */
-public interface ParallelRunnerExecutorFactory<T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ParallelRunnerExecutorFactory {
+    
+    private static final Map<ParallelLevel, Class<? extends ParallelRunnerExecutor>> EXECUTORS = new HashMap<>();
+    
+    static {
+        for (ParallelRunnerExecutor each : ServiceLoader.load(ParallelRunnerExecutor.class)) {
+            EXECUTORS.put(each.getParallelLevel(), each.getClass());
+        }
+    }
     
     /**
-     * Get executor.
-     *
-     * @param key key bind to the executor
+     * Create new instance of parallel runner executor.
+     * 
      * @param parallelLevel parallel level
-     * @return got executor
+     * @return created instance
      */
-    ParallelRunnerExecutor getExecutor(T key, ParallelLevel parallelLevel);
-    
-    /**
-     * Finish all executors.
-     */
-    void finishAllExecutors();
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
+        return EXECUTORS.get(parallelLevel).getDeclaredConstructor().newInstance();
+    }
 }
