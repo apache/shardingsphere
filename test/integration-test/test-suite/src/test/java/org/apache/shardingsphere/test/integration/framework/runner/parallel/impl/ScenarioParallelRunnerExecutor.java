@@ -28,11 +28,11 @@ import java.util.concurrent.Executors;
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerExecutor<ITParameterizedArray> {
+public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerExecutor {
     
     @Override
-    protected ExecutorService getExecutorService(final ITParameterizedArray key) {
-        ScenarioKey scenarioKey = new ScenarioKey(key);
+    protected ExecutorService getExecutorService(final Object key) {
+        ScenarioKey scenarioKey = new ScenarioKey((ITParameterizedArray) key);
         if (getExecutorServiceMap().containsKey(scenarioKey)) {
             return getExecutorServiceMap().get(scenarioKey);
         }

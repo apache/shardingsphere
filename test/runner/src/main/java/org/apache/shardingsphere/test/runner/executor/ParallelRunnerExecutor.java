@@ -22,15 +22,16 @@ import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLev
 /**
  * Parallel runner executor.
  */
-public interface ParallelRunnerExecutor<T> {
+public interface ParallelRunnerExecutor {
     
     /**
      * Execute child statement.
      *
      * @param key executor key
      * @param childStatement child statement
+     * @param <T> type of key
      */
-    void execute(T key, Runnable childStatement);
+    <T> void execute(T key, Runnable childStatement);
     
     /**
      * Execute child statement.

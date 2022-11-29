@@ -32,10 +32,8 @@ import java.util.concurrent.Future;
 
 /**
  * Normal parallel runner executor.
- * 
- * @param <T> key type bind to parallel executor
  */
-public class NormalParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T> {
+public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
     
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
@@ -45,7 +43,7 @@ public class NormalParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T
     private volatile ExecutorService defaultExecutorService;
     
     @Override
-    public void execute(final T key, final Runnable childStatement) {
+    public <T> void execute(final T key, final Runnable childStatement) {
         taskFeatures.add(getExecutorService(key).submit(childStatement));
     }
     
@@ -54,7 +52,7 @@ public class NormalParallelRunnerExecutor<T> implements ParallelRunnerExecutor<T
         taskFeatures.add(getExecutorService().submit(childStatement));
     }
     
-    protected ExecutorService getExecutorService(final T key) {
+    protected <T> ExecutorService getExecutorService(final T key) {
         if (executorServiceMap.containsKey(key)) {
             return executorServiceMap.get(key);
         }

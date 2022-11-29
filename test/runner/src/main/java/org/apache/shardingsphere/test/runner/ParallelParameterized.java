@@ -31,7 +31,7 @@ public final class ParallelParameterized extends Parameterized {
     public ParallelParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
-        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new ParallelRunnerExecutors<>()));
+        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new ParallelRunnerExecutors()));
     }
     
     private ParallelLevel getParallelLevel(final Class<?> clazz) {
