@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -447,5 +448,14 @@ public final class IntervalShardingAlgorithmTest {
         Collection<String> actualAsMonthString = shardingAlgorithmByMonthInJSR310.doSharding(availableTablesForMonthInJSR310DataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("04", "10")));
         assertThat(actualAsMonthString.size(), is(4));
+    }
+
+    @Test
+    public void assertDateInSqlDate() {
+        Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
+                        Range.closed(new Date(LocalDate.of(2021, 6, 15).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()),
+                                new Date(LocalDate.of(2021, 7, 31).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()))));
+        assertThat(actualAsLocalDate.size(), is(24));
     }
 }
