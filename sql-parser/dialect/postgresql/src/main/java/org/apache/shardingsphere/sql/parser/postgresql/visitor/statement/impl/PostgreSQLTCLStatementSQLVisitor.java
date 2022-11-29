@@ -74,26 +74,26 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
         PostgreSQLSetTransactionStatement result = new PostgreSQLSetTransactionStatement();
         if (null != ctx.transactionModeList()) {
             ctx.transactionModeList().transactionModeItem().forEach(each -> {
-                setTransactionAccessType(result, each);
-                setTransactionIsolationLevel(result, each);
+                result.setAccessMode(getTransactionAccessType(each));
+                result.setIsolationLevel(getTransactionIsolationLevel(each));
             });
         }
         return result;
     }
     
-    private void setTransactionAccessType(final PostgreSQLSetTransactionStatement statement, final TransactionModeItemContext modeItemContext) {
+    private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext modeItemContext) {
         TransactionAccessType accessType = null;
         if (null != modeItemContext.ONLY()) {
             accessType = TransactionAccessType.READ_ONLY;
         } else if (null != modeItemContext.WRITE()) {
             accessType = TransactionAccessType.READ_WRITE;
         }
-        statement.setAccessMode(accessType);
+        return accessType;
     }
     
-    private void setTransactionIsolationLevel(final PostgreSQLSetTransactionStatement statement, final TransactionModeItemContext modeItemContext) {
+    private TransactionIsolationLevel getTransactionIsolationLevel(final TransactionModeItemContext modeItemContext) {
+        TransactionIsolationLevel isolationLevel = null;
         if (null != modeItemContext.isoLevel()) {
-            TransactionIsolationLevel isolationLevel = null;
             if (null != modeItemContext.isoLevel().UNCOMMITTED()) {
                 isolationLevel = TransactionIsolationLevel.READ_UNCOMMITTED;
             } else if (null != modeItemContext.isoLevel().COMMITTED()) {
@@ -103,8 +103,8 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
             } else if (null != modeItemContext.isoLevel().SERIALIZABLE()) {
                 isolationLevel = TransactionIsolationLevel.SERIALIZABLE;
             }
-            statement.setIsolationLevel(isolationLevel);
         }
+        return isolationLevel;
     }
     
     @Override
