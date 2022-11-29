@@ -82,29 +82,32 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     }
     
     private TransactionAccessType getTransactionAccessType(final TransactionModeItemContext modeItemContext) {
-        TransactionAccessType accessType = null;
         if (null != modeItemContext.ONLY()) {
-            accessType = TransactionAccessType.READ_ONLY;
-        } else if (null != modeItemContext.WRITE()) {
-            accessType = TransactionAccessType.READ_WRITE;
+            return TransactionAccessType.READ_ONLY;
         }
-        return accessType;
+        if (null != modeItemContext.WRITE()) {
+            return TransactionAccessType.READ_WRITE;
+        }
+        return null;
     }
     
     private TransactionIsolationLevel getTransactionIsolationLevel(final TransactionModeItemContext modeItemContext) {
-        TransactionIsolationLevel isolationLevel = null;
-        if (null != modeItemContext.isoLevel()) {
-            if (null != modeItemContext.isoLevel().UNCOMMITTED()) {
-                isolationLevel = TransactionIsolationLevel.READ_UNCOMMITTED;
-            } else if (null != modeItemContext.isoLevel().COMMITTED()) {
-                isolationLevel = TransactionIsolationLevel.READ_COMMITTED;
-            } else if (null != modeItemContext.isoLevel().REPEATABLE()) {
-                isolationLevel = TransactionIsolationLevel.REPEATABLE_READ;
-            } else if (null != modeItemContext.isoLevel().SERIALIZABLE()) {
-                isolationLevel = TransactionIsolationLevel.SERIALIZABLE;
-            }
+        if (null == modeItemContext.isoLevel()) {
+            return null;
         }
-        return isolationLevel;
+        if (null != modeItemContext.isoLevel().UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != modeItemContext.isoLevel().COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        if (null != modeItemContext.isoLevel().REPEATABLE()) {
+            return TransactionIsolationLevel.REPEATABLE_READ;
+        }
+        if (null != modeItemContext.isoLevel().SERIALIZABLE()) {
+            return TransactionIsolationLevel.SERIALIZABLE;
+        }
+        return null;
     }
     
     @Override
