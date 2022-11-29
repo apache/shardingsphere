@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.external;
 
+import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
+import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
-import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -30,13 +31,14 @@ import java.util.Collection;
 @RunWith(ParallelParameterized.class)
 public final class ExternalPostgreSQLParserParameterizedIT extends ExternalSQLParserParameterizedIT {
     
-    public ExternalPostgreSQLParserParameterizedIT(final String sqlCaseId, final String sql) {
-        super(sqlCaseId, sql, "PostgreSQL", "CSV");
+    public ExternalPostgreSQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0} (PostgreSQL) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(
-                URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/sql"), URI.create("https://github.com/postgres/postgres/tree/master/src/test/regress/expected"));
+    public static Collection<ExternalSQLParserParameterizedArray> getTestParameters() {
+        String caseURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
+        String resultURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
+        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "PostgreSQL", "CSV");
     }
 }

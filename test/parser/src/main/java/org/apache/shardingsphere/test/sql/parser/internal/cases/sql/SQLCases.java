@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilderFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,31 +45,27 @@ public final class SQLCases {
      * @param databaseTypes database types to be generated
      * @return generated test parameters
      */
-    public Collection<Object[]> generateTestParameters(final Collection<String> databaseTypes) {
-        Collection<Object[]> result = new LinkedList<>();
+    public Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<String> databaseTypes) {
+        Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
         for (SQLCase each : cases.values()) {
             result.addAll(generateTestParameters(databaseTypes, each));
         }
         return result;
     }
     
-    private Collection<Object[]> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
-        Collection<Object[]> result = new LinkedList<>();
+    private Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
+        Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
             result.addAll(generateTestParameters(databaseTypes, sqlCase, each));
         }
         return result;
     }
     
-    private Collection<Object[]> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType caseType) {
-        Collection<Object[]> result = new LinkedList<>();
+    private Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType caseType) {
+        Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
         for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each) && containsSQLCaseType(sqlCase, caseType)) {
-                Object[] params = new Object[3];
-                params[0] = sqlCase.getId();
-                params[1] = each;
-                params[2] = caseType;
-                result.add(params);
+                result.add(new InternalSQLParserParameterizedArray(sqlCase.getId(), each, caseType));
             }
         }
         return result;

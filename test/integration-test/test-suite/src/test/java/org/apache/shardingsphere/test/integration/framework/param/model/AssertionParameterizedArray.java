@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
  */
 @RequiredArgsConstructor
 @Getter
-public final class AssertionParameterizedArray implements ParameterizedArray {
+public final class AssertionParameterizedArray implements ITParameterizedArray {
     
     private final IntegrationTestCaseContext testCaseContext;
     

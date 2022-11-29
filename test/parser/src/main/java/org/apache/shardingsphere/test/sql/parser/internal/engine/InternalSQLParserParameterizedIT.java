@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.engine;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -28,9 +27,10 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.SQLS
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.SQLParserTestCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -38,7 +38,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
 
-@RequiredArgsConstructor
 public abstract class InternalSQLParserParameterizedIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
@@ -51,9 +50,15 @@ public abstract class InternalSQLParserParameterizedIT {
     
     private final SQLCaseType sqlCaseType;
     
-    protected static Collection<Object[]> getTestParameters(final String... databaseTypes) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : SQL_CASES.generateTestParameters(Arrays.asList(databaseTypes))) {
+    public InternalSQLParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {
+        sqlCaseId = parameterizedArray.getSqlCaseId();
+        databaseType = parameterizedArray.getDatabaseType();
+        sqlCaseType = parameterizedArray.getSqlCaseType();
+    }
+    
+    protected static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String... databaseTypes) {
+        Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
+        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each)) {
                 result.add(each);
             }
@@ -61,8 +66,8 @@ public abstract class InternalSQLParserParameterizedIT {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
-        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES.get(sqlTestParam[0].toString()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserParameterizedArray parameterizedArray) {
+        return SQLCaseType.Placeholder == parameterizedArray.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(parameterizedArray.getSqlCaseId()).getParameters().isEmpty();
     }
     
     @Test

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporterCreatorFactory;
 import org.junit.Test;
@@ -38,11 +39,11 @@ public abstract class ExternalSQLParserParameterizedIT {
     
     private final SQLParseResultReporter resultReporter;
     
-    protected ExternalSQLParserParameterizedIT(final String sqlCaseId, final String sql, final String databaseType, final String reportType) {
-        this.sqlCaseId = sqlCaseId;
-        this.sql = sql;
-        this.databaseType = databaseType;
-        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(reportType).create(databaseType);
+    protected ExternalSQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {
+        sqlCaseId = parameterizedArray.getSqlCaseId();
+        sql = parameterizedArray.getSql();
+        databaseType = parameterizedArray.getDatabaseType();
+        resultReporter = SQLParseResultReporterCreatorFactory.newInstance(parameterizedArray.getReportType()).create(databaseType);
     }
     
     @Test

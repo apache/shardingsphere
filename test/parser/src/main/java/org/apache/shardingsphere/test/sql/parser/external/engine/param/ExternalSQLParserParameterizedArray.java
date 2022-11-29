@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.param.model;
+package org.apache.shardingsphere.test.sql.parser.external.engine.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
- * Parameterized array of case based integration test.
+ * External SQL parser parameterized array.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseParameterizedArray implements ITParameterizedArray {
+public final class ExternalSQLParserParameterizedArray implements ParameterizedArray {
     
-    private final IntegrationTestCaseContext testCaseContext;
+    private final String sqlCaseId;
     
-    private final String adapter;
+    private final String sql;
     
-    private final String scenario;
+    private final String databaseType;
     
-    private final String mode;
-    
-    private final DatabaseType databaseType;
+    private final String reportType;
     
     @Override
     public String toString() {
-        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getType(), testCaseContext.getTestCase().getSql());
+        return String.format("%s (%s) -> %s", sqlCaseId, databaseType, sql);
     }
 }

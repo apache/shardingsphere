@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,10 +27,10 @@ import java.util.concurrent.Executors;
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ParameterizedArray> {
+public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ITParameterizedArray> {
     
     @Override
-    protected ExecutorService getExecutorService(final ParameterizedArray key) {
+    protected ExecutorService getExecutorService(final ITParameterizedArray key) {
         ScenarioKey scenarioKey = new ScenarioKey(key);
         if (getExecutorServiceMap().containsKey(scenarioKey)) {
             return getExecutorServiceMap().get(scenarioKey);
@@ -57,7 +57,7 @@ public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerE
         
         private final String databaseTypeName;
         
-        private ScenarioKey(final ParameterizedArray parameterizedArray) {
+        private ScenarioKey(final ITParameterizedArray parameterizedArray) {
             adapter = parameterizedArray.getAdapter();
             scenario = parameterizedArray.getScenario();
             databaseTypeName = parameterizedArray.getDatabaseType().getType();

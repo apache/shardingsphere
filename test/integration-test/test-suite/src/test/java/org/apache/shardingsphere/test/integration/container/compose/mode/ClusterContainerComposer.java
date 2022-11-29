@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.S
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.AdapterContainerUtil;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -48,7 +48,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
     
     private final AdapterContainer adapterContainer;
     
-    public ClusterContainerComposer(final ParameterizedArray parameterizedArray) {
+    public ClusterContainerComposer(final ITParameterizedArray parameterizedArray) {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
         // TODO support other types of governance
