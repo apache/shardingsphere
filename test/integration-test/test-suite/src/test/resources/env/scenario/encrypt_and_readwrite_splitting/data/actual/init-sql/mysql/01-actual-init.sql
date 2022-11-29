@@ -34,6 +34,7 @@ CREATE TABLE encrypt_write_ds.t_order_federate_sharding (order_id_sharding INT N
 CREATE TABLE encrypt_write_ds.t_user_encrypt_federate_sharding (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_write_ds.t_user_encrypt_federate (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_write_ds.t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE encrypt_write_ds.t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE INDEX user_index_t_user ON encrypt_write_ds.t_user (user_id);
 
 CREATE TABLE encrypt_read_ds.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
@@ -46,4 +47,5 @@ CREATE TABLE encrypt_read_ds.t_order_federate_sharding (order_id_sharding INT NO
 CREATE TABLE encrypt_read_ds.t_user_encrypt_federate_sharding (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_read_ds.t_user_encrypt_federate (user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, cipher_pwd VARCHAR(45) NULL, username VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_read_ds.t_user_info (user_id INT NOT NULL, information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE encrypt_read_ds.t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE INDEX user_index_t_user ON encrypt_read_ds.t_user (user_id);
