@@ -33,17 +33,17 @@ public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerEx
     @Override
     protected ExecutorService getExecutorService(final Object key) {
         ScenarioKey scenarioKey = new ScenarioKey((ITParameterizedArray) key);
-        if (getExecutorServiceMap().containsKey(scenarioKey)) {
-            return getExecutorServiceMap().get(scenarioKey);
+        if (getExecutorServices().containsKey(scenarioKey)) {
+            return getExecutorServices().get(scenarioKey);
         }
         String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", scenarioKey.toString(), "%d");
         ExecutorService executorService = Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors(),
                 new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
-        if (null != getExecutorServiceMap().putIfAbsent(scenarioKey, executorService)) {
+        if (null != getExecutorServices().putIfAbsent(scenarioKey, executorService)) {
             executorService.shutdownNow();
         }
-        return getExecutorServiceMap().get(scenarioKey);
+        return getExecutorServices().get(scenarioKey);
     }
     
     @Override

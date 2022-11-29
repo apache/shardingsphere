@@ -29,7 +29,6 @@ import java.util.ServiceLoader;
 /**
  * Parallel runner executor factory.
  */
-@SuppressWarnings("rawtypes")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParallelRunnerExecutorFactory {
     

@@ -35,34 +35,34 @@ import java.util.concurrent.Future;
  */
 public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
     
-    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
+    private final Collection<Future<?>> futures = new LinkedList<>();
     
     @Getter
-    private final Map<Object, ExecutorService> executorServiceMap = new ConcurrentHashMap<>();
+    private final Map<Object, ExecutorService> executorServices = new ConcurrentHashMap<>();
     
     private volatile ExecutorService defaultExecutorService;
     
     @Override
     public <T> void execute(final T key, final Runnable childStatement) {
-        taskFeatures.add(getExecutorService(key).submit(childStatement));
+        futures.add(getExecutorService(key).submit(childStatement));
     }
     
     @Override
     public void execute(final Runnable childStatement) {
-        taskFeatures.add(getExecutorService().submit(childStatement));
+        futures.add(getExecutorService().submit(childStatement));
     }
     
     protected <T> ExecutorService getExecutorService(final T key) {
-        if (executorServiceMap.containsKey(key)) {
-            return executorServiceMap.get(key);
+        if (executorServices.containsKey(key)) {
+            return executorServices.get(key);
         }
         String threadPoolNameFormat = String.join("-", "ShardingSphere-KeyedParallelTestThread", key.toString(), "%d");
         ExecutorService executorService = Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
-        if (null != executorServiceMap.putIfAbsent(key, executorService)) {
+        if (null != executorServices.putIfAbsent(key, executorService)) {
             executorService.shutdownNow();
         }
-        return executorServiceMap.get(key);
+        return executorServices.get(key);
     }
     
     private ExecutorService getExecutorService() {
@@ -79,13 +79,13 @@ public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
     
     @Override
     public void finished() {
-        taskFeatures.forEach(each -> {
+        futures.forEach(each -> {
             try {
                 each.get();
             } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
-        executorServiceMap.values().forEach(ExecutorService::shutdownNow);
+        executorServices.values().forEach(ExecutorService::shutdownNow);
         if (null != defaultExecutorService) {
             defaultExecutorService.shutdownNow();
         }
