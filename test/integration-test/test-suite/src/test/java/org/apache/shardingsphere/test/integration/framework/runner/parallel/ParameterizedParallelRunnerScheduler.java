@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorEngine;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
 import org.apache.shardingsphere.test.runner.param.RunnerParameters;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
  */
 public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
     
-    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutorEngine executorEngine) {
+    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutors executorEngine) {
         super(parallelLevel, executorEngine);
     }
     
