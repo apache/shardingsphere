@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.runner.executor.impl;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -90,5 +91,10 @@ public class DefaultParallelRunnerExecutor<T> implements ParallelRunnerExecutor<
         if (null != defaultExecutorService) {
             defaultExecutorService.shutdownNow();
         }
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.NORMAL;
     }
 }

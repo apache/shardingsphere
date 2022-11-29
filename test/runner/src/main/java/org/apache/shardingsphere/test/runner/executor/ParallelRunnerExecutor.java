@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.runner.executor;
 
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+
 /**
  * Parallel runner executor.
  */
@@ -41,4 +43,11 @@ public interface ParallelRunnerExecutor<T> {
      * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
      */
     void finished();
+    
+    /**
+     * Get parallel level.
+     * 
+     * @return parallel level
+     */
+    ParallelLevel getParallelLevel();
 }

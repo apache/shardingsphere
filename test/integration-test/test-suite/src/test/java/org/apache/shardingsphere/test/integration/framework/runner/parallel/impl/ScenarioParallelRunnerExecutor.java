@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +44,11 @@ public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerE
             executorService.shutdownNow();
         }
         return getExecutorServiceMap().get(scenarioKey);
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.SCENARIO;
     }
     
     /**

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.runner;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutorFactory;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorEngine;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
 
@@ -31,7 +31,7 @@ public final class ParallelParameterized extends Parameterized {
     public ParallelParameterized(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
         super(clazz);
-        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new DefaultParallelRunnerExecutorFactory<>()));
+        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new ParallelRunnerExecutorEngine<>()));
     }
     
     private ParallelLevel getParallelLevel(final Class<?> clazz) {

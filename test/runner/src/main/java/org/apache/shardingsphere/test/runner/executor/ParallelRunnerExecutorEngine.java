@@ -15,46 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.executor.impl;
+package org.apache.shardingsphere.test.runner.executor;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default parallel runner executor factory.
+ * Parallel runner executor engine.
+ * 
+ * @param <T> key type which bind to executor
  */
-public class DefaultParallelRunnerExecutorFactory<T> implements ParallelRunnerExecutorFactory<T> {
+public final class ParallelRunnerExecutorEngine<T> {
     
     private final Map<T, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
     /**
-     * Create executor instance by parallel level.
+     * Get executor.
      *
+     * @param key key bind to the executor
      * @param parallelLevel parallel level
-     * @return executor by parallel level
+     * @return got executor
      */
-    public ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
-        return new DefaultParallelRunnerExecutor<>();
-    }
-    
-    @Override
-    public final ParallelRunnerExecutor getExecutor(final T key, final ParallelLevel parallelLevel) {
+    public ParallelRunnerExecutor getExecutor(final T key, final ParallelLevel parallelLevel) {
         if (executors.containsKey(key)) {
             return executors.get(key);
         }
-        ParallelRunnerExecutor newExecutor = newInstance(parallelLevel);
+        ParallelRunnerExecutor newExecutor = ParallelRunnerExecutorFactory.newInstance(parallelLevel);
         if (null != executors.putIfAbsent(key, newExecutor)) {
             newExecutor.finished();
         }
         return executors.get(key);
     }
     
-    @Override
-    public final void finishAllExecutors() {
+    /**
+     * Finish all executors.
+     */
+    public void finishAllExecutors() {
         executors.values().forEach(ParallelRunnerExecutor::finished);
     }
 }

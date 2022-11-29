@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.runner.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorFactory;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutorEngine;
+import org.apache.shardingsphere.test.runner.param.RunnerParameters;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 
 /**
@@ -29,13 +28,13 @@ import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
  */
 public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
     
-    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutorFactory<DatabaseType> executorFactory) {
-        super(parallelLevel, executorFactory);
+    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutorEngine executorEngine) {
+        super(parallelLevel, executorEngine);
     }
     
     @Override
     public void schedule(final Runnable childStatement) {
         ITParameterizedArray parameterizedArray = (ITParameterizedArray) new RunnerParameters(childStatement).getParameterizedArray();
-        getExecutorFactory().getExecutor(parameterizedArray.getDatabaseType(), getParallelLevel()).execute(parameterizedArray, childStatement);
+        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType(), getParallelLevel()).execute(parameterizedArray, childStatement);
     }
 }
