@@ -50,19 +50,23 @@ public final class TransactionSetHandler implements ProxyBackendHandler {
     }
     
     private void setReadOnly() {
-        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode()) {
+        if (!sqlStatement.getAccessMode().isPresent()) {
+            return;
+        }
+        if (TransactionAccessType.READ_ONLY == sqlStatement.getAccessMode().get()) {
             connectionSession.setReadOnly(true);
-        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode()) {
+        } else if (TransactionAccessType.READ_WRITE == sqlStatement.getAccessMode().get()) {
             connectionSession.setReadOnly(false);
         }
     }
     
     private void setTransactionIsolationLevel() {
-        if (null != sqlStatement.getIsolationLevel()) {
-            connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
-                    ? TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
-                    : TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
-            connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel());
+        if (!sqlStatement.getIsolationLevel().isPresent()) {
+            return;
         }
+        connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
+                ? TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
+                : TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
+        connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }
