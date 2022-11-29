@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.internal.engine.param;
+package org.apache.shardingsphere.test.sql.parser;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.SQLParserParameterizedArray;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
- * Internal SQL parser parameterized array.
+ * SQL parser parameterized array.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InternalSQLParserParameterizedArray implements SQLParserParameterizedArray {
+public interface SQLParserParameterizedArray extends ParameterizedArray {
     
-    private final String sqlCaseId;
+    /**
+     * Get SQL case ID.
+     * 
+     * @return SQL case ID
+     */
+    String getSqlCaseId();
     
-    private final String databaseType;
-    
-    private final SQLCaseType sqlCaseType;
-    
-    @Override
-    public String toString() {
-        return String.format("%s (%s) -> %s", sqlCaseId, sqlCaseType, databaseType);
-    }
+    /**
+     * Get database type.
+     * 
+     * @return database type
+     */
+    String getDatabaseType();
 }

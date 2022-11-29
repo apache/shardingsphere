@@ -38,9 +38,9 @@ public final class RunnerParameters {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public ParameterizedArray getParameterizedArray() {
-        Field parametersField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
-        parametersField.setAccessible(true);
-        Object[] params = (Object[]) parametersField.get(getRunner());
+        Field paramsField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
+        paramsField.setAccessible(true);
+        Object[] params = (Object[]) paramsField.get(getRunner());
         return (ParameterizedArray) params[0];
     }
     
