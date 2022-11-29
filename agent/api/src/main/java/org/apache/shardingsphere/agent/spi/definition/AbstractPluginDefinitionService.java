@@ -32,19 +32,28 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = new HashMap<>();
     
     /**
-     * Define interceptors to collection of plugin interceptor point.
-     */
-    public abstract void defineInterceptors();
-    
-    /**
      * Install to collection of plugin interceptor point.
      *
      * @return collection of plugin interceptor point
      */
     public final Collection<PluginInterceptorPoint> install() {
-        defineInterceptors();
+        if (isRunWithProxy()) {
+            defineProxyInterceptors();
+        } else {
+            defineJdbcInterceptors();
+        }
         return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
     }
+    
+    /**
+     * Define proxy interceptors to collection of plugin interceptor point.
+     */
+    public abstract void defineProxyInterceptors();
+    
+    /**
+     * Define JDBC interceptors to collection of plugin interceptor point.
+     */
+    public abstract void defineJdbcInterceptors();
     
     protected final PluginInterceptorPoint.Builder defineInterceptor(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {
@@ -53,5 +62,14 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         PluginInterceptorPoint.Builder builder = PluginInterceptorPoint.intercept(classNameOfTarget);
         interceptorPointMap.put(classNameOfTarget, builder);
         return builder;
+    }
+    
+    private boolean isRunWithProxy() {
+        try {
+            Class.forName("org.apache.shardingsphere.proxy.Bootstrap");
+        } catch (final ClassNotFoundException ignored) {
+            return false;
+        }
+        return true;
     }
 }

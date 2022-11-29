@@ -46,7 +46,7 @@ public final class ZipkinPluginDefinitionService extends AbstractPluginDefinitio
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice";
     
     @Override
-    public void defineInterceptors() {
+    public void defineProxyInterceptors() {
         defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -61,6 +61,11 @@ public final class ZipkinPluginDefinitionService extends AbstractPluginDefinitio
                                 .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
+    }
+    
+    @Override
+    public void defineJdbcInterceptors() {
+        // TODO add JDBC related interception
     }
     
     @Override

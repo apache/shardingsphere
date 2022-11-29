@@ -41,13 +41,25 @@ public final class PrometheusPluginBootService implements PluginBootService {
     
     private static final String KEY_JVM_INFORMATION_COLLECTOR_ENABLED = "jvm-information-collector-enabled";
     
+    private boolean isRunWithProxy = true;
+    
     private HTTPServer httpServer;
     
     @Override
     public void start(final PluginConfiguration pluginConfig) {
         Preconditions.checkState(pluginConfig.getPort() > 0, "Prometheus config error, host is null or port is `%s`", pluginConfig.getPort());
+        isRunWithProxy = isRunWithProxy();
         startServer(pluginConfig);
         MetricsPool.setMetricsFactory(new PrometheusWrapperFactory());
+    }
+    
+    private boolean isRunWithProxy() {
+        try {
+            Class.forName("org.apache.shardingsphere.proxy.Bootstrap");
+        } catch (final ClassNotFoundException ignored) {
+            return false;
+        }
+        return true;
     }
     
     private void startServer(final PluginConfiguration pluginConfig) {
@@ -62,9 +74,11 @@ public final class PrometheusPluginBootService implements PluginBootService {
     }
     
     private void registerCollector(final boolean enabled) {
-        new ProxyInfoCollector().register();
-        new BuildInfoCollector().register();
-        new MetaDataInfoCollector().register();
+        new BuildInfoCollector(isRunWithProxy).register();
+        if (isRunWithProxy) {
+            new ProxyInfoCollector().register();
+            new MetaDataInfoCollector().register();
+        }
         if (enabled) {
             DefaultExports.initialize();
         }
