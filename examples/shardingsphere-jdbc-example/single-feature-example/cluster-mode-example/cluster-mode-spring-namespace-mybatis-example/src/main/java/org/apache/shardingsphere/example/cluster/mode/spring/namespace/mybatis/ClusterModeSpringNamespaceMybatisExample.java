@@ -28,6 +28,7 @@ import java.sql.SQLException;
 
 public final class ClusterModeSpringNamespaceMybatisExample {
     
+    // TODO Fix ShardingSphereDrive cluster mode start
 //    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
