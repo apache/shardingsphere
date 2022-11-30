@@ -58,7 +58,6 @@ rules:
       type: mod
       props:
         sharding-count: 4
-    
   
   keyGenerators:
     snowflake:
