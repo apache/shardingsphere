@@ -36,6 +36,6 @@ public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerSc
     public void schedule(final Runnable childStatement) {
         ITParameterizedArray parameterizedArray = (ITParameterizedArray) new RunnerParameters(childStatement).getParameterizedArray();
         String key = String.join("-", parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getType());
-        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType().getType(), getParallelLevel()).execute(ParallelLevel.SCENARIO == getParallelLevel() ? key : "", childStatement);
+        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType().getType()).execute(ParallelLevel.SCENARIO == getParallelLevel() ? key : "", childStatement);
     }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.runner.executor;
 
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,14 +31,13 @@ public final class ParallelRunnerExecutors {
      * Get executor.
      *
      * @param key key bind to the executor
-     * @param parallelLevel parallel level
      * @return got executor
      */
-    public ParallelRunnerExecutor getExecutor(final String key, final ParallelLevel parallelLevel) {
+    public ParallelRunnerExecutor getExecutor(final String key) {
         if (executors.containsKey(key)) {
             return executors.get(key);
         }
-        ParallelRunnerExecutor newExecutor = ParallelRunnerExecutorFactory.newInstance(parallelLevel);
+        ParallelRunnerExecutor newExecutor = new ParallelRunnerExecutor();
         if (null != executors.putIfAbsent(key, newExecutor)) {
             newExecutor.finished();
         }

@@ -17,12 +17,25 @@
 
 package org.apache.shardingsphere.test.runner.executor;
 
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
- * Parallel runner executor.
+ * Abstract parallel runner executor.
  */
-public interface ParallelRunnerExecutor {
+public final class ParallelRunnerExecutor {
+    
+    private final Collection<Future<?>> futures = new LinkedList<>();
+    
+    private final Map<Object, ExecutorService> executorServices = new ConcurrentHashMap<>();
     
     /**
      * Execute child statement.
@@ -30,17 +43,33 @@ public interface ParallelRunnerExecutor {
      * @param key executor key
      * @param childStatement child statement
      */
-    void execute(String key, Runnable childStatement);
+    public void execute(final String key, final Runnable childStatement) {
+        futures.add(getExecutorService(key).submit(childStatement));
+    }
+    
+    private ExecutorService getExecutorService(final String key) {
+        if (executorServices.containsKey(key)) {
+            return executorServices.get(key);
+        }
+        String threadPoolNameFormat = String.join("-", "TestThread", key, "%d");
+        ExecutorService executorService = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
+        if (null != executorServices.putIfAbsent(key, executorService)) {
+            executorService.shutdownNow();
+        }
+        return executorServices.get(key);
+    }
     
     /**
-     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
+     * Finish tasks.
      */
-    void finished();
-    
-    /**
-     * Get parallel level.
-     * 
-     * @return parallel level
-     */
-    ParallelLevel getParallelLevel();
+    public void finished() {
+        futures.forEach(each -> {
+            try {
+                each.get();
+            } catch (final InterruptedException | ExecutionException ignored) {
+            }
+        });
+        executorServices.values().forEach(ExecutorService::shutdownNow);
+    }
 }
