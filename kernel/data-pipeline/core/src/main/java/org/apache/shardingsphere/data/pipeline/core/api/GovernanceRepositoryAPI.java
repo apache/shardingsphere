@@ -60,30 +60,30 @@ public interface GovernanceRepositoryAPI {
     /**
      * Get latest check job id.
      *
-     * @param jobId job id
+     * @param parentJobId parent job id
      * @return check job id
      */
-    Optional<String> getLatestCheckJobId(String jobId);
+    Optional<String> getLatestCheckJobId(String parentJobId);
     
     /**
      * Persist latest check job id.
      *
-     * @param jobId job id
+     * @param parentJobId job id
      * @param checkJobId check job id
      */
-    void persistLatestCheckJobId(String jobId, String checkJobId);
+    void persistLatestCheckJobId(String parentJobId, String checkJobId);
     
     /**
      * Delete latest check job id.
      *
-     * @param jobId job id
+     * @param parentJobId parent job id
      */
-    void deleteLatestCheckJobId(String jobId);
+    void deleteLatestCheckJobId(String parentJobId);
     
     /**
      * Get check job result.
      *
-     * @param parentJobId job id
+     * @param parentJobId parent job id
      * @param checkJobId check job id
      * @return check job result
      */
@@ -92,27 +92,27 @@ public interface GovernanceRepositoryAPI {
     /**
      * Persist check job result.
      *
-     * @param jobId job id
+     * @param parentJobId parent job id
      * @param checkJobId check job id
      * @param checkResultMap check result map
      */
-    void persistCheckJobResult(String jobId, String checkJobId, Map<String, DataConsistencyCheckResult> checkResultMap);
+    void persistCheckJobResult(String parentJobId, String checkJobId, Map<String, DataConsistencyCheckResult> checkResultMap);
     
     /**
      * Delete check job result.
      *
-     * @param jobId job id
+     * @param parentJobId parent job id
      * @param checkJobId check job id
      */
-    void deleteCheckJobResult(String jobId, String checkJobId);
+    void deleteCheckJobResult(String parentJobId, String checkJobId);
     
     /**
      * List check job ids.
      *
-     * @param jobId job id
+     * @param parentJobId parent job id
      * @return check job ids
      */
-    Collection<String> listCheckJobIds(String jobId);
+    Collection<String> listCheckJobIds(String parentJobId);
     
     /**
      * Delete job.
