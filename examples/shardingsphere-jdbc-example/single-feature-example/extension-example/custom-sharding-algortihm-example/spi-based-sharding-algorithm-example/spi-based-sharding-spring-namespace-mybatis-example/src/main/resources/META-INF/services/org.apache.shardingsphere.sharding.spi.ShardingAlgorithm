@@ -17,4 +17,4 @@
 
 org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.mybatis.fixture.SPIBasedOrderStandardShardingAlgorithmFixture
 org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.mybatis.fixture.SPIBasedOrderItemStandardShardingAlgorithmFixture
-org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.mybatis.fixture.SPIBasedDataSourceStandardShardingAlgorithmFixture
+org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.mybatis.fixture.SPIBasedDatabaseStandardShardingAlgorithmFixture

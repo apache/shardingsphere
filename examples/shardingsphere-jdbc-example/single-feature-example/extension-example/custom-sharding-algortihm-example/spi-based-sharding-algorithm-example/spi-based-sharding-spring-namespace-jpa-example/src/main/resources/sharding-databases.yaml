@@ -33,14 +33,17 @@ rules:
 - !SHARDING
   tables:
     t_order:
+      actualDataNodes: ds_${0..1}.t_order
       keyGenerateStrategy:
         column: order_id
         keyGeneratorName: snowflake
     t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
     t_account:
+      actualDataNodes: ds_${0..1}.t_account
       keyGenerateStrategy:
         column: order_item_id
         keyGeneratorName: snowflake
@@ -51,11 +54,11 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: datasource_spi_based
+      shardingAlgorithmName: database_spi_based
   
   shardingAlgorithms:
-    datasource_spi_based:
-      type: DATASOURCE_SPI_BASED
+    database_spi_based:
+      type: DATABASE_SPI_BASED
   
   keyGenerators:
     snowflake:
