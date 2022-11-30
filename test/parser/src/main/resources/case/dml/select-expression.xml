@@ -1897,18 +1897,18 @@
             <expression-projection start-index="13" stop-index="56" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
                 <expr>
                     <case-when-expression>
-                        <case-arg>
+                        <case-expr>
                             <column name="order_id" start-index="18" stop-index="25" />
-                        </case-arg>
-                        <when-list>
+                        </case-expr>
+                        <when-exprs>
                             <literal-expression value="1" start-index="32" stop-index="32" />
-                        </when-list>
-                        <then-list>
+                        </when-exprs>
+                        <then-exprs>
                             <literal-expression value="11" start-index="39" stop-index="42" />
-                        </then-list>
-                        <else-expression>
+                        </then-exprs>
+                        <else-expr>
                             <literal-expression value="00" start-index="49" stop-index="52" />
-                        </else-expression>
+                        </else-expr>
                     </case-when-expression>
                 </expr>
             </expression-projection>
@@ -1928,18 +1928,18 @@
             <expression-projection start-index="7" stop-index="50" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
                 <expr>
                     <case-when-expression>
-                        <case-arg>
+                        <case-expr>
                             <column name="order_id" start-index="12" stop-index="19" />
-                        </case-arg>
-                        <when-list>
+                        </case-expr>
+                        <when-exprs>
                             <literal-expression value="1" start-index="26" stop-index="26" />
-                        </when-list>
-                        <then-list>
+                        </when-exprs>
+                        <then-exprs>
                             <literal-expression value="11" start-index="33" stop-index="36" />
-                        </then-list>
-                        <else-expression>
+                        </then-exprs>
+                        <else-expr>
                             <literal-expression value="00" start-index="43" stop-index="46" />
-                        </else-expression>
+                        </else-expr>
                     </case-when-expression>
                 </expr>
             </expression-projection>
