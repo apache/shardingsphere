@@ -38,7 +38,7 @@ public final class PluginBootServiceManager {
     
     /**
      * Start all services.
-     * 
+     *
      * @param pluginConfigurationMap plugin configuration map
      * @param classLoader classLoader
      * @param isEnhancedForProxy is enhanced for proxy
