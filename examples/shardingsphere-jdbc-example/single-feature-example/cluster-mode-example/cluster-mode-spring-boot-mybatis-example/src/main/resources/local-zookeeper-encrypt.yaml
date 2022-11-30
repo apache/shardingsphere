@@ -15,16 +15,36 @@
 # limitations under the License.
 #
 
-mybatis.config-location=classpath:META-INF/mybatis-config.xml
-# TODO Fix ShardingSphereDrive cluster mode start
-#spring.profiles.active=local-zookeeper-sharding-databases-tables
-spring.profiles.active=cloud-zookeeper-sharding-databases-tables
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_spring_boot_ds_encrypt
+      server-lists: localhost:2181
 
-#spring.profiles.active=local-zookeeper-readwrite-splitting
-#spring.profiles.active=cloud-zookeeper-readwrite-splitting
+dataSources:
+  ds_encrypt:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
 
-#spring.profiles.active=local-zookeeper-encrypt
-#spring.profiles.active=cloud-zookeeper-encrypt
+rules:
+- !ENCRYPT
+  tables:
+    t_order:
+      columns:
+        status: 
+         cipherColumn: status
+         encryptorName: status_encryptor
+  encryptors:
+    status_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456
 
-#spring.profiles.active=local-zookeeper-shadow
-#spring.profiles.active=cloud-zookeeper-shadow
+props:
+  queryWithCipherColumn: true
+  sql-show: true

@@ -46,7 +46,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.generi
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBetweenExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBinaryOperationExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCaseWhenExpression;
@@ -61,6 +60,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segm
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.Iterator;
 
@@ -335,8 +335,8 @@ public final class ExpressionAssert {
      * @param expected expected case when expression
      */
     public static void assertCaseWhenExpression(final SQLCaseAssertContext assertContext, final CaseWhenExpression actual, final ExpectedCaseWhenExpression expected) {
-        assertThat(assertContext.getText("When list size is not same!"), actual.getWhenExprs().size(), is(expected.getWhenExprs().size()));
-        assertThat(assertContext.getText("Then list size is not same!"), actual.getThenExprs().size(), is(expected.getThenExprs().size()));
+        assertThat(assertContext.getText("When exprs size is not same!"), actual.getWhenExprs().size(), is(expected.getWhenExprs().size()));
+        assertThat(assertContext.getText("Then exprs size is not same!"), actual.getThenExprs().size(), is(expected.getThenExprs().size()));
         Iterator<ExpectedExpression> whenExprsIterator = expected.getWhenExprs().iterator();
         for (ExpressionSegment each : actual.getWhenExprs()) {
             assertExpression(assertContext, each, whenExprsIterator.next());

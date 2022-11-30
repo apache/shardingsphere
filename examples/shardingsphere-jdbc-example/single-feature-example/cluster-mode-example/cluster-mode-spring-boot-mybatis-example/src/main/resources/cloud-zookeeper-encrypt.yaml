@@ -15,5 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.integration.framework.runner.parallel.impl.CaseParallelRunnerExecutor
-org.apache.shardingsphere.test.integration.framework.runner.parallel.impl.ScenarioParallelRunnerExecutor
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_spring_boot_ds_encrypt
+      server-lists: localhost:2181

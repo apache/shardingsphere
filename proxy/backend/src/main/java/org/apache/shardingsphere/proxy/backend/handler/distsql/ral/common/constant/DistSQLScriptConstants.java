@@ -164,6 +164,16 @@ public final class DistSQLScriptConstants {
     
     public static final String CIPHER = "CIPHER=%s";
     
+    public static final String ASSISTED_QUERY_COLUMN = "ASSISTED_QUERY_COLUMN=%s";
+    
+    public static final String LIKE_QUERY_COLUMN = "LIKE_QUERY_COLUMN=%s";
+    
+    public static final String ENCRYPT_ALGORITHM = "ENCRYPT_ALGORITHM(%s)";
+    
+    public static final String ASSISTED_QUERY_ALGORITHM = "ASSISTED_QUERY_ALGORITHM(%s)";
+    
+    public static final String LIKE_QUERY_ALGORITHM = "LIKE_QUERY_ALGORITHM(%s)";
+    
     public static final String ALGORITHM_TYPE = "TYPE(NAME='%s', PROPERTIES(%s))";
     
     public static final String ALGORITHM_TYPE_WITHOUT_PROPS = "TYPE(NAME='%s')";

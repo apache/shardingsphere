@@ -15,16 +15,10 @@
 # limitations under the License.
 #
 
-mybatis.config-location=classpath:META-INF/mybatis-config.xml
-# TODO Fix ShardingSphereDrive cluster mode start
-#spring.profiles.active=local-zookeeper-sharding-databases-tables
-spring.profiles.active=cloud-zookeeper-sharding-databases-tables
-
-#spring.profiles.active=local-zookeeper-readwrite-splitting
-#spring.profiles.active=cloud-zookeeper-readwrite-splitting
-
-#spring.profiles.active=local-zookeeper-encrypt
-#spring.profiles.active=cloud-zookeeper-encrypt
-
-#spring.profiles.active=local-zookeeper-shadow
-#spring.profiles.active=cloud-zookeeper-shadow
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_spring_boot_ds_shadow
+      server-lists: localhost:2181

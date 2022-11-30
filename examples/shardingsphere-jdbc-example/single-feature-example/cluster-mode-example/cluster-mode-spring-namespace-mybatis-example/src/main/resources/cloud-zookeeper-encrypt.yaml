@@ -15,4 +15,10 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerExecutor
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_spring_boot_ds_encrypt
+      server-lists: localhost:2181
