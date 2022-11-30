@@ -43,7 +43,7 @@ public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
     private volatile ExecutorService defaultExecutorService;
     
     @Override
-    public <T> void execute(final T key, final Runnable childStatement) {
+    public void execute(final String key, final Runnable childStatement) {
         futures.add(getExecutorService(key).submit(childStatement));
     }
     
@@ -52,11 +52,11 @@ public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
         futures.add(getExecutorService().submit(childStatement));
     }
     
-    protected <T> ExecutorService getExecutorService(final T key) {
+    protected ExecutorService getExecutorService(final String key) {
         if (executorServices.containsKey(key)) {
             return executorServices.get(key);
         }
-        String threadPoolNameFormat = String.join("-", "ShardingSphere-KeyedParallelTestThread", key.toString(), "%d");
+        String threadPoolNameFormat = String.join("-", "ShardingSphere-KeyedParallelTestThread", key, "%d");
         ExecutorService executorService = Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
         if (null != executorServices.putIfAbsent(key, executorService)) {
