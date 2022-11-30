@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.example.sharding.spring.boot.jpa.fixture.SPIBasedDatasourceStandardShardingAlgorithmFixture
+org.apache.shardingsphere.example.sharding.spring.boot.jpa.fixture.SPIBasedDatabaseStandardShardingAlgorithmFixture
 org.apache.shardingsphere.example.sharding.spring.boot.jpa.fixture.SPIBasedOrderStandardShardingAlgorithmFixture

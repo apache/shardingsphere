@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 @Getter
-public final class SPIBasedDataSourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class SPIBasedDatabaseStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     private Properties props;
     
@@ -56,6 +56,6 @@ public final class SPIBasedDataSourceStandardShardingAlgorithmFixture implements
     
     @Override
     public String getType() {
-        return "DATASOURCE_SPI_BASED";
+        return "DATABASE_SPI_BASED";
     }
 }
