@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeS
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BinaryOperationExpressionConverter;
-import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.CaseWhenConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.CaseWhenExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ColumnConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.ExistsSubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.FunctionConverter;
@@ -101,8 +101,8 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         if (segment instanceof DataTypeSegment) {
             return new DataTypeConverter().convert((DataTypeSegment) segment);
         }
-        if (segment instanceof CaseWhenSegment) {
-            return new CaseWhenConverter().convert((CaseWhenSegment) segment);
+        if (segment instanceof CaseWhenExpression) {
+            return new CaseWhenExpressionConverter().convert((CaseWhenExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
@@ -35,25 +35,25 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Case when converter.
+ * Case when expression converter.
  */
-public final class CaseWhenConverter implements SQLSegmentConverter<CaseWhenSegment, SqlNode> {
+public final class CaseWhenExpressionConverter implements SQLSegmentConverter<CaseWhenExpression, SqlNode> {
     
     @Override
-    public Optional<SqlNode> convert(final CaseWhenSegment segment) {
-        Collection<SqlNode> whenList = convertWhenList(segment.getCaseArg(), segment.getWhenList());
-        Collection<SqlNode> thenList = new LinkedList<>();
-        segment.getThenList().forEach(each -> new ExpressionConverter().convert(each).ifPresent(thenList::add));
-        Optional<SqlNode> elseExpr = new ExpressionConverter().convert(segment.getElseExpression());
-        return Optional.of(new SqlCase(SqlParserPos.ZERO, null, new SqlNodeList(whenList, SqlParserPos.ZERO), new SqlNodeList(thenList, SqlParserPos.ZERO),
+    public Optional<SqlNode> convert(final CaseWhenExpression segment) {
+        Collection<SqlNode> whenExprs = convertWhenExprs(segment.getCaseExpr(), segment.getWhenExprs());
+        Collection<SqlNode> thenExprs = new LinkedList<>();
+        segment.getThenExprs().forEach(each -> new ExpressionConverter().convert(each).ifPresent(thenExprs::add));
+        Optional<SqlNode> elseExpr = new ExpressionConverter().convert(segment.getElseExpr());
+        return Optional.of(new SqlCase(SqlParserPos.ZERO, null, new SqlNodeList(whenExprs, SqlParserPos.ZERO), new SqlNodeList(thenExprs, SqlParserPos.ZERO),
                 elseExpr.orElseGet(() -> SqlLiteral.createCharString("NULL", SqlParserPos.ZERO))));
     }
     
-    private Collection<SqlNode> convertWhenList(final ExpressionSegment caseArg, final Collection<ExpressionSegment> whenList) {
+    private Collection<SqlNode> convertWhenExprs(final ExpressionSegment caseExpr, final Collection<ExpressionSegment> whenExprs) {
         Collection<SqlNode> result = new LinkedList<>();
-        for (ExpressionSegment each : whenList) {
-            if (null != caseArg) {
-                convertWithCaseArg(caseArg, each, result);
+        for (ExpressionSegment each : whenExprs) {
+            if (null != caseExpr) {
+                convertCaseExpr(caseExpr, each).ifPresent(result::add);
             } else {
                 new ExpressionConverter().convert(each).ifPresent(result::add);
             }
@@ -61,12 +61,12 @@ public final class CaseWhenConverter implements SQLSegmentConverter<CaseWhenSegm
         return result;
     }
     
-    private void convertWithCaseArg(final ExpressionSegment caseArg, final ExpressionSegment expressionSegment, final Collection<SqlNode> result) {
-        Optional<SqlNode> leftExpr = new ExpressionConverter().convert(caseArg);
-        Optional<SqlNode> rightExpr = new ExpressionConverter().convert(expressionSegment);
+    private Optional<SqlNode> convertCaseExpr(final ExpressionSegment caseExpr, final ExpressionSegment whenExpr) {
+        Optional<SqlNode> leftExpr = new ExpressionConverter().convert(caseExpr);
+        Optional<SqlNode> rightExpr = new ExpressionConverter().convert(whenExpr);
         if (leftExpr.isPresent() && rightExpr.isPresent()) {
-            new ExpressionConverter().convert(expressionSegment).ifPresent(optional -> result.add(
-                    new SqlBasicCall(SqlStdOperatorTable.EQUALS, Arrays.asList(leftExpr.get(), rightExpr.get()), SqlParserPos.ZERO)));
+            return new ExpressionConverter().convert(whenExpr).map(optional -> new SqlBasicCall(SqlStdOperatorTable.EQUALS, Arrays.asList(leftExpr.get(), rightExpr.get()), SqlParserPos.ZERO));
         }
+        return Optional.empty();
     }
 }
