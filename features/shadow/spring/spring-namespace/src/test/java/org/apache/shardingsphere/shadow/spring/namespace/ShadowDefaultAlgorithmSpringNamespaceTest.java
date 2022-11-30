@@ -26,6 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -55,9 +56,10 @@ public final class ShadowDefaultAlgorithmSpringNamespaceTest extends AbstractJUn
         assertThat(simpleHintAlgorithm.getProps().getProperty("foo"), is("bar"));
     }
     
-    private void assertShadowDataSources(final Map<String, ShadowDataSourceConfiguration> dataSources) {
+    private void assertShadowDataSources(final Collection<ShadowDataSourceConfiguration> dataSources) {
         assertThat(dataSources.size(), is(1));
-        assertThat(dataSources.get("shadow-data-source").getProductionDataSourceName(), is("ds"));
-        assertThat(dataSources.get("shadow-data-source").getShadowDataSourceName(), is("ds-shadow"));
+        ShadowDataSourceConfiguration shadowDataSourceConfiguration = dataSources.iterator().next();
+        assertThat(shadowDataSourceConfiguration.getProductionDataSourceName(), is("ds"));
+        assertThat(shadowDataSourceConfiguration.getShadowDataSourceName(), is("ds-shadow"));
     }
 }

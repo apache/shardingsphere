@@ -47,13 +47,13 @@
         result.add("shadow-data-source");
         return result;
     }
-
-    private Map<String, ShadowDataSourceConfiguration> createShadowDataSources() {
-        Map<String, ShadowDataSourceConfiguration> result = new LinkedHashMap<>();
-        result.put("shadow-data-source", new ShadowDataSourceConfiguration("ds_0", "ds_1"));
+    
+    private Collection<ShadowDataSourceConfiguration> createShadowDataSources() {
+        Collection<ShadowDataSourceConfiguration> result = new LinkedList<>();
+        result.add(new ShadowDataSourceConfiguration("shadow-data-source", "ds_0", "ds_1"));
         return result;
     }
-
+    
     private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
         Properties orderTypeInsertProps = new Properties();

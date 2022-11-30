@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Dist SQL result set for global rule.
+ * DistSQL result set for global rule.
  */
 public interface GlobalRuleDistSQLResultSet extends DistSQLResultSet {
     

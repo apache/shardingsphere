@@ -68,17 +68,6 @@ public final class InventoryIncrementalJobItemProgressTest {
     }
     
     @Test
-    public void assertGetInventoryFinishedPercentage() {
-        InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        assertThat(actual.getInventory().getInventoryFinishedPercentage(), is(50));
-    }
-    
-    @Test
-    public void assertGetAllFinishedInventoryFinishedPercentage() {
-        assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getInventory().getInventoryFinishedPercentage(), is(100));
-    }
-    
-    @Test
     public void assertGetIncrementalLatestActiveTimeMillis() {
         assertThat(getJobItemProgress(ConfigurationFileUtil.readFile("job-progress.yaml")).getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
     }

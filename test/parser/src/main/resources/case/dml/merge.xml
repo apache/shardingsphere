@@ -61,7 +61,7 @@
                             <expr>
                                 <binary-operation-expression start-index="91" stop-index="108">
                                     <left>
-                                        <column name="department_id" start-index="91" stop-index="103"/>
+                                        <column name="department_id" start-index="91" stop-index="103" />
                                     </left>
                                     <operator>=</operator>
                                     <right>
@@ -167,7 +167,7 @@
                             <expr>
                                 <binary-operation-expression start-index="91" stop-index="108">
                                     <left>
-                                        <column name="department_id" start-index="91" stop-index="103"/>
+                                        <column name="department_id" start-index="91" stop-index="103" />
                                     </left>
                                     <operator>=</operator>
                                     <right>

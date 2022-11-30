@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ReadwriteSplittingDistSQ
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
 /**
- * SQL lexer for readwrite-splitting dist SQL.
+ * SQL lexer for readwrite-splitting DistSQL.
  */
 public final class ReadwriteSplittingDistSQLLexer extends ReadwriteSplittingDistSQLStatementLexer implements SQLLexer {
     

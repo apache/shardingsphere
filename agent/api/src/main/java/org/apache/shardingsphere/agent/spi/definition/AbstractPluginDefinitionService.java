@@ -32,19 +32,29 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = new HashMap<>();
     
     /**
-     * Define interceptors to collection of plugin interceptor point.
-     */
-    public abstract void defineInterceptors();
-    
-    /**
      * Install to collection of plugin interceptor point.
      *
+     * @param isEnhancedForProxy is enhanced for proxy
      * @return collection of plugin interceptor point
      */
-    public final Collection<PluginInterceptorPoint> install() {
-        defineInterceptors();
+    public final Collection<PluginInterceptorPoint> install(final boolean isEnhancedForProxy) {
+        if (isEnhancedForProxy) {
+            defineProxyInterceptors();
+        } else {
+            defineJdbcInterceptors();
+        }
         return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
     }
+    
+    /**
+     * Define proxy interceptors to collection of plugin interceptor point.
+     */
+    public abstract void defineProxyInterceptors();
+    
+    /**
+     * Define JDBC interceptors to collection of plugin interceptor point.
+     */
+    public abstract void defineJdbcInterceptors();
     
     protected final PluginInterceptorPoint.Builder defineInterceptor(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {

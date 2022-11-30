@@ -113,6 +113,7 @@ public final class MySQLMigrationGeneralIT extends AbstractMigrationITCase {
         List<Map<String, Object>> jobStatus = waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
         for (Map<String, Object> each : jobStatus) {
             assertTrue(Integer.parseInt(each.get("processed_records_count").toString()) > 0);
+            assertThat(Integer.parseInt(each.get("inventory_finished_percentage").toString()), is(100));
         }
         assertCheckMigrationSuccess(jobId, algorithmType);
     }

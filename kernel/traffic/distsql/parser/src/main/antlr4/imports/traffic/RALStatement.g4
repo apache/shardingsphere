@@ -56,7 +56,15 @@ loadBalancerDefinition
     ;
 
 algorithmTypeName
-    : STRING
+    : buildInTrafficAlgorithmTypeName | buildInLoadBalancerTypeName | STRING
+    ;
+
+buildInTrafficAlgorithmTypeName
+    : SQL_MATCH | SQL_HINT
+    ;
+
+buildInLoadBalancerTypeName
+    : RANDOM | ROUND_ROBIN
     ;
 
 label

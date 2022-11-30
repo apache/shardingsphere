@@ -57,7 +57,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     private Tracing tracing;
     
     @Override
-    public void start(final PluginConfiguration pluginConfig) {
+    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         pluginConfig.validate("Zipkin");
         Properties props = pluginConfig.getProps();
         String urlVersion = Optional.ofNullable(props.getProperty(KEY_URL_VERSION)).orElse(DEFAULT_URL_VERSION);

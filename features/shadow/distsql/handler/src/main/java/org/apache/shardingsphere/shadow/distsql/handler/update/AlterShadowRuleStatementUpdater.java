@@ -61,9 +61,8 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         currentRuleConfig.getShadowAlgorithms().putAll(toBeAlteredRuleConfig.getShadowAlgorithms());
     }
     
-    private void updateDataSources(final ShadowRuleConfiguration currentRuleConfig, final Map<String, ShadowDataSourceConfiguration> toBeAlteredDataSources) {
-        currentRuleConfig.getTables().values().forEach(each -> each.getDataSourceNames().removeIf(toBeAlteredDataSources::containsKey));
-        currentRuleConfig.getDataSources().putAll(toBeAlteredDataSources);
+    private void updateDataSources(final ShadowRuleConfiguration currentRuleConfig, final Collection<ShadowDataSourceConfiguration> toBeAlteredDataSources) {
+        currentRuleConfig.getDataSources().addAll(toBeAlteredDataSources);
     }
     
     private void updateTables(final Map<String, ShadowTableConfiguration> currentTables, final Map<String, ShadowTableConfiguration> toBeAlteredTables) {

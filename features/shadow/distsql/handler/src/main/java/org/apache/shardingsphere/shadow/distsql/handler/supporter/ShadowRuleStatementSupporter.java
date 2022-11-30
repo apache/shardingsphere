@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public final class ShadowRuleStatementSupporter {
      * @return rule names
      */
     public static List<String> getRuleNames(final ShadowRuleConfiguration ruleConfig) {
-        return null == ruleConfig ? Collections.emptyList() : new ArrayList<>(ruleConfig.getDataSources().keySet());
+        return null == ruleConfig ? Collections.emptyList() : getDataSources(ruleConfig);
     }
     
     /**
@@ -53,6 +54,12 @@ public final class ShadowRuleStatementSupporter {
      */
     public static List<String> getRuleNames(final Collection<ShadowRuleSegment> segments) {
         return segments.isEmpty() ? Collections.emptyList() : segments.stream().map(ShadowRuleSegment::getRuleName).collect(Collectors.toList());
+    }
+    
+    private static List<String> getDataSources(final ShadowRuleConfiguration ruleConfig) {
+        List<String> result = new LinkedList<>();
+        ruleConfig.getDataSources().forEach(each -> result.add(each.getName()));
+        return result;
     }
     
     /**

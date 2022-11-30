@@ -26,5 +26,5 @@
         <table name="clstr_1" start-index="8" stop-index="14" />
     </cluster>
 
-    <cluster sql-case-id="cluster"/>
+    <cluster sql-case-id="cluster" />
 </sql-parser-test-cases>

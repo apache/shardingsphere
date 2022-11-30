@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
 import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -62,8 +62,8 @@ public final class ParameterizedArrayFactory {
      * @param sqlCommandType SQL command type
      * @return case parameterized array
      */
-    public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+    public static Collection<ITParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
+        Collection<ITParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
             if (EnvironmentConstants.STANDALONE_MODE.equalsIgnoreCase(each)) {
                 result.addAll(isDistSQLCommandType(sqlCommandType)

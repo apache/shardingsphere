@@ -25,4 +25,19 @@ public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder 
     public String getType() {
         return "H2";
     }
+    
+    @Override
+    protected boolean isKeyword(final String item) {
+        return false;
+    }
+    
+    @Override
+    protected String getLeftIdentifierQuoteString() {
+        return "";
+    }
+    
+    @Override
+    protected String getRightIdentifierQuoteString() {
+        return "";
+    }
 }

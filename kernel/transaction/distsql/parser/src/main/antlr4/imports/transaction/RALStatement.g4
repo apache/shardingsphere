@@ -36,11 +36,19 @@ providerDefinition
     ;
 
 defaultType
-    : STRING
+    : STRING | buildInDefaultTransactionType
+    ;
+
+buildInDefaultTransactionType
+    : LOCAL | XA | BASE
     ;
 
 providerName
-    : STRING
+    : STRING | buildInProviderTypeName
+    ;
+
+buildInProviderTypeName
+    : ATOMIKOS | NARAYANA | BITRONIX
     ;
 
 propertiesDefinition

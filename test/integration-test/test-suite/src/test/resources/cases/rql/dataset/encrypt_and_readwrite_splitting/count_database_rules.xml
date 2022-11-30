@@ -17,15 +17,15 @@
 
 <dataset>
     <metadata>
-        <column name="rule_name"/>
-        <column name="count"/>
+        <column name="rule_name" />
+        <column name="count" />
     </metadata>
-    <row values="single_table| 10"/>
-    <row values="sharding_table| 0"/>
-    <row values="sharding_binding_table| 0"/>
-    <row values="sharding_broadcast_table| 0"/>
-    <row values="readwrite_splitting| 1"/>
-    <row values="db_discovery| 0"/>
-    <row values="encrypt| 4"/>
-    <row values="shadow| 0"/>
+    <row values="single_table| 10" />
+    <row values="sharding_table| 0" />
+    <row values="sharding_binding_table| 0" />
+    <row values="sharding_broadcast_table| 0" />
+    <row values="readwrite_splitting| 1" />
+    <row values="db_discovery| 0" />
+    <row values="encrypt| 4" />
+    <row values="shadow| 0" />
 </dataset>

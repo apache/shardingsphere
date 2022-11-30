@@ -90,7 +90,7 @@ public final class ShadowSelectStatementRoutingEngineTest {
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
-        result.setDataSources(Collections.singletonMap("shadow-data-source-0", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
+        result.setDataSources(Collections.singletonList(new ShadowDataSourceConfiguration("shadow-data-source-0", "ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(Collections.singleton("shadow-data-source-0"), Collections.singleton("user-id-select-regex-algorithm"))));
         result.setShadowAlgorithms(Collections.singletonMap("user-id-select-regex-algorithm", createShadowAlgorithm()));
         return result;

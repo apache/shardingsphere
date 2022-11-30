@@ -60,7 +60,7 @@
 
     <rewrite-assertion id="select_with_schema" db-types="MySQL,Oracle,SQLServer,SQL92">
         <input sql="SELECT * FROM logic_db.t_account" />
-        <output sql="SELECT * FROM t_account_0 UNION ALL SELECT * FROM t_account_1"/>
+        <output sql="SELECT * FROM t_account_0 UNION ALL SELECT * FROM t_account_1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery" db-types="MySQL">
@@ -69,13 +69,13 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-types="MySQL">
-        <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount IN (SELECT amount FROM t_account WHERE account_id = ?)"  parameters="100, 100"/>
-        <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount IN (SELECT amount FROM t_account_0 WHERE account_id = ?)"  parameters="100, 100"/>
+        <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount IN (SELECT amount FROM t_account WHERE account_id = ?)"  parameters="100, 100" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount IN (SELECT amount FROM t_account_0 WHERE account_id = ?)"  parameters="100, 100" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_between_and_predicate" db-types="MySQL">
-        <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account WHERE account_id = ?) AND ?"  parameters="100, 100, 1500"/>
-        <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account_0 WHERE account_id = ?) AND ?"  parameters="100, 100, 1500"/>
+        <input sql="SELECT * FROM t_account WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account WHERE account_id = ?) AND ?"  parameters="100, 100, 1500" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = ? AND amount BETWEEN (SELECT amount FROM t_account_0 WHERE account_id = ?) AND ?"  parameters="100, 100, 1500" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_without_sharding_value_for_parameters" db-types="MySQL,Oracle,SQLServer,SQL92">
@@ -452,38 +452,38 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_join_table_on_condition_with_qualified_columns" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
-        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id = ?" parameters="1"/>
-        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id = ?" parameters="1"/>
+        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id = ?" parameters="1" />
+        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id = ?" parameters="1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_join_table_where_condition_with_qualified_columns">
-        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id where t_account.account_id = ?" parameters="1"/>
-        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id where t_account_1.account_id = ?" parameters="1"/>
+        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id where t_account.account_id = ?" parameters="1" />
+        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id where t_account_1.account_id = ?" parameters="1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_join_table_on_in_condition_with_qualified_columns" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
-        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id in ( ? )" parameters="1"/>
-        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1"/>
+        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id in ( ? )" parameters="1" />
+        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_union_single_table" db-types="MySQL">
-        <input sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
-        <output sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend"/>
+        <input sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend" />
+        <output sql="SELECT id FROM t_single UNION SELECT id FROM t_single_extend" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_join_table_with_different_sharding_columns">
-        <input sql="SELECT * FROM t_user JOIN t_user_extend ON t_user.id = t_user_extend.user_id WHERE t_user_extend.user_id = ?" parameters="1"/>
-        <output sql="SELECT * FROM t_user_1 JOIN t_user_extend_1 ON t_user_1.id = t_user_extend_1.user_id WHERE t_user_extend_1.user_id = ?" parameters="1"/>
+        <input sql="SELECT * FROM t_user JOIN t_user_extend ON t_user.id = t_user_extend.user_id WHERE t_user_extend.user_id = ?" parameters="1" />
+        <output sql="SELECT * FROM t_user_1 JOIN t_user_extend_1 ON t_user_1.id = t_user_extend_1.user_id WHERE t_user_extend_1.user_id = ?" parameters="1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_or_and_condition">
-        <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3"/>
-        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=? UNION ALL SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3, 1, 2, 3"/>
+        <input sql="SELECT * FROM t_account WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3" />
+        <output sql="SELECT * FROM t_account_0 WHERE amount=? OR amount=? AND account_id=? UNION ALL SELECT * FROM t_account_1 WHERE amount=? OR amount=? AND account_id=?" parameters="1, 2, 3, 1, 2, 3" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_multi_nested_subquery_with_binding_tables" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
-        <input sql="SELECT * FROM (SELECT id, content FROM t_user WHERE id = ? AND content IN (SELECT content FROM t_user_extend WHERE user_id = ?)) AS temp" parameters="1, 1"/>
-        <output sql="SELECT * FROM (SELECT id, content FROM t_user_1 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_1 WHERE user_id = ?)) AS temp" parameters="1, 1"/>
+        <input sql="SELECT * FROM (SELECT id, content FROM t_user WHERE id = ? AND content IN (SELECT content FROM t_user_extend WHERE user_id = ?)) AS temp" parameters="1, 1" />
+        <output sql="SELECT * FROM (SELECT id, content FROM t_user_1 WHERE id = ? AND content IN (SELECT content FROM t_user_extend_1 WHERE user_id = ?)) AS temp" parameters="1, 1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_broadcast_table_and_single_table">
@@ -497,8 +497,8 @@
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_and_condition_and_lowercase_keyword">
-        <input sql="select * from t_account where amount=? and account_id=?" parameters="1,2"/>
-        <output sql="select * from t_account_0 where amount=? and account_id=?" parameters="1,2"/>
+        <input sql="select * from t_account where amount=? and account_id=?" parameters="1,2" />
+        <output sql="select * from t_account_0 where amount=? and account_id=?" parameters="1,2" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_case_when_then_in_group_by_item_and_order_by_item" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Oracle">

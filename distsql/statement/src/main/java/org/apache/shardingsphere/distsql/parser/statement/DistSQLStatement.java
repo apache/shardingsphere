@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Dist SQL Statement.
+ * DistSQL Statement.
  */
 public abstract class DistSQLStatement extends AbstractSQLStatement {
 }

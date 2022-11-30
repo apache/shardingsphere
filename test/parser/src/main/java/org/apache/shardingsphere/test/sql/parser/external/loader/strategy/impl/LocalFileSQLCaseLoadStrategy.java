@@ -17,21 +17,31 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.SQLCaseLoadStrategy;
 import org.apache.shardingsphere.test.sql.parser.external.loader.summary.FileSummary;
 
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.Stream;
 
 /**
  * SQL case loader with local file.
  */
 public final class LocalFileSQLCaseLoadStrategy implements SQLCaseLoadStrategy {
     
+    @SneakyThrows
     @Override
     public Collection<FileSummary> loadSQLCaseFileSummaries(final URI uri) {
-        // TODO
-        return Collections.emptyList();
+        final Collection<FileSummary> result = new LinkedList<>();
+        try (Stream<Path> stream = Files.walk(Paths.get(uri))) {
+            stream.filter(each -> each.toString().endsWith(".sql"))
+                    .forEach(each -> result.add(new FileSummary(each.getFileName().toString(), each.toUri().toString())));
+        }
+        return result;
     }
 }

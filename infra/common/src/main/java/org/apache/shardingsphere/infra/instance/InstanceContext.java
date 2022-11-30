@@ -60,14 +60,14 @@ public final class InstanceContext {
      * @param instanceId instance id
      * @param status status
      */
-    public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
+    public void updateInstanceStatus(final String instanceId, final String status) {
         if (instance.getMetaData().getId().equals(instanceId)) {
             instance.switchState(status);
         }
         updateRelatedComputeNodeInstancesStatus(instanceId, status);
     }
     
-    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
+    private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final String status) {
         for (ComputeNodeInstance each : allClusterInstances) {
             if (each.getMetaData().getId().equals(instanceId)) {
                 each.switchState(status);

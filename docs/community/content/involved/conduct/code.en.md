@@ -49,14 +49,14 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Minimize the access permission for classes and methods.
  - Private method should be just next to the method in which it is used; Multiple private methods should be in the same as the appearance order of original methods.
  - No `null` parameters or return values.
- - Replace if else return and assign statement with ternary operator in priority.
  - Replace constructors, getters, setter methods and log variable with lombok in priority.
  - Use `LinkedList`  in priority. Use `ArrayList` for use index to get element only.
  - Use capacity based `Collection` such as `ArrayList`, `HashMap` must indicate initial capacity to avoid recalculate capacity.
  - Use English in all the logs and javadoc.
  - Include Javadoc, todo and fixme only in the comments.
- - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
- - Nested using conditional operator is forbidden.
+ - Only `public` classes and methods need javadoc, the Javadoc for the user API and SPI needs to be written clearly and comprehensively, other methods, classes and override methods do not need javadoc.
+ - Replace if else return and assign statement with ternary operator in priority.
+ - Nested using ternary operator is forbidden.
  - Use forward semantics in priority for better understanding code logic in conditional expressions. For example: `if (null == param) {} else {}`.
  - Use concentrate `@SuppressWarnings("xxx")` instead of `@SuppressWarnings("all")`.
  - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
@@ -75,15 +75,17 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Error: Error value test, test for error input, exception to get expect result.
  - Without particular reasons, test cases should be fully covered.
  - Test cases should be fully covered expect simply `getter /setter` methods, and declared static codes of SPI, such as: `getType / getOrder`.
- - Every test case need precised assertion.
+ - Every test case need precised assertion, try not to use `not`, `containsString` to make assertions.
  - Environment preparation codes should be separate from test codes.
  - Only those that relate to `Mockito`, junit `Assert`, hamcrest `CoreMatchers` and `MatcherAssert` can use static import.
- - For single parameter asserts, `assertTrue`, `assertFalse`, `assertNull` and `assertNotNull` should be used.
- - For multiple parameter asserts, `assertThat` should be used.
- - For accurate asserts, try not to use `not`, `containsString` to make assertions.
+ - Usage of assertion methods: for boolean type asserts, `assertTrue` and `assertFalse` should be used, `assertNull` and `assertNotNull` should be used to assert whether the assertion is null, and `assertThat` should be used for other scenarios.
+ - Usage of assertion methods:
+   - Use `assertTrue` and `assertFalse` for boolean value;
+   - Use `assertNull` and `assertNotNull` for null value;
+   - Use `assertThat` for other values.
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
- - Mockito mockStatic and mockConstruction methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
+ - Mockito `mockStatic` and `mockConstruction` methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
 
 ## Contributor Covenant G4 Code of Conduct
 

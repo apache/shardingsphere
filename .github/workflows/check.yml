@@ -38,6 +38,7 @@ on:
       - 'test/integration-agent-test/plugins/**'
       - '!examples/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}

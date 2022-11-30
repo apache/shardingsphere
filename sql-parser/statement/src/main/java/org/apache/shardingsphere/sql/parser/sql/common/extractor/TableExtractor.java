@@ -325,9 +325,9 @@ public final class TableExtractor {
     }
     
     /**
-     * Extract table that should be rewritten from sql statement.
+     * Extract table that should be rewritten from SQL statement.
      *
-     * @param sqlStatement sql statement
+     * @param sqlStatement SQL statement
      */
     public void extractTablesFromSQLStatement(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {

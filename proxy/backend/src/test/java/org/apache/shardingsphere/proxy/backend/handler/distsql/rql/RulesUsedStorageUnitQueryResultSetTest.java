@@ -41,7 +41,7 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -120,7 +120,7 @@ public final class RulesUsedStorageUnitQueryResultSetTest {
     private ShadowRule mockShadowRule() {
         ShadowRule result = mock(ShadowRule.class);
         ShadowRuleConfiguration config = mock(ShadowRuleConfiguration.class);
-        when(config.getDataSources()).thenReturn(Collections.singletonMap("shadow_source", new ShadowDataSourceConfiguration("foo_ds", "shadow_ds")));
+        when(config.getDataSources()).thenReturn(Collections.singletonList(new ShadowDataSourceConfiguration("shadow_source", "foo_ds", "shadow_ds")));
         when(result.getConfiguration()).thenReturn(config);
         return result;
     }

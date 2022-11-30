@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.As
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.assignment.ExpectedAssignment;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.assignment.ExpectedAssignment;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,7 +42,7 @@ public final class AssignmentAssert {
      * @param expected expected assignment
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AssignmentSegment actual, final ExpectedAssignment expected) {
-        if (null == expected.getColumns()) {
+        if (expected.getColumns().isEmpty()) {
             ColumnAssert.assertIs(assertContext, actual.getColumns().get(0), expected.getColumn());
         } else {
             assertThat(assertContext.getText("Assignment columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));

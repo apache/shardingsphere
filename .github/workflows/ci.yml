@@ -42,6 +42,7 @@ on:
       - '!*.md'
   repository_dispatch:
     types: [ci-completed]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}

@@ -346,3 +346,11 @@ REGISTER
 UNREGISTER
     : U N R E G I S T E R
     ;
+
+GOVERNANCE
+    : G O V E R N A N C E
+    ;
+
+CENTER
+    : C E N T E R
+    ;

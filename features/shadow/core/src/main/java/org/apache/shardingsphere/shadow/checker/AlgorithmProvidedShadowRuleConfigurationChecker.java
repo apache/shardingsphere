@@ -33,7 +33,7 @@ public final class AlgorithmProvidedShadowRuleConfigurationChecker extends Abstr
     
     @Override
     protected void checkShadowRuleConfiguration(final AlgorithmProvidedShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
-        Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+        Map<String, ShadowDataSourceConfiguration> dataSources = initShadowDataSources(config.getDataSources());
         checkDataSources(dataSources, dataSourceMap);
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
         shadowTableDataSourcesAutoReferences(shadowTables, dataSources);

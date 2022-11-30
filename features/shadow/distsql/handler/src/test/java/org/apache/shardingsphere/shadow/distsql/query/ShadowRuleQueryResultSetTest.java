@@ -63,7 +63,7 @@ public final class ShadowRuleQueryResultSetTest {
     
     private RuleConfiguration createRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.getDataSources().put("shadow_rule", new ShadowDataSourceConfiguration("source", "shadow"));
+        result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_rule", "source", "shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.emptyList()));
         result.getTables().put("t_order_1", new ShadowTableConfiguration(Collections.singletonList("shadow_rule"), Collections.emptyList()));
         return result;

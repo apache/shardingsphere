@@ -45,5 +45,14 @@ public interface PluginLoader {
      * @param <T> advice type
      * @return instance of advice
      */
-    <T> T getOrCreateInstance(String adviceClassName);
+    
+    /**
+     * To get or create instance of the advice class. Create new one and caching when it is not exist.
+     * 
+     * @param adviceClassName class name of advice
+     * @param classLoader classloader
+     * @param <T> advice type
+     * @return instance
+     */
+    <T> T getOrCreateInstance(String adviceClassName, ClassLoader classLoader);
 }

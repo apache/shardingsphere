@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AggregationType;
 
 /**
  * Aggregation distinct projection.

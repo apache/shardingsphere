@@ -51,6 +51,10 @@ clearHint
     : CLEAR HINT
     ;
 
+refreshDatabaseMetadata
+    : REFRESH DATABASE METADATA databaseName? FROM GOVERNANCE CENTER
+    ;
+
 refreshTableMetadata
     : REFRESH TABLE METADATA refreshScope?
     ;

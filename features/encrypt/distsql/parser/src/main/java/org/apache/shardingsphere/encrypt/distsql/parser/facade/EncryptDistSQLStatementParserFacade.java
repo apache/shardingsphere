@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL parser facade for encrypt dist SQL statement.
+ * SQL parser facade for encrypt DistSQL statement.
  */
 public final class EncryptDistSQLStatementParserFacade implements FeaturedDistSQLStatementParserFacade {
     

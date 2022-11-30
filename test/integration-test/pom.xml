@@ -34,7 +34,7 @@
         <module>test-suite</module>
         <module>scaling</module>
         <module>transaction</module>
-        <module>ha</module>
+        <module>discovery</module>
         <module>showprocesslist</module>
     </modules>
     

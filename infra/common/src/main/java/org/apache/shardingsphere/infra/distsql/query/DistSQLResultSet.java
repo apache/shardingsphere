@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import java.util.Collection;
 
 /**
- * Dist SQL result set.
+ * DistSQL result set.
  */
 public interface DistSQLResultSet extends TypedSPI {
     

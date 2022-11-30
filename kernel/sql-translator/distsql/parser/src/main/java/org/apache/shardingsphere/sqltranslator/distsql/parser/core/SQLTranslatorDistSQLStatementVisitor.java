@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
 
 /**
- * SQL statement visitor for SQL translator dist SQL.
+ * SQL statement visitor for SQL translator DistSQL.
  */
 public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

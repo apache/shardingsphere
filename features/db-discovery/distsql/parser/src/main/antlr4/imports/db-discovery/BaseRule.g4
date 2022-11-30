@@ -28,7 +28,11 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING
+    : STRING | buildInAlgorithmTypeName
+    ;
+
+buildInAlgorithmTypeName
+    : MYSQLMGR
     ;
 
 propertiesDefinition

@@ -4,7 +4,7 @@ weight = 5
 +++
 
 ## Background
-Encryption algorithms are the algorithms used by the encryption features of Apache ShardingSphere. A variety of algorithms are built-in to make it easy for users to fully leverage the feature.
+Encryption algorithms are by the encryption features of Apache ShardingSphere. A variety of algorithms are built-in to make it easy for users to fully leverage the feature.
 
 ## Parameters
 ### MD5 Encrypt Algorithm
@@ -69,7 +69,7 @@ Attributes：
 | start    | int          | Ciphertext Unicode initial code（decimal number） |
 | dict     | String       | Common words                                      |
 
-## Operating Procedures
+## Operating Procedure
 1. Configure encryptors in an encryption rule.
 2. Use relevant algorithm types in encryptors.
 

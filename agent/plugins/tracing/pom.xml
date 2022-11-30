@@ -29,11 +29,11 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>test</module>
-        <module>jaeger</module>
-        <module>zipkin</module>
         <module>opentracing</module>
         <module>opentelemetry</module>
+        <module>jaeger</module>
+        <module>zipkin</module>
+        <module>test</module>
     </modules>
     
     <properties>

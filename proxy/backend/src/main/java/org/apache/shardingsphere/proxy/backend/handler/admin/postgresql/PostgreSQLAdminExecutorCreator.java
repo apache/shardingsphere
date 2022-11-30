@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +57,10 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     
     private static final String PG_PREFIX = "pg_";
     
+    private static final String PG_NAMESPACE = "pg_namespace";
+    
+    private static final Collection<String> KERNEL_SUPPORTED_TABLES = Arrays.asList(PG_NAMESPACE, PG_CLASS);
+    
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
@@ -70,6 +75,9 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
+            if (KERNEL_SUPPORTED_TABLES.containsAll(selectedTableNames)) {
+                return Optional.empty();
+            }
             if (selectedTableNames.contains(PG_DATABASE)) {
                 return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql));
             }

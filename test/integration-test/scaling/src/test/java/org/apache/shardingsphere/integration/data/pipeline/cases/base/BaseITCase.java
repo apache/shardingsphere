@@ -50,16 +50,16 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -85,8 +85,6 @@ public abstract class BaseITCase {
     protected static final String DS_3 = "scaling_it_3";
     
     protected static final String DS_4 = "scaling_it_4";
-    
-    protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
     
     protected static final int TABLE_INIT_ROW_COUNT = 3000;
     
@@ -286,7 +284,7 @@ public abstract class BaseITCase {
             List<Map<String, Object>> listJobStatus = queryForListWithLog(distSQL);
             log.info("show status result: {}", listJobStatus);
             Set<String> actualStatus = new HashSet<>();
-            List<Integer> incrementalIdleSecondsList = new ArrayList<>();
+            Collection<Integer> incrementalIdleSecondsList = new LinkedList<>();
             for (Map<String, Object> each : listJobStatus) {
                 assertTrue("error_message is not null", Strings.isNullOrEmpty(each.get("error_message").toString()));
                 actualStatus.add(each.get("status").toString());

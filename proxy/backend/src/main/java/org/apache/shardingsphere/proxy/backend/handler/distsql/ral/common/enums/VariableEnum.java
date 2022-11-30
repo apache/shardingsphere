@@ -32,6 +32,7 @@ public enum VariableEnum {
     
     /**
      * Returns the variable constant of the specified variable name.
+     * 
      * @param variableName variable name
      * @return variable constant
      */

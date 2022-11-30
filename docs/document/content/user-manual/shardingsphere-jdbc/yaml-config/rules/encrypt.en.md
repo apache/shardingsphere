@@ -17,10 +17,13 @@ rules:
     <table-name> (+): # Encrypt table name
       columns:
         <column-name> (+): # Encrypt logic column name
-          cipherColumn: # Cipher column name
-          assistedQueryColumn (?):  # Assisted query column name
           plainColumn (?): # Plain column name
-          encryptorName: # Encrypt algorithm name
+          cipherColumn: # Cipher column name
+          encryptorName: # Cipher encrypt algorithm name
+          assistedQueryColumn (?):  # Assisted query column name
+          assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
+          likeQueryColumn (?):  # Like query column name
+          likeQueryEncryptorName:  # Like query encrypt algorithm name
       queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
     
   # Encrypt algorithm configuration
@@ -61,18 +64,30 @@ rules:
         username:
           plainColumn: username_plain
           cipherColumn: username
-          encryptorName: name-encryptor
+          encryptorName: name_encryptor
+          assistedQueryColumn: assisted_query_username
+          assistedQueryEncryptorName: assisted_encryptor
+          likeQueryColumn: like_query_username
+          likeQueryEncryptorName: like_encryptor
         pwd:
           cipherColumn: pwd
-          assistedQueryColumn: assisted_query_pwd
           encryptorName: pwd_encryptor
+          assistedQueryColumn: assisted_query_pwd
+          assistedQueryEncryptorName: assisted_encryptor
+      queryWithCipherColumn: true
   encryptors:
-    name-encryptor:
+    name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
+    assisted_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
     pwd_encryptor:
-      type: assistedTest
+      type: MD5
 ```
 
 Read the YAML configuration to create a data source according to the createDataSource method of YamlShardingSphereDataSourceFactory.

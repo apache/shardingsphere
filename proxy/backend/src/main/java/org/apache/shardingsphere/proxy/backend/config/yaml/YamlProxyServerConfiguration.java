@@ -21,8 +21,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
+import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,6 +42,14 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private YamlModeConfiguration mode;
     
     private YamlAuthorityConfiguration authority;
+    
+    private YamlTransactionRuleConfiguration transaction;
+    
+    private YamlSQLParserRuleConfiguration sqlParser;
+    
+    private YamlSQLTranslatorRuleConfiguration sqlTranslator;
+    
+    private YamlTrafficRuleConfiguration traffic;
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

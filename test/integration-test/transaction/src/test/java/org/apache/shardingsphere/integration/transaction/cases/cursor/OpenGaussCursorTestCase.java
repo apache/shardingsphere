@@ -33,9 +33,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-import static org.junit.Assert.fail;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * OpenGauss cursor transaction integration test.
@@ -57,19 +57,54 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     
     @Override
     protected void beforeTest() throws SQLException {
-        super.beforeTest();
         Connection connection = getDataSource().getConnection();
-        executeWithLog(connection, "CREATE OR REPLACE VIEW t_order_view AS SELECT * FROM t_order;");
+        assertTableRowCount(connection, "t_order", 4);
     }
     
     @Override
     public void executeTest() throws SQLException {
         Connection connection = getDataSource().getConnection();
+        singleTableCursorTest(connection);
+        singleTableCursorOrderByTest(connection);
         broadcastTableCursorTest(connection);
         broadcastTableCursorTest2(connection);
         broadcastAndSingleTablesCursorTest(connection);
         broadcastAndSingleTablesCursorTest2(connection);
         viewCursorTest(connection);
+    }
+    
+    private void singleTableCursorTest(final Connection connection) throws SQLException {
+        executeWithLog(connection, "start transaction;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        executeWithLog(connection, "close test;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursor());
+        fetch(connection, 1);
+        fetch(connection, 2);
+        fetch(connection, 3);
+        fetch(connection, 4);
+        fetchOverTest(connection);
+        executeWithLog(connection, "rollback;");
+    }
+    
+    private void fetchOverTest(final Connection connection) throws SQLException {
+        fetchOver(connection);
+        fetchOver(connection);
+        fetchForwardOver(connection);
+        fetchForwardAllOver(connection);
+        fetchForwardOver(connection);
+    }
+    
+    private void singleTableCursorOrderByTest(final Connection connection) throws SQLException {
+        executeWithLog(connection, "start transaction;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursorOrderBy());
+        executeWithLog(connection, "close test;");
+        executeWithLog(connection, cursorSQLCommand.getSingleTableCursorOrderBy());
+        fetch(connection, 4);
+        fetch(connection, 3);
+        fetch(connection, 2);
+        fetch(connection, 1);
+        fetchOverTest(connection);
+        executeWithLog(connection, "rollback;");
     }
     
     private void broadcastTableCursorTest(final Connection connection) throws SQLException {
@@ -81,8 +116,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10102);
         fetch(connection, 10201);
         fetch(connection, 10202);
-        fetchOver(connection);
-        fetchOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -95,8 +129,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10102);
         fetch(connection, 10201);
         fetch(connection, 10202);
-        fetchOver(connection);
-        fetchOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -109,8 +142,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 2);
         fetch(connection, 3);
         fetch(connection, 4);
-        fetchOver(connection);
-        fetchOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -123,8 +155,7 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         fetch(connection, 10102);
         fetch(connection, 10201);
         fetch(connection, 10202);
-        fetchOver(connection);
-        fetchOver(connection);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
@@ -134,24 +165,39 @@ public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
         executeWithLog(connection, "close test;");
         executeWithLog(connection, cursorSQLCommand.getViewCursor());
         fetch(connection, 1);
+        fetch(connection, 1);
         fetch(connection, 2);
-        fetch(connection, 3);
-        fetch(connection, 4);
-        fetchOver(connection);
-        fetchOver(connection);
+        fetch(connection, 2);
+        fetchOverTest(connection);
         executeWithLog(connection, "rollback;");
     }
     
     private void fetch(final Connection connection, final int expectedId) throws SQLException {
         ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
-        while (resultSet.next()) {
+        if (resultSet.next()) {
             int id = resultSet.getInt("id");
             assertThat(id, is(expectedId));
+        } else {
+            fail("Expected has result.");
         }
     }
     
     private void fetchOver(final Connection connection) throws SQLException {
         ResultSet resultSet = executeQueryWithLog(connection, "fetch test;");
+        while (resultSet.next()) {
+            fail("Expected fetch nothing.");
+        }
+    }
+    
+    private void fetchForwardOver(final Connection connection) throws SQLException {
+        ResultSet resultSet = executeQueryWithLog(connection, "fetch forward from test;");
+        while (resultSet.next()) {
+            fail("Expected fetch nothing.");
+        }
+    }
+    
+    private void fetchForwardAllOver(final Connection connection) throws SQLException {
+        ResultSet resultSet = executeQueryWithLog(connection, "fetch forward all from test;");
         while (resultSet.next()) {
             fail("Expected fetch nothing.");
         }

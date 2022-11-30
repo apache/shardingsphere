@@ -59,7 +59,7 @@ proxy 已包含 PostgreSQL JDBC 驱动。
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar )                              | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
 | openGauss             | [opengauss-jdbc-3.0.0.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/3.0.0/opengauss-jdbc-3.0.0.jar ) |                                                                                                  |
 
-如果是异构迁移，源端支持范围更广的数据库，比如：Oracle。JDBC 驱动处理方式同上。
+如果是异构迁移，源端支持范围更广的数据库。JDBC 驱动处理方式同上。
 
 5. 启动 ShardingSphere-Proxy：
 

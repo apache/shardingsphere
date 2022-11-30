@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
@@ -27,7 +26,6 @@ import java.util.Optional;
  * Refresh table metadata statement.
  */
 @RequiredArgsConstructor
-@Getter
 public final class RefreshTableMetadataStatement extends UpdatableRALStatement {
     
     private final String tableName;

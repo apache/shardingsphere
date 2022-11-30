@@ -44,6 +44,7 @@ execute
     | showSingleTable
     | showDefaultSingleTableStorageUnit
     | setDefaultSingleTableStorageUnit
+    | refreshDatabaseMetadata
     | refreshTableMetadata
     | showTableMetadata
     | exportDatabaseConfiguration

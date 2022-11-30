@@ -174,11 +174,11 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 | *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*                | *Stress Testing* |
 | -------------------- | ----------------------- | ---------------------| --------------------------------- | ---------------- |
-|                      | Data Sharding           | Data Encrypt         | Heterogeneous Databases Supported | Shadow Database  |
-|                      | Readwrite-splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
+|                      | Data Sharding           | Data Encryption         | Heterogeneous Databases Supported | Shadow Database  |
+|                      | Read/write Splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
 |                      | Distributed Transaction | SQL Audit (TODO)     |                                   |                  |
 |                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                   |                  |
-|                      | Highly Available        |                      |                                   |                  |
+|                      | High Availability       |                      |                                   |                  |
 
 ##
 
@@ -186,7 +186,7 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 <hr>
 
-![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_v2.png)
+![Roadmap](https://shardingsphere.apache.org/document/current/img/roadmap_en.png)
 
 ##
 

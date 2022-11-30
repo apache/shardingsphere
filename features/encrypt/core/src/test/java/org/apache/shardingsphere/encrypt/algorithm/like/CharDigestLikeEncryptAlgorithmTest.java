@@ -55,12 +55,13 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     
     @Test
     public void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("5$45"));
+        assertThat(encryptAlgorithm.encrypt("1234567890%abcdefghijklmnopqrstuvwxyz%ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                mock(EncryptContext.class)), is("0145458981%`adedehihilmlmpqpqtutuxyxy%@ADEDEHIHILMLMPQPQTUTUXYXY"));
     }
     
     @Test
     public void assertEncryptWithChineseChar() {
-        assertThat(chineseLikeEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("娝侰"));
+        assertThat(chineseLikeEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("婝估"));
     }
     
     @Test

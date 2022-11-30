@@ -36,7 +36,7 @@ public final class PipelineSQLBuilderFactoryTest {
     public void assertGetInstance() {
         Collection<Pair<String, Class<? extends PipelineSQLBuilder>>> paramResult = Arrays.asList(
                 Pair.of("MySQL", MySQLPipelineSQLBuilder.class), Pair.of("PostgreSQL", PostgreSQLPipelineSQLBuilder.class),
-                Pair.of("openGauss", OpenGaussPipelineSQLBuilder.class), Pair.of("Oracle", OraclePipelineSQLBuilder.class),
+                Pair.of("openGauss", OpenGaussPipelineSQLBuilder.class),
                 Pair.of("DB2", DefaultPipelineSQLBuilder.class));
         for (Pair<String, Class<? extends PipelineSQLBuilder>> each : paramResult) {
             PipelineSQLBuilder actual = PipelineSQLBuilderFactory.getInstance(each.getKey());

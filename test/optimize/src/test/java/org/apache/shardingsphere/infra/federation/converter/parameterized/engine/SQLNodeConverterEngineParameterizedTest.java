@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.converter.parameterized.engine;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.config.CalciteConnectionConfig;
@@ -37,11 +36,12 @@ import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilderFactory;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.CasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistry;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.SQLParserTestCasesRegistryFactory;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.SQLCaseType;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.sql.loader.SQLCasesLoader;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.SQLParserTestCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.SQLCases;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -57,18 +57,17 @@ import java.util.Set;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
-@RequiredArgsConstructor
 public final class SQLNodeConverterEngineParameterizedTest {
     
-    private static final SQLCasesLoader SQL_CASES_LOADER = CasesRegistry.getInstance().getSqlCasesLoader();
+    private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
-    private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
+    private static final SQLParserTestCases SQL_PARSER_TEST_CASES = SQLParserTestCasesRegistry.getInstance().getCases();
     
     private static final String SELECT_STATEMENT_PREFIX = "SELECT";
     
     private static final Set<String> SUPPORTED_SQL_CASE_IDS = new HashSet<>();
     
-    // TODO remove SUPPORTED_SQL_CASE_IDS when all sql statement support convert to sql node
+    // TODO remove SUPPORTED_SQL_CASE_IDS when all SQL statement support convert to SQL node
     // CHECKSTYLE:OFF
     static {
         SUPPORTED_SQL_CASE_IDS.add("select_with_join_table_subquery");
@@ -139,6 +138,12 @@ public final class SQLNodeConverterEngineParameterizedTest {
         SUPPORTED_SQL_CASE_IDS.add("select_minus");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by");
         SUPPORTED_SQL_CASE_IDS.add("select_minus_order_by_limit");
+        SUPPORTED_SQL_CASE_IDS.add("select_projections_with_only_expr");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_inner_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_left_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_right_join");
+        SUPPORTED_SQL_CASE_IDS.add("select_natural_full_join");
     }
     // CHECKSTYLE:ON
     
@@ -148,14 +153,20 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private final SQLCaseType sqlCaseType;
     
-    @Parameters(name = "{0} ({2}) -> {1}")
-    public static Collection<Object[]> getTestParameters() {
+    public SQLNodeConverterEngineParameterizedTest(final InternalSQLParserParameterizedArray parameterizedArray) {
+        sqlCaseId = parameterizedArray.getSqlCaseId();
+        databaseType = parameterizedArray.getDatabaseType();
+        sqlCaseType = parameterizedArray.getSqlCaseType();
+    }
+    
+    @Parameters(name = "{0}")
+    public static Collection<InternalSQLParserParameterizedArray> getTestParameters() {
         return getTestParameters("MySQL", "PostgreSQL", "openGauss");
     }
     
-    private static Collection<Object[]> getTestParameters(final String... databaseTypes) {
-        Collection<Object[]> result = new LinkedList<>();
-        for (Object[] each : SQL_CASES_LOADER.getTestParameters(Arrays.asList(databaseTypes))) {
+    private static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String... databaseTypes) {
+        Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
+        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.asList(databaseTypes))) {
             if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
                 result.add(each);
             }
@@ -163,19 +174,18 @@ public final class SQLNodeConverterEngineParameterizedTest {
         return result;
     }
     
-    private static boolean isPlaceholderWithoutParameter(final Object[] sqlTestParam) {
-        return SQLCaseType.Placeholder == sqlTestParam[2] && SQL_PARSER_TEST_CASES_REGISTRY.get(sqlTestParam[0].toString()).getParameters().isEmpty();
+    private static boolean isPlaceholderWithoutParameter(final InternalSQLParserParameterizedArray parameterizedArray) {
+        return SQLCaseType.Placeholder == parameterizedArray.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(parameterizedArray.getSqlCaseId()).getParameters().isEmpty();
     }
     
-    private static boolean isSupportedSQLCase(final Object[] sqlTestParam) {
-        String sqlCaseId = sqlTestParam[0].toString();
-        return sqlCaseId.toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(sqlCaseId);
+    private static boolean isSupportedSQLCase(final InternalSQLParserParameterizedArray parameterizedArray) {
+        return parameterizedArray.getSqlCaseId().toUpperCase().startsWith(SELECT_STATEMENT_PREFIX) && SUPPORTED_SQL_CASE_IDS.contains(parameterizedArray.getSqlCaseId());
     }
     
     @Test
     public void assertConvert() {
         String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
-        String sql = SQL_CASES_LOADER.getCaseValue(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), databaseType);
+        String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convert(sqlStatement);
         SqlNode expected = parseSqlNode(databaseType, sql);

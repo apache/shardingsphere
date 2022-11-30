@@ -20,16 +20,16 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.StorageUnitDefinitionStatement;
 
 import java.util.Collection;
 
 /**
- * Add resource statement.
+ * Register storage unit statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RegisterStorageUnitStatement extends ResourceDefinitionStatement {
+public final class RegisterStorageUnitStatement extends StorageUnitDefinitionStatement {
     
-    private final Collection<DataSourceSegment> dataSources;
+    private final Collection<DataSourceSegment> storageUnits;
 }

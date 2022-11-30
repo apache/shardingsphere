@@ -136,9 +136,9 @@ public final class RulesUsedStorageUnitQueryResultSet implements DatabaseDistSQL
             return Collections.emptyList();
         }
         ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
-        return config.getDataSources().entrySet().stream()
-                .filter(entry -> entry.getValue().getShadowDataSourceName().equalsIgnoreCase(resourceName) || entry.getValue().getProductionDataSourceName().equalsIgnoreCase(resourceName))
-                .map(entry -> buildRow(SHADOW, entry.getKey())).collect(Collectors.toList());
+        return config.getDataSources().stream()
+                .filter(each -> each.getShadowDataSourceName().equalsIgnoreCase(resourceName) || each.getProductionDataSourceName().equalsIgnoreCase(resourceName))
+                .map(each -> buildRow(SHADOW, each.getName())).collect(Collectors.toList());
     }
     
     private Collection<Object> buildRow(final String type, final String name) {

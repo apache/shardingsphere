@@ -52,7 +52,7 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     @Override
     public void updateCurrentRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final ShadowRuleConfiguration toBeCreatedRuleConfig) {
         if (null != currentRuleConfig) {
-            currentRuleConfig.getDataSources().putAll(toBeCreatedRuleConfig.getDataSources());
+            currentRuleConfig.getDataSources().addAll(toBeCreatedRuleConfig.getDataSources());
             currentRuleConfig.getShadowAlgorithms().putAll(toBeCreatedRuleConfig.getShadowAlgorithms());
             updateTables(currentRuleConfig.getTables(), toBeCreatedRuleConfig.getTables());
         }

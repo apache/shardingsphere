@@ -114,8 +114,7 @@ public final class JDBCPortal implements Portal<Void> {
     }
     
     private PostgreSQLRowDescriptionPacket createRowDescriptionPacket(final QueryResponseHeader queryResponseHeader) {
-        Collection<PostgreSQLColumnDescription> columnDescriptions = createColumnDescriptions(queryResponseHeader);
-        return new PostgreSQLRowDescriptionPacket(columnDescriptions.size(), columnDescriptions);
+        return new PostgreSQLRowDescriptionPacket(createColumnDescriptions(queryResponseHeader));
     }
     
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {

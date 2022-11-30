@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.datasource.pool.metadata.type.dbcp;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPropertiesValidator;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DefaultDataSourcePoolPropertiesValidator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,5 +75,10 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData 
     @Override
     public Collection<String> getTypeAliases() {
         return Arrays.asList("org.apache.commons.dbcp.BasicDataSource", "org.apache.tomcat.dbcp.dbcp2.BasicDataSource");
+    }
+    
+    @Override
+    public DataSourcePoolPropertiesValidator getDataSourcePoolPropertiesValidator() {
+        return new DefaultDataSourcePoolPropertiesValidator();
     }
 }

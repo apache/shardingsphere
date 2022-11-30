@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * ShardingSphere table data.
@@ -35,5 +36,5 @@ public final class YamlShardingSphereTableData implements YamlConfiguration {
     
     private List<YamlShardingSphereColumn> columns;
     
-    private List<YamlShardingSphereRowData> rows;
+    private Map<Integer, YamlShardingSpherePartitionRowData> partitionRows;
 }

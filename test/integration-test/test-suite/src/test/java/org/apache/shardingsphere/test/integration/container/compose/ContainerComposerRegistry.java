@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.container.compose.mode.Cluster
 import org.apache.shardingsphere.test.integration.container.compose.mode.StandaloneContainerComposer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.AdapterContainerConstants;
 import org.apache.shardingsphere.test.integration.env.container.atomic.constants.EnvironmentConstants;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public final class ContainerComposerRegistry implements AutoCloseable {
      * @param parameterizedArray parameterized array
      * @return composed container
      */
-    public ContainerComposer getContainerComposer(final ParameterizedArray parameterizedArray) {
+    public ContainerComposer getContainerComposer(final ITParameterizedArray parameterizedArray) {
         String key = parameterizedArray.getKey();
         if (containerComposers.containsKey(key)) {
             return containerComposers.get(key);
@@ -55,11 +55,11 @@ public final class ContainerComposerRegistry implements AutoCloseable {
         }
     }
     
-    private ContainerComposer createContainerComposer(final ParameterizedArray parameterizedArray) {
+    private ContainerComposer createContainerComposer(final ITParameterizedArray parameterizedArray) {
         return isClusterMode(parameterizedArray) ? new ClusterContainerComposer(parameterizedArray) : new StandaloneContainerComposer(parameterizedArray);
     }
     
-    private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
+    private boolean isClusterMode(final ITParameterizedArray parameterizedArray) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
         return EnvironmentConstants.CLUSTER_MODE.equalsIgnoreCase(parameterizedArray.getMode()) && AdapterContainerConstants.PROXY.equalsIgnoreCase(parameterizedArray.getAdapter());
     }

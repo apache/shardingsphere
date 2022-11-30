@@ -100,6 +100,19 @@ public final class ShardingSphereDataNode {
     }
     
     /**
+     * Get table partition rows path.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param table table name
+     * @param partition partition
+     * @return table meta data path
+     */
+    public static String getTablePartitionRowsPath(final String databaseName, final String schemaName, final String table, final String partition) {
+        return String.join("/", getTablePath(databaseName, schemaName, table), partition);
+    }
+    
+    /**
      * Get database name.
      *
      * @param configNodeFullPath config node full path
@@ -157,5 +170,27 @@ public final class ShardingSphereDataNode {
         Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(tableMetaDataPath);
         return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Get table name by partition rows path.
+     *
+     * @param partitionRowsPath partition rows data path
+     * @return table name
+     */
+    public static Optional<String> getTableNameByPartitionRowsPath(final String partitionRowsPath) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/([\\w\\-]+)/([\\w\\-]+)/tables" + "/([\\w\\-]+)?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(partitionRowsPath);
+        return matcher.find() ? Optional.of(matcher.group(4)) : Optional.empty();
+    }
+    
+    /**
+     * Is table row data matched.
+     * @param path path
+     * @return is matched
+     */
+    public static boolean isTableRowDataMatched(final String path) {
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\d+)$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(path).find();
     }
 }

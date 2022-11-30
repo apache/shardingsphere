@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -66,6 +67,16 @@ public final class ComputeNodeStatusService {
     }
     
     /**
+     * Persist instance state.
+     *
+     * @param instanceId instance id
+     * @param state state context
+     */
+    public void persistInstanceState(final String instanceId, final StateContext state) {
+        repository.persistEphemeral(ComputeNode.getInstanceStatusNodePath(instanceId), state.getCurrentState().name());
+    }
+    
+    /**
      * Persist instance worker id.
      *
      * @param instanceId instance id
@@ -94,9 +105,8 @@ public final class ComputeNodeStatusService {
      * @return status
      */
     @SuppressWarnings("unchecked")
-    public Collection<String> loadInstanceStatus(final String instanceId) {
-        String yamlContent = repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
-        return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
+    public String loadInstanceStatus(final String instanceId) {
+        return repository.getDirectly(ComputeNode.getInstanceStatusNodePath(instanceId));
     }
     
     /**

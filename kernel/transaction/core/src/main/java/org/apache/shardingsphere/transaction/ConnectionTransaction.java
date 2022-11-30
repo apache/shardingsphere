@@ -33,6 +33,7 @@ import java.util.Optional;
  */
 public final class ConnectionTransaction {
     
+    @Getter
     private final TransactionType transactionType;
     
     private final String databaseName;

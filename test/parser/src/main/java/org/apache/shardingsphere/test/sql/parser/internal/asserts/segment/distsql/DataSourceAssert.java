@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.internal.jaxb.cases.domain.segment.impl.distsql.ExpectedDataSource;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedDataSource;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -51,15 +51,15 @@ public final class DataSourceAssert {
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
             assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));
-            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
             if (actual instanceof URLBasedDataSourceSegment) {
-                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                        actual.getClass().getSimpleName())), ((URLBasedDataSourceSegment) actual).getUrl(), is(expected.getUrl()));
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), ((URLBasedDataSourceSegment) actual).getUrl(),
+                        is(expected.getUrl()));
             }
             if (actual instanceof HostnameAndPortBasedDataSourceSegment) {
                 HostnameAndPortBasedDataSourceSegment actualSegment = (HostnameAndPortBasedDataSourceSegment) actual;
-                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                        actual.getClass().getSimpleName())), actualSegment.getHostname(), is(expected.getHostname()));
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getHostname(),
+                        is(expected.getHostname()));
                 assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getPort(), is(expected.getPort()));
                 assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getDatabase(), is(expected.getDb()));
             }

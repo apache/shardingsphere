@@ -31,7 +31,7 @@
         <native.image.name>apache-shardingsphere-proxy-native</native.image.name>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-        <native.maven.plugin.version>0.9.16</native.maven.plugin.version>
+        <native.maven.plugin.version>0.9.17</native.maven.plugin.version>
     </properties>
     
     <dependencies>
@@ -98,6 +98,9 @@
         </profile>
         <profile>
             <id>native</id>
+            <properties>
+                <hikari-cp.version>5.0.1</hikari-cp.version>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -177,6 +180,10 @@
                                         <argument>--build-arg</argument>
                                         <argument>APP_NAME=${native.image.name}</argument>
                                         <argument>.</argument>
+                                        <argument>-t</argument>
+                                        <argument>${proxy.image.repository}:${proxy.image.tag}</argument>
+                                        <argument>-t</argument>
+                                        <argument>${proxy.image.repository}:latest</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

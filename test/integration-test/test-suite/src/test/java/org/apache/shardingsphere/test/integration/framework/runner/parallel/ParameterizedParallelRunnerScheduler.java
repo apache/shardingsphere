@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.framework.param.RunnerParameters;
-import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerExecutorFactory;
-import org.apache.shardingsphere.test.runner.parallel.ParallelRunnerScheduler;
-import org.apache.shardingsphere.test.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
+import org.apache.shardingsphere.test.runner.param.RunnerParameters;
+import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 
 /**
  * Parameterized parallel runner scheduler.
  */
-public class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
+public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
     
-    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutorFactory<DatabaseType> executorFactory) {
-        super(parallelLevel, executorFactory);
+    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutors executorEngine) {
+        super(parallelLevel, executorEngine);
     }
     
     @Override
     public void schedule(final Runnable childStatement) {
-        ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
-        getExecutorFactory().getExecutor(parameterizedArray.getDatabaseType(), getParallelLevel()).execute(parameterizedArray, childStatement);
+        ITParameterizedArray parameterizedArray = (ITParameterizedArray) new RunnerParameters(childStatement).getParameterizedArray();
+        String key = String.join("-", parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getType());
+        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType().getType()).execute(ParallelLevel.SCENARIO == getParallelLevel() ? key : "", childStatement);
     }
 }

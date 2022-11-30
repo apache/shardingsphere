@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
+import org.apache.shardingsphere.test.fixture.infra.rule.MockedRuleConfiguration;
 
 @Getter
 @Setter

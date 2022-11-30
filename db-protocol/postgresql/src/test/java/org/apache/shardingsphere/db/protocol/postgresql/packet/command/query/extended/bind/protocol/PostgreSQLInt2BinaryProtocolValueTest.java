@@ -17,30 +17,40 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLInt2BinaryProtocolValueTest {
     
-    @Mock
-    private PostgreSQLPacketPayload payload;
+    @Test
+    public void assertGetColumnLength() {
+        assertThat(new PostgreSQLInt2BinaryProtocolValue().getColumnLength(null), is(2));
+    }
     
     @Test
-    public void assertNewInstance() {
+    public void assertRead() {
+        byte[] data = {(byte) 0x80, (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0x7F, (byte) 0xFF};
         PostgreSQLInt2BinaryProtocolValue actual = new PostgreSQLInt2BinaryProtocolValue();
-        assertThat(actual.getColumnLength(null), is(2));
-        when(payload.readInt2()).thenReturn(1);
-        assertThat(actual.read(payload, 2), is(1));
-        actual.write(payload, 1);
-        verify(payload).writeInt2(1);
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        assertThat(actual.read(payload, 2), is(Short.MIN_VALUE));
+        assertThat(actual.read(payload, 2), is((short) -1));
+        assertThat(actual.read(payload, 2), is(Short.MAX_VALUE));
+    }
+    
+    @Test
+    public void assertWrite() {
+        byte[] actualData = new byte[6];
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(actualData).writerIndex(0), StandardCharsets.UTF_8);
+        PostgreSQLInt2BinaryProtocolValue actual = new PostgreSQLInt2BinaryProtocolValue();
+        actual.write(payload, (int) Short.MIN_VALUE);
+        actual.write(payload, -1);
+        actual.write(payload, (int) Short.MAX_VALUE);
+        assertThat(actualData, is(new byte[]{(byte) 0x80, (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0x7F, (byte) 0xFF}));
     }
 }

@@ -54,6 +54,7 @@ on:
       - '!distribution/proxy/src/main/release-docs/**'
       - '!kernel/data-pipeline/**'
       - '!*.md'
+  workflow_dispatch:
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
@@ -103,7 +104,10 @@ jobs:
       matrix:
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL, openGauss ]
-        scenario: [ empty_rules, rdl_empty_rules ]
+        scenario: [ empty_rules, rdl_empty_rules, passthrough ]
+        exclude:
+          - adapter: jdbc
+            scenario: passthrough
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
