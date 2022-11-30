@@ -28,10 +28,10 @@ import java.sql.SQLException;
 
 public final class ClusterModeSpringNamespaceMybatisExample {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
+//    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
 //    private static ShardingType shardingType = ShardingType.SHARDING_READWRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
-//    private static ShardingType shardingType = ShardingType.SHADOW;
+    private static ShardingType shardingType = ShardingType.SHADOW;
     
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;

@@ -15,5 +15,10 @@
 # limitations under the License.
 #
 
-spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSphereDriver
-spring.datasource.url=jdbc:shardingsphere:classpath:cloud-zookeeper-sharding-databases-tables.yaml
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_spring_boot_ds_encrypt
+      server-lists: localhost:2181

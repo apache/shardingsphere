@@ -15,5 +15,36 @@
 # limitations under the License.
 #
 
-spring.datasource.driver-class-name=org.apache.shardingsphere.driver.ShardingSphereDriver
-spring.datasource.url=jdbc:shardingsphere:classpath:cloud-zookeeper-sharding-databases-tables.yaml
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: demo_spring_boot_ds_encrypt
+      server-lists: localhost:2181
+
+dataSources:
+  ds-encrypt:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+
+rules:
+- !ENCRYPT
+  tables:
+    t_order:
+      columns:
+        status: 
+         cipherColumn: status
+         encryptorName: status-encryptor
+  encryptors:
+    status-encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456
+
+props:
+  queryWithCipherColumn: true
+  sql-show: true
