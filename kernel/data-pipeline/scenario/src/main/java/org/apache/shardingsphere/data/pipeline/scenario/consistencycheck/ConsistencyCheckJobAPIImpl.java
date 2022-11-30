@@ -54,10 +54,12 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Consistency check job API impl.
@@ -87,8 +89,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
                 throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
             }
         }
-        int sequence = checkLatestJobId.map(optional -> ConsistencyCheckJobId.parseSequence(optional) + 1).orElse(ConsistencyCheckJobId.MIN_SEQUENCE);
-        String result = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
+        String result = marshalJobId(checkLatestJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(parentJobId)));
         repositoryAPI.persistCheckLatestJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
         dropJob(result);
@@ -139,7 +140,6 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void startDisabledJob(final String jobId) {
-        log.info("Start disable check job {}", jobId);
         PipelineJobItemProgress jobProgress = getJobItemProgress(jobId, 0);
         if (null != jobProgress && JobStatus.FINISHED == jobProgress.getStatus()) {
             log.info("job status is FINISHED, ignore, jobId={}", jobId);
@@ -150,18 +150,36 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void startByParentJobId(final String parentJobId) {
-        log.info("Start check job by parent job id: {}", parentJobId);
-        Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
-        ShardingSpherePreconditions.checkState(checkLatestJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
-        startDisabledJob(checkLatestJobId.get());
+        startDisabledJob(getCheckLatestJobId(parentJobId));
+    }
+    
+    private String getCheckLatestJobId(final String parentJobId) {
+        Optional<String> result = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
+        ShardingSpherePreconditions.checkState(result.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
+        return result.get();
     }
     
     @Override
     public void stopByParentJobId(final String parentJobId) {
-        log.info("Stop check job by parent job id: {}", parentJobId);
-        Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
-        ShardingSpherePreconditions.checkState(checkLatestJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
-        stop(checkLatestJobId.get());
+        stop(getCheckLatestJobId(parentJobId));
+    }
+    
+    @Override
+    public void dropByParentJobId(final String parentJobId) {
+        String latestCheckJobId = getCheckLatestJobId(parentJobId);
+        stop(latestCheckJobId);
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        Collection<String> checkJobIds = repositoryAPI.listCheckJobIds(parentJobId);
+        Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
+                checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
+        if (previousSequence.isPresent()) {
+            String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, previousSequence.get()));
+            repositoryAPI.persistCheckLatestJobId(parentJobId, checkJobId);
+        } else {
+            repositoryAPI.deleteCheckLatestJobId(parentJobId);
+        }
+        repositoryAPI.deleteCheckJobResult(parentJobId, latestCheckJobId);
+        dropJob(latestCheckJobId);
     }
     
     @Override

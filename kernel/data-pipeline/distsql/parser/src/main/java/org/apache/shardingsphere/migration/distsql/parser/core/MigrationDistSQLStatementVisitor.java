@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatemen
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CheckMigrationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.CommitMigrationContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.DropMigrationCheckContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.MigrateTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PasswordContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MigrationDistSQLStatementParser.PropertiesDefinitionContext;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedData
 import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
+import org.apache.shardingsphere.migration.distsql.statement.DropMigrationCheckStatement;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.RegisterMigrationSourceStorageUnitStatement;
 import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
@@ -199,5 +201,10 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     @Override
     public ASTNode visitStopMigrationCheck(final StopMigrationCheckContext ctx) {
         return new StopMigrationCheckStatement(getIdentifierValue(ctx.jobId()));
+    }
+    
+    @Override
+    public ASTNode visitDropMigrationCheck(final DropMigrationCheckContext ctx) {
+        return new DropMigrationCheckStatement(getIdentifierValue(ctx.jobId()));
     }
 }

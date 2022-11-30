@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration;
 
-import Symbol, RALStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | registerMigrationSourceStorageUnit
-    | unregisterMigrationSourceStorageUnit
-    | showMigrationSourceStorageUnits
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    | dropMigrationCheck
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Drop migration check statement test case.
+ */
+@Getter
+@Setter
+public final class DropMigrationCheckStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "job-id")
+    private String jobId;
+}

@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-grammar MigrationDistSQLStatement;
+package org.apache.shardingsphere.migration.distsql.statement;
 
-import Symbol, RALStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
-execute
-    : (showMigrationList
-    | showMigrationStatus
-    | migrateTable
-    | startMigration
-    | stopMigration
-    | rollbackMigration
-    | commitMigration
-    | checkMigration
-    | showMigrationCheckAlgorithms
-    | registerMigrationSourceStorageUnit
-    | unregisterMigrationSourceStorageUnit
-    | showMigrationSourceStorageUnits
-    | showMigrationCheckStatus
-    | startMigrationCheck
-    | stopMigrationCheck
-    | dropMigrationCheck
-    ) SEMI?
-    ;
+/**
+ * Drop migration check statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropMigrationCheckStatement extends UpdatableScalingRALStatement {
+    
+    private final String jobId;
+}

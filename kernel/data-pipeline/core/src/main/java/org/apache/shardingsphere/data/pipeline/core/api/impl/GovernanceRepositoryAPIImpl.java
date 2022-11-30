@@ -75,6 +75,11 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         repository.persist(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId), String.valueOf(checkJobId));
     }
     
+    @Override
+    public void deleteCheckLatestJobId(final String jobId) {
+        repository.delete(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId));
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, DataConsistencyCheckResult> getCheckJobResult(final String parentJobId, final String checkJobId) {

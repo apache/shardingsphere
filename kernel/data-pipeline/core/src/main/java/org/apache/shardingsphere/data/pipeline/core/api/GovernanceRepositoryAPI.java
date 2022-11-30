@@ -63,6 +63,7 @@ public interface GovernanceRepositoryAPI {
      * @param jobId job id
      * @return check job id
      */
+    // TODO rename method name
     Optional<String> getCheckLatestJobId(String jobId);
     
     /**
@@ -72,6 +73,13 @@ public interface GovernanceRepositoryAPI {
      * @param checkJobId check job id
      */
     void persistCheckLatestJobId(String jobId, String checkJobId);
+    
+    /**
+     * Delete check latest job id.
+     *
+     * @param jobId job id
+     */
+    void deleteCheckLatestJobId(String jobId);
     
     /**
      * Get check job result.
