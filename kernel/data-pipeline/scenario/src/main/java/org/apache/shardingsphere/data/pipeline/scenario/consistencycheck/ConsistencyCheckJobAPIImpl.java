@@ -81,16 +81,16 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         String parentJobId = param.getJobId();
-        Optional<String> checkLatestJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
-        if (checkLatestJobId.isPresent()) {
-            PipelineJobItemProgress progress = getJobItemProgress(checkLatestJobId.get(), 0);
+        Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
+        if (latestCheckJobId.isPresent()) {
+            PipelineJobItemProgress progress = getJobItemProgress(latestCheckJobId.get(), 0);
             if (null == progress || JobStatus.FINISHED != progress.getStatus()) {
                 log.info("check job already exists and status is not FINISHED, progress={}", progress);
-                throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
+                throw new UncompletedConsistencyCheckJobExistsException(latestCheckJobId.get());
             }
         }
-        String result = marshalJobId(checkLatestJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(parentJobId)));
-        repositoryAPI.persistCheckLatestJobId(parentJobId, result);
+        String result = marshalJobId(latestCheckJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(parentJobId)));
+        repositoryAPI.persistLatestCheckJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
         dropJob(result);
         YamlConsistencyCheckJobConfiguration yamlConfig = new YamlConsistencyCheckJobConfiguration();
@@ -104,11 +104,11 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public Map<String, DataConsistencyCheckResult> getLatestDataConsistencyCheckResult(final String jobId) {
-        Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId);
-        if (!checkLatestJobId.isPresent()) {
+        Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId);
+        if (!latestCheckJobId.isPresent()) {
             return Collections.emptyMap();
         }
-        return PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(jobId, checkLatestJobId.get());
+        return PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckJobResult(jobId, latestCheckJobId.get());
     }
     
     @Override
@@ -154,7 +154,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     }
     
     private String getCheckLatestJobId(final String parentJobId) {
-        Optional<String> result = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
+        Optional<String> result = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(result.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         return result.get();
     }
@@ -174,9 +174,9 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
             String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, previousSequence.get()));
-            repositoryAPI.persistCheckLatestJobId(parentJobId, checkJobId);
+            repositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
         } else {
-            repositoryAPI.deleteCheckLatestJobId(parentJobId);
+            repositoryAPI.deleteLatestCheckJobId(parentJobId);
         }
         repositoryAPI.deleteCheckJobResult(parentJobId, latestCheckJobId);
         dropJob(latestCheckJobId);
@@ -184,9 +184,9 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public ConsistencyCheckJobItemInfo getJobItemInfo(final String parentJobId) {
-        Optional<String> checkLatestJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(parentJobId);
-        ShardingSpherePreconditions.checkState(checkLatestJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
-        String checkJobId = checkLatestJobId.get();
+        Optional<String> latestCheckJobId = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
+        ShardingSpherePreconditions.checkState(latestCheckJobId.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
+        String checkJobId = latestCheckJobId.get();
         ConsistencyCheckJobItemProgress jobItemProgress = getJobItemProgress(checkJobId, 0);
         ConsistencyCheckJobItemInfo result = new ConsistencyCheckJobItemInfo();
         if (null == jobItemProgress) {

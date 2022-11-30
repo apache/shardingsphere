@@ -58,28 +58,27 @@ public interface GovernanceRepositoryAPI {
     String getJobItemProgress(String jobId, int shardingItem);
     
     /**
-     * Get check latest job id.
+     * Get latest check job id.
      *
      * @param jobId job id
      * @return check job id
      */
-    // TODO rename method name
-    Optional<String> getCheckLatestJobId(String jobId);
+    Optional<String> getLatestCheckJobId(String jobId);
     
     /**
-     * Persist check latest job id.
+     * Persist latest check job id.
      *
      * @param jobId job id
      * @param checkJobId check job id
      */
-    void persistCheckLatestJobId(String jobId, String checkJobId);
+    void persistLatestCheckJobId(String jobId, String checkJobId);
     
     /**
-     * Delete check latest job id.
+     * Delete latest check job id.
      *
      * @param jobId job id
      */
-    void deleteCheckLatestJobId(String jobId);
+    void deleteLatestCheckJobId(String jobId);
     
     /**
      * Get check job result.

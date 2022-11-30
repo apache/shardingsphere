@@ -79,7 +79,7 @@ public final class ConsistencyCheckJobAPIImplTest {
         Optional<String> jobId = migrationJobAPI.start(JobConfigurationBuilder.createJobConfiguration());
         assertTrue(jobId.isPresent());
         String checkJobId = checkJobAPI.createJobAndStart(new CreateConsistencyCheckJobParameter(jobId.get(), null, null));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckLatestJobId(jobId.get(), checkJobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistLatestCheckJobId(jobId.get(), checkJobId);
         Map<String, DataConsistencyCheckResult> expectedCheckResult = Collections.singletonMap("t_order", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1),
                 new DataConsistencyContentCheckResult(true)));
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistCheckJobResult(jobId.get(), checkJobId, expectedCheckResult);
@@ -101,19 +101,19 @@ public final class ConsistencyCheckJobAPIImplTest {
             Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult = Collections.singletonMap("t_order",
                     new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(0, 0), new DataConsistencyContentCheckResult(true)));
             repositoryAPI.persistCheckJobResult(parentJobId, checkJobId, dataConsistencyCheckResult);
-            Optional<String> latestCheckJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
+            Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence++));
         }
         expectedSequence = 2;
         for (int i = 0; i < 2; i++) {
             checkJobAPI.dropByParentJobId(parentJobId);
-            Optional<String> latestCheckJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
+            Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
             assertTrue(latestCheckJobId.isPresent());
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId.get()), is(expectedSequence--));
         }
         checkJobAPI.dropByParentJobId(parentJobId);
-        Optional<String> latestCheckJobId = repositoryAPI.getCheckLatestJobId(parentJobId);
+        Optional<String> latestCheckJobId = repositoryAPI.getLatestCheckJobId(parentJobId);
         assertFalse(latestCheckJobId.isPresent());
     }
     
