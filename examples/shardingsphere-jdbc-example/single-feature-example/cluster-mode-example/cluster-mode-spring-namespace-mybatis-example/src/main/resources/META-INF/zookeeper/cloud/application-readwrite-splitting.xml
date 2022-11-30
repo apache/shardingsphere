@@ -32,7 +32,7 @@
 
     <bean id="readWriteSplittingDataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="org.apache.shardingsphere.driver.ShardingSphereDriver" />
-        <property name="url" value="jdbc:shardingsphere:classpath:cloud-zookeeper-rewrite-spitting.yaml" />
+        <property name="url" value="jdbc:shardingsphere:classpath:cloud-zookeeper-rewrite-splitting.yaml" />
     </bean>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

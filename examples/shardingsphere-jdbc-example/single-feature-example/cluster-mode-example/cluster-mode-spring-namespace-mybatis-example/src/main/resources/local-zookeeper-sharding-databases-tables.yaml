@@ -22,8 +22,6 @@ mode:
     props:
       namespace: demo_spring_boot_ds_sharding
       server-lists: localhost:2181
-      
-databaseName: sharding_databases_tables
 
 dataSources:
   demo_ds_0:

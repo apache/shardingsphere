@@ -22,8 +22,6 @@ mode:
     props:
       namespace: demo_spring_boot_readwrite_ds
       server-lists: localhost:2181
-      
-databaseName: sharding_databases_tables
 
 dataSources:
   write_ds:
