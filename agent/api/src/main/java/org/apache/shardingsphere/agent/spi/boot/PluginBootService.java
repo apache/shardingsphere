@@ -27,7 +27,7 @@ public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
     
     /**
      * Start plugin boot service.
-     * 
+     *
      * @param pluginConfig plugin configuration
      * @param isEnhancedForProxy is enhanced for proxy
      */
