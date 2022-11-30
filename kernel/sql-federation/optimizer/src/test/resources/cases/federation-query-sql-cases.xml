@@ -81,4 +81,51 @@
         <assertion expected-result="EnumerableCalc(expr#0..9=[{inputs}], proj#0..2=[{exprs}], item_id=[$t4], order_id1=[$t5], user_id0=[$t6], status0=[$t7], remarks=[$t8])  EnumerableHashJoin(condition=[=($3, $9)], joinType=[inner])    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t0):INTEGER], proj#0..3=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_order_federate]], fields=[[0, 1, 2]])    EnumerableCalc(expr#0..4=[{inputs}], expr#5=[CAST($t0):INTEGER], proj#0..5=[{exprs}])      TranslatableTableScan(table=[[federate_jdbc, t_order_item_federate_sharding]], fields=[[0, 1, 2, 3, 4]])" />
     </test-case>
     
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 11) AND o.order_id BETWEEN 1000 AND 1909 ORDER BY i.item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])  EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])    EnumerableHashJoin(condition=[AND(=($1, $4), =($0, $3))], joinType=[inner])      TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[AND(SEARCH($1, Sarg[10, 11]), SEARCH($0, Sarg[[1000..1909]])), null]])      TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($2, Sarg[10, 11]), SEARCH($1, Sarg[[1000..1909]])), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])  EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])    EnumerableHashJoin(condition=[AND(=($1, $4), =($0, $3))], joinType=[inner])      TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]])      TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id WHERE o.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])  EnumerableHashJoin(condition=[AND(=($0, $3), =($1, $4))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[=(CAST($0):BIGINT, 1000), null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[=(CAST($1):BIGINT, 1000), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id = 1000">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])  EnumerableHashJoin(condition=[AND(=($0, $3), =($1, $4))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[=(CAST($0):BIGINT, 1000), null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[=(CAST($1):BIGINT, 1000), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id in (1000,1001)">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])  EnumerableHashJoin(condition=[AND(=($0, $3), =($1, $4))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[SEARCH($0, Sarg[1000L:JavaType(long), 1001L:JavaType(long)]:JavaType(long)), null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[SEARCH($1, Sarg[1000L:JavaType(long), 1001L:JavaType(long)]:JavaType(long)), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id AND o.user_id = i.user_id AND o.order_id in (1000,1001)">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])  EnumerableHashJoin(condition=[AND(=($0, $3), =($1, $4))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[SEARCH($0, Sarg[1000L:JavaType(long), 1001L:JavaType(long)]:JavaType(long)), null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[SEARCH($1, Sarg[1000L:JavaType(long), 1001L:JavaType(long)]:JavaType(long)), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o, t_order_item i WHERE o.user_id = i.user_id AND o.order_id = i.order_id AND o.user_id IN (10, 11) AND o.order_id BETWEEN 1000 AND 1909">
+        <assertion expected-result="EnumerableAggregate(group=[{}], items_count=[COUNT()])  EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($1, Sarg[10, 11]), SEARCH($0, Sarg[[1000..1909]])), null, null, null, null, null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($2, Sarg[10, 11]), SEARCH($1, Sarg[[1000..1909]])), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT COUNT(*) AS items_count FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 11) AND o.order_id BETWEEN 1000 AND 1909">
+        <assertion expected-result="EnumerableAggregate(group=[{}], items_count=[COUNT()])  EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($1, Sarg[10, 11]), SEARCH($0, Sarg[[1000..1909]])), null, null, null, null, null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($2, Sarg[10, 11]), SEARCH($1, Sarg[[1000..1909]])), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = 1000 OR o.order_id = 1100) AND o.user_id = 11">
+        <assertion expected-result="EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])  EnumerableHashJoin(condition=[AND(=($1, $4), =($0, $3))], joinType=[inner])    TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[AND(SEARCH(CAST($0):BIGINT, Sarg[1000L:BIGINT, 1100L:BIGINT]:BIGINT), =(CAST($1):INTEGER, 11)), null]])    TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH(CAST($1):BIGINT, Sarg[1000L:BIGINT, 1100L:BIGINT]:BIGINT), =(CAST($2):INTEGER, 11)), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 19) AND o.order_id BETWEEN 1000 AND 1909 ORDER BY i.item_id DESC">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[DESC])  EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])    EnumerableHashJoin(condition=[AND(=($1, $4), =($0, $3))], joinType=[inner])      TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[AND(SEARCH($1, Sarg[10, 19]), SEARCH($0, Sarg[[1000..1909]])), null]])      TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($2, Sarg[10, 19]), SEARCH($1, Sarg[[1000..1909]])), null, null, null, null, null]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id">
+        <assertion expected-result="EnumerableSort(sort0=[$0], dir0=[ASC])  EnumerableCalc(expr#0..11=[{inputs}], item_id=[$t6], order_id=[$t7], user_id=[$t8], product_id=[$t9], quantity=[$t10], creation_date=[$t11], order_id0=[$t0], user_id0=[$t1], status=[$t2], merchant_id=[$t3], remark=[$t4], creation_date0=[$t5])    EnumerableHashJoin(condition=[AND(=($1, $8), =($0, $7))], joinType=[inner])      TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1, 2, 3, 4, 5]])      TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]])" />
+    </test-case>
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE o.user_id IN (10, 19) AND o.order_id BETWEEN 1000 AND 1909 ORDER BY i.item_id DESC LIMIT 2">
+        <assertion expected-result="EnumerableLimit(fetch=[2])  EnumerableSort(sort0=[$0], dir0=[DESC])    EnumerableCalc(expr#0..7=[{inputs}], item_id=[$t2], order_id=[$t3], user_id=[$t4], product_id=[$t5], quantity=[$t6], creation_date=[$t7])      EnumerableHashJoin(condition=[AND(=($1, $4), =($0, $3))], joinType=[inner])        TranslatableTableScan(table=[[federate_jdbc, t_order]], fields=[[0, 1]], filters=[[AND(SEARCH($1, Sarg[10, 19]), SEARCH($0, Sarg[[1000..1909]])), null]])        TranslatableTableScan(table=[[federate_jdbc, t_order_item]], fields=[[0, 1, 2, 3, 4, 5]], filters=[[AND(SEARCH($2, Sarg[10, 19]), SEARCH($1, Sarg[[1000..1909]])), null, null, null, null, null]])" />
+    </test-case>
 </test-cases>
