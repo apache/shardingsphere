@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.test.runner.scheduler;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
-import org.apache.shardingsphere.test.runner.scheduler.NormalParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
+import org.junit.runners.model.RunnerScheduler;
 
 /**
- * Parallel parameterized.
+ * Abstract Parallel runner scheduler.
  */
-public final class ParallelParameterized extends Parameterized {
+@RequiredArgsConstructor
+@Getter
+public abstract class AbstractParallelRunnerScheduler implements RunnerScheduler {
     
-    // CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        setScheduler(new NormalParallelRunnerScheduler(new ParallelRunnerExecutors()));
+    private final ParallelRunnerExecutors runnerExecutors;
+    
+    @Override
+    public final void schedule(final Runnable childStatement) {
+        runnerExecutors.getExecutor(getExecutorKey(childStatement)).execute("", childStatement);
+    }
+    
+    @Override
+    public final void finished() {
+        runnerExecutors.finishAll();
+    }
+    
+    protected String getExecutorKey(final Runnable childStatement) {
+        return "";
     }
 }

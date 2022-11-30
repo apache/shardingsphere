@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
-import org.apache.shardingsphere.test.runner.scheduler.NormalParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.test.runner.scheduler.AbstractParallelRunnerScheduler;
 
 /**
- * Parallel parameterized.
+ * Scenario parallel runner scheduler.
  */
-public final class ParallelParameterized extends Parameterized {
+public final class ScenarioParallelRunnerScheduler extends AbstractParallelRunnerScheduler {
     
-    // CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        setScheduler(new NormalParallelRunnerScheduler(new ParallelRunnerExecutors()));
+    public ScenarioParallelRunnerScheduler(final ParallelRunnerExecutors executorEngine) {
+        super(executorEngine);
     }
 }

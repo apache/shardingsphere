@@ -18,24 +18,22 @@
 package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
 import org.apache.shardingsphere.test.runner.param.RunnerParameters;
-import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
+import org.apache.shardingsphere.test.runner.scheduler.AbstractParallelRunnerScheduler;
 
 /**
- * Parameterized parallel runner scheduler.
+ * Case parallel runner scheduler.
  */
-public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerScheduler {
+public final class CaseParallelRunnerScheduler extends AbstractParallelRunnerScheduler {
     
-    public ParameterizedParallelRunnerScheduler(final ParallelLevel parallelLevel, final ParallelRunnerExecutors executorEngine) {
-        super(parallelLevel, executorEngine);
+    public CaseParallelRunnerScheduler(final ParallelRunnerExecutors executorEngine) {
+        super(executorEngine);
     }
     
     @Override
-    public void schedule(final Runnable childStatement) {
+    protected String getExecutorKey(final Runnable childStatement) {
         ITParameterizedArray parameterizedArray = (ITParameterizedArray) new RunnerParameters(childStatement).getParameterizedArray();
-        String key = String.join("-", parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getType());
-        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType().getType()).execute(ParallelLevel.SCENARIO == getParallelLevel() ? key : "", childStatement);
+        return String.join("-", parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getType());
     }
 }
