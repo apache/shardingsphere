@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.executor.impl.AbstractParallelRunnerExecutor;
 
 /**
  * Parallel runner executor with case.
  */
-public final class CaseParallelRunnerExecutor extends NormalParallelRunnerExecutor {
+public final class CaseParallelRunnerExecutor extends AbstractParallelRunnerExecutor {
     
     @Override
     public ParallelLevel getParallelLevel() {

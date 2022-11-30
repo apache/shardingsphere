@@ -17,57 +17,12 @@
 
 package org.apache.shardingsphere.test.runner.executor.impl;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.Getter;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Normal parallel runner executor.
  */
-public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
-    
-    private final Collection<Future<?>> futures = new LinkedList<>();
-    
-    @Getter
-    private final Map<Object, ExecutorService> executorServices = new ConcurrentHashMap<>();
-    
-    @Override
-    public void execute(final String key, final Runnable childStatement) {
-        futures.add(getExecutorService(key).submit(childStatement));
-    }
-    
-    protected ExecutorService getExecutorService(final String key) {
-        if (executorServices.containsKey(key)) {
-            return executorServices.get(key);
-        }
-        String threadPoolNameFormat = String.join("-", "ShardingSphere-KeyedParallelTestThread", key, "%d");
-        ExecutorService executorService = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
-        if (null != executorServices.putIfAbsent(key, executorService)) {
-            executorService.shutdownNow();
-        }
-        return executorServices.get(key);
-    }
-    
-    @Override
-    public void finished() {
-        futures.forEach(each -> {
-            try {
-                each.get();
-            } catch (final InterruptedException | ExecutionException ignored) {
-            }
-        });
-        executorServices.values().forEach(ExecutorService::shutdownNow);
-    }
+public final class NormalParallelRunnerExecutor extends AbstractParallelRunnerExecutor {
     
     @Override
     public ParallelLevel getParallelLevel() {

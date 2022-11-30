@@ -17,59 +17,16 @@
 
 package org.apache.shardingsphere.test.integration.framework.runner.parallel.impl;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.EqualsAndHashCode;
-import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerExecutor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import org.apache.shardingsphere.test.runner.executor.impl.AbstractParallelRunnerExecutor;
 
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerExecutor {
-    
-    @Override
-    protected ExecutorService getExecutorService(final String key) {
-        if (getExecutorServices().containsKey(key)) {
-            return getExecutorServices().get(key);
-        }
-        String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", key, "%d");
-        ExecutorService executorService = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
-        if (null != getExecutorServices().putIfAbsent(key, executorService)) {
-            executorService.shutdownNow();
-        }
-        return getExecutorServices().get(key);
-    }
+public final class ScenarioParallelRunnerExecutor extends AbstractParallelRunnerExecutor {
     
     @Override
     public ParallelLevel getParallelLevel() {
         return ParallelLevel.SCENARIO;
-    }
-    
-    /**
-     * Scenario key.
-     */
-    @EqualsAndHashCode
-    public static final class ScenarioKey {
-        
-        private final String adapter;
-        
-        private final String scenario;
-        
-        private final String databaseType;
-        
-        public ScenarioKey(final ITParameterizedArray parameterizedArray) {
-            adapter = parameterizedArray.getAdapter();
-            scenario = parameterizedArray.getScenario();
-            databaseType = parameterizedArray.getDatabaseType().getType();
-        }
-        
-        @Override
-        public String toString() {
-            return String.join("-", adapter, scenario, databaseType);
-        }
     }
 }
