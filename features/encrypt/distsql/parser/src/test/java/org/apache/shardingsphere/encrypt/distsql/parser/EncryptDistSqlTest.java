@@ -44,8 +44,8 @@ public final class EncryptDistSqlTest {
     public void assertCreateEncryptRule() {
         String sql = "CREATE ENCRYPT RULE t_encrypt (COLUMNS("
                 + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like"
-                + ",CIPHER_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_ALGORITHM(TYPE(NAME='MD5')),LIKE_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))"
-                + ",(NAME=order_id, CIPHER =order_cipher,CIPHER_ALGORITHM(TYPE(NAME='MD5'))))"
+                + ",ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))"
+                + ",(NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5'))))"
                 + ",QUERY_WITH_CIPHER_COLUMN=true)";
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(createEncryptRuleStatement.getRules().size(), is(1));
@@ -56,8 +56,8 @@ public final class EncryptDistSqlTest {
     public void assertAlterEncryptRule() {
         String sql = "ALTER ENCRYPT RULE t_encrypt (COLUMNS("
                 + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like"
-                + ",CIPHER_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_ALGORITHM(TYPE(NAME='MD5')),LIKE_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))"
-                + ",(NAME=order_id, CIPHER =order_cipher,CIPHER_ALGORITHM(TYPE(NAME='MD5'))))"
+                + ",ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))"
+                + ",(NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5'))))"
                 + ",QUERY_WITH_CIPHER_COLUMN=true)";
         AlterEncryptRuleStatement alterEncryptRule = (AlterEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(alterEncryptRule.getRules().size(), is(1));

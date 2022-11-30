@@ -95,9 +95,9 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
                 null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().dataType()),
-                null == ctx.cipherAlgorithm() ? null : (AlgorithmSegment) visit(ctx.cipherAlgorithm().algorithmDefinition()),
-                null == ctx.assistedAlgorithm() ? null : (AlgorithmSegment) visit(ctx.assistedAlgorithm().algorithmDefinition()),
-                null == ctx.likeAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeAlgorithm().algorithmDefinition()));
+                null == ctx.encryptAlgorithm() ? null : (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition()),
+                null == ctx.assistedQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.assistedQueryAlgorithm().algorithmDefinition()),
+                null == ctx.likeQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeQueryAlgorithm().algorithmDefinition()));
     }
     
     @Override

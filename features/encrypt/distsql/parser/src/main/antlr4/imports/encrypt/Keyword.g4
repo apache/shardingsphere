@@ -59,16 +59,16 @@ TYPE
     : T Y P E
     ;
 
-CIPHER_ALGORITHM
-    : C I P H E R UL_ A L G O R I T H M
+ENCRYPT_ALGORITHM
+    : E N C R Y P T UL_ A L G O R I T H M
     ;
 
-ASSISTED_ALGORITHM
-    : A S S I S T E D UL_ A L G O R I T H M
+ASSISTED_QUERY_ALGORITHM
+    : A S S I S T E D UL_ Q U E R Y UL_ A L G O R I T H M
     ;
 
-LIKE_ALGORITHM
-    : L I K E UL_ A L G O R I T H M
+LIKE_QUERY_ALGORITHM
+    : L I K E UL_ Q U E R Y UL_ A L G O R I T H M
     ;
 
 NAME

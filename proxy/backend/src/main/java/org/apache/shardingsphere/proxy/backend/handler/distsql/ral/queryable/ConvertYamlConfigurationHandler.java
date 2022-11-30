@@ -489,15 +489,15 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         String assistedQueryEncryptorName = ruleConfig.getAssistedQueryEncryptorName();
         String likeQueryEncryptorName = ruleConfig.getLikeQueryEncryptorName();
         if (null != cipherEncryptorName) {
-            result.append(String.format(DistSQLScriptConstants.CIPHER_ALGORITHM, getAlgorithmType(encryptors.get(cipherEncryptorName))));
+            result.append(String.format(DistSQLScriptConstants.ENCRYPT_ALGORITHM, getAlgorithmType(encryptors.get(cipherEncryptorName))));
         }
         if (null != assistedQueryEncryptorName) {
             result.append(DistSQLScriptConstants.COMMA).append(" ")
-                    .append(String.format(DistSQLScriptConstants.ASSISTED_ALGORITHM, getAlgorithmType(encryptors.get(assistedQueryEncryptorName))));
+                    .append(String.format(DistSQLScriptConstants.ASSISTED_QUERY_ALGORITHM, getAlgorithmType(encryptors.get(assistedQueryEncryptorName))));
         }
         if (null != likeQueryEncryptorName) {
             result.append(DistSQLScriptConstants.COMMA).append(" ")
-                    .append(String.format(DistSQLScriptConstants.LIKE_ALGORITHM, getAlgorithmType(encryptors.get(likeQueryEncryptorName))));
+                    .append(String.format(DistSQLScriptConstants.LIKE_QUERY_ALGORITHM, getAlgorithmType(encryptors.get(likeQueryEncryptorName))));
         }
         return result.toString();
     }

@@ -44,7 +44,7 @@ resourceName
     ;
 
 encryptColumnDefinition
-    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? (COMMA likeQueryColumnDefinition)? COMMA cipherAlgorithm (COMMA assistedAlgorithm)? (COMMA likeAlgorithm)? RP
+    : LP columnDefinition (COMMA plainColumnDefinition)? COMMA cipherColumnDefinition (COMMA assistedQueryColumnDefinition)? (COMMA likeQueryColumnDefinition)? COMMA encryptAlgorithm (COMMA assistedQueryAlgorithm)? (COMMA likeQueryAlgorithm)? RP
     ;
 
 columnDefinition
@@ -91,16 +91,16 @@ likeQueryColumnName
     : IDENTIFIER
     ;
 
-cipherAlgorithm
-    : CIPHER_ALGORITHM LP algorithmDefinition RP
+encryptAlgorithm
+    : ENCRYPT_ALGORITHM LP algorithmDefinition RP
     ;
 
-assistedAlgorithm
-    : ASSISTED_ALGORITHM LP algorithmDefinition RP
+assistedQueryAlgorithm
+    : ASSISTED_QUERY_ALGORITHM LP algorithmDefinition RP
     ;
 
-likeAlgorithm
-    : LIKE_ALGORITHM LP algorithmDefinition RP
+likeQueryAlgorithm
+    : LIKE_QUERY_ALGORITHM LP algorithmDefinition RP
     ;
 
 queryWithCipherColumn
