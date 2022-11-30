@@ -15,16 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.scheduler;
+package org.apache.shardingsphere.test.runner.key;
 
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 
 /**
- * Normal parallel runner scheduler.
+ * Test key provider.
  */
-public final class NormalParallelRunnerScheduler extends AbstractParallelRunnerScheduler {
+public interface TestKeyProvider {
     
-    public NormalParallelRunnerScheduler(final ParallelRunnerExecutors runnerExecutors) {
-        super(runnerExecutors);
-    }
+    /**
+     * Get runner key.
+     *
+     * @param childStatement child statement
+     * @return runner key
+     */
+    String getRunnerKey(Runnable childStatement);
+    
+    /**
+     * Get executor key.
+     * 
+     * @param childStatement child statement
+     * @return executor key
+     */
+    String getExecutorKey(Runnable childStatement);
+    
+    /**
+     * Get parallel level.
+     * 
+     * @return parallel level
+     */
+    ParallelLevel getParallelLevel();
 }

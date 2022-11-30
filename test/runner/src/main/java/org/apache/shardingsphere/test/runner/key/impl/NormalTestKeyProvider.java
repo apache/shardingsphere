@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.scheduler;
+package org.apache.shardingsphere.test.runner.key.impl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
-import org.junit.runners.model.RunnerScheduler;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
 
 /**
- * Abstract Parallel runner scheduler.
+ * Normal test key provider.
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class AbstractParallelRunnerScheduler implements RunnerScheduler {
-    
-    private final ParallelRunnerExecutors runnerExecutors;
+public final class NormalTestKeyProvider implements TestKeyProvider {
     
     @Override
-    public final void schedule(final Runnable childStatement) {
-        runnerExecutors.getExecutor(getExecutorKey(childStatement)).execute("", childStatement);
-    }
-    
-    @Override
-    public final void finished() {
-        runnerExecutors.finishAll();
-    }
-    
-    protected String getExecutorKey(final Runnable childStatement) {
+    public String getRunnerKey(final Runnable childStatement) {
         return "";
+    }
+    
+    @Override
+    public String getExecutorKey(final Runnable childStatement) {
+        return "";
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.NORMAL;
     }
 }

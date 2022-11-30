@@ -15,27 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.test.runner.scheduler;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
-import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
+import org.apache.shardingsphere.test.runner.key.TestKeyProviderFactory;
+import org.junit.runners.model.RunnerScheduler;
 
 /**
- * Parallel parameterized.
+ * Parallel runner scheduler.
  */
-public final class ParallelParameterized extends Parameterized {
+@RequiredArgsConstructor
+@Getter
+public final class ParallelRunnerScheduler implements RunnerScheduler {
     
-    // CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new ParallelRunnerExecutors()));
+    private final ParallelLevel parallelLevel;
+    
+    private final ParallelRunnerExecutors runnerExecutors;
+    
+    @Override
+    public void schedule(final Runnable childStatement) {
+        TestKeyProvider provider = TestKeyProviderFactory.newInstance(parallelLevel);
+        runnerExecutors.getExecutor(provider.getRunnerKey(childStatement)).execute(provider.getExecutorKey(childStatement), childStatement);
     }
     
-    private ParallelLevel getParallelLevel(final Class<?> clazz) {
-        ParallelRunningStrategy runningStrategy = clazz.getAnnotation(ParallelRunningStrategy.class);
-        return null == runningStrategy ? ParallelLevel.NORMAL : runningStrategy.value();
+    @Override
+    public void finished() {
+        runnerExecutors.finishAll();
     }
 }

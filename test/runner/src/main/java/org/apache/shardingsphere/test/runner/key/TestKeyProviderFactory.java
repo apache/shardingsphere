@@ -15,27 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.test.runner.key;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
-import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
- * Parallel parameterized.
+ * Test key provider factory.
  */
-public final class ParallelParameterized extends Parameterized {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TestKeyProviderFactory {
     
-    // CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new ParallelRunnerExecutors()));
+    private static final Map<ParallelLevel, TestKeyProvider> PROVIDERS = new HashMap<>();
+    
+    static {
+        for (TestKeyProvider each : ServiceLoader.load(TestKeyProvider.class)) {
+            PROVIDERS.put(each.getParallelLevel(), each);
+        }
     }
     
-    private ParallelLevel getParallelLevel(final Class<?> clazz) {
-        ParallelRunningStrategy runningStrategy = clazz.getAnnotation(ParallelRunningStrategy.class);
-        return null == runningStrategy ? ParallelLevel.NORMAL : runningStrategy.value();
+    /**
+     * Create new instance of executor key provider.
+     * 
+     * @param parallelLevel parallel level
+     * @return created instance
+     */
+    public static TestKeyProvider newInstance(final ParallelLevel parallelLevel) {
+        return PROVIDERS.get(parallelLevel);
     }
 }
