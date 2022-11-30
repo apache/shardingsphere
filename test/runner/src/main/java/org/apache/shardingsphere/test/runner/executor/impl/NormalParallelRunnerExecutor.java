@@ -40,16 +40,9 @@ public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
     @Getter
     private final Map<Object, ExecutorService> executorServices = new ConcurrentHashMap<>();
     
-    private volatile ExecutorService defaultExecutorService;
-    
     @Override
     public void execute(final String key, final Runnable childStatement) {
         futures.add(getExecutorService(key).submit(childStatement));
-    }
-    
-    @Override
-    public void execute(final Runnable childStatement) {
-        futures.add(getExecutorService().submit(childStatement));
     }
     
     protected ExecutorService getExecutorService(final String key) {
@@ -65,18 +58,6 @@ public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
         return executorServices.get(key);
     }
     
-    private ExecutorService getExecutorService() {
-        if (null == defaultExecutorService) {
-            synchronized (NormalParallelRunnerExecutor.class) {
-                if (null == defaultExecutorService) {
-                    defaultExecutorService = Executors.newFixedThreadPool(
-                            Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-ParallelTestThread-%d").build());
-                }
-            }
-        }
-        return defaultExecutorService;
-    }
-    
     @Override
     public void finished() {
         futures.forEach(each -> {
@@ -86,9 +67,6 @@ public class NormalParallelRunnerExecutor implements ParallelRunnerExecutor {
             }
         });
         executorServices.values().forEach(ExecutorService::shutdownNow);
-        if (null != defaultExecutorService) {
-            defaultExecutorService.shutdownNow();
-        }
     }
     
     @Override

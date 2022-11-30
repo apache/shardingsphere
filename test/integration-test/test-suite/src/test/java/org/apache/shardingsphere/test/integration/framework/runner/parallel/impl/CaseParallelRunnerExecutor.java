@@ -26,11 +26,6 @@ import org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerE
 public final class CaseParallelRunnerExecutor extends NormalParallelRunnerExecutor {
     
     @Override
-    public void execute(final String key, final Runnable childStatement) {
-        execute(childStatement);
-    }
-    
-    @Override
     public ParallelLevel getParallelLevel() {
         return ParallelLevel.CASE;
     }
