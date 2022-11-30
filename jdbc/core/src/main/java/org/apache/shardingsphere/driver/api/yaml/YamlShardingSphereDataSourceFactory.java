@@ -130,9 +130,6 @@ public final class YamlShardingSphereDataSourceFactory {
     private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlRootConfiguration rootConfig) throws SQLException {
         ModeConfiguration modeConfig = null == rootConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
         Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(rootConfig.getRules());
-        if (dataSourceMap.isEmpty() && ruleConfigs.isEmpty()) {
-            return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig);
-        }
         return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, rootConfig.getProps());
     }
     
