@@ -106,7 +106,7 @@ public final class AdviceInstanceLoader {
             return;
         }
         try {
-            PluginBootServiceManager.startAllServices(AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getPlugins(), classLoader);
+            PluginBootServiceManager.startAllServices(AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getPlugins(), classLoader, false);
             Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
         } finally {
             isStarted = true;
