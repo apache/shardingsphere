@@ -90,12 +90,16 @@ public final class DataSourceReflection {
             String fieldName = getGetterFieldName(each, prefix);
             if (GENERAL_CLASS_TYPES.contains(each.getReturnType()) && !SKIPPED_PROPERTY_KEYS.contains(fieldName)) {
                 Object fieldValue = each.invoke(dataSource);
-                if (null != fieldValue) {
+                if (null != fieldValue && isEmptyProperties(fieldValue)) {
                     result.put(fieldName, fieldValue);
                 }
             }
         }
         return result;
+    }
+    
+    private boolean isEmptyProperties(final Object fieldValue) {
+        return !(fieldValue instanceof Properties) || !((Properties) fieldValue).isEmpty();
     }
     
     private Collection<Method> findAllGetterMethods(final String methodPrefix) {
