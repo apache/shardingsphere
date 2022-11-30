@@ -39,6 +39,14 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
     private final int sequence;
     
+    public ConsistencyCheckJobId(final String parentJobId) {
+        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE);
+    }
+    
+    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId) {
+        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)));
+    }
+    
     public ConsistencyCheckJobId(final String parentJobId, final int sequence) {
         super(JobType.CONSISTENCY_CHECK, CURRENT_VERSION);
         this.parentJobId = parentJobId;

@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Consistency check job API impl.
@@ -88,8 +89,7 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
                 throw new UncompletedConsistencyCheckJobExistsException(checkLatestJobId.get());
             }
         }
-        int sequence = checkLatestJobId.map(optional -> ConsistencyCheckJobId.parseSequence(optional) + 1).orElse(ConsistencyCheckJobId.MIN_SEQUENCE);
-        String result = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
+        String result = marshalJobId(checkLatestJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(parentJobId)));
         repositoryAPI.persistCheckLatestJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
         dropJob(result);
@@ -166,20 +166,20 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void dropByParentJobId(final String parentJobId) {
-        String checkLatestJobId = getCheckLatestJobId(parentJobId);
-        stop(checkLatestJobId);
+        String latestCheckJobId = getCheckLatestJobId(parentJobId);
+        stop(latestCheckJobId);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         Collection<String> checkJobIds = repositoryAPI.listCheckJobIds(parentJobId);
-        checkJobIds.remove(checkLatestJobId);
-        if (checkJobIds.isEmpty()) {
-            repositoryAPI.deleteCheckLatestJobId(parentJobId);
-        } else {
-            int sequence = checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).max(Integer::compareTo).get();
-            String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, sequence));
+        Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
+                checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
+        if (previousSequence.isPresent()) {
+            String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, previousSequence.get()));
             repositoryAPI.persistCheckLatestJobId(parentJobId, checkJobId);
+        } else {
+            repositoryAPI.deleteCheckLatestJobId(parentJobId);
         }
-        repositoryAPI.deleteCheckJobResult(parentJobId, checkLatestJobId);
-        dropJob(checkLatestJobId);
+        repositoryAPI.deleteCheckJobResult(parentJobId, latestCheckJobId);
+        dropJob(latestCheckJobId);
     }
     
     @Override
