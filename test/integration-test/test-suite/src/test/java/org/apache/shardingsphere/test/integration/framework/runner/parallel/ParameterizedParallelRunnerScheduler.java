@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.runner.parallel.impl.ScenarioParallelRunnerExecutor.ScenarioKey;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
 import org.apache.shardingsphere.test.runner.param.RunnerParameters;
@@ -35,6 +36,6 @@ public final class ParameterizedParallelRunnerScheduler extends ParallelRunnerSc
     @Override
     public void schedule(final Runnable childStatement) {
         ITParameterizedArray parameterizedArray = (ITParameterizedArray) new RunnerParameters(childStatement).getParameterizedArray();
-        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType().getType(), getParallelLevel()).execute(parameterizedArray, childStatement);
+        getExecutorEngine().getExecutor(parameterizedArray.getDatabaseType().getType(), getParallelLevel()).execute(new ScenarioKey(parameterizedArray).toString(), childStatement);
     }
 }

@@ -29,9 +29,8 @@ public interface ParallelRunnerExecutor {
      *
      * @param key executor key
      * @param childStatement child statement
-     * @param <T> type of key
      */
-    <T> void execute(T key, Runnable childStatement);
+    void execute(String key, Runnable childStatement);
     
     /**
      * Execute child statement.

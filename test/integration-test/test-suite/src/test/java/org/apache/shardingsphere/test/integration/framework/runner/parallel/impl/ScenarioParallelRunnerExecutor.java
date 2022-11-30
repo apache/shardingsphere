@@ -31,19 +31,17 @@ import java.util.concurrent.Executors;
 public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerExecutor {
     
     @Override
-    protected ExecutorService getExecutorService(final Object key) {
-        ScenarioKey scenarioKey = new ScenarioKey((ITParameterizedArray) key);
-        if (getExecutorServices().containsKey(scenarioKey)) {
-            return getExecutorServices().get(scenarioKey);
+    protected ExecutorService getExecutorService(final String key) {
+        if (getExecutorServices().containsKey(key)) {
+            return getExecutorServices().get(key);
         }
-        String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", scenarioKey.toString(), "%d");
+        String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", key, "%d");
         ExecutorService executorService = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(),
-                new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
-        if (null != getExecutorServices().putIfAbsent(scenarioKey, executorService)) {
+                Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
+        if (null != getExecutorServices().putIfAbsent(key, executorService)) {
             executorService.shutdownNow();
         }
-        return getExecutorServices().get(scenarioKey);
+        return getExecutorServices().get(key);
     }
     
     @Override
@@ -55,23 +53,23 @@ public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerEx
      * Scenario key.
      */
     @EqualsAndHashCode
-    private static final class ScenarioKey {
+    public static final class ScenarioKey {
         
         private final String adapter;
         
         private final String scenario;
         
-        private final String databaseTypeName;
+        private final String databaseType;
         
-        private ScenarioKey(final ITParameterizedArray parameterizedArray) {
+        public ScenarioKey(final ITParameterizedArray parameterizedArray) {
             adapter = parameterizedArray.getAdapter();
             scenario = parameterizedArray.getScenario();
-            databaseTypeName = parameterizedArray.getDatabaseType().getType();
+            databaseType = parameterizedArray.getDatabaseType().getType();
         }
         
         @Override
         public String toString() {
-            return String.join("-", adapter, scenario, databaseTypeName);
+            return String.join("-", adapter, scenario, databaseType);
         }
     }
 }
