@@ -25,7 +25,7 @@ import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 public class OpenTelemetryTracingPluginBootService implements PluginBootService {
     
     @Override
-    public void start(final PluginConfiguration pluginConfig) {
+    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         pluginConfig.getProps().forEach((key, value) -> setSystemProperty(String.valueOf(key), String.valueOf(value)));
         OpenTelemetrySdk sdk = OpenTelemetrySdkAutoConfiguration.initialize();
         // tracer will be created
