@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.sharding.spring.boot.jpa.fixture;
+package org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sharding.api.sharding.standard.*;
+import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
 import java.util.Properties;
 
 @Getter
-public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
-
+public final class SPIBasedDatabaseStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+    
     private Properties props;
-
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
     }
-
+    
     @Override
     public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
         for (String each : dataSourceNames) {
@@ -42,18 +44,18 @@ public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements
         }
         return null;
     }
-
+    
     private String shardingSuffix(final Integer shardingValue) {
-        return "-" + (shardingValue % 2);
+        return "_" + (shardingValue % 2);
     }
-
+    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         return availableTargetNames;
     }
-
+    
     @Override
     public String getType() {
-        return "DATASOURCE_SPI_BASED";
+        return "DATABASE_SPI_BASED";
     }
 }

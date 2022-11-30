@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture;
+package org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.mybatis.fixture;
 
+import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -25,37 +27,35 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Properties;
 
-@Getter
-public final class SPIBasedDataSourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class ClassBasedDatabaseStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
+    private static final String SHARDING_COUNT = "sharding-count";
+    
+    @Getter
     private Properties props;
+    
+    private Integer shardingCount;
     
     @Override
     public void init(final Properties props) {
         this.props = props;
+        Preconditions.checkArgument(props.containsKey(SHARDING_COUNT), "%s can not be null.", SHARDING_COUNT);
+        shardingCount = Ints.tryParse(props.getProperty(SHARDING_COUNT));
+        Preconditions.checkArgument(null != shardingCount, "%s is not valid.", SHARDING_COUNT);
     }
     
     @Override
-    public String doSharding(final Collection<String> dataSourceNames, final PreciseShardingValue<Integer> shardingValue) {
-        for (String each : dataSourceNames) {
-            if (each.endsWith(shardingSuffix(shardingValue.getValue()))) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+        for (String each : availableTargetNames) {
+            if (each.endsWith(String.valueOf(shardingValue.getValue() % shardingCount))) {
                 return each;
             }
         }
         return null;
     }
     
-    private String shardingSuffix(final Integer shardingValue) {
-        return "_" + (shardingValue % 2);
-    }
-    
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
         return availableTargetNames;
-    }
-    
-    @Override
-    public String getType() {
-        return "DATASOURCE_SPI_BASED";
     }
 }

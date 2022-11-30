@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.jpa.fixture;
+package org.apache.shardingsphere.example.extension.classbased.sharding.spring.namespace.mybatis.fixture;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Properties;
 
-public final class ClassBasedDataSourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class ClassBasedDatabaseStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     private static final String SHARDING_COUNT = "sharding-count";
     

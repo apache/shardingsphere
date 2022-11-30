@@ -24,22 +24,22 @@ import lombok.ToString;
 import java.util.Collection;
 
 /**
- * Case when segment.
+ * Case when expression.
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class CaseWhenSegment implements ExpressionSegment {
+public final class CaseWhenExpression implements ExpressionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ExpressionSegment caseArg;
+    private final ExpressionSegment caseExpr;
     
-    private final Collection<ExpressionSegment> whenList;
+    private final Collection<ExpressionSegment> whenExprs;
     
-    private final Collection<ExpressionSegment> thenList;
+    private final Collection<ExpressionSegment> thenExprs;
     
-    private final ExpressionSegment elseExpression;
+    private final ExpressionSegment elseExpr;
 }
