@@ -129,50 +129,87 @@
             <column-projection start-index="11" stop-index="30" name="item_id" alias="item_id">
                 <owner start-index="11" stop-index="11" name="o" />
             </column-projection>
-            <expression-projection text="case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end" start-index="33" stop-index="124" alias="stateName" />
+            <expression-projection text="case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end" start-index="32" stop-index="124" alias="stateName">
+                <expr>
+                    <case-when-expression>
+                        <when-exprs>
+                            <binary-operation-expression start-index="43" stop-index="59">
+                                <left>
+                                    <column name="status" start-index="43" stop-index="50">
+                                        <owner name="t" start-index="43" stop-index="43" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="init" start-index="54" stop-index="59" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <when-exprs>
+                            <binary-operation-expression start-index="77" stop-index="95">
+                                <left>
+                                    <column name="status" start-index="77" stop-index="84">
+                                        <owner name="t" start-index="77" stop-index="77" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="failed" start-index="88" stop-index="95" />
+                                </right>
+                            </binary-operation-expression>
+                        </when-exprs>
+                        <then-exprs>
+                            <literal-expression value="已启用" start-index="66" stop-index="70" />
+                        </then-exprs>
+                        <then-exprs>
+                            <literal-expression value="已停用" start-index="102" stop-index="106" />
+                        </then-exprs>
+                    </case-when-expression>
+                </expr>
+            </expression-projection>
         </projections>
         <from>
             <join-table join-type="LEFT">
                 <left>
-                    <simple-table start-index="135" stop-index="143" name="t_order" alias="t" />
+                    <simple-table start-index="131" stop-index="139" name="t_order" alias="t" />
                 </left>
                 <right>
-                    <simple-table start-index="155" stop-index="171" name="t_order_item" alias="o" />
+                    <simple-table start-index="151" stop-index="167" name="t_order_item" alias="o" />
                 </right>
                 <on-condition>
-                    <binary-operation-expression start-index="176" stop-index="197">
+                    <binary-operation-expression start-index="172" stop-index="193">
                         <left>
-                            <column name="order_id" start-index="176" stop-index="185">
-                                <owner name="o" start-index="176" stop-index="176" />
+                            <column name="order_id" start-index="172" stop-index="181">
+                                <owner name="o" start-index="172" stop-index="172" />
                             </column>
                         </left>
                         <operator>=</operator>
                         <right>
-                            <column name="order_id" start-index="188" stop-index="197">
-                                <owner name="t" start-index="188" stop-index="188" />
+                            <column name="order_id" start-index="184" stop-index="193">
+                                <owner name="t" start-index="184" stop-index="184" />
                             </column>
                         </right>
                     </binary-operation-expression>
                 </on-condition>
             </join-table>
         </from>
-        <where start-index="199" stop-index="219">
+        <where start-index="195" stop-index="215">
             <expr>
-                <binary-operation-expression start-index="205" stop-index="219">
+                <binary-operation-expression start-index="201" stop-index="215">
                     <left>
-                        <column name="order_id" start-index="205" stop-index="214">
-                            <owner name="t" start-index="205" stop-index="205" />
+                        <column name="order_id" start-index="201" stop-index="210">
+                            <owner name="t" start-index="201" stop-index="201" />
                         </column>
                     </left>
                     <operator>=</operator>
                     <right>
-                        <literal-expression value="1000" start-index="216" stop-index="219" />
+                        <literal-expression value="1000" start-index="212" stop-index="215" />
                     </right>
                 </binary-operation-expression>
             </expr>
         </where>
-        <limit start-index="221" stop-index="227">
-            <row-count value="1" start-index="227" stop-index="227" />
+        <limit start-index="217" stop-index="223">
+            <row-count value="1" start-index="223" stop-index="223" />
         </limit>
     </select>
 
@@ -1703,15 +1740,36 @@
     </select>
 
     <select sql-case-id="select_where_with_simple_expr_with_case" parameters="1,'true','false'">
-        <from start-index="14" stop-index="20">
-            <simple-table name="t_order" start-index="14" stop-index="20" />
-        </from>
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
         </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
         <where start-index="22" stop-index="67" literal-stop-index="78">
             <expr>
-                <common-expression text="CASE WHEN order_id &gt; ? THEN ? ELSE ? END" literal-text="CASE WHEN order_id > 1 THEN 'true' ELSE 'false' END" start-index="28" stop-index="67" literal-stop-index="78" />
+                <case-when-expression>
+                    <when-exprs>
+                        <binary-operation-expression start-index="38" stop-index="49">
+                            <left>
+                                <column name="order_id" start-index="38" stop-index="45" />
+                            </left>
+                            <operator>&gt;</operator>
+                            <right>
+                                <literal-expression value="1" start-index="49" stop-index="49" />
+                                <parameter-marker-expression parameter-index="0" start-index="49" stop-index="49" />
+                            </right>
+                        </binary-operation-expression>
+                    </when-exprs>
+                    <then-exprs>
+                        <literal-expression value="true" start-index="56" stop-index="61" />
+                        <parameter-marker-expression parameter-index="1" start-index="56" stop-index="56" />
+                    </then-exprs>
+                    <else-expr>
+                        <literal-expression value="false" start-index="68" stop-index="74" />
+                        <parameter-marker-expression parameter-index="2" start-index="63" stop-index="63" />
+                    </else-expr>
+                </case-when-expression>
             </expr>
         </where>
     </select>
@@ -1862,37 +1920,6 @@
 
     <select sql-case-id="select_projections_with_expr">
         <projections start-index="7" stop-index="58">
-            <expression-projection start-index="7" stop-index="11" text="10+20">
-                <expr>
-                    <binary-operation-expression start-index="7" stop-index="11">
-                        <left>
-                            <literal-expression value="10" start-index="7" stop-index="8" />
-                        </left>
-                        <right>
-                            <literal-expression value="20" start-index="10" stop-index="11" />
-                        </right>
-                        <operator>+</operator>
-                    </binary-operation-expression>
-                </expr>
-            </expression-projection>
-            <expression-projection start-index="13" stop-index="56" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
-                <expr>
-                    <common-expression literal-text="CASE order_id WHEN 1 THEN '11' ELSE '00' END" start-index="13" stop-index="56" />
-                </expr>
-            </expression-projection>
-            <expression-projection start-index="58" stop-index="58" text="1">
-                <expr>
-                    <literal-expression value="1" start-index="58" stop-index="58" />
-                </expr>
-            </expression-projection>
-        </projections>
-        <from>
-            <simple-table name="t_order" start-index="65" stop-index="71" />
-        </from>
-    </select>
-
-    <select sql-case-id="select_projections_with_expr_for_postgres">
-        <projections start-index="7" stop-index="58">
             <expression-projection start-index="7" stop-index="11" text="10+20" />
             <expression-projection start-index="13" stop-index="56" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
                 <expr>
@@ -1923,7 +1950,7 @@
         </from>
     </select>
 
-    <select sql-case-id="select_projections_with_only_expr_for_postgres">
+    <select sql-case-id="select_projections_with_only_expr">
         <projections start-index="7" stop-index="50">
             <expression-projection start-index="7" stop-index="50" text="CASE order_id WHEN 1 THEN '11' ELSE '00' END">
                 <expr>
