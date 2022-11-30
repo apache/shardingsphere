@@ -66,18 +66,18 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public Optional<String> getCheckLatestJobId(final String jobId) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId)));
+    public Optional<String> getLatestCheckJobId(final String parentJobId) {
+        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
     }
     
     @Override
-    public void persistCheckLatestJobId(final String jobId, final String checkJobId) {
-        repository.persist(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId), String.valueOf(checkJobId));
+    public void persistLatestCheckJobId(final String parentJobId, final String checkJobId) {
+        repository.persist(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId), String.valueOf(checkJobId));
     }
     
     @Override
-    public void deleteCheckLatestJobId(final String jobId) {
-        repository.delete(PipelineMetaDataNode.getCheckLatestJobIdPath(jobId));
+    public void deleteLatestCheckJobId(final String parentJobId) {
+        repository.delete(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId));
     }
     
     @SuppressWarnings("unchecked")
@@ -97,7 +97,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistCheckJobResult(final String jobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
+    public void persistCheckJobResult(final String parentJobId, final String checkJobId, final Map<String, DataConsistencyCheckResult> checkResultMap) {
         if (null == checkResultMap) {
             return;
         }
@@ -106,17 +106,17 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
             YamlDataConsistencyCheckResult yamlCheckResult = new YamlDataConsistencyCheckResultSwapper().swapToYamlConfiguration(entry.getValue());
             yamlCheckResultMap.put(entry.getKey(), YamlEngine.marshal(yamlCheckResult));
         }
-        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId), YamlEngine.marshal(yamlCheckResultMap));
+        repository.persist(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId), YamlEngine.marshal(yamlCheckResultMap));
     }
     
     @Override
-    public void deleteCheckJobResult(final String jobId, final String checkJobId) {
-        repository.delete(PipelineMetaDataNode.getCheckJobResultPath(jobId, checkJobId));
+    public void deleteCheckJobResult(final String parentJobId, final String checkJobId) {
+        repository.delete(PipelineMetaDataNode.getCheckJobResultPath(parentJobId, checkJobId));
     }
     
     @Override
-    public Collection<String> listCheckJobIds(final String jobId) {
-        return repository.getChildrenKeys(PipelineMetaDataNode.getCheckJobIdsRootPath(jobId));
+    public Collection<String> listCheckJobIds(final String parentJobId) {
+        return repository.getChildrenKeys(PipelineMetaDataNode.getCheckJobIdsRootPath(parentJobId));
     }
     
     @Override
