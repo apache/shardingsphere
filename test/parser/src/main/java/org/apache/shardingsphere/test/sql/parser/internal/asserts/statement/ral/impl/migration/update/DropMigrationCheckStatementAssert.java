@@ -31,11 +31,11 @@ import static org.junit.Assert.assertNull;
 public final class DropMigrationCheckStatementAssert {
     
     /**
-     * Assert stop migration check statement is correct with expected parser result.
+     * Assert drop migration check statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual start migration statement
-     * @param expected expected start migration statement test case
+     * @param actual actual drop migration statement
+     * @param expected expected drop migration statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropMigrationCheckStatement actual, final DropMigrationCheckStatementTestCase expected) {
         if (null == expected) {
