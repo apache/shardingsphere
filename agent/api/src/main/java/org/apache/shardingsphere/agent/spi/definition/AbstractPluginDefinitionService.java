@@ -33,7 +33,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     /**
      * Install to collection of plugin interceptor point.
-     * 
+     *
      * @param isEnhancedForProxy is enhanced for proxy
      * @return collection of plugin interceptor point
      */
