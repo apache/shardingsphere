@@ -41,6 +41,19 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="write_ds.t_product_category,read_${0..1}.t_product_category">
+        <column name="category_id" type="numeric" />
+        <column name="category_name" type="varchar" />
+        <column name="parent_id" type="numeric" />
+        <column name="level" type="numeric" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
+    <metadata data-nodes="write_ds.t_country,read_${0..1}.t_country">
+        <column name="country_id" type="numeric" />
+        <column name="country_name" type="varchar" />
+        <column name="continent_name" type="varchar" />
+        <column name="creation_date" type="datetime" />
+    </metadata>
     <row data-node="write_ds.t_order" values="1000, 10, init, 1, test, 2017-08-08" />
     <row data-node="write_ds.t_order" values="1001, 10, init, 2, test, 2017-08-08" />
     <row data-node="write_ds.t_order" values="1100, 11, init, 3, test, 2017-08-08" />
@@ -166,6 +179,22 @@
     <row data-node="write_ds.t_single_table" values="3, 1200, init" />
     <row data-node="write_ds.t_single_table" values="4, 1300, init" />
     <row data-node="write_ds.t_broadcast_table" values="1, init" />
+    <row data-node="write_ds.t_product_category" values="1, virtual goods, 0, 1, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="2, prepaid cards, 1, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="3, home appliance, 0, 1, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="4, washing machine, 3, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="5, digital products, 0, 1, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="6, mobile phones, 5, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="7, food and drinks, 0, 1, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="8, drinks, 7, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="9, game console, 5, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="10, computer related, 5, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="11, daily commodities, 0, 1, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="12, shampoo, 11, 2, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="13, transportation, 0, 1, 2017-08-08" />
+    <row data-node="write_ds.t_product_category" values="14, car, 13, 2, 2017-08-08" />
+    <row data-node="write_ds.t_country" values="1, usa, north america, 2017-08-08" />
+    <row data-node="write_ds.t_country" values="86, china, asia, 2017-08-08" />
     <row data-node="read_0.t_order" values="1000, 10, init_read, 1, test, 2017-08-08" />
     <row data-node="read_0.t_order" values="1001, 10, init_read, 2, test, 2017-08-08" />
     <row data-node="read_0.t_order" values="1100, 11, init_read, 3, test, 2017-08-08" />
@@ -291,6 +320,22 @@
     <row data-node="read_0.t_single_table" values="3, 1200, init_read" />
     <row data-node="read_0.t_single_table" values="4, 1300, init_read" />
     <row data-node="read_0.t_broadcast_table" values="1, init_read" />
+    <row data-node="read_0.t_product_category" values="1, virtual goods, 0, 1, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="2, prepaid cards, 1, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="3, home appliance, 0, 1, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="4, washing machine, 3, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="5, digital products, 0, 1, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="6, mobile phones, 5, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="7, food and drinks, 0, 1, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="8, drinks, 7, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="9, game console, 5, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="10, computer related, 5, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="11, daily commodities, 0, 1, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="12, shampoo, 11, 2, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="13, transportation, 0, 1, 2017-08-08" />
+    <row data-node="read_0.t_product_category" values="14, car, 13, 2, 2017-08-08" />
+    <row data-node="read_0.t_country" values="1, usa, north america, 2017-08-08" />
+    <row data-node="read_0.t_country" values="86, china, asia, 2017-08-08" />
     <row data-node="read_1.t_order" values="1000, 10, init_read, 1, test, 2017-08-08" />
     <row data-node="read_1.t_order" values="1001, 10, init_read, 2, test, 2017-08-08" />
     <row data-node="read_1.t_order" values="1100, 11, init_read, 3, test, 2017-08-08" />
@@ -416,4 +461,20 @@
     <row data-node="read_1.t_single_table" values="3, 1200, init_read" />
     <row data-node="read_1.t_single_table" values="4, 1300, init_read" />
     <row data-node="read_1.t_broadcast_table" values="1, init_read" />
+    <row data-node="read_1.t_product_category" values="1, virtual goods, 0, 1, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="2, prepaid cards, 1, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="3, home appliance, 0, 1, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="4, washing machine, 3, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="5, digital products, 0, 1, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="6, mobile phones, 5, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="7, food and drinks, 0, 1, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="8, drinks, 7, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="9, game console, 5, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="10, computer related, 5, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="11, daily commodities, 0, 1, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="12, shampoo, 11, 2, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="13, transportation, 0, 1, 2017-08-08" />
+    <row data-node="read_1.t_product_category" values="14, car, 13, 2, 2017-08-08" />
+    <row data-node="read_1.t_country" values="1, usa, north america, 2017-08-08" />
+    <row data-node="read_1.t_country" values="86, china, asia, 2017-08-08" />
 </dataset>
