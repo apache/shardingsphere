@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
@@ -75,9 +74,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
-    private final Map<String, Object> tableCheckPositions;
-    
-    private final PipelineJobProgressListener jobProgressListener;
+    private final ConsistencyCheckJobItemProgressContext progressContext;
     
     /**
      * Data consistency check.
@@ -104,6 +101,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, sourceTableName);
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(schemaName, sourceTableName));
         Collection<String> columnNames = tableMetaData.getColumnNames();
+        Map<String, Object> tableCheckPositions = progressContext.getTableCheckPositions();
         DataConsistencyCalculateParameter sourceParam = buildParameter(
                 sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPositions.get(sourceTableName));
         String targetTableName = targetTable.getTableName().getOriginal();
@@ -135,7 +133,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
             if (targetCalculatedResult.getMaxUniqueKeyValue().isPresent()) {
                 tableCheckPositions.put(targetTableName, targetCalculatedResult.getMaxUniqueKeyValue().get());
             }
-            jobProgressListener.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
+            progressContext.onProgressUpdated(new PipelineJobProgressUpdatedParameter(sourceCalculatedResult.getRecordsCount()));
         }
         return new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(sourceRecordsCount, targetRecordsCount), new DataConsistencyContentCheckResult(contentMatched));
     }
