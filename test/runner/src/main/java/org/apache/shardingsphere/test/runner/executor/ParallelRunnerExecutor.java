@@ -33,13 +33,6 @@ public interface ParallelRunnerExecutor {
     void execute(String key, Runnable childStatement);
     
     /**
-     * Execute child statement.
-     *
-     * @param childStatement child statement
-     */
-    void execute(Runnable childStatement);
-    
-    /**
      * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
      */
     void finished();
