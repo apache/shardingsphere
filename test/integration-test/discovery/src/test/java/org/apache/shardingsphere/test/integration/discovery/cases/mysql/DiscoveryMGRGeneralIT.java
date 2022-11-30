@@ -30,17 +30,16 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * MySQL MGR primary data source changed Integration Test.
+ * Discovery MySQL MGR Integration Test.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
+public final class DiscoveryMGRGeneralIT extends BaseITCase {
     
-    public MySQLMGRPrimaryDataSourceChangedIT(final DiscoveryParameterized discoveryParameterized) {
+    public DiscoveryMGRGeneralIT(final DiscoveryParameterized discoveryParameterized) {
         super(discoveryParameterized);
     }
     
@@ -49,17 +48,17 @@ public final class MySQLMGRPrimaryDataSourceChangedIT extends BaseITCase {
         Collection<DiscoveryParameterized> result = new LinkedList<>();
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         for (String each : ENV.listStorageContainerImages(databaseType)) {
-            result.add(new DiscoveryParameterized(databaseType, each, "discovery"));
+            result.add(new DiscoveryParameterized(databaseType, each, "mgr_discovery"));
         }
         return result;
     }
     
     @Test
-    public void assertMySQLMGRPrimaryDataSourceChanged() throws SQLException {
+    public void assertDiscoveryMySQLMGR() throws SQLException {
         DatabaseClusterEnvironment mgrEnvironment = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", getMappedDataSources());
         initDiscoveryEnvironment();
-        String oldPrimaryDataSourceName = getPrimaryDataSourceName();
-        closeDataSources(Collections.singletonList(mgrEnvironment.getPrimaryDataSource()));
-        assertPrimaryDataSourceChanged(oldPrimaryDataSourceName, getPrimaryDataSourceName());
+        assertClosePrimaryDataSource(mgrEnvironment);
+        assertCloseReplicationDataSource(mgrEnvironment);
+        assertCloseAllReplicationDataSource(mgrEnvironment);
     }
 }

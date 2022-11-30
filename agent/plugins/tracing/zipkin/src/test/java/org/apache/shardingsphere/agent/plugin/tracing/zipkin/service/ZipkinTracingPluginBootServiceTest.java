@@ -33,7 +33,7 @@ public final class ZipkinTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() throws ReflectiveOperationException {
-        zipkinTracingPluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()));
+        zipkinTracingPluginBootService.start(new PluginConfiguration("localhost", 9441, "", new Properties()), true);
         Field field = ZipkinTracingPluginBootService.class.getDeclaredField("tracing");
         field.setAccessible(true);
         Tracing tracing = (Tracing) field.get(zipkinTracingPluginBootService);

@@ -57,7 +57,7 @@ public final class PrometheusPluginBootServiceTest extends ProxyContextRestorer 
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null), mock(LockContext.class),
                 new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
-        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
+        PROMETHEUS_PLUGIN_BOOT_SERVICE.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
         new Socket().connect(new InetSocketAddress("localhost", 8090));
     }
     

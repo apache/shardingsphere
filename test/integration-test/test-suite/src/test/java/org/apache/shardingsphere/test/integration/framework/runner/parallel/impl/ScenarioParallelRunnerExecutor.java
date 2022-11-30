@@ -20,52 +20,56 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel.imp
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
-import org.apache.shardingsphere.test.runner.executor.impl.DefaultParallelRunnerExecutor;
+import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.runner.executor.impl.NormalParallelRunnerExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * Parallel runner executor with scenario.
  */
-public final class ScenarioParallelRunnerExecutor extends DefaultParallelRunnerExecutor<ITParameterizedArray> {
+public final class ScenarioParallelRunnerExecutor extends NormalParallelRunnerExecutor {
     
     @Override
-    protected ExecutorService getExecutorService(final ITParameterizedArray key) {
-        ScenarioKey scenarioKey = new ScenarioKey(key);
-        if (getExecutorServiceMap().containsKey(scenarioKey)) {
-            return getExecutorServiceMap().get(scenarioKey);
+    protected ExecutorService getExecutorService(final String key) {
+        if (getExecutorServices().containsKey(key)) {
+            return getExecutorServices().get(key);
         }
-        String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", scenarioKey.toString(), "%d");
+        String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", key, "%d");
         ExecutorService executorService = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors(),
-                new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
-        if (null != getExecutorServiceMap().putIfAbsent(scenarioKey, executorService)) {
+                Runtime.getRuntime().availableProcessors(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat(threadPoolNameFormat).build());
+        if (null != getExecutorServices().putIfAbsent(key, executorService)) {
             executorService.shutdownNow();
         }
-        return getExecutorServiceMap().get(scenarioKey);
+        return getExecutorServices().get(key);
+    }
+    
+    @Override
+    public ParallelLevel getParallelLevel() {
+        return ParallelLevel.SCENARIO;
     }
     
     /**
      * Scenario key.
      */
     @EqualsAndHashCode
-    private static final class ScenarioKey {
+    public static final class ScenarioKey {
         
         private final String adapter;
         
         private final String scenario;
         
-        private final String databaseTypeName;
+        private final String databaseType;
         
-        private ScenarioKey(final ITParameterizedArray parameterizedArray) {
+        public ScenarioKey(final ITParameterizedArray parameterizedArray) {
             adapter = parameterizedArray.getAdapter();
             scenario = parameterizedArray.getScenario();
-            databaseTypeName = parameterizedArray.getDatabaseType().getType();
+            databaseType = parameterizedArray.getDatabaseType().getType();
         }
         
         @Override
         public String toString() {
-            return String.join("-", adapter, scenario, databaseTypeName);
+            return String.join("-", adapter, scenario, databaseType);
         }
     }
 }

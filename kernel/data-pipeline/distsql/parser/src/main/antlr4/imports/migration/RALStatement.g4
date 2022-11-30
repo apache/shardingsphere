@@ -63,6 +63,10 @@ startMigrationCheck
     : START MIGRATION CHECK jobId
     ;
 
+dropMigrationCheck
+    : DROP MIGRATION CHECK jobId
+    ;
+
 showMigrationCheckAlgorithms
     : SHOW MIGRATION CHECK ALGORITHMS
     ;

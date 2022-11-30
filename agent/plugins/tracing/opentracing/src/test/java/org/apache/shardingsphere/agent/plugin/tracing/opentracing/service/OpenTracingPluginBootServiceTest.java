@@ -32,7 +32,7 @@ public final class OpenTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()));
+        openTracingPluginBootService.start(new PluginConfiguration("localhost", 8090, "", createProperties()), true);
         assertTrue(GlobalTracer.isRegistered());
     }
     

@@ -107,7 +107,7 @@ public final class AgentPluginLoader implements PluginLoader {
     
     private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginInterceptorPoint> pointMap) {
         AbstractPluginDefinitionService definitionService = (AbstractPluginDefinitionService) pluginDefinitionService;
-        definitionService.install().forEach(each -> {
+        definitionService.install(isEnhancedForProxy).forEach(each -> {
             String target = each.getClassNameOfTarget();
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);

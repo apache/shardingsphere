@@ -35,5 +35,6 @@ execute
     | showMigrationCheckStatus
     | startMigrationCheck
     | stopMigrationCheck
+    | dropMigrationCheck
     ) SEMI?
     ;

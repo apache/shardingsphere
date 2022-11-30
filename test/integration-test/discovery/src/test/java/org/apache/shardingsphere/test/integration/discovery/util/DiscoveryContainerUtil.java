@@ -36,7 +36,7 @@ public final class DiscoveryContainerUtil {
      * @return container names and quantity
      */
     public static Map<String, Integer> loadContainerRawNamesAndQuantity(final String scenario) {
-        Map<String, Integer> result = new HashMap<>(3, 1);
+        Map<String, Integer> result = new HashMap<>(4, 1);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         URL resource = classLoader.getResource("env/scenario/" + scenario);
         if (null != resource) {

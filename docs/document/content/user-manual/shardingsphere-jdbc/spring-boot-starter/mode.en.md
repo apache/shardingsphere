@@ -5,36 +5,27 @@ weight = 1
 
 ## Parameters
 
-```yaml
-mode (?): # Default value is Standalone
-  type: # Type of mode configuration. Values could be: Standalone or Cluster
-  repository (?): # Persist repository configuration
+```properties
+spring.shardingsphere.mode.type= # Type of  mode configuration. Value could be: Standalone, Cluster
+spring.shardingsphere.mode.repository= # Persist repository configuration.
 ```
 
 ### Standalone Mode
 
-```yaml
-mode:
-  type: Standalone
-  repository:
-    type: # Type of persist repository
-    props: # Properties of persist repository
-      foo_key: foo_value
-      bar_key: bar_value
+```properties
+spring.shardingsphere.mode.type=Standalone
+spring.shardingsphere.mode.repository.type= # Type of persist repository
+spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
 ```
 
 ### Cluster Mode (recommended)
 
-```yaml
-mode:
-  type: Cluster
-  repository:
-    type: # Type of persist repository
-    props: # Properties of persist repository
-      namespace: # Namespace of registry center
-      server-lists: # Server lists of registry center
-      foo_key: foo_value
-      bar_key: bar_value
+```properties
+spring.shardingsphere.mode.type=Cluster
+spring.shardingsphere.mode.repository.type= # Type of persist repository
+spring.shardingsphere.mode.repository.props.namespace= # Namespace of registry center
+spring.shardingsphere.mode.repository.props.server-lists= # Server lists of registry center
+spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
 ```
 
 ## Notes
@@ -43,29 +34,36 @@ mode:
 1. The `ZooKeeper` registry center is recommended for cluster mode deployment.
 1. If there is configuration information in the `ZooKeeper`, please refer to the config information there.
 
+## Procedure
+1. Import MAVEN dependency.
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+> Note: please change `${latest.release.version}' to the actual version number.
 ## Sample
 
 ### Standalone Mode
 
-```yaml
-mode:
-  type: Standalone
-  repository:
-    type: JDBC
+```properties
+spring.shardingsphere.mode.type=Standalone
+spring.shardingsphere.mode.repository.type=JDBC
 ```
 
 ### Cluster Mode (recommended)
 
-```yaml
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props: 
-      namespace: governance
-      server-lists: localhost:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
+```properties
+spring.shardingsphere.mode.type=Cluster
+spring.shardingsphere.mode.repository.type=ZooKeeper
+spring.shardingsphere.mode.repository.props.namespace=governance
+spring.shardingsphere.mode.repository.props.server-lists=localhost:2181
+spring.shardingsphere.mode.repository.props.retryIntervalMilliseconds=500
+spring.shardingsphere.mode.repository.props.timeToLiveSeconds=60
 ```
 
 ## Related References

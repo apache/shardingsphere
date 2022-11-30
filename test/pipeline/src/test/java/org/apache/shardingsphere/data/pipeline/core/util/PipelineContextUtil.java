@@ -69,7 +69,7 @@ public final class PipelineContextUtil {
     private static final LazyInitializer<ClusterPersistRepository> PERSIST_REPOSITORY_LAZY_INITIALIZER;
     
     static {
-        PERSIST_REPOSITORY_CONFIG = new ClusterPersistRepositoryConfiguration("Zookeeper", "test", EmbedTestingServer.getConnectionString(), new Properties());
+        PERSIST_REPOSITORY_CONFIG = new ClusterPersistRepositoryConfiguration("ZooKeeper", "test", EmbedTestingServer.getConnectionString(), new Properties());
         PERSIST_REPOSITORY_LAZY_INITIALIZER = new LazyInitializer<ClusterPersistRepository>() {
             
             @Override

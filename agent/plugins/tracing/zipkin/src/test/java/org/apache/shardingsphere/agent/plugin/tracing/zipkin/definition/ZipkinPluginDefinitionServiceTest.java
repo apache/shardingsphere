@@ -26,6 +26,6 @@ public final class ZipkinPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        assertThat(new ZipkinPluginDefinitionService().install().size(), is(3));
+        assertThat(new ZipkinPluginDefinitionService().install(true).size(), is(3));
     }
 }

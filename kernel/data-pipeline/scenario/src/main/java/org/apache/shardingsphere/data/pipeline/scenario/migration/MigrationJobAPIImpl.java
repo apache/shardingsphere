@@ -249,7 +249,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     @Override
     public void startDisabledJob(final String jobId) {
         super.startDisabledJob(jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> {
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
                 ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional);
                 // CHECKSTYLE:OFF
@@ -262,7 +262,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     
     @Override
     public void stop(final String jobId) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getCheckLatestJobId(jobId).ifPresent(optional -> {
+        PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
                 ConsistencyCheckJobAPIFactory.getInstance().stop(optional);
                 // CHECKSTYLE:OFF

@@ -26,6 +26,6 @@ public final class OpenTracingPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        assertThat(new OpenTracingPluginDefinitionService().install().size(), is(3));
+        assertThat(new OpenTracingPluginDefinitionService().install(true).size(), is(3));
     }
 }

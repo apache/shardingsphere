@@ -68,7 +68,7 @@ public final class SQLCaseLoader {
             result.addAll(createSQLCases(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
         }
         if (result.isEmpty()) {
-            result.add(new ExternalSQLParserParameterizedArray("", "", databaseType, reportType));
+            result.add(new ExternalSQLParserParameterizedArray("", databaseType, "", reportType));
         }
         return result;
     }
@@ -102,7 +102,7 @@ public final class SQLCaseLoader {
                 resultIndex = searchInResultContent(resultIndex, rawResultLines, completedSQL, statementLines);
                 if (resultIndex >= rawResultLines.length || !rawResultLines[resultIndex].contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
-                    result.add(new ExternalSQLParserParameterizedArray(sqlCaseId, completedSQL, databaseType, reportType));
+                    result.add(new ExternalSQLParserParameterizedArray(sqlCaseId, databaseType, completedSQL, reportType));
                     sqlCaseEnum++;
                 }
                 completedSQL = "";
