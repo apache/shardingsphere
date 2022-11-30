@@ -67,17 +67,17 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     
     @Override
     public Optional<String> getLatestCheckJobId(final String parentJobId) {
-        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getCheckLatestJobIdPath(parentJobId)));
+        return Optional.ofNullable(repository.getDirectly(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId)));
     }
     
     @Override
     public void persistLatestCheckJobId(final String parentJobId, final String checkJobId) {
-        repository.persist(PipelineMetaDataNode.getCheckLatestJobIdPath(parentJobId), String.valueOf(checkJobId));
+        repository.persist(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId), String.valueOf(checkJobId));
     }
     
     @Override
     public void deleteLatestCheckJobId(final String parentJobId) {
-        repository.delete(PipelineMetaDataNode.getCheckLatestJobIdPath(parentJobId));
+        repository.delete(PipelineMetaDataNode.getLatestCheckJobIdPath(parentJobId));
     }
     
     @SuppressWarnings("unchecked")

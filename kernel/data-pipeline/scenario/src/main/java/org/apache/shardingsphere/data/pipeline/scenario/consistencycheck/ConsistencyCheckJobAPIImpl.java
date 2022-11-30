@@ -150,10 +150,10 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void startByParentJobId(final String parentJobId) {
-        startDisabledJob(getCheckLatestJobId(parentJobId));
+        startDisabledJob(getLatestCheckJobId(parentJobId));
     }
     
-    private String getCheckLatestJobId(final String parentJobId) {
+    private String getLatestCheckJobId(final String parentJobId) {
         Optional<String> result = PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(parentJobId);
         ShardingSpherePreconditions.checkState(result.isPresent(), () -> new ConsistencyCheckJobNotFoundException(parentJobId));
         return result.get();
@@ -161,12 +161,12 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     
     @Override
     public void stopByParentJobId(final String parentJobId) {
-        stop(getCheckLatestJobId(parentJobId));
+        stop(getLatestCheckJobId(parentJobId));
     }
     
     @Override
     public void dropByParentJobId(final String parentJobId) {
-        String latestCheckJobId = getCheckLatestJobId(parentJobId);
+        String latestCheckJobId = getLatestCheckJobId(parentJobId);
         stop(latestCheckJobId);
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         Collection<String> checkJobIds = repositoryAPI.listCheckJobIds(parentJobId);
