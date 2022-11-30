@@ -47,6 +47,7 @@ public final class PipelineJobProgressDetector {
         return inventoryTasks.stream().allMatch(each -> each.getTaskProgress().getPosition() instanceof FinishedPosition);
     }
     
+    // TODO clean unused methods
     /**
      * Whether job is completed (successful or failed).
      *

@@ -59,6 +59,6 @@ public final class ConsistencyCheckJobTest {
         ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
         ReflectionUtil.invokeMethodInParentClass(consistencyCheckJob, "setJobId", new Class[]{String.class}, new Object[]{checkJobId});
         ConsistencyCheckJobItemContext actualItemContext = consistencyCheckJob.buildPipelineJobItemContext(shardingContext);
-        assertThat(actualItemContext.getTableCheckPositions(), is(expectTableCheckPosition));
+        assertThat(actualItemContext.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));
     }
 }

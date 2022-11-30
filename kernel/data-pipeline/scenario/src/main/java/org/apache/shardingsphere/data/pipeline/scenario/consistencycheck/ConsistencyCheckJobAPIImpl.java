@@ -39,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractPipelineJobAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ConsistencyCheckJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UncompletedConsistencyCheckJobExistsException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
@@ -114,8 +115,9 @@ public final class ConsistencyCheckJobAPIImpl extends AbstractPipelineJobAPIImpl
     @Override
     public void persistJobItemProgress(final PipelineJobItemContext jobItemContext) {
         ConsistencyCheckJobItemContext context = (ConsistencyCheckJobItemContext) jobItemContext;
-        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(String.join(",", context.getTableNames()),
-                context.getCheckedRecordsCount().get(), context.getRecordsCount(), context.getCheckBeginTimeMillis(), context.getCheckEndTimeMillis(), context.getTableCheckPositions());
+        ConsistencyCheckJobItemProgressContext progressContext = context.getProgressContext();
+        ConsistencyCheckJobItemProgress jobItemProgress = new ConsistencyCheckJobItemProgress(String.join(",", progressContext.getTableNames()), progressContext.getCheckedRecordsCount().get(),
+                progressContext.getRecordsCount(), progressContext.getCheckBeginTimeMillis(), progressContext.getCheckEndTimeMillis(), progressContext.getTableCheckPositions());
         jobItemProgress.setStatus(context.getStatus());
         YamlConsistencyCheckJobItemProgress yamlJobProgress = swapper.swapToYamlConfiguration(jobItemProgress);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(context.getJobId(), context.getShardingItem(), YamlEngine.marshal(yamlJobProgress));
