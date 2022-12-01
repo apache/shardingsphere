@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>migration</module>
         <module>consistencycheck</module>
+        <module>migration</module>
     </modules>
 </project>
