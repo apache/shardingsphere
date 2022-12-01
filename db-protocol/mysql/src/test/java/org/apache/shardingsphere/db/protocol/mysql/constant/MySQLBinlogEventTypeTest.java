@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
+import org.junit.Test;
+
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public final class MySQLBinlogEventTypeTest {
     
@@ -30,7 +34,16 @@ public final class MySQLBinlogEventTypeTest {
     }
     
     @Test
-    public void assertValueOfByInt() {
-        assertThat(MySQLBinlogEventType.valueOf(0x01), is(MySQLBinlogEventType.START_EVENT_V3));
+    public void assertValueOfValidType() {
+        for (MySQLBinlogEventType each : MySQLBinlogEventType.values()) {
+            Optional<MySQLBinlogEventType> eventType = MySQLBinlogEventType.valueOf(each.getValue());
+            assertTrue(eventType.isPresent());
+            assertThat(eventType.get().getValue(), is(each.getValue()));
+        }
+    }
+    
+    @Test
+    public void assertValueOfInvalidType() {
+        assertFalse(MySQLBinlogEventType.valueOf(-1).isPresent());
     }
 }
