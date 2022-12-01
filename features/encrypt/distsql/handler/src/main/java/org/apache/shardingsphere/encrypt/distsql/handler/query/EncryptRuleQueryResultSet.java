@@ -66,11 +66,11 @@ public final class EncryptRuleQueryResultSet implements DatabaseDistSQLResultSet
                     nullToEmptyString(each.getPlainColumn()), nullToEmptyString(null),
                     nullToEmptyString(each.getAssistedQueryColumn()), nullToEmptyString(null),
                     encryptorAlgorithmConfig.getType(), PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
-                    Objects.isNull(tableRuleConfig.getQueryWithCipherColumn()) ? Boolean.TRUE.toString() : tableRuleConfig.getQueryWithCipherColumn().toString(),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
                     Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
-                    Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps())));
+                    Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()),
+                    Objects.isNull(tableRuleConfig.getQueryWithCipherColumn()) ? Boolean.TRUE.toString() : tableRuleConfig.getQueryWithCipherColumn().toString()));
         });
         return result;
     }
@@ -82,8 +82,8 @@ public final class EncryptRuleQueryResultSet implements DatabaseDistSQLResultSet
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("table", "logic_column", "logic_data_type", "cipher_column", "cipher_data_type", "plain_column", "plain_data_type",
-                "assisted_query_column", "assisted_query_data_type", "encryptor_type", "encryptor_props", "query_with_cipher_column",
-                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props");
+                "assisted_query_column", "assisted_query_data_type", "encryptor_type", "encryptor_props",
+                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props", "query_with_cipher_column");
     }
     
     @Override
