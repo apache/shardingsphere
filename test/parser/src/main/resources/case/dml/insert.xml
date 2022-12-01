@@ -1847,7 +1847,7 @@
                     <literal-expression value="1.2E+3" start-index="178" stop-index="182" />
                 </assignment-value>
                 <assignment-value>
-                    <literal-expression value="NULL" start-index="185" stop-index="188" />
+                    <literal-expression value="null" start-index="185" stop-index="188" />
                 </assignment-value>
             </value>
         </values>

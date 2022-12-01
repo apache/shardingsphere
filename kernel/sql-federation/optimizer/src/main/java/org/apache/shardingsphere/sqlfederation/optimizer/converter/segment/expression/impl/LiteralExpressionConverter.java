@@ -32,13 +32,13 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
     
     @Override
     public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
-        if (Integer.class == segment.getLiterals().getClass()) {
+        if (null == segment.getLiterals()) {
+            return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
+        }
+        if (segment.getLiterals() instanceof Integer) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
-        if (String.class == segment.getLiterals().getClass()) {
-            if ("NULL".equalsIgnoreCase(String.valueOf(segment.getLiterals()))) {
-                return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
-            }
+        if (segment.getLiterals() instanceof String) {
             return Optional.of(SqlLiteral.createCharString(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
         return Optional.empty();

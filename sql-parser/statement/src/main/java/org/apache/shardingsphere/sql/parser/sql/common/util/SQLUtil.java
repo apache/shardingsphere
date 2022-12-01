@@ -273,7 +273,7 @@ public final class SQLUtil {
             return new LiteralExpressionSegment(startIndex, stopIndex, ((BooleanLiteralValue) astNode).getValue());
         }
         if (astNode instanceof NullLiteralValue) {
-            return new LiteralExpressionSegment(startIndex, stopIndex, ((NullLiteralValue) astNode).getValue());
+            return new LiteralExpressionSegment(startIndex, stopIndex, null);
         }
         if (astNode instanceof OtherLiteralValue) {
             return new CommonExpressionSegment(startIndex, stopIndex, ((OtherLiteralValue) astNode).getValue());
