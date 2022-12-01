@@ -51,6 +51,7 @@ public final class ProxyConfigurationLoaderTest {
         assertNull(serverConfig.getLabels());
         assertTrue(serverConfig.getProps().isEmpty());
         assertTrue(serverConfig.getRules().isEmpty());
+        assertNull(serverConfig.getCdc());
         assertTrue(actual.getDatabaseConfigurations().isEmpty());
     }
     

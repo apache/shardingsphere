@@ -30,8 +30,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.cdc.rule.CDCRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
@@ -41,11 +43,13 @@ import org.apache.shardingsphere.proxy.frontend.protocol.FrontDatabaseProtocolTy
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ShardingSphere-Proxy.
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class ShardingSphereProxy {
     
     private EventLoopGroup bossGroup;
@@ -62,6 +66,12 @@ public final class ShardingSphereProxy {
     public void start(final int port, final List<String> addresses) {
         try {
             List<ChannelFuture> futures = startInternal(port, addresses);
+            Optional<CDCRule> cdcConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream()
+                    .filter(each -> each instanceof CDCRule).map(each -> (CDCRule) each).findFirst();
+            // TODO cdc is actually independent, but coupled with the proxy code
+            if (cdcConfig.isPresent() && cdcConfig.get().isEnable()) {
+                futures.addAll(new ShardingSphereCDCServer().startAsync(cdcConfig.get().getPort(), addresses));
+            }
             accept(futures);
         } finally {
             workerGroup.shutdownGracefully();
