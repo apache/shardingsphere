@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.transaction.api;
 
 /**
  * Transaction type.

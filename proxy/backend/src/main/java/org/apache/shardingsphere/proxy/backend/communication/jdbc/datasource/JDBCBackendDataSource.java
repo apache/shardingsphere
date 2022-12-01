@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughExcep
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
