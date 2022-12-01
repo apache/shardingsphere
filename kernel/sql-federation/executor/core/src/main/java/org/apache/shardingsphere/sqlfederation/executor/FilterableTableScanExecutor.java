@@ -119,8 +119,8 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     @Override
     public Enumerable<Object[]> execute(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
-        String databaseName = executorContext.getDatabaseName();
-        String schemaName = executorContext.getSchemaName();
+        String databaseName = executorContext.getDatabaseName().toLowerCase();
+        String schemaName = executorContext.getSchemaName().toLowerCase();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContext(databaseName).getDatabaseType().getType());
         if (databaseType.getSystemSchemas().contains(schemaName)) {
             return executeByShardingSphereData(databaseName, schemaName, table);
