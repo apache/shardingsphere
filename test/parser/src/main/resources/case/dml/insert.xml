@@ -994,7 +994,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="null" start-index="43" stop-index="46" />
+                    <literal-expression value="null" start-index="43" stop-index="46" />
                 </assignment-value>
             </value>
         </values>
@@ -1847,7 +1847,7 @@
                     <literal-expression value="1.2E+3" start-index="178" stop-index="182" />
                 </assignment-value>
                 <assignment-value>
-                    <common-expression text="NULL" start-index="185" stop-index="188" />
+                    <literal-expression value="null" start-index="185" stop-index="188" />
                 </assignment-value>
             </value>
         </values>
