@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
+import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
+import org.apache.shardingsphere.test.runner.key.TestKeyProviderFactory;
 import org.junit.runners.model.RunnerScheduler;
 
 /**
@@ -28,19 +30,20 @@ import org.junit.runners.model.RunnerScheduler;
  */
 @RequiredArgsConstructor
 @Getter
-public class ParallelRunnerScheduler implements RunnerScheduler {
+public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
-    private final ParallelRunnerExecutors executorEngine;
+    private final ParallelRunnerExecutors runnerExecutors;
     
     @Override
     public void schedule(final Runnable childStatement) {
-        executorEngine.getExecutor("").execute("", childStatement);
+        TestKeyProvider provider = TestKeyProviderFactory.newInstance(parallelLevel);
+        runnerExecutors.getExecutor(provider.getRunnerKey(childStatement)).execute(provider.getExecutorKey(childStatement), childStatement);
     }
     
     @Override
-    public final void finished() {
-        executorEngine.finishAll();
+    public void finished() {
+        runnerExecutors.finishAll();
     }
 }

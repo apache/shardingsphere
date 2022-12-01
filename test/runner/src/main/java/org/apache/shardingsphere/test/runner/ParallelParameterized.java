@@ -35,7 +35,7 @@ public final class ParallelParameterized extends Parameterized {
     }
     
     private ParallelLevel getParallelLevel(final Class<?> clazz) {
-        ParallelRunningStrategy strategy = clazz.getAnnotation(ParallelRunningStrategy.class);
-        return null == strategy ? ParallelLevel.NORMAL : strategy.value();
+        ParallelRunningStrategy runningStrategy = clazz.getAnnotation(ParallelRunningStrategy.class);
+        return null == runningStrategy ? ParallelLevel.NORMAL : runningStrategy.value();
     }
 }
