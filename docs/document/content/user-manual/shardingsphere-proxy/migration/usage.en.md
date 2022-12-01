@@ -64,8 +64,6 @@ Result sample:
 
 1. Prepare the source database, table, and data in MySQL.
 
-Sample: 
-
 ```sql
 DROP DATABASE IF EXISTS migration_ds_0;
 CREATE DATABASE migration_ds_0 DEFAULT CHARSET utf8;
@@ -78,8 +76,6 @@ INSERT INTO t_order (order_id, user_id, status) VALUES (1,2,'ok'),(2,4,'ok'),(3,
 ```
 
 2. Prepare the target database in MySQL.
-
-Sample: 
 
 ```sql
 DROP DATABASE IF EXISTS migration_ds_10;
@@ -158,7 +154,6 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                    | tables  | job_item_count       | active | create_time         | stop_time |
@@ -169,8 +164,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -180,15 +179,18 @@ SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
 
 6. Verify data consistency.
 
-```
+```sql
 CHECK MIGRATION 'j01016e501b498ed1bdb2c373a2e85e2529a6' BY TYPE (NAME='CRC32_MATCH');
-Query OK, 0 rows affected (0.09 sec)
 ```
 
 Data consistency check algorithm list:
 
-```
+```sql
 SHOW MIGRATION CHECK ALGORITHMS;
+```
+
+Result example:
+```
 +-------------+--------------------------------------------------------------+----------------------------+
 | type        | supported_database_types                                     | description                |
 +-------------+--------------------------------------------------------------+----------------------------+
@@ -204,6 +206,10 @@ If you are migrating to a heterogeneous database, then `DATA_MATCH` could be use
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
@@ -359,7 +365,6 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                    | tables  | job_item_count       | active | create_time         | stop_time |
@@ -370,8 +375,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -389,6 +398,10 @@ Query OK, 0 rows affected (0.09 sec)
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
@@ -542,7 +555,6 @@ SHOW MIGRATION LIST;
 ```
 
 Result example:
-
 ```
 +---------------------------------------+---------+----------------------+--------+---------------------+-----------+
 | id                                    | tables  | job_item_count       | active | create_time         | stop_time |
@@ -553,8 +565,12 @@ Result example:
 
 5. View the data migration details.
 
-```
+```sql
 SHOW MIGRATION STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
 | item | data_source | status                   | active | processed_records_count | inventory_finished_percentage | incremental_idle_seconds | error_message |
 +------+-------------+--------------------------+--------+-------------------------+-------------------------------+--------------------------+---------------+
@@ -572,6 +588,10 @@ Query OK, 0 rows affected (0.09 sec)
 Query data consistency check progress:
 ```sql
 SHOW MIGRATION CHECK STATUS 'j01016e501b498ed1bdb2c373a2e85e2529a6';
+```
+
+Result example:
+```
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
 | tables  | result | finished_percentage | remaining_seconds | check_begin_time        | check_end_time          | duration_seconds | error_message |
 +---------+--------+---------------------+-------------------+-------------------------+-------------------------+------------------+---------------+
