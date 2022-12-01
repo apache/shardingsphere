@@ -1,0 +1,92 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "CDCRequestProto";
+option java_package = "org.apache.shardingsphere.data.pipeline.cdc.proto.request";
+
+message CDCRequest {
+  int32 version = 1; // proto version
+  string request_id = 2; // request id
+  enum Type {
+    UNKNOWN = 0;
+    LOGIN = 1; // 登陆
+    CREATE_SUBSCRIPTION = 2; // Create subscription
+    START_SUBSCRIPTION = 3; // Start subscription
+    STOP_SUBSCRIPTION = 4; // Stop subscription
+    DROP_SUBSCRIPTION = 5; // Drop subscription
+    FETCH_RECORDS = 6;
+    FETCH_RECORDS_ACK = 7; // The ack of fetch records
+  }
+  Type type = 3;
+  oneof request {
+    LoginRequest login = 4;
+    CreateSubscriptionRequest create_subscription = 5;
+    StartSubscriptionRequest start_subscription = 6;
+    FetchRecordAck fetch_record_ack = 7;
+    StopSubscriptionRequest stop_subscription = 8;
+    DropSubscriptionRequest drop_subscription = 9;
+  }
+}
+
+message LoginRequest {
+  enum LoginType {
+    UNKNOWN = 0;
+    BASIC = 1;
+  }
+  LoginType type = 1;
+  oneof body {
+    BasicBody basic_body = 2; // Username and password body
+  }
+
+  message BasicBody {
+    string username = 1;
+    string password = 2; // Encrypted password
+  }
+}
+
+message CreateSubscriptionRequest {
+  string database = 1;
+  repeated string tableNames = 2; // If a schema exists use . separates，eg. public.t_order
+  string subscriptionName = 3;
+  SubscriptionMode subscriptionMode = 4;
+
+  enum SubscriptionMode {
+    UNKNOWN = 0;
+    INCREMENTAL = 1;
+    FULL = 2;
+  }
+}
+
+message StartSubscriptionRequest {
+  string subscriptionName = 1;
+}
+
+message StopSubscriptionRequest {
+  string subscriptionName = 1;
+}
+
+message DropSubscriptionRequest {
+  string subscriptionName = 1;
+}
+
+message FetchRecordAck {
+  string subscriptionName = 1;
+  string lastReceivePosition = 2;
+}

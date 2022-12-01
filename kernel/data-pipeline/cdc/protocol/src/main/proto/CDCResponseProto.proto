@@ -1,0 +1,80 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "CDCResponseProto";
+option java_package = "org.apache.shardingsphere.data.pipeline.cdc.proto.response";
+
+message CDCResponse {
+  string request_id = 1;
+  enum Status {
+    UNKNOWN = 0;
+    SUCCEED = 1;
+    FAILED = 2;
+  }
+  Status status = 2;
+  oneof response {
+    ServerGreetingResult server_greeting_result = 3;
+    CreateSubscriptionResult create_subscription_result = 4;
+    FetchRecordResult fetch_record_result = 5;
+  }
+
+  optional string error_code = 100;
+  optional string error_message = 101;
+}
+
+message ServerGreetingResult {
+  string server_version = 1;
+  string max_protocol_version = 2;
+  string min_protocol_version = 3;
+}
+
+message CreateSubscriptionResult {
+  string subscriptionName = 1;
+  bool already_exists = 2;
+}
+
+message FetchRecordResult {
+  message Record {
+    map<string, google.protobuf.Any> before = 1;
+    map<string, google.protobuf.Any> after = 2;
+    message TableMetaData {
+      string databaseName = 1;
+      optional string schema = 2;
+      string tableName = 3;
+    }
+    TableMetaData tableMetaData = 3;
+    int64 ts_ms = 4;  // Transaction Commit Time
+    enum DataChangeType {
+      UNKNOWN = 0;
+      INSERT = 1;
+      UPDATE = 2;
+      DELETE = 3;
+      CREATE = 4;
+      ALTER = 5;
+      DROP = 6;
+    }
+    bool isDdl = 6; // When isDdl is true, the message contains a DDL sql.
+    optional string sql = 7; // This field has a value only when isDdl is true
+  }
+  repeated Record records = 1;
+  bool hasNext = 2;
+}
