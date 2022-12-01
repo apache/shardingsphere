@@ -23,8 +23,8 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import java.util.Properties;
  * Char digest like encrypt algorithm.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm<Object, String> {
     
     private static final String DELTA = "delta";
     
@@ -174,11 +174,6 @@ public final class CharDigestLikeEncryptAlgorithm implements EncryptAlgorithm<Ob
             return (char) (((charIndexes.get(originalChar) + delta) & mask) + start);
         }
         return (char) (((originalChar + delta) & mask) + start);
-    }
-    
-    @Override
-    public String decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return cipherValue;
     }
     
     @Override

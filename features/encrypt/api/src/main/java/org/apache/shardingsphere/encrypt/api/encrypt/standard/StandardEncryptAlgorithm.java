@@ -15,12 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi;
+package org.apache.shardingsphere.encrypt.api.encrypt.standard;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 /**
- * Encrypt algorithm.
+ * Standard encrypt algorithm.
+ * 
+ * @param <I> type of plain value
+ * @param <O> type of cipher value
  */
-public interface EncryptAlgorithm extends ShardingSphereAlgorithm {
+public interface StandardEncryptAlgorithm<I, O> extends EncryptAlgorithm {
+    
+    /**
+     * Encrypt.
+     *
+     * @param plainValue plain value
+     * @param encryptContext encrypt context
+     * @return cipher value
+     */
+    O encrypt(I plainValue, EncryptContext encryptContext);
+    
+    /**
+     * Decrypt.
+     *
+     * @param cipherValue cipher value
+     * @param encryptContext encrypt context
+     * @return plain value
+     */
+    I decrypt(O cipherValue, EncryptContext encryptContext);
 }
