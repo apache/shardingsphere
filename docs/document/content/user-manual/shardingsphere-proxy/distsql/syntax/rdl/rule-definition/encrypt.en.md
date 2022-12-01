@@ -18,17 +18,14 @@ encryptRuleDefinition:
 columnDefinition:
     (NAME=columnName [, PLAIN=plainColumnName] , CIPHER=cipherColumnName [, ASSISTED_QUERY_COLUMN=assistedQueryColumnName] [, LIKE_QUERY_COLUMN=likeQueryColumnName], encryptAlgorithm [, assistedQueryAlgorithm] [, likeQueryAlgorithm])
 
-encryptAlgorithm
-    ENCRYPT_ALGORITHM(algorithmDefinition)
+encryptAlgorithm:
+    ENCRYPT_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 assistedQueryAlgorithm
-    ASSISTED_QUERY_ALGORITHM(algorithmDefinition)
+    ASSISTED_QUERY_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 likeQueryAlgorithm
-    LIKE_QUERY_ALGORITHM(algorithmDefinition)
-
-algorithmDefinition:
-    TYPE(NAME=algorithmType [, PROPERTIES([algorithmProperties] )] )
+    LIKE_QUERY_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -38,20 +35,20 @@ algorithmProperty:
 ```
 
 ### Parameters Explained
-| name                    | DateType   | Description                |
-|:------------------------|:-----------|:---------------------------|
-| tableName               | IDENTIFIER | Table name                 |
-| columnName              | IDENTIFIER | Logic column name          |
-| plainColumnName         | IDENTIFIER | Plain column name          |
-| cipherColumnName        | IDENTIFIER | Cipher column name         |
-| assistedQueryColumnName | IDENTIFIER | Assisted query column name |
-| likeQueryColumnName     | IDENTIFIER | Like query column name     |
-| algorithmType           | STRING     | Algorithm type name        |
+| name                    | DateType   | Description                    |
+|:------------------------|:-----------|:-------------------------------|
+| tableName               | IDENTIFIER | Table name                     |
+| columnName              | IDENTIFIER | Logic column name              |
+| plainColumnName         | IDENTIFIER | Plain column name              |
+| cipherColumnName        | IDENTIFIER | Cipher column name             |
+| assistedQueryColumnName | IDENTIFIER | Assisted query column name     |
+| likeQueryColumnName     | IDENTIFIER | Like query column name         |
+| encryptAlgorithmType    | STRING     | Encryption algorithm type name |
 
 ### Notes 
 
 - `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column
-- `algorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/)
+- `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/)
 - Duplicate `tableName` will not be created
 - `queryWithCipherColumn` support uppercase or lowercase true or false
 

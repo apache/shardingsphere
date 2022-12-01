@@ -18,17 +18,14 @@ encryptRuleDefinition:
 columnDefinition:
     (NAME=columnName [, PLAIN=plainColumnName] , CIPHER=cipherColumnName [, ASSISTED_QUERY_COLUMN=assistedQueryColumnName] [, LIKE_QUERY_COLUMN=likeQueryColumnName], encryptAlgorithm [, assistedQueryAlgorithm] [, likeQueryAlgorithm])
 
-encryptAlgorithm
-    ENCRYPT_ALGORITHM(algorithmDefinition)
+encryptAlgorithm:
+    ENCRYPT_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 assistedQueryAlgorithm
-    ASSISTED_QUERY_ALGORITHM(algorithmDefinition)
+    ASSISTED_QUERY_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 likeQueryAlgorithm
-    LIKE_QUERY_ALGORITHM(algorithmDefinition)
-
-algorithmDefinition:
-    TYPE(NAME=algorithmType [, PROPERTIES([algorithmProperties] )] )
+    LIKE_QUERY_ALGORITHM(TYPE(NAME=encryptAlgorithmType [, PROPERTIES([algorithmProperties] )] ))
 
 algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
@@ -38,20 +35,20 @@ algorithmProperty:
 ```
 
 ### 参数解释
-| 名称                     | 数据类型      | 说明          |
-|:------------------------|:-------------|:--------------|
-| tableName               | IDENTIFIER   | 表名称         |
-| columnName              | IDENTIFIER   | 逻辑数据列名称  |
-| plainColumnName         | IDENTIFIER   | 明文数据列名称  |
-| cipherColumnName        | IDENTIFIER   | 加密数据列名称  |
-| assistedQueryColumnName | IDENTIFIER   | 辅助查询列名称  |
-| likeQueryColumnName     | IDENTIFIER   | 模糊查询列名称  |
-| algorithmType           | STRING       | 算法类型名称    |
+| 名称                   | 数据类型       | 说明          |
+|:------------------------|:-----------|:--------------|
+| tableName               | IDENTIFIER | 表名称         |
+| columnName              | IDENTIFIER | 逻辑数据列名称  |
+| plainColumnName         | IDENTIFIER | 明文数据列名称  |
+| cipherColumnName        | IDENTIFIER | 加密数据列名称  |
+| assistedQueryColumnName | IDENTIFIER | 辅助查询列名称  |
+| likeQueryColumnName     | IDENTIFIER | 模糊查询列名称  |
+| encryptAlgorithmType    | STRING     | 加密算法类型名称 |
 
 ### 注意事项
 
 - `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列；
-- `algorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
+- `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
 - 重复的 `tableName` 将无法被创建；
 - `queryWithCipherColumn` 支持大写或小写的 true 或 false。
 

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.runner.key;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
  * Test key provider.
@@ -27,18 +28,18 @@ public interface TestKeyProvider {
     /**
      * Get runner key.
      *
-     * @param childStatement child statement
+     * @param parameterizedArray parameterized array
      * @return runner key
      */
-    String getRunnerKey(Runnable childStatement);
+    String getRunnerKey(ParameterizedArray parameterizedArray);
     
     /**
      * Get executor key.
      * 
-     * @param childStatement child statement
+     * @param parameterizedArray parameterized array
      * @return executor key
      */
-    String getExecutorKey(Runnable childStatement);
+    String getExecutorKey(ParameterizedArray parameterizedArray);
     
     /**
      * Get parallel level.
