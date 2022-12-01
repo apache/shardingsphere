@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
-import org.apache.shardingsphere.test.runner.param.RunnerParameters;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
  * Case test key provider.
@@ -28,13 +28,12 @@ import org.apache.shardingsphere.test.runner.param.RunnerParameters;
 public final class CaseTestKeyProvider implements TestKeyProvider {
     
     @Override
-    public String getRunnerKey(final Runnable childStatement) {
-        ITParameterizedArray parameterizedArray = (ITParameterizedArray) new RunnerParameters(childStatement).getParameterizedArray();
-        return parameterizedArray.getDatabaseType().getType();
+    public String getRunnerKey(final ParameterizedArray parameterizedArray) {
+        return ((ITParameterizedArray) parameterizedArray).getDatabaseType().getType();
     }
     
     @Override
-    public String getExecutorKey(final Runnable childStatement) {
+    public String getExecutorKey(final ParameterizedArray parameterizedArray) {
         return "";
     }
     
