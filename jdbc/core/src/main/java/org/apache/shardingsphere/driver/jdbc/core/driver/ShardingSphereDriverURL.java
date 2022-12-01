@@ -19,10 +19,9 @@ package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.io.CharStreams;
-import com.google.common.io.LineProcessor;
 import lombok.SneakyThrows;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,25 +61,15 @@ public final class ShardingSphereDriverURL {
     @SneakyThrows(IOException.class)
     public byte[] toConfigurationBytes() {
         try (InputStream stream = inClasspath ? ShardingSphereDriverURL.class.getResourceAsStream("/" + file) : Files.newInputStream(new File(file).toPath())) {
-            LineProcessor<byte[]> lineProcessor = new LineProcessor<byte[]>() {
-                
-                private final StringBuilder builder = new StringBuilder();
-                
-                @Override
-                public boolean processLine(final String line) {
-                    if (line.startsWith("#") || 0 == line.length()) {
-                        return true;
-                    }
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charsets.UTF_8));
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.startsWith("#")) {
                     builder.append(line);
-                    return true;
                 }
-                
-                @Override
-                public byte[] getResult() {
-                    return builder.toString().getBytes(StandardCharsets.UTF_8);
-                }
-            };
-            final byte[] result = CharStreams.readLines(new InputStreamReader(stream, Charsets.UTF_8), lineProcessor);
+            }
+            final byte[] result = builder.toString().getBytes(StandardCharsets.UTF_8);
             Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file)).read(result);
             return result;
         }
