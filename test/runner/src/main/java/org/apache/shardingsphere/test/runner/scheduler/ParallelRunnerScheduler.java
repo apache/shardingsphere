@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLev
 import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
 import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
 import org.apache.shardingsphere.test.runner.key.TestKeyProviderFactory;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
+import org.apache.shardingsphere.test.runner.param.RunnerParameters;
 import org.junit.runners.model.RunnerScheduler;
 
 /**
@@ -38,8 +40,9 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void schedule(final Runnable childStatement) {
+        ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
         TestKeyProvider provider = TestKeyProviderFactory.newInstance(parallelLevel);
-        runnerExecutors.getExecutor(provider.getRunnerKey(childStatement)).execute(provider.getExecutorKey(childStatement), childStatement);
+        runnerExecutors.getExecutor(provider.getRunnerKey(parameterizedArray)).execute(provider.getExecutorKey(parameterizedArray), childStatement);
     }
     
     @Override

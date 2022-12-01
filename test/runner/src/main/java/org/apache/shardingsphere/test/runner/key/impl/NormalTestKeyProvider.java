@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.runner.key.impl;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
 import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
+import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
  * Normal test key provider.
@@ -26,12 +27,12 @@ import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
 public final class NormalTestKeyProvider implements TestKeyProvider {
     
     @Override
-    public String getRunnerKey(final Runnable childStatement) {
+    public String getRunnerKey(final ParameterizedArray parameterizedArray) {
         return "";
     }
     
     @Override
-    public String getExecutorKey(final Runnable childStatement) {
+    public String getExecutorKey(final ParameterizedArray parameterizedArray) {
         return "";
     }
     
