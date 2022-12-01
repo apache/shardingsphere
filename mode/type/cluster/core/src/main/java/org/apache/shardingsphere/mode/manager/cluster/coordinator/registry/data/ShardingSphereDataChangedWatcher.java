@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
-import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereTableDataSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.DatabaseDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.SchemaDataDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereRowDataAddedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereRowDataChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.ShardingSphereRowDataDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event.TableDataChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ShardingSphereDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -62,11 +62,11 @@ public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher
         if (isSchemaChanged(event)) {
             return createSchemaChangedEvent(event);
         }
-        if (isSchemaDataChanged(event)) {
-            return createSchemaDataChangedEvent(event);
+        if (isTableChanged(event)) {
+            return createTableChangedEvent(event);
         }
         if (isTableRowDataChanged(event)) {
-            return createRowAddedEvent(event);
+            return createRowDataChangedEvent(event);
         }
         return Optional.empty();
     }
@@ -79,15 +79,15 @@ public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher
         return ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey()).isPresent() && ShardingSphereDataNode.getSchemaName(event.getKey()).isPresent();
     }
     
-    private boolean isSchemaDataChanged(final DataChangedEvent event) {
+    private boolean isTableChanged(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
         Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
-        return databaseName.isPresent() && schemaName.isPresent() && null != event.getValue() && !event.getValue().isEmpty() && tableName.isPresent();
+        return databaseName.isPresent() && schemaName.isPresent() && tableName.isPresent();
     }
     
     private boolean isTableRowDataChanged(final DataChangedEvent event) {
-        return ShardingSphereDataNode.isTableRowDataMatched(event.getKey());
+        return ShardingSphereDataNode.getRowUniqueKey(event.getKey()).isPresent();
     }
     
     private Optional<GovernanceEvent> createDatabaseChangedEvent(final DataChangedEvent event) {
@@ -116,34 +116,42 @@ public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createSchemaDataChangedEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createTableChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
         Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
         Preconditions.checkState(schemaName.isPresent());
-        return Optional.of(doCreateSchemaDataChangedEvent(event, databaseName.get(), schemaName.get()));
+        return doCreateTableChangedEvent(event, databaseName.get(), schemaName.get());
     }
     
-    private GovernanceEvent doCreateSchemaDataChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
+    private Optional<GovernanceEvent> doCreateTableChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName) {
         Optional<String> tableName = ShardingSphereDataNode.getTableName(event.getKey());
         Preconditions.checkState(tableName.isPresent());
-        return Type.DELETED == event.getType()
-                ? new TableDataChangedEvent(databaseName, schemaName, null, tableName.get())
-                : new TableDataChangedEvent(databaseName, schemaName, new YamlShardingSphereTableDataSwapper()
-                        .swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTableData.class)), null);
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType()) {
+            return Optional.of(new TableDataChangedEvent(databaseName, schemaName, tableName.get(), null));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new TableDataChangedEvent(databaseName, schemaName, null, tableName.get()));
+        }
+        return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createRowAddedEvent(final DataChangedEvent event) {
-        if (Type.ADDED != event.getType()) {
-            return Optional.empty();
-        }
+    private Optional<GovernanceEvent> createRowDataChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = ShardingSphereDataNode.getDatabaseNameByDatabasePath(event.getKey());
         Preconditions.checkState(databaseName.isPresent());
         Optional<String> schemaName = ShardingSphereDataNode.getSchemaNameBySchemaPath(event.getKey());
         Preconditions.checkState(schemaName.isPresent());
-        Optional<String> tableName = ShardingSphereDataNode.getTableNameByPartitionRowsPath(event.getKey());
+        Optional<String> tableName = ShardingSphereDataNode.getTableNameByRowPath(event.getKey());
         Preconditions.checkState(tableName.isPresent());
-        YamlShardingSphereRowData yamlShardingSphereRowData = YamlEngine.unmarshal(event.getValue(), YamlShardingSphereRowData.class);
-        return Optional.of(new ShardingSphereRowDataAddedEvent(databaseName.get(), schemaName.get(), tableName.get(), yamlShardingSphereRowData));
+        Optional<String> rowPath = ShardingSphereDataNode.getRowUniqueKey(event.getKey());
+        Preconditions.checkState(rowPath.isPresent());
+        if (Type.ADDED == event.getType() || Type.UPDATED == event.getType() && !Strings.isNullOrEmpty(event.getValue())) {
+            YamlShardingSphereRowData yamlShardingSphereRowData = YamlEngine.unmarshal(event.getValue(), YamlShardingSphereRowData.class);
+            return Optional.of(new ShardingSphereRowDataChangedEvent(databaseName.get(), schemaName.get(), tableName.get(), yamlShardingSphereRowData));
+        }
+        if (Type.DELETED == event.getType()) {
+            return Optional.of(new ShardingSphereRowDataDeletedEvent(databaseName.get(), schemaName.get(), tableName.get(), rowPath.get()));
+        }
+        return Optional.empty();
     }
 }

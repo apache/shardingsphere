@@ -19,15 +19,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Row data added event.
+ * Row data deleted event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShardingSphereRowDataAddedEvent implements GovernanceEvent {
+public final class ShardingSphereRowDataDeletedEvent implements GovernanceEvent {
     
     private final String databaseName;
     
@@ -35,5 +34,5 @@ public final class ShardingSphereRowDataAddedEvent implements GovernanceEvent {
     
     private final String tableName;
     
-    private final YamlShardingSphereRowData yamlRowData;
+    private final String uniqueKey;
 }
