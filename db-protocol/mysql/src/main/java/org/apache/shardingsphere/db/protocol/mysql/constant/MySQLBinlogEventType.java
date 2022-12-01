@@ -28,6 +28,7 @@ import java.util.Optional;
  * MySQL binlog event type.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event-type.html">Binlog Event Type</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/binlog__event_8h_source.html">binlog_event.h</a>
  */
 @RequiredArgsConstructor
 @Getter
@@ -103,7 +104,19 @@ public enum MySQLBinlogEventType {
     
     ANONYMOUS_GTID_EVENT(0x22),
     
-    PREVIOUS_GTIDS_EVENT(0x23);
+    PREVIOUS_GTIDS_EVENT(0x23),
+    
+    TRANSACTION_CONTEXT_EVENT(36),
+    
+    VIEW_CHANGE_EVENT(37),
+    
+    XA_PREPARE_LOG_EVENT(38),
+    
+    PARTIAL_UPDATE_ROWS_EVENT(39),
+    
+    TRANSACTION_PAYLOAD_EVENT(40),
+    
+    HEARTBEAT_LOG_EVENT_V2(41);
     
     private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(values().length, 1);
     
