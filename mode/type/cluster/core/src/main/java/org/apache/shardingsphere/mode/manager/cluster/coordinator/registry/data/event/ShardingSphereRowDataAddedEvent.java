@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
-import java.util.Collection;
-
 /**
  * Row data added event.
  */
@@ -37,5 +35,5 @@ public final class ShardingSphereRowDataAddedEvent implements GovernanceEvent {
     
     private final String tableName;
     
-    private final Collection<YamlShardingSphereRowData> yamlRowData;
+    private final YamlShardingSphereRowData yamlRowData;
 }

@@ -693,19 +693,17 @@ public final class ContextManager implements AutoCloseable {
      * @param tableName table name
      * @param yamlRowData yaml row data
      */
-    public synchronized void alterRowsData(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> yamlRowData) {
+    public synchronized void alterRowsData(final String databaseName, final String schemaName, final String tableName, final YamlShardingSphereRowData yamlRowData) {
         if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().containsKey(tableName)) {
             return;
         }
         ShardingSphereTableData tableData = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().get(tableName);
-        Collection<ShardingSphereRowData> rowData = yamlRowData.stream().map(each -> new YamlShardingSphereRowDataSwapper(tableData.getColumns()).swapToObject(each)).collect(Collectors.toList());
-        rowData.forEach(each -> {
-            if (!tableData.getRows().contains(each)) {
-                tableData.getRows().add(each);
-            }
-        });
+        ShardingSphereRowData rowData = new YamlShardingSphereRowDataSwapper(tableData.getColumns()).swapToObject(yamlRowData);
+        if (!tableData.getRows().contains(rowData)) {
+            tableData.getRows().add(rowData);
+        }
     }
     
     @Override
