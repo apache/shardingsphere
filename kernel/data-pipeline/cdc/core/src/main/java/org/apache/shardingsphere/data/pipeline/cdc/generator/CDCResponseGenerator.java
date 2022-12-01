@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.proto.response.CDCResponse.St
 public final class CDCResponseGenerator {
     
     /**
-     * Response succeed builder.
+     * Succeed response builder.
      *
      * @param requestId request id
      * @return success message

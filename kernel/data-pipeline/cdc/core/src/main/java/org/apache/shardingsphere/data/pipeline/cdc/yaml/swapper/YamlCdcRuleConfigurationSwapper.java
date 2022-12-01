@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCRuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCOrder;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.config.YamlCdcRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
@@ -51,6 +52,6 @@ public final class YamlCdcRuleConfigurationSwapper implements YamlRuleConfigurat
     
     @Override
     public int getOrder() {
-        return 10000;
+        return CDCOrder.ORDER;
     }
 }

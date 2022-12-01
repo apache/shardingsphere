@@ -26,11 +26,11 @@ message CDCRequest {
   string request_id = 2; // request id
   enum Type {
     UNKNOWN = 0;
-    LOGIN = 1; // 登陆
-    CREATE_SUBSCRIPTION = 2; // Create subscription
-    START_SUBSCRIPTION = 3; // Start subscription
-    STOP_SUBSCRIPTION = 4; // Stop subscription
-    DROP_SUBSCRIPTION = 5; // Drop subscription
+    LOGIN = 1;
+    CREATE_SUBSCRIPTION = 2; 
+    START_SUBSCRIPTION = 3; 
+    STOP_SUBSCRIPTION = 4; 
+    DROP_SUBSCRIPTION = 5;
     FETCH_RECORDS = 6;
     FETCH_RECORDS_ACK = 7; // The ack of fetch records
   }

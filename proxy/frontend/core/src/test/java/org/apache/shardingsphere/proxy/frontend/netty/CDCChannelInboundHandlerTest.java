@@ -56,9 +56,9 @@ public final class CDCChannelInboundHandlerTest {
     
     private static MockedStatic<ProxyContext> proxyContext;
     
-    private EmbeddedChannel channel;
-    
     private final CDCChannelInboundHandler cdcChannelInboundHandler = new CDCChannelInboundHandler();
+    
+    private EmbeddedChannel channel;
     
     @BeforeClass
     public static void beforeClass() {

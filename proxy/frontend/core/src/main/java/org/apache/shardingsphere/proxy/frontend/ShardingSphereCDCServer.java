@@ -25,6 +25,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -61,8 +62,7 @@ public final class ShardingSphereCDCServer {
     private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         createEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
-        bootstrap
-                .channel(NioServerSocketChannel.class)
+        bootstrap.channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
                 .group(bossGroup, workerGroup)
                 .option(ChannelOption.SO_REUSEADDR, true)
                 .option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024 * 1024, 16 * 1024 * 1024))

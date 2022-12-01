@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.rule.builder;
 
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCRuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCOrder;
 import org.apache.shardingsphere.data.pipeline.cdc.rule.CDCRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -39,7 +40,7 @@ public final class CDCRuleBuilder implements GlobalRuleBuilder<CDCRuleConfigurat
     
     @Override
     public int getOrder() {
-        return 2000;
+        return CDCOrder.ORDER;
     }
     
     @Override
