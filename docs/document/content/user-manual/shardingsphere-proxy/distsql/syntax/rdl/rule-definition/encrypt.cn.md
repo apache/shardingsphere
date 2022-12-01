@@ -38,15 +38,15 @@ algorithmProperty:
 ```
 
 ### 参数解释
-| 名称                     | 数据类型       | 说明       |
-|:------------------------|:-----------|:--------------|
-| tableName               | IDENTIFIER | 表名称         |
-| columnName              | IDENTIFIER | 逻辑数据列名称  |
-| plainColumnName         | IDENTIFIER | 明文数据列名称  |
-| cipherColumnName        | IDENTIFIER | 加密数据列名称  |
-| assistedQueryColumnName | IDENTIFIER | 辅助查询列名称  |
-| likeQueryColumnName     | IDENTIFIER | 模糊查询列名称  |
-| algorithmType           | STRING     | 算法类型名称    |
+| 名称                     | 数据类型      | 说明          |
+|:------------------------|:-------------|:--------------|
+| tableName               | IDENTIFIER   | 表名称         |
+| columnName              | IDENTIFIER   | 逻辑数据列名称  |
+| plainColumnName         | IDENTIFIER   | 明文数据列名称  |
+| cipherColumnName        | IDENTIFIER   | 加密数据列名称  |
+| assistedQueryColumnName | IDENTIFIER   | 辅助查询列名称  |
+| likeQueryColumnName     | IDENTIFIER   | 模糊查询列名称  |
+| algorithmType           | STRING       | 算法类型名称    |
 
 ### 注意事项
 

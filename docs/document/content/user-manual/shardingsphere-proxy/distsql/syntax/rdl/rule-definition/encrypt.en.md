@@ -46,7 +46,7 @@ algorithmProperty:
 | cipherColumnName        | IDENTIFIER | Cipher column name         |
 | assistedQueryColumnName | IDENTIFIER | Assisted query column name |
 | likeQueryColumnName     | IDENTIFIER | Like query column name     |
-| algorithmType           | STRING     | algorithm type name        |
+| algorithmType           | STRING     | Algorithm type name        |
 
 ### Notes 
 
