@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.fixture.encrypt;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
 @Getter
-public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
+public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -39,11 +39,6 @@ public final class RewriteQueryLikeEncryptAlgorithmFixture implements EncryptAlg
             return null;
         }
         return "like_query_" + plainValue;
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return cipherValue;
     }
     
     @Override
