@@ -31,6 +31,6 @@ public final class MySQLBinlogEventTypeTest {
     
     @Test
     public void assertValueOfByInt() {
-        assertThat(MySQLBinlogEventType.valueOf(0x01), is(MySQLBinlogEventType.START_EVENT_V3));
+        assertThat(MySQLBinlogEventType.valueOf(0x01).get(), is(MySQLBinlogEventType.START_EVENT_V3));
     }
 }
