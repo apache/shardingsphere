@@ -63,7 +63,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSche
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
@@ -251,7 +250,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
         super.startDisabledJob(jobId);
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                ConsistencyCheckJobAPIFactory.getInstance().startDisabledJob(optional);
+                PipelineAPIFactory.getPipelineJobAPI(JobType.CONSISTENCY_CHECK).startDisabledJob(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
@@ -264,7 +263,7 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     public void stop(final String jobId) {
         PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
-                ConsistencyCheckJobAPIFactory.getInstance().stop(optional);
+                PipelineAPIFactory.getPipelineJobAPI(JobType.CONSISTENCY_CHECK).stop(optional);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
