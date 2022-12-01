@@ -15,27 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner;
+package org.apache.shardingsphere.test.runner.key;
 
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
-import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
 
 /**
- * Parallel parameterized.
+ * Test key provider.
  */
-public final class ParallelParameterized extends Parameterized {
+public interface TestKeyProvider {
     
-    // CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> clazz) throws Throwable {
-        // CHECKSTYLE:ON
-        super(clazz);
-        setScheduler(new ParallelRunnerScheduler(getParallelLevel(clazz), new ParallelRunnerExecutors()));
-    }
+    /**
+     * Get runner key.
+     *
+     * @param childStatement child statement
+     * @return runner key
+     */
+    String getRunnerKey(Runnable childStatement);
     
-    private ParallelLevel getParallelLevel(final Class<?> clazz) {
-        ParallelRunningStrategy runningStrategy = clazz.getAnnotation(ParallelRunningStrategy.class);
-        return null == runningStrategy ? ParallelLevel.NORMAL : runningStrategy.value();
-    }
+    /**
+     * Get executor key.
+     * 
+     * @param childStatement child statement
+     * @return executor key
+     */
+    String getExecutorKey(Runnable childStatement);
+    
+    /**
+     * Get parallel level.
+     * 
+     * @return parallel level
+     */
+    ParallelLevel getParallelLevel();
 }
