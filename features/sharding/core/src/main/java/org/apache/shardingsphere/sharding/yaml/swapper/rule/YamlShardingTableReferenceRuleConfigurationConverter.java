@@ -27,6 +27,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class YamlShardingTableReferenceRuleConfigurationConverter {
     
+    private static final int GENERATE_NAME_LENGTH = 16;
+    
     /**
      * Convert to YAML String configuration.
      * 
@@ -55,7 +57,7 @@ public final class YamlShardingTableReferenceRuleConfigurationConverter {
     
     private static ShardingTableReferenceRuleConfiguration convertYamlConfigurationWithoutName(final String referenceConfig) {
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
-        String name = new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString().replace("-", "").substring(0, 16);
+        String name = new UUID(threadLocalRandom.nextLong(), threadLocalRandom.nextLong()).toString().replace("-", "").substring(0, GENERATE_NAME_LENGTH);
         return new ShardingTableReferenceRuleConfiguration(name, referenceConfig);
     }
 }
