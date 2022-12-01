@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.spi;
+package org.apache.shardingsphere.transaction.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-
+import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import java.util.Collection;
 
 /**

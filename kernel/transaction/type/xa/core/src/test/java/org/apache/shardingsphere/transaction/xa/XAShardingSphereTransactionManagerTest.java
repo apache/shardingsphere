@@ -22,7 +22,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
@@ -30,6 +29,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import javax.transaction.Transaction;
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -49,9 +49,9 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        Map<String, ResourceDataSource> resourceDataSources = createResourceDataSources(DatabaseTypeFactory.getInstance("H2"));
+        Map<String, DataSource> dataSources = createDataSources(DatabaseTypeFactory.getInstance("H2"));
         Map<String, DatabaseType> databaseTypes = createDatabaseTypes(DatabaseTypeFactory.getInstance("H2"));
-        xaTransactionManager.init(databaseTypes, resourceDataSources, "Atomikos");
+        xaTransactionManager.init(databaseTypes, dataSources, "Atomikos");
     }
     
     @After
@@ -150,11 +150,11 @@ public final class XAShardingSphereTransactionManagerTest {
         return (ThreadLocal<Map<Transaction, Connection>>) field.get(transactionDataSource);
     }
     
-    private Map<String, ResourceDataSource> createResourceDataSources(final DatabaseType databaseType) {
-        Map<String, ResourceDataSource> result = new LinkedHashMap<>(3, 1);
-        result.put("sharding_db.ds_0", new ResourceDataSource("sharding_db.ds_0", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_0")));
-        result.put("sharding_db.ds_1", new ResourceDataSource("sharding_db.ds_1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1")));
-        result.put("sharding_db.ds_2", new ResourceDataSource("sharding_db.ds_2", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_2")));
+    private Map<String, DataSource> createDataSources(final DatabaseType databaseType) {
+        Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
+        result.put("sharding_db.ds_0", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_0"));
+        result.put("sharding_db.ds_1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1"));
+        result.put("sharding_db.ds_2", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_2"));
         return result;
     }
     

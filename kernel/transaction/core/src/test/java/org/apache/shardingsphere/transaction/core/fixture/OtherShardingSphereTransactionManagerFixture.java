@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.transaction.core.fixture;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
 
 public final class OtherShardingSphereTransactionManagerFixture implements ShardingSphereTransactionManager {
     
     @Override
-    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, ResourceDataSource> resourceDataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
     }
     
     @Override
