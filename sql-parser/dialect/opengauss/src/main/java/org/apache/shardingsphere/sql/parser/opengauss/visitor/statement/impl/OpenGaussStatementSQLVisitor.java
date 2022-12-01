@@ -1060,40 +1060,34 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
             result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), new IdentifierValue(ctx.colId().getText())));
             return result;
         }
-        if (null != ctx.aExpr().cExpr()) {
-            ASTNode projection = visit(expr.cExpr());
-            return findProjectionFromCExpr(ctx, expr, projection).orElseGet(() -> new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null));
+        if (null != ctx.aExpr()) {
+            ASTNode projection = visit(ctx.aExpr());
+            return createProjectionSegment(ctx, expr, projection);
         }
         return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
     }
     
-    private Optional<ProjectionSegment> findProjectionFromCExpr(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
+    private ProjectionSegment createProjectionSegment(final TargetElContext ctx, final AExprContext expr, final ASTNode projection) {
         if (projection instanceof ColumnSegment) {
-            return Optional.of(new ColumnProjectionSegment((ColumnSegment) projection));
-        }
-        if (projection instanceof FunctionSegment) {
-            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (FunctionSegment) projection));
+            return new ColumnProjectionSegment((ColumnSegment) projection);
         }
         if (projection instanceof AggregationProjectionSegment) {
-            return Optional.of((AggregationProjectionSegment) projection);
+            return (AggregationProjectionSegment) projection;
         }
         if (projection instanceof SubqueryExpressionSegment) {
             SubqueryExpressionSegment subqueryExpression = (SubqueryExpressionSegment) projection;
             String text = ctx.start.getInputStream().getText(new Interval(subqueryExpression.getStartIndex(), subqueryExpression.getStopIndex()));
-            return Optional.of(new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text));
+            return new SubqueryProjectionSegment(subqueryExpression.getSubquery(), text);
         }
         if (projection instanceof ExistsSubqueryExpression) {
             ExistsSubqueryExpression existsSubqueryExpression = (ExistsSubqueryExpression) projection;
             String text = ctx.start.getInputStream().getText(new Interval(existsSubqueryExpression.getStartIndex(), existsSubqueryExpression.getStopIndex()));
-            return Optional.of(new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text));
+            return new SubqueryProjectionSegment(existsSubqueryExpression.getSubquery(), text);
         }
-        if (projection instanceof LiteralExpressionSegment) {
-            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (LiteralExpressionSegment) projection));
+        if (projection instanceof ExpressionSegment) {
+            return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (ExpressionSegment) projection);
         }
-        if (projection instanceof CaseWhenExpression) {
-            return Optional.of(new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), (CaseWhenExpression) projection));
-        }
-        return Optional.empty();
+        return new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(expr), null);
     }
     
     @Override
