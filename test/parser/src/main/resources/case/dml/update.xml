@@ -878,7 +878,7 @@
             <assignment start-index="21" stop-index="41">
                 <column name="commission_pct" start-index="21" stop-index="34" />
                 <assignment-value>
-                    <common-expression text="NULL" start-index="38" stop-index="41" />
+                    <literal-expression value="null" start-index="38" stop-index="41" />
                 </assignment-value>
             </assignment>
         </set>

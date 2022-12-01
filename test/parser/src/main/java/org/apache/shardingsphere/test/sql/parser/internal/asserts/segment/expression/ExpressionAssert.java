@@ -106,7 +106,7 @@ public final class ExpressionAssert {
             assertNull(assertContext.getText("Actual literal expression should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual literal expression should exist."), actual);
-            assertThat(assertContext.getText("Literal assertion error: "), actual.getLiterals().toString(), is(expected.getValue()));
+            assertThat(assertContext.getText("Literal assertion error: "), String.valueOf(actual.getLiterals()), is(expected.getValue()));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
     }
