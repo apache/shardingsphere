@@ -170,7 +170,8 @@ public final class MySQLCommandExecutorFactoryTest extends ProxyContextRestorer 
     
     @Test
     public void assertNewInstanceWithComResetConnection() throws SQLException {
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, mock(MySQLComSetOptionPacket.class), connectionSession), instanceOf(MySQLComResetConnectionExecutor.class));
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, mock(MySQLComSetOptionPacket.class), connectionSession),
+                instanceOf(MySQLComResetConnectionExecutor.class));
     }
     
     @Test
