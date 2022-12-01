@@ -42,7 +42,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.constants
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.StorageContainerUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;

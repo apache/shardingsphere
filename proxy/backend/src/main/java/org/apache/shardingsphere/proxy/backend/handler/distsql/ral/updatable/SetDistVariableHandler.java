@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.util.Properties;
 
