@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.MissingRequiredRuleException;
-import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
@@ -33,9 +31,10 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
@@ -43,20 +42,32 @@ public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    private final AlterShardingTableReferenceRuleStatementUpdater updater = new AlterShardingTableReferenceRuleStatementUpdater();
-    
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckWithoutCurrentRuleConfig() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new TableReferenceRuleSegment("foo", "t_order,t_order_item"))), null);
-    }
-    
-    private AlterShardingTableReferenceRuleStatement createSQLStatement(final List<TableReferenceRuleSegment> segments) {
-        return new AlterShardingTableReferenceRuleStatement(segments);
+    public void assertCheckWithoutCurrentRuleConfig() {
+        new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null);
     }
     
     @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckWithNotExistedRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, createSQLStatement(Collections.singletonList(new TableReferenceRuleSegment("notExisted", "t_3,t_4"))), createCurrentRuleConfiguration());
+    public void assertCheckWithNotExistedRule() {
+        new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration());
+    }
+    
+    @Test(expected = MissingRequiredRuleException.class)
+    public void assertCheckWithNotExistedTables() {
+        new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration());
+    }
+    
+    @Test
+    public void assertUpdate() {
+        ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
+        new AlterShardingTableReferenceRuleStatementUpdater().updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfig());
+        assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
+        assertThat(currentRuleConfig.getBindingTableGroups().iterator().next().getName(), is("reference_0"));
+        assertThat(currentRuleConfig.getBindingTableGroups().iterator().next().getReference(), is("t_order,t_order_item,t_1,t_2"));
+    }
+    
+    private AlterShardingTableReferenceRuleStatement createSQLStatement(final String name, final String reference) {
+        return new AlterShardingTableReferenceRuleStatement(Collections.singletonList(new TableReferenceRuleSegment(name, reference)));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
@@ -69,15 +80,9 @@ public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
         return result;
     }
     
-    @Test(expected = MissingRequiredRuleException.class)
-    public void assertCheckWithDuplicatedTables() throws RuleDefinitionViolationException {
-        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("foo", "t_order,t_order_item"), new TableReferenceRuleSegment("bar", "t_order,t_order_item"));
-        updater.checkSQLStatement(database, createSQLStatement(segments), createCurrentRuleConfiguration());
-    }
-    
-    @Test(expected = DuplicateRuleException.class)
-    public void assertCheckSQLStatementWithDifferentCaseDuplicateTables() throws RuleDefinitionViolationException {
-        List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("foo", "T_ORDER,T_ORDER_ITEM"), new TableReferenceRuleSegment("bar", "t_order,t_order_item"));
-        updater.checkSQLStatement(database, createSQLStatement(segments), createCurrentRuleConfiguration());
+    private ShardingRuleConfiguration createToBeAlteredRuleConfig() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order,t_order_item,t_1,t_2"));
+        return result;
     }
 }

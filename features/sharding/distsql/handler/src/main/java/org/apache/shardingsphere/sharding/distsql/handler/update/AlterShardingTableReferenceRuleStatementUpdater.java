@@ -73,7 +73,7 @@ public final class AlterShardingTableReferenceRuleStatementUpdater implements Ru
     private Collection<String> getToBeAlteredRuleNames(final AlterShardingTableReferenceRuleStatement sqlStatement) {
         return sqlStatement.getRules().stream().map(TableReferenceRuleSegment::getName).collect(Collectors.toSet());
     }
-
+    
     private Collection<String> getToBeAlteredRuleNames(final ShardingRuleConfiguration ruleConfig) {
         return ruleConfig.getBindingTableGroups().stream().map(ShardingTableReferenceRuleConfiguration::getName).collect(Collectors.toSet());
     }

@@ -43,7 +43,7 @@ public final class ShardingTableReferenceRuleQueryResultSet implements DatabaseD
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         rule.ifPresent(optional -> data = buildData((ShardingRuleConfiguration) optional.getConfiguration()).iterator());
     }
-
+    
     private Collection<ShardingTableReferenceRuleConfiguration> buildData(final ShardingRuleConfiguration ruleConfig) {
         return ruleConfig.getBindingTableGroups();
     }
@@ -62,7 +62,7 @@ public final class ShardingTableReferenceRuleQueryResultSet implements DatabaseD
     public Collection<Object> getRowData() {
         return buildTableRowData(data.next());
     }
-
+    
     private Collection<Object> buildTableRowData(final ShardingTableReferenceRuleConfiguration ruleConfig) {
         return Arrays.asList(ruleConfig.getName(), ruleConfig.getReference());
     }

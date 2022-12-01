@@ -104,8 +104,8 @@ rules:
           shardingColumn: user_id
           shardingAlgorithmName: table_inline_user_id
   bindingTables:
-    - t_user,t_user_details
-    - t_order,t_order_item
+    - ref_0:t_user,t_user_details
+    - ref_1:t_order,t_order_item
   broadcastTables:
     - t_product_category
     - t_country

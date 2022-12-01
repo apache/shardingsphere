@@ -57,7 +57,7 @@ rules:
           shardingAlgorithmName: db_inline_item_id
 
   bindingTables:
-    - t_order,t_order_item,t_order_details
+    - ref_0:t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
     - t_broadcast_table_for_ddl
