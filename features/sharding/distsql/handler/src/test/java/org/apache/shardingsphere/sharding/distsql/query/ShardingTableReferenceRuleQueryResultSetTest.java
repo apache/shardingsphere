@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,8 +44,10 @@ public final class ShardingTableReferenceRuleQueryResultSetTest {
         ShardingTableReferenceRuleQueryResultSet resultSet = new ShardingTableReferenceRuleQueryResultSet();
         resultSet.init(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.contains("t_order,t_order_item"));
+        assertThat(actual.size(), is(2));
+        Iterator<Object> iterator = actual.iterator();
+        assertThat(iterator.next(), is("foo"));
+        assertThat(iterator.next(), is("t_order,t_order_item"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

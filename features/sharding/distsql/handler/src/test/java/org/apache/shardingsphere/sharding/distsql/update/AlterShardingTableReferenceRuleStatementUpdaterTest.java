@@ -69,7 +69,7 @@ public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
         return result;
     }
     
-    @Test(expected = DuplicateRuleException.class)
+    @Test(expected = MissingRequiredRuleException.class)
     public void assertCheckWithDuplicatedTables() throws RuleDefinitionViolationException {
         List<TableReferenceRuleSegment> segments = Arrays.asList(new TableReferenceRuleSegment("foo", "t_order,t_order_item"), new TableReferenceRuleSegment("bar", "t_order,t_order_item"));
         updater.checkSQLStatement(database, createSQLStatement(segments), createCurrentRuleConfiguration());
