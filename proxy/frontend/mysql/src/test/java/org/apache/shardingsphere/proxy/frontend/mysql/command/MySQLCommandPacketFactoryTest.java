@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComResetConnectionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
@@ -107,6 +108,11 @@ public final class MySQLCommandPacketFactoryTest {
     @Test
     public void assertNewInstanceWithComPingPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_PING, payload, connectionSession, false), instanceOf(MySQLComPingPacket.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithComResetConnectionPacket() {
+        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, payload, connectionSession, false), instanceOf(MySQLComResetConnectionPacket.class));
     }
     
     @Test
@@ -222,10 +228,5 @@ public final class MySQLCommandPacketFactoryTest {
     @Test
     public void assertNewInstanceWithComBinlogDumpGTIDPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_BINLOG_DUMP_GTID, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
-    }
-    
-    @Test
-    public void assertNewInstanceWithComResetConnectionPacket() {
-        assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
 }
