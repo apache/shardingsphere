@@ -46,11 +46,11 @@
     </drop-sharding-table-rule>
     
     <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule">
-        <rule>t_1,t_2</rule>
+        <name>reference_0</name>
     </drop-sharding-table-reference-rule>
     
     <drop-sharding-table-reference-rule sql-case-id="drop-sharding-table-reference-rule-if-exists" if-exists="true">
-        <rule>t_1,t_2</rule>
+        <name>reference_1</name>
     </drop-sharding-table-reference-rule>
     
     <drop-broadcast-table-rule sql-case-id="drop-broadcast-table-rule" >

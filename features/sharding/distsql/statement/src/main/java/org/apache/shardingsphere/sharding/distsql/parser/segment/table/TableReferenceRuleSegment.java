@@ -32,14 +32,16 @@ import java.util.stream.Collectors;
 @Getter
 public final class TableReferenceRuleSegment implements ASTNode {
     
-    private final String tableGroup;
+    private final String name;
+    
+    private final String reference;
     
     /**
-     * Get table reference.
+     * Get table names.
      * 
-     * @return table reference
+     * @return table names
      */
-    public Collection<String> getTableReference() {
-        return Arrays.stream(tableGroup.split(",")).map(String::trim).collect(Collectors.toList());
+    public Collection<String> getTableNames() {
+        return Arrays.stream(reference.split(",")).map(String::trim).collect(Collectors.toList());
     }
 }

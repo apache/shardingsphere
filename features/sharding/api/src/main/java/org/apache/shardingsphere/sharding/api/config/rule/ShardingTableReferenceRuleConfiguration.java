@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.sharding.api.config.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-
-import java.util.Collection;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Drop sharding table reference rules statement.
+ * Sharding table reference rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class DropShardingTableReferenceRuleStatement extends DropRuleStatement {
+public final class ShardingTableReferenceRuleConfiguration {
     
-    private final Collection<String> names;
+    private final String name;
     
-    public DropShardingTableReferenceRuleStatement(final boolean ifExists, final Collection<String> names) {
-        super(ifExists);
-        this.names = names;
-    }
+    private final String reference;
 }

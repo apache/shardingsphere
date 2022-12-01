@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.query;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableReferenceRuleQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableReferenceRulesStatement;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -62,7 +62,7 @@ public final class ShardingTableReferenceRuleQueryResultSetTest {
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
         result.getTables().add(new ShardingTableRuleConfiguration("t_1"));
         result.getTables().add(new ShardingTableRuleConfiguration("t_2"));
-        result.getBindingTableGroups().addAll(Collections.singleton("t_order,t_order_item"));
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         return result;
     }
 }

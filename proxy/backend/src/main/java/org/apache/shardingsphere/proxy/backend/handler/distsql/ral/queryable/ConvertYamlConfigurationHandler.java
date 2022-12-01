@@ -59,6 +59,7 @@ import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
@@ -324,9 +325,10 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
             return;
         }
         result.append(DistSQLScriptConstants.SHARDING_BINDING_TABLE_RULES);
-        Iterator<String> iterator = ruleConfig.getBindingTableGroups().iterator();
+        Iterator<ShardingTableReferenceRuleConfiguration> iterator = ruleConfig.getBindingTableGroups().iterator();
         while (iterator.hasNext()) {
-            result.append(String.format(DistSQLScriptConstants.BINDING_TABLES, iterator.next()));
+            ShardingTableReferenceRuleConfiguration referenceRuleConfig = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.BINDING_TABLES, referenceRuleConfig.getName(), referenceRuleConfig.getReference()));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }

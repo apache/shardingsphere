@@ -125,7 +125,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -147,12 +146,17 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitCreateShardingTableReferenceRule(final CreateShardingTableReferenceRuleContext ctx) {
-        return new CreateShardingTableReferenceRuleStatement(createTableReferenceRuleSegment(ctx.tableReferenceRuleDefinition()));
+        return new CreateShardingTableReferenceRuleStatement(getTableReferenceRuleSegments(ctx.tableReferenceRuleDefinition()));
     }
     
-    private Collection<TableReferenceRuleSegment> createTableReferenceRuleSegment(final List<TableReferenceRuleDefinitionContext> contexts) {
-        return contexts.stream().map(each -> each.tableName().stream()
-                .map(this::getIdentifierValue).collect(Collectors.joining(","))).map(TableReferenceRuleSegment::new).collect(Collectors.toList());
+    private Collection<TableReferenceRuleSegment> getTableReferenceRuleSegments(final List<TableReferenceRuleDefinitionContext> ctx) {
+        Collection<TableReferenceRuleSegment> result = new LinkedList<>();
+        for (TableReferenceRuleDefinitionContext each : ctx) {
+            String ruleName = getIdentifierValue(each.ruleName());
+            String reference = each.tableName().stream().map(this::getIdentifierValue).collect(Collectors.joining(","));
+            result.add(new TableReferenceRuleSegment(ruleName, reference));
+        }
+        return result;
     }
     
     @Override
@@ -174,11 +178,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitAlterShardingTableReferenceRule(final AlterShardingTableReferenceRuleContext ctx) {
-        Collection<TableReferenceRuleSegment> rules = new LinkedList<>();
-        for (TableReferenceRuleDefinitionContext each : ctx.tableReferenceRuleDefinition()) {
-            rules.add(new TableReferenceRuleSegment(each.tableName().stream().map(tableName -> new IdentifierValue(tableName.getText()).getValue()).collect(Collectors.joining(","))));
-        }
-        return new AlterShardingTableReferenceRuleStatement(rules);
+        return new AlterShardingTableReferenceRuleStatement(getTableReferenceRuleSegments(ctx.tableReferenceRuleDefinition()));
     }
     
     @Override
@@ -189,8 +189,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingTableReferenceRule(final DropShardingTableReferenceRuleContext ctx) {
-        Collection<TableReferenceRuleSegment> tableNames = null == ctx.tableReferenceRuleDefinition() ? Collections.emptyList() : createTableReferenceRuleSegment(ctx.tableReferenceRuleDefinition());
-        return new DropShardingTableReferenceRuleStatement(null != ctx.ifExists(), tableNames);
+        return new DropShardingTableReferenceRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override

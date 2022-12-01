@@ -70,7 +70,6 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(createShardingTableRuleConfiguration());
         result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
-        result.getBindingTableGroups().add("t_order,t_order_item");
         result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
