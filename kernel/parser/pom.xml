@@ -31,7 +31,6 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>spring</module>
         <module>distsql</module>
     </modules>
 </project>

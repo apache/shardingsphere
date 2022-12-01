@@ -30,6 +30,5 @@
     
     <modules>
         <module>core</module>
-        <module>spring</module>
     </modules>
 </project>

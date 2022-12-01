@@ -25,6 +25,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessTy
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Optional;
+
 /**
  * Set transaction statement.
  */
@@ -38,4 +40,22 @@ public abstract class SetTransactionStatement extends AbstractSQLStatement imple
     private OperationScope scope;
     
     private TransactionAccessType accessMode;
+    
+    /**
+     * Get isolation level.
+     * 
+     * @return isolation level
+     */
+    public Optional<TransactionIsolationLevel> getIsolationLevel() {
+        return Optional.ofNullable(isolationLevel);
+    }
+    
+    /**
+     * Get access mode.
+     * 
+     * @return access mode 
+     */
+    public Optional<TransactionAccessType> getAccessMode() {
+        return Optional.ofNullable(accessMode);
+    }
 }

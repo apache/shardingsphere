@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.ProxyContextRestorer;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.MySQLComResetConnectionExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.MySQLComSetOptionExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb.MySQLComInitDbExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.ping.MySQLComPingExecutor;
@@ -165,6 +166,12 @@ public final class MySQLCommandExecutorFactoryTest extends ProxyContextRestorer 
     @Test
     public void assertNewInstanceWithComSetOption() throws SQLException {
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, mock(MySQLComSetOptionPacket.class), connectionSession), instanceOf(MySQLComSetOptionExecutor.class));
+    }
+    
+    @Test
+    public void assertNewInstanceWithComResetConnection() throws SQLException {
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, mock(MySQLComSetOptionPacket.class), connectionSession),
+                instanceOf(MySQLComResetConnectionExecutor.class));
     }
     
     @Test

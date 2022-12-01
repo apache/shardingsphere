@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComResetConnectionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
@@ -79,6 +80,8 @@ public final class MySQLCommandPacketFactory {
                 return new MySQLComSetOptionPacket(payload);
             case COM_PING:
                 return new MySQLComPingPacket();
+            case COM_RESET_CONNECTION:
+                return new MySQLComResetConnectionPacket();
             default:
                 return new MySQLUnsupportedCommandPacket(commandPacketType);
         }

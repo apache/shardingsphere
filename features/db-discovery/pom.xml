@@ -33,6 +33,5 @@
         <module>core</module>
         <module>distsql</module>
         <module>provider</module>
-        <module>spring</module>
     </modules>
 </project>
