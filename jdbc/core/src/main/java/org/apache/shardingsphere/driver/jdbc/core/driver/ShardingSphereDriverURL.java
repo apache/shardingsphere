@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 
@@ -61,7 +60,8 @@ public final class ShardingSphereDriverURL {
     @SneakyThrows(IOException.class)
     public byte[] toConfigurationBytes() {
         try (InputStream stream = inClasspath ? ShardingSphereDriverURL.class.getResourceAsStream("/" + file) : Files.newInputStream(new File(file).toPath())) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, Charsets.UTF_8));
+            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file)).read();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -70,7 +70,6 @@ public final class ShardingSphereDriverURL {
                 }
             }
             final byte[] result = builder.toString().getBytes(StandardCharsets.UTF_8);
-            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file)).read(result);
             return result;
         }
     }
