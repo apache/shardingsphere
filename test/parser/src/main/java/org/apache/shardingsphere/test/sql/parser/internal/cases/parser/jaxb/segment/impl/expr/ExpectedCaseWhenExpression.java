@@ -26,21 +26,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Expected case when in expression.
+ * Expected case when expression.
  */
 @Getter
 @Setter
 public final class ExpectedCaseWhenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
     
-    @XmlElement(name = "case-arg")
-    private ExpectedExpression caseArg;
+    @XmlElement(name = "case-expr")
+    private ExpectedExpression caseExpr;
     
-    @XmlElement(name = "when-list")
-    private final List<ExpectedExpression> whenList = new LinkedList<>();
+    @XmlElement(name = "when-exprs")
+    private final List<ExpectedExpression> whenExprs = new LinkedList<>();
     
-    @XmlElement(name = "then-list")
-    private final List<ExpectedExpression> thenList = new LinkedList<>();
+    @XmlElement(name = "then-exprs")
+    private final List<ExpectedExpression> thenExprs = new LinkedList<>();
     
-    @XmlElement(name = "else-expression")
+    @XmlElement(name = "else-expr")
     private ExpectedExpression elseExpr;
 }

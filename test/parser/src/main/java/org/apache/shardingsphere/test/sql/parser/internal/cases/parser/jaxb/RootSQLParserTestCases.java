@@ -317,6 +317,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.stat
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.UnlabelComputeNodeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.CheckMigrationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.CommitMigrationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.DropMigrationCheckStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.MigrateTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.RegisterMigrationSourceStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.RollbackMigrationStatementTestCase;
@@ -1007,6 +1008,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "start-migration-check")
     private final List<StartMigrationCheckStatementTestCase> startMigrationCheckTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-migration-check")
+    private final List<DropMigrationCheckStatementTestCase> dropMigrationCheckTestCases = new LinkedList<>();
     
     @XmlElement(name = "migrate-table")
     private final List<MigrateTableStatementTestCase> migrateTableTestCases = new LinkedList<>();

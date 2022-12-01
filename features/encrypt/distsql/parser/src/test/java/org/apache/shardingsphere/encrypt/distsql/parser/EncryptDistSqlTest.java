@@ -43,8 +43,9 @@ public final class EncryptDistSqlTest {
     @Test
     public void assertCreateEncryptRule() {
         String sql = "CREATE ENCRYPT RULE t_encrypt (COLUMNS("
-                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))"
-                + ",(NAME=order_id, CIPHER =order_cipher,TYPE(NAME='MD5')))"
+                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like"
+                + ",ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))"
+                + ",(NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5'))))"
                 + ",QUERY_WITH_CIPHER_COLUMN=true)";
         CreateEncryptRuleStatement createEncryptRuleStatement = (CreateEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(createEncryptRuleStatement.getRules().size(), is(1));
@@ -54,8 +55,10 @@ public final class EncryptDistSqlTest {
     @Test
     public void assertAlterEncryptRule() {
         String sql = "ALTER ENCRYPT RULE t_encrypt (COLUMNS("
-                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),"
-                + " (NAME=order_id,CIPHER=order_cipher,TYPE(NAME='MD5'))), QUERY_WITH_CIPHER_COLUMN=TRUE)";
+                + " (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ASSISTED_QUERY_COLUMN=user_assisted,LIKE_QUERY_COLUMN=user_like"
+                + ",ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))),ASSISTED_QUERY_ALGORITHM(TYPE(NAME='MD5')),LIKE_QUERY_ALGORITHM(TYPE(NAME='CHAR_DIGEST_LIKE')))"
+                + ",(NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5'))))"
+                + ",QUERY_WITH_CIPHER_COLUMN=true)";
         AlterEncryptRuleStatement alterEncryptRule = (AlterEncryptRuleStatement) getEncryptDistSQLStatement(sql);
         assertThat(alterEncryptRule.getRules().size(), is(1));
         assertEncryptRule(alterEncryptRule.getRules().iterator().next());
@@ -70,7 +73,10 @@ public final class EncryptDistSqlTest {
         assertThat(userEncryptColumn.getName(), is("user_id"));
         assertThat(userEncryptColumn.getPlainColumn(), is("user_plain"));
         assertThat(userEncryptColumn.getCipherColumn(), is("user_cipher"));
+        assertThat(userEncryptColumn.getAssistedQueryColumn(), is("user_assisted"));
         assertThat(userEncryptColumn.getEncryptor().getName(), is("AES"));
+        assertThat(userEncryptColumn.getAssistedQueryEncryptor().getName(), is("MD5"));
+        assertThat(userEncryptColumn.getLikeQueryEncryptor().getName(), is("CHAR_DIGEST_LIKE"));
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456abc");
         assertThat(userEncryptColumn.getEncryptor().getProps(), is(props));

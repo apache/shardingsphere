@@ -24,23 +24,16 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Consistency check job item context.
  */
 @Getter
 @Setter
-public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext, PipelineJobProgressListener {
+public final class ConsistencyCheckJobItemContext implements PipelineJobItemContext {
     
     private final String jobId;
     
@@ -52,40 +45,24 @@ public final class ConsistencyCheckJobItemContext implements PipelineJobItemCont
     
     private volatile JobStatus status;
     
-    private final Collection<String> tableNames = new CopyOnWriteArraySet<>();
-    
-    private volatile long recordsCount;
-    
-    private final AtomicLong checkedRecordsCount = new AtomicLong(0);
-    
-    private final long checkBeginTimeMillis;
-    
-    private volatile Long checkEndTimeMillis;
-    
-    private final Map<String, Object> tableCheckPositions = new ConcurrentHashMap<>();
-    
     private final ConsistencyCheckJobConfiguration jobConfig;
+    
+    private final ConsistencyCheckJobItemProgressContext progressContext;
     
     public ConsistencyCheckJobItemContext(final ConsistencyCheckJobConfiguration jobConfig, final int shardingItem, final JobStatus status, final ConsistencyCheckJobItemProgress jobItemProgress) {
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = shardingItem;
         this.status = status;
-        checkBeginTimeMillis = System.currentTimeMillis();
+        progressContext = new ConsistencyCheckJobItemProgressContext(jobId, shardingItem);
         if (null != jobItemProgress) {
-            checkedRecordsCount.set(Optional.ofNullable(jobItemProgress.getCheckedRecordsCount()).orElse(0L));
-            Optional.ofNullable(jobItemProgress.getTableCheckPositions()).ifPresent(tableCheckPositions::putAll);
+            progressContext.getCheckedRecordsCount().set(Optional.ofNullable(jobItemProgress.getCheckedRecordsCount()).orElse(0L));
+            Optional.ofNullable(jobItemProgress.getTableCheckPositions()).ifPresent(progressContext.getTableCheckPositions()::putAll);
         }
     }
     
     @Override
     public PipelineProcessContext getJobProcessContext() {
         throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
-        checkedRecordsCount.addAndGet(param.getProcessedRecordsCount());
-        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
     }
 }

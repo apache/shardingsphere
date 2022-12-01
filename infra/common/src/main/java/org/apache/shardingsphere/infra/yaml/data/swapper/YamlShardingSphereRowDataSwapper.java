@@ -48,6 +48,7 @@ public final class YamlShardingSphereRowDataSwapper implements YamlConfiguration
             yamlRowData.add(convertDataType(each, columns.get(count++).getDataType()));
         }
         result.setRows(yamlRowData);
+        result.setUniqueKey(data.getUniqueKey());
         return result;
     }
     
@@ -68,7 +69,7 @@ public final class YamlShardingSphereRowDataSwapper implements YamlConfiguration
             ShardingSphereColumn column = columns.get(count++);
             rowData.add(convertByDataType(each, column.getDataType()));
         }
-        return new ShardingSphereRowData(rowData);
+        return new ShardingSphereRowData(yamlConfig.getUniqueKey(), rowData);
     }
     
     private Object convertByDataType(final Object data, final int dataType) {

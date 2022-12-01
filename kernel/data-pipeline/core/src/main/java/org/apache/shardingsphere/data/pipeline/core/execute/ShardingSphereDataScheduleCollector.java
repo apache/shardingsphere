@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
@@ -121,8 +120,7 @@ public final class ShardingSphereDataScheduleCollector {
             }
             shardingSphereData.getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().put(changedTableData.getName().toLowerCase(), changedTableData);
             ShardingSphereSchemaDataAlteredEvent event = new ShardingSphereSchemaDataAlteredEvent(databaseName, schemaName);
-            event.getAlteredYamlTables().add(new YamlShardingSphereTableDataSwapper(contextManager.getMetaDataContexts().getMetaData().getProps()
-                    .getValue(ConfigurationPropertyKey.METADATA_CHUNK_UNIT_ROWS)).swapToYamlConfiguration(changedTableData));
+            event.getAlteredYamlTables().add(new YamlShardingSphereTableDataSwapper().swapToYamlConfiguration(changedTableData));
             contextManager.getInstanceContext().getEventBusContext().post(event);
         }
     }

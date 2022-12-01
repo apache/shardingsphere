@@ -21,8 +21,7 @@
     <sql-case id="select_with_expression_for_postgresql" value="SELECT o.order_id + 1 * 2 as exp FROM t_order AS o ORDER BY o.order_id" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_date_function" value="SELECT DATE(i.creation_date) AS creation_date FROM `t_order_item` AS i ORDER BY DATE(i.creation_date) DESC" db-types="MySQL" />
     <sql-case id="select_with_regexp" value="SELECT * FROM t_order_item t WHERE t.status REGEXP ? AND t.item_id IN (?, ?)" db-types="MySQL" />
-    <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName
-    from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
+    <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
     <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL" />
@@ -82,9 +81,8 @@
     <sql-case id="select_where_with_expr_with_not_with_order_by" value="SELECT last_name, job_id, salary, department_id FROM employees WHERE NOT (job_id = 'PU_CLERK' AND department_id = 30) ORDER BY last_name" db-types="Oracle" />
     <sql-case id="select_where_with_subquery" value="SELECT last_name, department_id FROM employees WHERE department_id = (SELECT department_id FROM employees WHERE last_name = 'Lorentz') ORDER BY last_name, department_id" db-types="Oracle" />
     <sql-case id="select_where_with_expr_with_not_in" value="SELECT * FROM employees WHERE department_id NOT IN (SELECT department_id FROM departments WHERE location_id = 1700) ORDER BY last_name" db-types="Oracle" />
-    <sql-case id="select_projections_with_expr" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="MySQL" />
-    <sql-case id="select_projections_with_expr_for_postgres" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_projections_with_only_expr_for_postgres" value="SELECT CASE order_id WHEN 1 THEN '11' ELSE '00' END FROM t_order" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_projections_with_expr" value="SELECT 10+20,CASE order_id WHEN 1 THEN '11' ELSE '00' END,1 FROM t_order" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="select_projections_with_only_expr" value="SELECT CASE order_id WHEN 1 THEN '11' ELSE '00' END FROM t_order" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="select_with_amp" value="select 1 &amp; 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_vertical_bar" value="select 1 | 1" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_with_abs_function" value="SELECT ABS(1) FROM t_order WHERE ABS(1) &gt; 1 GROUP BY ABS(1) ORDER BY ABS(1)" db-types="Oracle" />

@@ -118,12 +118,12 @@ public final class PipelineMetaDataNode {
     }
     
     /**
-     * Get check latest job id path.
+     * Get latest check job id path.
      *
      * @param jobId job id
-     * @return check latest job id path
+     * @return latest check job id path
      */
-    public static String getCheckLatestJobIdPath(final String jobId) {
+    public static String getLatestCheckJobIdPath(final String jobId) {
         return String.join("/", getJobRootPath(jobId), "check", "latest_job_id");
     }
     
