@@ -53,6 +53,7 @@ import org.apache.shardingsphere.data.pipeline.api.pojo.TableBasedPipelineJobInf
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIncrementalJobAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
@@ -63,7 +64,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobAPIFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.sharding.ShardingColumnsExtractorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
@@ -242,8 +242,8 @@ public final class MigrationJobAPIImpl extends AbstractInventoryIncrementalJobAP
     
     @Override
     protected PipelineDataConsistencyChecker buildPipelineDataConsistencyChecker(final PipelineJobConfiguration pipelineJobConfig, final InventoryIncrementalProcessContext processContext,
-                                                                                 final ConsistencyCheckJobItemContext checkJobItemContext) {
-        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext, checkJobItemContext);
+                                                                                 final ConsistencyCheckJobItemProgressContext progressContext) {
+        return new MigrationDataConsistencyChecker((MigrationJobConfiguration) pipelineJobConfig, processContext, progressContext);
     }
     
     @Override

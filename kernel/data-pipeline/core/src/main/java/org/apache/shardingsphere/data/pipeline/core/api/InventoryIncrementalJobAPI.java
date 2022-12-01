@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.util.Map;
@@ -57,12 +57,11 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
      *
      * @param pipelineJobConfig job configuration
      * @param calculateAlgorithm calculate algorithm
-     * @param checkJobItemContext consistency check job item context
+     * @param progressContext consistency check job item progress context
      * @return each logic table check result
      */
-    // TODO do not depend on ConsistencyCheckJobItemContext
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(PipelineJobConfiguration pipelineJobConfig, DataConsistencyCalculateAlgorithm calculateAlgorithm,
-                                                                 ConsistencyCheckJobItemContext checkJobItemContext);
+                                                                 ConsistencyCheckJobItemProgressContext progressContext);
     
     /**
      * Aggregate data consistency check results.
