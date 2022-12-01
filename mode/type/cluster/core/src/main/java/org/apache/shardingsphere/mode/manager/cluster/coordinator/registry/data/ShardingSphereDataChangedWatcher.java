@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSpherePartitionRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereTableDataSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
@@ -66,7 +66,7 @@ public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher
             return createSchemaDataChangedEvent(event);
         }
         if (isTableRowDataChanged(event)) {
-            return createPartitionRowsAddedEvent(event);
+            return createRowAddedEvent(event);
         }
         return Optional.empty();
     }
@@ -133,7 +133,7 @@ public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher
                         .swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTableData.class)), null);
     }
     
-    private Optional<GovernanceEvent> createPartitionRowsAddedEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createRowAddedEvent(final DataChangedEvent event) {
         if (Type.ADDED != event.getType()) {
             return Optional.empty();
         }
@@ -143,7 +143,7 @@ public final class ShardingSphereDataChangedWatcher implements GovernanceWatcher
         Preconditions.checkState(schemaName.isPresent());
         Optional<String> tableName = ShardingSphereDataNode.getTableNameByPartitionRowsPath(event.getKey());
         Preconditions.checkState(tableName.isPresent());
-        YamlShardingSpherePartitionRowData yamlShardingSpherePartitionRowData = YamlEngine.unmarshal(event.getValue(), YamlShardingSpherePartitionRowData.class);
-        return Optional.of(new ShardingSphereRowDataAddedEvent(databaseName.get(), schemaName.get(), tableName.get(), yamlShardingSpherePartitionRowData.getPartitionRows()));
+        YamlShardingSphereRowData yamlShardingSphereRowData = YamlEngine.unmarshal(event.getValue(), YamlShardingSphereRowData.class);
+        return Optional.of(new ShardingSphereRowDataAddedEvent(databaseName.get(), schemaName.get(), tableName.get(), yamlShardingSphereRowData));
     }
 }

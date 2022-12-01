@@ -46,12 +46,6 @@ public final class MySQLContainerConfigurationFactory {
      */
     public static List<StorageContainerConfiguration> newInstance(final String scenario, final DatabaseType databaseType) {
         Integer containerQuantity = DiscoveryContainerUtil.loadContainerRawNamesAndQuantity(scenario).get(databaseType.getType().toLowerCase());
-        if (null == containerQuantity) {
-            return getDefaultConfiguration(databaseType);
-        }
-        if (1 == containerQuantity) {
-            return Collections.singletonList(new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario, databaseType, 0)));
-        }
         List<StorageContainerConfiguration> result = new LinkedList<>();
         for (int i = 1; i <= containerQuantity; i++) {
             result.add(new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario, databaseType, i)));

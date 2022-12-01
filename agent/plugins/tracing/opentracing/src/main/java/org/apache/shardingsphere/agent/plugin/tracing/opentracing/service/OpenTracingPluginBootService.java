@@ -31,7 +31,7 @@ public final class OpenTracingPluginBootService implements PluginBootService {
     private static final String KEY_OPENTRACING_TRACER_CLASS_NAME = "opentracing-tracer-class-name";
     
     @Override
-    public void start(final PluginConfiguration pluginConfig) {
+    public void start(final PluginConfiguration pluginConfig, final boolean isEnhancedForProxy) {
         String tracerClassName = pluginConfig.getProps().getProperty(KEY_OPENTRACING_TRACER_CLASS_NAME);
         Preconditions.checkNotNull(tracerClassName, "Can not find opentracing tracer implementation in you config");
         try {

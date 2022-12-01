@@ -35,5 +35,6 @@
     <sql-case id="start-migration" value="START MIGRATION 123;" db-types="ShardingSphere" />
     <sql-case id="stop-migration-check" value="STOP MIGRATION CHECK 123;" db-types="ShardingSphere" />
     <sql-case id="start-migration-check" value="START MIGRATION CHECK 123;" db-types="ShardingSphere" />
+    <sql-case id="drop-migration-check" value="DROP MIGRATION CHECK 123;" db-types="ShardingSphere" />
     <sql-case id="unregister-migration-source-storage-unit" value="UNREGISTER MIGRATION SOURCE STORAGE UNIT ds_0,ds_1" db-types="ShardingSphere" />
 </sql-cases>

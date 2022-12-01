@@ -23,16 +23,15 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSpherePartitionRowData;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
 import org.apache.shardingsphere.infra.yaml.data.swapper.YamlShardingSphereTableDataSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.node.ShardingSphereDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Optional;
-import java.util.TreeMap;
 
 /**
  * ShardingSphere data persist service.
@@ -93,12 +92,14 @@ public final class ShardingSphereDataPersistService {
     private ShardingSphereTableData loadTableData(final String databaseName, final String schemaName, final String tableName) {
         String tableData = repository.getDirectly(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName));
         YamlShardingSphereTableData yamlTableData = YamlEngine.unmarshal(tableData, YamlShardingSphereTableData.class);
-        Map<Integer, YamlShardingSpherePartitionRowData> partitionRowsData = new TreeMap<>();
+        Collection<YamlShardingSphereRowData> yamlRowData = new LinkedList<>();
         for (String each : repository.getChildrenKeys(ShardingSphereDataNode.getTablePath(databaseName, schemaName, tableName))) {
-            String partitionRows = repository.getDirectly(ShardingSphereDataNode.getTablePartitionRowsPath(databaseName, schemaName, tableName, each));
-            partitionRowsData.put(Integer.parseInt(each), YamlEngine.unmarshal(partitionRows, YamlShardingSpherePartitionRowData.class));
+            String yamlRow = repository.getDirectly(ShardingSphereDataNode.getTablePartitionRowsPath(databaseName, schemaName, tableName, each));
+            if (null != yamlRow) {
+                yamlRowData.add(YamlEngine.unmarshal(yamlRow, YamlShardingSphereRowData.class));
+            }
         }
-        yamlTableData.setPartitionRows(partitionRowsData);
+        yamlTableData.setRowData(yamlRowData);
         return new YamlShardingSphereTableDataSwapper().swapToObject(yamlTableData);
     }
     
@@ -108,13 +109,12 @@ public final class ShardingSphereDataPersistService {
      * @param databaseName database name
      * @param schemaName schema name
      * @param schemaData schema data
-     * @param rowsPartitionSize rows partition size
      */
-    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData, final int rowsPartitionSize) {
+    public void persist(final String databaseName, final String schemaName, final ShardingSphereSchemaData schemaData) {
         if (schemaData.getTableData().isEmpty()) {
             repository.persist(ShardingSphereDataNode.getSchemaDataPath(databaseName, schemaName), "");
         } else {
-            schemaData.getTableData().values().forEach(each -> persistTable(databaseName, schemaName, new YamlShardingSphereTableDataSwapper(rowsPartitionSize).swapToYamlConfiguration(each)));
+            schemaData.getTableData().values().forEach(each -> persistTable(databaseName, schemaName, new YamlShardingSphereTableDataSwapper().swapToYamlConfiguration(each)));
         }
     }
     
@@ -131,7 +131,7 @@ public final class ShardingSphereDataPersistService {
         yamlTableDataWithoutRows.setName(table.getName());
         yamlTableDataWithoutRows.setColumns(table.getColumns());
         repository.persist(ShardingSphereDataNode.getTablePath(databaseName, schemaName, table.getName().toLowerCase()), YamlEngine.marshal(yamlTableDataWithoutRows));
-        table.getPartitionRows().forEach((key, value) -> repository.persist(ShardingSphereDataNode
-                .getTablePartitionRowsPath(databaseName, schemaName, table.getName().toLowerCase(), String.valueOf(key)), YamlEngine.marshal(value)));
+        table.getRowData().forEach(each -> repository.persist(ShardingSphereDataNode
+                .getTablePartitionRowsPath(databaseName, schemaName, table.getName().toLowerCase(), each.getUniqueKey()), YamlEngine.marshal(each)));
     }
 }

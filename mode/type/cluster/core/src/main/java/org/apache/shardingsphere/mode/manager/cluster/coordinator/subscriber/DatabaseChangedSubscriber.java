@@ -92,7 +92,7 @@ public final class DatabaseChangedSubscriber {
     
     /**
      * Renew ShardingSphere data of row.
-     * 
+     *
      * @param event ShardingSphere row data added event
      */
     @Subscribe

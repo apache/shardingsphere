@@ -28,7 +28,9 @@ import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -39,19 +41,36 @@ public final class MySQLMGREnvironment implements DatabaseClusterEnvironment {
     private final MGRPrimaryReplicaCommand mgrPrimaryReplicaCommand;
     
     @Getter
+    private final Map<String, DataSource> dataSources;
+    
     private final DataSource primaryDataSource;
     
-    @Getter
     private final List<DataSource> replicationDataSources;
     
     public MySQLMGREnvironment(final List<DataSource> dataSources) throws SQLException {
         primaryDataSource = dataSources.get(0);
         replicationDataSources = dataSources.subList(1, dataSources.size());
+        this.dataSources = getAllDataSources();
         mgrPrimaryReplicaCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/mgr-primary-replica-command.xml")),
                 MGRPrimaryReplicaCommand.class);
         buildMGRPrimaryDataSource();
         buildMGRReplicaDataSources();
         createDatabase();
+    }
+    
+    private Map<String, DataSource> getAllDataSources() {
+        Map<String, DataSource> result = new LinkedHashMap<>(4, 1);
+        result.put("ds_0", primaryDataSource);
+        result.putAll(getReplicationDataSources());
+        return result;
+    }
+    
+    private Map<String, DataSource> getReplicationDataSources() {
+        Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
+        for (int i = 0; i < replicationDataSources.size(); i++) {
+            result.put("ds_" + (i + 1), replicationDataSources.get(i));
+        }
+        return result;
     }
     
     private void buildMGRPrimaryDataSource() throws SQLException {

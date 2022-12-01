@@ -453,8 +453,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         Iterator<EncryptColumnRuleConfiguration> iterator = ruleConfigs.iterator();
         while (iterator.hasNext()) {
             EncryptColumnRuleConfiguration columnRuleConfig = iterator.next();
-            String columnType = getAlgorithmType(encryptors.get(columnRuleConfig.getEncryptorName()));
-            result.append(String.format(DistSQLScriptConstants.ENCRYPT_COLUMN, columnRuleConfig.getLogicColumn(), getColumnPlainAndCipher(columnRuleConfig), columnType));
+            result.append(String.format(DistSQLScriptConstants.ENCRYPT_COLUMN, columnRuleConfig.getLogicColumn(), getColumns(columnRuleConfig), getEncryptAlgorithms(columnRuleConfig, encryptors)));
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
             }
@@ -462,7 +461,7 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
         return result.toString();
     }
     
-    private String getColumnPlainAndCipher(final EncryptColumnRuleConfiguration ruleConfig) {
+    private String getColumns(final EncryptColumnRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
         String plainColumnName = ruleConfig.getPlainColumn();
         String cipherColumnName = ruleConfig.getCipherColumn();
@@ -474,6 +473,31 @@ public final class ConvertYamlConfigurationHandler extends QueryableRALBackendHa
                 result.append(DistSQLScriptConstants.COMMA).append(" ");
             }
             result.append(String.format(DistSQLScriptConstants.CIPHER, cipherColumnName));
+        }
+        if (null != ruleConfig.getAssistedQueryColumn()) {
+            result.append(DistSQLScriptConstants.COMMA).append(" ").append(String.format(DistSQLScriptConstants.ASSISTED_QUERY_COLUMN, ruleConfig.getAssistedQueryColumn()));
+        }
+        if (null != ruleConfig.getLikeQueryColumn()) {
+            result.append(DistSQLScriptConstants.COMMA).append(" ").append(String.format(DistSQLScriptConstants.LIKE_QUERY_COLUMN, ruleConfig.getLikeQueryColumn()));
+        }
+        return result.toString();
+    }
+    
+    private String getEncryptAlgorithms(final EncryptColumnRuleConfiguration ruleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
+        StringBuilder result = new StringBuilder();
+        String cipherEncryptorName = ruleConfig.getEncryptorName();
+        String assistedQueryEncryptorName = ruleConfig.getAssistedQueryEncryptorName();
+        String likeQueryEncryptorName = ruleConfig.getLikeQueryEncryptorName();
+        if (null != cipherEncryptorName) {
+            result.append(String.format(DistSQLScriptConstants.ENCRYPT_ALGORITHM, getAlgorithmType(encryptors.get(cipherEncryptorName))));
+        }
+        if (null != assistedQueryEncryptorName) {
+            result.append(DistSQLScriptConstants.COMMA).append(" ")
+                    .append(String.format(DistSQLScriptConstants.ASSISTED_QUERY_ALGORITHM, getAlgorithmType(encryptors.get(assistedQueryEncryptorName))));
+        }
+        if (null != likeQueryEncryptorName) {
+            result.append(DistSQLScriptConstants.COMMA).append(" ")
+                    .append(String.format(DistSQLScriptConstants.LIKE_QUERY_ALGORITHM, getAlgorithmType(encryptors.get(likeQueryEncryptorName))));
         }
         return result.toString();
     }

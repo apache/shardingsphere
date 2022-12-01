@@ -27,8 +27,8 @@ import java.sql.SQLException;
 public final class ClassBasedShardingSpringNamespaceJpaExample {
 
 //    private static final String CONFIG_FILE = "META-INF/application-sharding-databases.xml";
-//    private static final String CONFIG_FILE = "META-INF/application-sharding-tables.xml";
-    private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
+    private static final String CONFIG_FILE = "META-INF/application-sharding-tables.xml";
+//    private static final String CONFIG_FILE = "META-INF/application-sharding-databases-tables.xml";
 
     public static void main(final String[] args) throws SQLException {
         try (ConfigurableApplicationContext applicationContext = new ClassPathXmlApplicationContext(CONFIG_FILE)) {

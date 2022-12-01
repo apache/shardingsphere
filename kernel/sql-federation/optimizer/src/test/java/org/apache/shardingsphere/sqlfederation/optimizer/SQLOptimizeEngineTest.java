@@ -87,7 +87,7 @@ public final class SQLOptimizeEngineTest {
     @Before
     public void init() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
-        tables.put("t_order_federate", createOrderTableMetaData());
+        tables.put("t_order_federate", createOrderFederationTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
         tables.put("t_order", createTOrderTableMetaData());
         tables.put("t_order_item", createTOrderItemTableMetaData());
@@ -99,7 +99,7 @@ public final class SQLOptimizeEngineTest {
         optimizeEngine = new SQLOptimizeEngine(converter, SQLFederationPlannerUtil.createHepPlanner());
     }
     
-    private ShardingSphereTable createOrderTableMetaData() {
+    private ShardingSphereTable createOrderFederationTableMetaData() {
         ShardingSphereColumn orderIdColumn = new ShardingSphereColumn("order_id", Types.VARCHAR, true, false, false, true, false);
         ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false, true, false);
         ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false);

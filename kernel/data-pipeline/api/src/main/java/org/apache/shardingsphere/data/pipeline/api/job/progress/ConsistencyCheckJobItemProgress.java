@@ -28,6 +28,7 @@ import java.util.Map;
 /**
  * Data consistency check job item progress.
  */
+// TODO move package
 @Getter
 @RequiredArgsConstructor
 @ToString

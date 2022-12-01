@@ -82,6 +82,18 @@
                                     <pattern>net.bytebuddy</pattern>
                                     <shadedPattern>${shade.package}.net.bytebuddy</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>org.yaml</pattern>
+                                    <shadedPattern>${shade.package}.org.yaml</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>${shade.package}.com.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>${shade.package}.org.apache.commons</shadedPattern>
+                                </relocation>
                             </relocations>
                             <filters>
                                 <filter>

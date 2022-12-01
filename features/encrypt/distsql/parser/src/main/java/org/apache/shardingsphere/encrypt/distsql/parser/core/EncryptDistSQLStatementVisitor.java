@@ -45,10 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -88,10 +85,6 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitEncryptColumnDefinition(final EncryptColumnDefinitionContext ctx) {
-        List<AlgorithmSegment> algorithmSegments = new ArrayList<>();
-        for (AlgorithmDefinitionContext each : ctx.algorithmDefinition()) {
-            algorithmSegments.add((AlgorithmSegment) visit(each));
-        }
         return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()),
                 getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()),
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().plainColumnName()),
@@ -102,11 +95,9 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
                 null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
                 null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().dataType()),
-                algorithmSegments.get(0),
-                null == ctx.assistedQueryColumnDefinition() || 1 == algorithmSegments.size() ? null : algorithmSegments.get(1),
-                null == ctx.likeQueryColumnDefinition() ? null
-                        : Optional.ofNullable(algorithmSegments).filter(algorithm -> algorithm.size() > 2).map(algorithm -> algorithm.get(2)).orElse(null));
-        
+                null == ctx.encryptAlgorithm() ? null : (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition()),
+                null == ctx.assistedQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.assistedQueryAlgorithm().algorithmDefinition()),
+                null == ctx.likeQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeQueryAlgorithm().algorithmDefinition()));
     }
     
     @Override

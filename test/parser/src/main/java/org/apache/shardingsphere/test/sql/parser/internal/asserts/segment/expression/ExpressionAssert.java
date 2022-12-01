@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -46,7 +46,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.generi
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.sql.parser.internal.asserts.statement.dml.impl.SelectStatementAssert;
-import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBetweenExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedBinaryOperationExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedCaseWhenExpression;
@@ -61,6 +60,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segm
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 import java.util.Iterator;
 
@@ -334,19 +334,19 @@ public final class ExpressionAssert {
      * @param actual actual case when expression
      * @param expected expected case when expression
      */
-    public static void assertCaseWhenExpression(final SQLCaseAssertContext assertContext, final CaseWhenSegment actual, final ExpectedCaseWhenExpression expected) {
-        assertThat(assertContext.getText("When list size is not same!"), actual.getWhenList().size(), is(expected.getWhenList().size()));
-        assertThat(assertContext.getText("Then list size is not same!"), actual.getThenList().size(), is(expected.getThenList().size()));
-        Iterator<ExpectedExpression> whenListIterator = expected.getWhenList().iterator();
-        for (ExpressionSegment each : actual.getWhenList()) {
-            assertExpression(assertContext, each, whenListIterator.next());
+    public static void assertCaseWhenExpression(final SQLCaseAssertContext assertContext, final CaseWhenExpression actual, final ExpectedCaseWhenExpression expected) {
+        assertThat(assertContext.getText("When exprs size is not same!"), actual.getWhenExprs().size(), is(expected.getWhenExprs().size()));
+        assertThat(assertContext.getText("Then exprs size is not same!"), actual.getThenExprs().size(), is(expected.getThenExprs().size()));
+        Iterator<ExpectedExpression> whenExprsIterator = expected.getWhenExprs().iterator();
+        for (ExpressionSegment each : actual.getWhenExprs()) {
+            assertExpression(assertContext, each, whenExprsIterator.next());
         }
-        Iterator<ExpectedExpression> thenListIterator = expected.getThenList().iterator();
-        for (ExpressionSegment each : actual.getThenList()) {
-            assertExpression(assertContext, each, thenListIterator.next());
+        Iterator<ExpectedExpression> thenExprsIterator = expected.getThenExprs().iterator();
+        for (ExpressionSegment each : actual.getThenExprs()) {
+            assertExpression(assertContext, each, thenExprsIterator.next());
         }
-        assertExpression(assertContext, actual.getCaseArg(), expected.getCaseArg());
-        assertExpression(assertContext, actual.getElseExpression(), expected.getElseExpr());
+        assertExpression(assertContext, actual.getCaseExpr(), expected.getCaseExpr());
+        assertExpression(assertContext, actual.getElseExpr(), expected.getElseExpr());
     }
     
     /**
@@ -397,8 +397,8 @@ public final class ExpressionAssert {
             assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
         } else if (actual instanceof CollateExpression) {
             assertCollateExpression(assertContext, (CollateExpression) actual, expected.getCollateExpression());
-        } else if (actual instanceof CaseWhenSegment) {
-            assertCaseWhenExpression(assertContext, (CaseWhenSegment) actual, expected.getCaseWhenExpression());
+        } else if (actual instanceof CaseWhenExpression) {
+            assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

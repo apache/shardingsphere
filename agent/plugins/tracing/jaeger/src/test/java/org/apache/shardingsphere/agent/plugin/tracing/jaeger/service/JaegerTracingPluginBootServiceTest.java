@@ -34,7 +34,7 @@ public final class JaegerTracingPluginBootServiceTest {
     
     @Test
     public void assertStart() {
-        jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()));
+        jaegerTracingPluginBootService.start(new PluginConfiguration("localhost", 5775, "", createProperties()), true);
         assertTrue(GlobalTracer.isRegistered());
     }
     

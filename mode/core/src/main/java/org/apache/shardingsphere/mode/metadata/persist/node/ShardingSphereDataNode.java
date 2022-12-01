@@ -190,7 +190,7 @@ public final class ShardingSphereDataNode {
      * @return is matched
      */
     public static boolean isTableRowDataMatched(final String path) {
-        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\d+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getShardingSphereDataNodePath() + "/([\\w\\-]+)/schemas/([\\w\\-]+)/tables" + "/([\\w\\-]+)" + "/(\\w+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(path).find();
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.traffic.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 
 import java.util.LinkedHashMap;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class YamlTrafficRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlTrafficRuleConfiguration implements YamlGlobalRuleConfiguration {
     
     private Map<String, YamlTrafficStrategyConfiguration> trafficStrategies = new LinkedHashMap<>();
     
