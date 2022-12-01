@@ -45,12 +45,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-scenario-consistencycheck</artifactId>
+            <artifactId>shardingsphere-data-pipeline-scenario-migration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-data-pipeline-scenario-migration</artifactId>
+            <artifactId>shardingsphere-data-pipeline-scenario-consistencycheck</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
