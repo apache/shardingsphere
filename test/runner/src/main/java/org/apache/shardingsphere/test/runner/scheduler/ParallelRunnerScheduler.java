@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.runner.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
 import org.apache.shardingsphere.test.runner.key.TestKeyProviderFactory;
 import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
@@ -34,17 +34,17 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
-    private final ParallelRunnerExecutors executors;
+    private final ParallelRunnerExecutor executor;
     
     @Override
     public void schedule(final Runnable childStatement) {
         ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
         TestKeyProvider provider = TestKeyProviderFactory.newInstance(parallelLevel);
-        executors.getExecutor(parameterizedArray.getDatabaseType()).execute(provider.getKey(parameterizedArray), childStatement);
+        executor.execute(provider.getKey(parameterizedArray), childStatement);
     }
     
     @Override
     public void finished() {
-        executors.finishAll();
+        executor.finished();
     }
 }

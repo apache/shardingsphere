@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.runner;
 
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutors;
+import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.runner.scheduler.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
 
@@ -32,7 +32,7 @@ public final class ParallelParameterized extends Parameterized {
         super(clazz);
         ParallelRunningStrategy runningStrategy = clazz.getAnnotation(ParallelRunningStrategy.class);
         if (null != runningStrategy) {
-            setScheduler(new ParallelRunnerScheduler(runningStrategy.value(), new ParallelRunnerExecutors()));
+            setScheduler(new ParallelRunnerScheduler(runningStrategy.value(), new ParallelRunnerExecutor()));
         }
     }
 }
