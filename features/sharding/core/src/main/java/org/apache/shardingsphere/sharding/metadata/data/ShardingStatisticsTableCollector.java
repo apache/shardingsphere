@@ -53,16 +53,27 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        ShardingSphereDatabase shardingSphereDatabase = shardingSphereDatabases.get(databaseName);
-        Optional<ShardingRule> shardingRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(ShardingRule.class);
-        if (!shardingRule.isPresent()) {
-            return Optional.empty();
+        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
+        DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
+        if (protocolType instanceof PostgreSQLDatabaseType || protocolType instanceof OpenGaussDatabaseType) {
+            collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
+        } else {
+            for (ShardingSphereDatabase each : shardingSphereDatabases.values()) {
+                collectFromDatabase(each, result);
+            }
         }
-        return Optional.of(collectForShardingStatisticTable(shardingSphereDatabase, shardingRule.get()));
+        return result.getRows().isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
-    private ShardingSphereTableData collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule) throws SQLException {
-        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
+    private void collectFromDatabase(final ShardingSphereDatabase shardingSphereDatabase, final ShardingSphereTableData tableData) throws SQLException {
+        Optional<ShardingRule> shardingRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!shardingRule.isPresent()) {
+            return;
+        }
+        collectForShardingStatisticTable(shardingSphereDatabase, shardingRule.get(), tableData);
+    }
+    
+    private void collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule, final ShardingSphereTableData tableData) throws SQLException {
         int count = 1;
         for (TableRule each : shardingRule.getTableRules().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {
@@ -73,10 +84,9 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 row.add(dataNode.getDataSourceName());
                 row.add(dataNode.getTableName());
                 addTableRowsAndDataLength(shardingSphereDatabase.getResourceMetaData().getDataSources(), dataNode, row, shardingSphereDatabase.getProtocolType());
-                result.getRows().add(new ShardingSphereRowData(row));
+                tableData.getRows().add(new ShardingSphereRowData(row));
             }
         }
-        return result;
     }
     
     private void addTableRowsAndDataLength(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row, final DatabaseType databaseType) throws SQLException {
