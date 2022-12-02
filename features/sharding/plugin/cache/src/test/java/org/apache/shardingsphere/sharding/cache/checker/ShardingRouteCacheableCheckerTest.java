@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.cache.api.ShardingCacheOptions;
@@ -123,7 +124,7 @@ public final class ShardingRouteCacheableCheckerTest {
     private ShardingRule prepareShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.getBroadcastTables().add("t_broadcast_table");
-        ruleConfig.getBindingTableGroups().add("t_order,t_order_item");
+        ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         Properties modShardingAlgorithmProps = new Properties();
         modShardingAlgorithmProps.setProperty("sharding-count", "2");
         ruleConfig.getShardingAlgorithms().put("mod", new AlgorithmConfiguration("MOD", modShardingAlgorithmProps));

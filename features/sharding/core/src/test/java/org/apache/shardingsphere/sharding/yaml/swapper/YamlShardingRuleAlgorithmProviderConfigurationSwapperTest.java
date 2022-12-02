@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -35,8 +36,8 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 public final class YamlShardingRuleAlgorithmProviderConfigurationSwapperTest {
@@ -53,7 +54,7 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapperTest {
         AlgorithmProvidedShardingRuleConfiguration result = new AlgorithmProvidedShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("foo_db"));
         result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("foo_db", null));
-        result.getBindingTableGroups().add("foo_bind_tb");
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_reference", "foo_bind_tb"));
         result.setBroadcastTables(Collections.singleton("foo_broad_cast_tb"));
         result.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
         result.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
