@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 public final class StorageUnitNotExistedException extends MetaDataSQLException {
     
     private static final long serialVersionUID = 4146100333670404924L;
-
+    
     public StorageUnitNotExistedException() {
         super(XOpenSQLState.SYNTAX_ERROR, 0, "There is no storage unit in any database.");
     }
