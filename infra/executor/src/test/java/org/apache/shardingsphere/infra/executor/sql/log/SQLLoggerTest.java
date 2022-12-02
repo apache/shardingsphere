@@ -74,35 +74,32 @@ public final class SQLLoggerTest {
     @Test
     public void assertLogNormalSQLWithoutParameter() {
         SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
-        assertThat(appenderList.size(), is(5));
+        assertThat(appenderList.size(), is(4));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
         assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
-        assertThat(appenderList.get(1).getFormattedMessage(), is("SQLStatement: null"));
-        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL: db1 ::: SELECT * FROM t_user"));
-        assertThat(appenderList.get(3).getFormattedMessage(), is("Actual SQL: db2 ::: SELECT * FROM t_user"));
-        assertThat(appenderList.get(4).getFormattedMessage(), is("Actual SQL: db3 ::: SELECT * FROM t_user"));
+        assertThat(appenderList.get(1).getFormattedMessage(), is("Actual SQL: db1 ::: SELECT * FROM t_user"));
+        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL: db2 ::: SELECT * FROM t_user"));
+        assertThat(appenderList.get(3).getFormattedMessage(), is("Actual SQL: db3 ::: SELECT * FROM t_user"));
     }
     
     @Test
     public void assertLogNormalSQLWithParameters() {
         executionUnits.forEach(each -> each.getSqlUnit().getParameters().add("parameter"));
         SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
-        assertThat(appenderList.size(), is(5));
+        assertThat(appenderList.size(), is(4));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
         assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
-        assertThat(appenderList.get(1).getFormattedMessage(), is("SQLStatement: null"));
-        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL: db1 ::: SELECT * FROM t_user ::: [parameter]"));
-        assertThat(appenderList.get(3).getFormattedMessage(), is("Actual SQL: db2 ::: SELECT * FROM t_user ::: [parameter]"));
-        assertThat(appenderList.get(4).getFormattedMessage(), is("Actual SQL: db3 ::: SELECT * FROM t_user ::: [parameter]"));
+        assertThat(appenderList.get(1).getFormattedMessage(), is("Actual SQL: db1 ::: SELECT * FROM t_user ::: [parameter]"));
+        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL: db2 ::: SELECT * FROM t_user ::: [parameter]"));
+        assertThat(appenderList.get(3).getFormattedMessage(), is("Actual SQL: db3 ::: SELECT * FROM t_user ::: [parameter]"));
     }
     
     @Test
     public void assertLogSimpleSQL() {
         SQLLogger.logSQL(queryContext, true, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
-        assertThat(appenderList.size(), is(3));
+        assertThat(appenderList.size(), is(2));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
         assertThat(appenderList.get(0).getFormattedMessage(), is("Logic SQL: SELECT * FROM t_user"));
-        assertThat(appenderList.get(1).getFormattedMessage(), is("SQLStatement: null"));
-        assertThat(appenderList.get(2).getFormattedMessage(), is("Actual SQL(simple): [db3, db2, db1] ::: 3"));
+        assertThat(appenderList.get(1).getFormattedMessage(), is("Actual SQL(simple): [db3, db2, db1] ::: 3"));
     }
 }
