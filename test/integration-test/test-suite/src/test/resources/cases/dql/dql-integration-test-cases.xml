@@ -514,7 +514,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
