@@ -43,7 +43,7 @@ If the following information is displayed, binlog is enabled.
 
 2. Grant Replication-related permissions for MySQL account.
 
-Run the following command and see whether the user has migration permission.
+Run the following command to check whether the user has migration permission.
 ```
 SHOW GRANTS FOR 'migration_user';
 ```
@@ -70,7 +70,7 @@ Please refer to [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html
 
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in MySQL.
 
@@ -281,7 +281,7 @@ If you are using a non-super admin account for migration, you need to GRANT CREA
 GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
 
-The account also need to have access to the migrated tables and schema, take the t_order table under test schema as an example. 
+The account also needs to have access to the migrated tables and schema. Take the t_order table under test schema as an example. 
 
 ```sql
 \c migration_ds_0
@@ -296,7 +296,7 @@ Please refer to [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-g
 
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in PostgreSQL.
 
@@ -492,7 +492,7 @@ If you are using a non-super admin account for migration, you need to GRANT CREA
 GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
 
-The account also need to have access to the migrated tables and schema, take the t_order table under test schema as an example. 
+The account also needs to have access to the migrated tables and schema. Take the t_order table under test schema as an example. 
 
 ```sql
 \c migration_ds_0
@@ -513,7 +513,7 @@ GRANT ALL PRIVILEGES TO migration_user;
 
 ### Complete procedure example
 
-#### Prerequisite
+#### Requirements
 
 1. Prepare the source database, table, and data in openGauss.
 
