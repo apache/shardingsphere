@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -30,7 +29,6 @@ import java.util.Optional;
  * SQLServer delete statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class SQLServerDeleteStatement extends DeleteStatement implements SQLServerStatement {
     
     private WithSegment withSegment;

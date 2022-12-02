@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WindowSegment;
@@ -31,7 +30,6 @@ import java.util.Optional;
  * PostgreSQL select statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class PostgreSQLSelectStatement extends SelectStatement implements PostgreSQLStatement {
     
     private LimitSegment limit;

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -32,7 +31,6 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public final class MySQLLockStatement extends LockStatement implements MySQLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();

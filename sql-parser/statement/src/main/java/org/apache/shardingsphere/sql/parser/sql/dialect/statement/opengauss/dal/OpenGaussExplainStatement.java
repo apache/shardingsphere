@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss explain statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussExplainStatement extends ExplainStatement implements OpenGaussStatement {
 }

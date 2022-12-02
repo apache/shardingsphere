@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.infra.binder.segment.insert.values.expression;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 
 /**
  * Derived literal expression segment.
  */
 @Getter
-@ToString(callSuper = true)
 public final class DerivedLiteralExpressionSegment extends LiteralExpressionSegment implements DerivedSimpleExpressionSegment {
     
     public DerivedLiteralExpressionSegment(final Object literals) {

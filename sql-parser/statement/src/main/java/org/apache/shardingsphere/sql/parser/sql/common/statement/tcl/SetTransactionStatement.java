@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
@@ -32,7 +31,6 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString(callSuper = true)
 public abstract class SetTransactionStatement extends AbstractSQLStatement implements TCLStatement {
     
     private TransactionIsolationLevel isolationLevel;

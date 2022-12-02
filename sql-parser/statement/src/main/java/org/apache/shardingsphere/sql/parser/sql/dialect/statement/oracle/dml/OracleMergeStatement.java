@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle merge statement.
  */
-@ToString(callSuper = true)
 public final class OracleMergeStatement extends MergeStatement implements OracleStatement {
 }
