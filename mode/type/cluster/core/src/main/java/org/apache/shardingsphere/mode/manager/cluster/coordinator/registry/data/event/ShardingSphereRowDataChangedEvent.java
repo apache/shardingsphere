@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.data;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.data.event;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.TreeSet;
+import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * ShardingSphere table data.
+ * Row data changed event.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class ShardingSphereTableData {
+public final class ShardingSphereRowDataChangedEvent implements GovernanceEvent {
     
-    private final String name;
+    private final String databaseName;
     
-    private final Collection<ShardingSphereRowData> rows = new TreeSet<>(Comparator.comparing(ShardingSphereRowData::getUniqueKey));
+    private final String schemaName;
+    
+    private final String tableName;
+    
+    private final YamlShardingSphereRowData yamlRowData;
 }

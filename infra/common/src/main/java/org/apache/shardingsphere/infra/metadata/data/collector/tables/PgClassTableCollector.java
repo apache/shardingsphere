@@ -54,8 +54,8 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
         Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtil.collectRowData(shardingSphereDatabases.get(databaseName).getResourceMetaData().getDataSources().values(),
                 SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
         Collection<ShardingSphereRowData> rowData = decorateTableName(rows, table, shardingSphereDatabases.get(databaseName).getRuleMetaData().getRules());
-        ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS, new ArrayList<>(table.getColumns().values()));
-        result.getRows().addAll(rowData.stream().distinct().collect(Collectors.toList()));
+        ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);
+        result.getRows().addAll(rowData);
         return Optional.of(result);
     }
     

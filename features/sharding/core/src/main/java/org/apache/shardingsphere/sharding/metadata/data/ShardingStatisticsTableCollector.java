@@ -36,7 +36,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -59,12 +58,11 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
         if (!shardingRule.isPresent()) {
             return Optional.empty();
         }
-        return Optional.of(collectForShardingStatisticTable(shardingSphereDatabase, shardingRule.get(), table));
+        return Optional.of(collectForShardingStatisticTable(shardingSphereDatabase, shardingRule.get()));
     }
     
-    private ShardingSphereTableData collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule,
-                                                                     final ShardingSphereTable table) throws SQLException {
-        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS, new ArrayList<>(table.getColumns().values()));
+    private ShardingSphereTableData collectForShardingStatisticTable(final ShardingSphereDatabase shardingSphereDatabase, final ShardingRule shardingRule) throws SQLException {
+        ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         int count = 1;
         for (TableRule each : shardingRule.getTableRules().values()) {
             for (DataNode dataNode : each.getActualDataNodes()) {

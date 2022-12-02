@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilderFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.data.ShardingSphereDataPersistService;
 
 import java.util.Optional;
 
@@ -46,7 +45,8 @@ public final class MetaDataContexts implements AutoCloseable {
     }
     
     private ShardingSphereData initShardingSphereData(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
-        Optional<ShardingSphereData> result = Optional.ofNullable(persistService.getShardingSphereDataPersistService()).flatMap(ShardingSphereDataPersistService::load);
+        Optional<ShardingSphereData> result = Optional.ofNullable(persistService.getShardingSphereDataPersistService())
+                .flatMap(shardingSphereDataPersistService -> shardingSphereDataPersistService.load(metaData));
         if (result.isPresent()) {
             return result.get();
         }

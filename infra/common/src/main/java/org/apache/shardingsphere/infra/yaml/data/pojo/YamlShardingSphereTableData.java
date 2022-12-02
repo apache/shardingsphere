@@ -20,10 +20,8 @@ package org.apache.shardingsphere.infra.yaml.data.pojo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * ShardingSphere table data.
@@ -33,8 +31,6 @@ import java.util.List;
 public final class YamlShardingSphereTableData implements YamlConfiguration {
     
     private String name;
-    
-    private List<YamlShardingSphereColumn> columns;
     
     private Collection<YamlShardingSphereRowData> rowData;
 }

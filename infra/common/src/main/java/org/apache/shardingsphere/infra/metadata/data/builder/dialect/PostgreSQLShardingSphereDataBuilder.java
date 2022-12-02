@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,8 +75,7 @@ public final class PostgreSQLShardingSphereDataBuilder implements ShardingSphere
     private void appendTableData(final Entry<String, ShardingSphereSchema> schemaEntry, final ShardingSphereSchemaData schemaData) {
         for (Entry<String, ShardingSphereTable> entry : schemaEntry.getValue().getTables().entrySet()) {
             if (COLLECTED_SCHEMA_TABLES.get(schemaEntry.getKey()).contains(entry.getKey())) {
-                schemaData.getTableData().put(entry.getKey(), new ShardingSphereTableData(entry.getValue().getName(),
-                        new ArrayList<>(entry.getValue().getColumns().values())));
+                schemaData.getTableData().put(entry.getKey(), new ShardingSphereTableData(entry.getValue().getName()));
             }
         }
     }
