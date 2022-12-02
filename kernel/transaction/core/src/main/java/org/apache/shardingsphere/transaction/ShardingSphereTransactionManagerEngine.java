@@ -20,14 +20,12 @@ package org.apache.shardingsphere.transaction;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManagerFactory;
+import org.apache.shardingsphere.transaction.factory.ShardingSphereTransactionManagerFactory;
 
 import javax.sql.DataSource;
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -62,15 +60,7 @@ public final class ShardingSphereTransactionManagerEngine {
      * @param providerType transaction manager provider type
      */
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSourceMap, final String providerType) {
-        transactionManagers.forEach((key, value) -> value.init(databaseTypes, getResourceDataSources(dataSourceMap), providerType));
-    }
-    
-    private Map<String, ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
-        Map<String, ResourceDataSource> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.put(entry.getKey(), new ResourceDataSource(entry.getKey(), entry.getValue()));
-        }
-        return result;
+        transactionManagers.forEach((key, value) -> value.init(databaseTypes, dataSourceMap, providerType));
     }
     
     /**

@@ -33,9 +33,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
-import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -61,7 +60,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
-    private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.foo_ds";
+    private static final String DATA_SOURCE_UNIQUE_NAME = "sharding_db.ds_0";
     
     private final SeataATShardingSphereTransactionManager seataTransactionManager = new SeataATShardingSphereTransactionManager();
     
@@ -87,7 +86,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     @Before
     public void setUp() {
         seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", DatabaseTypeFactory.getInstance("MySQL")),
-                Collections.singletonMap("sharding_db.ds_0", new ResourceDataSource(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource())), "Seata");
+                Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
     }
     
     @After
@@ -111,7 +110,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("sharding_db", "foo_ds");
+        Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
