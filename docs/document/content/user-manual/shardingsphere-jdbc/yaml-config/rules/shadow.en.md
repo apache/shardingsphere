@@ -16,14 +16,14 @@ rules:
       productionDataSourceName: # production data source name
       shadowDataSourceName: # shadow data source name
   tables:
-    <table-name>:
+    <table_name>:
       dataSourceNames: # shadow table associates shadow data source name list
-        - <shadow-data-source>
+        - <shadow_data_source>
       shadowAlgorithmNames: # shadow table associates shadow algorithm name list
-        - <shadow-algorithm-name>
+        - <shadow_algorithm_name>
   defaultShadowAlgorithmName: # default shadow algorithm name (option)
   shadowAlgorithms:
-    <shadow-algorithm-name> (+): # shadow algorithm name
+    <shadow_algorithm_name> (+): # shadow algorithm name
       type: # shadow algorithm type
       props: # shadow algorithm attribute configuration
 ```
