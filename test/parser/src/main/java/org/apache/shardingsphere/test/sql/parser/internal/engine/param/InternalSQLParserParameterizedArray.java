@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.sql.parser.internal.engine.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.SQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCase
  */
 @RequiredArgsConstructor
 @Getter
-public final class InternalSQLParserParameterizedArray implements SQLParserParameterizedArray {
+public final class InternalSQLParserParameterizedArray {
     
     private final String sqlCaseId;
     

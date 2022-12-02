@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.sql.parser.external.engine.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.sql.parser.SQLParserParameterizedArray;
 
 /**
  * External SQL parser parameterized array.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExternalSQLParserParameterizedArray implements SQLParserParameterizedArray {
+public final class ExternalSQLParserParameterizedArray {
     
     private final String sqlCaseId;
     
