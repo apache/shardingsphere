@@ -42,7 +42,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     public void schedule(final Runnable childStatement) {
         ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
         TestKeyProvider provider = TestKeyProviderFactory.newInstance(parallelLevel);
-        runnerExecutors.getExecutor(provider.getRunnerKey(parameterizedArray)).execute(provider.getExecutorKey(parameterizedArray), childStatement);
+        runnerExecutors.getExecutor(parameterizedArray.getDatabaseType()).execute(provider.getKey(parameterizedArray), childStatement);
     }
     
     @Override

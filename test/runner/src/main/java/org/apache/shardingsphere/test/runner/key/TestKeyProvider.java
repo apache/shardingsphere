@@ -26,20 +26,12 @@ import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 public interface TestKeyProvider {
     
     /**
-     * Get runner key.
-     *
-     * @param parameterizedArray parameterized array
-     * @return runner key
-     */
-    String getRunnerKey(ParameterizedArray parameterizedArray);
-    
-    /**
-     * Get executor key.
+     * Get key.
      * 
      * @param parameterizedArray parameterized array
      * @return executor key
      */
-    String getExecutorKey(ParameterizedArray parameterizedArray);
+    String getKey(ParameterizedArray parameterizedArray);
     
     /**
      * Get parallel level.

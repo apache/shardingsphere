@@ -28,12 +28,7 @@ import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 public final class ScenarioTestKeyProvider implements TestKeyProvider {
     
     @Override
-    public String getRunnerKey(final ParameterizedArray parameterizedArray) {
-        return ((ITParameterizedArray) parameterizedArray).getDatabaseType().getType();
-    }
-    
-    @Override
-    public String getExecutorKey(final ParameterizedArray parameterizedArray) {
+    public String getKey(final ParameterizedArray parameterizedArray) {
         ITParameterizedArray itParameterizedArray = (ITParameterizedArray) parameterizedArray;
         return String.join("-", itParameterizedArray.getAdapter(), itParameterizedArray.getScenario(), itParameterizedArray.getDatabaseType().getType());
     }

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.runner.executor;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,23 +27,23 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ParallelRunnerExecutors {
     
-    private final Map<String, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
+    private final Map<DatabaseType, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
     /**
      * Get executor.
      *
-     * @param key key bind to the executor
+     * @param databaseType database type
      * @return got executor
      */
-    public ParallelRunnerExecutor getExecutor(final String key) {
-        if (executors.containsKey(key)) {
-            return executors.get(key);
+    public ParallelRunnerExecutor getExecutor(final DatabaseType databaseType) {
+        if (executors.containsKey(databaseType)) {
+            return executors.get(databaseType);
         }
         ParallelRunnerExecutor newExecutor = new ParallelRunnerExecutor();
-        if (null != executors.putIfAbsent(key, newExecutor)) {
+        if (null != executors.putIfAbsent(databaseType, newExecutor)) {
             newExecutor.finished();
         }
-        return executors.get(key);
+        return executors.get(databaseType);
     }
     
     /**
