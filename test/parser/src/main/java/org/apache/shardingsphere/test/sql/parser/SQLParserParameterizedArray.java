@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
@@ -31,11 +30,4 @@ public interface SQLParserParameterizedArray extends ParameterizedArray {
      * @return SQL case ID
      */
     String getSqlCaseId();
-    
-    /**
-     * Get database type.
-     * 
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
 }

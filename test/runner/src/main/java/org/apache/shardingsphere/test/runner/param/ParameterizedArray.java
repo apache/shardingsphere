@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.test.runner.param;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+
 /**
  * Parameterized array.
  */
 public interface ParameterizedArray {
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
 }
