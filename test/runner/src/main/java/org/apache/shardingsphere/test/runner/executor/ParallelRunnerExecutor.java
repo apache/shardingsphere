@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.runner.executor;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
  */
 public final class ParallelRunnerExecutor {
     
-    private final Collection<Future<?>> futures = new LinkedList<>();
+    private final Collection<Future<?>> futures = new CopyOnWriteArrayList<>();
     
     private final Map<Object, ExecutorService> executorServices = new ConcurrentHashMap<>();
     

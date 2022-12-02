@@ -28,7 +28,7 @@ public final class CaseTestKeyProvider implements TestKeyProvider {
     
     @Override
     public String getKey(final ParameterizedArray parameterizedArray) {
-        return "";
+        return parameterizedArray.getDatabaseType().getType();
     }
     
     @Override
