@@ -505,7 +505,7 @@ openGauss has the concept of OWNER, and if the account is the OWNER of a databas
 
 openGauss does not allow normal accounts to operate in public schema, so if the migrated table is in public schema, you need to authorize additional.
 
-Please refer to [openGauss GRANT](https://docs.opengauss.org/en/docs/3.1.0/docs/Developerguide/grant.html)
+Please refer to [openGauss GRANT](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/grant.html)
 
 ```sql
 GRANT ALL PRIVILEGES TO migration_user;

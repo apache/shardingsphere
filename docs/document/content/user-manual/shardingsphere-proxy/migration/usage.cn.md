@@ -72,7 +72,7 @@ SHOW GRANTS FOR 'migration_user';
 GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
 ```
 
-更多信息请参考 [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
+详情请参见 [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
 
 ### 完整流程示例
 
@@ -302,7 +302,7 @@ GRANT SELECT ON TABLE test.t_order TO migration_user;
 
 PostgreSQL 有 OWNER 的概念，如果是数据库，SCHEMA，表的 OWNER，则可以省略对应的授权步骤。
 
-更多信息请参考 [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
+详情请参见 [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
 
 ### 完整流程示例
 
@@ -520,7 +520,7 @@ openGauss 不允许普通账户在 public schema 下操作。所以如果迁移�
 GRANT ALL PRIVILEGES TO migration_user;
 ```
 
-更多信息请参考 [openGauss GRANT](https://docs.opengauss.org/zh/docs/3.1.0/docs/Developerguide/dolphin-GRANT.html)
+详情请参见 [openGauss GRANT](https://docs.opengauss.org/zh/docs/2.0.1/docs/Developerguide/GRANT.html)
 
 ### 完整流程示例
 
