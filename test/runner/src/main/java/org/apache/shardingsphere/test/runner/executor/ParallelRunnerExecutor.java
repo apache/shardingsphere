@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * Abstract parallel runner executor.
+ * Parallel runner executor.
  */
 public final class ParallelRunnerExecutor {
     
