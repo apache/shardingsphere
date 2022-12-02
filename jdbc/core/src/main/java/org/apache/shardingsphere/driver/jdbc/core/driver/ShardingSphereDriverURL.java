@@ -66,7 +66,7 @@ public final class ShardingSphereDriverURL {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (!line.startsWith("#")) {
-                    builder.append(line);
+                    builder.append(line).append('\n');
                 }
             }
             return builder.toString().getBytes(StandardCharsets.UTF_8);
