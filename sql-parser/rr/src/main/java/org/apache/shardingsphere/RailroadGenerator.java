@@ -1,41 +1,42 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.codec.PngImage;
+import lombok.extern.slf4j.Slf4j;
 import nl.bigo.rrdantlr4.ANTLRv4Lexer;
 import nl.bigo.rrdantlr4.ANTLRv4Parser;
 import nl.bigo.rrdantlr4.CommentsParser;
 import nl.bigo.rrdantlr4.DiagramGenerator;
-import nl.bigo.rrdantlr4.RuleVisitor;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.batik.transcoder.image.PNGTranscoder;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringReader;
-import java.net.URL;
-import java.net.URLConnection;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -44,6 +45,7 @@ import java.util.regex.Pattern;
 /**
  * Railroad Generator
  */
+@Slf4j
 public class RailroadGenerator {
 
     private static final ScriptEngineManager MANAGER = new ScriptEngineManager();
@@ -60,8 +62,7 @@ public class RailroadGenerator {
             ENGINE.eval(RAILROAD_SCRIPT);
         }
         catch (ScriptException e) {
-            e.printStackTrace();
-            System.err.println("could not evaluate script:\n" + RAILROAD_SCRIPT);
+            log.error("could not evaluate script:\n{}", RAILROAD_SCRIPT);
             System.exit(1);
         }
     }
@@ -76,27 +77,24 @@ public class RailroadGenerator {
     }
 
     /**
-     * Parses `this.antlr4Grammar` and returns all parsed grammar rules.
+     * parse the antlr4 grammar and get all the rules and rules relations.
      *
-     * @return all parsed grammar rules.
-     *
+     * @param grammarFile grammar file
      * @throws IOException
-     *         when the grammar could not be parsed.
      */
-    public void parse(String antlr4Grammar) throws IOException {
+    public void parse(File grammarFile) throws IOException {
 
-        InputStream input = new FileInputStream(antlr4Grammar);
+        InputStream input = new FileInputStream(grammarFile);
 
-        // Now parse the grammar.
         ANTLRv4Lexer lexer = new ANTLRv4Lexer(new ANTLRInputStream(new BufferedInputStream(input)));
         ANTLRv4Parser parser = new ANTLRv4Parser(new CommonTokenStream(lexer));
 
         ParseTree tree = parser.grammarSpec();
-        RailroadRuleVistor visitor = new RailroadRuleVistor();
+        RailroadRuleVisitor visitor = new RailroadRuleVisitor();
         visitor.visit(tree);
 
         this.rules.putAll(visitor.getRules());
-        this.comments.putAll(CommentsParser.commentsMap(inputAsString(new FileInputStream(antlr4Grammar))));
+        this.comments.putAll(CommentsParser.commentsMap(inputAsString(new FileInputStream(grammarFile))));
         this.rulesRelation.putAll(visitor.getRulesRelation());
     }
 
@@ -109,24 +107,18 @@ public class RailroadGenerator {
      * @return the SVG railroad diagram corresponding to the provided grammar rule.
      */
     public String getSVG(String ruleName) {
-
         try {
             CharSequence dsl = rules.get(ruleName);
-
             if (dsl == null) {
                 throw new RuntimeException("no such rule found: " + ruleName);
             }
-
-            // Evaluate the DSL that translates the input back to a SVG.
             String svg = (String) ENGINE.eval(dsl.toString());
-
-            // Insert the proper namespaces and (custom) style sheet.
             svg = svg.replaceFirst("<svg ", "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
             svg = svg.replaceFirst("<g ", "<style type=\"text/css\">" + RAILROAD_CSS + "</style>\n<g ");
-
             return svg;
         }
         catch (ScriptException e) {
+            log.error("get svg of rule {} fail", ruleName);
             throw new RuntimeException(e);
         }
     }
@@ -139,66 +131,63 @@ public class RailroadGenerator {
      *
      * @return an html page as a string of all grammar rules.
      */
-    public String getHtml(String fileName, boolean simpleHTML) {
+    public String getHtml(String fileName,String rootRule, boolean simpleHTML) {
         StringBuilder rows = new StringBuilder();
 
-        for (String ruleName : this.rules.keySet()) {
+        for (String ruleName : iterateRules(rootRule)) {
             String svg = this.getSVG(ruleName);
             String ruleDescription = comments.get(ruleName);
 
-            rows.append("<tr><td id=\"").append(antlr4GrammarFileName).append("_").append(ruleName).append("\"><h4>")
-                .append(ruleName).append("</h4></td><td>").append(svg).append("</td></tr>");
+            rows.append("<tr><td id=\"").append(fileName).append("_").append(ruleName).append("\"><h4>").append(ruleName).append("</h4></td><td>").append(svg).append("</td></tr>");
             if (ruleDescription != null) {
                 rows.append("<tr class=\"border-notop\"><td></td><td>" + ruleDescription.replaceAll("\n", "<br>") + "</td></tr>");
             }
         }
 
+        final String template;
         if(simpleHTML) {
-            final String template = HTML_SIMPLE_TEMPLATE
-                .replace("${rows}", rows);
-            return addLinks(antlr4GrammarFileName, template);
+            template = HTML_SIMPLE_TEMPLATE.replace("${rows}", rows);
         }
         else {
+            template = HTML_TEMPLATE.replace("${grammar}", fileName).replace("${css}", CSS_TEMPLATE).replace("${rows}", rows);
+        }
+        return addLinks(fileName, template);
+    }
 
-            final String template = HTML_TEMPLATE
-                .replace("${grammar}", antlr4GrammarFileName)
-                .replace("${css}", CSS_TEMPLATE)
-                .replace("${rows}", rows);
-
-            return addLinks(antlr4GrammarFileName, template);
+    private Collection<String> iterateRules(String rootRule){
+        if(null == rootRule){
+            return this.rules.keySet();
+        }else {
+            return iterateRulesBroadcast(rootRule);
         }
     }
 
-    /**
-     * Creates a default (index.html) page containing all grammar rules.
-     *
-     * @return `true` iff the creation of the html page was successful.
-     */
-    public boolean createHtml() {
-        return createHtml("index.html", false);
+    private Collection<String> iterateRulesBroadcast(String rootRule){
+        return null;
     }
 
     /**
      * Creates an html page containing all grammar rules.
      *
+     * @param dir
+     *          output dir
      * @param fileName
-     *         the file name of the generated html page.
-     *
-     * @return `true` iff the creation of the html page was successful.
+     *          output fine name
+     * @param simpleHTML
+     *          simple html or not
+     * @return`true` iff the creation of the html page was successful.
      */
-    public boolean createHtml(String fileName, boolean simpleHTML) {
-
-        String html = this.getHtml(fileName, simpleHTML);
-
+    public boolean createHtml(String dir,String fileName, String rootRule, boolean simpleHTML) {
+        String html = this.getHtml(fileName,rootRule, simpleHTML);
         PrintWriter out = null;
 
         try {
-            out = new PrintWriter(new File(this.outputDir, fileName));
+            out = new PrintWriter(new File(dir+"/"+fileName));
             out.write(html);
             return true;
         }
         catch (IOException e) {
-            e.printStackTrace();
+            log.error("create html fail,Exception:{}", e.getMessage());
             return false;
         }
         finally {
@@ -208,53 +197,32 @@ public class RailroadGenerator {
         }
     }
 
-
-
     /**
-     * Returns an HTML template containing SVG text-tags that
-     * will be wrapped with '<a xlink:href=...' to make the grammar
-     * rules clickable inside the HTML page.
-     *
-     * @param antlr4GrammarFileName
-     *         the name of the parsed grammar.
+     * Returns an HTML template containing SVG text-tags that will be wrapped with '<a xlink:href=...' to make the grammar rules clickable inside the HTML page.
+     * @param fileName
+     *          the name of the parsed grammar.
      * @param template
-     *         the template whose text-tags need to be linked.
-     *
-     * @return an HTML template containing SVG text-tags that
-     * will be wrapped with '<a xlink:href=...' to make the grammar
-     * rules clickable inside the HTML page.
+     *          the template whose text-tags need to be linked.
+     * @return an HTML template containing SVG text-tags that will be wrapped with '<a xlink:href=...' to make the grammar rules clickable inside the HTML page.
      */
-    private String addLinks(String antlr4GrammarFileName, String template) {
-
+    private String addLinks(String fileName, String template) {
         StringBuilder builder = new StringBuilder();
         Matcher m = TEXT_PATTERN.matcher(template);
-
         while (m.find()) {
-
             if (m.group(1) == null) {
-                // We didn't match a text-tag, just append whatever we did match.
                 builder.append(m.group());
             }
             else {
-                // We found an SVG text tag.
                 String textTag = m.group(1);
                 String rule = m.group(2);
-
-                // The rule does not match any of the parser rules (one of:
-                // epsilon/not/comment/literal tags probably). Do not link
-                // but just add it back in the builder.
                 if (!this.rules.containsKey(rule)) {
                     builder.append(textTag);
                 }
                 else {
-                    // Yes, the rule matches with a parsed rule, add a link
-                    // around it.
-                    builder.append("<a xlink:href=\"").append("#").append(antlr4GrammarFileName).append("_").append(rule).append("\">")
-                            .append(textTag).append("</a>");
+                    builder.append("<a xlink:href=\"").append("#").append(fileName).append("_").append(rule).append("\">").append(textTag).append("</a>");
                 }
             }
         }
-
         return builder.toString();
     }
 
