@@ -99,73 +99,73 @@ dataSources:
     password:
 
 rules:
-  - !SHARDING
-    tables:
-      t_order:
-        actualDataNodes: ds_${0..1}.t_order_${0..1}
-        tableStrategy:
-          standard:
-            shardingColumn: order_id
-            shardingAlgorithmName: t_order_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
-        auditStrategy:
-          auditorNames:
-            - sharding_key_required_auditor
-          allowHintDisable: true
-      t_order_item:
-        actualDataNodes: ds_${0..1}.t_order_item_${0..1}
-        tableStrategy:
-          standard:
-            shardingColumn: order_id
-            shardingAlgorithmName: t_order_item_inline
-        keyGenerateStrategy:
-          column: order_item_id
-          keyGeneratorName: snowflake
-      t_account:
-        actualDataNodes: ds_${0..1}.t_account_${0..1}
-        tableStrategy:
-          standard:
-            shardingAlgorithmName: t_account_inline
-        keyGenerateStrategy:
-          column: account_id
-          keyGeneratorName: snowflake
-    defaultShardingColumn: account_id
-    bindingTables:
-      - t_order,t_order_item
-    broadcastTables:
-      - t_address
-    defaultDatabaseStrategy:
-      standard:
-        shardingColumn: user_id
-        shardingAlgorithmName: database-inline
-    defaultTableStrategy:
-      none:
-
-    shardingAlgorithms:
-      database-inline:
-        type: INLINE
-        props:
-          algorithm-expression: ds_${user_id % 2}
-      t_order_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_${order_id % 2}
-      t_order_item_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_item_${order_id % 2}
-      t_account_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_account_${account_id % 2}
-    keyGenerators:
-      snowflake:
-        type: SNOWFLAKE
-    auditors:
-      sharding_key_required_auditor:
-        type: DML_SHARDING_CONDITIONS
+- !SHARDING
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+      auditStrategy:
+        auditorNames:
+          - sharding_key_required_auditor
+        allowHintDisable: true
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_item_inline
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+    t_account:
+      actualDataNodes: ds_${0..1}.t_account_${0..1}
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t_account_inline
+      keyGenerateStrategy:
+        column: account_id
+        keyGeneratorName: snowflake
+  defaultShardingColumn: account_id
+  bindingTables:
+    - t_order,t_order_item
+  broadcastTables:
+    - t_address
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+  
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}
+    t_account_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_${account_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
 
 props:
   sql-show: false
