@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.result;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
 /**
  * SQL parse result reporter.
  */
@@ -32,5 +30,5 @@ public interface SQLParseResultReporter {
      * @param sql SQL
      * @param isSuccess whether success
      */
-    void printResult(String sqlCaseId, DatabaseType databaseType, boolean isSuccess, String sql);
+    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
 }

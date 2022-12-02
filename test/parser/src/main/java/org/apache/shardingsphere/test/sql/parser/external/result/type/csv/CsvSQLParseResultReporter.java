@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.external.result.type.csv;
 import lombok.SneakyThrows;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporter;
 
@@ -35,8 +34,8 @@ public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     private final CSVPrinter printer;
     
     @SneakyThrows
-    public CsvSQLParseResultReporter(final DatabaseType databaseType) {
-        File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType.getType() + "-result.csv");
+    public CsvSQLParseResultReporter(final String databaseType) {
+        File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
         printHeader(csvFile);
         printer = new CSVPrinter(new FileWriter(csvFile, true), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
     }
@@ -54,8 +53,8 @@ public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     
     @SneakyThrows
     @Override
-    public void printResult(final String sqlCaseId, final DatabaseType databaseType, final boolean isSuccess, final String sql) {
-        printer.printRecord(sqlCaseId, databaseType.getType(), isSuccess ? "success" : "failed", sql);
+    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
+        printer.printRecord(sqlCaseId, databaseType, isSuccess ? "success" : "failed", sql);
         printer.flush();
     }
 }

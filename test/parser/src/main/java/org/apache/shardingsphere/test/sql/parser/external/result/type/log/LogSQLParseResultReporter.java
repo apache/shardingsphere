@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.external.result.type.log;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporter;
 
 /**
@@ -28,9 +27,9 @@ import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultR
 public final class LogSQLParseResultReporter implements SQLParseResultReporter {
     
     @Override
-    public void printResult(final String sqlCaseId, final DatabaseType databaseType, final boolean isSuccess, final String sql) {
+    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
         if (!isSuccess) {
-            log.warn("SQL parse failed. SQL Case ID is: {}, database type is: {}, SQL is: {}", sqlCaseId, databaseType.getType(), sql);
+            log.warn("SQL parse failed. SQL Case ID is: {}, database type is: {}, SQL is: {}", sqlCaseId, databaseType, sql);
         }
     }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
 /**
  * SQL parser parameterized array.
  */
@@ -36,5 +34,5 @@ public interface SQLParserParameterizedArray {
      *
      * @return database type
      */
-    DatabaseType getDatabaseType();
+    String getDatabaseType();
 }

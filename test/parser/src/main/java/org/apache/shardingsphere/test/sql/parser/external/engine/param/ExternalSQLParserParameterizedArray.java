@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.sql.parser.external.engine.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.SQLParserParameterizedArray;
 
 /**
@@ -31,7 +30,7 @@ public final class ExternalSQLParserParameterizedArray implements SQLParserParam
     
     private final String sqlCaseId;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final String sql;
     
@@ -39,6 +38,6 @@ public final class ExternalSQLParserParameterizedArray implements SQLParserParam
     
     @Override
     public String toString() {
-        return String.format("%s (%s) -> %s", sqlCaseId, databaseType.getType(), sql);
+        return String.format("%s (%s) -> %s", sqlCaseId, databaseType, sql);
     }
 }
