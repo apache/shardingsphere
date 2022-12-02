@@ -172,17 +172,20 @@ public class RailroadGenerator {
         Collection<String> rulesProcessed = new HashSet<>(this.rules.size());
         rules.add(rootRule);
         rulesProcessed.add(rootRule);
+
         Queue<String> ruleQueue = new LinkedList<>();
         ruleQueue.addAll(this.rulesRelation.get(rootRule));
+        rulesProcessed.addAll(this.rulesRelation.get(rootRule));
+
         while (!ruleQueue.isEmpty()){
             String rule = ruleQueue.poll();
             rules.add(rule);
-            rulesProcessed.add(rule);
             Collection<String> childRules = this.rulesRelation.get(rule);
             if(null != childRules && !childRules.isEmpty()){
                 childRules.forEach(
                         childRule -> {
                             if(!rulesProcessed.contains(childRule)){
+                                rulesProcessed.add(childRule);
                                 ruleQueue.add(childRule);
                             }
                         }
