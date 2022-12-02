@@ -58,6 +58,14 @@ Result sample:
 +------------------------------------------------------------------------------+
 ```
 
+3. Grant insert, select, update and delete permissions to the physical library used in the migration
+
+If you use a non-super admin account for migration, you need to make sure that the account has the permission to insert, select, update and delete on the physical library used for migration.
+
+```sql
+GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `normal_user`@`%`;
+```
+
 ### Complete procedure example
 
 #### Prerequisite
@@ -263,6 +271,25 @@ host replication repl_acct 0.0.0.0/0 md5
 
 Please refer to [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-pg-hba-conf.html) for details.
 
+4. Grant access to databases and tables 
+
+If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
+
+```sql
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
+```
+
+The account also need to have access to the migrated tables and schema, take the t_order table under test schema as an example. 
+
+```sql
+\c migration_ds_0
+
+GRANT USAGE ON SCHEMA test TO GROUP normal_user;
+GRANT SELECT ON TABLE test.t_order TO normal_user;
+```
+
+PostgreSQL has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
 ### Complete procedure example
 
 #### Prerequisite
@@ -452,6 +479,31 @@ host replication repl_acct 0.0.0.0/0 md5
 ```
 
 Please refer to [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) and [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html) for details.
+
+3. Grant access to databases and tables 
+
+If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
+
+```sql
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
+```
+
+The account also need to have access to the migrated tables and schema, take the t_order table under test schema as an example. 
+
+```sql
+\c migration_ds_0
+
+GRANT USAGE ON SCHEMA test TO GROUP normal_user;
+GRANT SELECT ON TABLE test.t_order TO normal_user;
+```
+
+openGauss has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
+openGauss does not allow normal accounts to operate in public mode for security reasons. So if the migrated table is in public mode, you need to authorize additional.
+
+```sql
+GRANT ALL PRIVILEGES TO normal_user;
+```
 
 ### Complete procedure example
 
