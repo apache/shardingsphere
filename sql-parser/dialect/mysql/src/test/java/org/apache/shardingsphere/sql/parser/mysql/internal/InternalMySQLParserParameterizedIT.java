@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.internal;
 
-import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
-@RunWith(ParallelParameterized.class)
+@RunWith(Parameterized.class)
 public final class InternalMySQLParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
     public InternalMySQLParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {

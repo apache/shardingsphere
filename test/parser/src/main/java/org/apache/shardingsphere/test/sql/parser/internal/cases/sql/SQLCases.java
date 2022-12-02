@@ -69,7 +69,7 @@ public final class SQLCases {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each) && containsSQLCaseType(sqlCase, caseType)) {
-                result.add(new InternalSQLParserParameterizedArray(sqlCase.getId(), each, caseType));
+                result.add(new InternalSQLParserParameterizedArray(sqlCase.getId(), caseType, each));
             }
         }
         return result;

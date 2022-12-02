@@ -32,9 +32,9 @@ public final class InternalSQLParserParameterizedArray implements SQLParserParam
     
     private final String sqlCaseId;
     
-    private final DatabaseType databaseType;
-    
     private final SQLCaseType sqlCaseType;
+    
+    private final DatabaseType databaseType;
     
     @Override
     public String toString() {
