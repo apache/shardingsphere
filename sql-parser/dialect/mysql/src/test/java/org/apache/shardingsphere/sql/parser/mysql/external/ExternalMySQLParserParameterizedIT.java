@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.external;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
@@ -40,6 +39,6 @@ public final class ExternalMySQLParserParameterizedIT extends ExternalSQLParserP
     public static Collection<ExternalSQLParserParameterizedArray> getTestParameters() {
         String caseURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
         String resultURL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), DatabaseTypeFactory.getInstance("MySQL"), "CSV");
+        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "MySQL", "CSV");
     }
 }

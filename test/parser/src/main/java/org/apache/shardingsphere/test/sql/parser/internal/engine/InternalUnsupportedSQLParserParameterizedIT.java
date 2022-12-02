@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.internal.engine;
 
-import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
@@ -41,7 +38,7 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     
     private final String sqlCaseId;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
     
@@ -52,14 +49,14 @@ public abstract class InternalUnsupportedSQLParserParameterizedIT {
     }
     
     protected static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String databaseType) {
-        return SQL_CASES.generateTestParameters(Collections.singleton(DatabaseTypeFactory.getInstance(databaseType)));
+        return SQL_CASES.generateTestParameters(Collections.singleton(databaseType));
     }
     
     @Test(expected = Exception.class)
     // TODO should expect SQLParsingException only
     public final void assertUnsupportedSQL() {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
-        String databaseType = (this.databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) this.databaseType).getTrunkDatabaseType() : this.databaseType).getType();
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         CacheOption cacheOption = new CacheOption(128, 1024L);
         ParseASTNode parseContext = new SQLParserEngine(databaseType, cacheOption).parse(sql, false);
         // TODO remove SQLStatement sqlStatement =

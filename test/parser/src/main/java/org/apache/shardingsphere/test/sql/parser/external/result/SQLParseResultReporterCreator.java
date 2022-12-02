@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.result;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
@@ -31,5 +30,5 @@ public interface SQLParseResultReporterCreator extends TypedSPI {
      * @param databaseType database type
      * @return created SQL parse result reporter
      */
-    SQLParseResultReporter create(DatabaseType databaseType);
+    SQLParseResultReporter create(String databaseType);
 }

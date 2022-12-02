@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.external;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
@@ -40,6 +39,6 @@ public final class ExternalPostgreSQLParserParameterizedIT extends ExternalSQLPa
     public static Collection<ExternalSQLParserParameterizedArray> getTestParameters() {
         String caseURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
         String resultURL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
-        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), DatabaseTypeFactory.getInstance("PostgreSQL"), "CSV");
+        return new SQLCaseLoader(new GitHubSQLCaseLoadStrategy()).load(URI.create(caseURL), URI.create(resultURL), "PostgreSQL", "CSV");
     }
 }

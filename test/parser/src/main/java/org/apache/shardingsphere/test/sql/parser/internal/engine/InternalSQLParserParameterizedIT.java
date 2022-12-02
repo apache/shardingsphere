@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.test.sql.parser.internal.engine;
 
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
@@ -50,7 +47,7 @@ public abstract class InternalSQLParserParameterizedIT {
     
     private final String sqlCaseId;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
     
@@ -62,7 +59,7 @@ public abstract class InternalSQLParserParameterizedIT {
     
     protected static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String... databaseTypes) {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
-        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).map(DatabaseTypeFactory::getInstance).collect(Collectors.toSet()))) {
+        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
             if (!isPlaceholderWithoutParameter(each)) {
                 result.add(each);
             }
@@ -77,7 +74,7 @@ public abstract class InternalSQLParserParameterizedIT {
     @Test
     public final void assertSupportedSQL() {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
-        SQLStatement actual = parseSQLStatement((databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType() : databaseType).getType(), sql);
+        SQLStatement actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, sql);
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }

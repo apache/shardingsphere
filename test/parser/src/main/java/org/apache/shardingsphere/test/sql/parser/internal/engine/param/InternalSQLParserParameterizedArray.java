@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.sql.parser.internal.engine.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.SQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
 
@@ -34,10 +33,10 @@ public final class InternalSQLParserParameterizedArray implements SQLParserParam
     
     private final SQLCaseType sqlCaseType;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     @Override
     public String toString() {
-        return String.format("%s (%s) -> %s", sqlCaseId, sqlCaseType, databaseType.getType());
+        return String.format("%s (%s) -> %s", sqlCaseId, sqlCaseType, databaseType);
     }
 }

@@ -29,6 +29,7 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        
         <json-path.version>2.4.0</json-path.version>
         <commons-csv.version>1.9.0</commons-csv.version>
     </properties>
@@ -133,12 +134,6 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-shadow-distsql-parser</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-runner</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

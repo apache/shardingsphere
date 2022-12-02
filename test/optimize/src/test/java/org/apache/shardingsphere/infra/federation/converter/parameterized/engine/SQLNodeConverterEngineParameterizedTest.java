@@ -28,7 +28,6 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.util.Litmus;
-import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -153,7 +152,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private final String sqlCaseId;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final SQLCaseType sqlCaseType;
     
@@ -170,7 +169,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     private static Collection<InternalSQLParserParameterizedArray> getTestParameters(final String... databaseTypes) {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
-        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).map(DatabaseTypeFactory::getInstance).collect(Collectors.toSet()))) {
+        for (InternalSQLParserParameterizedArray each : SQL_CASES.generateTestParameters(Arrays.stream(databaseTypes).collect(Collectors.toSet()))) {
             if (!isPlaceholderWithoutParameter(each) && isSupportedSQLCase(each)) {
                 result.add(each);
             }
@@ -188,7 +187,7 @@ public final class SQLNodeConverterEngineParameterizedTest {
     
     @Test
     public void assertConvert() {
-        String databaseType = (this.databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) this.databaseType).getTrunkDatabaseType() : this.databaseType).getType();
+        String databaseType = "H2".equals(this.databaseType) ? "MySQL" : this.databaseType;
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         SQLStatement sqlStatement = parseSQLStatement(databaseType, sql);
         SqlNode actual = SQLNodeConverterEngine.convert(sqlStatement);

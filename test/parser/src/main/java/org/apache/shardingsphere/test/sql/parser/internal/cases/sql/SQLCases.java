@@ -20,9 +20,6 @@ package org.apache.shardingsphere.test.sql.parser.internal.cases.sql;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.jaxb.SQLCase;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.CaseTypedSQLBuilderFactory;
 import org.apache.shardingsphere.test.sql.parser.internal.cases.sql.type.SQLCaseType;
@@ -30,7 +27,6 @@ import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalS
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +45,7 @@ public final class SQLCases {
      * @param databaseTypes database types to be generated
      * @return generated test parameters
      */
-    public Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<DatabaseType> databaseTypes) {
+    public Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<String> databaseTypes) {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
         for (SQLCase each : cases.values()) {
             result.addAll(generateTestParameters(databaseTypes, each));
@@ -57,7 +53,7 @@ public final class SQLCases {
         return result;
     }
     
-    private Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<DatabaseType> databaseTypes, final SQLCase sqlCase) {
+    private Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase) {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
         for (SQLCaseType each : SQLCaseType.values()) {
             result.addAll(generateTestParameters(databaseTypes, sqlCase, each));
@@ -65,9 +61,9 @@ public final class SQLCases {
         return result;
     }
     
-    private Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<DatabaseType> databaseTypes, final SQLCase sqlCase, final SQLCaseType caseType) {
+    private Collection<InternalSQLParserParameterizedArray> generateTestParameters(final Collection<String> databaseTypes, final SQLCase sqlCase, final SQLCaseType caseType) {
         Collection<InternalSQLParserParameterizedArray> result = new LinkedList<>();
-        for (DatabaseType each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
+        for (String each : getDatabaseTypes(sqlCase.getDatabaseTypes())) {
             if (databaseTypes.contains(each) && containsSQLCaseType(sqlCase, caseType)) {
                 result.add(new InternalSQLParserParameterizedArray(sqlCase.getId(), caseType, each));
             }
@@ -75,15 +71,8 @@ public final class SQLCases {
         return result;
     }
     
-    private Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
-        Collection<DatabaseType> result = new HashSet<>();
-        for (String each : null == databaseTypes ? getAllDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes)) {
-            try {
-                result.add(DatabaseTypeFactory.getInstance(each));
-            } catch (final ServiceProviderNotFoundServerException ignored) {
-            }
-        }
-        return result;
+    private Collection<String> getDatabaseTypes(final String databaseTypes) {
+        return null == databaseTypes ? getAllDatabaseTypes() : Splitter.on(',').trimResults().splitToList(databaseTypes);
     }
     
     private Collection<String> getAllDatabaseTypes() {

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.engine;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
@@ -36,7 +35,7 @@ public abstract class ExternalSQLParserParameterizedIT {
     
     private final String sql;
     
-    private final DatabaseType databaseType;
+    private final String databaseType;
     
     private final SQLParseResultReporter resultReporter;
     
@@ -51,8 +50,8 @@ public abstract class ExternalSQLParserParameterizedIT {
     public final void assertParseSQL() {
         boolean isSuccess = true;
         try {
-            ParseASTNode parseASTNode = new SQLParserEngine(databaseType.getType(), new CacheOption(128, 1024L)).parse(sql, false);
-            new SQLVisitorEngine(databaseType.getType(), "STATEMENT", true, new Properties()).visit(parseASTNode);
+            ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
+            new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
         } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
             isSuccess = false;
         }
