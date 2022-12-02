@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dd
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterPublicationStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-/**`
+/**
  * PostgreSQL alter publication statement.
  */
 public final class PostgreSQLAlterPublicationStatement extends AlterPublicationStatement implements PostgreSQLStatement {
