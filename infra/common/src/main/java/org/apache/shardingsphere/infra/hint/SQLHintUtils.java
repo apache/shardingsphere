@@ -106,22 +106,22 @@ public final class SQLHintUtils {
         String hintText = sql.substring(0, sql.indexOf(SQL_COMMENT_SUFFIX) + 2);
         Properties hintProperties = SQLHintUtils.getSQLHintProps(hintText);
         if (hintProperties.containsKey(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())) {
-            result.setWriteRouteOnly(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())));
+            result.setWriteRouteOnly(Boolean.parseBoolean(hintProperties.getProperty(SQLHintPropertiesKey.WRITE_ROUTE_ONLY_KEY.getKey())));
         }
         if (hintProperties.containsKey(SQLHintPropertiesKey.USE_TRAFFIC_KEY.getKey())) {
-            result.setUseTraffic(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.USE_TRAFFIC_KEY.getKey())));
+            result.setUseTraffic(Boolean.parseBoolean(hintProperties.getProperty(SQLHintPropertiesKey.USE_TRAFFIC_KEY.getKey())));
         }
         if (hintProperties.containsKey(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY.getKey())) {
-            result.setSkipEncryptRewrite(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY.getKey())));
+            result.setSkipEncryptRewrite(Boolean.parseBoolean(hintProperties.getProperty(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY.getKey())));
         }
         if (hintProperties.containsKey(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY.getKey())) {
             result.setDisableAuditNames(hintProperties.getProperty(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES_KEY.getKey()));
         }
         if (hintProperties.containsKey(SQLHintPropertiesKey.SHADOW_KEY.getKey())) {
-            result.setShadow(Boolean.valueOf(hintProperties.getProperty(SQLHintPropertiesKey.SHADOW_KEY.getKey())));
+            result.setShadow(Boolean.parseBoolean(hintProperties.getProperty(SQLHintPropertiesKey.SHADOW_KEY.getKey())));
         }
         for (Entry<Object, Object> entry : hintProperties.entrySet()) {
-            Comparable value = entry.getValue() instanceof Comparable ? (Comparable<?>) entry.getValue() : Objects.toString(entry.getValue());
+            Comparable<?> value = entry.getValue() instanceof Comparable ? (Comparable<?>) entry.getValue() : Objects.toString(entry.getValue());
             if (Objects.toString(entry.getKey()).contains(SQLHintPropertiesKey.SHARDING_DATABASE_VALUE_KEY.getKey())) {
                 result.getShardingDatabaseValues().put(Objects.toString(entry.getKey()), value);
             }
