@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.container.compose.ContainerCom
 import org.apache.shardingsphere.test.integration.container.compose.ContainerComposerRegistry;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
-import org.apache.shardingsphere.test.integration.framework.runner.ShardingSphereIntegrationTestParameterized;
+import org.apache.shardingsphere.test.integration.framework.runner.ParallelParameterized;
 import org.h2.tools.RunScript;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@RunWith(ShardingSphereIntegrationTestParameterized.class)
+@RunWith(ParallelParameterized.class)
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseITCase {
     

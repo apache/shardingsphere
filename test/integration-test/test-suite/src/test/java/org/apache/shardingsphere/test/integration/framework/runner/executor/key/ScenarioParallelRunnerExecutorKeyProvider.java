@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.runner.parallel;
+package org.apache.shardingsphere.test.integration.framework.runner.executor.key;
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.key.ParallelRunnerExecutorKeyProvider;
-import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
 
 /**
  * Scenario parallel runner executor key provider.

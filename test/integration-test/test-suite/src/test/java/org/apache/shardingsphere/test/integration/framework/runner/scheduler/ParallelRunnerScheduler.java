@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.scheduler;
+package org.apache.shardingsphere.test.integration.framework.runner.scheduler;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.executor.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.runner.executor.key.ParallelRunnerExecutorKeyProviderFactory;
-import org.apache.shardingsphere.test.runner.param.RunnerParameters;
+import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.framework.runner.executor.key.ParallelRunnerExecutorKeyProviderFactory;
+import org.apache.shardingsphere.test.integration.framework.runner.param.RunnerParameters;
 import org.junit.runners.model.RunnerScheduler;
 
 /**

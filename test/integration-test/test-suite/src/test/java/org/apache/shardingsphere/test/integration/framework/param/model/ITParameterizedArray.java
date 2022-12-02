@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
 
 /**
  * IT parameterized array.
