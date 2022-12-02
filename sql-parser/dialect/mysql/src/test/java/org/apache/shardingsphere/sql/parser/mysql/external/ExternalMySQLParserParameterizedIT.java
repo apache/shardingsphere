@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.sql.parser.mysql.external;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.external.engine.ExternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.external.engine.param.ExternalSQLParserParameterizedArray;
 import org.apache.shardingsphere.test.sql.parser.external.loader.SQLCaseLoader;
 import org.apache.shardingsphere.test.sql.parser.external.loader.strategy.impl.GitHubSQLCaseLoadStrategy;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.net.URI;
 import java.util.Collection;
 
-@RunWith(ParallelParameterized.class)
+@RunWith(Parameterized.class)
 public final class ExternalMySQLParserParameterizedIT extends ExternalSQLParserParameterizedIT {
     
     public ExternalMySQLParserParameterizedIT(final ExternalSQLParserParameterizedArray parameterizedArray) {

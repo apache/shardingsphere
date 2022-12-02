@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.internal;
 
-import org.apache.shardingsphere.test.runner.ParallelParameterized;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.InternalSQLParserParameterizedIT;
 import org.apache.shardingsphere.test.sql.parser.internal.engine.param.InternalSQLParserParameterizedArray;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
 
-@RunWith(ParallelParameterized.class)
+@RunWith(Parameterized.class)
 public final class InternalPostgreSQLParserParameterizedIT extends InternalSQLParserParameterizedIT {
     
     public InternalPostgreSQLParserParameterizedIT(final InternalSQLParserParameterizedArray parameterizedArray) {
