@@ -21,13 +21,17 @@ import org.apache.shardingsphere.infra.exception.MetaDataSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Resource does not exist exception.
+ * Storage unit not existed exception.
  */
-public final class ResourceNotExistedException extends MetaDataSQLException {
+public final class StorageUnitNotExistedException extends MetaDataSQLException {
     
     private static final long serialVersionUID = 4146100333670404924L;
+
+    public StorageUnitNotExistedException() {
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "There is no storage unit in any database.");
+    }
     
-    public ResourceNotExistedException() {
-        super(XOpenSQLState.SYNTAX_ERROR, 0, "Resource does not exist.");
+    public StorageUnitNotExistedException(final String databaseName) {
+        super(XOpenSQLState.SYNTAX_ERROR, 0, "There is no storage unit in database `%s`.", databaseName);
     }
 }

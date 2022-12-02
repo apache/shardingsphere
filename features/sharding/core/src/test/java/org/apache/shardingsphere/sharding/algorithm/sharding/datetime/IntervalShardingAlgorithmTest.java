@@ -449,7 +449,7 @@ public final class IntervalShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("04", "10")));
         assertThat(actualAsMonthString.size(), is(4));
     }
-
+    
     @Test
     public void assertDateInSqlDate() {
         Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
