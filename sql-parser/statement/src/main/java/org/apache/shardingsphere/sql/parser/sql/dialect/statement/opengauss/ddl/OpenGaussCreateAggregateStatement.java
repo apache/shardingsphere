@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateAggregateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss create aggregate statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussCreateAggregateStatement extends CreateAggregateStatement implements OpenGaussStatement {
 }

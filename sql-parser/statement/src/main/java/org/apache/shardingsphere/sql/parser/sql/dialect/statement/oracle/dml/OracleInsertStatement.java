@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.InsertMultiTableElementSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
@@ -30,7 +29,6 @@ import java.util.Optional;
  * Oracle insert statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class OracleInsertStatement extends InsertStatement implements OracleStatement {
     
     private SubquerySegment selectSubquery;

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ReindexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL reindex statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLReindexStatement extends ReindexStatement implements PostgreSQLStatement {
 }

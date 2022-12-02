@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml;
 
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.WithSegment;
@@ -31,7 +30,6 @@ import java.util.Optional;
  * PostgreSQL insert statement.
  */
 @Setter
-@ToString(callSuper = true)
 public final class PostgreSQLInsertStatement extends InsertStatement implements PostgreSQLStatement {
     
     private WithSegment withSegment;

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterRoutineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL alter routine statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLAlterRoutineStatement extends AlterRoutineStatement implements PostgreSQLStatement {
 }

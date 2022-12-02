@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss alter type statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussAlterTypeStatement extends AlterTypeStatement implements OpenGaussStatement {
 }

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL explain statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLExplainStatement extends ExplainStatement implements PostgreSQLStatement {
 }

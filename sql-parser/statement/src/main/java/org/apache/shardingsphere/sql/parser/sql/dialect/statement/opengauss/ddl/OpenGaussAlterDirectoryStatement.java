@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterDirectoryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss alter directory statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussAlterDirectoryStatement extends AlterDirectoryStatement implements OpenGaussStatement {
 }

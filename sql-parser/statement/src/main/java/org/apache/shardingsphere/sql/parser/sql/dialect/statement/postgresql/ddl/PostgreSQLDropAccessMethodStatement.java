@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
  * PostgreSQL drop access method statement.
  */
-@ToString(callSuper = true)
 public final class PostgreSQLDropAccessMethodStatement extends DropAccessMethodStatement implements PostgreSQLStatement {
 }

@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle create role statement.
  */
-@ToString(callSuper = true)
 public final class OracleCreateRoleStatement extends CreateRoleStatement implements OracleStatement {
 }

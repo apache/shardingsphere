@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer create procedure statement.
  */
-@ToString(callSuper = true)
 public final class SQLServerCreateProcedureStatement extends CreateProcedureStatement implements SQLServerStatement {
 }

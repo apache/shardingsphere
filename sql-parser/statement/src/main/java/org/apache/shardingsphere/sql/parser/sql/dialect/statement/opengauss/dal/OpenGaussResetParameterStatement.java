@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
 
-import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 
 /**
  * OpenGauss reset parameter statement.
  */
-@ToString(callSuper = true)
 public final class OpenGaussResetParameterStatement extends ResetParameterStatement implements OpenGaussStatement {
     
     public OpenGaussResetParameterStatement(final String configurationParam) {
