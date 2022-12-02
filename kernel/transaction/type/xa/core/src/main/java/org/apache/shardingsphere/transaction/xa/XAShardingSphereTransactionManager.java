@@ -20,7 +20,7 @@ package org.apache.shardingsphere.transaction.xa;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderFactory;
@@ -37,7 +37,9 @@ import javax.transaction.TransactionManager;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -49,10 +51,19 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
     @Override
-    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, ResourceDataSource> resourceDataSources, final String providerType) {
+    public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
         xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(providerType);
         xaTransactionManagerProvider.init();
+        Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);
         resourceDataSources.forEach((key, value) -> cachedDataSources.put(value.getOriginalName(), newXATransactionDataSource(databaseTypes.get(key), value)));
+    }
+    
+    private Map<String, ResourceDataSource> getResourceDataSources(final Map<String, DataSource> dataSourceMap) {
+        Map<String, ResourceDataSource> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            result.put(entry.getKey(), new ResourceDataSource(entry.getKey(), entry.getValue()));
+        }
+        return result;
     }
     
     private XATransactionDataSource newXATransactionDataSource(final DatabaseType databaseType, final ResourceDataSource resourceDataSource) {

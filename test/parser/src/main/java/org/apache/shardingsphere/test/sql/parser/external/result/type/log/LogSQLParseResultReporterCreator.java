@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.result.type.log;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporterCreator;
 
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultR
 public final class LogSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    public SQLParseResultReporter create(final String databaseType) {
+    public SQLParseResultReporter create(final DatabaseType databaseType) {
         return new LogSQLParseResultReporter();
     }
     

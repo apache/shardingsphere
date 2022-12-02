@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.example.transaction.base.seata.spring.boot;
 
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

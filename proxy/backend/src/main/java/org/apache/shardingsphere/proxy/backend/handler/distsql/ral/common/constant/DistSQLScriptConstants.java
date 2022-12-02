@@ -111,7 +111,7 @@ public final class DistSQLScriptConstants {
     
     public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING TABLE REFERENCE RULE";
     
-    public static final String BINDING_TABLES = " (%s)";
+    public static final String BINDING_TABLES = " %s (%s)";
     
     public static final String BROADCAST_TABLE_RULE = "CREATE BROADCAST TABLE RULE %s";
     

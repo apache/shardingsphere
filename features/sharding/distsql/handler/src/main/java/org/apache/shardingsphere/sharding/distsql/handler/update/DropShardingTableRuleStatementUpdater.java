@@ -69,9 +69,7 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
         Collection<String> currentShardingTableNames = getCurrentShardingTableNames(currentRuleConfig);
         Collection<String> notExistedTableNames =
                 getToBeDroppedShardingTableNames(sqlStatement).stream().filter(each -> !containsIgnoreCase(currentShardingTableNames, each)).collect(Collectors.toList());
-        if (!notExistedTableNames.isEmpty()) {
-            throw new MissingRequiredRuleException("sharding", databaseName, notExistedTableNames);
-        }
+        ShardingSpherePreconditions.checkState(notExistedTableNames.isEmpty(), () -> new MissingRequiredRuleException("sharding", databaseName, notExistedTableNames));
     }
     
     private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
@@ -95,7 +93,7 @@ public final class DropShardingTableRuleStatementUpdater extends AbstractDropSha
     
     private Collection<String> getBindingTables(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each)));
+        shardingRuleConfig.getBindingTableGroups().forEach(each -> result.addAll(Splitter.on(",").splitToList(each.getReference())));
         return result;
     }
     

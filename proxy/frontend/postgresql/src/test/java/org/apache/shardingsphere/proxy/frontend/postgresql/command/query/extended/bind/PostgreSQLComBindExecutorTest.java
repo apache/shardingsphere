@@ -34,7 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.JDBCPortal;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLEmptyStatement;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

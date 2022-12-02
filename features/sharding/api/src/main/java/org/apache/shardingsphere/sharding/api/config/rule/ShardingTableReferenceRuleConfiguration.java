@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.spi;
+package org.apache.shardingsphere.sharding.api.config.rule;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * ShardingSphere transaction manager factory.
+ * Sharding table reference rule configuration.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereTransactionManagerFactory {
+@RequiredArgsConstructor
+@Getter
+public final class ShardingTableReferenceRuleConfiguration {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereTransactionManager.class);
-    }
+    private final String name;
     
-    /**
-     * Get all instances of ShardingSphere transaction manager.
-     * 
-     * @return got instances
-     */
-    public static Collection<ShardingSphereTransactionManager> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class);
-    }
+    private final String reference;
 }

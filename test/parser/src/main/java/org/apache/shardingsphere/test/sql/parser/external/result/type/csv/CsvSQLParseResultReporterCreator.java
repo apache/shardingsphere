@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.sql.parser.external.result.type.csv;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporter;
 import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultReporterCreator;
 
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.test.sql.parser.external.result.SQLParseResultR
 public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    public SQLParseResultReporter create(final String databaseType) {
+    public SQLParseResultReporter create(final DatabaseType databaseType) {
         return new CsvSQLParseResultReporter(databaseType);
     }
     

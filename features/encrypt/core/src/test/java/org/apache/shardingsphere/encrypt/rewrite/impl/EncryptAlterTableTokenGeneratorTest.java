@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -66,7 +66,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
         when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("certificate_number_plain"));
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
-        EncryptAlgorithm<?, ?> encryptAlgorithm = mock(EncryptAlgorithm.class);
+        StandardEncryptAlgorithm<?, ?> encryptAlgorithm = mock(StandardEncryptAlgorithm.class);
         when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findEncryptor("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));

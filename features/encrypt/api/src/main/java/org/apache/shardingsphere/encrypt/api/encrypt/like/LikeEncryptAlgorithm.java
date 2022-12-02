@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.encrypt.api.encrypt.like;
+
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 /**
- * Transaction type.
+ * Like encrypt algorithm.
+ * 
+ * @param <I> type of plain value
+ * @param <O> type of cipher value
  */
-public enum TransactionType {
-    
-    LOCAL, XA, BASE;
+public interface LikeEncryptAlgorithm<I, O> extends EncryptAlgorithm {
     
     /**
-     * Judge whether distributed transaction.
-     * 
-     * @param transactionType transaction type
-     * @return is distributed transaction or not
+     * Encrypt.
+     *
+     * @param plainValue plain value
+     * @param encryptContext encrypt context
+     * @return cipher value
      */
-    public static boolean isDistributedTransaction(final TransactionType transactionType) {
-        return XA == transactionType || BASE == transactionType;
-    }
+    O encrypt(I plainValue, EncryptContext encryptContext);
 }

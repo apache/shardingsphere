@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.transaction;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
 import org.junit.Test;
 
