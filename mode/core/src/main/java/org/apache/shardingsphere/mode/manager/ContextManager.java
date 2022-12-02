@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereView;
@@ -57,10 +58,12 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -647,63 +650,79 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Alter ShardingSphere schema data.
+     * Add ShardingSphere table data.
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param toBeDeletedTableName to be deleted table name
+     * @param tableName table name
      */
-    public synchronized void alterSchemaData(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
+    public synchronized void addShardingSphereTableData(final String databaseName, final String schemaName, final String tableName) {
         if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)) {
             return;
         }
-        Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTableData(databaseName, schemaName, optional));
-    }
-    
-    /**
-     * Alter ShardingSphere schema data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param toBeChangedTable to be changed table
-     */
-    public synchronized void alterSchemaData(final String databaseName, final String schemaName, final ShardingSphereTableData toBeChangedTable) {
-        if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
-                || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)) {
+        if (metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().containsKey(tableName)) {
             return;
         }
-        Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTableData(databaseName, schemaName, optional));
-    }
-    
-    private synchronized void alterTableData(final String databaseName, final String schemaName, final ShardingSphereTableData toBeChangedTable) {
         ShardingSphereDatabaseData database = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName);
-        database.getSchemaData().get(schemaName).getTableData().put(toBeChangedTable.getName(), toBeChangedTable);
-    }
-    
-    private synchronized void dropTableData(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
-        metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().remove(toBeDeletedTableName);
+        database.getSchemaData().get(schemaName).getTableData().put(tableName, new ShardingSphereTableData(tableName));
     }
     
     /**
-     * Alter ShardingSphere rows data.
+     * Drop ShardingSphere table data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     */
+    public synchronized void dropShardingSphereTableData(final String databaseName, final String schemaName, final String tableName) {
+        if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
+                || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)) {
+            return;
+        }
+        metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().remove(tableName);
+    }
+    
+    /**
+     * Alter ShardingSphere row data.
      *
      * @param databaseName database name
      * @param schemaName schema name
      * @param tableName table name
      * @param yamlRowData yaml row data
      */
-    public synchronized void alterRowsData(final String databaseName, final String schemaName, final String tableName, final YamlShardingSphereRowData yamlRowData) {
+    public synchronized void alterShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final YamlShardingSphereRowData yamlRowData) {
+        if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
+                || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)
+                || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().containsKey(tableName)) {
+            return;
+        }
+        if (!metaDataContexts.getMetaData().containsDatabase(databaseName) || !metaDataContexts.getMetaData().getDatabase(databaseName).containsSchema(schemaName)
+                || !metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).containsTable(tableName)) {
+            return;
+        }
+        ShardingSphereTableData tableData = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().get(tableName);
+        List<ShardingSphereColumn> columns = new ArrayList<>(metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).getTable(tableName).getColumns().values());
+        ShardingSphereRowData rowData = new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData);
+        tableData.getRows().add(rowData);
+    }
+    
+    /**
+     * Delete ShardingSphere row data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey row uniqueKey
+     */
+    public synchronized void deleteShardingSphereRowData(final String databaseName, final String schemaName, final String tableName, final String uniqueKey) {
         if (!metaDataContexts.getShardingSphereData().getDatabaseData().containsKey(databaseName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().containsKey(schemaName)
                 || !metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().containsKey(tableName)) {
             return;
         }
         ShardingSphereTableData tableData = metaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName).getSchemaData().get(schemaName).getTableData().get(tableName);
-        ShardingSphereRowData rowData = new YamlShardingSphereRowDataSwapper(tableData.getColumns()).swapToObject(yamlRowData);
-        if (!tableData.getRows().contains(rowData)) {
-            tableData.getRows().add(rowData);
-        }
+        tableData.getRows().removeIf(each -> uniqueKey.equals(each.getUniqueKey()));
     }
     
     @Override

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -228,10 +229,10 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return result;
     }
     
-    private Map<String, BindingTableRule> createBindingTableRules(final Collection<String> bindingTableGroups) {
+    private Map<String, BindingTableRule> createBindingTableRules(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups) {
         Map<String, BindingTableRule> result = new LinkedHashMap<>();
-        for (String each : bindingTableGroups) {
-            BindingTableRule bindingTableRule = createBindingTableRule(each);
+        for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
+            BindingTableRule bindingTableRule = createBindingTableRule(each.getReference());
             for (String logicTable : bindingTableRule.getAllLogicTables()) {
                 result.put(logicTable.toLowerCase(), bindingTableRule);
             }
@@ -248,8 +249,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     private boolean isValidBindingTableConfiguration(final Map<String, TableRule> tableRules, final BindingTableCheckedConfiguration checkedConfig) {
-        for (String each : checkedConfig.getBindingTableGroups()) {
-            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.toLowerCase());
+        for (ShardingTableReferenceRuleConfiguration each : checkedConfig.getBindingTableGroups()) {
+            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference().toLowerCase());
             if (bindingTables.size() <= 1) {
                 continue;
             }

@@ -14,22 +14,9 @@ For systems running on a single database that urgently need to securely and simp
 
 ## Procedure
 
-1. Run the following command to compile the ShardingSphere-Proxy binary package: 
+1. Get ShardingSphere-Proxy. Please refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/) for details.
 
-```
-git clone --depth 1 https://github.com/apache/shardingsphere.git
-cd shardingsphere
-mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
-```
-
-Release package：
-- /shardingsphere-distribution/shardingsphere-proxy-distribution/target/apache-shardingsphere-${latest.release.version}-shardingsphere-proxy-bin.tar.gz
-
-Or you can get the installation package through the [Download Page](https://shardingsphere.apache.org/document/current/en/downloads/)
-
-2. Decompress the proxy release package and modify the configuration file `conf/config-sharding.yaml`. Please refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/) for details.
-
-3. Modify the configuration file `conf/server.yaml`. Please refer to [mode configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for details.
+2. Modify the configuration file `conf/server.yaml`. Please refer to [mode configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/) for details.
 
 Currently, `mode` must be `Cluster`, and the corresponding registry must be started in advance.
 
@@ -48,7 +35,7 @@ mode:
       operationTimeoutMilliseconds: 500
 ```
 
-4. Introduce JDBC driver.
+3. Introduce JDBC driver.
 
 Proxy has included JDBC driver of PostgreSQL.
 
@@ -61,13 +48,13 @@ If the backend is connected to the following databases, download the correspondi
 
 If you are migrating to a heterogeneous database, then you could use more types of database. Introduce JDBC driver as above too.
 
-5. Start ShardingSphere-Proxy:
+4. Start ShardingSphere-Proxy:
 
 ```
 sh bin/start.sh
 ```
 
-6. View the proxy log `logs/stdout.log`. If you see the following statements:
+5. View the proxy log `logs/stdout.log`. If you see the following statements:
 
 ```
 [INFO ] [main] o.a.s.p.frontend.ShardingSphereProxy - ShardingSphere-Proxy start success
@@ -75,9 +62,9 @@ sh bin/start.sh
 
 The startup will have been successful.
 
-7. Configure and migrate on demand.
+6. Configure and migrate on demand.
 
-7.1. Query configuration.
+6.1. Query configuration.
 
 ```sql
 SHOW MIGRATION RULE;
@@ -93,7 +80,7 @@ The default configuration is as follows.
 +--------------------------------------------------------------+--------------------------------------+------------------------------------------------------+
 ```
 
-7.2. Alter configuration (Optional).
+6.2. Alter configuration (Optional).
 
 Since the migration rule has default values, there is no need to create it, only the `ALTER` statement is provided.
 
@@ -162,7 +149,7 @@ READ(
 
 Configure data reading for traffic limit. Other configurations use default values.
 
-7.3. Restore configuration.
+6.3. Restore configuration.
 
 To restore the default configuration, also through the `ALTER` statement.
 

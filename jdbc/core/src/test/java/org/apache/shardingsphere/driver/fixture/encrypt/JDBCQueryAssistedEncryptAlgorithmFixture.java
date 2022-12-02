@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.driver.fixture.encrypt;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
 @Getter
-public final class JDBCQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
+public final class JDBCQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     
     private Properties props;
     

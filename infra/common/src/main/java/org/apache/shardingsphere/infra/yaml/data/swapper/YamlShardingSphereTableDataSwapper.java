@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.yaml.data.swapper;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereTableData;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,46 +31,27 @@ import java.util.List;
 /**
  * YAML ShardingSphere data swapper.
  */
+@RequiredArgsConstructor
 public final class YamlShardingSphereTableDataSwapper implements YamlConfigurationSwapper<YamlShardingSphereTableData, ShardingSphereTableData> {
+    
+    private final List<ShardingSphereColumn> columns;
     
     @Override
     public YamlShardingSphereTableData swapToYamlConfiguration(final ShardingSphereTableData data) {
         YamlShardingSphereTableData result = new YamlShardingSphereTableData();
         result.setName(data.getName());
         Collection<YamlShardingSphereRowData> yamlShardingSphereRowData = new LinkedList<>();
-        data.getRows().forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(data.getColumns()).swapToYamlConfiguration(rowData)));
+        data.getRows().forEach(rowData -> yamlShardingSphereRowData.add(new YamlShardingSphereRowDataSwapper(columns).swapToYamlConfiguration(rowData)));
         result.setRowData(yamlShardingSphereRowData);
-        List<YamlShardingSphereColumn> columns = new LinkedList<>();
-        data.getColumns().forEach(each -> columns.add(swapYamlColumn(each)));
-        result.setColumns(columns);
-        return result;
-    }
-    
-    private YamlShardingSphereColumn swapYamlColumn(final ShardingSphereColumn column) {
-        YamlShardingSphereColumn result = new YamlShardingSphereColumn();
-        result.setName(column.getName());
-        result.setCaseSensitive(column.isCaseSensitive());
-        result.setGenerated(column.isGenerated());
-        result.setPrimaryKey(column.isPrimaryKey());
-        result.setDataType(column.getDataType());
-        result.setVisible(column.isVisible());
         return result;
     }
     
     @Override
     public ShardingSphereTableData swapToObject(final YamlShardingSphereTableData yamlConfig) {
-        List<ShardingSphereColumn> columns = new LinkedList<>();
-        if (null != yamlConfig.getColumns()) {
-            yamlConfig.getColumns().forEach(each -> columns.add(swapColumn(each)));
-        }
-        ShardingSphereTableData result = new ShardingSphereTableData(yamlConfig.getName(), columns);
+        ShardingSphereTableData result = new ShardingSphereTableData(yamlConfig.getName());
         if (null != yamlConfig.getRowData()) {
             yamlConfig.getRowData().forEach(yamlRowData -> result.getRows().add(new YamlShardingSphereRowDataSwapper(columns).swapToObject(yamlRowData)));
         }
         return result;
-    }
-    
-    private ShardingSphereColumn swapColumn(final YamlShardingSphereColumn column) {
-        return new ShardingSphereColumn(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive(), column.isVisible(), column.isUnsigned());
     }
 }

@@ -95,21 +95,21 @@ public final class ScenarioDataPath {
      * @return actual init SQL file
      */
     public Optional<String> findActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
-        return isActualDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getActualDatabaseInitSQLFile(databaseType, databaseName)) : Optional.empty();
+        return isActualDatabaseInitSQLFileExisted(databaseName, databaseType) ? Optional.of(getActualDatabaseInitSQLFile(databaseName, databaseType)) : Optional.empty();
     }
     
     private boolean isActualDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
-        String initSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
+        String initSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
         return null != ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
     }
     
-    private String getActualDatabaseInitSQLResourceFile(final DatabaseType databaseType, final String databaseName) {
+    private String getActualDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
         String initSQLFileName = String.join("-", Type.ACTUAL.name().toLowerCase(), databaseName, BASIC_INIT_SQL_FILE);
         return String.join("/", getInitSQLResourcePath(Type.ACTUAL, databaseType), initSQLFileName);
     }
     
-    private String getActualDatabaseInitSQLFile(final DatabaseType databaseType, final String databaseName) {
-        String resourceFile = getActualDatabaseInitSQLResourceFile(databaseType, databaseName);
+    private String getActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
+        String resourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
         URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
         assertNotNull(String.format("File `%s` must exist.", resourceFile), url);
         return url.getFile();

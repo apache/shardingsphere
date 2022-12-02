@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.advance;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -76,7 +77,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
         parseDistSQLHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
         assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast(), is(new Gson().toJson(statement)));
+        assertThat(JsonParser.parseString(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
     }
     
     @Test
@@ -89,8 +90,7 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
         parseDistSQLHandler.execute();
         parseDistSQLHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false);
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getFirst(), is("PostgreSQLSelectStatement"));
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast(), is(new Gson().toJson(statement)));
+        assertThat(JsonParser.parseString(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast().toString()), is(JsonParser.parseString(new Gson().toJson(statement))));
     }
     
     @Test(expected = SQLParsingException.class)

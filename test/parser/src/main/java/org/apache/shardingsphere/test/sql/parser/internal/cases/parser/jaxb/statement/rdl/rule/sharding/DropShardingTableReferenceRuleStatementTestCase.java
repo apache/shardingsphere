@@ -30,6 +30,6 @@ import java.util.List;
 @Getter
 public final class DropShardingTableReferenceRuleStatementTestCase extends DropRuleStatementTestCase {
     
-    @XmlElement(name = "rule")
-    private final List<String> rules = new LinkedList<>();
+    @XmlElement(name = "name")
+    private final List<String> names = new LinkedList<>();
 }

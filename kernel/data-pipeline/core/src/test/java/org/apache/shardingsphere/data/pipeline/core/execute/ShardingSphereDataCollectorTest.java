@@ -24,13 +24,15 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereDatabaseData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereSchemaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.sql.Types;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -61,7 +63,7 @@ public final class ShardingSphereDataCollectorTest {
         shardingSphereData.getDatabaseData().put("logic_db", shardingSphereDatabaseData);
         ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
         shardingSphereDatabaseData.getSchemaData().put("logic_schema", shardingSphereSchemaData);
-        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table", Collections.emptyList());
+        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
         shardingSphereSchemaData.getTableData().put("test_table", shardingSphereTableData);
         return shardingSphereData;
     }
@@ -74,11 +76,18 @@ public final class ShardingSphereDataCollectorTest {
         databases.put("logic_db", database);
         when(result.getDatabases()).thenReturn(databases);
         when(result.getDatabase("logic_db")).thenReturn(database);
+        when(result.containsDatabase("logic_db")).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema("logic_schema")).thenReturn(schema);
+        when(database.containsSchema("logic_schema")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(schema.getTable("test_table")).thenReturn(table);
+        when(schema.containsTable("test_table")).thenReturn(true);
         when(table.getName()).thenReturn("test_table");
+        Map<String, ShardingSphereColumn> columns = new LinkedHashMap<>();
+        columns.put("column1", new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false));
+        columns.put("column2", new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false));
+        when(table.getColumns()).thenReturn(columns);
         return result;
     }
 }

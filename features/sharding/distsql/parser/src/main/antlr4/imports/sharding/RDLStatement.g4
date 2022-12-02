@@ -40,7 +40,7 @@ alterShardingTableReferenceRule
     ;
 
 dropShardingTableReferenceRule
-    : DROP SHARDING TABLE REFERENCE RULE ifExists? (tableReferenceRuleDefinition (COMMA tableReferenceRuleDefinition)*)?
+    : DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
 createBroadcastTableRule
@@ -184,7 +184,7 @@ columnName
     ;
 
 tableReferenceRuleDefinition
-    : ruleName? LP tableName (COMMA tableName)* RP
+    : ruleName LP tableName (COMMA tableName)* RP
     ;
 
 shardingAlgorithmDefinition

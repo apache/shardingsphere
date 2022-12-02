@@ -715,7 +715,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="null" start-index="44" stop-index="47" />
+                    <literal-expression value="null" start-index="44" stop-index="47" />
                 </assignment-value>
             </value>
         </values>

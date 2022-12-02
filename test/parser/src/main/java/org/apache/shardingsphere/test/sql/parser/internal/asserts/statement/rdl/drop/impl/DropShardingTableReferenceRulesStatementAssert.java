@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.sql.parser.internal.asserts.SQLCaseAssertC
 import org.apache.shardingsphere.test.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropShardingTableReferenceRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Drop sharding table reference rule statement assert.
@@ -42,7 +42,7 @@ public final class DropShardingTableReferenceRulesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingTableReferenceRuleStatement actual, final DropShardingTableReferenceRuleStatementTestCase expected) {
         assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getTableReferences(), is(expected.getRules()));
-        assertThat(assertContext.getText("Sharding able reference rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
+        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getNames(), is(expected.getNames()));
+        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
     }
 }

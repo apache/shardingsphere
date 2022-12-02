@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.example.transaction.xa.narayana.raw.jdbc;
 
 import org.apache.shardingsphere.example.core.api.service.ExampleService;
-import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
