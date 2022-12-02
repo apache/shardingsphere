@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

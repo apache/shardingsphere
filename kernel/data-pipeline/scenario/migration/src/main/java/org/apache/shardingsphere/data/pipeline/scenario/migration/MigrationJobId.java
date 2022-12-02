@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
 /**
  * Migration job id.

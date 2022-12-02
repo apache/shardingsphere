@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PipelineJobIdUtilsTest {
     

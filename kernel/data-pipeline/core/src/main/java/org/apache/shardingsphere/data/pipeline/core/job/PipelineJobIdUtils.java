@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
 /**
  * Pipeline job id utils.

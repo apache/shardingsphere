@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.api;
-
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+package org.apache.shardingsphere.data.pipeline.spi.job;
 
 /**
- * Pipeline meta data persist service.
- *
- * @param <T> type of configuration
+ * Job type.
  */
-public interface PipelineMetaDataPersistService<T> {
+public interface JobType {
     
     /**
-     * Load meta data.
+     * Get type name.
      *
-     * @param jobType job type, nullable
-     * @return configurations
+     * @return type name
      */
-    T load(JobType jobType);
+    String getTypeName();
     
     /**
-     * Persist meta data.
+     * Get type code.
      *
-     * @param jobType job type, nullable
-     * @param configs configurations
+     * @return type code
      */
-    void persist(JobType jobType, T configs);
+    String getTypeCode();
+    
 }
