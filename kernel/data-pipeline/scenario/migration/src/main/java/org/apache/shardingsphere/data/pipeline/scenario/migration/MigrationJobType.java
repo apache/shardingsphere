@@ -15,31 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
-import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
 
 /**
- * Abstract pipeline job id.
+ * Migration job type.
  */
-@Getter
-public abstract class AbstractPipelineJobId implements PipelineJobId {
+public final class MigrationJobType extends AbstractJobType {
     
-    private final JobType jobType;
+    public static final String TYPE_CODE = "01";
     
-    private final String formatVersion;
-    
-    public AbstractPipelineJobId(final JobType jobType, final String formatVersion) {
-        this.jobType = jobType;
-        Preconditions.checkArgument(2 == formatVersion.length(), "formatVersion length is not 2");
-        this.formatVersion = formatVersion;
-    }
-    
-    @Override
-    public final String getJobTypeCode() {
-        return jobType.getTypeCode();
+    public MigrationJobType() {
+        super("MIGRATION", TYPE_CODE);
     }
 }

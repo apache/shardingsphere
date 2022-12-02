@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.job;
 
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+
 /**
  * Job type.
  */
+@SingletonSPI
 public interface JobType {
     
     /**
@@ -35,5 +38,4 @@ public interface JobType {
      * @return type code
      */
     String getTypeCode();
-    
 }

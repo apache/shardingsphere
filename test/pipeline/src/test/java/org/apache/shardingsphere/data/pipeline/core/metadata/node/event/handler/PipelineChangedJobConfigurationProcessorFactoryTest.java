@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler;
 
+import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.metadata.processor.ConsistencyCheckChangedJobConfigurationProcessor;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.processor.MigrationChangedJobConfigurationProcessor;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -29,7 +30,7 @@ public final class PipelineChangedJobConfigurationProcessorFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(PipelineChangedJobConfigurationProcessorFactory.getInstance(JobType.MIGRATION), instanceOf(MigrationChangedJobConfigurationProcessor.class));
-        assertThat(PipelineChangedJobConfigurationProcessorFactory.getInstance(JobType.CONSISTENCY_CHECK), instanceOf(ConsistencyCheckChangedJobConfigurationProcessor.class));
+        assertThat(PipelineChangedJobConfigurationProcessorFactory.getInstance(new MigrationJobType()), instanceOf(MigrationChangedJobConfigurationProcessor.class));
+        assertThat(PipelineChangedJobConfigurationProcessorFactory.getInstance(new ConsistencyCheckJobType()), instanceOf(ConsistencyCheckChangedJobConfigurationProcessor.class));
     }
 }

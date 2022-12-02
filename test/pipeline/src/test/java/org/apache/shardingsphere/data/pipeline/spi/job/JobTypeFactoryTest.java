@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job;
+package org.apache.shardingsphere.data.pipeline.spi.job;
 
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineJobIdUtilsTest {
+public final class JobTypeFactoryTest {
     
     @Test
-    public void assertParseJobType() {
-        MigrationJobId pipelineJobId = new MigrationJobId("ds_0", null, "t_order", "sharding_db", "t_order");
-        String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
-        JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
-        assertThat(actualJobType, instanceOf(MigrationJobType.class));
+    public void assertGetInstance() {
+        Collection<Pair<String, Class<? extends JobType>>> paramResult = Arrays.asList(
+                Pair.of(MigrationJobType.TYPE_CODE, MigrationJobType.class), Pair.of(ConsistencyCheckJobType.TYPE_CODE, ConsistencyCheckJobType.class));
+        for (Pair<String, Class<? extends JobType>> each : paramResult) {
+            JobType actual = JobTypeFactory.getInstance(each.getKey());
+            assertThat(actual, instanceOf(each.getValue()));
+        }
     }
 }

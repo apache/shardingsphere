@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.api.job.type;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
@@ -27,17 +27,11 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 @Getter
 public abstract class AbstractJobType implements JobType {
     
-    // TODO delete
-/*
-    MIGRATION("MIGRATION", "01"),
-    CONSISTENCY_CHECK("CONSISTENCY_CHECK", "02");
-*/
-    
     private final String typeName;
     
     private final String typeCode;
     
-    AbstractJobType(final String typeName, final String typeCode) {
+    public AbstractJobType(final String typeName, final String typeCode) {
         this.typeName = typeName;
         Preconditions.checkArgument(2 == typeCode.length(), "code length is not 2");
         this.typeCode = typeCode;
