@@ -267,7 +267,7 @@ rules:
     t_account_inline:
       type: INLINE
       props:
-        algorithm_expression: t_account_${account_id % 2}
+        algorithm-expression: t_account_${account_id % 2}
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
