@@ -43,12 +43,12 @@ rules:
   
   defaultDatabaseStrategy:
     hint:
-      shardingAlgorithmName: hint-test
+      shardingAlgorithmName: hint_test
   defaultTableStrategy:
     none:
   
   shardingAlgorithms:
-    hint-test:
+    hint_test:
       type: HINT_TEST
 
 props:

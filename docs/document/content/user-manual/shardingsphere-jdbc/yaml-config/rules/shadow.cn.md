@@ -18,9 +18,9 @@ rules:
   tables:
     <table-name>:
       dataSourceNames: # 影子表关联影子数据源名称列表
-        - <shadow-data-source>
+        - <shadow_data_source>
       shadowAlgorithmNames: # 影子表关联影子算法名称列表
-        - <shadow-algorithm-name>
+        - <shadow_algorithm_name>
   defaultShadowAlgorithmName: # 默认影子算法名称（选配项）
   shadowAlgorithms:
     <shadow-algorithm-name> (+): # 影子算法名称
@@ -69,8 +69,8 @@ rules:
       dataSourceNames: 
         - shadowDataSource
       shadowAlgorithmNames: 
-        - user-id-insert-match-algorithm
-        - simple-hint-algorithm
+        - user_id_insert_match_algorithm
+        - simple_hint_algorithm
   shadowAlgorithms:
     user-id-insert-match-algorithm:
       type: REGEX_MATCH

@@ -88,10 +88,10 @@ rules:
           - ds_0
           - ds_1
           - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
     discoveryHeartbeats:
-      mgr-heartbeat:
+      mgr_heartbeat:
         props:
           keep-alive-cron: '0/5 * * * * ?'
     discoveryTypes:

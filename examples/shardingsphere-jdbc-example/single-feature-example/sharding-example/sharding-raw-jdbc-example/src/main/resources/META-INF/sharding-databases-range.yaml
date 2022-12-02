@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-databaseName: sharding-databases-range
+databaseName: sharding_databases_range
 
 dataSources:
   ds_0:
@@ -56,13 +56,13 @@ rules:
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
-      shardingAlgorithmName: standard-test-db
+      shardingAlgorithmName: standard_test_db
   defaultTableStrategy:
     none:
   defaultShardingColumn: user_id
 
   shardingAlgorithms:
-    standard-test-db:
+    standard_test_db:
       type: STANDARD_TEST_DB
   
   keyGenerators:

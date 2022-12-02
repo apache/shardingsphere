@@ -21,8 +21,8 @@ rules:
   dataSources:
     <data-source-name> (+): # Logic data source name
       dataSourceNames: # Data source names
-        - <data-source>
-        - <data-source>
+        - <data_source>
+        - <data_source>
       discoveryHeartbeatName: # Detect heartbeat name
       discoveryTypeName: # Database discovery type name
   
@@ -87,10 +87,10 @@ rules:
           - ds_0
           - ds_1
           - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
+        discoveryHeartbeatName: mgr_heartbeat
         discoveryTypeName: mgr
     discoveryHeartbeats:
-      mgr-heartbeat:
+      mgr_heartbeat:
         props:
           keep-alive-cron: '0/5 * * * * ?'
     discoveryTypes:
