@@ -38,13 +38,13 @@ public @interface ParallelRunningStrategy {
      * 
      * @return parallel level
      */
-    ParallelLevel value() default ParallelLevel.NORMAL;
+    ParallelLevel value();
     
     /**
      * Parallel level.
      */
     enum ParallelLevel {
         
-        NORMAL, CASE, SCENARIO
+        CASE, SCENARIO
     }
 }
