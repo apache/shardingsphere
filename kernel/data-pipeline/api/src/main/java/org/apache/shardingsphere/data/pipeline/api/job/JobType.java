@@ -41,13 +41,10 @@ public enum JobType {
     
     private final String typeName;
     
-    private final String lowercaseTypeName;
-    
     private final String typeCode;
     
     JobType(final String typeName, final String typeCode) {
         this.typeName = typeName;
-        lowercaseTypeName = typeName.toLowerCase();
         Preconditions.checkArgument(2 == typeCode.length(), "code length is not 2");
         this.typeCode = typeCode;
     }
