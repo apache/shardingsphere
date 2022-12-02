@@ -35,10 +35,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,7 +72,7 @@ public class RailroadGenerator {
         }
     }
     private  Map<String, String> rules;
-    private  Map<String, String> rulesRelation;
+    private  Map<String, Set<String>> rulesRelation;
     private  Map<String, String> comments;
 
     public RailroadGenerator() {
@@ -163,7 +168,28 @@ public class RailroadGenerator {
     }
 
     private Collection<String> iterateRulesBroadcast(String rootRule){
-        return null;
+        Collection<String> rules = new ArrayList<>(this.rules.size());
+        Collection<String> rulesProcessed = new HashSet<>(this.rules.size());
+        rules.add(rootRule);
+        rulesProcessed.add(rootRule);
+        Queue<String> ruleQueue = new LinkedList<>();
+        ruleQueue.addAll(this.rulesRelation.get(rootRule));
+        while (!ruleQueue.isEmpty()){
+            String rule = ruleQueue.poll();
+            rules.add(rule);
+            rulesProcessed.add(rule);
+            Collection<String> childRules = this.rulesRelation.get(rule);
+            if(null != childRules && !childRules.isEmpty()){
+                childRules.forEach(
+                        childRule -> {
+                            if(!rulesProcessed.contains(childRule)){
+                                ruleQueue.add(childRule);
+                            }
+                        }
+                );
+            }
+        }
+        return rules;
     }
 
     /**

@@ -27,7 +27,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Railroad rule visitor
@@ -35,7 +37,7 @@ import java.util.Map;
 public class RailroadRuleVisitor extends RuleVisitor {
 
     @Getter
-    private Map<String, String> rulesRelation = new HashMap<>();
+    private Map<String, Set<String>> rulesRelation = new HashMap<>();
 
     @Override
     public String visitRuleref(@NotNull RulerefContext ctx) {
@@ -55,7 +57,14 @@ public class RailroadRuleVisitor extends RuleVisitor {
         ParserRuleContext context = ctx.getParent();
         while (null != context){
             if(context instanceof ParserRuleSpecContext){
-                rulesRelation.put(((ParserRuleSpecContext) context).RULE_REF().getText(),ctx.RULE_REF().getText());
+                String ruleName = ((ParserRuleSpecContext) context).RULE_REF().getText();
+                if(rulesRelation.containsKey(ruleName)){
+                    rulesRelation.get(ruleName).add(ctx.RULE_REF().getText());
+                }else {
+                    Set<String> temp = new HashSet<>();
+                    temp.add(ctx.RULE_REF().getText());
+                    rulesRelation.put(ruleName,temp);
+                }
                 break;
             }
             context = context.getParent();
@@ -66,7 +75,14 @@ public class RailroadRuleVisitor extends RuleVisitor {
         ParserRuleContext context = ctx.getParent();
         while (null != context){
             if(context instanceof LexerRuleContext){
-                rulesRelation.put(((LexerRuleContext) context).TOKEN_REF().getText(),ctx.RULE_REF().getText());
+                String ruleName = ((LexerRuleContext) context).TOKEN_REF().getText();
+                if(rulesRelation.containsKey(ruleName)){
+                    rulesRelation.get(ruleName).add(ctx.RULE_REF().getText());
+                }else {
+                    Set<String> temp = new HashSet<>();
+                    temp.add(ctx.RULE_REF().getText());
+                    rulesRelation.put(ruleName,temp);
+                }
                 break;
             }
             context = context.getParent();

@@ -168,6 +168,7 @@ public class RailroadMojo extends AbstractMojo {
         railroadMojo.setSourceDirectory(new File("/Users/hewenbin/github/shardingsphere/sql-parser/dialect/mysql/src/main/antlr4/org/apache/shardingsphere/sql/parser/autogen"));
         railroadMojo.setLibDirectory(new File("/Users/hewenbin/github/shardingsphere/sql-parser/dialect/mysql/src/main/antlr4/imports/mysql"));
         railroadMojo.setOutputDirectory(new File("/tmp"));
+        railroadMojo.setRootRule("execute");
         railroadMojo.execute();
     }
 }
