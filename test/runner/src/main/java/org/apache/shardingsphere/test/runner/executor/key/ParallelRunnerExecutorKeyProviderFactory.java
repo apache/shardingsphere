@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.runner.key;
+package org.apache.shardingsphere.test.runner.executor.key;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -26,26 +26,26 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
- * Test key provider factory.
+ * Parallel runner executor key provider factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TestKeyProviderFactory {
+public final class ParallelRunnerExecutorKeyProviderFactory {
     
-    private static final Map<ParallelLevel, TestKeyProvider> PROVIDERS = new HashMap<>();
+    private static final Map<ParallelLevel, ParallelRunnerExecutorKeyProvider> PROVIDERS = new HashMap<>();
     
     static {
-        for (TestKeyProvider each : ServiceLoader.load(TestKeyProvider.class)) {
+        for (ParallelRunnerExecutorKeyProvider each : ServiceLoader.load(ParallelRunnerExecutorKeyProvider.class)) {
             PROVIDERS.put(each.getParallelLevel(), each);
         }
     }
     
     /**
-     * Create new instance of executor key provider.
+     * Create new instance of parallel runner executor key provider.
      * 
      * @param parallelLevel parallel level
      * @return created instance
      */
-    public static TestKeyProvider newInstance(final ParallelLevel parallelLevel) {
+    public static ParallelRunnerExecutorKeyProvider newInstance(final ParallelLevel parallelLevel) {
         return PROVIDERS.get(parallelLevel);
     }
 }
