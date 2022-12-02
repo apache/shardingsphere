@@ -95,10 +95,6 @@ shardingTableRule
     : tableName LP dataNodes (COMMA databaseStrategy)? (COMMA tableStrategy)? (COMMA keyGenerateDefinition)? (COMMA auditDefinition)? RP
     ;
 
-keyGeneratorDefinition
-    : keyGeneratorName LP algorithmDefinition RP
-    ;
-
 keyGeneratorName
     : IDENTIFIER
     ;
@@ -185,10 +181,6 @@ columnName
 
 tableReferenceRuleDefinition
     : ruleName LP tableName (COMMA tableName)* RP
-    ;
-
-shardingAlgorithmDefinition
-    : shardingAlgorithmName LP algorithmDefinition RP
     ;
 
 strategyType

@@ -49,7 +49,7 @@ execute
     | createShardingAuditor
     | alterShardingAuditor
     | dropShardingAuditor
-    | showShardingDefaultShardingStrategy
+    | showDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms
