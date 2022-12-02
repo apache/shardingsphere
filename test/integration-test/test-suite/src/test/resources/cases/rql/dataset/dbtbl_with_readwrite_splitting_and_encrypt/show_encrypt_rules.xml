@@ -37,6 +37,6 @@
     <row values="t_user| pwd| | pwd_cipher| | pwd_plain| | | | AES| aes-key-value=123456abc| | | | | true" />
     <row values="t_user_details| number| | number_cipher| | number_plain| | | | AES| aes-key-value=123456abc| | | | | true" />
     <row values="t_user_details| number_new| | number_new_cipher| | number_new_plain| | | | AES| aes-key-value=123456abc| | | | | true" />
-    <row values="t_user_encrypt_federate| pwd| | cipher_pwd| | plain_pwd| | | | AES| aes-key-value=123456abc| true| | | | " />
+    <row values="t_user_encrypt_federate| pwd| | cipher_pwd| | plain_pwd| | | | AES| aes-key-value=123456abc| | | | | true" />
     <row values="t_user_encrypt_federate_sharding| pwd| | cipher_pwd| | plain_pwd| | | | AES| aes-key-value=123456abc| | | | | true" />
 </dataset>
