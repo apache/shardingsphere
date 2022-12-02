@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.integration.framework.runner.parallel;
 
 import org.apache.shardingsphere.test.integration.framework.param.model.ITParameterizedArray;
 import org.apache.shardingsphere.test.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.runner.key.TestKeyProvider;
+import org.apache.shardingsphere.test.runner.executor.key.ParallelRunnerExecutorKeyProvider;
 import org.apache.shardingsphere.test.runner.param.ParameterizedArray;
 
 /**
- * Scenario test key provider.
+ * Scenario parallel runner executor key provider.
  */
-public final class ScenarioTestKeyProvider implements TestKeyProvider {
+public final class ScenarioParallelRunnerExecutorKeyProvider implements ParallelRunnerExecutorKeyProvider {
     
     @Override
     public String getKey(final ParameterizedArray parameterizedArray) {
