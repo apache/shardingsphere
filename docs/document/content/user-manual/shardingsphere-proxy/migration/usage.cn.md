@@ -491,6 +491,8 @@ max_connections = 600
 host replication repl_acct 0.0.0.0/0 md5
 ```
 
+详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
+
 3. 赋予数据库和表的访问权限
 
 如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
@@ -512,7 +514,7 @@ GRANT SELECT ON TABLE test.t_order TO migration_user;
 
 openGauss 有 OWNER 的概念，如果是数据库，SCHEMA，表的 OWNER，则可以省略对应的授权步骤。
 
-openGauss 不允许普通客户在 public schema 下操作。所以如果迁移的表在 public schema 下，需要额外授权。
+openGauss 不允许普通账户在 public schema 下操作。所以如果迁移的表在 public schema 下，需要额外授权。
 
 ```sql
 GRANT ALL PRIVILEGES TO migration_user;
