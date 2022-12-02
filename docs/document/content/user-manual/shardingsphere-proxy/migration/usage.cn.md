@@ -48,7 +48,7 @@ show variables like '%binlog%';
 执行以下命令，查看该用户是否有迁移权限：
 
 ```
-SHOW GRANTS FOR 'user';
+SHOW GRANTS FOR 'migration_user';
 ```
 
 示例结果：
@@ -69,8 +69,10 @@ SHOW GRANTS FOR 'user';
 示例：
 
 ```sql
-GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `normal_user`@`%`;
+GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
 ```
+
+详情请参见 [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
 
 ### 完整流程示例
 
@@ -281,12 +283,12 @@ host replication repl_acct 0.0.0.0/0 md5
 
 4. 赋予数据库和表的访问权限
 
-如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE，和 CONNECT 的权限。
+如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
 
 示例：
 
 ```sql
-GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
 
 还需要账号对迁移的表和 schema 具备访问权限，以 test schema 下的 t_order 表为例。
@@ -294,11 +296,13 @@ GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
 ```sql
 \c migration_ds_0
 
-GRANT USAGE ON SCHEMA test TO GROUP normal_user;
-GRANT SELECT ON TABLE test.t_order TO normal_user;
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
 ```
 
 PostgreSQL 有 OWNER 的概念，如果是数据库，SCHEMA，表的 OWNER，则可以省略对应的授权步骤。
+
+详情请参见 [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
 
 ### 完整流程示例
 
@@ -486,14 +490,17 @@ max_connections = 600
 ```
 host replication repl_acct 0.0.0.0/0 md5
 ```
+
+详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
+
 3. 赋予数据库和表的访问权限
 
-如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE，和 CONNECT 的权限。
+如果使用非超级管理员账号进行迁移，要求该账号在迁移时用到的数据库上，具备 CREATE 和 CONNECT 的权限。
 
 示例：
 
 ```sql
-GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
 
 还需要账号对迁移的表和 schema 具备访问权限，以 test schema 下的 t_order 表为例。
@@ -501,19 +508,19 @@ GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
 ```sql
 \c migration_ds_0
 
-GRANT USAGE ON SCHEMA test TO GROUP normal_user;
-GRANT SELECT ON TABLE test.t_order TO normal_user;
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
 ```
 
 openGauss 有 OWNER 的概念，如果是数据库，SCHEMA，表的 OWNER，则可以省略对应的授权步骤。
 
-openGauss 因为安全原因，不允许普通客户在 public 模式下操作。所以如果迁移的表在 public 模式下，需要额外授权。
+openGauss 不允许普通账户在 public schema 下操作。所以如果迁移的表在 public schema 下，需要额外授权。
 
 ```sql
-GRANT ALL PRIVILEGES TO normal_user;
+GRANT ALL PRIVILEGES TO migration_user;
 ```
 
-详情请参见 [Configuring Client Access Authentication](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/configuring-client-access-authentication.html) 和 [Example: Logic Replication Code](https://opengauss.org/en/docs/2.0.1/docs/Developerguide/example-logic-replication-code.html)。
+详情请参见 [openGauss GRANT](https://docs.opengauss.org/zh/docs/2.0.1/docs/Developerguide/GRANT.html)
 
 ### 完整流程示例
 

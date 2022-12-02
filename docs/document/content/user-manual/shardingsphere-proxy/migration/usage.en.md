@@ -45,7 +45,7 @@ If the following information is displayed, binlog is enabled.
 
 Run the following command and see whether the user has migration permission.
 ```
-SHOW GRANTS FOR 'user';
+SHOW GRANTS FOR 'migration_user';
 ```
 
 Result sample: 
@@ -63,8 +63,10 @@ Result sample:
 If you use a non-super admin account for migration, you need to make sure that the account has the permission to insert, select, update and delete on the physical library used for migration.
 
 ```sql
-GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `normal_user`@`%`;
+GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE, INDEX ON migration_ds_0.* TO `migration_user`@`%`;
 ```
+
+Please refer to [MySQL GRANT](https://dev.mysql.com/doc/refman/8.0/en/grant.html)
 
 ### Complete procedure example
 
@@ -276,7 +278,7 @@ Please refer to [The pg_hba.conf File](https://www.postgresql.org/docs/9.6/auth-
 If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
 
 ```sql
-GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
 
 The account also need to have access to the migrated tables and schema, take the t_order table under test schema as an example. 
@@ -284,11 +286,13 @@ The account also need to have access to the migrated tables and schema, take the
 ```sql
 \c migration_ds_0
 
-GRANT USAGE ON SCHEMA test TO GROUP normal_user;
-GRANT SELECT ON TABLE test.t_order TO normal_user;
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
 ```
 
 PostgreSQL has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
+
+Please refer to [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
 
 ### Complete procedure example
 
@@ -485,7 +489,7 @@ Please refer to [Configuring Client Access Authentication](https://opengauss.org
 If you are using a non-super admin account for migration, you need to GRANT CREATE and CONNECT privileges on the database used for migration.
 
 ```sql
-GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE migration_ds_0 TO migration_user;
 ```
 
 The account also need to have access to the migrated tables and schema, take the t_order table under test schema as an example. 
@@ -493,16 +497,18 @@ The account also need to have access to the migrated tables and schema, take the
 ```sql
 \c migration_ds_0
 
-GRANT USAGE ON SCHEMA test TO GROUP normal_user;
-GRANT SELECT ON TABLE test.t_order TO normal_user;
+GRANT USAGE ON SCHEMA test TO GROUP migration_user;
+GRANT SELECT ON TABLE test.t_order TO migration_user;
 ```
 
 openGauss has the concept of OWNER, and if the account is the OWNER of a database, SCHEMA, or table, the relevant steps can be omitted.
 
-openGauss does not allow normal accounts to operate in public mode for security reasons. So if the migrated table is in public mode, you need to authorize additional.
+openGauss does not allow normal accounts to operate in public schema, so if the migrated table is in public schema, you need to authorize additional.
+
+Please refer to [openGauss GRANT](https://docs.opengauss.org/en/docs/2.0.1/docs/Developerguide/grant.html)
 
 ```sql
-GRANT ALL PRIVILEGES TO normal_user;
+GRANT ALL PRIVILEGES TO migration_user;
 ```
 
 ### Complete procedure example
