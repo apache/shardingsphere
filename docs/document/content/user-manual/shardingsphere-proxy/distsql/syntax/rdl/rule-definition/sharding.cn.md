@@ -126,12 +126,12 @@ CREATE SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableRefere
 
 ALTER SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
 
-DROP SHARDING TABLE REFERENCE RULE tableReferenceRuleDefinition [, tableReferenceRuleDefinition] ...
+DROP SHARDING TABLE REFERENCE RULE ifExists? ruleName [, ruleName] ...
 
 tableReferenceRuleDefinition:
-    (tableName [, tableName] ... )
+    ruleName (tableName [, tableName] ... )
 ```
-- `ALTER` 会使用新的配置覆盖数据库内的绑定表配置
+- 一张分片表只能关联一个 sharding table reference rule
 
 ### Broadcast Table Rule
 
@@ -223,13 +223,11 @@ DROP DEFAULT SHARDING DATABASE STRATEGY;
 ### Sharding Table Reference Rule
 
 ```sql
-CREATE SHARDING TABLE REFERENCE RULE (t_order,t_order_item),(t_1,t_2);
+CREATE SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item), ref_1 (t_1,t_2);
 
-ALTER SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
+ALTER SHARDING TABLE REFERENCE RULE ref_0 (t_order,t_order_item,t_user);
 
-DROP SHARDING TABLE REFERENCE RULE;
-
-DROP SHARDING TABLE REFERENCE RULE (t_order,t_order_item);
+DROP SHARDING TABLE REFERENCE RULE ref_0, ref_1;
 ```
 
 ### Broadcast Table Rule
