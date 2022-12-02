@@ -22,10 +22,14 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereDriverTest {
     
@@ -35,9 +39,18 @@ public final class ShardingSphereDriverTest {
     }
     
     @Test
-    public void assertConnect() throws SQLException {
-        try (Connection actual = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml")) {
-            assertThat(actual, instanceOf(ShardingSphereConnection.class));
+    public void assertDriverWorks() throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+                Statement statement = connection.createStatement()) {
+            assertThat(connection, instanceOf(ShardingSphereConnection.class));
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+            statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
+            try (ResultSet resultSet = statement.executeQuery("SELECT COUNT(1) FROM t_order")) {
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(2));
+            }
         }
     }
 }
