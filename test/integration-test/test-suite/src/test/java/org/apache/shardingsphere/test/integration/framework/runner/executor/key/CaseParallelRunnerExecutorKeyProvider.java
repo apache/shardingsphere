@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.framework.runner.executor.key;
 
 import org.apache.shardingsphere.test.integration.framework.runner.ParallelRunningStrategy.ParallelLevel;
-import org.apache.shardingsphere.test.integration.framework.runner.executor.key.ParallelRunnerExecutorKeyProvider;
 import org.apache.shardingsphere.test.integration.framework.runner.param.ParameterizedArray;
 
 /**
